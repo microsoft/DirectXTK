@@ -181,10 +181,10 @@ This implementation supports sparse fonts, so if you are localizing into
 languages such as Chinese, Japanese, or Korean, you can build a spritefont 
 including only the specific characters needed by your program. This is usually a 
 good idea for CJK languages, as a complete CJK character set is too large to fit 
-in a Direct3D texture! (if you need full CJK support, D2D or DWrite would be a 
-better choice). SpriteFont does not support combining characters or RTL layout, 
-so it will not work for languages with complex layout requirements such as Arabic 
-or Thai.
+in a Direct3D texture! (if you need full CJK support, Direct2D or DirectWrite would
+be a better choice). SpriteFont does not support combining characters or
+right-to-left (RTL) layout, so it will not work for languages with complex layout
+requirements such as Arabic or Thai.
 
 The MakeSpriteFont tool can process any TrueType font that is installed on your 
 system (using GDI+ to rasterize them into a bitmap) or it can import character 
@@ -232,7 +232,7 @@ Commandline options for the MakeSpriteFont tool:
                 High quality and supports multicolored fonts, but wastes space.
             Bgra4444
                 Good choice for color fonts on Metro platforms, but this format 
-                is not supported by D3D on versions of Windows prior to Win8.
+                requires the DirectX 11.1 Runtime and a WDDM 1.2 driver.
             CompressedMono
                 The smallest format, and works on all D3D platforms, but it only 
                 supports monochromatic font data. This uses a special BC2 
@@ -517,7 +517,7 @@ RELEASE HISTORY
 ---------------
 
 May 2, 2012
-    Added SpriteFont implementation
+    Added SpriteFont implementation and the MakeSpriteFont utility
 
 March 29, 2012
     WICTextureLoader updated with Windows 8 WIC native pixel formats
