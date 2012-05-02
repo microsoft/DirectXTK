@@ -1202,7 +1202,7 @@ static HRESULT CreateTextureFromDDS( _In_ ID3D11Device* d3dDevice,
     {
         hr = CreateD3DResources( d3dDevice, resDim, twidth, theight, tdepth, mipCount - skipMip, arraySize, format, isCubeMap, initData.get(), texture, textureView );
 
-        if ( (hr == E_INVALIDARG) && !maxsize && (mipCount > 1) )
+        if ( FAILED(hr) && !maxsize && (mipCount > 1) )
         {
             // Retry with a maxsize determined by feature level
             switch( d3dDevice->GetFeatureLevel() )
