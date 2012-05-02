@@ -21,6 +21,9 @@
     <ClInclude Include="Inc\SpriteBatch.h">
       <Filter>Inc</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\SpriteFont.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
     <ClInclude Include="Inc\VertexTypes.h">
       <Filter>Inc</Filter>
     </ClInclude>
@@ -28,6 +31,9 @@
       <Filter>Src</Filter>
     </ClInclude>
     <ClInclude Include="Src\ConstantBuffer.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\BinaryReader.h">
       <Filter>Src</Filter>
     </ClInclude>
     <ClInclude Include="Src\pch.h">
@@ -71,10 +77,16 @@
     <ClCompile Include="Src\SpriteBatch.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="Src\SpriteFont.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
     <ClCompile Include="Src\VertexTypes.cpp">
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="Src\BasicEffect.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\BinaryReader.cpp">
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="Src\GeometricPrimitive.cpp">

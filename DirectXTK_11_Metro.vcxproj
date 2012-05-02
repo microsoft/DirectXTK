@@ -32,11 +32,13 @@
     <ClInclude Include="Inc\Effects.h" />
     <ClInclude Include="Inc\GeometricPrimitive.h" />
     <ClInclude Include="Inc\SpriteBatch.h" />
+    <ClInclude Include="Inc\SpriteFont.h" />
     <ClInclude Include="Inc\VertexTypes.h" />
     <ClInclude Include="Inc\WICTextureLoader.h" />
     <ClInclude Include="Src\AlignedNew.h" />
     <ClInclude Include="Src\Bezier.h" />
     <ClInclude Include="Src\ConstantBuffer.h" />
+    <ClInclude Include="Src\BinaryReader.h" />
     <ClInclude Include="Src\DemandCreate.h" />
     <ClInclude Include="Src\EffectCommon.h" />
     <ClInclude Include="Src\pch.h" />
@@ -50,6 +52,7 @@
     <ClCompile Include="Src\DDSTextureLoader.cpp" />
     <ClCompile Include="Src\DualTextureEffect.cpp" />
     <ClCompile Include="Src\EffectCommon.cpp" />
+    <ClCompile Include="Src\BinaryReader.cpp" />
     <ClCompile Include="Src\EnvironmentMapEffect.cpp" />
     <ClCompile Include="Src\GeometricPrimitive.cpp" />
     <ClCompile Include="Src\pch.cpp">
@@ -62,6 +65,7 @@
     </ClCompile>
     <ClCompile Include="Src\SkinnedEffect.cpp" />
     <ClCompile Include="Src\SpriteBatch.cpp" />
+    <ClCompile Include="Src\SpriteFont.cpp" />
     <ClCompile Include="Src\VertexTypes.cpp" />
     <ClCompile Include="Src\WICTextureLoader.cpp" />
   </ItemGroup>

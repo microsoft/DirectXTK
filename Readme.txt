@@ -4,16 +4,18 @@ DirectXTK - the DirectX Tool Kit
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-March 29, 2012
+May 2, 2012
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for
 writing Direct3D 11 code for Metro style apps, Windows 8 Desktop, and Windows 7 'classic'
 applications in C++.
 
-This code is designed to build with either Visual Studio 11 which includes the Windows 8.0 SDK
-or Visual Studio 2010 with the standalone Windows 8.0 SDK installed using the "Platform Toolset" set
-to "Windows 8.0 SDK".  It makes use of the DirectXMath library and optionally the DXGI 1.2 headers
-from the Windows 8.0 SDK as well as other headers.
+This code is designed to build with either Visual Studio 11 which includes the 
+Windows 8.0 SDK or Visual Studio 2010 with the standalone Windows 8.0 SDK installed 
+using the "Platform Toolset" set to use the Windows 8.0 SDK. See the Visual C++ Team Blog 
+<http://blogs.msdn.com/b/vcblog/archive/2012/03/25/10287354.aspx>. It makes use of 
+the DirectXMath library and optionally the DXGI 1.2 headers from the Windows 8.0 SDK 
+as well as other headers.
 
 These components are designed to work without requiring any content from the DirectX SDK. For details,
 see "Where is the DirectX SDK"? <http://msdn.microsoft.com/en-us/library/ee663275.aspx>
@@ -22,6 +24,7 @@ Inc\
     Public Header Files:
 
     SpriteBatch.h - simple & efficient 2D sprite rendering
+    SpriteFont.h - bitmap based text rendering
     Effects.h - set of built-in shaders for common rendering tasks
     GeometricPrimitive.h - draws basic shapes such as cubes and spheres
     CommonStates.h - factory providing commonly used D3D state objects
@@ -31,6 +34,9 @@ Inc\
 
 Src\
     DirectXTK source files and internal implementation headers
+
+MakeSpriteFont\
+    Command line tool used to generate binary resources for use with SpriteFont
 
 All content and source code for this package are bound to the Microsoft Public License (Ms-PL)
 <http://www.microsoft.com/en-us/openness/licenses.aspx#MPL>.
@@ -128,6 +134,122 @@ Further reading:
     http://www.shawnhargreaves.com/blogindex.html#spritebatch
     http://blogs.msdn.com/b/shawnhar/archive/2010/06/18/spritebatch-and-renderstates-in-xna-game-studio-4-0.aspx
     http://www.shawnhargreaves.com/blogindex.html#premultipliedalpha
+
+
+
+----------
+SpriteFont
+----------
+
+This is a native D3D11 implementation of a bitmap font renderer, similar to the 
+SpriteFont type from XNA Game Studio, plus a command line tool (MakeSpriteFont) 
+for building fonts into bitmap format. It is less fully featured than Direct2D 
+and DirectWrite, but may be useful for those who want something simpler and 
+lighter weight.
+
+At build time:
+
+    MakeSpriteFont.exe "Comic Sans" myfile.spritefont /FontSize:16
+
+During initialization:
+
+    std::unique_ptr<SpriteBatch> spriteBatch(new SpriteBatch(deviceContext));
+    std::unique_ptr<SpriteFont> spriteFont(new SpriteFont(device, L"myfile.spritefont"));
+
+Simple drawing:
+
+    spriteBatch->Begin();
+    spriteFont->DrawString(spriteBatch.get(), L"Hello, world!", XMFLOAT2(x, y));
+    spriteBatch->End();
+
+The Draw method has several overloads with parameters controlling color, 
+rotation, origin point, scaling, horizontal or vertical mirroring, and layer 
+depth. These work the same way as the equivalent SpriteBatch::Draw parameters.
+
+SpriteFont has three constructors:
+
+    - Pass a filename string to read a binary file created by MakeSpriteFont
+    - Pass a buffer containing a MakeSpriteFont binary that was already loaded some other way
+    - Pass an array of Glyph structs if you prefer to entirely bypass MakeSpriteFont
+
+If you try to draw or call MeasureString with a character that is not included in 
+the font, by default you will get an exception. Use SetDefaultCharacter to 
+specify some other character that will be automatically substituted in place of 
+any that are missing.
+
+This implementation supports sparse fonts, so if you are localizing into 
+languages such as Chinese, Japanese, or Korean, you can build a spritefont 
+including only the specific characters needed by your program. This is usually a 
+good idea for CJK languages, as a complete CJK character set is too large to fit 
+in a Direct3D texture! (if you need full CJK support, D2D or DWrite would be a 
+better choice). SpriteFont does not support combining characters or RTL layout, 
+so it will not work for languages with complex layout requirements such as Arabic 
+or Thai.
+
+The MakeSpriteFont tool can process any TrueType font that is installed on your 
+system (using GDI+ to rasterize them into a bitmap) or it can import character 
+glyphs from a specially formatted bitmap file. This latter option allows you to 
+create multicolored fonts, drawing special effects such as gradients or drop 
+shadows directly into your glyph textures. Characters should be arranged in a 
+grid ordered from top left to bottom right. Monochrome fonts should use white for 
+solid areas and black for transparent areas. To include multicolored characters, 
+add an alpha channel to the bitmap and use that to control which parts of each 
+character are solid. The spaces between characters and around the edges of the 
+grid should be filled with bright pink (red=255, green=0, blue=255). It doesn't 
+matter if your grid includes lots of wasted space, because the converter will 
+rearrange characters, packing everything as tightly as possible.
+
+Commandline options for the MakeSpriteFont tool:
+
+    /CharacterRegion:<region>
+        Specifies which Unicode codepoints to include in the font. Can be 
+        repeated to include more than one region. If not specified, the default 
+        ASCII range (32-126) is used. Examples:
+            /CharacterRegion:a-z
+            /CharacterRegion:0x1200-0x1250
+            /CharacterRegion:0x1234
+
+    /DefaultCharacter:<value>
+        Fallback character substituted in place of codepoints that are not 
+        included in the font. If zero, missing characters throw exceptions.
+
+    /FontSize:<value>
+    /FontStyle:<value>
+        Size and style (bold or italic) for TrueType fonts. Ignored when 
+        converting a bitmap font.
+
+    /LineSpacing:<value>
+    /CharacterSpacing:<value>
+        Spacing overrides. Zero is default spacing, negative closer together, 
+        positive further apart.
+
+    /TextureFormat:<value>
+        What format should the output texture be? Options:
+            Auto
+                The default. Chooses between CompressedMono and Rgba32 depending 
+                on whether the font data is monochromatic or multicolored.
+            Rgba32
+                High quality and supports multicolored fonts, but wastes space.
+            Bgra4444
+                Good choice for color fonts on Metro platforms, but this format 
+                is not supported by D3D on versions of Windows prior to Win8.
+            CompressedMono
+                The smallest format, and works on all D3D platforms, but it only 
+                supports monochromatic font data. This uses a special BC2 
+                encoder: see comments in SpriteFontWriter.cs for details.
+
+    /NoPremultiply
+        By default, font textures use premultiplied alpha format. Pass this flag 
+        if you want interpolative alpha instead.
+
+    /DebugOutputSpriteSheet:<filename>
+        Dumps the generated texture to a bitmap file (useful when debugging the 
+        MakeSpriteFont tool, not so much if you are just trying to use it).
+
+Further reading:
+
+    http://blogs.msdn.com/b/shawnhar/archive/2007/04/26/bitmap-fonts-in-xna.aspx
+    http://create.msdn.com/en-US/education/catalog/utility/bitmap_font_maker
 
 
 
@@ -394,15 +516,18 @@ Further reading:
 RELEASE HISTORY
 ---------------
 
+May 2, 2012
+    Added SpriteFont implementation
+
 March 29, 2012
     WICTextureLoader updated with Windows 8 WIC native pixel formats
 
-March 6, 2012:
+March 6, 2012
     Fix for too much temp memory used by WICTextureLoader
     Add separate Visual Studio 11 projects for Desktop vs. Metro builds
 
-March 5, 2012:
+March 5, 2012
     Bug fix for SpriteBatch with batches > 2048
 
-February 24, 2012:
+February 24, 2012
     Original release

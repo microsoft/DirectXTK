@@ -523,7 +523,7 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
         }
         else
         {
-#if defined(DEBUG) || defined(PROFILE)
+#if defined(_DEBUG) || defined(PROFILE)
             tex->SetPrivateData( WKPDID_D3DDebugObjectName,
                                  sizeof("WICTextureLoader")-1,
                                  "WICTextureLoader"
@@ -590,7 +590,7 @@ HRESULT CreateWICTextureFromMemory( _In_ ID3D11Device* d3dDevice,
     if ( FAILED(hr)) 
         return hr;
 
-#if defined(DEBUG) || defined(PROFILE)
+#if defined(_DEBUG) || defined(PROFILE)
     if (texture != 0 && *texture != 0)
     {
         (*texture)->SetPrivateData( WKPDID_D3DDebugObjectName,
@@ -643,7 +643,7 @@ HRESULT CreateWICTextureFromFile( _In_ ID3D11Device* d3dDevice,
     if ( FAILED(hr)) 
         return hr;
 
-#if defined(DEBUG) || defined(PROFILE)
+#if defined(_DEBUG) || defined(PROFILE)
     if (texture != 0 || textureView != 0)
     {
         CHAR strFileA[MAX_PATH];

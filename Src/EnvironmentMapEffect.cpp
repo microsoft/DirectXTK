@@ -322,7 +322,7 @@ void EnvironmentMapEffect::SetLightingEnabled(bool value)
 }
 
 
-void EnvironmentMapEffect::SetPerPixelLighting(bool value)
+void EnvironmentMapEffect::SetPerPixelLighting(bool)
 {
     // Unsupported interface method.
 }
@@ -360,7 +360,7 @@ void EnvironmentMapEffect::SetLightDiffuseColor(int whichLight, FXMVECTOR value)
 }
 
 
-void EnvironmentMapEffect::SetLightSpecularColor(int whichLight, FXMVECTOR value)
+void EnvironmentMapEffect::SetLightSpecularColor(int, FXMVECTOR)
 {
     // Unsupported interface method.
 }
