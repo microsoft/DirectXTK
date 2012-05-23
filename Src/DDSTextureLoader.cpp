@@ -1391,7 +1391,7 @@ HRESULT CreateDDSTextureFromFile( _In_ ID3D11Device* d3dDevice,
         if (texture != 0 && *texture != 0)
         {
             (*texture)->SetPrivateData( WKPDID_D3DDebugObjectName,
-                                        strnlen_s(pstrName, MAX_PATH),
+                                        static_cast<UINT>( strnlen_s(pstrName, MAX_PATH) ),
                                         pstrName
                                       );
         }
@@ -1399,7 +1399,7 @@ HRESULT CreateDDSTextureFromFile( _In_ ID3D11Device* d3dDevice,
         if (textureView != 0 && *textureView != 0 )
         {
             (*textureView)->SetPrivateData( WKPDID_D3DDebugObjectName,
-                                            strnlen_s(pstrName, MAX_PATH),
+                                            static_cast<UINT>( strnlen_s(pstrName, MAX_PATH) ),
                                             pstrName
                                           );
         }
