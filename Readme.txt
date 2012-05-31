@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-May 2, 2012
+May 31, 2012
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for
 writing Direct3D 11 code for Metro style apps, Windows 8 Desktop, and Windows 7 'classic'
@@ -515,6 +515,11 @@ Further reading:
 ---------------
 RELEASE HISTORY
 ---------------
+
+May 31, 2012
+    Updated Metro project for Visual Studio 2012 Release Candidate changes
+    Cleaned up x64 Debug configuration warnings and switched to use "_DEBUG" instead of "DEBUG"
+    Minor fix for DDSTextureLoader's retry fallback that can happen with 10level9 feature levels
 
 May 2, 2012
     Added SpriteFont implementation and the MakeSpriteFont utility
