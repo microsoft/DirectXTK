@@ -175,7 +175,6 @@ static WICConvert g_WICConvert[] =
     { GUID_WICPixelFormat64bppRGBHalf,          GUID_WICPixelFormat64bppRGBAHalf }, // DXGI_FORMAT_R16G16B16A16_FLOAT 
     { GUID_WICPixelFormat48bppRGBHalf,          GUID_WICPixelFormat64bppRGBAHalf }, // DXGI_FORMAT_R16G16B16A16_FLOAT 
 
-    { GUID_WICPixelFormat96bppRGBFixedPoint,    GUID_WICPixelFormat128bppRGBAFloat }, // DXGI_FORMAT_R32G32B32A32_FLOAT 
     { GUID_WICPixelFormat128bppPRGBAFloat,      GUID_WICPixelFormat128bppRGBAFloat }, // DXGI_FORMAT_R32G32B32A32_FLOAT 
     { GUID_WICPixelFormat128bppRGBFloat,        GUID_WICPixelFormat128bppRGBAFloat }, // DXGI_FORMAT_R32G32B32A32_FLOAT 
     { GUID_WICPixelFormat128bppRGBAFixedPoint,  GUID_WICPixelFormat128bppRGBAFloat }, // DXGI_FORMAT_R32G32B32A32_FLOAT 
@@ -190,6 +189,9 @@ static WICConvert g_WICConvert[] =
     { GUID_WICPixelFormat32bppRGB,              GUID_WICPixelFormat32bppRGBA }, // DXGI_FORMAT_R8G8B8A8_UNORM
     { GUID_WICPixelFormat64bppRGB,              GUID_WICPixelFormat64bppRGBA }, // DXGI_FORMAT_R16G16B16A16_UNORM
     { GUID_WICPixelFormat64bppPRGBAHalf,        GUID_WICPixelFormat64bppRGBAHalf }, // DXGI_FORMAT_R16G16B16A16_FLOAT 
+    { GUID_WICPixelFormat96bppRGBFixedPoint,    GUID_WICPixelFormat96bppRGBFloat }, // DXGI_FORMAT_R32G32B32_FLOAT
+#else
+    { GUID_WICPixelFormat96bppRGBFixedPoint,    GUID_WICPixelFormat128bppRGBAFloat }, // DXGI_FORMAT_R32G32B32A32_FLOAT 
 #endif
 
     // We don't support n-channel formats
@@ -362,6 +364,22 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
     {
         bpp = _WICBitsPerPixel( pixelFormat );
     }
+
+#if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
+    if ( (format == DXGI_FORMAT_R32G32B32_FLOAT) && d3dContext != 0 && textureView != 0 )
+    {
+        // Special case test for optional device support for autogen mipchains for R32G32B32_FLOAT 
+        UINT fmtSupport = 0;
+        hr = d3dDevice->CheckFormatSupport( DXGI_FORMAT_R32G32B32_FLOAT, &fmtSupport );
+        if ( FAILED(hr) || !( fmtSupport & D3D11_FORMAT_SUPPORT_MIP_AUTOGEN ) )
+        {
+            // Use R32G32B32A32_FLOAT instead which is required for Feature Level 10.0 and up
+            memcpy( &convertGUID, &GUID_WICPixelFormat128bppRGBAFloat, sizeof(WICPixelFormatGUID) );
+            format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+            bpp = 128;
+        }
+    }
+#endif
 
     if ( !bpp )
         return E_FAIL;
