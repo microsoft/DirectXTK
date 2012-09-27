@@ -1247,12 +1247,12 @@ static HRESULT CreateTextureFromDDS( _In_ ID3D11Device* d3dDevice,
 }
 
 //--------------------------------------------------------------------------------------
-HRESULT CreateDDSTextureFromMemory( _In_ ID3D11Device* d3dDevice,
-                                    _In_reads_bytes_(ddsDataSize) const uint8_t* ddsData,
-                                    _In_ size_t ddsDataSize,
-                                    _Out_opt_ ID3D11Resource** texture,
-                                    _Out_opt_ ID3D11ShaderResourceView** textureView,
-                                    _In_ size_t maxsize )
+HRESULT DirectX::CreateDDSTextureFromMemory( _In_ ID3D11Device* d3dDevice,
+                                             _In_reads_bytes_(ddsDataSize) const uint8_t* ddsData,
+                                             _In_ size_t ddsDataSize,
+                                             _Out_opt_ ID3D11Resource** texture,
+                                             _Out_opt_ ID3D11ShaderResourceView** textureView,
+                                             _In_ size_t maxsize )
 {
     if (!d3dDevice || !ddsData || (!texture && !textureView))
     {
@@ -1329,11 +1329,11 @@ HRESULT CreateDDSTextureFromMemory( _In_ ID3D11Device* d3dDevice,
 }
 
 //--------------------------------------------------------------------------------------
-HRESULT CreateDDSTextureFromFile( _In_ ID3D11Device* d3dDevice,
-                                  _In_z_ const wchar_t* fileName,
-                                  _Out_opt_ ID3D11Resource** texture,
-                                  _Out_opt_ ID3D11ShaderResourceView** textureView,
-                                  _In_ size_t maxsize )
+HRESULT DirectX::CreateDDSTextureFromFile( _In_ ID3D11Device* d3dDevice,
+                                           _In_z_ const wchar_t* fileName,
+                                           _Out_opt_ ID3D11Resource** texture,
+                                           _Out_opt_ ID3D11ShaderResourceView** textureView,
+                                           _In_ size_t maxsize )
 {
     if (!d3dDevice || !fileName || (!texture && !textureView))
     {

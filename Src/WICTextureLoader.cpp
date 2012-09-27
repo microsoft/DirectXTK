@@ -555,13 +555,13 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
 }
 
 //--------------------------------------------------------------------------------------
-HRESULT CreateWICTextureFromMemory( _In_ ID3D11Device* d3dDevice,
-                                    _In_opt_ ID3D11DeviceContext* d3dContext,
-                                    _In_reads_bytes_(wicDataSize) const uint8_t* wicData,
-                                    _In_ size_t wicDataSize,
-                                    _Out_opt_ ID3D11Resource** texture,
-                                    _Out_opt_ ID3D11ShaderResourceView** textureView,
-                                    _In_ size_t maxsize
+HRESULT DirectX::CreateWICTextureFromMemory( _In_ ID3D11Device* d3dDevice,
+                                             _In_opt_ ID3D11DeviceContext* d3dContext,
+                                             _In_reads_bytes_(wicDataSize) const uint8_t* wicData,
+                                             _In_ size_t wicDataSize,
+                                             _Out_opt_ ID3D11Resource** texture,
+                                             _Out_opt_ ID3D11ShaderResourceView** textureView,
+                                             _In_ size_t maxsize
                                   )
 {
     if (!d3dDevice || !wicData || (!texture && !textureView))
@@ -630,12 +630,12 @@ HRESULT CreateWICTextureFromMemory( _In_ ID3D11Device* d3dDevice,
 }
 
 //--------------------------------------------------------------------------------------
-HRESULT CreateWICTextureFromFile( _In_ ID3D11Device* d3dDevice,
-                                  _In_opt_ ID3D11DeviceContext* d3dContext,
-                                  _In_z_ const wchar_t* fileName,
-                                  _Out_opt_ ID3D11Resource** texture,
-                                  _Out_opt_ ID3D11ShaderResourceView** textureView,
-                                  _In_ size_t maxsize )
+HRESULT DirectX::CreateWICTextureFromFile( _In_ ID3D11Device* d3dDevice,
+                                           _In_opt_ ID3D11DeviceContext* d3dContext,
+                                           _In_z_ const wchar_t* fileName,
+                                           _Out_opt_ ID3D11Resource** texture,
+                                           _Out_opt_ ID3D11ShaderResourceView** textureView,
+                                           _In_ size_t maxsize )
 {
     if (!d3dDevice || !fileName || (!texture && !textureView))
     {
