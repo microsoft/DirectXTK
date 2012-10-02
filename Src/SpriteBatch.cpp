@@ -946,7 +946,7 @@ void SpriteBatch::Draw(_In_ ID3D11ShaderResourceView* texture, FXMVECTOR positio
 {
     XMVECTOR destination = XMVectorPermute<0, 1, 4, 4>(position, XMLoadFloat(&scale)); // x, y, scale, scale
 
-    XMVECTOR rotationDepth = XMVectorMergeXY(XMLoadFloat(&rotation), XMLoadFloat(&layerDepth));
+    XMVECTOR rotationDepth = XMVectorMergeXY(XMVectorReplicate(rotation), XMVectorReplicate(layerDepth));
 
     XMVECTOR originRotationDepth = XMVectorPermute<0, 1, 4, 5>(origin, rotationDepth);
     
@@ -958,7 +958,7 @@ void SpriteBatch::Draw(_In_ ID3D11ShaderResourceView* texture, FXMVECTOR positio
 {
     XMVECTOR destination = XMVectorPermute<0, 1, 4, 5>(position, scale); // x, y, scale.x, scale.y
     
-    XMVECTOR rotationDepth = XMVectorMergeXY(XMLoadFloat(&rotation), XMLoadFloat(&layerDepth));
+    XMVECTOR rotationDepth = XMVectorMergeXY(XMVectorReplicate(rotation), XMVectorReplicate(layerDepth));
 
     XMVECTOR originRotationDepth = XMVectorPermute<0, 1, 4, 5>(origin, rotationDepth);
 
