@@ -30,22 +30,9 @@
 #endif
 
 
-namespace DirectX
-{
-    // Helper utility converts D3D API failures into exceptions.
-    inline void ThrowIfFailed(HRESULT hr)
-    {
-        if (FAILED(hr))
-        {
-            throw std::exception();
-        }
-    }
-}
-
-
 #if _WIN32_WINNT < 0x0602 /*_WIN32_WINNT_WIN8*/
 
-// Emulate the new Metro ComPtr type via ATL CComPtr when building for Windows versions prior to Win8.
+// Emulate the WRL ComPtr type via ATL CComPtr when building for Windows versions prior to Windows 8.
 namespace Microsoft
 {
     namespace WRL
@@ -76,6 +63,57 @@ namespace Microsoft
 }
 
 #endif
+
+
+namespace DirectX
+{
+    // Helper utility converts D3D API failures into exceptions.
+    inline void ThrowIfFailed(HRESULT hr)
+    {
+        if (FAILED(hr))
+        {
+            throw std::exception();
+        }
+    }
+
+
+    // Helper smart-pointers
+    struct handle_closer { void operator()(HANDLE h) { if (h) CloseHandle(h); } };
+
+    typedef public std::unique_ptr<void, handle_closer> ScopedHandle;
+
+    inline HANDLE safe_handle( HANDLE h ) { return (h == INVALID_HANDLE_VALUE) ? 0 : h; }
+
+    template<class T> class ScopedObject
+    {
+    public:
+        explicit ScopedObject( T *p = 0 ) : _pointer(p) {}
+        ~ScopedObject()
+        {
+            if ( _pointer )
+            {
+                _pointer->Release();
+                _pointer = nullptr;
+            }
+        }
+
+        bool IsNull() const { return (!_pointer); }
+
+        T& operator*() { return *_pointer; }
+        T* operator->() { return _pointer; }
+        T** operator&() { return &_pointer; }
+
+        void Reset(T *p = 0) { if ( _pointer ) { _pointer->Release(); } _pointer = p; }
+
+        T* Get() const { return _pointer; }
+
+    private:
+        ScopedObject(const ScopedObject&);
+        ScopedObject& operator=(const ScopedObject&);
+        
+        T* _pointer;
+    };
+}
 
 
 #if defined(_MSC_VER) && (_MSC_VER < 1610)

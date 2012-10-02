@@ -37,40 +37,9 @@
 
 #include "WICTextureLoader.h"
 
-#if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/) && !defined(DXGI_1_2_FORMATS)
-#define DXGI_1_2_FORMATS
-#endif
+#include "PlatformHelpers.h"
 
-//---------------------------------------------------------------------------------
-template<class T> class ScopedObject
-{
-public:
-    explicit ScopedObject( T *p = 0 ) : _pointer(p) {}
-    ~ScopedObject()
-    {
-        if ( _pointer )
-        {
-            _pointer->Release();
-            _pointer = nullptr;
-        }
-    }
-
-    bool IsNull() const { return (!_pointer); }
-
-    T& operator*() { return *_pointer; }
-    T* operator->() { return _pointer; }
-    T** operator&() { return &_pointer; }
-
-    void Reset(T *p = 0) { if ( _pointer ) { _pointer->Release(); } _pointer = p; }
-
-    T* Get() const { return _pointer; }
-
-private:
-    ScopedObject(const ScopedObject&);
-    ScopedObject& operator=(const ScopedObject&);
-        
-    T* _pointer;
-};
+using namespace DirectX;
 
 //-------------------------------------------------------------------------------------
 // WIC Pixel Format Translation Data
@@ -198,7 +167,10 @@ static WICConvert g_WICConvert[] =
 };
 
 //--------------------------------------------------------------------------------------
-static IWICImagingFactory* _GetWIC()
+namespace DirectX
+{
+
+IWICImagingFactory* _GetWIC()
 {
     static IWICImagingFactory* s_Factory = nullptr;
 
@@ -221,6 +193,9 @@ static IWICImagingFactory* _GetWIC()
 
     return s_Factory;
 }
+
+} // namespace DirectX
+
 
 //---------------------------------------------------------------------------------
 static DXGI_FORMAT _WICToDXGI( const GUID& guid )

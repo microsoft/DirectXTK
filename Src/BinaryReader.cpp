@@ -40,26 +40,6 @@ BinaryReader::BinaryReader(_In_reads_bytes_(dataSize) uint8_t const* dataBlob, s
 }
 
 
-// Helpers apply C++ RAII to Win32 file handles.
-namespace
-{
-    inline HANDLE safe_handle(HANDLE h)
-    {
-        return (h == INVALID_HANDLE_VALUE) ? 0 : h;
-    }
-
-    struct handle_closer
-    {
-        void operator() (HANDLE h)
-        {
-            if (h) CloseHandle(h);
-        }
-    };
-
-    typedef std::unique_ptr<void, handle_closer> ScopedHandle;
-}
-
-
 // Reads from the filesystem into memory.
 HRESULT BinaryReader::ReadEntireFile(_In_z_ wchar_t const* fileName, _Inout_ std::unique_ptr<uint8_t[]>& data, _Out_ size_t* dataSize)
 {

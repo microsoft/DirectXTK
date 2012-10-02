@@ -26,3 +26,13 @@
 #include <map>
 #include <memory>
 #include <vector>
+
+#pragma warning(push)
+#pragma warning(disable : 4005)
+#include <stdint.h>
+#pragma warning(pop)
+
+#if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/) && !defined(DXGI_1_2_FORMATS)
+#define DXGI_1_2_FORMATS
+#endif
+
