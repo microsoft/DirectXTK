@@ -18,6 +18,9 @@
     <ClInclude Include="Inc\CommonStates.h">
       <Filter>Inc</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\ScreenGrab.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
     <ClInclude Include="Inc\SpriteBatch.h">
       <Filter>Inc</Filter>
     </ClInclude>
@@ -43,6 +46,9 @@
       <Filter>Src</Filter>
     </ClInclude>
     <ClInclude Include="Src\SharedResourcePool.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\DDS.h">
       <Filter>Src</Filter>
     </ClInclude>
     <ClInclude Include="Inc\GeometricPrimitive.h">
@@ -111,6 +117,9 @@
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="Src\WICTextureLoader.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\ScreenGrab.cpp">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>
