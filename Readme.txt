@@ -4,13 +4,13 @@ DirectXTK - the DirectX Tool Kit
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-May 31, 2012
+October 2, 2012
 
-This package contains the "DirectX Tool Kit", a collection of helper classes for
-writing Direct3D 11 code for Metro style apps, Windows 8 Desktop, and Windows 7 'classic'
-applications in C++.
+This package contains the "DirectX Tool Kit", a collection of helper classes for 
+writing Direct3D 11 C++ code for Windows Store apps, Windows 8 Win32 desktop
+applications, Windows 7 applications, and Windows Vista Direct3D 11.0 applications.
 
-This code is designed to build with either Visual Studio 11 which includes the 
+This code is designed to build with either Visual Studio 2012 which includes the 
 Windows 8.0 SDK or Visual Studio 2010 with the standalone Windows 8.0 SDK installed 
 using the "Platform Toolset" set to use the Windows 8.0 SDK. See the Visual C++ Team Blog 
 <http://blogs.msdn.com/b/vcblog/archive/2012/03/25/10287354.aspx>. It makes use of 
@@ -21,7 +21,7 @@ These components are designed to work without requiring any content from the Dir
 see "Where is the DirectX SDK"? <http://msdn.microsoft.com/en-us/library/ee663275.aspx>
 
 Inc\
-    Public Header Files:
+    Public Header Files (in the DirectX C++ namespace):
 
     SpriteBatch.h - simple & efficient 2D sprite rendering
     SpriteFont.h - bitmap based text rendering
@@ -31,6 +31,7 @@ Inc\
     VertexTypes.h - structures for commonly used vertex data formats
     DDSTextureLoader.h - light-weight DDS file texture loader
     WICTextureLoader.h - WIC-based image file texture loader
+    ScreenGrab.h - light-weight screen shot saver
 
 Src\
     DirectXTK source files and internal implementation headers
@@ -231,7 +232,7 @@ Commandline options for the MakeSpriteFont tool:
             Rgba32
                 High quality and supports multicolored fonts, but wastes space.
             Bgra4444
-                Good choice for color fonts on Metro platforms, but this format 
+                Good choice for color fonts on Windows Store apps, but this format
                 requires the DirectX 11.1 Runtime and a WDDM 1.2 driver.
             CompressedMono
                 The smallest format, and works on all D3D platforms, but it only 
@@ -338,7 +339,7 @@ GeometricPrimitive
 This is a helper for drawing simple geometric shapes:
 
     - Cube
-    - Sphere
+    - Sphere (both geodesic sphere and uv-sphere)
     - Cylinder
     - Torus
     - Teapot
@@ -463,9 +464,17 @@ DDSTextureLoader will load BGRA 4:4:4:4 DDS files using DXGI_FORMAT_B4G4R4A4_UNO
 The DirectX 11.1 Runtime, DXGI 1.2 headers, and WDDM 1.2 drivers are required to
 support 16bpp pixel formats on all feature levels.
 
+Threading model:
+
+    Resource creation with Direct3D 11 is thread-safe. CreateDDSTextureFromFile blocks
+    the calling thread for reading the file data. CreateDDSTextureFromMemory can be used
+    to implement asynchronous loading.
+
 Further reading:
+
     http://go.microsoft.com/fwlink/?LinkId=248926
     http://blogs.msdn.com/b/chuckw/archive/2011/10/28/directxtex.aspx
+    http://blogs.msdn.com/b/chuckw/archive/2010/02/05/the-dds-file-format-lives.aspx
 
 
 
@@ -499,22 +508,91 @@ provided (i.e. d3dContext is null) or the pixel format is unsupported for auto-g
 mips by the current device, then the resulting texture will have only a single level.
 
 This loader does not support array textures, 1D textures, 3D volume textures, or 
-cubemaps. For these scenarios, use the .DDS file format and DDSTextureLoader instead.
+cubemaps. For these scenarios, use the .dds file format and DDSTextureLoader instead.
 
 The DXGI 1.2 version of WICTextureLoader will load 16bpp pixel images as 5:6:5 or
 5:5:5:1 rather than expand them to 32bpp RGBA. The DirectX 11.1 Runtime, DXGI 1.2
 headers, and WDDM 1.2 drivers are required to support 16bpp pixel formats on all
 feature levels.
 
+Threading model:
+
+    Resource creation with Direct3D 11 is thread-safe. CreateWICTextureFromFile blocks
+    the calling thread for reading the file data. CreateWICTextureFromMemory can be used
+    to implement asynchronous loading. Any use of either function with a
+    ID3D11DeviceContext to support auto-gen of mipmaps is not thread-safe.
+
 Further reading:
+
     http://go.microsoft.com/fwlink/?LinkId=248926
     http://blogs.msdn.com/b/chuckw/archive/2011/10/28/directxtex.aspx
+
+
+
+----------------
+ScreenGrab
+----------------
+
+ScreenGrab.h contains routines for writing out a texture, usually a render-target,
+to either a .dds file or a WIC-supported bitmap file (BMP, JPEG, PNG, TIFF, etc.).
+
+SaveDDSTextureToFile and SaveWICTextureToFile will save a texture to a file,
+which is a 'screen shot' when used with a render target texture. Only 2D
+textures are supported, and the routines will fail for 1D and 3D
+textures (aka volume maps). For 2D array textures and cubemaps, only the
+first image is written to disk. Mipmap levels are ignored by both routines.
+MSAA textures are resolved before being written.
+
+NOTE: For a complete DDS texture dump routine that supports all dimensions,
+arrays, cubemaps, and mipmaps use the 'DirectXTex' library.
+
+SaveDDSTextureToFile will store the data in the format of the original
+resource (i.e. performs no conversions), but will prefer using legacy
+.dds file headers when possible over the newer 'DX10' header extension for
+better tools support. The DXGI 1.2 version supports writing 16bpp pixel
+formats.
+
+SaveWICTextureToFile will convert the pixel data if needed, and prefers to
+use a non-alpha format (alpha channels in render targets can result in some
+strange looking screenshot files). The caller can also provide a specific
+pixel target format GUID to use as well. The caller provides the GUID of the
+specific file container format to use.
+
+Capturing a screenshot:
+
+    WRL::ComPtr<ID3D11Texture2D> backBuffer;
+    hr = pSwapChain->GetBuffer( 0, __uuidof( ID3D11Texture2D ), ( LPVOID* )&backBuffer );
+    if ( SUCCEEDED(hr) )
+    {
+        hr = SaveWICTextureToFile( pContext, backBuffer, GUID_ContainerFormatBmp, L"SCREENSHOT.BMP" ) );
+    }
+
+
+Threading model:
+
+    Since these functions use ID3D11DeviceContext, they are not thread-safe.
+
+Further reading:
+
+    http://go.microsoft.com/fwlink/?LinkId=248926
+    http://blogs.msdn.com/b/chuckw/archive/2010/02/05/the-dds-file-format-lives.aspx
 
 
 
 ---------------
 RELEASE HISTORY
 ---------------
+
+October 2, 2012
+    Added ScreenGrab module
+    Added CreateGeoSphere for drawing a geodesic sphere
+    Put DDSTextureLoader and WICTextureLoader into the DirectX C++ namespace
+
+September 7, 2012
+    Renamed project files for better naming consistency
+    Updated WICTextureLoader for Windows 8 96bpp floating-point formats
+    Win32 desktop projects updated to use Windows Vista (0x0600) rather than Windows 7 (0x0601) APIs
+    Tweaked SpriteBatch.cpp to workaround ARM NEON compiler codegen bug
 
 May 31, 2012
     Updated Metro project for Visual Studio 2012 Release Candidate changes
