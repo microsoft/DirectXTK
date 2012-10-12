@@ -39,6 +39,8 @@ namespace DirectX
             ThrowIfFailed(
                 device->CreateBuffer(&desc, nullptr, &mConstantBuffer)
             );
+
+            SetDebugObjectName(mConstantBuffer.Get(), "DirectXTK");
         }
 
 

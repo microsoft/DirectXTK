@@ -118,11 +118,8 @@ SpriteFont::Impl::Impl(_In_ ID3D11Device* device, _In_ BinaryReader* reader)
         device->CreateShaderResourceView(texture2D.Get(), &viewDesc, &texture)
     );
 
-#if defined(_DEBUG) || defined(PROFILE)
-    const char debugLabel[] = "SpriteFont";
-    texture->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof(debugLabel) - 1, debugLabel);
-    texture2D->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof(debugLabel) - 1, debugLabel);
-#endif
+    SetDebugObjectName(texture.Get(),   "DirectXTK:SpriteFont");
+    SetDebugObjectName(texture2D.Get(), "DirectXTK:SpriteFont");
 }
 
 

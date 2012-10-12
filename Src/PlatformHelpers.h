@@ -77,12 +77,23 @@ namespace DirectX
     }
 
 
+    // Helper sets a D3D resource name string (used by PIX and debug layer leak reporting).
+    template<UINT TNameLength>
+    inline void SetDebugObjectName(_In_ ID3D11DeviceChild* resource, _In_z_ const char (&name)[TNameLength])
+    {
+        #if defined(_DEBUG) || defined(PROFILE)
+            resource->SetPrivateData(WKPDID_D3DDebugObjectName, TNameLength - 1, name);
+        #endif
+    }
+
+
     // Helper smart-pointers
     struct handle_closer { void operator()(HANDLE h) { if (h) CloseHandle(h); } };
 
     typedef public std::unique_ptr<void, handle_closer> ScopedHandle;
 
     inline HANDLE safe_handle( HANDLE h ) { return (h == INVALID_HANDLE_VALUE) ? 0 : h; }
+
 
     template<class T> class ScopedObject
     {

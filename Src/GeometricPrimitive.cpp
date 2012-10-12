@@ -111,6 +111,8 @@ static void CreateInputLayout(_In_ ID3D11Device* device, IEffect* effect, _Out_ 
                                   shaderByteCode, byteCodeLength,
                                   pInputLayout)
     );
+
+    SetDebugObjectName(*pInputLayout, "DirectXTK:GeometricPrimitive");
 }
 
 
@@ -216,6 +218,8 @@ static void CreateBuffer(_In_ ID3D11Device* device, T const& data, D3D11_BIND_FL
     ThrowIfFailed(
         device->CreateBuffer(&bufferDesc, &dataDesc, pBuffer)
     );
+
+    SetDebugObjectName(*pBuffer, "DirectXTK:GeometricPrimitive");
 }
 
 

@@ -356,9 +356,14 @@ void EffectLights::EnableDefaultLighting(_In_ IEffectLights* effect)
 // Gets or lazily creates the specified vertex shader permutation.
 ID3D11VertexShader* EffectDeviceResources::DemandCreateVertexShader(_Inout_ ComPtr<ID3D11VertexShader>& vertexShader, ShaderBytecode const& bytecode)
 {
-    return DemandCreate(vertexShader, mMutex, [&](ID3D11VertexShader** pResult)
+    return DemandCreate(vertexShader, mMutex, [&](ID3D11VertexShader** pResult) -> HRESULT
     {
-        return mDevice->CreateVertexShader(bytecode.code, bytecode.length, nullptr, pResult);
+        HRESULT hr = mDevice->CreateVertexShader(bytecode.code, bytecode.length, nullptr, pResult);
+
+        if (SUCCEEDED(hr))
+            SetDebugObjectName(*pResult, "DirectXTK:Effect");
+
+        return hr;
     });
 }
 
@@ -366,8 +371,13 @@ ID3D11VertexShader* EffectDeviceResources::DemandCreateVertexShader(_Inout_ ComP
 // Gets or lazily creates the specified pixel shader permutation.
 ID3D11PixelShader* EffectDeviceResources::DemandCreatePixelShader(_Inout_ ComPtr<ID3D11PixelShader>& pixelShader, ShaderBytecode const& bytecode)
 {
-    return DemandCreate(pixelShader, mMutex, [&](ID3D11PixelShader** pResult)
+    return DemandCreate(pixelShader, mMutex, [&](ID3D11PixelShader** pResult) -> HRESULT
     {
-        return mDevice->CreatePixelShader(bytecode.code, bytecode.length, nullptr, pResult);
+        HRESULT hr = mDevice->CreatePixelShader(bytecode.code, bytecode.length, nullptr, pResult);
+
+        if (SUCCEEDED(hr))
+            SetDebugObjectName(*pResult, "DirectXTK:Effect");
+
+        return hr;
     });
 }

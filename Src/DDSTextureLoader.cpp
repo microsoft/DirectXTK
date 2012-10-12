@@ -762,11 +762,7 @@ static HRESULT CreateD3DResources( _In_ ID3D11Device* d3dDevice,
                     }
                     else
                     {
-#if defined(_DEBUG) || defined(PROFILE)
-                        tex->SetPrivateData( WKPDID_D3DDebugObjectName,
-                                             sizeof("DDSTextureLoader")-1,
-                                             "DDSTextureLoader" );
-#endif
+                        SetDebugObjectName(tex, "DDSTextureLoader");
                         tex->Release();
                     }
                 }
@@ -846,12 +842,7 @@ static HRESULT CreateD3DResources( _In_ ID3D11Device* d3dDevice,
                     }
                     else
                     {
-#if defined(_DEBUG) || defined(PROFILE)
-                        tex->SetPrivateData( WKPDID_D3DDebugObjectName,
-                                             sizeof("DDSTextureLoader")-1,
-                                             "DDSTextureLoader"
-                                           );
-#endif
+                        SetDebugObjectName(tex, "DDSTextureLoader");
                         tex->Release();
                     }
                 }
@@ -903,11 +894,7 @@ static HRESULT CreateD3DResources( _In_ ID3D11Device* d3dDevice,
                     }
                     else
                     {
-#if defined(_DEBUG) || defined(PROFILE)
-                        tex->SetPrivateData( WKPDID_D3DDebugObjectName,
-                                             sizeof("DDSTextureLoader")-1,
-                                             "DDSTextureLoader" );
-#endif
+                        SetDebugObjectName(tex, "DDSTextureLoader");
                         tex->Release();
                     }
                 }
@@ -1206,23 +1193,15 @@ HRESULT DirectX::CreateDDSTextureFromMemory( _In_ ID3D11Device* d3dDevice,
                                        maxsize
                                      );
 
-#if defined(_DEBUG) || defined(PROFILE)
     if (texture != 0 && *texture != 0)
     {
-        (*texture)->SetPrivateData( WKPDID_D3DDebugObjectName,
-                                    sizeof("DDSTextureLoader")-1,
-                                    "DDSTextureLoader"
-                                  );
+        SetDebugObjectName(*texture, "DDSTextureLoader");
     }
 
     if (textureView != 0 && *textureView != 0)
     {
-        (*textureView)->SetPrivateData( WKPDID_D3DDebugObjectName,
-                                        sizeof("DDSTextureLoader")-1,
-                                        "DDSTextureLoader"
-                                      );
+        SetDebugObjectName(*textureView, "DDSTextureLoader");
     }
-#endif
 
     return hr;
 }

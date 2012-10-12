@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-October 2, 2012
+October 12, 2012
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Windows Store apps, Windows 8 Win32 desktop
@@ -26,6 +26,7 @@ Inc\
     SpriteBatch.h - simple & efficient 2D sprite rendering
     SpriteFont.h - bitmap based text rendering
     Effects.h - set of built-in shaders for common rendering tasks
+    PrimitiveBatch.h - simple and efficient way to draw user primitives
     GeometricPrimitive.h - draws basic shapes such as cubes and spheres
     CommonStates.h - factory providing commonly used D3D state objects
     VertexTypes.h - structures for commonly used vertex data formats
@@ -43,6 +44,7 @@ All content and source code for this package are bound to the Microsoft Public L
 <http://www.microsoft.com/en-us/openness/licenses.aspx#MPL>.
 
 http://go.microsoft.com/fwlink/?LinkId=248929
+
 
 
 -----------
@@ -332,6 +334,88 @@ Further reading:
 
 
 
+--------------
+PrimitiveBatch
+--------------
+
+This is a helper for easily and efficiently drawing dynamically generated 
+geometry such as lines or trianges. It fills the same role as the legacy D3D9 
+APIs DrawPrimitiveUP and DrawIndexedPrimitiveUP. Dynamic submission is a highly 
+effective pattern for drawing procedural geometry, and convenient for debug 
+rendering, but is not nearly as efficient as static vertex buffers. Excessive 
+dynamic submission is a common source of performance problems in apps.
+
+PrimitiveBatch manages the vertex and index buffers for you, using DISCARD and 
+NO_OVERWRITE hints to avoid stalling the GPU pipeline. It automatically merges 
+adjacent draw requests, so if you call DrawLine 100 times in a row, only a 
+single GPU draw call will be generated.
+
+PrimitiveBatch is responsible for setting the vertex buffer, index buffer, and 
+primitive topology, then issuing the final draw call. Unlike the higher level 
+SpriteBatch helper, it does not provide shaders, set the input layout, or set 
+any state objects. PrimitiveBatch is often used in conjunction with BasicEffect 
+and the structures from VertexTypes.h, but it can work with any other shader or 
+vertex formats of your own.
+
+To initialize a PrimitiveBatch for drawing VertexPositionColor data:
+
+    std::unique_ptr<PrimitiveBatch<VertexPositionColor>> primitiveBatch(new PrimitiveBatch<VertexPositionColor>(deviceContext));
+
+To set up a suitable BasicEffect and input layout:
+
+    std::unique_ptr<BasicEffect> basicEffect(new BasicEffect(device));
+
+    basicEffect->SetProjection(XMMatrixOrthographicOffCenterRH(0, screenHeight, screenWidth, 0, 0, 1));
+    basicEffect->SetVertexColorEnabled(true);
+
+    void const* shaderByteCode;
+    size_t byteCodeLength;
+
+    basicEffect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
+
+    ComPtr<ID3D11InputLayout> inputLayout;
+
+    device->CreateInputLayout(VertexPositionColor::InputElements,
+                              VertexPositionColor::InputElementCount,
+                              shaderByteCode, byteCodeLength,
+                              &inputLayout);
+
+To draw a line:
+
+    basicEffect->Apply(deviceContext);
+    deviceContext->IASetInputLayout(inputLayout.Get());
+
+    primitiveBatch->Begin();
+    primitiveBatch->DrawLine(VertexPositionColor(...), VertexPositionColor(...));
+    primitiveBatch->End();
+
+PrimitiveBatch provides five drawing methods:
+
+    - DrawLine(v1, v2)
+    - DrawTriangle(v1, v2, v3)
+    - DrawQuad(v1, v2, v3, v4)
+    - Draw(topology, vertices, vertexCount)
+    - DrawIndexed(topology, indices, indexCount, vertices, vertexCount)
+
+Optimization:
+
+    For best performance, draw as much as possible inside the fewest separate 
+    Begin/End blocks. This will reduce overhead and maximize potential for 
+    batching.
+
+    The PrimitiveBatch constructor allows you to specify what size index and 
+    vertex buffers to allocate. You may want to tweak these values to fit your 
+    workload, or if you only intend to draw non-indexed geometry, specify 
+    maxIndices = 0 to entirely skip creating the index buffer.
+
+Threading model:
+
+    Each PrimitiveBatch instance only supports drawing from one thread at a 
+    time, but you can simultaneously submit primitives on multiple threads if 
+    you create a separate PrimitiveBatch instance per D3D11 deferred context.
+
+
+
 ------------------
 GeometricPrimitive
 ------------------
@@ -529,9 +613,9 @@ Further reading:
 
 
 
-----------------
+----------
 ScreenGrab
-----------------
+----------
 
 ScreenGrab.h contains routines for writing out a texture, usually a render-target,
 to either a .dds file or a WIC-supported bitmap file (BMP, JPEG, PNG, TIFF, etc.).
@@ -567,7 +651,6 @@ Capturing a screenshot:
         hr = SaveWICTextureToFile( pContext, backBuffer, GUID_ContainerFormatBmp, L"SCREENSHOT.BMP" ) );
     }
 
-
 Threading model:
 
     Since these functions use ID3D11DeviceContext, they are not thread-safe.
@@ -582,6 +665,10 @@ Further reading:
 ---------------
 RELEASE HISTORY
 ---------------
+
+October 12, 2012
+    Added PrimitiveBatch for drawing user primitives
+    Debug object names for all D3D resources (for PIX and debug layer leak reporting)
 
 October 2, 2012
     Added ScreenGrab module

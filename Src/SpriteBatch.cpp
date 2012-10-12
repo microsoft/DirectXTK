@@ -239,6 +239,10 @@ void SpriteBatch::Impl::DeviceResources::CreateShaders(_In_ ID3D11Device* device
                                   sizeof(SpriteEffect_SpriteVertexShader),
                                   &inputLayout)
     );
+
+    SetDebugObjectName(vertexShader.Get(), "DirectXTK:SpriteBatch");
+    SetDebugObjectName(pixelShader.Get(),  "DirectXTK:SpriteBatch");
+    SetDebugObjectName(inputLayout.Get(),  "DirectXTK:SpriteBatch");
 }
 
 
@@ -260,6 +264,8 @@ void SpriteBatch::Impl::DeviceResources::CreateIndexBuffer(_In_ ID3D11Device* de
     ThrowIfFailed(
         device->CreateBuffer(&indexBufferDesc, &indexDataDesc, &indexBuffer)
     );
+
+    SetDebugObjectName(indexBuffer.Get(), "DirectXTK:SpriteBatch");
 }
 
 
@@ -309,6 +315,8 @@ void SpriteBatch::Impl::ContextResources::CreateVertexBuffer()
     ThrowIfFailed(
         GetDevice(deviceContext.Get())->CreateBuffer(&vertexBufferDesc, nullptr, &vertexBuffer)
     );
+
+    SetDebugObjectName(vertexBuffer.Get(), "DirectXTK:SpriteBatch");
 }
 
 

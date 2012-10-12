@@ -24,6 +24,9 @@
     <ClInclude Include="Inc\SpriteBatch.h">
       <Filter>Inc</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\PrimitiveBatch.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
     <ClInclude Include="Inc\SpriteFont.h">
       <Filter>Inc</Filter>
     </ClInclude>
@@ -81,6 +84,9 @@
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="Src\SpriteBatch.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\PrimitiveBatch.cpp">
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="Src\SpriteFont.cpp">

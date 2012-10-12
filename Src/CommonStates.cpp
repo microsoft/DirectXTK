@@ -82,7 +82,12 @@ HRESULT CommonStates::Impl::CreateBlendState(D3D11_BLEND srcBlend, D3D11_BLEND d
 
     desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
-    return device->CreateBlendState(&desc, pResult);
+    HRESULT hr = device->CreateBlendState(&desc, pResult);
+
+    if (SUCCEEDED(hr))
+        SetDebugObjectName(*pResult, "DirectXTK:CommonStates");
+
+    return hr;
 }
 
 
@@ -107,7 +112,12 @@ HRESULT CommonStates::Impl::CreateDepthStencilState(bool enable, bool writeEnabl
 
     desc.BackFace = desc.FrontFace;
 
-    return device->CreateDepthStencilState(&desc, pResult);
+    HRESULT hr = device->CreateDepthStencilState(&desc, pResult);
+
+    if (SUCCEEDED(hr))
+        SetDebugObjectName(*pResult, "DirectXTK:CommonStates");
+
+    return hr;
 }
 
 
@@ -122,7 +132,12 @@ HRESULT CommonStates::Impl::CreateRasterizerState(D3D11_CULL_MODE cullMode, D3D1
     desc.DepthClipEnable = true;
     desc.MultisampleEnable = true;
 
-    return device->CreateRasterizerState(&desc, pResult);
+    HRESULT hr = device->CreateRasterizerState(&desc, pResult);
+
+    if (SUCCEEDED(hr))
+        SetDebugObjectName(*pResult, "DirectXTK:CommonStates");
+
+    return hr;
 }
 
 
@@ -142,7 +157,12 @@ HRESULT CommonStates::Impl::CreateSamplerState(D3D11_FILTER filter, D3D11_TEXTUR
     desc.MaxAnisotropy = 16;
     desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 
-    return device->CreateSamplerState(&desc, pResult);
+    HRESULT hr = device->CreateSamplerState(&desc, pResult);
+
+    if (SUCCEEDED(hr))
+        SetDebugObjectName(*pResult, "DirectXTK:CommonStates");
+
+    return hr;
 }
 
 
