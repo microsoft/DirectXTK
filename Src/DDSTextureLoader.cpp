@@ -1071,7 +1071,7 @@ static HRESULT CreateTextureFromDDS( _In_ ID3D11Device* d3dDevice,
     }
 
     // Create the texture
-    std::unique_ptr<D3D11_SUBRESOURCE_DATA> initData( new D3D11_SUBRESOURCE_DATA[ mipCount * arraySize ] );
+    std::unique_ptr<D3D11_SUBRESOURCE_DATA[]> initData( new D3D11_SUBRESOURCE_DATA[ mipCount * arraySize ] );
     if ( !initData )
     {
         return E_OUTOFMEMORY;
