@@ -4,11 +4,12 @@ DirectXTK - the DirectX Tool Kit
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-October 12, 2012
+October 30, 2012
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Windows Store apps, Windows 8 Win32 desktop
-applications, Windows 7 applications, and Windows Vista Direct3D 11.0 applications.
+applications, Windows Phone 8 applications, Windows 7 applications, and
+Windows Vista Direct3D 11.0 applications.
 
 This code is designed to build with either Visual Studio 2012 which includes the 
 Windows 8.0 SDK or Visual Studio 2010 with the standalone Windows 8.0 SDK installed 
@@ -234,8 +235,9 @@ Commandline options for the MakeSpriteFont tool:
             Rgba32
                 High quality and supports multicolored fonts, but wastes space.
             Bgra4444
-                Good choice for color fonts on Windows Store apps, but this format
-                requires the DirectX 11.1 Runtime and a WDDM 1.2 driver.
+                Good choice for color fonts on Windows Store apps and Windows Phone
+                platforms, as this format requires the DirectX 11.1 Runtime and a
+                WDDM 1.2 driver.
             CompressedMono
                 The smallest format, and works on all D3D platforms, but it only 
                 supports monochromatic font data. This uses a special BC2 
@@ -570,6 +572,9 @@ WICTextureLoader.h contains a loader for BMP, JPEG, PNG, TIFF, GIF, HD Photo, an
 other WIC-supported image formats. This performs any required pixel format conversions
 or image resizing using WIC at load time as well.
 
+NOTE: WICTextureLoader is not supported on Windows Phone 8, because WIC is not 
+available on that platform.
+
 NOTE: WICTextureLoader cannot load .TGA files unless the system has a 3rd party WIC
 codec installed. You must use the DirectXTex library for TGA file format support
 without relying on an add-on WIC codec.
@@ -642,6 +647,9 @@ strange looking screenshot files). The caller can also provide a specific
 pixel target format GUID to use as well. The caller provides the GUID of the
 specific file container format to use.
 
+NOTE: SaveWICTextureToFile is not supported on Windows Phone 8, because WIC is not 
+available on that platform.
+
 Capturing a screenshot:
 
     WRL::ComPtr<ID3D11Texture2D> backBuffer;
@@ -665,6 +673,9 @@ Further reading:
 ---------------
 RELEASE HISTORY
 ---------------
+
+October 30, 2012
+    Added project files for Windows Phone 8
 
 October 12, 2012
     Added PrimitiveBatch for drawing user primitives

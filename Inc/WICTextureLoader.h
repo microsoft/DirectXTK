@@ -29,6 +29,10 @@
 #pragma once
 #endif
 
+#if defined(WINAPI_FAMILY) && WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
+#error WIC is not supported on Windows Phone
+#endif
+
 #include <d3d11.h>
 
 #pragma warning(push)
