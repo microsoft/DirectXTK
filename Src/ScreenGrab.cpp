@@ -589,6 +589,7 @@ HRESULT DirectX::SaveDDSTextureToFile( _In_ ID3D11DeviceContext* pContext,
 
 namespace DirectX
 {
+extern bool _IsWIC2();
 extern IWICImagingFactory* _GetWIC();
 }
 
@@ -714,11 +715,18 @@ HRESULT DirectX::SaveWICTextureToFile( _In_ ID3D11DeviceContext* pContext,
         // Screenshots don’t typically include the alpha channel of the render target
         switch ( desc.Format )
         {
-#if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
+#if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/) || defined(_WIN7_PLATFORM_UPDATE)
         case DXGI_FORMAT_R32G32B32A32_FLOAT:            
         case DXGI_FORMAT_R16G16B16A16_FLOAT:
         case DXGI_FORMAT_R9G9B9E5_SHAREDEXP:
-            targetGuid = GUID_WICPixelFormat96bppRGBFloat;
+            if ( _IsWIC2() )
+            {
+                targetGuid = GUID_WICPixelFormat96bppRGBFloat;
+            }
+            else
+            {
+                targetGuid = GUID_WICPixelFormat24bppBGR;
+            }
             break;
 #endif
 

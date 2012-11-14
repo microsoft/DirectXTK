@@ -78,10 +78,6 @@ static WICTranslate g_WICFormats[] =
     { GUID_WICPixelFormat8bppGray,              DXGI_FORMAT_R8_UNORM },
 
     { GUID_WICPixelFormat8bppAlpha,             DXGI_FORMAT_A8_UNORM },
-
-#if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
-    { GUID_WICPixelFormat96bppRGBFloat,         DXGI_FORMAT_R32G32B32_FLOAT },
-#endif
 };
 
 //-------------------------------------------------------------------------------------
@@ -154,21 +150,25 @@ static WICConvert g_WICConvert[] =
     { GUID_WICPixelFormat40bppCMYKAlpha,        GUID_WICPixelFormat64bppRGBA }, // DXGI_FORMAT_R16G16B16A16_UNORM
     { GUID_WICPixelFormat80bppCMYKAlpha,        GUID_WICPixelFormat64bppRGBA }, // DXGI_FORMAT_R16G16B16A16_UNORM
 
-#if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
+#if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/) || defined(_WIN7_PLATFORM_UPDATE)
     { GUID_WICPixelFormat32bppRGB,              GUID_WICPixelFormat32bppRGBA }, // DXGI_FORMAT_R8G8B8A8_UNORM
     { GUID_WICPixelFormat64bppRGB,              GUID_WICPixelFormat64bppRGBA }, // DXGI_FORMAT_R16G16B16A16_UNORM
     { GUID_WICPixelFormat64bppPRGBAHalf,        GUID_WICPixelFormat64bppRGBAHalf }, // DXGI_FORMAT_R16G16B16A16_FLOAT 
-    { GUID_WICPixelFormat96bppRGBFixedPoint,    GUID_WICPixelFormat96bppRGBFloat }, // DXGI_FORMAT_R32G32B32_FLOAT
-#else
-    { GUID_WICPixelFormat96bppRGBFixedPoint,    GUID_WICPixelFormat128bppRGBAFloat }, // DXGI_FORMAT_R32G32B32A32_FLOAT 
 #endif
 
     // We don't support n-channel formats
 };
 
+static bool g_WIC2 = false;
+
 //--------------------------------------------------------------------------------------
 namespace DirectX
 {
+
+bool _IsWIC2()
+{
+    return g_WIC2;
+}
 
 IWICImagingFactory* _GetWIC()
 {
@@ -177,6 +177,37 @@ IWICImagingFactory* _GetWIC()
     if ( s_Factory )
         return s_Factory;
 
+#if(_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/) || defined(_WIN7_PLATFORM_UPDATE)
+    HRESULT hr = CoCreateInstance(
+        CLSID_WICImagingFactory2,
+        nullptr,
+        CLSCTX_INPROC_SERVER,
+        __uuidof(IWICImagingFactory2),
+        (LPVOID*)&s_Factory
+        );
+
+    if ( SUCCEEDED(hr) )
+    {
+        // WIC2 is available on Windows 8 and Windows 7 SP1 with KB 2670838 installed
+        g_WIC2 = true;
+    }
+    else
+    {
+        hr = CoCreateInstance(
+            CLSID_WICImagingFactory1,
+            nullptr,
+            CLSCTX_INPROC_SERVER,
+            __uuidof(IWICImagingFactory),
+            (LPVOID*)&s_Factory
+            );
+
+        if ( FAILED(hr) )
+        {
+            s_Factory = nullptr;
+            return nullptr;
+        }
+    }
+#else
     HRESULT hr = CoCreateInstance(
         CLSID_WICImagingFactory,
         nullptr,
@@ -190,6 +221,7 @@ IWICImagingFactory* _GetWIC()
         s_Factory = nullptr;
         return nullptr;
     }
+#endif
 
     return s_Factory;
 }
@@ -205,6 +237,14 @@ static DXGI_FORMAT _WICToDXGI( const GUID& guid )
         if ( memcmp( &g_WICFormats[i].wic, &guid, sizeof(GUID) ) == 0 )
             return g_WICFormats[i].format;
     }
+
+#if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/) || defined(_WIN7_PLATFORM_UPDATE)
+    if ( g_WIC2 )
+    {
+        if ( memcmp( &GUID_WICPixelFormat96bppRGBFloat, &guid, sizeof(GUID) ) == 0 )
+            return DXGI_FORMAT_R32G32B32_FLOAT;
+    }
+#endif
 
     return DXGI_FORMAT_UNKNOWN;
 }
@@ -319,16 +359,34 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
     DXGI_FORMAT format = _WICToDXGI( pixelFormat );
     if ( format == DXGI_FORMAT_UNKNOWN )
     {
-        for( size_t i=0; i < _countof(g_WICConvert); ++i )
+        if ( memcmp( &GUID_WICPixelFormat96bppRGBFixedPoint, &pixelFormat, sizeof(WICPixelFormatGUID) ) == 0 )
         {
-            if ( memcmp( &g_WICConvert[i].source, &pixelFormat, sizeof(WICPixelFormatGUID) ) == 0 )
+#if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/) || defined(_WIN7_PLATFORM_UPDATE)
+            if ( g_WIC2 )
             {
-                memcpy( &convertGUID, &g_WICConvert[i].target, sizeof(WICPixelFormatGUID) );
+                memcpy( &convertGUID, &GUID_WICPixelFormat96bppRGBFloat, sizeof(WICPixelFormatGUID) );
+                format = DXGI_FORMAT_R32G32B32_FLOAT;
+            }
+            else
+#endif
+            {
+                memcpy( &convertGUID, &GUID_WICPixelFormat128bppRGBAFloat, sizeof(WICPixelFormatGUID) );
+                format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+            }
+        }
+        else
+        {
+            for( size_t i=0; i < _countof(g_WICConvert); ++i )
+            {
+                if ( memcmp( &g_WICConvert[i].source, &pixelFormat, sizeof(WICPixelFormatGUID) ) == 0 )
+                {
+                    memcpy( &convertGUID, &g_WICConvert[i].target, sizeof(WICPixelFormatGUID) );
 
-                format = _WICToDXGI( g_WICConvert[i].target );
-                assert( format != DXGI_FORMAT_UNKNOWN );
-                bpp = _WICBitsPerPixel( convertGUID );
-                break;
+                    format = _WICToDXGI( g_WICConvert[i].target );
+                    assert( format != DXGI_FORMAT_UNKNOWN );
+                    bpp = _WICBitsPerPixel( convertGUID );
+                    break;
+                }
             }
         }
 
@@ -340,7 +398,7 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
         bpp = _WICBitsPerPixel( pixelFormat );
     }
 
-#if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
+#if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/) || defined(_WIN7_PLATFORM_UPDATE)
     if ( (format == DXGI_FORMAT_R32G32B32_FLOAT) && d3dContext != 0 && textureView != 0 )
     {
         // Special case test for optional device support for autogen mipchains for R32G32B32_FLOAT 
