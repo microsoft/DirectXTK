@@ -515,12 +515,12 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateGeoSphere(_In_ ID3
             XMFLOAT3 v01; // vertex on the midpoint of v0 and v1
             XMFLOAT3 v12; // ditto v1 and v2
             XMFLOAT3 v20; // ditto v2 and v0
-            uint32_t iv01; // index of v01
-            uint32_t iv12; // index of v12
-            uint32_t iv20; // index of v20
+            uint16_t iv01; // index of v01
+            uint16_t iv12; // index of v12
+            uint16_t iv20; // index of v20
 
             // Function that, when given the index of two vertices, creates a new vertex at the midpoint of those vertices.
-            auto divideEdge = [&](uint32_t i0, uint32_t i1, XMFLOAT3& outVertex, uint32_t& outIndex)
+            auto divideEdge = [&](uint16_t i0, uint16_t i1, XMFLOAT3& outVertex, uint16_t& outIndex)
             {
                 const UndirectedEdge edge = makeUndirectedEdge(i0, i1);
 
@@ -545,7 +545,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateGeoSphere(_In_ ID3
                         )
                     );
 
-                    outIndex = static_cast<uint32_t>( vertexPositions.size() );
+                    outIndex = static_cast<uint16_t>( vertexPositions.size() );
                     CheckIndexOverflow(outIndex);
                     vertexPositions.push_back(outVertex);
 
@@ -567,7 +567,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateGeoSphere(_In_ ID3
             //     /b\c/d\
             // v2 o---o---o v1
             //       v12
-            const uint32_t indicesToAdd[] =
+            const uint16_t indicesToAdd[] =
             {
                  iv0, iv01, iv20, // a
                 iv20, iv12,  iv2, // b

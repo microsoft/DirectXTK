@@ -13,6 +13,8 @@
 
 #pragma once
 
+#pragma warning(disable : 4324)
+
 #include <exception>
 
 #if _WIN32_WINNT < 0x0602 /*_WIN32_WINNT_WIN8*/
@@ -83,6 +85,9 @@ namespace DirectX
     {
         #if defined(_DEBUG) || defined(PROFILE)
             resource->SetPrivateData(WKPDID_D3DDebugObjectName, TNameLength - 1, name);
+        #else
+            UNREFERENCED_PARAMETER(resource);
+            UNREFERENCED_PARAMETER(name);
         #endif
     }
 
