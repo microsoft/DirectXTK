@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-October 30, 2012
+November 15, 2012
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Windows Store apps, Windows 8 Win32 desktop
@@ -673,6 +673,10 @@ Further reading:
 ---------------
 RELEASE HISTORY
 ---------------
+
+November 15, 2012
+    Added support for WIC2 when available on Windows 8 and Windows 7 with KB 2670838
+    Cleaned up warning level 4 warnings
 
 October 30, 2012
     Added project files for Windows Phone 8
