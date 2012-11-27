@@ -23,8 +23,11 @@
 #include <wrl.h>
 #endif
 
+#if defined(_DEBUG) || defined(PROFILE)
+#pragma comment(lib,"dxguid.lib")
+#endif
 
-// Emulate SAL2 macros when building with Visual Studio versions < 2011.
+// Emulate SAL2 macros when building with Visual Studio versions < 2012.
 #if defined(_MSC_VER) && (_MSC_VER < 1610) && !defined (_Outptr_)
 #define _Outptr_
 #define _Out_writes_all_(c)
@@ -134,7 +137,7 @@ namespace DirectX
 
 #if defined(_MSC_VER) && (_MSC_VER < 1610)
 
-// Emulate the C++0x mutex and lock_guard types when building with Visual Studio versions < 2011.
+// Emulate the C++0x mutex and lock_guard types when building with Visual Studio versions < 2012.
 namespace std
 {
     class mutex
