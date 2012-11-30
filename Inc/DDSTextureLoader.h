@@ -45,4 +45,27 @@ namespace DirectX
                                       _Out_opt_ ID3D11ShaderResourceView** textureView,
                                       _In_ size_t maxsize = 0
                                     );
+
+    HRESULT CreateDDSTextureFromMemoryEx( _In_ ID3D11Device* d3dDevice,
+                                          _In_reads_bytes_(ddsDataSize) const uint8_t* ddsData,
+                                          _In_ size_t ddsDataSize,
+                                          _In_ size_t maxsize,
+                                          _In_ D3D11_USAGE usage,
+                                          _In_ unsigned int bindFlags,
+                                          _In_ unsigned int cpuAccessFlags,
+                                          _In_ unsigned int miscFlags,
+                                          _Out_opt_ ID3D11Resource** texture,
+                                          _Out_opt_ ID3D11ShaderResourceView** textureView
+                                      );
+
+    HRESULT CreateDDSTextureFromFileEx( _In_ ID3D11Device* d3dDevice,
+                                        _In_z_ const wchar_t* szFileName,
+                                        _In_ size_t maxsize,
+                                        _In_ D3D11_USAGE usage,
+                                        _In_ unsigned int bindFlags,
+                                        _In_ unsigned int cpuAccessFlags,
+                                        _In_ unsigned int miscFlags,
+                                        _Out_opt_ ID3D11Resource** texture,
+                                        _Out_opt_ ID3D11ShaderResourceView** textureView
+                                    );
 }
