@@ -179,8 +179,6 @@ void AlphaTestEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
         // Comparison tolerance of half the 8 bit integer precision.
         const float threshold = 0.5f / 255.0f;
 
-        static const XMVECTORF32 thresholdY = { 0, threshold, 0, 0 };
-
         // What to do if the alpha comparison passes or fails. Positive accepts the pixel, negative clips it.
         static const XMVECTORF32 selectIfTrue  = {  1, -1 };
         static const XMVECTORF32 selectIfFalse = { -1,  1 };
@@ -245,7 +243,7 @@ void AlphaTestEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
         }
 
         // x = compareTo, y = threshold, zw = resultSelector.
-        constants.alphaTest = XMVectorPermute<0, 1, 4, 5>(XMLoadFloat(&compareTo) + thresholdY, resultSelector);
+        constants.alphaTest = XMVectorPermute<0, 1, 4, 5>(XMVectorSet(compareTo, threshold, 0, 0), resultSelector);
                 
         dirtyFlags &= ~EffectDirtyFlags::AlphaTest;
         dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
