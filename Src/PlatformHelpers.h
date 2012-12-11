@@ -17,58 +17,14 @@
 
 #include <exception>
 
-#if _WIN32_WINNT < 0x0602 /*_WIN32_WINNT_WIN8*/
-#include "atlbase.h"
-#else
+#pragma warning(push)
+#pragma warning(disable : 4005)
 #include <wrl.h>
-#endif
+#pragma warning(pop)
 
 #if defined(_DEBUG) || defined(PROFILE)
 #pragma comment(lib,"dxguid.lib")
 #endif
-
-// Emulate SAL2 macros when building with Visual Studio versions < 2012.
-#if defined(_MSC_VER) && (_MSC_VER < 1610) && !defined (_Outptr_)
-#define _Outptr_
-#define _Out_writes_all_(c)
-#define _Inout_updates_(c)
-#endif
-
-
-#if _WIN32_WINNT < 0x0602 /*_WIN32_WINNT_WIN8*/
-
-// Emulate the WRL ComPtr type via ATL CComPtr when building for Windows versions prior to Windows 8.
-namespace Microsoft
-{
-    namespace WRL
-    {
-        template<typename T>
-        class ComPtr : public CComPtr<T>
-        {
-        public:
-            ComPtr()
-            { }
-
-            ComPtr(_In_opt_ T* value)
-              : CComPtr(value)
-            { }
-
-            T* Get() const
-            {
-                return *this;
-            }
-
-            template<typename Q>
-            HRESULT As(_Outptr_ Q** result) const
-            {
-                return QueryInterface(result);
-            }
-        };
-    }
-}
-
-#endif
-
 
 namespace DirectX
 {
