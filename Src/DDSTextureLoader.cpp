@@ -1198,29 +1198,31 @@ static HRESULT CreateTextureFromDDS( _In_ ID3D11Device* d3dDevice,
 }
 
 //--------------------------------------------------------------------------------------
-HRESULT DirectX::CreateDDSTextureFromMemory( _In_ ID3D11Device* d3dDevice,
-                                             _In_reads_bytes_(ddsDataSize) const uint8_t* ddsData,
-                                             _In_ size_t ddsDataSize,
-                                             _Out_opt_ ID3D11Resource** texture,
-                                             _Out_opt_ ID3D11ShaderResourceView** textureView,
-                                             _In_ size_t maxsize )
+_Use_decl_annotations_
+HRESULT DirectX::CreateDDSTextureFromMemory( ID3D11Device* d3dDevice,
+                                             const uint8_t* ddsData,
+                                             size_t ddsDataSize,
+                                             ID3D11Resource** texture,
+                                             ID3D11ShaderResourceView** textureView,
+                                             size_t maxsize )
 {
     return CreateDDSTextureFromMemoryEx( d3dDevice, ddsData, ddsDataSize, maxsize,
                                          D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0, false,
                                          texture, textureView );
 }
 
-HRESULT DirectX::CreateDDSTextureFromMemoryEx( _In_ ID3D11Device* d3dDevice,
-                                               _In_reads_bytes_(ddsDataSize) const uint8_t* ddsData,
-                                               _In_ size_t ddsDataSize,
-                                               _In_ size_t maxsize,
-                                               _In_ D3D11_USAGE usage,
-                                               _In_ unsigned int bindFlags,
-                                               _In_ unsigned int cpuAccessFlags,
-                                               _In_ unsigned int miscFlags,
-                                               _In_ bool forceSRGB,
-                                               _Out_opt_ ID3D11Resource** texture,
-                                               _Out_opt_ ID3D11ShaderResourceView** textureView )
+_Use_decl_annotations_
+HRESULT DirectX::CreateDDSTextureFromMemoryEx( ID3D11Device* d3dDevice,
+                                               const uint8_t* ddsData,
+                                               size_t ddsDataSize,
+                                               size_t maxsize,
+                                               D3D11_USAGE usage,
+                                               unsigned int bindFlags,
+                                               unsigned int cpuAccessFlags,
+                                               unsigned int miscFlags,
+                                               bool forceSRGB,
+                                               ID3D11Resource** texture,
+                                               ID3D11ShaderResourceView** textureView )
 {
     if (!d3dDevice || !ddsData || (!texture && !textureView))
     {
@@ -1285,27 +1287,29 @@ HRESULT DirectX::CreateDDSTextureFromMemoryEx( _In_ ID3D11Device* d3dDevice,
 }
 
 //--------------------------------------------------------------------------------------
-HRESULT DirectX::CreateDDSTextureFromFile( _In_ ID3D11Device* d3dDevice,
-                                           _In_z_ const wchar_t* fileName,
-                                           _Out_opt_ ID3D11Resource** texture,
-                                           _Out_opt_ ID3D11ShaderResourceView** textureView,
-                                           _In_ size_t maxsize )
+_Use_decl_annotations_
+HRESULT DirectX::CreateDDSTextureFromFile( ID3D11Device* d3dDevice,
+                                           const wchar_t* fileName,
+                                           ID3D11Resource** texture,
+                                           ID3D11ShaderResourceView** textureView,
+                                           size_t maxsize )
 {
     return CreateDDSTextureFromFileEx( d3dDevice, fileName, maxsize,
                                        D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0, false,
                                        texture, textureView );
 }
 
-HRESULT DirectX::CreateDDSTextureFromFileEx( _In_ ID3D11Device* d3dDevice,
-                                             _In_z_ const wchar_t* fileName,
-                                             _In_ size_t maxsize,
-                                             _In_ D3D11_USAGE usage,
-                                             _In_ unsigned int bindFlags,
-                                             _In_ unsigned int cpuAccessFlags,
-                                             _In_ unsigned int miscFlags,
-                                             _In_ bool forceSRGB,
-                                             _Out_opt_ ID3D11Resource** texture,
-                                             _Out_opt_ ID3D11ShaderResourceView** textureView )
+_Use_decl_annotations_
+HRESULT DirectX::CreateDDSTextureFromFileEx( ID3D11Device* d3dDevice,
+                                             const wchar_t* fileName,
+                                             size_t maxsize,
+                                             D3D11_USAGE usage,
+                                             unsigned int bindFlags,
+                                             unsigned int cpuAccessFlags,
+                                             unsigned int miscFlags,
+                                             bool forceSRGB,
+                                             ID3D11Resource** texture,
+                                             ID3D11ShaderResourceView** textureView )
 {
     if (!d3dDevice || !fileName || (!texture && !textureView))
     {
