@@ -680,6 +680,7 @@ December 11, 2012
     Ex versions of DDSTextureLoader and WICTextureLoader
     Removed use of ATL's CComPtr in favor of WRL's ComPtr for all platforms to support VS Express editions
     Updated VS 2010 project for official 'property sheet' integration for Windows 8.0 SDK
+    Minor fix to CommonStates for Feature Level 9.1
     Tweaked AlphaTestEffect.cpp to work around ARM NEON compiler codegen bug
     Added dxguid.lib as a default library for Debug builds to resolve GUID link issues
 

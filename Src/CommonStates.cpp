@@ -153,8 +153,9 @@ HRESULT CommonStates::Impl::CreateSamplerState(D3D11_FILTER filter, D3D11_TEXTUR
     desc.AddressV = addressMode;
     desc.AddressW = addressMode;
 
+    desc.MaxAnisotropy = (device->GetFeatureLevel() > D3D_FEATURE_LEVEL_9_1) ? 16 : 2;
+    
     desc.MaxLOD = FLT_MAX;
-    desc.MaxAnisotropy = 16;
     desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 
     HRESULT hr = device->CreateSamplerState(&desc, pResult);
