@@ -278,6 +278,39 @@ static size_t _WICBitsPerPixel( REFGUID targetGuid )
     return bpp;
 }
 
+
+//--------------------------------------------------------------------------------------
+static DXGI_FORMAT MakeSRGB( _In_ DXGI_FORMAT format )
+{
+    switch( format )
+    {
+    case DXGI_FORMAT_R8G8B8A8_UNORM:
+        return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+
+    case DXGI_FORMAT_BC1_UNORM:
+        return DXGI_FORMAT_BC1_UNORM_SRGB;
+
+    case DXGI_FORMAT_BC2_UNORM:
+        return DXGI_FORMAT_BC2_UNORM_SRGB;
+
+    case DXGI_FORMAT_BC3_UNORM:
+        return DXGI_FORMAT_BC3_UNORM_SRGB;
+
+    case DXGI_FORMAT_B8G8R8A8_UNORM:
+        return DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
+
+    case DXGI_FORMAT_B8G8R8X8_UNORM:
+        return DXGI_FORMAT_B8G8R8X8_UNORM_SRGB;
+
+    case DXGI_FORMAT_BC7_UNORM:
+        return DXGI_FORMAT_BC7_UNORM_SRGB;
+
+    default:
+        return format;
+    }
+}
+
+
 //---------------------------------------------------------------------------------
 static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
                                      _In_opt_ ID3D11DeviceContext* d3dContext,
@@ -287,6 +320,7 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
                                      _In_ unsigned int bindFlags,
                                      _In_ unsigned int cpuAccessFlags,
                                      _In_ unsigned int miscFlags,
+                                     _In_ bool forceSRGB,
                                      _Out_opt_ ID3D11Resource** texture,
                                      _Out_opt_ ID3D11ShaderResourceView** textureView )
 {
@@ -562,7 +596,13 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
         {
             D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
             memset( &SRVDesc, 0, sizeof( SRVDesc ) );
-            SRVDesc.Format = format;
+            if ( forceSRGB )
+            {
+                SRVDesc.Format = MakeSRGB( format );
+            }
+            else
+                SRVDesc.Format = format;
+
             SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
             SRVDesc.Texture2D.MipLevels = (autogen) ? -1 : 1;
 
@@ -605,7 +645,7 @@ HRESULT DirectX::CreateWICTextureFromMemory( _In_ ID3D11Device* d3dDevice,
                                              _In_ size_t maxsize )
 {
     return CreateWICTextureFromMemoryEx( d3dDevice, d3dContext, wicData, wicDataSize, maxsize,
-                                         D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
+                                         D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0, false,
                                          texture, textureView );
 }
 
@@ -618,6 +658,7 @@ HRESULT DirectX::CreateWICTextureFromMemoryEx( _In_ ID3D11Device* d3dDevice,
                                                _In_ unsigned int bindFlags,
                                                _In_ unsigned int cpuAccessFlags,
                                                _In_ unsigned int miscFlags,
+                                               _In_ bool forceSRGB,
                                                _Out_opt_ ID3D11Resource** texture,
                                                _Out_opt_ ID3D11ShaderResourceView** textureView )
 {
@@ -662,7 +703,7 @@ HRESULT DirectX::CreateWICTextureFromMemoryEx( _In_ ID3D11Device* d3dDevice,
         return hr;
 
     hr = CreateTextureFromWIC( d3dDevice, d3dContext, frame.Get(), maxsize,
-                               usage, bindFlags, cpuAccessFlags, miscFlags,
+                               usage, bindFlags, cpuAccessFlags, miscFlags, forceSRGB,
                                texture, textureView );
     if ( FAILED(hr)) 
         return hr;
@@ -689,7 +730,7 @@ HRESULT DirectX::CreateWICTextureFromFile( _In_ ID3D11Device* d3dDevice,
                                            _In_ size_t maxsize )
 {
     return CreateWICTextureFromFileEx( d3dDevice, d3dContext, fileName, maxsize,
-                                       D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
+                                       D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0, false,
                                        texture, textureView );
 }
 
@@ -701,6 +742,7 @@ HRESULT DirectX::CreateWICTextureFromFileEx( _In_ ID3D11Device* d3dDevice,
                                              _In_ unsigned int bindFlags,
                                              _In_ unsigned int cpuAccessFlags,
                                              _In_ unsigned int miscFlags,
+                                             _In_ bool forceSRGB,
                                              _Out_opt_ ID3D11Resource** texture,
                                              _Out_opt_ ID3D11ShaderResourceView** textureView )
 {
@@ -725,7 +767,7 @@ HRESULT DirectX::CreateWICTextureFromFileEx( _In_ ID3D11Device* d3dDevice,
         return hr;
 
     hr = CreateTextureFromWIC( d3dDevice, d3dContext, frame.Get(), maxsize, 
-                               usage, bindFlags, cpuAccessFlags, miscFlags,
+                               usage, bindFlags, cpuAccessFlags, miscFlags, forceSRGB,
                                texture, textureView );
     if ( FAILED(hr)) 
         return hr;
