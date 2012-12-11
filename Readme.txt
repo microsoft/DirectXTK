@@ -4,19 +4,21 @@ DirectXTK - the DirectX Tool Kit
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-November 15, 2012
+December 11, 2012
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Windows Store apps, Windows 8 Win32 desktop
 applications, Windows Phone 8 applications, Windows 7 applications, and
 Windows Vista Direct3D 11.0 applications.
 
-This code is designed to build with either Visual Studio 2012 which includes the 
-Windows 8.0 SDK or Visual Studio 2010 with the standalone Windows 8.0 SDK installed 
-using the "Platform Toolset" set to use the Windows 8.0 SDK. See the Visual C++ Team Blog 
-<http://blogs.msdn.com/b/vcblog/archive/2012/03/25/10287354.aspx>. It makes use of 
-the DirectXMath library and optionally the DXGI 1.2 headers from the Windows 8.0 SDK 
-as well as other headers.
+This code is designed to build with either Visual Studio 2012 or Visual Studio 
+2010. It requires the Windows 8.0 SDK for functionality such as the DirectXMath
+library and optionally the DXGI 1.2 headers. Visual Studio 2012 already includes
+this Windows SDK, but Visual Studio 2010 users must install the standalone Windows
+8.0 SDK. Details on using the Windows 8.0 SDK with VS 2010 are described on the
+Visual C++ Team Blog:
+
+<http://blogs.msdn.com/b/vcblog/archive/2012/11/23/using-the-windows-8-sdk-with-visual-studio-2010-configuring-multiple-projects.aspx>
 
 These components are designed to work without requiring any content from the DirectX SDK. For details,
 see "Where is the DirectX SDK"? <http://msdn.microsoft.com/en-us/library/ee663275.aspx>
@@ -673,6 +675,13 @@ Further reading:
 ---------------
 RELEASE HISTORY
 ---------------
+
+December 11, 2012
+    Ex versions of DDSTextureLoader and WICTextureLoader
+    Removed use of ATL's CComPtr in favor of WRL's ComPtr for all platforms to support VS Express editions
+    Updated VS 2010 project for official 'property sheet' integration for Windows 8.0 SDK
+    Tweaked AlphaTestEffect.cpp to work around ARM NEON compiler codegen bug
+    Added dxguid.lib as a default library for Debug builds to resolve GUID link issues
 
 November 15, 2012
     Added support for WIC2 when available on Windows 8 and Windows 7 with KB 2670838
