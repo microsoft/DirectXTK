@@ -56,7 +56,7 @@ namespace
 class GeometricPrimitive::Impl
 {
 public:
-    void Initialize(_In_ ID3D11DeviceContext* deviceContext, VertexCollection const& vertices, IndexCollection const& indices);
+    void Initialize(_In_ ID3D11DeviceContext* deviceContext, VertexCollection const& vertices, IndexCollection const& indices, bool ccw);
 
     void Draw(CXMMATRIX world, CXMMATRIX view, CXMMATRIX projection, FXMVECTOR color, _In_opt_ ID3D11ShaderResourceView* texture, bool wireframe, _In_opt_ std::function<void()> setCustomState);
 
@@ -65,7 +65,7 @@ private:
     ComPtr<ID3D11Buffer> mIndexBuffer;
 
     UINT mIndexCount;
-
+    bool mCCW;
 
     // Only one of these helpers is allocated per D3D device context, even if there are multiple GeometricPrimitive instances.
     class SharedResources
@@ -73,7 +73,7 @@ private:
     public:
         SharedResources(_In_ ID3D11DeviceContext* deviceContext);
 
-        void PrepareForRendering(CXMMATRIX world, CXMMATRIX view, CXMMATRIX projection, FXMVECTOR color, _In_opt_ ID3D11ShaderResourceView* texture, bool wireframe);
+        void PrepareForRendering(CXMMATRIX world, CXMMATRIX view, CXMMATRIX projection, FXMVECTOR color, _In_opt_ ID3D11ShaderResourceView* texture, bool wireframe, bool ccw);
 
         ComPtr<ID3D11DeviceContext> deviceContext;
         
@@ -142,7 +142,7 @@ GeometricPrimitive::Impl::SharedResources::SharedResources(_In_ ID3D11DeviceCont
 
 
 // Sets up D3D device state ready for drawing a primitive.
-void GeometricPrimitive::Impl::SharedResources::PrepareForRendering(CXMMATRIX world, CXMMATRIX view, CXMMATRIX projection, FXMVECTOR color, _In_opt_ ID3D11ShaderResourceView* texture, bool wireframe)
+void GeometricPrimitive::Impl::SharedResources::PrepareForRendering(CXMMATRIX world, CXMMATRIX view, CXMMATRIX projection, FXMVECTOR color, _In_opt_ ID3D11ShaderResourceView* texture, bool wireframe, bool ccw)
 {
     float alpha = XMVectorGetW(color);
 
@@ -167,7 +167,10 @@ void GeometricPrimitive::Impl::SharedResources::PrepareForRendering(CXMMATRIX wo
     deviceContext->OMSetDepthStencilState(depthStencilState, 0);
 
     // Set the rasterizer state.
-    deviceContext->RSSetState(wireframe ? stateObjects->Wireframe() : stateObjects->CullCounterClockwise());
+    if ( wireframe )
+        deviceContext->RSSetState( stateObjects->Wireframe() );
+    else
+        deviceContext->RSSetState( ccw ? stateObjects->CullCounterClockwise() : stateObjects->CullClockwise() );
 
     // Set the texture, sampler state, and input layout.
     if (texture)
@@ -224,7 +227,7 @@ static void CreateBuffer(_In_ ID3D11Device* device, T const& data, D3D11_BIND_FL
 
 
 // Initializes a geometric primitive instance that will draw the specified vertex and index data.
-void GeometricPrimitive::Impl::Initialize(_In_ ID3D11DeviceContext* deviceContext, VertexCollection const& vertices, IndexCollection const& indices)
+void GeometricPrimitive::Impl::Initialize(_In_ ID3D11DeviceContext* deviceContext, VertexCollection const& vertices, IndexCollection const& indices, bool ccw)
 {
     mResources = sharedResourcesPool.DemandCreate(deviceContext);
 
@@ -236,6 +239,8 @@ void GeometricPrimitive::Impl::Initialize(_In_ ID3D11DeviceContext* deviceContex
     CreateBuffer(device.Get(), indices, D3D11_BIND_INDEX_BUFFER, &mIndexBuffer);
 
     mIndexCount = (UINT)indices.size();
+
+    mCCW = ccw;
 }
 
 
@@ -245,7 +250,7 @@ void GeometricPrimitive::Impl::Draw(CXMMATRIX world, CXMMATRIX view, CXMMATRIX p
     auto deviceContext = mResources->deviceContext.Get();
 
     // Set state objects and shaders.
-    mResources->PrepareForRendering(world, view, projection, color, texture, wireframe);
+    mResources->PrepareForRendering(world, view, projection, color, texture, wireframe, mCCW);
 
     // Set the vertex and index buffer.
     auto vertexBuffer = mVertexBuffer.Get();
@@ -290,7 +295,7 @@ void GeometricPrimitive::Draw(CXMMATRIX world, CXMMATRIX view, CXMMATRIX project
 
 
 // Creates a cube primitive.
-std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCube(_In_ ID3D11DeviceContext* deviceContext, float size)
+std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCube(_In_ ID3D11DeviceContext* deviceContext, float size, bool ccw)
 {
     // A cube has six faces, each one pointing in a different direction.
     const int FaceCount = 6;
@@ -348,14 +353,14 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCube(_In_ ID3D11De
     // Create the primitive object.
     std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
     
-    primitive->pImpl->Initialize(deviceContext, vertices, indices);
+    primitive->pImpl->Initialize(deviceContext, vertices, indices, ccw);
 
     return primitive;
 }
 
 
 // Creates a sphere primitive.
-std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateSphere(_In_ ID3D11DeviceContext* deviceContext, float diameter, size_t tessellation)
+std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateSphere(_In_ ID3D11DeviceContext* deviceContext, float diameter, size_t tessellation, bool ccw)
 {
     VertexCollection vertices;
     IndexCollection indices;
@@ -421,14 +426,14 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateSphere(_In_ ID3D11
     // Create the primitive object.
     std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
     
-    primitive->pImpl->Initialize(deviceContext, vertices, indices);
+    primitive->pImpl->Initialize(deviceContext, vertices, indices, ccw);
 
     return primitive;
 }
 
 
 // Creates a geosphere primitive.
-std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateGeoSphere(_In_ ID3D11DeviceContext* deviceContext, float diameter, size_t tessellation)
+std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateGeoSphere(_In_ ID3D11DeviceContext* deviceContext, float diameter, size_t tessellation, bool ccw)
 {
     // An undirected edge between two vertices, represented by a pair of indexes into a vertex array.
     // Becuse this edge is undirected, (a,b) is the same as (b,a).
@@ -748,7 +753,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateGeoSphere(_In_ ID3
     // Create the primitive object.
     std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
     
-    primitive->pImpl->Initialize(deviceContext, vertices, indices);
+    primitive->pImpl->Initialize(deviceContext, vertices, indices, ccw);
     return primitive;
 }
 
@@ -809,7 +814,7 @@ static void CreateCylinderCap(VertexCollection& vertices, IndexCollection& indic
 
 
 // Creates a cylinder primitive.
-std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCylinder(_In_ ID3D11DeviceContext* deviceContext, float height, float diameter, size_t tessellation)
+std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCylinder(_In_ ID3D11DeviceContext* deviceContext, float height, float diameter, size_t tessellation, bool ccw)
 {
     VertexCollection vertices;
     IndexCollection indices;
@@ -854,14 +859,14 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCylinder(_In_ ID3D
     // Create the primitive object.
     std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
     
-    primitive->pImpl->Initialize(deviceContext, vertices, indices);
+    primitive->pImpl->Initialize(deviceContext, vertices, indices, ccw);
 
     return primitive;
 }
 
 
 // Creates a torus primitive.
-std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateTorus(_In_ ID3D11DeviceContext* deviceContext, float diameter, float thickness, size_t tessellation)
+std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateTorus(_In_ ID3D11DeviceContext* deviceContext, float diameter, float thickness, size_t tessellation, bool ccw)
 {
     VertexCollection vertices;
     IndexCollection indices;
@@ -919,7 +924,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateTorus(_In_ ID3D11D
     // Create the primitive object.
     std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
     
-    primitive->pImpl->Initialize(deviceContext, vertices, indices);
+    primitive->pImpl->Initialize(deviceContext, vertices, indices, ccw);
 
     return primitive;
 }
@@ -958,7 +963,7 @@ static void TessellatePatch(VertexCollection& vertices, IndexCollection& indices
 
         
 // Creates a teapot primitive.
-std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateTeapot(_In_ ID3D11DeviceContext* deviceContext, float size, size_t tessellation)
+std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateTeapot(_In_ ID3D11DeviceContext* deviceContext, float size, size_t tessellation, bool ccw)
 {
     VertexCollection vertices;
     IndexCollection indices;
@@ -994,7 +999,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateTeapot(_In_ ID3D11
     // Create the primitive object.
     std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
     
-    primitive->pImpl->Initialize(deviceContext, vertices, indices);
+    primitive->pImpl->Initialize(deviceContext, vertices, indices, ccw);
 
     return primitive;
 }
