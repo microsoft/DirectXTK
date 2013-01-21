@@ -17,11 +17,6 @@
 
 #include <exception>
 
-#pragma warning(push)
-#pragma warning(disable : 4005)
-#include <wrl.h>
-#pragma warning(pop)
-
 #if defined(_DEBUG) || defined(PROFILE)
 #pragma comment(lib,"dxguid.lib")
 #endif

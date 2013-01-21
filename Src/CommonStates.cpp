@@ -167,6 +167,10 @@ HRESULT CommonStates::Impl::CreateSamplerState(D3D11_FILTER filter, D3D11_TEXTUR
 }
 
 
+//--------------------------------------------------------------------------------------
+// CommonStates
+//--------------------------------------------------------------------------------------
+
 // Public constructor.
 CommonStates::CommonStates(_In_ ID3D11Device* device)
   : pImpl(Impl::instancePool.DemandCreate(device))
@@ -194,6 +198,10 @@ CommonStates::~CommonStates()
 {
 }
 
+
+//--------------------------------------------------------------------------------------
+// Blend states
+//--------------------------------------------------------------------------------------
 
 ID3D11BlendState* CommonStates::Opaque() const
 {
@@ -231,6 +239,10 @@ ID3D11BlendState* CommonStates::NonPremultiplied() const
 }
 
 
+//--------------------------------------------------------------------------------------
+// Depth stencil states
+//--------------------------------------------------------------------------------------
+
 ID3D11DepthStencilState* CommonStates::DepthNone() const
 {
     return DemandCreate(pImpl->depthNone, pImpl->mutex, [&](ID3D11DepthStencilState** pResult)
@@ -257,6 +269,10 @@ ID3D11DepthStencilState* CommonStates::DepthRead() const
     });
 }
 
+
+//--------------------------------------------------------------------------------------
+// Rasterizer states
+//--------------------------------------------------------------------------------------
 
 ID3D11RasterizerState* CommonStates::CullNone() const
 {
@@ -293,6 +309,10 @@ ID3D11RasterizerState* CommonStates::Wireframe() const
     });
 }
 
+
+//--------------------------------------------------------------------------------------
+// Sampler states
+//--------------------------------------------------------------------------------------
 
 ID3D11SamplerState* CommonStates::PointWrap() const
 {
