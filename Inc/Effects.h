@@ -380,6 +380,64 @@ namespace DirectX
         SkinnedEffect(SkinnedEffect const&);
         SkinnedEffect& operator= (SkinnedEffect const&);
     };
+
+
+
+    //----------------------------------------------------------------------------------
+    // Abstract interface to factory for sharing effects and texture resources
+    class IEffectFactory
+    {
+    public:
+        virtual ~IEffectFactory() {}
+
+        struct EffectInfo
+        {
+            const WCHAR*        name;
+            bool                perVertexColor;
+            float               specularPower;
+            float               alpha;
+            DirectX::XMFLOAT3   ambientColor;
+            DirectX::XMFLOAT3   diffuseColor;
+            DirectX::XMFLOAT3   specularColor;
+            DirectX::XMFLOAT3   emissiveColor;
+            const WCHAR*        texture;
+
+            EffectInfo() { memset( this, 0, sizeof(EffectInfo) ); };
+        };
+
+        virtual std::shared_ptr<IEffect> CreateEffect( _In_ const EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext ) = 0;
+
+        virtual void CreateTexture( _In_z_ const WCHAR* name, _In_opt_ ID3D11DeviceContext* deviceContext, _Outptr_ ID3D11ShaderResourceView** textureView ) = 0;
+    };
+
+
+    // Factory for sharing effects and texture resources
+    class EffectFactory : public IEffectFactory
+    {
+    public:
+        explicit EffectFactory(_In_ ID3D11Device* device);
+        EffectFactory(EffectFactory&& moveFrom);
+        EffectFactory& operator= (EffectFactory&& moveFrom);
+        virtual ~EffectFactory();
+
+        virtual std::shared_ptr<IEffect> CreateEffect( _In_ const EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext ) override;
+
+        virtual void CreateTexture( _In_z_ const WCHAR* name, _In_opt_ ID3D11DeviceContext* deviceContext, _Outptr_ ID3D11ShaderResourceView** textureView ) override;
+
+        void ReleaseCache();
+
+        void SetSharing( bool enabled );
+
+    private:
+        // Private implementation.
+        class Impl;
+
+        std::shared_ptr<Impl> pImpl;
+
+        // Prevent copying.
+        EffectFactory(EffectFactory const&);
+        EffectFactory& operator= (EffectFactory const&);
+    };
 }
 
 #pragma warning(pop)

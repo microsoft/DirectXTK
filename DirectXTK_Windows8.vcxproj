@@ -31,6 +31,7 @@
     <ClInclude Include="Inc\DDSTextureLoader.h" />
     <ClInclude Include="Inc\Effects.h" />
     <ClInclude Include="Inc\GeometricPrimitive.h" />
+    <ClInclude Include="Inc\Model.h" />
     <ClInclude Include="Inc\ScreenGrab.h" />
     <ClInclude Include="Inc\SpriteBatch.h" />
     <ClInclude Include="Inc\PrimitiveBatch.h" />
@@ -55,9 +56,13 @@
     <ClCompile Include="Src\DDSTextureLoader.cpp" />
     <ClCompile Include="Src\DualTextureEffect.cpp" />
     <ClCompile Include="Src\EffectCommon.cpp" />
+    <ClCompile Include="Src\EffectFactory.cpp" />
     <ClCompile Include="Src\BinaryReader.cpp" />
     <ClCompile Include="Src\EnvironmentMapEffect.cpp" />
     <ClCompile Include="Src\GeometricPrimitive.cpp" />
+    <ClCompile Include="Src\Model.cpp" />
+    <ClCompile Include="Src\ModelLoadCMO.cpp" />
+    <ClCompile Include="Src\ModelLoadSDKMESH.cpp" />
     <ClCompile Include="Src\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">Create</PrecompiledHeader>

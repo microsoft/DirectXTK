@@ -39,9 +39,6 @@
     <ClInclude Include="Src\ConstantBuffer.h">
       <Filter>Src</Filter>
     </ClInclude>
-    <ClInclude Include="Src\BinaryReader.h">
-      <Filter>Src</Filter>
-    </ClInclude>
     <ClInclude Include="Src\pch.h">
       <Filter>Src</Filter>
     </ClInclude>
@@ -73,6 +70,12 @@
       <Filter>Inc</Filter>
     </ClInclude>
     <ClInclude Include="Inc\WICTextureLoader.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\BinaryReader.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Model.h">
       <Filter>Inc</Filter>
     </ClInclude>
   </ItemGroup>
@@ -107,6 +110,9 @@
     <ClCompile Include="Src\EffectCommon.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="Src\EffectFactory.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
     <ClCompile Include="Src\SkinnedEffect.cpp">
       <Filter>Src</Filter>
     </ClCompile>
@@ -126,6 +132,15 @@
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="Src\ScreenGrab.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\ModelLoadCMO.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\ModelLoadSDKMESH.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Model.cpp">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>

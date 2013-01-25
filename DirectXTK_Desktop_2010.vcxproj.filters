@@ -75,6 +75,9 @@
     <ClInclude Include="Inc\WICTextureLoader.h">
       <Filter>Inc</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Model.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\CommonStates.cpp">
@@ -107,6 +110,9 @@
     <ClCompile Include="Src\EffectCommon.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="Src\EffectFactory.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
     <ClCompile Include="Src\SkinnedEffect.cpp">
       <Filter>Src</Filter>
     </ClCompile>
@@ -126,6 +132,15 @@
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="Src\ScreenGrab.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Model.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\ModelLoadCMO.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\ModelLoadSDKMESH.cpp">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>
