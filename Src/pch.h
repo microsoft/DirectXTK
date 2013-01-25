@@ -30,6 +30,8 @@
 #include <malloc.h>
 #include <map>
 #include <memory>
+#include <set>
+#include <string>
 #include <vector>
 
 #pragma warning(push)
