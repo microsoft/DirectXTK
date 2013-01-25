@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-December 11, 2012
+January 25, 2013
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Windows Store apps, Windows 8 Win32 desktop
@@ -31,6 +31,7 @@ Inc\
     Effects.h - set of built-in shaders for common rendering tasks
     PrimitiveBatch.h - simple and efficient way to draw user primitives
     GeometricPrimitive.h - draws basic shapes such as cubes and spheres
+    Model.h - draws simple meshes loaded from .CMO or .SDKMESH files
     CommonStates.h - factory providing commonly used D3D state objects
     VertexTypes.h - structures for commonly used vertex data formats
     DDSTextureLoader.h - light-weight DDS file texture loader
@@ -45,6 +46,9 @@ MakeSpriteFont\
 
 All content and source code for this package are bound to the Microsoft Public License (Ms-PL)
 <http://www.microsoft.com/en-us/openness/licenses.aspx#MPL>.
+
+For the latest version of DirectXTK, more detailed documentation, discussion forums, bug
+reports and feature requests, please visit the Codeplex site.
 
 http://go.microsoft.com/fwlink/?LinkId=248929
 
@@ -101,13 +105,24 @@ Sorting:
     scene, then End the batches in whatever order you want these groups of 
     sprites to be drawn.
 
+Alpha blending:
+
+    Alpha blending defaults to using premultiplied alpha. To make use of 'straight'
+    alpha textures, override the blending mode via the optional callback:
+
+    CommonStates states(deviceContext);
+
+    spriteBatch->Begin(SpriteSortMode_Deferred, nullptr, nullptr, nullptr, nullptr, [=]
+    {
+        deviceContext->OMSetBlendState( states.NonPremultiplied(), nullptr, 0xFFFFFFFF);
+    });
+
 Custom render states:
 
     By default SpriteBatch uses premultiplied alpha blending, no depth buffer, 
     counter clockwise culling, and linear filtering with clamp texture 
-    addressing. You can change this (if for instance you do not wish to use 
-    premultiplied alpha) by passing custom state objects to SpriteBatch::Begin. 
-    Pass null for any parameters that should use their default state.
+    addressing. You can change this by passing custom state objects to
+    SpriteBatch::Begin. Pass null for any parameters that should use their default state.
 
     To use SpriteBatch with a custom pixel shader (handy for 2D postprocessing 
     effects such as bloom or blur) or even a custom vertex shader, use the 
@@ -247,7 +262,7 @@ Commandline options for the MakeSpriteFont tool:
 
     /NoPremultiply
         By default, font textures use premultiplied alpha format. Pass this flag 
-        if you want interpolative alpha instead.
+        if you want interpolative/straight alpha instead.
 
     /DebugOutputSpriteSheet:<filename>
         Dumps the generated texture to a bitmap file (useful when debugging the 
@@ -318,9 +333,14 @@ To create an input layout matching the effect vertex shader input signature:
                               VertexPositionNormalTexture::InputElementCount,
                               shaderByteCode, byteCodeLength,
                               pInputLayout);
+Coordinate systems:
+
+    The built-in effects work equally well for both right-handed and left-handed coordinate
+    systems. The one difference is that the fog settings start & end for left-handed
+    coordinate systems need to be negated (i.e. SetFogStart(6), SetFogEnd(8) for right-handed
+    coordinates becomes SetFogStart(-6), SetFogEnd(-8) for left-handed coordinates).
 
 Threading model:
-
     Creation is fully asynchronous, so you can instantiate multiple effect 
     instances at the same time on different threads. Each instance only 
     supports drawing from one thread at a time, but you can simultaneously draw 
@@ -364,6 +384,9 @@ vertex formats of your own.
 To initialize a PrimitiveBatch for drawing VertexPositionColor data:
 
     std::unique_ptr<PrimitiveBatch<VertexPositionColor>> primitiveBatch(new PrimitiveBatch<VertexPositionColor>(deviceContext));
+
+    The default values assume that your maximum batch size is 2048 vertices arranged in triangles. If you want to
+    use larger batches, you need to provide the additional constructor parameters.
 
 To set up a suitable BasicEffect and input layout:
 
@@ -427,12 +450,13 @@ GeometricPrimitive
 This is a helper for drawing simple geometric shapes:
 
     - Cube
-    - Sphere (both geodesic sphere and uv-sphere)
+    - Sphere
+    - Geodesic Sphere
     - Cylinder
     - Torus
     - Teapot
 
-During initialization:
+Initialization:
 
     std::unique_ptr<GeometricPrimitive> shape(GeometricPrimitive::CreateTeapot(deviceContext));
 
@@ -447,6 +471,203 @@ callback function which can be used to override the default rendering state:
     {
         deviceContext->OMSetBlendState(...);
     });
+
+This makes use of a BasicEffect shared by all geometric primitives drawn on that device context.
+
+Advanced drawing:
+
+    IEffect* myeffect = ...
+
+    Microsoft::WRL::ComPtr<ID3D11InputLayout> inputLayout;
+    shape->CreateInputLayout( myeffect, &inputLayout );
+
+    shape->Draw( myeffect, inputLayout.Get() );
+
+Coordinate Systems:
+
+    These geometric primitives (based on the XNA Game Studio conventions) use right-handed
+    coordinates. They can be used with left-handed coordinates by setting the rhcoords
+    parameter on the factory methods to 'false' to reverse the winding ordering (the
+    parameter defaults to 'true').
+
+Alpha blending:
+
+    Alpha blending defaults to using premultiplied alpha. To make use of 'straight' alpha
+    textures, override the blending mode via the optional callback:
+
+    CommonStates states(deviceContext);
+    
+    shape->Draw(world, view, projection, Colors::White, catTexture, false, [=]
+    {
+        deviceContext->OMSetBlendState( states.NonPremultiplied(), nullptr, 0xFFFFFFFF);
+    });
+
+
+
+-----
+Model
+-----
+
+This is a class hierarchy for drawing simple meshes with support for loading rigid models from
+Visual Studio 3D Starter Kit .CMO files and legacy DirectX SDK .SDKMESH files.  It is an
+implementation of a mesh renderer similar to the XNA Game Studio Model, ModelMesh, ModelMeshPart design.
+
+NOTE: Currently Model only supports rigid models. Support for animation, skinning, and frame hierarchy
+is not yet implemented.
+
+A Model consists of one or more ModelMesh instances. The ModelMesh instances can be shared by multiple
+instances of Model. A ModelMesh instance consists of one or more ModelMeshPart instances.
+
+Each ModelMeshPart references an index buffer, a vertex buffer, an input layout, an Effects instance,
+and includes various metadata for drawing the geometry. Each ModelMeshPart represents a single material
+to be drawn at the same time (i.e. a submesh).
+
+Initialization:
+
+    Model instances can be loaded from either .CMO files or .SDKMESH files, or from custom file formats.
+    The Model loaders take an EffectFactory instance to facilitate the sharing of Effects and
+    textures between models. For simplicity, provided Model loaders always return built-in Effect instances.
+    Any references to specific shaders in the runtime mesh files are ignored.
+
+    NOTE: The EffectFactory is declared in the Effects.h header.
+
+    Visual Studio 2012 includes a built-in content pipeline that can generate .CMO files from an
+    Autodesk FBX, as well as DDS texture files from various bitmap image formats, as part of the
+    build process. See the Visual Studio 3D Starter Kit for details.
+    http://code.msdn.microsoft.com/windowsapps/Visual-Studio-3D-Starter-455a15f1
+
+    EffectFactory fx( device );
+
+    auto teapot = Model::CreateFromCMO( device, L"teapot.cmo", fx );
+
+    The legacy DirectX SDK has an exporter that will generate .SDKMESH files from an Autodesk FBX. The latest
+    version of this exporter tool can be obtained from:
+    http://go.microsoft.com/fwlink/?LinkId=226208
+
+    auto tiny = Model::CreateFromSDKMESH( device, L"tiny.sdkmesh", fx );
+
+    A Model instance also contains a name (a wide-character string) for tracking and application logic. Model
+    can be copied to create a new Model instance which will have shared references to the same set of ModelMesh
+    instances (i.e. a 'shallow' copy).
+
+Simple drawing:
+
+    The Model::Draw functions provides a high-level, easy to use method for drawing models.
+
+    CommonStates states(device);
+
+    XMMATRIX local = XMMatrixTranslation( 1.f, 1.f, 1.f );
+    local = XMMatrixMultiply( world, local );
+    tiny->Draw( context, states, local, view, projection );
+
+    There are optional parameters for rendering in wireframe and to provide a custom state override callback.
+
+Advanced drawing:
+
+    Rather than using the standard Model::Draw, the ModelMesh::Draw method can be used on each mesh in turn
+    listed in the Model::meshes collection. ModelMesh::Draw can be used to draw all the opaque parts or the
+    alpha parts individually. The ModelMesh::PrepareForRendering method can be used as a helper to setup
+    common render state, or the developer can set up the state directly before calling ModelMesh::Draw.
+
+    More detailed control over rendering can be had by skipping the use of Model::Draw and ModelMesh::Draw
+    in favor of the ModelMeshPart::Draw method. Each Model::meshes collection can be scanned for each
+    ModelMesh::meshParts collection to enumerate all ModelMeshPart instances. For this version of draw,
+    the ModelMeshPart::effect and ModelMeshPart::inputLayout can be used, or a custom effect override can
+    be used instead (be sure to create the appropriate matching input layout for the custom effect beforehand
+    using ModelMeshPart::CreateInputLayout).
+
+Effects control:
+
+    The Model loaders create an appropriate Effects instance for each ModelMeshPart in a mesh. Generally all
+    effects in a mesh should use the same lighting and fog settings, which is facilitated by the
+    Model::UpdateEffects method. This calls back for each unique effect in the ModelMesh once.
+
+    tiny->UpdateEffects([&](IEffect* effect)
+    {
+        auto lights = dynamic_cast<IEffectLights*>(effect);
+        if ( lights )
+        {
+            XMVECTOR dir = XMVector3Rotate( g_XMOne, quat );
+            lights->SetLightDirection( 0, dir );
+        }
+        auto fog = dynamic_cast<IEffectFog*>(effect);
+        if ( fog )
+        {
+            fog->SetFogEnabled(true);
+            fog->SetFogStart(6); // assuming RH coordiantes
+            fog->SetFogEnd(8);
+            fog->SetFogColor(Colors::CornflowerBlue);
+        }
+    });
+
+    It is also possible to change the Effects instance used by a given part (such as when overriding the
+    default effect put in place from a Model loader) by calling ModelMeshPart::ModifyEffect. This will
+    regenerate the ModelMeshPart::inputLayout appropriately.
+
+    Be sure to call Model::Modified on all Model instances that reference the impacted ModelMesh instance
+    to ensure the cache used by UpdateEffects is correctly updated. Model::Modified should also be called
+    whenever a Model::meshes or ModelMesh::meshParts collection is modified.
+
+    As noted above, it is also possible to render part or all of a model using a custom effect as an
+    override, rather than changing the effect referenced by the ModelMeshPart::effect directly.
+
+Alpha blending:
+
+    Proper drawing of alpha-blended models can be a complicated procedure. Each ModelMeshPart has a bool value
+    to indicate if the associated part is fully opaque (isAlpha is false), or has some level of alpha transparency
+    (isAlpha is true). The Model::Draw routine handles some basic logic for the rendering, first rendering the
+    opaque parts, then rendering the alpha parts.  More detailed control is provided by the ModelMesh::Draw method
+    which can be used to draw all opaque parts of all meshes first, then go back and draw all alpha parts of
+    all meshes second.
+
+    To indicate the use of ‘straight’ alpha vs. ‘premultiplied’ alpha blending modes, ModelMesh::pmalpha is set by
+    the various loaders functions controlled by a default parameter (which defaults false to indicate the
+    texture files are using 'straight' alpha). If you make use of DirectXTex's texconv tool with the -pmalpha 
+    switch, you should use pmalpha=true instead.
+
+Custom render states:
+
+    All the various Draw method provide a setCustomState callback which can be used to change the state just before the
+    geometry is drawn.
+ 
+    tiny->Draw( context, states, local, view, projection, false, [&]()
+    {
+        ID3D11ShaderResourceView* srv = nullptr;
+        context->PSSetShaderResources( 0, 1, &srv );
+    });
+
+Coordinate systems:
+
+    Meshes are authored in a specific winding order, typically using the standard counter-clockwise winding common in graphics.
+    The choice of viewing handedness (right-handed vs. left-handed coordinates) is largely a matter of preference and
+    convenience, but it impacts how the models are built and/or exported.
+
+    The Visual Studio 3D Starter Kit’s .CMO files assume the developer is using right-handed coordinates. DirectXTK’s default
+    parameters assume you are using right-handed coordinates as well, so the ‘ccw’ parameter defaults to true. If using a .CMO
+    with left-handed coordinates, you should pass false for the ‘ccw’ parameter which will use clockwise winding instead.
+    This makes the geometry visible, but could make textures on the model appear ‘flipped’ in U.
+ 
+    The legacy DirectX SDK’s .SDKMESH files assume the developer is using left-handed coordinates. DirectXTK’s default parameters
+    assume you are using right-handed coordinates, so the ‘ccw’ parameter defaults to false which will use clockwise winding
+    and potentially have the ‘flipped in U’ texture problem. If using a .SDKMESH with left-handed coordinates, you should pass
+    true for the ‘ccw’ parameter.
+
+Feature Level Notes:
+
+    If any ModelMeshPart makes use of 32-bit indices (i.e. ModelMeshPart:: indexFormat equals DXGI_FORMAT_R32_UINT) rather than
+    16-bit indices (DXGI_FORMAT_R16_UINT), then that model requires Feature Level 9.2 or greater.
+
+    If any ModelMeshPart uses adjacency (i.e. ModelMeshPart::primitiveType equals D3D_PRIMITIVE_TOPOLOGY_*_ADJ), then that model
+    requires Feature Level 10.0 or greater. If using tessellation (i.e. D3D_PRIMITIVE_TOPOLOGY_?_CONTROL_POINT_PATCHLIST), then
+    that model requires Feature Level 11.0 or greater.
+
+    Keep in mind that there are maximum primitive count limits per ModelMeshPart based on feature level as well (65535 for
+    Feature Level 9.1, 1048575 or Feature Level 9.2 and 9.3, and 4294967295 for Feature Level 10.0 or greater).
+
+Threading model:
+
+    The ModelMeshPart is tied to a device, but not a device context. This means that Model creation/loading is ‘free threaded’.
+    Drawing can be done on the immediate context or by a deferred context, but keep in mind device contexts are not ‘free threaded’.
 
 
 
@@ -675,6 +896,11 @@ Further reading:
 ---------------
 RELEASE HISTORY
 ---------------
+
+January 25, 2013
+    GeometricPrimitive support for left-handed coordinates and drawing with custom effects 
+    Model, ModelMesh, and ModelMeshPart added with loading of rigid non-animating models from .CMO and .SDKMESH files
+    EffectFactory helper class added
 
 December 11, 2012
     Ex versions of DDSTextureLoader and WICTextureLoader
