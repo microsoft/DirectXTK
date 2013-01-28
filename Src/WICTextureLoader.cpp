@@ -471,7 +471,9 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
     size_t rowPitch = ( twidth * bpp + 7 ) / 8;
     size_t imageSize = rowPitch * theight;
 
-    std::unique_ptr<uint8_t[]> temp( new uint8_t[ imageSize ] );
+    std::unique_ptr<uint8_t[]> temp( new (std::nothrow) uint8_t[ imageSize ] );
+    if (!temp)
+        return E_OUTOFMEMORY;
 
     // Load image data
     if ( memcmp( &convertGUID, &pixelFormat, sizeof(GUID) ) == 0
@@ -566,7 +568,7 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
     desc.Height = theight;
     desc.MipLevels = (autogen) ? 0 : 1;
     desc.ArraySize = 1;
-    desc.Format = format;
+    desc.Format = (forceSRGB) ? MakeSRGB( format ) : format;
     desc.SampleDesc.Count = 1;
     desc.SampleDesc.Quality = 0;
     desc.Usage = usage;
@@ -596,12 +598,7 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
         {
             D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
             memset( &SRVDesc, 0, sizeof( SRVDesc ) );
-            if ( forceSRGB )
-            {
-                SRVDesc.Format = MakeSRGB( format );
-            }
-            else
-                SRVDesc.Format = format;
+            SRVDesc.Format = desc.Format;
 
             SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
             SRVDesc.Texture2D.MipLevels = (autogen) ? -1 : 1;
@@ -664,15 +661,20 @@ HRESULT DirectX::CreateWICTextureFromMemoryEx( ID3D11Device* d3dDevice,
                                                ID3D11Resource** texture,
                                                ID3D11ShaderResourceView** textureView )
 {
-    if (!d3dDevice || !wicData || (!texture && !textureView))
+    if ( texture )
     {
-        return E_INVALIDARG;
+        *texture = nullptr;
+    }
+    if ( textureView )
+    {
+        *textureView = nullptr;
     }
 
+    if (!d3dDevice || !wicData || (!texture && !textureView))
+        return E_INVALIDARG;
+
     if ( !wicDataSize )
-    {
         return E_FAIL;
-    }
 
 #ifdef _M_AMD64
     if ( wicDataSize > 0xFFFFFFFF )
@@ -750,10 +752,17 @@ HRESULT DirectX::CreateWICTextureFromFileEx( ID3D11Device* d3dDevice,
                                              ID3D11Resource** texture,
                                              ID3D11ShaderResourceView** textureView )
 {
-    if (!d3dDevice || !fileName || (!texture && !textureView))
+    if ( texture )
     {
-        return E_INVALIDARG;
+        *texture = nullptr;
     }
+    if ( textureView )
+    {
+        *textureView = nullptr;
+    }
+
+    if (!d3dDevice || !fileName || (!texture && !textureView))
+        return E_INVALIDARG;
 
     IWICImagingFactory* pWIC = _GetWIC();
     if ( !pWIC )

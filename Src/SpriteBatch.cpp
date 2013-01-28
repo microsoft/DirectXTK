@@ -686,6 +686,8 @@ void SpriteBatch::Impl::RenderBatch(_In_ ID3D11ShaderResourceView* texture, _In_
         // Generate sprite vertex data.
         for (size_t i = 0; i < batchSize; i++)
         {
+            assert(i < count);
+            _Analysis_assume_(i < count);
             RenderSprite(sprites[i], vertices, textureSize, inverseTextureSize);
 
             vertices += VerticesPerSprite;

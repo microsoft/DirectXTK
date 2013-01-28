@@ -541,7 +541,9 @@ HRESULT DirectX::SaveDDSTextureToFile( _In_ ID3D11DeviceContext* pContext,
     }
 
     // Setup pixels
-    std::unique_ptr<uint8_t> pixels( new uint8_t[ slicePitch ] );
+    std::unique_ptr<uint8_t> pixels( new (std::nothrow) uint8_t[ slicePitch ] );
+    if (!pixels)
+        return E_OUTOFMEMORY;
 
     D3D11_MAPPED_SUBRESOURCE mapped;
     hr = pContext->Map( pStaging.Get(), 0, D3D11_MAP_READ, 0, &mapped );
@@ -600,9 +602,7 @@ HRESULT DirectX::SaveWICTextureToFile( _In_ ID3D11DeviceContext* pContext,
                                        _In_opt_ const GUID* targetFormat )
 {
     if ( !fileName )
-    {
         return E_INVALIDARG;
-    }
 
     D3D11_TEXTURE2D_DESC desc = { 0 };
     ScopedObject<ID3D11Texture2D> pStaging;
