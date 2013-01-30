@@ -35,7 +35,7 @@ public:
       : device(device), mSharing(true)
     { }
 
-    std::shared_ptr<IEffect> CreateEffect( _In_ const IEffectFactory::EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext );
+    std::shared_ptr<IEffect> CreateEffect( _In_ IEffectFactory* factory, _In_ const IEffectFactory::EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext );
     void CreateTexture( _In_z_ const WCHAR* texture, _In_opt_ ID3D11DeviceContext* deviceContext, _Outptr_ ID3D11ShaderResourceView** textureView );
 
     void ReleaseCache();
@@ -62,7 +62,7 @@ SharedResourcePool<ID3D11Device*, EffectFactory::Impl> EffectFactory::Impl::inst
 
 
 _Use_decl_annotations_
-std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect( const IEffectFactory::EffectInfo& info, ID3D11DeviceContext* deviceContext )
+std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect( IEffectFactory* factory, const IEffectFactory::EffectInfo& info, ID3D11DeviceContext* deviceContext )
 {
     auto it = (info.name && *info.name) ? mEffectCache.find( info.name ) : mEffectCache.end();
 
@@ -107,7 +107,7 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect( const IEffectFactory
         {
             Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
 
-            CreateTexture( info.texture, deviceContext, &srv );
+            factory->CreateTexture( info.texture, deviceContext, &srv );
 
             effect->SetTexture( srv.Get() );
             effect->SetTextureEnabled( true );
@@ -212,7 +212,7 @@ EffectFactory& EffectFactory::operator= (EffectFactory&& moveFrom)
 _Use_decl_annotations_
 std::shared_ptr<IEffect> EffectFactory::CreateEffect( const EffectInfo& info, ID3D11DeviceContext* deviceContext )
 {
-    return pImpl->CreateEffect( info, deviceContext );
+    return pImpl->CreateEffect( this, info, deviceContext );
 }
 
 _Use_decl_annotations_
