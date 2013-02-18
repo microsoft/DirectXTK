@@ -383,6 +383,10 @@ void SpriteBatch::Impl::End()
         FlushBatch();
     }
 
+    // Break circular reference chains, in case the state lambda closed
+    // over an object that holds a reference to this SpriteBatch.
+    mSetCustomShaders = nullptr;
+
     mInBeginEndPair = false;
 }
 
