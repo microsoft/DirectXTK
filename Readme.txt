@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-January 25, 2013
+February 22, 2013
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Windows Store apps, Windows 8 Win32 desktop
@@ -37,6 +37,7 @@ Inc\
     DDSTextureLoader.h - light-weight DDS file texture loader
     WICTextureLoader.h - WIC-based image file texture loader
     ScreenGrab.h - light-weight screen shot saver
+    SimpleMath.h - simplified C++ wrapper for DirectXMath
 
 Src\
     DirectXTK source files and internal implementation headers
@@ -893,9 +894,91 @@ Further reading:
 
 
 
+----------
+SimpleMath
+----------
+
+SimpleMath.h wraps the DirectXMath SIMD vector/matrix math API with an easier 
+to use C++ interface. It provides the following types, with similar names, 
+methods, and operator overloads to the XNA Game Studio math API:
+
+    - Vector2
+    - Vector3
+    - Vector4
+    - Matrix
+    - Quaternion
+    - Plane
+    - Ray
+    - Color
+
+Why wrap DirectXMath?
+
+DirectXMath provides highly optimized vector and matrix math functions, which 
+take advantage of SSE SIMD intrinsics when compiled for x86/x64, or the ARM 
+NEON instruction set when compiled for an ARM platform such as Windows RT or 
+Windows Phone. The downside of being designed for efficient SIMD usage is that 
+DirectXMath can be somewhat complicated to work with. Developers must be aware 
+of correct type usage (understanding the difference between SIMD register types 
+such as XMVECTOR vs. memory storage types such as XMFLOAT4), must take care to 
+maintain correct alignment for SIMD heap allocations, and must carefully 
+structure their code to avoid accessing individual components from a SIMD 
+register. This complexity is necessary for optimal SIMD performance, but 
+sometimes you just want to get stuff working without so much hassle!
+
+Enter SimpleMath...
+
+These types derive from the equivalent DirectXMath memory storage types (for 
+instance Vector3 is derived from XMFLOAT3), so they can be stored in arbitrary 
+locations without worrying about SIMD alignment, and individual components can 
+be accessed without bothering to call SIMD accessor functions. But unlike 
+XMFLOAT3, the Vector3 type defines a rich set of methods and overloaded 
+operators, so it can be directly manipulated without having to first load its 
+value into an XMVECTOR. Vector3 also defines an operator for automatic 
+conversion to XMVECTOR, so it can be passed directly to methods that were 
+written to use the lower level DirectXMath types.
+
+If that sounds horribly confusing, the short version is that the SimpleMath 
+types pretty much "Just Work" the way you would expect them to.
+
+By now you must be wondering, where is the catch? And of course there is one. 
+SimpleMath hides the complexities of SIMD programming by automatically 
+converting back and forth between memory and SIMD register types, which tends 
+to generate additional load and store instructions. This can add significant 
+overhead compared to the lower level DirectXMath approach, where SIMD loads and 
+stores are under explicit control of the programmer.
+
+You should use SimpleMath if you are:
+
+    - Looking for a C++ math library with similar API to the C# XNA types
+    - Porting existing XNA code from C# to C++
+    - Wanting to optimize for programmer efficiency (simplicity, readability, 
+      development speed) at the expense of runtime efficiency
+
+You should go straight to the underlying DirectXMath API if you:
+
+    - Want to create the fastest possible code
+    - Enjoy the lateral thinking needed to express algorithms in raw SIMD
+
+This need not be a global either/or decision. The SimpleMath types know how to 
+convert themselves to and from the corresponding DirectXMath types, so it is 
+easy to mix and match. You can use SimpleMath for the parts of your program 
+where readability and development time matter most, then drop down to 
+DirectXMath for performance hotspots where runtime efficiency is more important.
+
+
+
 ---------------
 RELEASE HISTORY
 ---------------
+
+February 22, 2013
+    Added SimpleMath header
+    Fixed bug that prevented properly overriding EffectFactory::CreateTexture
+    Fixed forceSRGB logic in DDSTextureLoader and WICTextureLoader
+    Break circular reference chains when using SpriteBatch with a setCustomShaders lambda
+    Updated projects with /fp:fast for all configs, /arch:SSE2 for Win32 configs
+    Sensibly named .pdb output files
+    Added WIC_USE_FACTORY_PROXY build option (uses WindowsCodecs.dll entrypoint rather than CoCreateInstance)
 
 January 25, 2013
     GeometricPrimitive support for left-handed coordinates and drawing with custom effects 

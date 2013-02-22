@@ -78,6 +78,12 @@
     <ClInclude Include="Inc\Model.h">
       <Filter>Inc</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\SimpleMath.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\SimpleMath.inl">
+      <Filter>Inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\CommonStates.cpp">

@@ -32,6 +32,8 @@
     <ClInclude Include="Inc\Effects.h" />
     <ClInclude Include="Inc\GeometricPrimitive.h" />
     <ClInclude Include="Inc\Model.h" />
+    <ClInclude Include="Inc\SimpleMath.h" />
+    <ClInclude Include="Inc\SimpleMath.inl" />
     <ClInclude Include="Inc\ScreenGrab.h" />
     <ClInclude Include="Inc\SpriteBatch.h" />
     <ClInclude Include="Inc\PrimitiveBatch.h" />
