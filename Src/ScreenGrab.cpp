@@ -28,6 +28,10 @@
 #include "pch.h"
 
 #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP)
+#if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/) || defined(_WIN7_PLATFORM_UPDATE)
+#include <d2d1.h>
+#endif
+
 #pragma warning(push)
 #pragma warning(disable : 4005)
 #include <wincodec.h>
