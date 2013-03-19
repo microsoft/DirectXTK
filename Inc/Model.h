@@ -27,9 +27,10 @@
 #pragma warning(push)
 #pragma warning(disable : 4005)
 #include <stdint.h>
-#include <wrl.h>
+#include <intsafe.h>
 #pragma warning(pop)
 
+#include <wrl.h>
 
 namespace DirectX
 {
