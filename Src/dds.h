@@ -183,6 +183,11 @@ enum DDS_RESOURCE_MISC_FLAG
    DDS_RESOURCE_MISC_TEXTURECUBE = 0x4L,
 };
 
+enum DDS_MISC_FLAGS2
+{
+    DDS_MISC_FLAGS2_ALPHA_MODE_MASK = 0x3L,
+};
+
 struct DDS_HEADER
 {
     uint32_t        size;
@@ -207,9 +212,12 @@ struct DDS_HEADER_DXT10
     uint32_t        resourceDimension;
     uint32_t        miscFlag; // see D3D11_RESOURCE_MISC_FLAG
     uint32_t        arraySize;
-    uint32_t        reserved;
+    uint32_t        miscFlags2; // see DDS_MISC_FLAGS2
 } ;
 
 #pragma pack(pop)
+
+static_assert( sizeof(DDS_HEADER) == 124, "DDS Header size mismatch" );
+static_assert( sizeof(DDS_HEADER_DXT10) == 20, "DDS DX10 Extended Header size mismatch");
 
 }; // namespace

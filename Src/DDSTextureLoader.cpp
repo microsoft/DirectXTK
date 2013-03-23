@@ -119,7 +119,7 @@ static HRESULT LoadTextureDataFromFile( _In_z_ const wchar_t* fileName,
         return E_FAIL;
     }
 
-    DDS_HEADER* hdr = reinterpret_cast<DDS_HEADER*>( ddsData.get() + sizeof( uint32_t ) );
+    auto hdr = reinterpret_cast<DDS_HEADER*>( ddsData.get() + sizeof( uint32_t ) );
 
     // Verify header to validate DDS file
     if (hdr->size != sizeof(DDS_HEADER) ||
@@ -990,7 +990,7 @@ static HRESULT CreateTextureFromDDS( _In_ ID3D11Device* d3dDevice,
     if ((header->ddspf.flags & DDS_FOURCC) &&
         (MAKEFOURCC( 'D', 'X', '1', '0' ) == header->ddspf.fourCC ))
     {
-        const DDS_HEADER_DXT10* d3d10ext = reinterpret_cast<const DDS_HEADER_DXT10*>( (const char*)header + sizeof(DDS_HEADER) );
+        auto d3d10ext = reinterpret_cast<const DDS_HEADER_DXT10*>( (const char*)header + sizeof(DDS_HEADER) );
 
         arraySize = d3d10ext->arraySize;
         if (arraySize == 0)
@@ -1191,6 +1191,28 @@ static HRESULT CreateTextureFromDDS( _In_ ID3D11Device* d3dDevice,
     return hr;
 }
 
+
+//--------------------------------------------------------------------------------------
+static DDS_ALPHA_MODE GetAlphaMode( _In_ const DDS_HEADER* header )
+{
+    if ( header->ddspf.flags & DDS_FOURCC )
+    {
+        if ( MAKEFOURCC( 'D', 'X', '1', '0' ) == header->ddspf.fourCC )
+        {
+            auto d3d10ext = reinterpret_cast<const DDS_HEADER_DXT10*>( (const char*)header + sizeof(DDS_HEADER) );
+            return static_cast<DDS_ALPHA_MODE>(d3d10ext->miscFlags2 & DDS_MISC_FLAGS2_ALPHA_MODE_MASK);
+        }
+        else if ( ( MAKEFOURCC( 'D', 'X', 'T', '2' ) == header->ddspf.fourCC )
+                  || ( MAKEFOURCC( 'D', 'X', 'T', '4' ) == header->ddspf.fourCC ) )
+        {
+            return DDS_ALPHA_MODE_PREMULTIPLIED;
+        }
+    }
+
+    return DDS_ALPHA_MODE_STRAIGHT;
+}
+
+
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_
 HRESULT DirectX::CreateDDSTextureFromMemory( ID3D11Device* d3dDevice,
@@ -1198,11 +1220,12 @@ HRESULT DirectX::CreateDDSTextureFromMemory( ID3D11Device* d3dDevice,
                                              size_t ddsDataSize,
                                              ID3D11Resource** texture,
                                              ID3D11ShaderResourceView** textureView,
-                                             size_t maxsize )
+                                             size_t maxsize,
+                                             DDS_ALPHA_MODE* alphaMode )
 {
     return CreateDDSTextureFromMemoryEx( d3dDevice, ddsData, ddsDataSize, maxsize,
                                          D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0, false,
-                                         texture, textureView );
+                                         texture, textureView, alphaMode );
 }
 
 _Use_decl_annotations_
@@ -1216,7 +1239,8 @@ HRESULT DirectX::CreateDDSTextureFromMemoryEx( ID3D11Device* d3dDevice,
                                                unsigned int miscFlags,
                                                bool forceSRGB,
                                                ID3D11Resource** texture,
-                                               ID3D11ShaderResourceView** textureView )
+                                               ID3D11ShaderResourceView** textureView,
+                                               DDS_ALPHA_MODE* alphaMode )
 {
     if ( texture )
     {
@@ -1244,7 +1268,7 @@ HRESULT DirectX::CreateDDSTextureFromMemoryEx( ID3D11Device* d3dDevice,
         return E_FAIL;
     }
 
-    const DDS_HEADER* header = reinterpret_cast<const DDS_HEADER*>( ddsData + sizeof( uint32_t ) );
+    auto header = reinterpret_cast<const DDS_HEADER*>( ddsData + sizeof( uint32_t ) );
 
     // Verify header to validate DDS file
     if (header->size != sizeof(DDS_HEADER) ||
@@ -1286,6 +1310,9 @@ HRESULT DirectX::CreateDDSTextureFromMemoryEx( ID3D11Device* d3dDevice,
         {
             SetDebugObjectName(*textureView, "DDSTextureLoader");
         }
+
+        if ( alphaMode )
+            *alphaMode = GetAlphaMode( header );
     }
 
     return hr;
@@ -1297,11 +1324,12 @@ HRESULT DirectX::CreateDDSTextureFromFile( ID3D11Device* d3dDevice,
                                            const wchar_t* fileName,
                                            ID3D11Resource** texture,
                                            ID3D11ShaderResourceView** textureView,
-                                           size_t maxsize )
+                                           size_t maxsize,
+                                           DDS_ALPHA_MODE* alphaMode )
 {
     return CreateDDSTextureFromFileEx( d3dDevice, fileName, maxsize,
                                        D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0, false,
-                                       texture, textureView );
+                                       texture, textureView, alphaMode );
 }
 
 _Use_decl_annotations_
@@ -1314,7 +1342,8 @@ HRESULT DirectX::CreateDDSTextureFromFileEx( ID3D11Device* d3dDevice,
                                              unsigned int miscFlags,
                                              bool forceSRGB,
                                              ID3D11Resource** texture,
-                                             ID3D11ShaderResourceView** textureView )
+                                             ID3D11ShaderResourceView** textureView,
+                                             DDS_ALPHA_MODE* alphaMode )
 {
     if ( texture )
     {
@@ -1351,9 +1380,9 @@ HRESULT DirectX::CreateDDSTextureFromFileEx( ID3D11Device* d3dDevice,
                                usage, bindFlags, cpuAccessFlags, miscFlags, forceSRGB,
                                texture, textureView );
 
-#if defined(_DEBUG) || defined(PROFILE)
     if ( SUCCEEDED(hr) )
     {
+#if defined(_DEBUG) || defined(PROFILE)
         if (texture != 0 || textureView != 0)
         {
             CHAR strFileA[MAX_PATH];
@@ -1395,8 +1424,11 @@ HRESULT DirectX::CreateDDSTextureFromFileEx( ID3D11Device* d3dDevice,
                 }
             }
         }
-    }
 #endif
+        
+        if ( alphaMode )
+            *alphaMode = GetAlphaMode( header );
+    }
 
     return hr;
 }
