@@ -1,7 +1,7 @@
 //--------------------------------------------------------------------------------------
 // File: DDSTextureLoader.cpp
 //
-// Function for loading a DDS texture and creating a Direct3D 11 runtime resource for it
+// Functions for loading a DDS texture and creating a Direct3D 11 runtime resource for it
 //
 // Note these functions are useful as a light-weight runtime loader for DDS files. For
 // a full-featured DDS file reader, writer, and texture processing pipeline see
@@ -739,8 +739,8 @@ static HRESULT CreateD3DResources( _In_ ID3D11Device* d3dDevice,
                                    _In_ bool forceSRGB,
                                    _In_ bool isCubeMap,
                                    _In_reads_(mipCount*arraySize) D3D11_SUBRESOURCE_DATA* initData,
-                                   _Out_opt_ ID3D11Resource** texture,
-                                   _Out_opt_ ID3D11ShaderResourceView** textureView )
+                                   _Outptr_opt_ ID3D11Resource** texture,
+                                   _Outptr_opt_ ID3D11ShaderResourceView** textureView )
 {
     if ( !d3dDevice || !initData )
         return E_POINTER;
@@ -829,9 +829,13 @@ static HRESULT CreateD3DResources( _In_ ID3D11Device* d3dDevice,
                 desc.BindFlags = bindFlags;
                 desc.CPUAccessFlags = cpuAccessFlags;
                 if ( isCubeMap )
+                {
                     desc.MiscFlags = miscFlags | D3D11_RESOURCE_MISC_TEXTURECUBE;
+                }
                 else
+                {
                     desc.MiscFlags = miscFlags & ~D3D11_RESOURCE_MISC_TEXTURECUBE;
+                }
 
                 ID3D11Texture2D* tex = nullptr;
                 hr = d3dDevice->CreateTexture2D( &desc,
@@ -846,7 +850,7 @@ static HRESULT CreateD3DResources( _In_ ID3D11Device* d3dDevice,
                         memset( &SRVDesc, 0, sizeof( SRVDesc ) );
                         SRVDesc.Format = format;
 
-                        if (isCubeMap)
+                        if ( isCubeMap )
                         {
                             if (arraySize > 6)
                             {
@@ -967,8 +971,8 @@ static HRESULT CreateTextureFromDDS( _In_ ID3D11Device* d3dDevice,
                                      _In_ unsigned int cpuAccessFlags,
                                      _In_ unsigned int miscFlags,
                                      _In_ bool forceSRGB,
-                                     _Out_opt_ ID3D11Resource** texture,
-                                     _Out_opt_ ID3D11ShaderResourceView** textureView )
+                                     _Outptr_opt_ ID3D11Resource** texture,
+                                     _Outptr_opt_ ID3D11ShaderResourceView** textureView )
 {
     HRESULT hr = S_OK;
 
@@ -1096,7 +1100,7 @@ static HRESULT CreateTextureFromDDS( _In_ ID3D11Device* d3dDevice,
             break;
 
         case D3D11_RESOURCE_DIMENSION_TEXTURE2D:
-            if (isCubeMap)
+            if ( isCubeMap )
             {
                 // This is the right bound because we set arraySize to (NumCubes*6) above
                 if ((arraySize > D3D11_REQ_TEXTURE2D_ARRAY_AXIS_DIMENSION) ||
@@ -1152,7 +1156,7 @@ static HRESULT CreateTextureFromDDS( _In_ ID3D11Device* d3dDevice,
             {
             case D3D_FEATURE_LEVEL_9_1:
             case D3D_FEATURE_LEVEL_9_2:
-                if (isCubeMap)
+                if ( isCubeMap )
                 {
                     maxsize = 512 /*D3D_FL9_1_REQ_TEXTURECUBE_DIMENSION*/;
                 }
@@ -1296,7 +1300,7 @@ HRESULT DirectX::CreateDDSTextureFromMemoryEx( ID3D11Device* d3dDevice,
                        + (bDXT10Header ? sizeof( DDS_HEADER_DXT10 ) : 0);
 
     HRESULT hr = CreateTextureFromDDS( d3dDevice, header,
-                                       ddsData + offset, ddsDataSize - offset, maxsize, 
+                                       ddsData + offset, ddsDataSize - offset, maxsize,
                                        usage, bindFlags, cpuAccessFlags, miscFlags, forceSRGB,
                                        texture, textureView );
     if ( SUCCEEDED(hr) )
@@ -1376,7 +1380,7 @@ HRESULT DirectX::CreateDDSTextureFromFileEx( ID3D11Device* d3dDevice,
     }
 
     hr = CreateTextureFromDDS( d3dDevice, header,
-                               bitData, bitSize, maxsize, 
+                               bitData, bitSize, maxsize,
                                usage, bindFlags, cpuAccessFlags, miscFlags, forceSRGB,
                                texture, textureView );
 
@@ -1425,7 +1429,7 @@ HRESULT DirectX::CreateDDSTextureFromFileEx( ID3D11Device* d3dDevice,
             }
         }
 #endif
-        
+
         if ( alphaMode )
             *alphaMode = GetAlphaMode( header );
     }

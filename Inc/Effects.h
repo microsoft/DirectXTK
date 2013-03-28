@@ -19,6 +19,7 @@
 
 #pragma warning(push)
 #pragma warning(disable : 4481)
+// VS 2010 considers 'override' to be a extension, but it's part of C++11 as of VS 2012
 
 namespace DirectX
 {
