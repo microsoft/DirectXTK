@@ -33,10 +33,11 @@ namespace DirectX
 {
     enum DDS_ALPHA_MODE
     {
-        DDS_ALPHA_MODE_STRAIGHT      = 0,
-        DDS_ALPHA_MODE_PREMULTIPLIED = 1,
-        DDS_ALPHA_MODE_4TH_CHANNEL   = 2,
+        DDS_ALPHA_MODE_UNKNOWN       = 0,
+        DDS_ALPHA_MODE_STRAIGHT      = 1,
+        DDS_ALPHA_MODE_PREMULTIPLIED = 2,
         DDS_ALPHA_MODE_OPAQUE        = 3,
+        DDS_ALPHA_MODE_CUSTOM        = 4,
     };
 
     HRESULT CreateDDSTextureFromMemory( _In_ ID3D11Device* d3dDevice,

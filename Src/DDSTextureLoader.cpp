@@ -1204,7 +1204,15 @@ static DDS_ALPHA_MODE GetAlphaMode( _In_ const DDS_HEADER* header )
         if ( MAKEFOURCC( 'D', 'X', '1', '0' ) == header->ddspf.fourCC )
         {
             auto d3d10ext = reinterpret_cast<const DDS_HEADER_DXT10*>( (const char*)header + sizeof(DDS_HEADER) );
-            return static_cast<DDS_ALPHA_MODE>(d3d10ext->miscFlags2 & DDS_MISC_FLAGS2_ALPHA_MODE_MASK);
+            auto mode = static_cast<DDS_ALPHA_MODE>( d3d10ext->miscFlags2 & DDS_MISC_FLAGS2_ALPHA_MODE_MASK );
+            switch( mode )
+            {
+            case DDS_ALPHA_MODE_STRAIGHT:
+            case DDS_ALPHA_MODE_PREMULTIPLIED:
+            case DDS_ALPHA_MODE_OPAQUE:
+            case DDS_ALPHA_MODE_CUSTOM:
+                return mode;
+            }
         }
         else if ( ( MAKEFOURCC( 'D', 'X', 'T', '2' ) == header->ddspf.fourCC )
                   || ( MAKEFOURCC( 'D', 'X', 'T', '4' ) == header->ddspf.fourCC ) )
@@ -1213,7 +1221,7 @@ static DDS_ALPHA_MODE GetAlphaMode( _In_ const DDS_HEADER* header )
         }
     }
 
-    return DDS_ALPHA_MODE_STRAIGHT;
+    return DDS_ALPHA_MODE_UNKNOWN;
 }
 
 
@@ -1253,6 +1261,10 @@ HRESULT DirectX::CreateDDSTextureFromMemoryEx( ID3D11Device* d3dDevice,
     if ( textureView )
     {
         *textureView = nullptr;
+    }
+    if ( alphaMode )
+    {
+        *alphaMode = DDS_ALPHA_MODE_UNKNOWN;
     }
 
     if (!d3dDevice || !ddsData || (!texture && !textureView))
@@ -1356,6 +1368,10 @@ HRESULT DirectX::CreateDDSTextureFromFileEx( ID3D11Device* d3dDevice,
     if ( textureView )
     {
         *textureView = nullptr;
+    }
+    if ( alphaMode )
+    {
+        *alphaMode = DDS_ALPHA_MODE_UNKNOWN;
     }
 
     if (!d3dDevice || !fileName || (!texture && !textureView))
