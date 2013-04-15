@@ -29,7 +29,7 @@ using namespace Microsoft::WRL;
 
 
 // Internal SpriteBatch implementation class.
-_declspec(align(16)) class SpriteBatch::Impl : public AlignedNew<SpriteBatch::Impl>
+__declspec(align(16)) class SpriteBatch::Impl : public AlignedNew<SpriteBatch::Impl>
 {
 public:
     Impl(_In_ ID3D11DeviceContext* deviceContext);
@@ -41,7 +41,7 @@ public:
 
 
     // Info about a single sprite that is waiting to be drawn.
-    _declspec(align(16)) struct SpriteInfo : public AlignedNew<SpriteInfo>
+    __declspec(align(16)) struct SpriteInfo : public AlignedNew<SpriteInfo>
     {
         XMFLOAT4A source;
         XMFLOAT4A destination;

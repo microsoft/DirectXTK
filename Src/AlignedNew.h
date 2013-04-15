@@ -24,7 +24,7 @@ namespace DirectX
     //
     // Example usage:
     //
-    //      _declspec(align(16)) struct MyAlignedType : public AlignedNew<MyAlignedType>
+    //      __declspec(align(16)) struct MyAlignedType : public AlignedNew<MyAlignedType>
 
     template<typename TDerived>
     struct AlignedNew
@@ -34,7 +34,7 @@ namespace DirectX
         {
             const size_t alignment = __alignof(TDerived);
 
-            static_assert(alignment > 8, "AlignedNew is only useful for types with > 8 byte alignment. Did you forget a _declspec(align) on TDerived?");
+            static_assert(alignment > 8, "AlignedNew is only useful for types with > 8 byte alignment. Did you forget a __declspec(align) on TDerived?");
 
             void* ptr = _aligned_malloc(size, alignment);
 
