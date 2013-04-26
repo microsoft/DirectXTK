@@ -691,8 +691,11 @@ static HRESULT FillInitData( _In_ size_t width,
                 initData[index].SysMemSlicePitch = static_cast<UINT>( NumBytes );
                 ++index;
             }
-            else
+            else if ( !j )
+            {
+                // Count number of skipped mipmaps (first item only)
                 ++skipMip;
+            }
 
             if (pSrcBits + (NumBytes*d) > pEndBits)
             {
