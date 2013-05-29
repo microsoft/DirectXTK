@@ -27,6 +27,11 @@ using namespace Microsoft::WRL;
 
 namespace
 {
+    static const float SQRT2 = 1.41421356237309504880f;
+    static const float SQRT3 = 1.73205080756887729352f;
+    static const float SQRT6 = 2.44948974278317809820f;
+
+
     void CheckIndexOverflow(size_t value)
     {
         // Use >=, not > comparison, because some D3D level 9_x hardware does not support 0xFFFF index values.
@@ -375,7 +380,7 @@ void GeometricPrimitive::CreateInputLayout(IEffect* effect, ID3D11InputLayout** 
 
 
 //--------------------------------------------------------------------------------------
-// Cube
+// Cube (aka a Hexahedron)
 //--------------------------------------------------------------------------------------
 
 // Creates a cube primitive.
@@ -853,22 +858,34 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateGeoSphere(_In_ ID3
 
 
 //--------------------------------------------------------------------------------------
-// Cylinder
+// Cylinder / Cone
 //--------------------------------------------------------------------------------------
 
 // Helper computes a point on a unit circle, aligned to the x/z plane and centered on the origin.
-static XMVECTOR GetCircleVector(size_t i, size_t tessellation)
+static inline XMVECTOR GetCircleVector(size_t i, size_t tessellation)
 {
     float angle = i * XM_2PI / tessellation;
     float dx, dz;
 
     XMScalarSinCos(&dx, &dz, angle);
 
-    return XMVectorPermute<0, 1, 4, 5>(XMLoadFloat(&dx), XMLoadFloat(&dz));
+    XMVECTORF32 v = { dx, 0, dz, 0 };
+    return v;
+}
+
+static inline XMVECTOR GetCircleTangent(size_t i, size_t tessellation)
+{
+    float angle = ( i * XM_2PI / tessellation ) + XM_PIDIV2;
+    float dx, dz;
+
+    XMScalarSinCos(&dx, &dz, angle);
+
+    XMVECTORF32 v = { dx, 0, dz, 0 };
+    return v;
 }
 
 
-// Helper creates a triangle fan to close the end of a cylinder.
+// Helper creates a triangle fan to close the end of a cylinder / cone
 static void CreateCylinderCap(VertexCollection& vertices, IndexCollection& indices, size_t tessellation, float height, float radius, bool isTop)
 {
     // Create cap indices.
@@ -964,6 +981,59 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCylinder(_In_ ID3D
 }
 
 
+// Creates a cone primitive.
+std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCone(_In_ ID3D11DeviceContext* deviceContext, float diameter, float height, size_t tessellation, bool rhcoords)
+{
+    VertexCollection vertices;
+    IndexCollection indices;
+
+    if (tessellation < 3)
+        throw std::out_of_range("tesselation parameter out of range");
+
+    height /= 2;
+
+    XMVECTOR topOffset = g_XMIdentityR1 * height;
+
+    float radius = diameter / 2;
+    size_t stride = tessellation + 1;
+
+    // Create a ring of triangles around the outside of the cone.
+    for (size_t i = 0; i <= tessellation; i++)
+    {
+        XMVECTOR circlevec = GetCircleVector(i, tessellation);
+
+        XMVECTOR sideOffset = circlevec * radius;
+
+        float u = (float)i / tessellation;
+
+        XMVECTOR textureCoordinate = XMLoadFloat(&u);
+
+        XMVECTOR pt = sideOffset - topOffset;
+
+        XMVECTOR normal = XMVector3Cross( GetCircleTangent( i, tessellation ), topOffset - pt );
+        normal = XMVector3Normalize( normal );
+
+        // Duplicate the top vertex for distinct normals
+        vertices.push_back(VertexPositionNormalTexture(topOffset, normal, g_XMZero));
+        vertices.push_back(VertexPositionNormalTexture(pt, normal, textureCoordinate + g_XMIdentityR1 ));
+
+        indices.push_back(i * 2);
+        indices.push_back((i * 2 + 3) % (stride * 2));
+        indices.push_back((i * 2 + 1) % (stride * 2));
+    }
+
+    // Create flat triangle fan caps to seal the bottom.
+    CreateCylinderCap(vertices, indices, tessellation, height, radius, false);
+
+    // Create the primitive object.
+    std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
+    
+    primitive->pImpl->Initialize(deviceContext, vertices, indices, rhcoords);
+
+    return primitive;
+}
+
+
 //--------------------------------------------------------------------------------------
 // Torus
 //--------------------------------------------------------------------------------------
@@ -1023,6 +1093,362 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateTorus(_In_ ID3D11D
             indices.push_back(nextI * stride + j);
         }
     }
+
+    // Create the primitive object.
+    std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
+    
+    primitive->pImpl->Initialize(deviceContext, vertices, indices, rhcoords);
+
+    return primitive;
+}
+
+
+//--------------------------------------------------------------------------------------
+// Tetrahedron
+//--------------------------------------------------------------------------------------
+
+std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateTetrahedron(_In_ ID3D11DeviceContext* deviceContext, float size, bool rhcoords)
+{
+    VertexCollection vertices;
+    IndexCollection indices;
+
+    static const XMVECTORF32 verts[4] =
+    {
+        {            0.f,        0.f,      1.f },
+        {  2.f*SQRT2/3.f,        0.f, -1.f/3.f },
+        {     -SQRT2/3.f,  SQRT6/3.f, -1.f/3.f },
+        {     -SQRT2/3.f, -SQRT6/3.f, -1.f/3.f }
+    };
+
+    static const uint32_t faces[4*3] = 
+    {
+        0, 1, 2,
+        0, 2, 3,
+        0, 3, 1,
+        1, 3, 2,
+    };
+
+    for( size_t j = 0; j < _countof(faces); j += 3 )
+    {
+        uint32_t v0 = faces[ j ];
+        uint32_t v1 = faces[ j + 1 ];
+        uint32_t v2 = faces[ j + 2 ];
+
+        XMVECTOR normal = XMVector3Cross( verts[ v1 ].v - verts[ v0 ].v,
+                                          verts[ v2 ].v - verts[ v0 ].v );
+        normal = XMVector3Normalize( normal );
+
+        size_t base = vertices.size();
+        indices.push_back( base );
+        indices.push_back( base + 1 );
+        indices.push_back( base + 2 );
+ 
+        // Duplicate vertices to use face normals
+        XMVECTOR position = XMVectorScale( verts[ v0 ], size );
+        vertices.push_back( VertexPositionNormalTexture( position, normal, g_XMZero /* 0, 0 */ ) );
+
+        position = XMVectorScale( verts[ v1 ], size );
+        vertices.push_back( VertexPositionNormalTexture( position, normal, g_XMIdentityR0 /* 1, 0 */ ) ); 
+
+        position = XMVectorScale( verts[ v2 ], size );
+        vertices.push_back( VertexPositionNormalTexture( position, normal, g_XMIdentityR1 /* 0, 1 */ ) ); 
+    }
+
+    assert( vertices.size() == 4*3 );
+    assert( indices.size() == 4*3 );
+
+    // Create the primitive object.
+    std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
+    
+    primitive->pImpl->Initialize(deviceContext, vertices, indices, rhcoords);
+
+    return primitive;
+}
+
+
+//--------------------------------------------------------------------------------------
+// Octahedron
+//--------------------------------------------------------------------------------------
+
+std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateOctahedron(_In_ ID3D11DeviceContext* deviceContext, float size, bool rhcoords )
+{
+    VertexCollection vertices;
+    IndexCollection indices;
+
+    static const XMVECTORF32 verts[6] =
+    {
+        {  1,  0,  0 },
+        { -1,  0,  0 },
+        {  0,  1,  0 },
+        {  0, -1,  0 },
+        {  0,  0,  1 },
+        {  0,  0, -1 }
+    };
+
+    static const uint32_t faces[8*3] = 
+    {
+        4, 0, 2, 
+        4, 2, 1,
+        4, 1, 3,
+        4, 3, 0,
+        5, 2, 0,
+        5, 1, 2,
+        5, 3, 1,
+        5, 0, 3
+    };
+
+    for( size_t j = 0; j < _countof(faces); j += 3 )
+    {
+        uint32_t v0 = faces[ j ];
+        uint32_t v1 = faces[ j + 1 ];
+        uint32_t v2 = faces[ j + 2 ];
+
+        XMVECTOR normal = XMVector3Cross( verts[ v1 ].v - verts[ v0 ].v,
+                                          verts[ v2 ].v - verts[ v0 ].v );
+        normal = XMVector3Normalize( normal );
+
+        size_t base = vertices.size();
+        indices.push_back( base );
+        indices.push_back( base + 1 );
+        indices.push_back( base + 2 );
+ 
+        // Duplicate vertices to use face normals
+        XMVECTOR position = XMVectorScale( verts[ v0 ], size );
+        vertices.push_back( VertexPositionNormalTexture( position, normal, g_XMZero /* 0, 0 */ ) );
+
+        position = XMVectorScale( verts[ v1 ], size );
+        vertices.push_back( VertexPositionNormalTexture( position, normal, g_XMIdentityR0 /* 1, 0 */ ) ); 
+
+        position = XMVectorScale( verts[ v2 ], size );
+        vertices.push_back( VertexPositionNormalTexture( position, normal, g_XMIdentityR1 /* 0, 1*/ ) ); 
+    }
+
+    assert( vertices.size() == 8*3 );
+    assert( indices.size() == 8*3 );
+
+    // Create the primitive object.
+    std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
+    
+    primitive->pImpl->Initialize(deviceContext, vertices, indices, rhcoords);
+
+    return primitive;
+}
+
+
+//--------------------------------------------------------------------------------------
+// Dodecahedron
+//--------------------------------------------------------------------------------------
+
+std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateDodecahedron(_In_ ID3D11DeviceContext* deviceContext, float size, bool rhcoords )
+{
+    VertexCollection vertices;
+    IndexCollection indices;
+
+    static const float a = 1.f/SQRT3;
+    static const float b = 0.356822089773089931942f; // sqrt( ( 3 - sqrt(5) ) / 6 )
+    static const float c = 0.934172358962715696451f; // sqrt( ( 3 + sqrt(5) ) / 6 );
+
+    static const XMVECTORF32 verts[20] =
+    {
+        {  a,  a,  a },
+        {  a,  a, -a },
+        {  a, -a,  a },
+        {  a, -a, -a },
+        { -a,  a,  a },
+        { -a,  a, -a },
+        { -a, -a,  a },
+        { -a, -a, -a },
+        {  b,  c,  0 },
+        { -b,  c,  0 },
+        {  b, -c,  0 },
+        { -b, -c,  0 },
+        {  c,  0,  b },
+        {  c,  0, -b },
+        { -c,  0,  b },
+        { -c,  0, -b },
+        {  0,  b,  c },
+        {  0, -b,  c },
+        {  0,  b, -c },
+        {  0, -b, -c }
+    };
+
+    static const uint32_t faces[12*5] = 
+    {
+        0, 8, 9, 4, 16,
+        0, 16, 17, 2, 12,
+        12, 2, 10, 3, 13,
+        9, 5, 15, 14, 4,
+        3, 19, 18, 1, 13,
+        7, 11, 6, 14, 15,
+        0, 12, 13, 1, 8,
+        8, 1, 18, 5, 9,
+        16, 4, 14, 6, 17,
+        6, 11, 10, 2, 17,
+        7, 15, 5, 18, 19,
+        7, 19, 3, 10, 11,
+    };
+
+    static const XMVECTORF32 textureCoordinates[5] =
+    {
+        {  0.654508f, 0.0244717f },
+        { 0.0954915f,  0.206107f },
+        { 0.0954915f,  0.793893f },
+        {  0.654508f,  0.975528f },
+        {        1.f,       0.5f }
+    };
+
+    static const uint32_t textureIndex[12][5] =
+    {
+        { 0, 1, 2, 3, 4 },
+        { 2, 3, 4, 0, 1 },
+        { 4, 0, 1, 2, 3 },
+        { 1, 2, 3, 4, 0 },
+        { 2, 3, 4, 0, 1 },
+        { 0, 1, 2, 3, 4 },
+        { 1, 2, 3, 4, 0 },
+        { 4, 0, 1, 2, 3 },
+        { 4, 0, 1, 2, 3 },
+        { 1, 2, 3, 4, 0 },
+        { 0, 1, 2, 3, 4 },
+        { 2, 3, 4, 0, 1 },
+    };
+
+    size_t t = 0;
+    for( size_t j = 0; j < _countof(faces); j += 5, ++t )
+    {
+        uint32_t v0 = faces[ j ];
+        uint32_t v1 = faces[ j + 1 ];
+        uint32_t v2 = faces[ j + 2 ];
+        uint32_t v3 = faces[ j + 3 ];
+        uint32_t v4 = faces[ j + 4 ];
+
+        XMVECTOR normal = XMVector3Cross( verts[ v1 ].v - verts[ v0 ].v,
+                                          verts[ v2 ].v - verts[ v0 ].v );
+        normal = XMVector3Normalize( normal );
+
+        size_t base = vertices.size();
+
+        indices.push_back( base );
+        indices.push_back( base + 1 );
+        indices.push_back( base + 2 );
+
+        indices.push_back( base );
+        indices.push_back( base + 2 );
+        indices.push_back( base + 3 );
+
+        indices.push_back( base );
+        indices.push_back( base + 3 );
+        indices.push_back( base + 4 );
+
+        // Duplicate vertices to use face normals
+        XMVECTOR position = XMVectorScale( verts[ v0 ], size );
+        vertices.push_back( VertexPositionNormalTexture( position, normal, textureCoordinates[ textureIndex[t][0] ] ) );
+
+        position = XMVectorScale( verts[ v1 ], size );
+        vertices.push_back( VertexPositionNormalTexture( position, normal, textureCoordinates[ textureIndex[t][1] ] ) ); 
+
+        position = XMVectorScale( verts[ v2 ], size );
+        vertices.push_back( VertexPositionNormalTexture( position, normal, textureCoordinates[ textureIndex[t][2] ] ) ); 
+
+        position = XMVectorScale( verts[ v3 ], size );
+        vertices.push_back( VertexPositionNormalTexture( position, normal, textureCoordinates[ textureIndex[t][3] ] ) ); 
+
+        position = XMVectorScale( verts[ v4 ], size );
+        vertices.push_back( VertexPositionNormalTexture( position, normal, textureCoordinates[ textureIndex[t][4] ] ) ); 
+    }
+
+    assert( vertices.size() == 12*5 );
+    assert( indices.size() == 12*3*3 );
+
+    // Create the primitive object.
+    std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
+    
+    primitive->pImpl->Initialize(deviceContext, vertices, indices, rhcoords);
+
+    return primitive;
+}
+
+
+//--------------------------------------------------------------------------------------
+// Icosahedron
+//--------------------------------------------------------------------------------------
+
+std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateIcosahedron(_In_ ID3D11DeviceContext* deviceContext, float size, bool rhcoords )
+{
+    VertexCollection vertices;
+    IndexCollection indices;
+
+    static const float  t = 1.618033988749894848205f; // (1 + sqrt(5)) / 2
+    static const float t2 = 1.519544995837552493271f; // sqrt( 1 + sqr( (1 + sqrt(5)) / 2 ) )
+
+    static const XMVECTORF32 verts[12] =
+    {
+        {    t/t2,  1.f/t2,       0 },
+        {   -t/t2,  1.f/t2,       0 },
+        {    t/t2, -1.f/t2,       0 },
+        {   -t/t2, -1.f/t2,       0 },
+        {  1.f/t2,       0,    t/t2 },
+        {  1.f/t2,       0,   -t/t2 },
+        { -1.f/t2,       0,    t/t2 },
+        { -1.f/t2,       0,   -t/t2 },
+        {       0,    t/t2,  1.f/t2 },
+        {       0,   -t/t2,  1.f/t2 },
+        {       0,    t/t2, -1.f/t2 },
+        {       0,   -t/t2, -1.f/t2 }
+    };
+ 
+    static const uint32_t faces[20*3] = 
+    {
+        0, 8, 4,
+        0, 5, 10,
+        2, 4, 9,
+        2, 11, 5,
+        1, 6, 8,
+        1, 10, 7,
+        3, 9, 6,
+        3, 7, 11,
+        0, 10, 8,
+        1, 8, 10,
+        2, 9, 11,
+        3, 11, 9,
+        4, 2, 0,
+        5, 0, 2,
+        6, 1, 3,
+        7, 3, 1,
+        8, 6, 4,
+        9, 4, 6,
+        10, 5, 7,
+        11, 7, 5
+    };
+
+    for( size_t j = 0; j < _countof(faces); j += 3 )
+    {
+        uint32_t v0 = faces[ j ];
+        uint32_t v1 = faces[ j + 1 ];
+        uint32_t v2 = faces[ j + 2 ];
+
+        XMVECTOR normal = XMVector3Cross( verts[ v1 ].v - verts[ v0 ].v,
+                                          verts[ v2 ].v - verts[ v0 ].v );
+        normal = XMVector3Normalize( normal );
+
+        size_t base = vertices.size();
+        indices.push_back( base );
+        indices.push_back( base + 1 );
+        indices.push_back( base + 2 );
+ 
+        // Duplicate vertices to use face normals
+        XMVECTOR position = XMVectorScale( verts[ v0 ], size );
+        vertices.push_back( VertexPositionNormalTexture( position, normal, g_XMZero /* 0, 0 */ ) );
+
+        position = XMVectorScale( verts[ v1 ], size );
+        vertices.push_back( VertexPositionNormalTexture( position, normal, g_XMIdentityR0 /* 1, 0 */ ) ); 
+
+        position = XMVectorScale( verts[ v2 ], size );
+        vertices.push_back( VertexPositionNormalTexture( position, normal, g_XMIdentityR1 /* 0, 1 */ ) ); 
+    }
+
+    assert( vertices.size() == 20*3 );
+    assert( indices.size() == 20*3 );
 
     // Create the primitive object.
     std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
