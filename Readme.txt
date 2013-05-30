@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-February 22, 2013
+May 30, 2013
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Windows Store apps, Windows 8 Win32 desktop
@@ -450,11 +450,16 @@ GeometricPrimitive
 
 This is a helper for drawing simple geometric shapes:
 
-    - Cube
+    - Cube (aka hexahedron)
     - Sphere
     - Geodesic Sphere
     - Cylinder
+    - Cone
     - Torus
+    - Tetrahedron
+    - Octahedron
+    - Dodecahedron
+    - Icosahedron
     - Teapot
 
 Initialization:
@@ -970,6 +975,12 @@ DirectXMath for performance hotspots where runtime efficiency is more important.
 ---------------
 RELEASE HISTORY
 ---------------
+
+May 30, 2013
+    Added more GeometricPrimitives: Cone, Tetrahedron, Octahedron, Dodecahedron, Icosahedron
+    Updated to support loading new metadata from DDS files (if present)
+    Fixed bug with loading of WIC 32bpp RGBE format images
+    Fixed bug when skipping mipmaps in a 1D or 2D array texture DDS file
 
 February 22, 2013
     Added SimpleMath header
