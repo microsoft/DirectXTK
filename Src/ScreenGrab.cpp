@@ -754,6 +754,12 @@ HRESULT DirectX::SaveWICTextureToFile( _In_ ID3D11DeviceContext* pContext,
     if ( FAILED(hr) )
         return hr;
 
+    if ( targetFormat && memcmp( targetFormat, &targetGuid, sizeof(WICPixelFormatGUID) ) != 0 )
+    {
+        // Requested output pixel format is not supported by the WIC codec
+        return E_FAIL;
+    }
+
     D3D11_MAPPED_SUBRESOURCE mapped;
     hr = pContext->Map( pStaging.Get(), 0, D3D11_MAP_READ, 0, &mapped );
     if ( FAILED(hr) )
