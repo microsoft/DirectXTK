@@ -499,6 +499,46 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
     if ( !bpp )
         return E_FAIL;
 
+    // Handle sRGB formats
+    if ( forceSRGB )
+    {
+        format = MakeSRGB( format );
+    }
+    else
+    {
+        ScopedObject<IWICMetadataQueryReader> metareader;
+        if ( SUCCEEDED( frame->GetMetadataQueryReader( &metareader ) ) )
+        {
+            GUID containerFormat;
+            if ( SUCCEEDED( metareader->GetContainerFormat( &containerFormat ) ) )
+            {
+                // Check for sRGB colorspace metadata
+                bool sRGB = false;
+
+                PROPVARIANT value;
+                PropVariantInit( &value );
+
+                if ( memcmp( &containerFormat, &GUID_ContainerFormatPng, sizeof(GUID) ) == 0 )
+                {
+                    // Check for sRGB chunk
+                    if ( SUCCEEDED( metareader->GetMetadataByName( L"/sRGB/RenderingIntent", &value ) ) && value.vt == VT_UI1 )
+                    {
+                        sRGB = true;
+                    }
+                }
+                else if ( SUCCEEDED( metareader->GetMetadataByName( L"System.Image.ColorSpace", &value ) ) && value.vt == VT_UI2 && value.uiVal == 1 )
+                {
+                    sRGB = true;
+                }
+
+                PropVariantClear( &value );
+
+                if ( sRGB )
+                    format = MakeSRGB( format );
+            }
+        }
+    }
+
     // Verify our target format is supported by the current device
     // (handles WDDM 1.0 or WDDM 1.1 device driver cases as well as DirectX 11.0 Runtime without 16bpp format support)
     UINT support = 0;
@@ -612,7 +652,7 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
     desc.Height = theight;
     desc.MipLevels = (autogen) ? 0 : 1;
     desc.ArraySize = 1;
-    desc.Format = (forceSRGB) ? MakeSRGB( format ) : format;
+    desc.Format = format;
     desc.SampleDesc.Count = 1;
     desc.SampleDesc.Quality = 0;
     desc.Usage = usage;

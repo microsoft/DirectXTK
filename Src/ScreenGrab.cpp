@@ -616,6 +616,7 @@ HRESULT DirectX::SaveWICTextureToFile( _In_ ID3D11DeviceContext* pContext,
 
     // Determine source format's WIC equivalent
     WICPixelFormatGUID pfGuid;
+    bool sRGB = false;
     switch ( desc.Format )
     {
     case DXGI_FORMAT_R32G32B32A32_FLOAT:            pfGuid = GUID_WICPixelFormat128bppRGBAFloat; break;
@@ -632,18 +633,30 @@ HRESULT DirectX::SaveWICTextureToFile( _In_ ID3D11DeviceContext* pContext,
     case DXGI_FORMAT_A8_UNORM:                      pfGuid = GUID_WICPixelFormat8bppAlpha; break;
 
     case DXGI_FORMAT_R8G8B8A8_UNORM:
-    case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
         pfGuid = GUID_WICPixelFormat32bppRGBA;
         break;
 
+    case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
+        pfGuid = GUID_WICPixelFormat32bppRGBA;
+        sRGB = true;
+        break;
+
     case DXGI_FORMAT_B8G8R8A8_UNORM: // DXGI 1.1
-    case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
         pfGuid = GUID_WICPixelFormat32bppBGRA;
         break;
 
+    case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB: // DXGI 1.1
+        pfGuid = GUID_WICPixelFormat32bppBGRA;
+        sRGB = true;
+        break;
+
     case DXGI_FORMAT_B8G8R8X8_UNORM: // DXGI 1.1
-    case DXGI_FORMAT_B8G8R8X8_UNORM_SRGB:
         pfGuid = GUID_WICPixelFormat32bppBGR;
+        break; 
+
+    case DXGI_FORMAT_B8G8R8X8_UNORM_SRGB: // DXGI 1.1
+        pfGuid = GUID_WICPixelFormat32bppBGR;
+        sRGB = true;
         break; 
 
     default:
@@ -758,6 +771,44 @@ HRESULT DirectX::SaveWICTextureToFile( _In_ ID3D11DeviceContext* pContext,
     {
         // Requested output pixel format is not supported by the WIC codec
         return E_FAIL;
+    }
+
+    // Encode WIC metadata
+    ScopedObject<IWICMetadataQueryWriter> metawriter;
+    if ( SUCCEEDED( frame->GetMetadataQueryWriter( &metawriter ) ) )
+    {
+        PROPVARIANT value;
+        PropVariantInit( &value );
+
+        value.vt = VT_LPSTR;
+        value.pszVal = "DirectXTK";
+
+        if ( memcmp( &guidContainerFormat, &GUID_ContainerFormatPng, sizeof(GUID) ) == 0 )
+        {
+            // Set Software name
+            (void)metawriter->SetMetadataByName( L"/tEXt/{str=Software}", &value );
+
+            // Set sRGB chunk
+            if ( sRGB )
+            {
+                value.vt = VT_UI1;
+                value.bVal = 0;
+                (void)metawriter->SetMetadataByName( L"/sRGB/RenderingIntent", &value );
+            }
+        }
+        else
+        {
+            // Set Software name
+            (void)metawriter->SetMetadataByName( L"System.ApplicationName", &value );
+
+            if ( sRGB )
+            {
+                // Set JPEG EXIF Colorspace of sRGB
+                value.vt = VT_UI2;
+                value.uiVal = 1;
+                (void)metawriter->SetMetadataByName( L"System.Image.ColorSpace", &value );
+            }
+        }
     }
 
     D3D11_MAPPED_SUBRESOURCE mapped;
