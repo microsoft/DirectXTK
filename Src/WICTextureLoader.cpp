@@ -181,47 +181,7 @@ IWICImagingFactory* _GetWIC()
     if ( s_Factory )
         return s_Factory;
 
-#ifdef WIC_USE_FACTORY_PROXY
-    HINSTANCE hInst = LoadLibraryEx( TEXT("WindowsCodecs.dll"), nullptr, 0 );
-    if ( !hInst )
-        return nullptr;
-
-    typedef HRESULT (WINAPI *WICCREATEFACTORY)(UINT, IWICImagingFactory**);
-    WICCREATEFACTORY pFactory = (WICCREATEFACTORY) GetProcAddress(hInst, "WICCreateImagingFactory_Proxy");
-    if ( !pFactory )
-    {
-        FreeLibrary( hInst );
-        return nullptr;
-    }
-
 #if(_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/) || defined(_WIN7_PLATFORM_UPDATE)
-    HRESULT hr = pFactory( WINCODEC_SDK_VERSION2, &s_Factory );
-    if ( SUCCEEDED(hr) )
-    {
-        // WIC2 is available on Windows 8 and Windows 7 SP1 with KB 2670838 installed
-        g_WIC2 = true;
-    }
-    else
-    {
-        hr = pFactory( WINCODEC_SDK_VERSION1, &s_Factory );
-        if ( FAILED(hr) )
-        {
-            FreeLibrary( hInst );
-            s_Factory = nullptr;
-            return nullptr;
-        }
-    }
-#else
-    HRESULT hr = pFactory( WINCODEC_SDK_VERSION, &s_Factory );
-    if ( FAILED(hr) )
-    {
-        FreeLibrary( hInst );
-        s_Factory = nullptr;
-        return nullptr;
-    }
-#endif
-
-#elif(_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/) || defined(_WIN7_PLATFORM_UPDATE)
     HRESULT hr = CoCreateInstance(
         CLSID_WICImagingFactory2,
         nullptr,
