@@ -470,7 +470,7 @@ HRESULT DirectX::SaveDDSTextureToFile( _In_ ID3D11DeviceContext* pContext,
 
     *reinterpret_cast<uint32_t*>(&fileHeader[0]) = DDS_MAGIC;
 
-    DDS_HEADER* header = reinterpret_cast<DDS_HEADER*>( reinterpret_cast<uint8_t*>(&fileHeader[0]) + sizeof(uint32_t) );
+    auto header = reinterpret_cast<DDS_HEADER*>( reinterpret_cast<uint8_t*>(&fileHeader[0]) + sizeof(uint32_t) );
     size_t headerSize = sizeof(uint32_t) + sizeof(DDS_HEADER);
     memset( header, 0, sizeof(DDS_HEADER) );
     header->size = sizeof( DDS_HEADER );
@@ -554,7 +554,7 @@ HRESULT DirectX::SaveDDSTextureToFile( _In_ ID3D11DeviceContext* pContext,
     if ( FAILED(hr) )
         return hr;
 
-    const uint8_t* sptr = reinterpret_cast<const uint8_t*>( mapped.pData );
+    auto sptr = reinterpret_cast<const uint8_t*>( mapped.pData );
     if ( !sptr )
     {
         pContext->Unmap( pStaging.Get(), 0 );

@@ -47,7 +47,7 @@ namespace DirectX
             if (newPos > mEnd)
                 throw std::exception("End of file");
 
-            T const* result = reinterpret_cast<T const*>(mPos);
+            auto result = reinterpret_cast<T const*>(mPos);
 
             mPos = newPos;
 
