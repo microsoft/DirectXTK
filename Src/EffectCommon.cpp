@@ -54,7 +54,8 @@ EffectFog::EffectFog()
 
 
 // Lazily recomputes the derived vector used by shader fog calculations.
-_Use_decl_annotations_ void EffectFog::SetConstants(int& dirtyFlags, CXMMATRIX worldView, XMVECTOR& fogVectorConstant)
+_Use_decl_annotations_
+void XM_CALLCONV EffectFog::SetConstants(int& dirtyFlags, FXMMATRIX worldView, XMVECTOR& fogVectorConstant)
 {
     if (enabled)
     {
@@ -265,7 +266,8 @@ _Use_decl_annotations_ int EffectLights::SetLightEnabled(int whichLight, bool va
 
 
 // Helper for setting diffuse color of one of the directional lights.
-_Use_decl_annotations_ int EffectLights::SetLightDiffuseColor(int whichLight, FXMVECTOR value, XMVECTOR* lightDiffuseConstant)
+_Use_decl_annotations_
+int XM_CALLCONV EffectLights::SetLightDiffuseColor(int whichLight, FXMVECTOR value, XMVECTOR* lightDiffuseConstant)
 {
     ValidateLightIndex(whichLight);
 
@@ -285,7 +287,8 @@ _Use_decl_annotations_ int EffectLights::SetLightDiffuseColor(int whichLight, FX
 
 
 // Helper for setting specular color of one of the directional lights.
-_Use_decl_annotations_ int EffectLights::SetLightSpecularColor(int whichLight, FXMVECTOR value, XMVECTOR* lightSpecularConstant)
+_Use_decl_annotations_
+int XM_CALLCONV EffectLights::SetLightSpecularColor(int whichLight, FXMVECTOR value, XMVECTOR* lightSpecularConstant)
 {
     ValidateLightIndex(whichLight);
 

@@ -280,7 +280,7 @@ void SkinnedEffect::GetVertexShaderBytecode(_Out_ void const** pShaderByteCode, 
 }
 
 
-void SkinnedEffect::SetWorld(CXMMATRIX value)
+void XM_CALLCONV SkinnedEffect::SetWorld(FXMMATRIX value)
 {
     pImpl->matrices.world = value;
 
@@ -288,7 +288,7 @@ void SkinnedEffect::SetWorld(CXMMATRIX value)
 }
 
 
-void SkinnedEffect::SetView(CXMMATRIX value)
+void XM_CALLCONV SkinnedEffect::SetView(FXMMATRIX value)
 {
     pImpl->matrices.view = value;
 
@@ -296,7 +296,7 @@ void SkinnedEffect::SetView(CXMMATRIX value)
 }
 
 
-void SkinnedEffect::SetProjection(CXMMATRIX value)
+void XM_CALLCONV SkinnedEffect::SetProjection(FXMMATRIX value)
 {
     pImpl->matrices.projection = value;
 
@@ -304,7 +304,7 @@ void SkinnedEffect::SetProjection(CXMMATRIX value)
 }
 
 
-void SkinnedEffect::SetDiffuseColor(FXMVECTOR value)
+void XM_CALLCONV SkinnedEffect::SetDiffuseColor(FXMVECTOR value)
 {
     pImpl->lights.diffuseColor = value;
 
@@ -312,7 +312,7 @@ void SkinnedEffect::SetDiffuseColor(FXMVECTOR value)
 }
 
 
-void SkinnedEffect::SetEmissiveColor(FXMVECTOR value)
+void XM_CALLCONV SkinnedEffect::SetEmissiveColor(FXMVECTOR value)
 {
     pImpl->lights.emissiveColor = value;
 
@@ -320,7 +320,7 @@ void SkinnedEffect::SetEmissiveColor(FXMVECTOR value)
 }
 
 
-void SkinnedEffect::SetSpecularColor(FXMVECTOR value)
+void XM_CALLCONV SkinnedEffect::SetSpecularColor(FXMVECTOR value)
 {
     // Set xyz to new value, but preserve existing w (specular power).
     pImpl->constants.specularColorAndPower = XMVectorSelect(pImpl->constants.specularColorAndPower, value, g_XMSelect1110);
@@ -361,7 +361,7 @@ void SkinnedEffect::SetPerPixelLighting(bool value)
 }
 
 
-void SkinnedEffect::SetAmbientLightColor(FXMVECTOR value)
+void XM_CALLCONV SkinnedEffect::SetAmbientLightColor(FXMVECTOR value)
 {
     pImpl->lights.ambientLightColor = value;
 
@@ -375,7 +375,7 @@ void SkinnedEffect::SetLightEnabled(int whichLight, bool value)
 }
 
 
-void SkinnedEffect::SetLightDirection(int whichLight, FXMVECTOR value)
+void XM_CALLCONV SkinnedEffect::SetLightDirection(int whichLight, FXMVECTOR value)
 {
     EffectLights::ValidateLightIndex(whichLight);
 
@@ -385,13 +385,13 @@ void SkinnedEffect::SetLightDirection(int whichLight, FXMVECTOR value)
 }
 
 
-void SkinnedEffect::SetLightDiffuseColor(int whichLight, FXMVECTOR value)
+void XM_CALLCONV SkinnedEffect::SetLightDiffuseColor(int whichLight, FXMVECTOR value)
 {
     pImpl->dirtyFlags |= pImpl->lights.SetLightDiffuseColor(whichLight, value, pImpl->constants.lightDiffuseColor);
 }
 
 
-void SkinnedEffect::SetLightSpecularColor(int whichLight, FXMVECTOR value)
+void XM_CALLCONV SkinnedEffect::SetLightSpecularColor(int whichLight, FXMVECTOR value)
 {
     pImpl->dirtyFlags |= pImpl->lights.SetLightSpecularColor(whichLight, value, pImpl->constants.lightSpecularColor);
 }
@@ -427,7 +427,7 @@ void SkinnedEffect::SetFogEnd(float value)
 }
 
 
-void SkinnedEffect::SetFogColor(FXMVECTOR value)
+void XM_CALLCONV SkinnedEffect::SetFogColor(FXMVECTOR value)
 {
     pImpl->constants.fogColor = value;
 

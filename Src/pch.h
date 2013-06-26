@@ -46,3 +46,11 @@
 #define DXGI_1_2_FORMATS
 #endif
 
+namespace DirectX
+{
+    #if (DIRECTXMATH_VERSION < 305) && !defined(XM_CALLCONV)
+    #define XM_CALLCONV __fastcall
+    typedef const XMVECTOR& HXMVECTOR;
+    typedef const XMMATRIX& FXMMATRIX;
+    #endif
+}

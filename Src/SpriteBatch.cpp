@@ -34,10 +34,10 @@ __declspec(align(16)) class SpriteBatch::Impl : public AlignedNew<SpriteBatch::I
 public:
     Impl(_In_ ID3D11DeviceContext* deviceContext);
 
-    void Begin(SpriteSortMode sortMode, _In_opt_ ID3D11BlendState* blendState, _In_opt_ ID3D11SamplerState* samplerState, _In_opt_ ID3D11DepthStencilState* depthStencilState, _In_opt_ ID3D11RasterizerState* rasterizerState, _In_opt_ std::function<void()> setCustomShaders, CXMMATRIX transformMatrix);
+    void XM_CALLCONV Begin(SpriteSortMode sortMode, _In_opt_ ID3D11BlendState* blendState, _In_opt_ ID3D11SamplerState* samplerState, _In_opt_ ID3D11DepthStencilState* depthStencilState, _In_opt_ ID3D11RasterizerState* rasterizerState, _In_opt_ std::function<void()> setCustomShaders, FXMMATRIX transformMatrix);
     void End();
 
-    void Draw(_In_ ID3D11ShaderResourceView* texture, FXMVECTOR destination, _In_opt_ RECT const* sourceRectangle, FXMVECTOR color, FXMVECTOR originRotationDepth, int flags);
+    void XM_CALLCONV Draw(_In_ ID3D11ShaderResourceView* texture, FXMVECTOR destination, _In_opt_ RECT const* sourceRectangle, FXMVECTOR color, FXMVECTOR originRotationDepth, int flags);
 
 
     // Info about a single sprite that is waiting to be drawn.
@@ -69,7 +69,7 @@ private:
 
     void RenderBatch(_In_ ID3D11ShaderResourceView* texture, _In_reads_(count) SpriteInfo const* const* sprites, size_t count);
 
-    static void RenderSprite(_In_ SpriteInfo const* sprite, _Out_cap_c_(VerticesPerSprite) VertexPositionColorTexture* vertices, FXMVECTOR textureSize, FXMVECTOR inverseTextureSize);
+    static void XM_CALLCONV RenderSprite(_In_ SpriteInfo const* sprite, _Out_cap_c_(VerticesPerSprite) VertexPositionColorTexture* vertices, FXMVECTOR textureSize, FXMVECTOR inverseTextureSize);
 
     static XMVECTOR GetTextureSize(_In_ ID3D11ShaderResourceView* texture);
     static XMMATRIX GetViewportTransform(_In_ ID3D11DeviceContext* deviceContext);
@@ -334,7 +334,7 @@ SpriteBatch::Impl::Impl(_In_ ID3D11DeviceContext* deviceContext)
 
 
 // Begins a batch of sprite drawing operations.
-void SpriteBatch::Impl::Begin(SpriteSortMode sortMode, _In_opt_ ID3D11BlendState* blendState, _In_opt_ ID3D11SamplerState* samplerState, _In_opt_ ID3D11DepthStencilState* depthStencilState, _In_opt_ ID3D11RasterizerState* rasterizerState, _In_opt_ std::function<void()> setCustomShaders, CXMMATRIX transformMatrix)
+void XM_CALLCONV SpriteBatch::Impl::Begin(SpriteSortMode sortMode, _In_opt_ ID3D11BlendState* blendState, _In_opt_ ID3D11SamplerState* samplerState, _In_opt_ ID3D11DepthStencilState* depthStencilState, _In_opt_ ID3D11RasterizerState* rasterizerState, _In_opt_ std::function<void()> setCustomShaders, FXMMATRIX transformMatrix)
 {
     if (mInBeginEndPair)
         throw std::exception("Cannot nest Begin calls on a single SpriteBatch");
@@ -392,7 +392,7 @@ void SpriteBatch::Impl::End()
 
 
 // Adds a single sprite to the queue.
-void SpriteBatch::Impl::Draw(_In_ ID3D11ShaderResourceView* texture, FXMVECTOR destination, _In_opt_ RECT const* sourceRectangle, FXMVECTOR color, FXMVECTOR originRotationDepth, int flags)
+void XM_CALLCONV SpriteBatch::Impl::Draw(_In_ ID3D11ShaderResourceView* texture, FXMVECTOR destination, _In_opt_ RECT const* sourceRectangle, FXMVECTOR color, FXMVECTOR originRotationDepth, int flags)
 {
     if (!texture)
         throw std::exception("Texture cannot be null");
@@ -715,7 +715,7 @@ void SpriteBatch::Impl::RenderBatch(_In_ ID3D11ShaderResourceView* texture, _In_
 
 
 // Generates vertex data for drawing a single sprite.
-void SpriteBatch::Impl::RenderSprite(_In_ SpriteInfo const* sprite, _Out_cap_c_(VerticesPerSprite) VertexPositionColorTexture* vertices, FXMVECTOR textureSize, FXMVECTOR inverseTextureSize)
+void XM_CALLCONV SpriteBatch::Impl::RenderSprite(_In_ SpriteInfo const* sprite, _Out_cap_c_(VerticesPerSprite) VertexPositionColorTexture* vertices, FXMVECTOR textureSize, FXMVECTOR inverseTextureSize)
 {
     // Load sprite parameters into SIMD registers.
     XMVECTOR source = XMLoadFloat4A(&sprite->source);
@@ -908,7 +908,7 @@ SpriteBatch::~SpriteBatch()
 }
 
 
-void SpriteBatch::Begin(SpriteSortMode sortMode, _In_opt_ ID3D11BlendState* blendState, _In_opt_ ID3D11SamplerState* samplerState, _In_opt_ ID3D11DepthStencilState* depthStencilState, _In_opt_ ID3D11RasterizerState* rasterizerState, _In_opt_ std::function<void()> setCustomShaders, CXMMATRIX transformMatrix)
+void XM_CALLCONV SpriteBatch::Begin(SpriteSortMode sortMode, _In_opt_ ID3D11BlendState* blendState, _In_opt_ ID3D11SamplerState* samplerState, _In_opt_ ID3D11DepthStencilState* depthStencilState, _In_opt_ ID3D11RasterizerState* rasterizerState, _In_opt_ std::function<void()> setCustomShaders, FXMMATRIX transformMatrix)
 {
     pImpl->Begin(sortMode, blendState, samplerState, depthStencilState, rasterizerState, setCustomShaders, transformMatrix);
 }
@@ -920,7 +920,7 @@ void SpriteBatch::End()
 }
 
 
-void SpriteBatch::Draw(_In_ ID3D11ShaderResourceView* texture, XMFLOAT2 const& position, FXMVECTOR color)
+void XM_CALLCONV SpriteBatch::Draw(_In_ ID3D11ShaderResourceView* texture, XMFLOAT2 const& position, FXMVECTOR color)
 {
     XMVECTOR destination = XMVectorPermute<0, 1, 4, 5>(XMLoadFloat2(&position), g_XMOne); // x, y, 1, 1
     
@@ -928,7 +928,7 @@ void SpriteBatch::Draw(_In_ ID3D11ShaderResourceView* texture, XMFLOAT2 const& p
 }
 
 
-void SpriteBatch::Draw(_In_ ID3D11ShaderResourceView* texture, XMFLOAT2 const& position, _In_opt_ RECT const* sourceRectangle, FXMVECTOR color, float rotation, XMFLOAT2 const& origin, float scale, SpriteEffects effects, float layerDepth)
+void XM_CALLCONV SpriteBatch::Draw(_In_ ID3D11ShaderResourceView* texture, XMFLOAT2 const& position, _In_opt_ RECT const* sourceRectangle, FXMVECTOR color, float rotation, XMFLOAT2 const& origin, float scale, SpriteEffects effects, float layerDepth)
 {
     XMVECTOR destination = XMVectorPermute<0, 1, 4, 4>(XMLoadFloat2(&position), XMLoadFloat(&scale)); // x, y, scale, scale
     
@@ -938,7 +938,7 @@ void SpriteBatch::Draw(_In_ ID3D11ShaderResourceView* texture, XMFLOAT2 const& p
 }
 
 
-void SpriteBatch::Draw(_In_ ID3D11ShaderResourceView* texture, XMFLOAT2 const& position, _In_opt_ RECT const* sourceRectangle, FXMVECTOR color, float rotation, XMFLOAT2 const& origin, XMFLOAT2 const& scale, SpriteEffects effects, float layerDepth)
+void XM_CALLCONV SpriteBatch::Draw(_In_ ID3D11ShaderResourceView* texture, XMFLOAT2 const& position, _In_opt_ RECT const* sourceRectangle, FXMVECTOR color, float rotation, XMFLOAT2 const& origin, XMFLOAT2 const& scale, SpriteEffects effects, float layerDepth)
 {
     XMVECTOR destination = XMVectorPermute<0, 1, 4, 5>(XMLoadFloat2(&position), XMLoadFloat2(&scale)); // x, y, scale.x, scale.y
     
@@ -948,7 +948,7 @@ void SpriteBatch::Draw(_In_ ID3D11ShaderResourceView* texture, XMFLOAT2 const& p
 }
 
 
-void SpriteBatch::Draw(_In_ ID3D11ShaderResourceView* texture, FXMVECTOR position, FXMVECTOR color)
+void XM_CALLCONV SpriteBatch::Draw(_In_ ID3D11ShaderResourceView* texture, FXMVECTOR position, FXMVECTOR color)
 {
     XMVECTOR destination = XMVectorPermute<0, 1, 4, 5>(position, g_XMOne); // x, y, 1, 1
     
@@ -956,7 +956,7 @@ void SpriteBatch::Draw(_In_ ID3D11ShaderResourceView* texture, FXMVECTOR positio
 }
 
 
-void SpriteBatch::Draw(_In_ ID3D11ShaderResourceView* texture, FXMVECTOR position, _In_opt_ RECT const* sourceRectangle, FXMVECTOR color, float rotation, FXMVECTOR origin, float scale, SpriteEffects effects, float layerDepth)
+void XM_CALLCONV SpriteBatch::Draw(_In_ ID3D11ShaderResourceView* texture, FXMVECTOR position, _In_opt_ RECT const* sourceRectangle, FXMVECTOR color, float rotation, FXMVECTOR origin, float scale, SpriteEffects effects, float layerDepth)
 {
     XMVECTOR destination = XMVectorPermute<0, 1, 4, 4>(position, XMLoadFloat(&scale)); // x, y, scale, scale
 
@@ -968,7 +968,7 @@ void SpriteBatch::Draw(_In_ ID3D11ShaderResourceView* texture, FXMVECTOR positio
 }
 
 
-void SpriteBatch::Draw(_In_ ID3D11ShaderResourceView* texture, FXMVECTOR position, _In_opt_ RECT const* sourceRectangle, FXMVECTOR color, float rotation, FXMVECTOR origin, GXMVECTOR scale, SpriteEffects effects, float layerDepth)
+void XM_CALLCONV SpriteBatch::Draw(_In_ ID3D11ShaderResourceView* texture, FXMVECTOR position, _In_opt_ RECT const* sourceRectangle, FXMVECTOR color, float rotation, FXMVECTOR origin, GXMVECTOR scale, SpriteEffects effects, float layerDepth)
 {
     XMVECTOR destination = XMVectorPermute<0, 1, 4, 5>(position, scale); // x, y, scale.x, scale.y
     
@@ -980,7 +980,7 @@ void SpriteBatch::Draw(_In_ ID3D11ShaderResourceView* texture, FXMVECTOR positio
 }
 
 
-void SpriteBatch::Draw(_In_ ID3D11ShaderResourceView* texture, RECT const& destinationRectangle, FXMVECTOR color)
+void XM_CALLCONV SpriteBatch::Draw(_In_ ID3D11ShaderResourceView* texture, RECT const& destinationRectangle, FXMVECTOR color)
 {
     XMVECTOR destination = LoadRect(&destinationRectangle); // x, y, w, h
 
@@ -988,7 +988,7 @@ void SpriteBatch::Draw(_In_ ID3D11ShaderResourceView* texture, RECT const& desti
 }
 
 
-void SpriteBatch::Draw(_In_ ID3D11ShaderResourceView* texture, RECT const& destinationRectangle, _In_opt_ RECT const* sourceRectangle, FXMVECTOR color, float rotation, XMFLOAT2 const& origin, SpriteEffects effects, float layerDepth)
+void XM_CALLCONV SpriteBatch::Draw(_In_ ID3D11ShaderResourceView* texture, RECT const& destinationRectangle, _In_opt_ RECT const* sourceRectangle, FXMVECTOR color, float rotation, XMFLOAT2 const& origin, SpriteEffects effects, float layerDepth)
 {
     XMVECTOR destination = LoadRect(&destinationRectangle); // x, y, w, h
 

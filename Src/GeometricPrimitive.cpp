@@ -124,7 +124,7 @@ class GeometricPrimitive::Impl
 public:
     void Initialize(_In_ ID3D11DeviceContext* deviceContext, VertexCollection& vertices, IndexCollection& indices, bool rhcoords );
 
-    void Draw(CXMMATRIX world, CXMMATRIX view, CXMMATRIX projection, FXMVECTOR color, _In_opt_ ID3D11ShaderResourceView* texture, bool wireframe, _In_opt_ std::function<void()> setCustomState);
+    void XM_CALLCONV Draw(FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection, FXMVECTOR color, _In_opt_ ID3D11ShaderResourceView* texture, bool wireframe, _In_opt_ std::function<void()> setCustomState);
 
     void Draw(_In_ IEffect* effect, _In_ ID3D11InputLayout* inputLayout, bool alpha, bool wireframe, _In_opt_ std::function<void()> setCustomState);
 
@@ -245,8 +245,8 @@ void GeometricPrimitive::Impl::Initialize(ID3D11DeviceContext* deviceContext, Ve
 
 // Draws the primitive.
 _Use_decl_annotations_
-void GeometricPrimitive::Impl::Draw(CXMMATRIX world, CXMMATRIX view, CXMMATRIX projection, FXMVECTOR color,
-                                    ID3D11ShaderResourceView* texture, bool wireframe, std::function<void()> setCustomState)
+void XM_CALLCONV GeometricPrimitive::Impl::Draw(FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection, FXMVECTOR color,
+                                                ID3D11ShaderResourceView* texture, bool wireframe, std::function<void()> setCustomState)
 {
     assert( mResources != 0 );
     auto effect = mResources->effect.get();
@@ -359,7 +359,7 @@ GeometricPrimitive::~GeometricPrimitive()
 
 // Public entrypoints.
 _Use_decl_annotations_
-void GeometricPrimitive::Draw(CXMMATRIX world, CXMMATRIX view, CXMMATRIX projection, FXMVECTOR color, ID3D11ShaderResourceView* texture, bool wireframe, std::function<void()> setCustomState)
+void XM_CALLCONV GeometricPrimitive::Draw(FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection, FXMVECTOR color, ID3D11ShaderResourceView* texture, bool wireframe, std::function<void()> setCustomState)
 {
     pImpl->Draw(world, view, projection, color, texture, wireframe, setCustomState);
 }
@@ -1471,7 +1471,7 @@ namespace
 
 
 // Tessellates the specified bezier patch.
-static void TessellatePatch(VertexCollection& vertices, IndexCollection& indices, TeapotPatch const& patch, size_t tessellation, FXMVECTOR scale, bool isMirrored)
+static void XM_CALLCONV TessellatePatch(VertexCollection& vertices, IndexCollection& indices, TeapotPatch const& patch, size_t tessellation, FXMVECTOR scale, bool isMirrored)
 {
     // Look up the 16 control points for this patch.
     XMVECTOR controlPoints[16];

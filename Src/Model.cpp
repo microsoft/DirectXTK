@@ -177,10 +177,10 @@ void ModelMesh::PrepareForRendering( ID3D11DeviceContext* deviceContext, CommonS
 
 
 _Use_decl_annotations_
-void ModelMesh::Draw( ID3D11DeviceContext* deviceContext,
-                      CXMMATRIX world, CXMMATRIX view, CXMMATRIX projection,
-                      bool alpha,
-                      std::function<void()> setCustomState ) const
+void XM_CALLCONV ModelMesh::Draw( ID3D11DeviceContext* deviceContext,
+                                  FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection,
+                                  bool alpha,
+                                  std::function<void()> setCustomState ) const
 {
     assert( deviceContext != 0 );
 
@@ -213,9 +213,9 @@ void ModelMesh::Draw( ID3D11DeviceContext* deviceContext,
 //--------------------------------------------------------------------------------------
 
 _Use_decl_annotations_
-void Model::Draw( ID3D11DeviceContext* deviceContext, CommonStates& states,
-                  CXMMATRIX world, CXMMATRIX view, CXMMATRIX projection,
-                  bool wireframe, std::function<void()> setCustomState ) const
+void XM_CALLCONV Model::Draw( ID3D11DeviceContext* deviceContext, CommonStates& states,
+                              FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection,
+                              bool wireframe, std::function<void()> setCustomState ) const
 {
     assert( deviceContext != 0 );
 

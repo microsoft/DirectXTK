@@ -191,7 +191,7 @@ namespace DirectX
             textureCoordinate(textureCoordinate)
         { }
 
-        VertexPositionNormalColorTexture(FXMVECTOR position, FXMVECTOR normal, FXMVECTOR color, GXMVECTOR textureCoordinate)
+        VertexPositionNormalColorTexture(FXMVECTOR position, FXMVECTOR normal, FXMVECTOR color, CXMVECTOR textureCoordinate)
         {
             XMStoreFloat3(&this->position, position);
             XMStoreFloat3(&this->normal, normal);

@@ -360,7 +360,7 @@ void BasicEffect::GetVertexShaderBytecode(_Out_ void const** pShaderByteCode, _O
 }
 
 
-void BasicEffect::SetWorld(CXMMATRIX value)
+void XM_CALLCONV BasicEffect::SetWorld(FXMMATRIX value)
 {
     pImpl->matrices.world = value;
 
@@ -368,7 +368,7 @@ void BasicEffect::SetWorld(CXMMATRIX value)
 }
 
 
-void BasicEffect::SetView(CXMMATRIX value)
+void XM_CALLCONV BasicEffect::SetView(FXMMATRIX value)
 {
     pImpl->matrices.view = value;
 
@@ -376,7 +376,7 @@ void BasicEffect::SetView(CXMMATRIX value)
 }
 
 
-void BasicEffect::SetProjection(CXMMATRIX value)
+void XM_CALLCONV BasicEffect::SetProjection(FXMMATRIX value)
 {
     pImpl->matrices.projection = value;
 
@@ -384,7 +384,7 @@ void BasicEffect::SetProjection(CXMMATRIX value)
 }
 
 
-void BasicEffect::SetDiffuseColor(FXMVECTOR value)
+void XM_CALLCONV BasicEffect::SetDiffuseColor(FXMVECTOR value)
 {
     pImpl->lights.diffuseColor = value;
 
@@ -392,7 +392,7 @@ void BasicEffect::SetDiffuseColor(FXMVECTOR value)
 }
 
 
-void BasicEffect::SetEmissiveColor(FXMVECTOR value)
+void XM_CALLCONV BasicEffect::SetEmissiveColor(FXMVECTOR value)
 {
     pImpl->lights.emissiveColor = value;
 
@@ -400,7 +400,7 @@ void BasicEffect::SetEmissiveColor(FXMVECTOR value)
 }
 
 
-void BasicEffect::SetSpecularColor(FXMVECTOR value)
+void XM_CALLCONV BasicEffect::SetSpecularColor(FXMVECTOR value)
 {
     // Set xyz to new value, but preserve existing w (specular power).
     pImpl->constants.specularColorAndPower = XMVectorSelect(pImpl->constants.specularColorAndPower, value, g_XMSelect1110);
@@ -440,7 +440,7 @@ void BasicEffect::SetPerPixelLighting(bool value)
 }
 
 
-void BasicEffect::SetAmbientLightColor(FXMVECTOR value)
+void XM_CALLCONV BasicEffect::SetAmbientLightColor(FXMVECTOR value)
 {
     pImpl->lights.ambientLightColor = value;
 
@@ -454,7 +454,7 @@ void BasicEffect::SetLightEnabled(int whichLight, bool value)
 }
 
 
-void BasicEffect::SetLightDirection(int whichLight, FXMVECTOR value)
+void XM_CALLCONV BasicEffect::SetLightDirection(int whichLight, FXMVECTOR value)
 {
     EffectLights::ValidateLightIndex(whichLight);
 
@@ -464,13 +464,13 @@ void BasicEffect::SetLightDirection(int whichLight, FXMVECTOR value)
 }
 
 
-void BasicEffect::SetLightDiffuseColor(int whichLight, FXMVECTOR value)
+void XM_CALLCONV BasicEffect::SetLightDiffuseColor(int whichLight, FXMVECTOR value)
 {
     pImpl->dirtyFlags |= pImpl->lights.SetLightDiffuseColor(whichLight, value, pImpl->constants.lightDiffuseColor);
 }
 
 
-void BasicEffect::SetLightSpecularColor(int whichLight, FXMVECTOR value)
+void XM_CALLCONV BasicEffect::SetLightSpecularColor(int whichLight, FXMVECTOR value)
 {
     pImpl->dirtyFlags |= pImpl->lights.SetLightSpecularColor(whichLight, value, pImpl->constants.lightSpecularColor);
 }
@@ -506,7 +506,7 @@ void BasicEffect::SetFogEnd(float value)
 }
 
 
-void BasicEffect::SetFogColor(FXMVECTOR value)
+void XM_CALLCONV BasicEffect::SetFogColor(FXMVECTOR value)
 {
     pImpl->constants.fogColor = value;
 

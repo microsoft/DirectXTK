@@ -299,7 +299,7 @@ void AlphaTestEffect::GetVertexShaderBytecode(_Out_ void const** pShaderByteCode
 }
 
 
-void AlphaTestEffect::SetWorld(CXMMATRIX value)
+void XM_CALLCONV AlphaTestEffect::SetWorld(FXMMATRIX value)
 {
     pImpl->matrices.world = value;
 
@@ -307,7 +307,7 @@ void AlphaTestEffect::SetWorld(CXMMATRIX value)
 }
 
 
-void AlphaTestEffect::SetView(CXMMATRIX value)
+void XM_CALLCONV AlphaTestEffect::SetView(FXMMATRIX value)
 {
     pImpl->matrices.view = value;
 
@@ -315,7 +315,7 @@ void AlphaTestEffect::SetView(CXMMATRIX value)
 }
 
 
-void AlphaTestEffect::SetProjection(CXMMATRIX value)
+void XM_CALLCONV AlphaTestEffect::SetProjection(FXMMATRIX value)
 {
     pImpl->matrices.projection = value;
 
@@ -323,7 +323,7 @@ void AlphaTestEffect::SetProjection(CXMMATRIX value)
 }
 
 
-void AlphaTestEffect::SetDiffuseColor(FXMVECTOR value)
+void XM_CALLCONV AlphaTestEffect::SetDiffuseColor(FXMVECTOR value)
 {
     pImpl->color.diffuseColor = value;
 
@@ -363,7 +363,7 @@ void AlphaTestEffect::SetFogEnd(float value)
 }
 
 
-void AlphaTestEffect::SetFogColor(FXMVECTOR value)
+void XM_CALLCONV AlphaTestEffect::SetFogColor(FXMVECTOR value)
 {
     pImpl->constants.fogColor = value;
 

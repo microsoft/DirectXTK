@@ -202,7 +202,7 @@ void DualTextureEffect::GetVertexShaderBytecode(_Out_ void const** pShaderByteCo
 }
 
 
-void DualTextureEffect::SetWorld(CXMMATRIX value)
+void XM_CALLCONV DualTextureEffect::SetWorld(FXMMATRIX value)
 {
     pImpl->matrices.world = value;
 
@@ -210,7 +210,7 @@ void DualTextureEffect::SetWorld(CXMMATRIX value)
 }
 
 
-void DualTextureEffect::SetView(CXMMATRIX value)
+void XM_CALLCONV DualTextureEffect::SetView(FXMMATRIX value)
 {
     pImpl->matrices.view = value;
 
@@ -218,7 +218,7 @@ void DualTextureEffect::SetView(CXMMATRIX value)
 }
 
 
-void DualTextureEffect::SetProjection(CXMMATRIX value)
+void XM_CALLCONV DualTextureEffect::SetProjection(FXMMATRIX value)
 {
     pImpl->matrices.projection = value;
 
@@ -226,7 +226,7 @@ void DualTextureEffect::SetProjection(CXMMATRIX value)
 }
 
 
-void DualTextureEffect::SetDiffuseColor(FXMVECTOR value)
+void XM_CALLCONV DualTextureEffect::SetDiffuseColor(FXMVECTOR value)
 {
     pImpl->color.diffuseColor = value;
 
@@ -266,7 +266,7 @@ void DualTextureEffect::SetFogEnd(float value)
 }
 
 
-void DualTextureEffect::SetFogColor(FXMVECTOR value)
+void XM_CALLCONV DualTextureEffect::SetFogColor(FXMVECTOR value)
 {
     pImpl->constants.fogColor = value;
 

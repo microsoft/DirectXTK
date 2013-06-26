@@ -22,6 +22,12 @@
 
 namespace DirectX
 {
+    #if (DIRECTXMATH_VERSION < 305) && !defined(XM_CALLCONV)
+    #define XM_CALLCONV __fastcall
+    typedef const XMVECTOR& HXMVECTOR;
+    typedef const XMMATRIX& FXMMATRIX;
+    #endif
+
     class IEffect;
 
     class GeometricPrimitive
@@ -43,7 +49,7 @@ namespace DirectX
         static std::unique_ptr<GeometricPrimitive> CreateTeapot       (_In_ ID3D11DeviceContext* deviceContext, float size = 1, size_t tessellation = 8, bool rhcoords = true);
 
         // Draw the primitive.
-        void Draw(CXMMATRIX world, CXMMATRIX view, CXMMATRIX projection, FXMVECTOR color = Colors::White, _In_opt_ ID3D11ShaderResourceView* texture = nullptr, bool wireframe = false, _In_opt_ std::function<void()> setCustomState = nullptr);
+        void XM_CALLCONV Draw(FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection, FXMVECTOR color = Colors::White, _In_opt_ ID3D11ShaderResourceView* texture = nullptr, bool wireframe = false, _In_opt_ std::function<void()> setCustomState = nullptr);
 
         // Draw the primitive using a custom effect.
         void Draw( _In_ IEffect* effect, _In_ ID3D11InputLayout* inputLayout, bool alpha = false, bool wireframe = false, _In_opt_ std::function<void()> setCustomState = nullptr );

@@ -265,7 +265,7 @@ void EnvironmentMapEffect::GetVertexShaderBytecode(_Out_ void const** pShaderByt
 }
 
 
-void EnvironmentMapEffect::SetWorld(CXMMATRIX value)
+void XM_CALLCONV EnvironmentMapEffect::SetWorld(FXMMATRIX value)
 {
     pImpl->matrices.world = value;
 
@@ -273,7 +273,7 @@ void EnvironmentMapEffect::SetWorld(CXMMATRIX value)
 }
 
 
-void EnvironmentMapEffect::SetView(CXMMATRIX value)
+void XM_CALLCONV EnvironmentMapEffect::SetView(FXMMATRIX value)
 {
     pImpl->matrices.view = value;
 
@@ -281,7 +281,7 @@ void EnvironmentMapEffect::SetView(CXMMATRIX value)
 }
 
 
-void EnvironmentMapEffect::SetProjection(CXMMATRIX value)
+void XM_CALLCONV EnvironmentMapEffect::SetProjection(FXMMATRIX value)
 {
     pImpl->matrices.projection = value;
 
@@ -289,7 +289,7 @@ void EnvironmentMapEffect::SetProjection(CXMMATRIX value)
 }
 
 
-void EnvironmentMapEffect::SetDiffuseColor(FXMVECTOR value)
+void XM_CALLCONV EnvironmentMapEffect::SetDiffuseColor(FXMVECTOR value)
 {
     pImpl->lights.diffuseColor = value;
 
@@ -297,7 +297,7 @@ void EnvironmentMapEffect::SetDiffuseColor(FXMVECTOR value)
 }
 
 
-void EnvironmentMapEffect::SetEmissiveColor(FXMVECTOR value)
+void XM_CALLCONV EnvironmentMapEffect::SetEmissiveColor(FXMVECTOR value)
 {
     pImpl->lights.emissiveColor = value;
 
@@ -328,7 +328,7 @@ void EnvironmentMapEffect::SetPerPixelLighting(bool)
 }
 
 
-void EnvironmentMapEffect::SetAmbientLightColor(FXMVECTOR value)
+void XM_CALLCONV EnvironmentMapEffect::SetAmbientLightColor(FXMVECTOR value)
 {
     pImpl->lights.ambientLightColor = value;
 
@@ -344,7 +344,7 @@ void EnvironmentMapEffect::SetLightEnabled(int whichLight, bool value)
 }
 
 
-void EnvironmentMapEffect::SetLightDirection(int whichLight, FXMVECTOR value)
+void XM_CALLCONV EnvironmentMapEffect::SetLightDirection(int whichLight, FXMVECTOR value)
 {
     EffectLights::ValidateLightIndex(whichLight);
 
@@ -354,13 +354,13 @@ void EnvironmentMapEffect::SetLightDirection(int whichLight, FXMVECTOR value)
 }
 
 
-void EnvironmentMapEffect::SetLightDiffuseColor(int whichLight, FXMVECTOR value)
+void XM_CALLCONV EnvironmentMapEffect::SetLightDiffuseColor(int whichLight, FXMVECTOR value)
 {
     pImpl->dirtyFlags |= pImpl->lights.SetLightDiffuseColor(whichLight, value, pImpl->constants.lightDiffuseColor);
 }
 
 
-void EnvironmentMapEffect::SetLightSpecularColor(int, FXMVECTOR)
+void XM_CALLCONV EnvironmentMapEffect::SetLightSpecularColor(int, FXMVECTOR)
 {
     // Unsupported interface method.
 }
@@ -396,7 +396,7 @@ void EnvironmentMapEffect::SetFogEnd(float value)
 }
 
 
-void EnvironmentMapEffect::SetFogColor(FXMVECTOR value)
+void XM_CALLCONV EnvironmentMapEffect::SetFogColor(FXMVECTOR value)
 {
     pImpl->constants.fogColor = value;
 
@@ -424,7 +424,7 @@ void EnvironmentMapEffect::SetEnvironmentMapAmount(float value)
 }
 
 
-void EnvironmentMapEffect::SetEnvironmentMapSpecular(FXMVECTOR value)
+void XM_CALLCONV EnvironmentMapEffect::SetEnvironmentMapSpecular(FXMVECTOR value)
 {
     pImpl->constants.environmentMapSpecular = value;
 
