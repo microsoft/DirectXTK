@@ -25,10 +25,14 @@
 
 #include <d3d11.h>
 
+#include <ocidl.h>
+
 #pragma warning(push)
 #pragma warning(disable : 4005)
 #include <stdint.h>
 #pragma warning(pop)
+
+#include <functional>
 
 namespace DirectX
 {
@@ -42,7 +46,8 @@ namespace DirectX
                                   _In_ ID3D11Resource* pSource,
                                   _In_ REFGUID guidContainerFormat, 
                                   _In_z_ LPCWSTR fileName,
-                                  _In_opt_ const GUID* targetFormat = nullptr );
+                                  _In_opt_ const GUID* targetFormat = nullptr,
+                                  _In_opt_ std::function<void(IPropertyBag2*)> setCustomProps = nullptr );
 
 #endif
 }

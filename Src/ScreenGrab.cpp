@@ -603,7 +603,8 @@ HRESULT DirectX::SaveWICTextureToFile( _In_ ID3D11DeviceContext* pContext,
                                        _In_ ID3D11Resource* pSource,
                                        _In_ REFGUID guidContainerFormat, 
                                        _In_z_ LPCWSTR fileName,
-                                       _In_opt_ const GUID* targetFormat )
+                                       _In_opt_ const GUID* targetFormat,
+                                       _In_opt_ std::function<void(IPropertyBag2*)> setCustomProps )
 {
     if ( !fileName )
         return E_INVALIDARG;
@@ -691,21 +692,21 @@ HRESULT DirectX::SaveWICTextureToFile( _In_ ID3D11DeviceContext* pContext,
     if ( FAILED(hr) )
         return hr;
 
-    if ( targetFormat && memcmp( &guidContainerFormat, &GUID_ContainerFormatBmp, sizeof(WICPixelFormatGUID) ) == 0  )
+    if ( targetFormat && memcmp( &guidContainerFormat, &GUID_ContainerFormatBmp, sizeof(WICPixelFormatGUID) ) == 0 && _IsWIC2() )
     {
-        // Opt-in to the Windows 8 support for writing 32-bit Windows BMP files with an alpha channel if supported
+        // Opt-in to the WIC2 support for writing 32-bit Windows BMP files with an alpha channel
         PROPBAG2 option = { 0 };
         option.pstrName = L"EnableV5Header32bppBGRA";
 
         VARIANT varValue;    
         varValue.vt = VT_BOOL;
         varValue.boolVal = VARIANT_TRUE;      
-        hr = props->Write( 1, &option, &varValue ); 
-        if ( FAILED(hr) )
-        {
-            // Fails on older versions of WIC, so we default to the null property bag
-            props.Reset();
-        }
+        (void)props->Write( 1, &option, &varValue ); 
+    }
+
+    if ( setCustomProps )
+    {
+        setCustomProps( props.Get() );
     }
 
     hr = frame->Initialize( props.Get() );
