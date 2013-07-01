@@ -4,19 +4,18 @@ DirectXTK - the DirectX Tool Kit
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-May 30, 2013
+July 1, 2013
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
-writing Direct3D 11 C++ code for Windows Store apps, Windows 8 Win32 desktop
+writing Direct3D 11 C++ code for Windows Store apps, Windows 8.x Win32 desktop
 applications, Windows Phone 8 applications, Windows 7 applications, and
 Windows Vista Direct3D 11.0 applications.
 
-This code is designed to build with either Visual Studio 2012 or Visual Studio 
-2010. It requires the Windows 8.0 SDK for functionality such as the DirectXMath
-library and optionally the DXGI 1.2 headers. Visual Studio 2012 already includes
-this Windows SDK, but Visual Studio 2010 users must install the standalone Windows
-8.0 SDK. Details on using the Windows 8.0 SDK with VS 2010 are described on the
-Visual C++ Team Blog:
+This code is designed to build with Visual Studio 2010, 2012, or 2013. It requires
+the Windows 8.x SDK for functionality such as the DirectXMath library and optionally
+the DXGI 1.2 headers. Visual Studio 2012 and 2013 already include the appropriate 
+Windows SDK, but Visual Studio 2010 users must install the standalone Windows 8.x SDK.
+Details on using the Windows 8.x SDK with VS 2010 are described on the Visual C++ Team Blog:
 
 <http://blogs.msdn.com/b/vcblog/archive/2012/11/23/using-the-windows-8-sdk-with-visual-studio-2010-configuring-multiple-projects.aspx>
 
@@ -537,7 +536,7 @@ Initialization:
 
     NOTE: The EffectFactory is declared in the Effects.h header.
 
-    Visual Studio 2012 includes a built-in content pipeline that can generate .CMO files from an
+    Visual Studio 2012 and 2013 include a built-in content pipeline that can generate .CMO files from an
     Autodesk FBX, as well as DDS texture files from various bitmap image formats, as part of the
     build process. See the Visual Studio 3D Starter Kit for details.
     http://code.msdn.microsoft.com/windowsapps/Visual-Studio-3D-Starter-455a15f1
@@ -975,6 +974,11 @@ DirectXMath for performance hotspots where runtime efficiency is more important.
 ---------------
 RELEASE HISTORY
 ---------------
+
+July 1, 2013
+    VS 2013 Preview projects added and updates for DirectXMath 3.05 __vectorcall
+    Added use of sRGB WIC metadata for JPEG, PNG, and TIFF
+    SaveToWIC functions updated with new optional setCustomProps parameter and error check with optional targetFormat
 
 May 30, 2013
     Added more GeometricPrimitives: Cone, Tetrahedron, Octahedron, Dodecahedron, Icosahedron
