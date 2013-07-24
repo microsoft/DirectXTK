@@ -30,7 +30,7 @@
 
 #include "pch.h"
 
-#if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/) || defined(_WIN7_PLATFORM_UPDATE)
+#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
 #include <d2d1.h>
 #endif
 
@@ -154,7 +154,7 @@ static WICConvert g_WICConvert[] =
     { GUID_WICPixelFormat40bppCMYKAlpha,        GUID_WICPixelFormat64bppRGBA }, // DXGI_FORMAT_R16G16B16A16_UNORM
     { GUID_WICPixelFormat80bppCMYKAlpha,        GUID_WICPixelFormat64bppRGBA }, // DXGI_FORMAT_R16G16B16A16_UNORM
 
-#if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/) || defined(_WIN7_PLATFORM_UPDATE)
+#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
     { GUID_WICPixelFormat32bppRGB,              GUID_WICPixelFormat32bppRGBA }, // DXGI_FORMAT_R8G8B8A8_UNORM
     { GUID_WICPixelFormat64bppRGB,              GUID_WICPixelFormat64bppRGBA }, // DXGI_FORMAT_R16G16B16A16_UNORM
     { GUID_WICPixelFormat64bppPRGBAHalf,        GUID_WICPixelFormat64bppRGBAHalf }, // DXGI_FORMAT_R16G16B16A16_FLOAT 
@@ -181,7 +181,7 @@ IWICImagingFactory* _GetWIC()
     if ( s_Factory )
         return s_Factory;
 
-#if(_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/) || defined(_WIN7_PLATFORM_UPDATE)
+#if(_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
     HRESULT hr = CoCreateInstance(
         CLSID_WICImagingFactory2,
         nullptr,
@@ -242,7 +242,7 @@ static DXGI_FORMAT _WICToDXGI( const GUID& guid )
             return g_WICFormats[i].format;
     }
 
-#if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/) || defined(_WIN7_PLATFORM_UPDATE)
+#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
     if ( g_WIC2 )
     {
         if ( memcmp( &GUID_WICPixelFormat96bppRGBFloat, &guid, sizeof(GUID) ) == 0 )
@@ -403,7 +403,7 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
     {
         if ( memcmp( &GUID_WICPixelFormat96bppRGBFixedPoint, &pixelFormat, sizeof(WICPixelFormatGUID) ) == 0 )
         {
-#if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/) || defined(_WIN7_PLATFORM_UPDATE)
+#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
             if ( g_WIC2 )
             {
                 memcpy( &convertGUID, &GUID_WICPixelFormat96bppRGBFloat, sizeof(WICPixelFormatGUID) );
@@ -440,7 +440,7 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
         bpp = _WICBitsPerPixel( pixelFormat );
     }
 
-#if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/) || defined(_WIN7_PLATFORM_UPDATE)
+#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
     if ( (format == DXGI_FORMAT_R32G32B32_FLOAT) && d3dContext != 0 && textureView != 0 )
     {
         // Special case test for optional device support for autogen mipchains for R32G32B32_FLOAT 
@@ -823,7 +823,7 @@ HRESULT DirectX::CreateWICTextureFromFileEx( ID3D11Device* d3dDevice,
     if ( FAILED(hr) )
         return hr;
 
-    hr = CreateTextureFromWIC( d3dDevice, d3dContext, frame.Get(), maxsize, 
+    hr = CreateTextureFromWIC( d3dDevice, d3dContext, frame.Get(), maxsize,
                                usage, bindFlags, cpuAccessFlags, miscFlags, forceSRGB,
                                texture, textureView );
 
@@ -834,13 +834,13 @@ HRESULT DirectX::CreateWICTextureFromFileEx( ID3D11Device* d3dDevice,
         {
             CHAR strFileA[MAX_PATH];
             int result = WideCharToMultiByte( CP_ACP,
-                                 WC_NO_BEST_FIT_CHARS,
-                                 fileName,
-                                 -1,
-                                 strFileA,
-                                 MAX_PATH,
-                                 nullptr,
-                                 FALSE
+                                              WC_NO_BEST_FIT_CHARS,
+                                              fileName,
+                                              -1,
+                                              strFileA,
+                                              MAX_PATH,
+                                              nullptr,
+                                              FALSE
                                );
             if ( result > 0 )
             {
