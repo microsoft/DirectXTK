@@ -272,7 +272,7 @@ static size_t _WICBitsPerPixel( REFGUID targetGuid )
         return 0;
 
     ScopedObject<IWICPixelFormatInfo> pfinfo;
-    if ( FAILED( cinfo->QueryInterface( __uuidof(IWICPixelFormatInfo), reinterpret_cast<void**>( &pfinfo )  ) ) )
+    if ( FAILED( cinfo.As( &pfinfo ) ) )
         return 0;
 
     UINT bpp;

@@ -358,11 +358,11 @@ static HRESULT CaptureTexture( _In_ ID3D11DeviceContext* pContext,
         return HRESULT_FROM_WIN32( ERROR_NOT_SUPPORTED );
 
     ScopedObject<ID3D11Texture2D> pTexture;
-    HRESULT hr = pSource->QueryInterface( __uuidof(ID3D11Texture2D), (void**) &pTexture );
+    HRESULT hr = pSource->QueryInterface( __uuidof(ID3D11Texture2D), reinterpret_cast<void**>( pTexture.GetAddressOf() ) );
     if ( FAILED(hr) )
         return hr;
 
-    assert( pTexture.Get() );
+    assert( pTexture );
 
     pTexture->GetDesc( &desc );
 
@@ -380,7 +380,7 @@ static HRESULT CaptureTexture( _In_ ID3D11DeviceContext* pContext,
         if ( FAILED(hr) )
             return hr;
 
-        assert( pTemp.Get() );
+        assert( pTemp );
 
         DXGI_FORMAT fmt = EnsureNotTypeless( desc.Format );
 
@@ -410,15 +410,14 @@ static HRESULT CaptureTexture( _In_ ID3D11DeviceContext* pContext,
         if ( FAILED(hr) )
             return hr;
 
-        assert( pStaging.Get() );
+        assert( pStaging );
 
         pContext->CopyResource( pStaging.Get(), pTemp.Get() );
     }
     else if ( (desc.Usage == D3D11_USAGE_STAGING) && (desc.CPUAccessFlags & D3D11_CPU_ACCESS_READ) )
     {
         // Handle case where the source is already a staging texture we can use directly
-        pTexture->AddRef();
-        pStaging.Reset( pTexture.Get() );
+        pStaging = pTexture;
     }
     else
     {
@@ -432,7 +431,7 @@ static HRESULT CaptureTexture( _In_ ID3D11DeviceContext* pContext,
         if ( FAILED(hr) )
             return hr;
 
-        assert( pStaging.Get() );
+        assert( pStaging );
 
         pContext->CopyResource( pStaging.Get(), pSource );
     }

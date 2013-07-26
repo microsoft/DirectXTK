@@ -53,36 +53,7 @@ namespace DirectX
 
     inline HANDLE safe_handle( HANDLE h ) { return (h == INVALID_HANDLE_VALUE) ? 0 : h; }
 
-
-    template<class T> class ScopedObject
-    {
-    public:
-        explicit ScopedObject( T *p = 0 ) : _pointer(p) {}
-        ~ScopedObject()
-        {
-            if ( _pointer )
-            {
-                _pointer->Release();
-                _pointer = nullptr;
-            }
-        }
-
-        bool IsNull() const { return (!_pointer); }
-
-        T& operator*() { return *_pointer; }
-        T* operator->() { return _pointer; }
-        T** operator&() { return &_pointer; }
-
-        void Reset(T *p = 0) { if ( _pointer ) { _pointer->Release(); } _pointer = p; }
-
-        T* Get() const { return _pointer; }
-
-    private:
-        ScopedObject(const ScopedObject&);
-        ScopedObject& operator=(const ScopedObject&);
-        
-        T* _pointer;
-    };
+    template<class T> class ScopedObject : public Microsoft::WRL::ComPtr<T> {};
 }
 
 
