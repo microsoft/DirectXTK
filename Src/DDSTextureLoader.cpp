@@ -1405,7 +1405,7 @@ HRESULT DirectX::CreateDDSTextureFromFileEx( ID3D11Device* d3dDevice,
 
     if ( SUCCEEDED(hr) )
     {
-#if defined(_DEBUG) || defined(PROFILE)
+#if !defined(NO_D3D11_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
         if (texture != 0 || textureView != 0)
         {
             CHAR strFileA[MAX_PATH];
