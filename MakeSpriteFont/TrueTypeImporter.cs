@@ -42,7 +42,7 @@ namespace MakeSpriteFont
             using (Bitmap bitmap = new Bitmap(MaxGlyphSize, MaxGlyphSize, PixelFormat.Format32bppArgb))
             using (Graphics graphics = Graphics.FromImage(bitmap))
             {
-                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                graphics.PixelOffsetMode = options.Sharp ? PixelOffsetMode.None : PixelOffsetMode.HighQuality;
                 graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
                 graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
 

@@ -58,6 +58,10 @@ namespace MakeSpriteFont
         public float CharacterSpacing = 0;
 
 
+        // Use smooth or sharp antialiasing mode for TrueType rasterization?
+        public bool Sharp = false;
+
+
         // What format should the output texture be?
         public TextureFormat TextureFormat = TextureFormat.Auto;
 

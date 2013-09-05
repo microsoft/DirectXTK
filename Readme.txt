@@ -244,6 +244,10 @@ Commandline options for the MakeSpriteFont tool:
         Spacing overrides. Zero is default spacing, negative closer together, 
         positive further apart.
 
+    /Sharp
+        Selects sharp antialising mode for TrueType rasterization. Otherwise,
+        a smoother looking (but more blurry) antialiasing mode is used.
+
     /TextureFormat:<value>
         What format should the output texture be? Options:
             Auto
