@@ -251,6 +251,8 @@ void SpriteBatch::Impl::DeviceResources::CreateIndexBuffer(_In_ ID3D11Device* de
 {
     D3D11_BUFFER_DESC indexBufferDesc = { 0 };
 
+    static_assert( ( MaxBatchSize * VerticesPerSprite ) < USHRT_MAX, "MaxBatchSize too large for 16-bit indices" );
+
     indexBufferDesc.ByteWidth = sizeof(short) * MaxBatchSize * IndicesPerSprite;
     indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
     indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;

@@ -228,6 +228,9 @@ void GeometricPrimitive::Impl::SharedResources::PrepareForRendering(bool alpha, 
 _Use_decl_annotations_
 void GeometricPrimitive::Impl::Initialize(ID3D11DeviceContext* deviceContext, VertexCollection& vertices, IndexCollection& indices, bool rhcoords)
 {
+    if ( vertices.size() >= USHRT_MAX )
+        throw std::exception("Too many vertices for 16-bit index buffer");
+
     if ( !rhcoords )
         ReverseWinding( indices, vertices );
 
