@@ -96,6 +96,10 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect( IEffectFactory* fact
             effect->SetSpecularColor( color );
             effect->SetSpecularPower( info.specularPower );
         }
+        else
+        {
+            effect->DisableSpecular();
+        }
 
         if ( info.emissiveColor.x != 0 || info.emissiveColor.y != 0 || info.emissiveColor.z != 0 )
         {

@@ -114,6 +114,7 @@ namespace DirectX
         void XM_CALLCONV SetEmissiveColor(FXMVECTOR value);
         void XM_CALLCONV SetSpecularColor(FXMVECTOR value);
         void SetSpecularPower(float value);
+        void DisableSpecular();
         void SetAlpha(float value);
         
         // Light settings.
@@ -345,6 +346,7 @@ namespace DirectX
         void XM_CALLCONV SetEmissiveColor(FXMVECTOR value);
         void XM_CALLCONV SetSpecularColor(FXMVECTOR value);
         void SetSpecularPower(float value);
+        void DisableSpecular();
         void SetAlpha(float value);
         
         // Light settings.

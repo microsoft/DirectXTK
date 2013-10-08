@@ -337,6 +337,15 @@ void SkinnedEffect::SetSpecularPower(float value)
     pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
 }
 
+void SkinnedEffect::DisableSpecular()
+{
+    // Set specular color to black, power to 1
+    // Note: Don't use a power of 0 or the shader will generate strange highlights on non-specular materials
+
+    pImpl->constants.specularColorAndPower = g_XMIdentityR3; 
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
+}
 
 void SkinnedEffect::SetAlpha(float value)
 {
