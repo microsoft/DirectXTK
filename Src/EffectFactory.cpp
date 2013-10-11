@@ -84,10 +84,9 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect( IEffectFactory* fact
             effect->SetVertexColorEnabled( true );
         }
 
-        XMVECTOR color = XMLoadFloat3( &info.ambientColor );
-        effect->SetAmbientLightColor( color );
+        // Basic Effect does not have an ambient material color
 
-        color = XMLoadFloat3( &info.diffuseColor );
+        XMVECTOR color = XMLoadFloat3( &info.diffuseColor );
         effect->SetDiffuseColor( color );
 
         if ( info.specularColor.x != 0 || info.specularColor.y != 0 || info.specularColor.z != 0 )
