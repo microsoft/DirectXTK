@@ -181,6 +181,7 @@ void EffectFactory::Impl::CreateTexture( const WCHAR* name, ID3D11DeviceContext*
 
 void EffectFactory::Impl::ReleaseCache()
 {
+    std::lock_guard<std::mutex> lock(mutex);
     mEffectCache.clear();
     mTextureCache.clear();
 }
