@@ -368,8 +368,18 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
         if ( !*nIBs )
             throw std::exception("No index buffers found\n");
 
+        struct IBData
+        {
+            size_t          nIndices;
+            const USHORT*   ptr;
+        };
+
+        std::vector<IBData> ibData;
+        ibData.reserve( *nIBs );
+
         std::vector<ComPtr<ID3D11Buffer>> ibs;
         ibs.resize( *nIBs );
+
         for( UINT j = 0; j < *nIBs; ++j )
         {
             auto nIndexes = reinterpret_cast<const UINT*>( meshData + usedSize );
@@ -387,6 +397,11 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
             if ( dataSize < usedSize )
                 throw std::exception("End of file");
 
+            IBData ib;
+            ib.nIndices = *nIndexes;
+            ib.ptr = indexes;
+            ibData.emplace_back( ib );
+
             D3D11_BUFFER_DESC desc = {0};
             desc.Usage = D3D11_USAGE_DEFAULT;
             desc.ByteWidth = static_cast<UINT>( ibBytes );
@@ -402,6 +417,9 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
             SetDebugObjectName( ibs[j].Get(), "ModelCMO" ); 
         }
 
+        assert( ibData.size() == *nIBs );
+        assert( ibs.size() == *nIBs );
+
         // Vertex buffers
         auto nVBs = reinterpret_cast<const UINT*>( meshData + usedSize );
         usedSize += sizeof(UINT);
@@ -411,8 +429,15 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
         if ( !*nVBs )
             throw std::exception("No vertex buffers found\n");
 
-        std::vector<ComPtr<ID3D11Buffer>> vbs;
-        vbs.resize( *nVBs );
+        struct VBData
+        {
+            size_t                              nVerts;
+            const VSD3DStarter::Vertex*         ptr;
+            const VSD3DStarter::SkinningVertex* skinPtr;
+        };
+
+        std::vector<VBData> vbData;
+        vbData.reserve( *nVBs );
         for( UINT j = 0; j < *nVBs; ++j )
         {
             auto nVerts = reinterpret_cast<const UINT*>( meshData + usedSize );
@@ -430,20 +455,14 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
             if ( dataSize < usedSize )
                 throw std::exception("End of file");
 
-            D3D11_BUFFER_DESC desc = {0};
-            desc.Usage = D3D11_USAGE_DEFAULT;
-            desc.ByteWidth = static_cast<UINT>( vbBytes );
-            desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-
-            D3D11_SUBRESOURCE_DATA initData = {0};
-            initData.pSysMem = verts;
-
-            ThrowIfFailed(
-                d3dDevice->CreateBuffer( &desc, &initData, &vbs[j] )
-                );
-
-            SetDebugObjectName( vbs[j].Get(), "ModelCMO" ); 
+            VBData vb;
+            vb.nVerts = *nVerts;
+            vb.ptr = verts;
+            vb.skinPtr = nullptr;
+            vbData.emplace_back( vb );
         }
+
+        assert( vbData.size() == *nVBs );
 
         // Skinning vertex buffers
         auto nSkinVBs = reinterpret_cast<const UINT*>( meshData + usedSize );
@@ -451,25 +470,33 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
         if ( dataSize < usedSize )
             throw std::exception("End of file");
 
-        for( UINT j = 0; j < *nSkinVBs; ++j )
+        if ( *nSkinVBs )
         {
-            auto nVerts = reinterpret_cast<const UINT*>( meshData + usedSize );
-            usedSize += sizeof(UINT);
-            if ( dataSize < usedSize )
-                throw std::exception("End of file");
+            if ( *nSkinVBs != *nVBs )
+                throw std::exception("Number of VBs not equal to number of skin VBs");
 
-            if ( !*nVerts )
-                throw std::exception("Empty skinning vertex buffer found\n");
+            for( UINT j = 0; j < *nSkinVBs; ++j )
+            {
+                auto nVerts = reinterpret_cast<const UINT*>( meshData + usedSize );
+                usedSize += sizeof(UINT);
+                if ( dataSize < usedSize )
+                    throw std::exception("End of file");
 
-            size_t vbBytes = sizeof(VSD3DStarter::SkinningVertex) * (*(nVerts));
+                if ( !*nVerts )
+                    throw std::exception("Empty skinning vertex buffer found\n");
 
-            auto verts = reinterpret_cast<const VSD3DStarter::SkinningVertex*>( meshData + usedSize );
-            usedSize += vbBytes;
-            if ( dataSize < usedSize )
-                throw std::exception("End of file");
+                if ( vbData[ j ].nVerts != *nVerts )
+                    throw std::exception("Mismatched number of verts for skin VBs");
+    
+                size_t vbBytes = sizeof(VSD3DStarter::SkinningVertex) * (*(nVerts));
 
-            // TODO - What to do with skinning data?
-            verts;
+                auto verts = reinterpret_cast<const VSD3DStarter::SkinningVertex*>( meshData + usedSize );
+                usedSize += vbBytes;
+                if ( dataSize < usedSize )
+                    throw std::exception("End of file");
+
+                vbData[j].skinPtr = verts;
+            }
         }
 
         // Extents
@@ -570,6 +597,104 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
 #else
         bSkeleton;
 #endif
+
+        // Build vertex buffers
+        std::vector<ComPtr<ID3D11Buffer>> vbs;
+        vbs.resize( *nVBs );
+
+        if ( *nSkinVBs )
+        {
+            // TODO - combine skinning data into a single VB
+        }
+
+        for( UINT j = 0; j < *nVBs; ++j )
+        {
+            size_t nVerts = vbData[ j ].nVerts;
+
+            size_t bytes = sizeof( VSD3DStarter::Vertex ) * nVerts;
+
+            // Need to fix up VB tex coords for UV transform
+            std::unique_ptr<uint8_t> temp( new uint8_t[ bytes + ( sizeof(UINT) * nVerts ) ] );
+
+            auto verts = reinterpret_cast<VSD3DStarter::Vertex*>( temp.get() );
+            auto visited = reinterpret_cast<UINT*>( temp.get() + bytes );
+
+            memcpy( verts, vbData[j].ptr, bytes );
+            memset( visited, 0xff, sizeof(UINT) * nVerts );
+
+            for( UINT k = 0; k < *nSubmesh; ++k )
+            {
+                auto& sm = subMesh[ k ];
+
+                if ( sm.VertexBufferIndex != j )
+                    continue;
+
+                if ( (sm.IndexBufferIndex >= *nIBs)
+                     || (sm.MaterialIndex >= *nMats) )
+                     throw std::exception("Invalid submesh found\n");
+
+                XMMATRIX uvTransform = XMLoadFloat4x4( &materials[ sm.MaterialIndex ].pMaterial->UVTransform );
+
+                auto ib = ibData[ sm.IndexBufferIndex ].ptr;
+
+                size_t count = ibData[ sm.IndexBufferIndex ].nIndices;
+
+                for( size_t q = 0; q < count; ++q )
+                {
+                    size_t v = ib[ q ];
+
+                    if ( v >= nVerts )
+                        throw std::exception("Invalid index found\n");
+
+                    if ( visited[v] == UINT(-1) )
+                    {
+                        visited[v] = sm.MaterialIndex;
+
+                        XMVECTOR t = XMVectorSet( verts[v].u, verts[v].v, 0.f, 1.f );
+
+                        t = XMVector4Transform( t, uvTransform );
+
+                        XMFLOAT4 tmp;
+                        XMStoreFloat4( &tmp, t );
+
+                        verts[v].u = tmp.x;
+                        verts[v].v = tmp.y;
+                    }
+                    else if ( visited[v] != sm.MaterialIndex )
+                    {
+#ifdef _DEBUG
+                        XMMATRIX uv2 = XMLoadFloat4x4( &materials[ visited[v] ].pMaterial->UVTransform );
+
+                        if ( XMVector4NotEqual( uvTransform.r[0], uv2.r[0] )
+                             || XMVector4NotEqual( uvTransform.r[1], uv2.r[1] )
+                             || XMVector4NotEqual( uvTransform.r[2], uv2.r[2] )
+                             || XMVector4NotEqual( uvTransform.r[3], uv2.r[3] ) )
+                        {
+                            wchar_t buff[1024];
+                            swprintf_s( buff, L"WARNING: %s - mismatched UV transforms for the same vertex; texture coordinates may not be correct\n", mesh->name.c_str() );
+                            OutputDebugString( buff );
+                        }
+#endif
+                    }
+                }
+            }
+
+            D3D11_BUFFER_DESC desc = {0};
+            desc.Usage = D3D11_USAGE_DEFAULT;
+            desc.ByteWidth = static_cast<UINT>( bytes );
+            desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+            D3D11_SUBRESOURCE_DATA initData = {0};
+            initData.pSysMem = verts;
+
+            ThrowIfFailed(
+                d3dDevice->CreateBuffer( &desc, &initData, &vbs[j] )
+                );
+
+            SetDebugObjectName( vbs[j].Get(), "ModelCMO" ); 
+        }
+
+        assert( vbs.size() == *nVBs );
 
         // Build mesh parts
         for( UINT j = 0; j < *nSubmesh; ++j )
