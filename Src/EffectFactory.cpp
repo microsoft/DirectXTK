@@ -33,7 +33,7 @@ class EffectFactory::Impl
 public:
     Impl(_In_ ID3D11Device* device)
       : device(device), mSharing(true)
-    { }
+    { *mPath = 0; }
 
     std::shared_ptr<IEffect> CreateEffect( _In_ IEffectFactory* factory, _In_ const IEffectFactory::EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext );
     void CreateTexture( _In_z_ const WCHAR* texture, _In_opt_ ID3D11DeviceContext* deviceContext, _Outptr_ ID3D11ShaderResourceView** textureView );
@@ -41,6 +41,11 @@ public:
     void ReleaseCache();
     void SetSharing( bool enabled ) { mSharing = enabled; }
 
+    static SharedResourcePool<ID3D11Device*, Impl> instancePool;
+
+    WCHAR mPath[MAX_PATH];
+
+private:
     ComPtr<ID3D11Device> device;
 
     typedef std::map< std::wstring, std::shared_ptr<IEffect> > EffectCache;
@@ -52,8 +57,6 @@ public:
     bool mSharing;
 
     std::mutex mutex;
-
-    static SharedResourcePool<ID3D11Device*, Impl> instancePool;
 };
 
 
@@ -142,6 +145,10 @@ void EffectFactory::Impl::CreateTexture( const WCHAR* name, ID3D11DeviceContext*
     }
     else
     {
+        WCHAR fullName[MAX_PATH]={0};
+        wcscpy_s( fullName, mPath );
+        wcscat_s( fullName, name );
+
 #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP)
         WCHAR ext[_MAX_EXT];
         _wsplitpath_s( name, nullptr, 0, nullptr, 0, nullptr, 0, ext, _MAX_EXT );
@@ -149,26 +156,26 @@ void EffectFactory::Impl::CreateTexture( const WCHAR* name, ID3D11DeviceContext*
         if ( _wcsicmp( ext, L".dds" ) == 0 )
         {
             ThrowIfFailed(
-                CreateDDSTextureFromFile( device.Get(), name, nullptr, textureView )
+                CreateDDSTextureFromFile( device.Get(), fullName, nullptr, textureView )
                 );
         }
         else if ( deviceContext )
         {
             std::lock_guard<std::mutex> lock(mutex);
             DirectX::ThrowIfFailed(
-                CreateWICTextureFromFile( device.Get(), deviceContext, name, nullptr, textureView )
+                CreateWICTextureFromFile( device.Get(), deviceContext, fullName, nullptr, textureView )
                 );
         }
         else
         {
             DirectX::ThrowIfFailed(
-                CreateWICTextureFromFile( device.Get(), nullptr, name, nullptr, textureView )
+                CreateWICTextureFromFile( device.Get(), nullptr, fullName, nullptr, textureView )
                 );
         }
 #else
         UNREFERENCED_PARAMETER( deviceContext );
         ThrowIfFailed(
-            CreateDDSTextureFromFile( device.Get(), name, nullptr, textureView ) );
+            CreateDDSTextureFromFile( device.Get(), fullName, nullptr, textureView ) );
 #endif
 
         if ( mSharing && *name && it == mTextureCache.end() )
@@ -233,4 +240,24 @@ void EffectFactory::ReleaseCache()
 void EffectFactory::SetSharing( bool enabled )
 {
     pImpl->SetSharing( enabled );
+}
+
+void EffectFactory::SetDirectory( _In_opt_z_ const WCHAR* path )
+{
+    if ( path && *path != 0 )
+    {
+        wcscpy_s( pImpl->mPath, path );
+        size_t len = wcsnlen( pImpl->mPath, MAX_PATH );
+        if ( len > 0 && len < (MAX_PATH-1) )
+        {
+            // Ensure it has a trailing slash
+            if ( pImpl->mPath[len-1] != L'\\' )
+            {
+                pImpl->mPath[len] = L'\\';
+                pImpl->mPath[len+1] = 0;
+            }
+        }
+    }
+    else
+        *pImpl->mPath = 0;
 }

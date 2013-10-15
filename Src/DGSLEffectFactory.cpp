@@ -37,7 +37,7 @@ class DGSLEffectFactory::Impl
 public:
     Impl(_In_ ID3D11Device* device)
       : device(device), mSharing(true)
-    { }
+    { *mPath = 0; }
 
     std::shared_ptr<IEffect> CreateEffect( _In_ DGSLEffectFactory* factory, _In_ const IEffectFactory::EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext );
     std::shared_ptr<IEffect> CreateDGSLEffect( _In_ DGSLEffectFactory* factory, _In_ const DGSLEffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext );
@@ -47,6 +47,11 @@ public:
     void ReleaseCache();
     void SetSharing( bool enabled ) { mSharing = enabled; }
 
+    static SharedResourcePool<ID3D11Device*, Impl> instancePool;
+
+    WCHAR mPath[MAX_PATH];
+
+private:
     ComPtr<ID3D11Device> device;
 
     typedef std::map< std::wstring, std::shared_ptr<IEffect> > EffectCache;
@@ -60,8 +65,6 @@ public:
     bool mSharing;
 
     std::mutex mutex;
-
-    static SharedResourcePool<ID3D11Device*, Impl> instancePool;
 };
 
 
@@ -279,6 +282,10 @@ void DGSLEffectFactory::Impl::CreateTexture( const WCHAR* name, ID3D11DeviceCont
     }
     else
     {
+        WCHAR fullName[MAX_PATH] = {0};
+        wcscpy_s( fullName, mPath );
+        wcscat_s( fullName, name );
+
 #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP)
         WCHAR ext[_MAX_EXT];
         _wsplitpath_s( name, nullptr, 0, nullptr, 0, nullptr, 0, ext, _MAX_EXT );
@@ -286,26 +293,26 @@ void DGSLEffectFactory::Impl::CreateTexture( const WCHAR* name, ID3D11DeviceCont
         if ( _wcsicmp( ext, L".dds" ) == 0 )
         {
             ThrowIfFailed(
-                CreateDDSTextureFromFile( device.Get(), name, nullptr, textureView )
+                CreateDDSTextureFromFile( device.Get(), fullName, nullptr, textureView )
                 );
         }
         else if ( deviceContext )
         {
             std::lock_guard<std::mutex> lock(mutex);
             DirectX::ThrowIfFailed(
-                CreateWICTextureFromFile( device.Get(), deviceContext, name, nullptr, textureView )
+                CreateWICTextureFromFile( device.Get(), deviceContext, fullName, nullptr, textureView )
                 );
         }
         else
         {
             DirectX::ThrowIfFailed(
-                CreateWICTextureFromFile( device.Get(), nullptr, name, nullptr, textureView )
+                CreateWICTextureFromFile( device.Get(), nullptr, fullName, nullptr, textureView )
                 );
         }
 #else
         UNREFERENCED_PARAMETER( deviceContext );
         ThrowIfFailed(
-            CreateDDSTextureFromFile( device.Get(), name, nullptr, textureView ) );
+            CreateDDSTextureFromFile( device.Get(), fullName, nullptr, textureView ) );
 #endif
 
         if ( mSharing && *name && it == mTextureCache.end() )
@@ -333,10 +340,14 @@ void DGSLEffectFactory::Impl::CreatePixelShader( const WCHAR* name, ID3D11PixelS
     }
     else
     {
+        WCHAR fullName[MAX_PATH]={0};
+        wcscpy_s( fullName, mPath );
+        wcscat_s( fullName, name );
+
         size_t dataSize = 0;
         std::unique_ptr<uint8_t[]> data;
         ThrowIfFailed(
-            BinaryReader::ReadEntireFile( name, data, &dataSize )
+            BinaryReader::ReadEntireFile( fullName, data, &dataSize )
         );
        
         ThrowIfFailed(
@@ -425,4 +436,24 @@ void DGSLEffectFactory::ReleaseCache()
 void DGSLEffectFactory::SetSharing( bool enabled )
 {
     pImpl->SetSharing( enabled );
+}
+
+void DGSLEffectFactory::SetDirectory( _In_opt_z_ const WCHAR* path )
+{
+    if ( path && *path != 0 )
+    {
+        wcscpy_s( pImpl->mPath, path );
+        size_t len = wcsnlen( pImpl->mPath, MAX_PATH );
+        if ( len > 0 && len < (MAX_PATH-1) )
+        {
+            // Ensure it has a trailing slash
+            if ( pImpl->mPath[len-1] != L'\\' )
+            {
+                pImpl->mPath[len] = L'\\';
+                pImpl->mPath[len+1] = 0;
+            }
+        }
+    }
+    else
+        *pImpl->mPath = 0;
 }

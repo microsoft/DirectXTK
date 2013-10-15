@@ -503,6 +503,8 @@ namespace DirectX
 
         void SetSharing( bool enabled );
 
+        void SetDirectory( _In_opt_z_ const WCHAR* path );
+
     private:
         // Private implementation.
         class Impl;
@@ -545,6 +547,8 @@ namespace DirectX
         void ReleaseCache();
 
         void SetSharing( bool enabled );
+
+        void SetDirectory( _In_opt_z_ const WCHAR* path );
 
     private:
         // Private implementation.
