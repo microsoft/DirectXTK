@@ -499,7 +499,7 @@ void DGSLEffect::SetAlpha(float value)
 
 
 // Additional settings.
-void DGSLEffect::SetUVTransform(FXMMATRIX value)
+void XM_CALLCONV DGSLEffect::SetUVTransform(FXMMATRIX value)
 {
     pImpl->constants.object.UvTransform4x4 = XMMatrixTranspose( value );
 
