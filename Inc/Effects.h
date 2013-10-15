@@ -389,6 +389,72 @@ namespace DirectX
         SkinnedEffect& operator= (SkinnedEffect const&);
     };
 
+    
+
+    //----------------------------------------------------------------------------------
+    // Built-in effect for Visual Studio Shader Designer (DGSL) shaders
+    class DGSLEffect : public IEffect, public IEffectMatrices, public IEffectLights
+    {
+    public:
+        explicit DGSLEffect( _In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader = nullptr );
+        DGSLEffect(DGSLEffect&& moveFrom);
+        DGSLEffect& operator= (DGSLEffect&& moveFrom);
+        virtual ~DGSLEffect();
+
+        // IEffect methods.
+        void Apply(_In_ ID3D11DeviceContext* deviceContext) override;
+
+        void GetVertexShaderBytecode(_Out_ void const** pShaderByteCode, _Out_ size_t* pByteCodeLength) override;
+
+        // Camera settings.
+        void XM_CALLCONV SetWorld(FXMMATRIX value) override;
+        void XM_CALLCONV SetView(FXMMATRIX value) override;
+        void XM_CALLCONV SetProjection(FXMMATRIX value) override;
+
+        // Material settings.
+        void XM_CALLCONV SetAmbientColor(FXMVECTOR value);
+        void XM_CALLCONV SetDiffuseColor(FXMVECTOR value);
+        void XM_CALLCONV SetEmissiveColor(FXMVECTOR value);
+        void XM_CALLCONV SetSpecularColor(FXMVECTOR value);
+        void SetSpecularPower(float value);
+        void DisableSpecular();
+        void SetAlpha(float value);
+
+        // Additional settings.
+        void XM_CALLCONV SetUVTransform(FXMMATRIX value);
+        void SetViewport( float width, float height );
+        void SetTime( float time );
+
+        // Light settings.
+        void SetLightingEnabled(bool value) override;
+        void SetPerPixelLighting(bool value) override;
+        void XM_CALLCONV SetAmbientLightColor(FXMVECTOR value) override;
+
+        void SetLightEnabled(int whichLight, bool value) override;
+        void XM_CALLCONV SetLightDirection(int whichLight, FXMVECTOR value) override;
+        void XM_CALLCONV SetLightDiffuseColor(int whichLight, FXMVECTOR value) override;
+        void XM_CALLCONV SetLightSpecularColor(int whichLight, FXMVECTOR value) override;
+
+        void EnableDefaultLighting() override;
+
+        // Texture settings.
+        void SetTextureEnabled(bool value);
+        void SetTexture(_In_opt_ ID3D11ShaderResourceView* value);
+        void SetTexture(int whichTexture, _In_opt_ ID3D11ShaderResourceView* value);
+
+        static const int MaxTextures = 8;
+
+    private:
+        // Private implementation.
+        class Impl;
+
+        std::unique_ptr<Impl> pImpl;
+
+        // Prevent copying.
+        DGSLEffect(DGSLEffect const&);
+        DGSLEffect& operator= (DGSLEffect const&);
+    };
+
 
 
     //----------------------------------------------------------------------------------
@@ -428,10 +494,11 @@ namespace DirectX
         EffectFactory& operator= (EffectFactory&& moveFrom);
         virtual ~EffectFactory();
 
+        // IEffectFactory methods.
         virtual std::shared_ptr<IEffect> CreateEffect( _In_ const EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext ) override;
-
         virtual void CreateTexture( _In_z_ const WCHAR* name, _In_opt_ ID3D11DeviceContext* deviceContext, _Outptr_ ID3D11ShaderResourceView** textureView ) override;
 
+        // Settings.
         void ReleaseCache();
 
         void SetSharing( bool enabled );
@@ -446,6 +513,50 @@ namespace DirectX
         EffectFactory(EffectFactory const&);
         EffectFactory& operator= (EffectFactory const&);
     };
+
+
+    // Factory for sharing Visual Studio Shader Designer (DGSL) shaders and texture resources
+    class DGSLEffectFactory : public IEffectFactory
+    {
+    public:
+        explicit DGSLEffectFactory(_In_ ID3D11Device* device);
+        DGSLEffectFactory(DGSLEffectFactory&& moveFrom);
+        DGSLEffectFactory& operator= (DGSLEffectFactory&& moveFrom);
+        virtual ~DGSLEffectFactory();
+
+        // IEffectFactory methods.
+        virtual std::shared_ptr<IEffect> CreateEffect( _In_ const EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext ) override;
+        virtual void CreateTexture( _In_z_ const WCHAR* name, _In_opt_ ID3D11DeviceContext* deviceContext, _Outptr_ ID3D11ShaderResourceView** textureView ) override;
+
+        // DGSL methods.
+        struct DGSLEffectInfo : public EffectInfo
+        {
+            const WCHAR*        textures[7];
+            const WCHAR*        pixelShader;
+
+            DGSLEffectInfo() { memset( this, 0, sizeof(DGSLEffectInfo) ); };
+        };
+
+        virtual std::shared_ptr<IEffect> CreateDGSLEffect( _In_ const DGSLEffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext );
+
+        virtual void CreatePixelShader( _In_z_ const WCHAR* shader, _Outptr_ ID3D11PixelShader** pixelShader );
+
+        // Settings.
+        void ReleaseCache();
+
+        void SetSharing( bool enabled );
+
+    private:
+        // Private implementation.
+        class Impl;
+
+        std::shared_ptr<Impl> pImpl;
+
+        // Prevent copying.
+        DGSLEffectFactory(DGSLEffectFactory const&);
+        DGSLEffectFactory& operator= (DGSLEffectFactory const&);
+    };
+
 }
 
 #pragma warning(pop)

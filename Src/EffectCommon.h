@@ -133,7 +133,7 @@ namespace DirectX
         ID3D11VertexShader* DemandCreateVertexShader(_Inout_ Microsoft::WRL::ComPtr<ID3D11VertexShader>& vertexShader, ShaderBytecode const& bytecode);
         ID3D11PixelShader * DemandCreatePixelShader (_Inout_ Microsoft::WRL::ComPtr<ID3D11PixelShader> & pixelShader,  ShaderBytecode const& bytecode);
 
-    private:
+    protected:
         Microsoft::WRL::ComPtr<ID3D11Device> mDevice;
 
         std::mutex mMutex;

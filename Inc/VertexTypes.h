@@ -207,4 +207,62 @@ namespace DirectX
         static const int InputElementCount = 4;
         static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
     };
+
+
+    // Vertex struct for Visual Studio Shader Designer (DGSL) holding position, normal,
+    // tangent, color (RGBA), and texture mapping information
+    struct VertexPositionNormalTangentColorTexture
+    {
+        VertexPositionNormalTangentColorTexture()
+        { }
+
+        XMFLOAT3 position;
+        XMFLOAT3 normal;
+        XMFLOAT4 tangent;
+        uint32_t color;
+        XMFLOAT2 textureCoordinate;
+
+        VertexPositionNormalTangentColorTexture(XMFLOAT3 const& position, XMFLOAT3 const& normal, XMFLOAT4 const& tangent, uint32_t rgba, XMFLOAT2 const& textureCoordinate)
+          : position(position),
+            normal(normal),
+            tangent(tangent),
+            color(rgba),
+            textureCoordinate(textureCoordinate)
+        {
+        }
+
+        VertexPositionNormalTangentColorTexture(FXMVECTOR position, FXMVECTOR normal, FXMVECTOR tangent, uint32_t rgba, CXMVECTOR textureCoordinate)
+          : color(rgba)
+        {
+            XMStoreFloat3(&this->position, position);
+            XMStoreFloat3(&this->normal, normal);
+            XMStoreFloat4(&this->tangent, tangent);
+            XMStoreFloat2(&this->textureCoordinate, textureCoordinate);
+        }
+
+        VertexPositionNormalTangentColorTexture(XMFLOAT3 const& position, XMFLOAT3 const& normal, XMFLOAT4 const& tangent, XMFLOAT4 const& color, XMFLOAT2 const& textureCoordinate)
+          : position(position),
+            normal(normal),
+            tangent(tangent),
+            textureCoordinate(textureCoordinate)
+        {
+            SetColor( color );
+        }
+
+        VertexPositionNormalTangentColorTexture(FXMVECTOR position, FXMVECTOR normal, FXMVECTOR tangent, CXMVECTOR color, CXMVECTOR textureCoordinate)
+        {
+            XMStoreFloat3(&this->position, position);
+            XMStoreFloat3(&this->normal, normal);
+            XMStoreFloat4(&this->tangent, tangent);
+            XMStoreFloat2(&this->textureCoordinate, textureCoordinate);
+
+            SetColor( color );
+        }
+
+        void SetColor( XMFLOAT4 const& color ) { SetColor( XMLoadFloat4( &color ) ); }
+        void SetColor( FXMVECTOR color );
+
+        static const int InputElementCount = 5;
+        static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
+    };
 }

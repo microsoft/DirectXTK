@@ -93,6 +93,15 @@ call :CompileShader SkinnedEffect ps PSSkinnedPixelLighting
 call :CompileShader SpriteEffect vs SpriteVertexShader
 call :CompileShader SpriteEffect ps SpritePixelShader
 
+call :CompileShader DGSLEffect vs main
+n
+call :CompileShaderHLSL DGSLUnlit ps main
+call :CompileShaderHLSL DGSLLambert ps main
+call :CompileShaderHLSL DGSLPhong ps main
+
+call :CompileShaderHLSL DGSLUnlit ps mainTx
+call :CompileShaderHLSL DGSLLambert ps mainTx
+call :CompileShaderHLSL DGSLPhong ps mainTx
 echo.
 
 if %error% == 0 (
@@ -106,6 +115,13 @@ exit /b
 
 :CompileShader
 set fxc=fxc /nologo %1.fx /T%2_4_0_level_9_1 /Zpc /Qstrip_reflect /Qstrip_debug /E%3 /FhCompiled\%1_%3.inc /Vn%1_%3
+echo.
+echo %fxc%
+%fxc% || set error=1
+exit /b
+
+:CompileShaderHLSL
+set fxc=fxc /nologo %1.hlsl /T%2_4_0_level_9_1 /Zpc /Qstrip_reflect /Qstrip_debug /E%3 /FhCompiled\%1_%3.inc /Vn%1_%3
 echo.
 echo %fxc%
 %fxc% || set error=1

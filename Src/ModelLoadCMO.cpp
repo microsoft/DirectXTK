@@ -16,6 +16,7 @@
 
 #include "DDSTextureLoader.h"
 #include "Effects.h"
+#include "VertexTypes.h"
 
 #include "PlatformHelpers.h"
 #include "BinaryReader.h"
@@ -113,15 +114,6 @@ namespace VSD3DStarter
         UINT PrimCount;
     };
 
-    struct Vertex
-    {
-        float x, y, z;
-        float nx, ny, nz;
-        float tx, ty, tz, tw;
-        UINT color;
-        float u, v;
-    };
-
     const uint32_t NUM_BONE_INFLUENCES = 4;
 
     struct SkinningVertex
@@ -176,17 +168,8 @@ struct MaterialRecordCMO
     ComPtr<ID3D11InputLayout>       il;
 };
 
-static const D3D11_INPUT_ELEMENT_DESC g_InputElements[] =
-{
-    { "SV_Position", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
-    { "NORMAL",      0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-    { "TANGENT",     0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-    { "COLOR",       0, DXGI_FORMAT_R8G8B8A8_UNORM,     0, 40, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-    { "TEXCOORD",    0, DXGI_FORMAT_R32G32_FLOAT,       0, 44, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-};
-
 // Helper for creating a D3D input layout.
-static void CreateInputLayout(_In_ ID3D11Device* device, IEffect* effect, _Out_ ID3D11InputLayout** pInputLayout)
+static void CreateInputLayout(_In_ ID3D11Device* device, IEffect* effect, _Out_ ID3D11InputLayout** pInputLayout )
 {
     void const* shaderByteCode;
     size_t byteCodeLength;
@@ -194,10 +177,10 @@ static void CreateInputLayout(_In_ ID3D11Device* device, IEffect* effect, _Out_ 
     effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
 
     ThrowIfFailed(
-        device->CreateInputLayout(g_InputElements,
-                                  _countof(g_InputElements),
-                                  shaderByteCode, byteCodeLength,
-                                  pInputLayout)
+        device->CreateInputLayout( VertexPositionNormalTangentColorTexture::InputElements,
+                                   VertexPositionNormalTangentColorTexture::InputElementCount,
+                                   shaderByteCode, byteCodeLength,
+                                   pInputLayout)
     );
 
     SetDebugObjectName(*pInputLayout, "ModelCMO");
@@ -212,7 +195,8 @@ static BOOL CALLBACK InitializeDecl( PINIT_ONCE initOnce, PVOID Parameter, PVOID
     UNREFERENCED_PARAMETER( initOnce );
     UNREFERENCED_PARAMETER( Parameter );
     UNREFERENCED_PARAMETER( lpContext );
-    g_vbdecl = std::make_shared<std::vector<D3D11_INPUT_ELEMENT_DESC>>( g_InputElements, g_InputElements + _countof(g_InputElements) );
+    g_vbdecl = std::make_shared<std::vector<D3D11_INPUT_ELEMENT_DESC>>( VertexPositionNormalTangentColorTexture::InputElements,
+           VertexPositionNormalTangentColorTexture::InputElements + VertexPositionNormalTangentColorTexture::InputElementCount );
     return TRUE;
 }
 
@@ -226,6 +210,8 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
     
     if ( !d3dDevice || !meshData )
         throw std::exception("Device and meshData cannot be null");
+
+    auto fxFactoryDGSL = dynamic_cast<DGSLEffectFactory*>( &fxFactory );
 
     // Meshes
     auto nMesh = reinterpret_cast<const UINT*>( meshData );
@@ -321,18 +307,45 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
                 m.texture[t].assign( txtName, *nName );
             }
 
-            EffectFactory::EffectInfo info;
-            info.name = m.name.c_str();
-            info.specularPower = m.pMaterial->SpecularPower;
-            info.perVertexColor = true;
-            info.alpha = m.pMaterial->Diffuse.w;
-            info.ambientColor = XMFLOAT3( m.pMaterial->Ambient.x, m.pMaterial->Ambient.y, m.pMaterial->Ambient.z );
-            info.diffuseColor = XMFLOAT3( m.pMaterial->Diffuse.x, m.pMaterial->Diffuse.y, m.pMaterial->Diffuse.z );
-            info.specularColor = XMFLOAT3( m.pMaterial->Specular.x, m.pMaterial->Specular.y, m.pMaterial->Specular.z );
-            info.emissiveColor = XMFLOAT3( m.pMaterial->Emissive.x, m.pMaterial->Emissive.y, m.pMaterial->Emissive.z );
-            info.texture = m.texture[0].c_str();
+            if ( fxFactoryDGSL )
+            {
+                DGSLEffectFactory::DGSLEffectInfo info;
+                info.name = m.name.c_str();
+                info.specularPower = m.pMaterial->SpecularPower;
+                info.perVertexColor = true;
+                info.alpha = m.pMaterial->Diffuse.w;
+                info.ambientColor = XMFLOAT3( m.pMaterial->Ambient.x, m.pMaterial->Ambient.y, m.pMaterial->Ambient.z );
+                info.diffuseColor = XMFLOAT3( m.pMaterial->Diffuse.x, m.pMaterial->Diffuse.y, m.pMaterial->Diffuse.z );
+                info.specularColor = XMFLOAT3( m.pMaterial->Specular.x, m.pMaterial->Specular.y, m.pMaterial->Specular.z );
+                info.emissiveColor = XMFLOAT3( m.pMaterial->Emissive.x, m.pMaterial->Emissive.y, m.pMaterial->Emissive.z );
+                info.texture = m.texture[0].c_str();
+                info.pixelShader = m.pixelShader.c_str();
+                
+                for( int i = 0; i < 7; ++i )
+                {
+                    info.textures[i] = m.texture[ i+1 ].empty() ? nullptr : m.texture[i].c_str();
+                }
 
-            m.effect = fxFactory.CreateEffect( info, nullptr );
+                m.effect = fxFactoryDGSL->CreateDGSLEffect( info, nullptr );
+
+                auto dgslEffect = reinterpret_cast<DGSLEffect*>( m.effect.get() );
+                dgslEffect->SetUVTransform( XMLoadFloat4x4( &m.pMaterial->UVTransform ) );
+            }
+            else
+            {
+                EffectFactory::EffectInfo info;
+                info.name = m.name.c_str();
+                info.specularPower = m.pMaterial->SpecularPower;
+                info.perVertexColor = true;
+                info.alpha = m.pMaterial->Diffuse.w;
+                info.ambientColor = XMFLOAT3( m.pMaterial->Ambient.x, m.pMaterial->Ambient.y, m.pMaterial->Ambient.z );
+                info.diffuseColor = XMFLOAT3( m.pMaterial->Diffuse.x, m.pMaterial->Diffuse.y, m.pMaterial->Diffuse.z );
+                info.specularColor = XMFLOAT3( m.pMaterial->Specular.x, m.pMaterial->Specular.y, m.pMaterial->Specular.z );
+                info.emissiveColor = XMFLOAT3( m.pMaterial->Emissive.x, m.pMaterial->Emissive.y, m.pMaterial->Emissive.z );
+                info.texture = m.texture[0].c_str();
+
+                m.effect = fxFactory.CreateEffect( info, nullptr );
+            }
 
             CreateInputLayout( d3dDevice, m.effect.get(), &m.il );
 
@@ -431,9 +444,9 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
 
         struct VBData
         {
-            size_t                              nVerts;
-            const VSD3DStarter::Vertex*         ptr;
-            const VSD3DStarter::SkinningVertex* skinPtr;
+            size_t                                          nVerts;
+            const VertexPositionNormalTangentColorTexture*  ptr;
+            const VSD3DStarter::SkinningVertex*             skinPtr;
         };
 
         std::vector<VBData> vbData;
@@ -448,9 +461,9 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
             if ( !*nVerts )
                 throw std::exception("Empty vertex buffer found\n");
 
-            size_t vbBytes = sizeof(VSD3DStarter::Vertex) * (*(nVerts));
+            size_t vbBytes = sizeof(VertexPositionNormalTangentColorTexture) * (*(nVerts));
 
-            auto verts = reinterpret_cast<const VSD3DStarter::Vertex*>( meshData + usedSize );
+            auto verts = reinterpret_cast<const VertexPositionNormalTangentColorTexture*>( meshData + usedSize );
             usedSize += vbBytes;
             if ( dataSize < usedSize )
                 throw std::exception("End of file");
@@ -611,85 +624,95 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
         {
             size_t nVerts = vbData[ j ].nVerts;
 
-            size_t bytes = sizeof( VSD3DStarter::Vertex ) * nVerts;
-
-            // Need to fix up VB tex coords for UV transform
-            std::unique_ptr<uint8_t> temp( new uint8_t[ bytes + ( sizeof(UINT) * nVerts ) ] );
-
-            auto verts = reinterpret_cast<VSD3DStarter::Vertex*>( temp.get() );
-            auto visited = reinterpret_cast<UINT*>( temp.get() + bytes );
-
-            memcpy( verts, vbData[j].ptr, bytes );
-            memset( visited, 0xff, sizeof(UINT) * nVerts );
-
-            for( UINT k = 0; k < *nSubmesh; ++k )
-            {
-                auto& sm = subMesh[ k ];
-
-                if ( sm.VertexBufferIndex != j )
-                    continue;
-
-                if ( (sm.IndexBufferIndex >= *nIBs)
-                     || (sm.MaterialIndex >= *nMats) )
-                     throw std::exception("Invalid submesh found\n");
-
-                XMMATRIX uvTransform = XMLoadFloat4x4( &materials[ sm.MaterialIndex ].pMaterial->UVTransform );
-
-                auto ib = ibData[ sm.IndexBufferIndex ].ptr;
-
-                size_t count = ibData[ sm.IndexBufferIndex ].nIndices;
-
-                for( size_t q = 0; q < count; ++q )
-                {
-                    size_t v = ib[ q ];
-
-                    if ( v >= nVerts )
-                        throw std::exception("Invalid index found\n");
-
-                    if ( visited[v] == UINT(-1) )
-                    {
-                        visited[v] = sm.MaterialIndex;
-
-                        XMVECTOR t = XMVectorSet( verts[v].u, verts[v].v, 0.f, 1.f );
-
-                        t = XMVector4Transform( t, uvTransform );
-
-                        XMFLOAT4 tmp;
-                        XMStoreFloat4( &tmp, t );
-
-                        verts[v].u = tmp.x;
-                        verts[v].v = tmp.y;
-                    }
-                    else if ( visited[v] != sm.MaterialIndex )
-                    {
-#ifdef _DEBUG
-                        XMMATRIX uv2 = XMLoadFloat4x4( &materials[ visited[v] ].pMaterial->UVTransform );
-
-                        if ( XMVector4NotEqual( uvTransform.r[0], uv2.r[0] )
-                             || XMVector4NotEqual( uvTransform.r[1], uv2.r[1] )
-                             || XMVector4NotEqual( uvTransform.r[2], uv2.r[2] )
-                             || XMVector4NotEqual( uvTransform.r[3], uv2.r[3] ) )
-                        {
-                            wchar_t buff[1024];
-                            swprintf_s( buff, L"WARNING: %s - mismatched UV transforms for the same vertex; texture coordinates may not be correct\n", mesh->name.c_str() );
-                            OutputDebugString( buff );
-                        }
-#endif
-                    }
-                }
-            }
+            size_t bytes = sizeof( VertexPositionNormalTangentColorTexture ) * nVerts;
 
             D3D11_BUFFER_DESC desc = {0};
             desc.Usage = D3D11_USAGE_DEFAULT;
             desc.ByteWidth = static_cast<UINT>( bytes );
             desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+            
+            if ( fxFactoryDGSL )
+            {
+                D3D11_SUBRESOURCE_DATA initData = {0};
+                initData.pSysMem = vbData[j].ptr;
 
-            D3D11_SUBRESOURCE_DATA initData = {0};
-            initData.pSysMem = verts;
+                ThrowIfFailed(
+                    d3dDevice->CreateBuffer( &desc, &initData, &vbs[j] )
+                    );
+            }
+            else
+            {
+                // Need to fix up VB tex coords for UV transform which is not supported by BasicEffect
+                std::unique_ptr<uint8_t> temp( new uint8_t[ bytes + ( sizeof(UINT) * nVerts ) ] );
 
-            ThrowIfFailed(
-                d3dDevice->CreateBuffer( &desc, &initData, &vbs[j] )
-                );
+                auto verts = reinterpret_cast<VertexPositionNormalTangentColorTexture*>( temp.get() );
+                auto visited = reinterpret_cast<UINT*>( temp.get() + bytes );
+
+                memcpy( verts, vbData[j].ptr, bytes );
+                memset( visited, 0xff, sizeof(UINT) * nVerts );
+
+                for( UINT k = 0; k < *nSubmesh; ++k )
+                {
+                    auto& sm = subMesh[ k ];
+
+                    if ( sm.VertexBufferIndex != j )
+                        continue;
+
+                    if ( (sm.IndexBufferIndex >= *nIBs)
+                         || (sm.MaterialIndex >= *nMats) )
+                         throw std::exception("Invalid submesh found\n");
+
+                    XMMATRIX uvTransform = XMLoadFloat4x4( &materials[ sm.MaterialIndex ].pMaterial->UVTransform );
+
+                    auto ib = ibData[ sm.IndexBufferIndex ].ptr;
+
+                    size_t count = ibData[ sm.IndexBufferIndex ].nIndices;
+
+                    for( size_t q = 0; q < count; ++q )
+                    {
+                        size_t v = ib[ q ];
+
+                        if ( v >= nVerts )
+                            throw std::exception("Invalid index found\n");
+
+                        if ( visited[v] == UINT(-1) )
+                        {
+                            visited[v] = sm.MaterialIndex;
+
+                            XMVECTOR t = XMLoadFloat2( &verts[v].textureCoordinate );
+
+                            t = XMVectorSelect( g_XMIdentityR3, t, g_XMSelect1110 );
+
+                            t = XMVector4Transform( t, uvTransform );
+
+                            XMStoreFloat2( &verts[v].textureCoordinate, t );
+                        }
+                        else if ( visited[v] != sm.MaterialIndex )
+                        {
+#ifdef _DEBUG
+                            XMMATRIX uv2 = XMLoadFloat4x4( &materials[ visited[v] ].pMaterial->UVTransform );
+
+                            if ( XMVector4NotEqual( uvTransform.r[0], uv2.r[0] )
+                                 || XMVector4NotEqual( uvTransform.r[1], uv2.r[1] )
+                                 || XMVector4NotEqual( uvTransform.r[2], uv2.r[2] )
+                                 || XMVector4NotEqual( uvTransform.r[3], uv2.r[3] ) )
+                            {
+                                wchar_t buff[1024];
+                                swprintf_s( buff, L"WARNING: %s - mismatched UV transforms for the same vertex; texture coordinates may not be correct\n", mesh->name.c_str() );
+                                OutputDebugString( buff );
+                            }
+#endif
+                        }
+                    }
+                }
+
+                D3D11_SUBRESOURCE_DATA initData = {0};
+                initData.pSysMem = verts;
+
+                ThrowIfFailed(
+                    d3dDevice->CreateBuffer( &desc, &initData, &vbs[j] )
+                    );
+            }
 
             SetDebugObjectName( vbs[j].Get(), "ModelCMO" ); 
         }
@@ -715,7 +738,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
 
             part->indexCount = sm.PrimCount * 3;
             part->startIndex = sm.StartIndex;
-            part->vertexStride = sizeof(VSD3DStarter::Vertex);
+            part->vertexStride = sizeof(VertexPositionNormalTangentColorTexture);
             part->inputLayout = mat.il;
             part->indexBuffer = ibs[ sm.IndexBufferIndex ];
             part->vertexBuffer = vbs[ sm.VertexBufferIndex ];
