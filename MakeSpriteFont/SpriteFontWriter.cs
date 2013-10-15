@@ -26,6 +26,7 @@ namespace MakeSpriteFont
         const int DXGI_FORMAT_BC2_UNORM = 74;
 
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
         public static void WriteSpriteFont(CommandLineOptions options, Glyph[] glyphs, float lineSpacing, Bitmap bitmap)
         {
             using (FileStream file = File.OpenWrite(options.OutputFile))
