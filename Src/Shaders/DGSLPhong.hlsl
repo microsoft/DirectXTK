@@ -133,12 +133,58 @@ P2F main(V2P pixel)
     local1 = saturate(local1);
     result.fragment = CombineRGBWithAlpha(local1 + local4, pixel.diffuse.a);
 
+    return result;
+}
+
+P2F mainTk(V2P pixel)
+{
+    P2F result;
+
+    float3 worldNormal = normalize(pixel.worldNorm);
+    float3 toEyeVector = normalize(pixel.toEye);
+
+    float3 local1 = MaterialAmbient.rgb * AmbientLight.rgb;
+    float3 local4 = 0;
+    [unroll]
+    for (int i = 0; i < 3; i++)
+    {
+        local1 += LambertLighting(LightDirection[i], worldNormal, LightColor[i].rgb, pixel.diffuse.rgb);
+        local4 += SpecularContribution(toEyeVector, LightDirection[i], worldNormal, MaterialSpecular.rgb, MaterialSpecularPower, LightSpecularIntensity[i], LightColor[i].rgb);
+    }
+
+    local1 = saturate(local1);
+    result.fragment = CombineRGBWithAlpha(local1 + local4, pixel.diffuse.a);
+
     if (result.fragment.a == 0.0f) discard;
 
     return result;
 }
 
 P2F mainTx(V2P pixel)
+{
+    P2F result;
+
+    float3 worldNormal = normalize(pixel.worldNorm);
+    float3 toEyeVector = normalize(pixel.toEye);
+
+    float3 local1 = MaterialAmbient.rgb * AmbientLight.rgb;
+    float3 local4 = 0;
+    [unroll]
+    for (int i = 0; i < 3; i++)
+    {
+        local1 += LambertLighting(LightDirection[i], worldNormal, LightColor[i].rgb, pixel.diffuse.rgb);
+        local4 += SpecularContribution(toEyeVector, LightDirection[i], worldNormal, MaterialSpecular.rgb, MaterialSpecularPower, LightSpecularIntensity[i], LightColor[i].rgb);
+    }
+
+    local1 = saturate(local1);
+    float3 local5 = mad(local1, Texture1.Sample(TexSampler, pixel.uv).rgb, local4);
+    float local6 = Texture1.Sample(TexSampler, pixel.uv).a * pixel.diffuse.a;
+    result.fragment = CombineRGBWithAlpha(local5, local6);
+
+    return result;
+}
+
+P2F mainTxTk(V2P pixel)
 {
     P2F result;
 

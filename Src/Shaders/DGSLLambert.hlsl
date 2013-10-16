@@ -108,12 +108,52 @@ P2F main(V2P pixel)
     local3 = saturate(local3);
     result.fragment = CombineRGBWithAlpha(local3, pixel.diffuse.a);
 
+    return result;
+}
+
+P2F mainTk(V2P pixel)
+{
+    P2F result;
+
+    float3 worldNormal = normalize(pixel.worldNorm);
+
+    float3 local3 = MaterialAmbient.rgb * AmbientLight.rgb;
+    [unroll]
+    for (int i = 0; i < 4; i++)
+    {
+        local3 += LambertLighting(LightDirection[i], worldNormal, LightColor[i].rgb, pixel.diffuse.rgb);
+    }
+
+    local3 = saturate(local3);
+    result.fragment = CombineRGBWithAlpha(local3, pixel.diffuse.a);
+
     if (result.fragment.a == 0.0f) discard;
 
     return result;
 }
 
 P2F mainTx(V2P pixel)
+{
+    P2F result;
+
+    float3 worldNormal = normalize(pixel.worldNorm);
+
+    float3 local3 = MaterialAmbient.rgb * AmbientLight.rgb;
+    [unroll]
+    for (int i = 0; i < 4; i++)
+    {
+        local3 += LambertLighting(LightDirection[i], worldNormal, LightColor[i].rgb, pixel.diffuse.rgb);
+    }
+
+    local3 = saturate(local3);
+    float3 local4 = Texture1.Sample(TexSampler, pixel.uv).rgb * local3;
+    float local5 = Texture1.Sample(TexSampler, pixel.uv).a * pixel.diffuse.a;
+    result.fragment = CombineRGBWithAlpha(local4, local5);
+
+    return result;
+}
+
+P2F mainTxTk(V2P pixel)
 {
     P2F result;
 

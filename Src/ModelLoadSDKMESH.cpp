@@ -432,6 +432,8 @@ static void GetInputLayoutDesc( _In_reads_(32) const DXUT::D3DVERTEXELEMENT9 dec
         { "TANGENT",     0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "BINORMAL",    0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "TEXCOORD",    0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "BLENDINDICES",0, DXGI_FORMAT_R8G8B8A8_UINT,      0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "BLENDWEIGHT", 0, DXGI_FORMAT_R8G8B8A8_UNORM,     0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
 
     using namespace DXUT;
@@ -500,11 +502,18 @@ static void GetInputLayoutDesc( _In_reads_(32) const DXUT::D3DVERTEXELEMENT9 dec
 
             inputDesc.push_back( desc );
         }
+        else if ( decl[index].Usage == D3DDECLUSAGE_BLENDINDICES && decl[index].Type == D3DDECLTYPE_UBYTE4 )
+        {
+            inputDesc.push_back( elements[6] );
+            offset += 4;
+        }
+        else if ( decl[index].Usage == D3DDECLUSAGE_BLENDWEIGHT && decl[index].Type == D3DDECLTYPE_UBYTE4N )
+        {
+            inputDesc.push_back( elements[7] );
+            offset += 4;
+        }
         else
             break;
-
-        // TODO - D3DDECLUSAGE_BLENDWEIGHT -> BLENDINDICES0
-        // TODO - D3DDECLUSAGE_BLENDINDICES -> and BLENDWEIGHT0
     }
 
     if ( !posfound )

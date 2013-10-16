@@ -63,7 +63,7 @@ public:
 
     EffectLights lights;
 
-    int GetCurrentShaderPermutation();
+    int GetCurrentShaderPermutation() const;
 
     void Apply(_In_ ID3D11DeviceContext* deviceContext);
 };
@@ -252,7 +252,7 @@ BasicEffect::Impl::Impl(_In_ ID3D11Device* device)
 }
 
 
-int BasicEffect::Impl::GetCurrentShaderPermutation()
+int BasicEffect::Impl::GetCurrentShaderPermutation() const
 {
     int permutation = 0;
 

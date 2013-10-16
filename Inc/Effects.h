@@ -424,6 +424,7 @@ namespace DirectX
         void XM_CALLCONV SetUVTransform(FXMMATRIX value);
         void SetViewport( float width, float height );
         void SetTime( float time );
+        void SetAlphaDiscardEnable(bool value);
 
         // Light settings.
         void SetLightingEnabled(bool value) override;
@@ -436,6 +437,9 @@ namespace DirectX
         void XM_CALLCONV SetLightSpecularColor(int whichLight, FXMVECTOR value) override;
 
         void EnableDefaultLighting() override;
+
+        // Vertex color setting.
+        void SetVertexColorEnabled(bool value);
 
         // Texture settings.
         void SetTextureEnabled(bool value);

@@ -107,20 +107,67 @@ __declspec(align(16)) struct DGSLEffectConstants
     MiscConstants       misc;
 };
 
+struct DGSLEffectTraits
+{
+    static const int VertexShaderCount = 2;
+    static const int PixelShaderCount = 12;
+
+    static const ShaderBytecode VertexShaderBytecode[VertexShaderCount];
+    static const ShaderBytecode PixelShaderBytecode[PixelShaderCount];
+};
+
 
 // Include the precompiled shader code.
 namespace
 {
+    // VS
     #include "Shaders/Compiled/DGSLEffect_main.inc"
+    #include "Shaders/Compiled/DGSLEffect_mainVc.inc"
 
+    // PS
     #include "Shaders/Compiled/DGSLUnlit_main.inc"
     #include "Shaders/Compiled/DGSLLambert_main.inc"
     #include "Shaders/Compiled/DGSLPhong_main.inc"
 
+    #include "Shaders/Compiled/DGSLUnlit_mainTk.inc"
+    #include "Shaders/Compiled/DGSLLambert_mainTk.inc"
+    #include "Shaders/Compiled/DGSLPhong_mainTk.inc"
+
     #include "Shaders/Compiled/DGSLUnlit_mainTx.inc"
     #include "Shaders/Compiled/DGSLLambert_mainTx.inc"
     #include "Shaders/Compiled/DGSLPhong_mainTx.inc"
+
+    #include "Shaders/Compiled/DGSLUnlit_mainTxTk.inc"
+    #include "Shaders/Compiled/DGSLLambert_mainTxTk.inc"
+    #include "Shaders/Compiled/DGSLPhong_mainTxTk.inc"
 }
+
+
+const ShaderBytecode DGSLEffectTraits::VertexShaderBytecode[] =
+{
+    { DGSLEffect_main, sizeof(DGSLEffect_main) },
+    { DGSLEffect_mainVc, sizeof(DGSLEffect_mainVc) },
+};
+
+
+const ShaderBytecode DGSLEffectTraits::PixelShaderBytecode[] =
+{
+    { DGSLUnlit_main, sizeof(DGSLUnlit_main) },             // UNLIT (no texture)
+    { DGSLLambert_main, sizeof(DGSLLambert_main) },         // LAMBERT (no texture)
+    { DGSLPhong_main, sizeof(DGSLPhong_main) },             // PHONG (no texture)
+
+    { DGSLUnlit_mainTx, sizeof(DGSLUnlit_mainTx) },         // UNLIT (textured)
+    { DGSLLambert_mainTx, sizeof(DGSLLambert_mainTx) },     // LAMBERT (textured)
+    { DGSLPhong_mainTx, sizeof(DGSLPhong_mainTx) },         // PHONG (textured)
+
+    { DGSLUnlit_mainTk, sizeof(DGSLUnlit_mainTk) },         // UNLIT (no texture, discard)
+    { DGSLLambert_mainTk, sizeof(DGSLLambert_mainTk) },     // LAMBERT (no texture, discard)
+    { DGSLPhong_mainTk, sizeof(DGSLPhong_mainTk) },         // PHONG (no texture, discard)
+
+    { DGSLUnlit_mainTxTk, sizeof(DGSLUnlit_mainTxTk) },     // UNLIT (textured, discard)
+    { DGSLLambert_mainTxTk, sizeof(DGSLLambert_mainTxTk) }, // LAMBERT (textured, discard)
+    { DGSLPhong_mainTxTk, sizeof(DGSLPhong_mainTxTk) },     // PHONG (textured, discard)
+};
 
 
 class DGSLEffect::Impl : public AlignedNew<DGSLEffectConstants>
@@ -128,8 +175,10 @@ class DGSLEffect::Impl : public AlignedNew<DGSLEffectConstants>
 public:
     Impl( _In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader ) :
         dirtyFlags( INT_MAX ),
+        vertexColorEnabled(false),
         textureEnabled(false),
         specularEnabled(false),
+        alphaDiscardEnabled(false),
         mPixelShader( pixelShader ),
         mCBMaterial( device ),
         mCBLight( device ),
@@ -148,6 +197,7 @@ public:
 
     // Methods
     void Apply( _In_ ID3D11DeviceContext* deviceContext );
+    void GetVertexShaderBytecode(_Out_ void const** pShaderByteCode, _Out_ size_t* pByteCodeLength);
 
     // Fields
     DGSLEffectConstants constants;
@@ -160,8 +210,10 @@ public:
 
     int dirtyFlags;
 
+    bool vertexColorEnabled;
     bool textureEnabled;
     bool specularEnabled;
+    bool alphaDiscardEnabled;
 
 private:
     ConstantBuffer<MaterialConstants>           mCBMaterial;
@@ -170,6 +222,8 @@ private:
     ConstantBuffer<MiscConstants>               mCBMisc;
     Microsoft::WRL::ComPtr<ID3D11PixelShader>   mPixelShader;
 
+    int GetCurrentPSPermutation() const;
+
     // Only one of these helpers is allocated per D3D device, even if there are multiple effect instances.
     class DeviceResources : protected EffectDeviceResources
     {
@@ -177,41 +231,21 @@ private:
         DeviceResources(_In_ ID3D11Device* device) : EffectDeviceResources(device) {}
 
         // Gets or lazily creates the vertex shader.
-        ID3D11VertexShader* GetVertexShader()
+        ID3D11VertexShader* GetVertexShader( bool vertexColorEnabled )
         {
-            static const ShaderBytecode s_shader = { DGSLEffect_main, sizeof(DGSLEffect_main) };
+            int permutation = (vertexColorEnabled) ? 1 : 0;
 
-            return DemandCreateVertexShader(mVertexShader, s_shader);
+            assert( permutation < DGSLEffectTraits::VertexShaderCount );
+
+            return DemandCreateVertexShader(mVertexShaders[permutation], DGSLEffectTraits::VertexShaderBytecode[permutation]);
         }
 
         // Gets or lazily creates the specified pixel shader permutation.
-        ID3D11PixelShader* GetPixelShader( bool textureEnabled, bool specularEnabled, bool lightingEnabled )
+        ID3D11PixelShader* GetPixelShader( int permutation )
         {
-            static const ShaderBytecode s_shaders[MaxPixelShaders] =
-            {
-                { DGSLUnlit_main, sizeof(DGSLUnlit_main) },         // UNLIT (no texture)
-                { DGSLLambert_main, sizeof(DGSLLambert_main) },     // LAMBERT (no texture)
-                { DGSLPhong_main, sizeof(DGSLPhong_main) },         // PHONG (no texture)
+            assert( permutation < DGSLEffectTraits::PixelShaderCount );
 
-                { DGSLUnlit_mainTx, sizeof(DGSLUnlit_mainTx) },     // UNLIT (textured)
-                { DGSLLambert_mainTx, sizeof(DGSLLambert_mainTx) }, // LAMBERT (textured)
-                { DGSLPhong_mainTx, sizeof(DGSLPhong_mainTx) },     // PHONG (textured)
-            };
-
-            int defaultShader = 0;
-
-            if ( lightingEnabled )
-            {
-                defaultShader = ( specularEnabled ) ? 2 : 1;
-            }
-
-            if ( textureEnabled )
-                defaultShader += 3;
-
-            if ( defaultShader >= _countof(s_shaders) )
-                throw std::out_of_range("defaultShader parameter out of range");
-
-            return DemandCreatePixelShader(mPixelShaders[defaultShader], s_shaders[defaultShader]);
+            return DemandCreatePixelShader(mPixelShaders[permutation], DGSLEffectTraits::PixelShaderBytecode[permutation]);
         }
 
         ID3D11ShaderResourceView* GetDefaultTexture()
@@ -255,10 +289,8 @@ private:
         }
 
     private:
-        static const int MaxPixelShaders = 6;
-
-        Microsoft::WRL::ComPtr<ID3D11VertexShader> mVertexShader;
-        Microsoft::WRL::ComPtr<ID3D11PixelShader> mPixelShaders[MaxPixelShaders];
+        Microsoft::WRL::ComPtr<ID3D11VertexShader> mVertexShaders[DGSLEffectTraits::VertexShaderCount];
+        Microsoft::WRL::ComPtr<ID3D11PixelShader> mPixelShaders[DGSLEffectTraits::PixelShaderCount];
         Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mDefaultTexture;
     };
 
@@ -274,11 +306,11 @@ SharedResourcePool<ID3D11Device*, DGSLEffect::Impl::DeviceResources> DGSLEffect:
 
 void DGSLEffect::Impl::Apply( _In_ ID3D11DeviceContext* deviceContext )
 {
-    auto vertexShader = mDeviceResources->GetVertexShader();
+    auto vertexShader = mDeviceResources->GetVertexShader( vertexColorEnabled );
     auto pixelShader = mPixelShader.Get();
     if( !pixelShader )
     {
-        pixelShader = mDeviceResources->GetPixelShader( textureEnabled, specularEnabled, constants.light.ActiveLights > 0 );
+        pixelShader = mDeviceResources->GetPixelShader( GetCurrentPSPermutation() );
     }
 
     deviceContext->VSSetShader( vertexShader, nullptr, 0 );
@@ -368,6 +400,38 @@ void DGSLEffect::Impl::Apply( _In_ ID3D11DeviceContext* deviceContext )
 }
 
 
+void DGSLEffect::Impl::GetVertexShaderBytecode(_Out_ void const** pShaderByteCode, _Out_ size_t* pByteCodeLength)
+{
+    int permutation = (vertexColorEnabled) ? 1 : 0;
+
+    assert( permutation < DGSLEffectTraits::VertexShaderCount );
+
+    auto shader = DGSLEffectTraits::VertexShaderBytecode[permutation];
+    *pShaderByteCode = shader.code;
+    *pByteCodeLength = shader.length;
+}
+
+
+int DGSLEffect::Impl::GetCurrentPSPermutation() const
+{
+    int permutation = 0;
+
+    if ( constants.light.ActiveLights > 0 )
+    {
+        permutation = ( specularEnabled ) ? 2 : 1;
+    }
+
+    if ( textureEnabled )
+        permutation += 3;
+
+    if ( alphaDiscardEnabled )
+        permutation += 6;
+
+    return permutation;
+}
+
+
+
 //--------------------------------------------------------------------------------------
 // DGSLEffect
 //--------------------------------------------------------------------------------------
@@ -405,9 +469,7 @@ void DGSLEffect::Apply(_In_ ID3D11DeviceContext* deviceContext)
 
 void DGSLEffect::GetVertexShaderBytecode(_Out_ void const** pShaderByteCode, _Out_ size_t* pByteCodeLength)
 {
-    // DGSL always uses the same Vertex Shader
-    *pShaderByteCode = DGSLEffect_main;
-    *pByteCodeLength = sizeof( DGSLEffect_main );
+    pImpl->GetVertexShaderBytecode( pShaderByteCode, pByteCodeLength );
 }
 
 
@@ -524,6 +586,12 @@ void DGSLEffect::SetTime( float time )
 }
 
 
+void DGSLEffect::SetAlphaDiscardEnable(bool value)
+{
+    pImpl->alphaDiscardEnabled = value;
+}
+
+
 // Light settings
 void DGSLEffect::SetLightingEnabled(bool value)
 {
@@ -614,6 +682,13 @@ void XM_CALLCONV DGSLEffect::SetLightSpecularColor(int whichLight, FXMVECTOR val
 void DGSLEffect::EnableDefaultLighting()
 {
     EffectLights::EnableDefaultLighting(this);
+}
+
+
+// Vertex color setting.
+void DGSLEffect::SetVertexColorEnabled(bool value)
+{
+    pImpl->vertexColorEnabled = value;
 }
 
 

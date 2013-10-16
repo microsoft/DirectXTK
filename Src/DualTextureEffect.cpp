@@ -51,7 +51,7 @@ public:
 
     ComPtr<ID3D11ShaderResourceView> texture2;
 
-    int GetCurrentShaderPermutation();
+    int GetCurrentShaderPermutation() const;
 
     void Apply(_In_ ID3D11DeviceContext* deviceContext);
 };
@@ -118,7 +118,7 @@ DualTextureEffect::Impl::Impl(_In_ ID3D11Device* device)
 }
 
 
-int DualTextureEffect::Impl::GetCurrentShaderPermutation()
+int DualTextureEffect::Impl::GetCurrentShaderPermutation() const
 {
     int permutation = 0;
 

@@ -35,6 +35,14 @@ struct A2V
     float4 pos : SV_Position;
     float3 normal : NORMAL0;
     float4 tangent : TANGENT0;
+    float2 uv : TEXCOORD0;
+};
+
+struct A2V_Vc
+{
+    float4 pos : SV_Position;
+    float3 normal : NORMAL0;
+    float4 tangent : TANGENT0;
     float4 color : COLOR0;
     float2 uv : TEXCOORD0;
 };
@@ -50,8 +58,27 @@ struct V2P
     float4 tangent : TEXCOORD4;
     float3 normal : TEXCOORD5;
 };
-  
+
 V2P main(A2V vertex)
+{
+    V2P result;
+  
+    float3 wp = mul(vertex.pos, LocalToWorld4x4).xyz;
+  
+    // set output data
+    result.pos = mul(vertex.pos, LocalToProjected4x4);
+    result.diffuse = MaterialDiffuse;
+    result.uv = mul(float4(vertex.uv.x, vertex.uv.y, 0, 1), UVTransform4x4).xy;
+    result.worldNorm = mul(vertex.normal, (float3x3)LocalToWorld4x4);
+    result.worldPos = wp;
+    result.toEye = EyePosition - wp;
+    result.tangent = vertex.tangent;
+    result.normal = vertex.normal;
+  
+    return result;
+}
+
+V2P mainVc(A2V_Vc vertex)
 {
     V2P result;
   

@@ -94,14 +94,23 @@ call :CompileShader SpriteEffect vs SpriteVertexShader
 call :CompileShader SpriteEffect ps SpritePixelShader
 
 call :CompileShader DGSLEffect vs main
-n
+call :CompileShader DGSLEffect vs mainVc
+
 call :CompileShaderHLSL DGSLUnlit ps main
 call :CompileShaderHLSL DGSLLambert ps main
 call :CompileShaderHLSL DGSLPhong ps main
 
+call :CompileShaderHLSL DGSLUnlit ps mainTk
+call :CompileShaderHLSL DGSLLambert ps mainTk
+call :CompileShaderHLSL DGSLPhong ps mainTk
+
 call :CompileShaderHLSL DGSLUnlit ps mainTx
 call :CompileShaderHLSL DGSLLambert ps mainTx
 call :CompileShaderHLSL DGSLPhong ps mainTx
+
+call :CompileShaderHLSL DGSLUnlit ps mainTxTk
+call :CompileShaderHLSL DGSLLambert ps mainTxTk
+call :CompileShaderHLSL DGSLPhong ps mainTxTk
 echo.
 
 if %error% == 0 (

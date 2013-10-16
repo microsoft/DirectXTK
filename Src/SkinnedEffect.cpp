@@ -63,7 +63,7 @@ public:
 
     EffectLights lights;
 
-    int GetCurrentShaderPermutation();
+    int GetCurrentShaderPermutation() const;
 
     void Apply(_In_ ID3D11DeviceContext* deviceContext);
 };
@@ -185,7 +185,7 @@ SkinnedEffect::Impl::Impl(_In_ ID3D11Device* device)
 }
 
 
-int SkinnedEffect::Impl::GetCurrentShaderPermutation()
+int SkinnedEffect::Impl::GetCurrentShaderPermutation() const
 {
     int permutation = 0;
 

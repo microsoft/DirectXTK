@@ -96,6 +96,11 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateEffect( DGSLEffectFactor
 
         effect->SetAlpha( info.alpha );
 
+        if ( info.perVertexColor )
+        {
+            effect->SetVertexColorEnabled( true );
+        }
+
         if ( info.specularColor.x != 0 || info.specularColor.y != 0 || info.specularColor.z != 0 )
         {
             color = XMLoadFloat3( &info.specularColor );
@@ -170,16 +175,16 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateDGSLEffect( DGSLEffectFa
             if ( !_wcsicmp( root, L"lambert" ) )
             {
                 allowSpecular = false;
-                effect= std::make_shared<DGSLEffect>( device.Get() );
+                effect = std::make_shared<DGSLEffect>( device.Get() );
             }
             else if ( !_wcsicmp( root, L"phong" ) )
             {
-                effect= std::make_shared<DGSLEffect>( device.Get() );
+                effect = std::make_shared<DGSLEffect>( device.Get() );
             }
             else if ( !_wcsicmp( root, L"unlit" ) )
             {
                 lighting = false;
-                effect= std::make_shared<DGSLEffect>( device.Get() );
+                effect = std::make_shared<DGSLEffect>( device.Get() );
             }
             else if ( device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0 )
             {
@@ -189,7 +194,7 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateDGSLEffect( DGSLEffectFa
                 Microsoft::WRL::ComPtr<ID3D11PixelShader> ps;
                 factory->CreatePixelShader( root, ps.GetAddressOf() );
 
-                effect= std::make_shared<DGSLEffect>( device.Get(), ps.Get() );
+                effect = std::make_shared<DGSLEffect>( device.Get(), ps.Get() );
             }
             else
             {
@@ -197,7 +202,7 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateDGSLEffect( DGSLEffectFa
                 Microsoft::WRL::ComPtr<ID3D11PixelShader> ps;
                 factory->CreatePixelShader( info.pixelShader, ps.GetAddressOf() );
 
-                effect= std::make_shared<DGSLEffect>( device.Get(), ps.Get() );
+                effect = std::make_shared<DGSLEffect>( device.Get(), ps.Get() );
             }
         }
 
@@ -213,6 +218,13 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateDGSLEffect( DGSLEffectFa
         color = XMLoadFloat3( &info.diffuseColor );
         effect->SetDiffuseColor( color );
         effect->SetAlpha( info.alpha );
+
+        if ( info.perVertexColor )
+        {
+            effect->SetVertexColorEnabled( true );
+        }
+
+        effect->SetAlphaDiscardEnable(true);
 
         if ( allowSpecular
              && ( info.specularColor.x != 0 || info.specularColor.y != 0 || info.specularColor.z != 0 ) )

@@ -67,7 +67,7 @@ public:
 
     ComPtr<ID3D11ShaderResourceView> environmentMap;
 
-    int GetCurrentShaderPermutation();
+    int GetCurrentShaderPermutation() const;
 
     void Apply(_In_ ID3D11DeviceContext* deviceContext);
 };
@@ -170,7 +170,7 @@ EnvironmentMapEffect::Impl::Impl(_In_ ID3D11Device* device)
 }
 
 
-int EnvironmentMapEffect::Impl::GetCurrentShaderPermutation()
+int EnvironmentMapEffect::Impl::GetCurrentShaderPermutation() const
 {
     int permutation = 0;
 
