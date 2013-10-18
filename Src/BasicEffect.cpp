@@ -38,6 +38,8 @@ struct BasicEffectConstants
     XMMATRIX worldViewProj;
 };
 
+static_assert( ( sizeof(BasicEffectConstants) % 16 ) == 0, "CB size not padded correctly" );
+
 
 // Traits type describes our characteristics to the EffectBase template.
 struct BasicEffectTraits
@@ -248,6 +250,11 @@ BasicEffect::Impl::Impl(_In_ ID3D11Device* device)
     vertexColorEnabled(false),
     textureEnabled(false)
 {
+    static_assert( _countof(EffectBase<BasicEffectTraits>::VertexShaderIndices) == BasicEffectTraits::ShaderPermutationCount, "array/max mismatch" );
+    static_assert( _countof(EffectBase<BasicEffectTraits>::VertexShaderBytecode) == BasicEffectTraits::VertexShaderCount, "array/max mismatch" );
+    static_assert( _countof(EffectBase<BasicEffectTraits>::PixelShaderBytecode) == BasicEffectTraits::PixelShaderCount, "array/max mismatch" );
+    static_assert( _countof(EffectBase<BasicEffectTraits>::PixelShaderIndices) == BasicEffectTraits::ShaderPermutationCount, "array/max mismatch" );
+
     lights.InitializeConstants(constants.specularColorAndPower, constants.lightDirection, constants.lightDiffuseColor, constants.lightSpecularColor);
 }
 

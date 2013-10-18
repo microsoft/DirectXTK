@@ -204,12 +204,7 @@ namespace DirectX
             deviceContext->PSSetConstantBuffers(0, 1, &buffer);
         }
 
-
-    private:
-        // D3D constant buffer holds a copy of the same data as the public 'constants' field.
-        ConstantBuffer<typename Traits::ConstantBufferType> mConstantBuffer;
-
-
+    protected:
         // Static arrays hold all the precompiled shader permutations.
         static const ShaderBytecode VertexShaderBytecode[Traits::VertexShaderCount];
         static const ShaderBytecode PixelShaderBytecode[Traits::PixelShaderCount];
@@ -217,6 +212,9 @@ namespace DirectX
         static const int VertexShaderIndices[Traits::ShaderPermutationCount];
         static const int PixelShaderIndices[Traits::ShaderPermutationCount];
 
+    private:
+        // D3D constant buffer holds a copy of the same data as the public 'constants' field.
+        ConstantBuffer<typename Traits::ConstantBufferType> mConstantBuffer;
 
         // Only one of these helpers is allocated per D3D device, even if there are multiple effect instances.
         class DeviceResources : protected EffectDeviceResources

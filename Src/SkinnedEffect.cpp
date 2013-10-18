@@ -40,6 +40,8 @@ struct SkinnedEffectConstants
     XMVECTOR bones[SkinnedEffect::MaxBones][3];
 };
 
+static_assert( ( sizeof(SkinnedEffectConstants) % 16 ) == 0, "CB size not padded correctly" );
+
 
 // Traits type describes our characteristics to the EffectBase template.
 struct SkinnedEffectTraits
@@ -174,6 +176,11 @@ SkinnedEffect::Impl::Impl(_In_ ID3D11Device* device)
     preferPerPixelLighting(false),
     weightsPerVertex(4)
 {
+    static_assert( _countof(EffectBase<SkinnedEffectTraits>::VertexShaderIndices) == SkinnedEffectTraits::ShaderPermutationCount, "array/max mismatch" );
+    static_assert( _countof(EffectBase<SkinnedEffectTraits>::VertexShaderBytecode) == SkinnedEffectTraits::VertexShaderCount, "array/max mismatch" );
+    static_assert( _countof(EffectBase<SkinnedEffectTraits>::PixelShaderBytecode) == SkinnedEffectTraits::PixelShaderCount, "array/max mismatch" );
+    static_assert( _countof(EffectBase<SkinnedEffectTraits>::PixelShaderIndices) == SkinnedEffectTraits::ShaderPermutationCount, "array/max mismatch" );
+
     lights.InitializeConstants(constants.specularColorAndPower, constants.lightDirection, constants.lightDiffuseColor, constants.lightSpecularColor);
 
     for (int i = 0; i < MaxBones; i++)
