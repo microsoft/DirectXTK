@@ -6,7 +6,7 @@
     <ExecutablePath>$(ProgramFiles)\Windows Kits\8.1\bin\x64;$(ExecutablePath)</ExecutablePath>
     <IncludePath>$(ProgramFiles)\Windows Kits\8.1\Include\um;$(ProgramFiles)\Windows Kits\8.1\Include\shared;$(ProgramFiles)\Windows Kits\8.1\Include\winrt;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProgramFiles)\Windows Kits\8.1\lib\win8\um\x64;$(LibraryPath)</LibraryPath>
-    <ExcludePath>$(ProgramFiles)\Windows Kits\8.1\Include\um;$(ProgramFiles)\Windows Kits\8.1\Include\shared;$(ProgramFiles)\Windows Kits\8.1\Include\wirt;$(ExcludePath)</ExcludePath>
+    <ExcludePath>$(ProgramFiles)\Windows Kits\8.1\Include\um;$(ProgramFiles)\Windows Kits\8.1\Include\shared;$(ProgramFiles)\Windows Kits\8.1\Include\winrt;$(ExcludePath)</ExcludePath>
   </PropertyGroup>
 <ItemDefinitionGroup />
 </Project>
