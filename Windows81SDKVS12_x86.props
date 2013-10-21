@@ -5,7 +5,7 @@
   <PropertyGroup>
     <ExecutablePath>$(ProgramFiles)\Windows Kits\8.1\bin\x86;$(ExecutablePath)</ExecutablePath>
     <IncludePath>$(ProgramFiles)\Windows Kits\8.1\Include\um;$(ProgramFiles)\Windows Kits\8.1\Include\shared;$(ProgramFiles)\Windows Kits\8.1\Include\winrt;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProgramFiles)\Windows Kits\8.1\lib\winv6.3\um\x64;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(ProgramFiles)\Windows Kits\8.1\lib\winv6.3\um\x86;$(LibraryPath)</LibraryPath>
     <ExcludePath>$(ProgramFiles)\Windows Kits\8.1\Include\um;$(ProgramFiles)\Windows Kits\8.1\Include\shared;$(ProgramFiles)\Windows Kits\8.1\Include\winrt;$(ExcludePath)</ExcludePath>
   </PropertyGroup>
 <ItemDefinitionGroup />
