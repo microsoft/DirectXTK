@@ -132,9 +132,11 @@ namespace DirectX
 
         ID3D11VertexShader* DemandCreateVertexShader(_Inout_ Microsoft::WRL::ComPtr<ID3D11VertexShader>& vertexShader, ShaderBytecode const& bytecode);
         ID3D11PixelShader * DemandCreatePixelShader (_Inout_ Microsoft::WRL::ComPtr<ID3D11PixelShader> & pixelShader,  ShaderBytecode const& bytecode);
+        ID3D11ShaderResourceView* GetDefaultTexture();
 
     protected:
         Microsoft::WRL::ComPtr<ID3D11Device> mDevice;
+        Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mDefaultTexture;
 
         std::mutex mMutex;
     };
@@ -204,6 +206,11 @@ namespace DirectX
             deviceContext->PSSetConstantBuffers(0, 1, &buffer);
         }
 
+
+        // Helper returns the default texture.
+        ID3D11ShaderResourceView* GetDefaultTexture() { return mDeviceResources->GetDefaultTexture(); }
+
+
     protected:
         // Static arrays hold all the precompiled shader permutations.
         static const ShaderBytecode VertexShaderBytecode[Traits::VertexShaderCount];
@@ -241,6 +248,10 @@ namespace DirectX
 
                 return DemandCreatePixelShader(mPixelShaders[shaderIndex], PixelShaderBytecode[shaderIndex]);
             }
+
+
+            // Gets or lazily creates the default texture
+            ID3D11ShaderResourceView* GetDefaultTexture() { return EffectDeviceResources::GetDefaultTexture(); }
 
 
         private:

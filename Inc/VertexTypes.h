@@ -19,6 +19,12 @@
 
 namespace DirectX
 {
+    #if (DIRECTXMATH_VERSION < 305) && !defined(XM_CALLCONV)
+    #define XM_CALLCONV __fastcall
+    typedef const XMVECTOR& HXMVECTOR;
+    typedef const XMMATRIX& FXMMATRIX;
+    #endif
+
     // Vertex struct holding position and color information.
     struct VertexPositionColor
     {
@@ -260,9 +266,61 @@ namespace DirectX
         }
 
         void SetColor( XMFLOAT4 const& color ) { SetColor( XMLoadFloat4( &color ) ); }
-        void SetColor( FXMVECTOR color );
+        void XM_CALLCONV SetColor( FXMVECTOR color );
 
         static const int InputElementCount = 5;
+        static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
+    };
+
+
+    // Vertex struct for Visual Studio Shader Designer (DGSL) holding position, normal,
+    // tangent, color (RGBA), texture mapping information, and skinning weights
+    struct VertexPositionNormalTangentColorTextureSkinning : public VertexPositionNormalTangentColorTexture
+    {
+        VertexPositionNormalTangentColorTextureSkinning()
+        { }
+
+        uint32_t indices;
+        uint32_t weights;
+
+        VertexPositionNormalTangentColorTextureSkinning(XMFLOAT3 const& position, XMFLOAT3 const& normal, XMFLOAT4 const& tangent, uint32_t rgba,
+                                                        XMFLOAT2 const& textureCoordinate, XMUINT4 const& indices, XMFLOAT4 const& weights)
+          : VertexPositionNormalTangentColorTexture(position,normal,tangent,rgba,textureCoordinate)
+        {
+            SetBlendIndices( indices );
+            SetBlendWeights( weights );
+        }
+
+        VertexPositionNormalTangentColorTextureSkinning(FXMVECTOR position, FXMVECTOR normal, FXMVECTOR tangent, uint32_t rgba, CXMVECTOR textureCoordinate,
+                                                        XMUINT4 const& indices, CXMVECTOR weights)
+          : VertexPositionNormalTangentColorTexture(position,normal,tangent,rgba,textureCoordinate)
+        {
+            SetBlendIndices( indices );
+            SetBlendWeights( weights );
+        }
+
+        VertexPositionNormalTangentColorTextureSkinning(XMFLOAT3 const& position, XMFLOAT3 const& normal, XMFLOAT4 const& tangent, XMFLOAT4 const& color,
+                                                        XMFLOAT2 const& textureCoordinate, XMUINT4 const& indices, XMFLOAT4 const& weights)
+          : VertexPositionNormalTangentColorTexture(position,normal,tangent,color,textureCoordinate)
+        {
+            SetBlendIndices( indices );
+            SetBlendWeights( weights );
+        }
+
+        VertexPositionNormalTangentColorTextureSkinning(FXMVECTOR position, FXMVECTOR normal, FXMVECTOR tangent, CXMVECTOR color, CXMVECTOR textureCoordinate,
+                                                        XMUINT4 const& indices, CXMVECTOR weights)
+          : VertexPositionNormalTangentColorTexture(position,normal,tangent,color,textureCoordinate)
+        {
+            SetBlendIndices( indices );
+            SetBlendWeights( weights );
+        }
+
+        void SetBlendIndices( XMUINT4 const& indices );
+
+        void SetBlendWeights( XMFLOAT4 const& weights ) { SetBlendWeights( XMLoadFloat4( &weights ) ); }
+        void XM_CALLCONV SetBlendWeights( FXMVECTOR weights );
+
+        static const int InputElementCount = 7;
         static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
     };
 }

@@ -59,6 +59,7 @@ private:
     typedef std::map< std::wstring, Microsoft::WRL::ComPtr<ID3D11PixelShader> > ShaderCache;
 
     EffectCache  mEffectCache;
+    EffectCache  mEffectCacheSkinning;
     TextureCache mTextureCache;
     ShaderCache  mShaderCache;
 
@@ -75,206 +76,242 @@ SharedResourcePool<ID3D11Device*, DGSLEffectFactory::Impl> DGSLEffectFactory::Im
 _Use_decl_annotations_
 std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateEffect( DGSLEffectFactory* factory, const DGSLEffectFactory::EffectInfo& info, ID3D11DeviceContext* deviceContext )
 {
-    auto it = (info.name && *info.name) ? mEffectCache.find( info.name ) : mEffectCache.end();
-
-    if ( mSharing && it != mEffectCache.end() )
+    if ( mSharing && info.name && *info.name )
     {
-        return it->second;
+        if ( info.enableSkinning )
+        {
+            auto it = mEffectCacheSkinning.find( info.name );
+            if ( it != mEffectCacheSkinning.end() )
+            {
+                return it->second;
+            }
+        }
+        else
+        {
+            auto it = mEffectCache.find( info.name );
+            if ( it != mEffectCache.end() )
+            {
+                return it->second;
+            }
+        }
     }
-    else
+
+    std::shared_ptr<DGSLEffect> effect = std::make_shared<DGSLEffect>( device.Get(), nullptr, info.enableSkinning );
+
+    effect->EnableDefaultLighting();
+    effect->SetLightingEnabled(true);
+
+    XMVECTOR color = XMLoadFloat3( &info.ambientColor );
+    effect->SetAmbientColor( color );
+
+    color = XMLoadFloat3( &info.diffuseColor );
+    effect->SetDiffuseColor( color );
+
+    effect->SetAlpha( info.alpha );
+
+    if ( info.perVertexColor )
     {
-        std::shared_ptr<DGSLEffect> effect = std::make_shared<DGSLEffect>( device.Get() );
-
-        effect->EnableDefaultLighting();
-        effect->SetLightingEnabled(true);
-
-        XMVECTOR color = XMLoadFloat3( &info.ambientColor );
-        effect->SetAmbientColor( color );
-
-        color = XMLoadFloat3( &info.diffuseColor );
-        effect->SetDiffuseColor( color );
-
-        effect->SetAlpha( info.alpha );
-
-        if ( info.perVertexColor )
-        {
-            effect->SetVertexColorEnabled( true );
-        }
-
-        if ( info.specularColor.x != 0 || info.specularColor.y != 0 || info.specularColor.z != 0 )
-        {
-            color = XMLoadFloat3( &info.specularColor );
-            effect->SetSpecularColor( color );
-            effect->SetSpecularPower( info.specularPower );
-        }
-
-        if ( info.emissiveColor.x != 0 || info.emissiveColor.y != 0 || info.emissiveColor.z != 0 )
-        {
-            color = XMLoadFloat3( &info.emissiveColor );
-            effect->SetEmissiveColor( color );
-        }
-
-        if ( info.texture && *info.texture )
-        {
-            Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
-
-            factory->CreateTexture( info.texture, deviceContext, srv.GetAddressOf() );
-
-            effect->SetTexture( srv.Get() );
-            effect->SetTextureEnabled(true);
-        }
-
-        if ( mSharing && info.name && *info.name && it == mEffectCache.end() )
-        {
-            std::lock_guard<std::mutex> lock(mutex);
-            mEffectCache.insert( EffectCache::value_type( info.name, effect) );
-        }
-
-        return effect;
+        effect->SetVertexColorEnabled( true );
     }
+
+    if ( info.specularColor.x != 0 || info.specularColor.y != 0 || info.specularColor.z != 0 )
+    {
+        color = XMLoadFloat3( &info.specularColor );
+        effect->SetSpecularColor( color );
+        effect->SetSpecularPower( info.specularPower );
+    }
+
+    if ( info.emissiveColor.x != 0 || info.emissiveColor.y != 0 || info.emissiveColor.z != 0 )
+    {
+        color = XMLoadFloat3( &info.emissiveColor );
+        effect->SetEmissiveColor( color );
+    }
+
+    if ( info.texture && *info.texture )
+    {
+        Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
+
+        factory->CreateTexture( info.texture, deviceContext, srv.GetAddressOf() );
+
+        effect->SetTexture( srv.Get() );
+        effect->SetTextureEnabled(true);
+    }
+
+    if ( mSharing && info.name && *info.name )
+    {
+        std::lock_guard<std::mutex> lock(mutex);
+        if ( info.enableSkinning )
+        {
+            mEffectCacheSkinning.insert( EffectCache::value_type( info.name, effect ) );
+        }
+        else
+        {
+            mEffectCache.insert( EffectCache::value_type( info.name, effect ) );
+        }
+    }
+
+    return effect;
 }
 
 
 _Use_decl_annotations_
 std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateDGSLEffect( DGSLEffectFactory* factory, const DGSLEffectFactory::DGSLEffectInfo& info, ID3D11DeviceContext* deviceContext )
 {
-    auto it = (info.name && *info.name) ? mEffectCache.find( info.name ) : mEffectCache.end();
-
-    if ( mSharing && it != mEffectCache.end() )
+    if ( mSharing && info.name && *info.name )
     {
-        return it->second;
+        if ( info.enableSkinning )
+        {
+            auto it = mEffectCacheSkinning.find( info.name );
+            if ( it != mEffectCacheSkinning.end() )
+            {
+                return it->second;
+            }
+        }
+        else
+        {
+            auto it = mEffectCache.find( info.name );
+            if ( it != mEffectCache.end() )
+            {
+                return it->second;
+            }
+        }
+    }
+
+    std::shared_ptr<DGSLEffect> effect;
+
+    bool lighting = true;
+    bool allowSpecular = true;
+
+    if ( !info.pixelShader || !*info.pixelShader )
+    {
+        effect = std::make_shared<DGSLEffect>( device.Get(), nullptr, info.enableSkinning );
     }
     else
     {
-        std::shared_ptr<DGSLEffect> effect;
-
-        bool lighting = true;
-        bool allowSpecular = true;
-
-        if ( !info.pixelShader || !*info.pixelShader )
+        wchar_t root[ MAX_PATH ] = {0};
+        auto last = wcsrchr( info.pixelShader, '_' );
+        if ( last )
         {
-            effect = std::make_shared<DGSLEffect>( device.Get() );
+            wcscpy_s( root, last+1 );
         }
         else
         {
-            wchar_t root[ MAX_PATH ] = {0};
-            auto last = wcsrchr( info.pixelShader, '_' );
-            if ( last )
-            {
-                wcscpy_s( root, last+1 );
-            }
-            else
-            {
-                wcscpy_s( root, info.pixelShader );
-            }
-
-            auto first = wcschr( root, '.' );
-            if ( first )
-                *first = 0;
-
-            if ( !_wcsicmp( root, L"lambert" ) )
-            {
-                allowSpecular = false;
-                effect = std::make_shared<DGSLEffect>( device.Get() );
-            }
-            else if ( !_wcsicmp( root, L"phong" ) )
-            {
-                effect = std::make_shared<DGSLEffect>( device.Get() );
-            }
-            else if ( !_wcsicmp( root, L"unlit" ) )
-            {
-                lighting = false;
-                effect = std::make_shared<DGSLEffect>( device.Get() );
-            }
-            else if ( device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0 )
-            {
-                // DGSL shaders are not compatible with Feature Level 9.x, use fallback shader
-                wcscat_s( root, L".cso" );
-
-                Microsoft::WRL::ComPtr<ID3D11PixelShader> ps;
-                factory->CreatePixelShader( root, ps.GetAddressOf() );
-
-                effect = std::make_shared<DGSLEffect>( device.Get(), ps.Get() );
-            }
-            else
-            {
-                // Create DGSL shader and use it for the effect
-                Microsoft::WRL::ComPtr<ID3D11PixelShader> ps;
-                factory->CreatePixelShader( info.pixelShader, ps.GetAddressOf() );
-
-                effect = std::make_shared<DGSLEffect>( device.Get(), ps.Get() );
-            }
+            wcscpy_s( root, info.pixelShader );
         }
 
-        if ( lighting )
+        auto first = wcschr( root, '.' );
+        if ( first )
+            *first = 0;
+
+        if ( !_wcsicmp( root, L"lambert" ) )
         {
-            effect->EnableDefaultLighting();
-            effect->SetLightingEnabled(true);
+            allowSpecular = false;
+            effect = std::make_shared<DGSLEffect>( device.Get(), nullptr, info.enableSkinning );
         }
-
-        XMVECTOR color = XMLoadFloat3( &info.ambientColor );
-        effect->SetAmbientColor( color );
-
-        color = XMLoadFloat3( &info.diffuseColor );
-        effect->SetDiffuseColor( color );
-        effect->SetAlpha( info.alpha );
-
-        if ( info.perVertexColor )
+        else if ( !_wcsicmp( root, L"phong" ) )
         {
-            effect->SetVertexColorEnabled( true );
+            effect = std::make_shared<DGSLEffect>( device.Get(), nullptr, info.enableSkinning );
         }
-
-        effect->SetAlphaDiscardEnable(true);
-
-        if ( allowSpecular
-             && ( info.specularColor.x != 0 || info.specularColor.y != 0 || info.specularColor.z != 0 ) )
+        else if ( !_wcsicmp( root, L"unlit" ) )
         {
-            color = XMLoadFloat3( &info.specularColor );
-            effect->SetSpecularColor( color );
-            effect->SetSpecularPower( info.specularPower );
+            lighting = false;
+            effect = std::make_shared<DGSLEffect>( device.Get(), nullptr, info.enableSkinning );
+        }
+        else if ( device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0 )
+        {
+            // DGSL shaders are not compatible with Feature Level 9.x, use fallback shader
+            wcscat_s( root, L".cso" );
+
+            Microsoft::WRL::ComPtr<ID3D11PixelShader> ps;
+            factory->CreatePixelShader( root, ps.GetAddressOf() );
+
+            effect = std::make_shared<DGSLEffect>( device.Get(), ps.Get(), info.enableSkinning );
         }
         else
         {
-            effect->DisableSpecular();
-        }
+            // Create DGSL shader and use it for the effect
+            Microsoft::WRL::ComPtr<ID3D11PixelShader> ps;
+            factory->CreatePixelShader( info.pixelShader, ps.GetAddressOf() );
 
-        if ( info.emissiveColor.x != 0 || info.emissiveColor.y != 0 || info.emissiveColor.z != 0 )
-        {
-            color = XMLoadFloat3( &info.emissiveColor );
-            effect->SetEmissiveColor( color );
+            effect = std::make_shared<DGSLEffect>( device.Get(), ps.Get(), info.enableSkinning );
         }
+    }
 
-        if ( info.texture && *info.texture )
+    if ( lighting )
+    {
+        effect->EnableDefaultLighting();
+        effect->SetLightingEnabled(true);
+    }
+
+    XMVECTOR color = XMLoadFloat3( &info.ambientColor );
+    effect->SetAmbientColor( color );
+
+    color = XMLoadFloat3( &info.diffuseColor );
+    effect->SetDiffuseColor( color );
+    effect->SetAlpha( info.alpha );
+
+    if ( info.perVertexColor )
+    {
+        effect->SetVertexColorEnabled( true );
+    }
+
+    effect->SetAlphaDiscardEnable(true);
+
+    if ( allowSpecular
+            && ( info.specularColor.x != 0 || info.specularColor.y != 0 || info.specularColor.z != 0 ) )
+    {
+        color = XMLoadFloat3( &info.specularColor );
+        effect->SetSpecularColor( color );
+        effect->SetSpecularPower( info.specularPower );
+    }
+    else
+    {
+        effect->DisableSpecular();
+    }
+
+    if ( info.emissiveColor.x != 0 || info.emissiveColor.y != 0 || info.emissiveColor.z != 0 )
+    {
+        color = XMLoadFloat3( &info.emissiveColor );
+        effect->SetEmissiveColor( color );
+    }
+
+    if ( info.texture && *info.texture )
+    {
+        Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
+
+        factory->CreateTexture( info.texture, deviceContext, srv.GetAddressOf() );
+
+        effect->SetTexture( srv.Get() );
+        effect->SetTextureEnabled(true);
+    }
+
+    for( int j = 0; j < 7; ++j )
+    {
+        if ( info.textures[j] && *info.textures[j] )
         {
             Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
 
-            factory->CreateTexture( info.texture, deviceContext, srv.GetAddressOf() );
+            factory->CreateTexture( info.textures[j], deviceContext, srv.GetAddressOf() );
 
-            effect->SetTexture( srv.Get() );
+            effect->SetTexture( j+1, srv.Get() );
             effect->SetTextureEnabled(true);
         }
-
-        for( int j = 0; j < 7; ++j )
-        {
-            if ( info.textures[j] && *info.textures[j] )
-            {
-                Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
-
-                factory->CreateTexture( info.textures[j], deviceContext, srv.GetAddressOf() );
-
-                effect->SetTexture( j+1, srv.Get() );
-                effect->SetTextureEnabled(true);
-            }
-        }
-
-        if ( mSharing && info.name && *info.name && it == mEffectCache.end() )
-        {
-            std::lock_guard<std::mutex> lock(mutex);
-            mEffectCache.insert( EffectCache::value_type( info.name, effect) );
-        }
-
-        return effect;
     }
+
+    if ( mSharing && info.name && *info.name )
+    {
+        std::lock_guard<std::mutex> lock(mutex);
+        if ( info.enableSkinning )
+        {
+            mEffectCacheSkinning.insert( EffectCache::value_type( info.name, effect ) );
+        }
+        else
+        {
+            mEffectCache.insert( EffectCache::value_type( info.name, effect ) );
+        }
+    }
+
+    return effect;
 }
 
 
@@ -378,6 +415,7 @@ void DGSLEffectFactory::Impl::ReleaseCache()
 {
     std::lock_guard<std::mutex> lock(mutex);
     mEffectCache.clear();
+    mEffectCacheSkinning.clear();
     mTextureCache.clear();
     mShaderCache.clear();
 }

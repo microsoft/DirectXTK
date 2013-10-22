@@ -374,7 +374,8 @@ struct MaterialRecordSDKMESH
 };
 
 
-static void LoadMaterials( const DXUT::SDKMESH_MATERIAL* materialArray, UINT count, bool perVertexColor, IEffectFactory& fxFactory, std::vector<MaterialRecordSDKMESH>& materials )
+static void LoadMaterials( const DXUT::SDKMESH_MATERIAL* materialArray, UINT count, bool perVertexColor, bool enableSkinning,
+                          IEffectFactory& fxFactory, std::vector<MaterialRecordSDKMESH>& materials )
 {
     materials.clear();
     materials.reserve( count );
@@ -392,6 +393,7 @@ static void LoadMaterials( const DXUT::SDKMESH_MATERIAL* materialArray, UINT cou
         EffectFactory::EffectInfo info;
         info.name = matName;
         info.perVertexColor = perVertexColor;
+        info.enableSkinning = enableSkinning;
         info.ambientColor = XMFLOAT3( mh.Ambient.x, mh.Ambient.y, mh.Ambient.z );
         info.diffuseColor = XMFLOAT3( mh.Diffuse.x, mh.Diffuse.y, mh.Diffuse.z );
         info.emissiveColor= XMFLOAT3( mh.Emissive.x, mh.Emissive.y, mh.Emissive.z );
@@ -422,7 +424,8 @@ static void LoadMaterials( const DXUT::SDKMESH_MATERIAL* materialArray, UINT cou
 //--------------------------------------------------------------------------------------
 // Direct3D 9 Vertex Declaration to DirectInput 11 Input Layout mapping
 
-static void GetInputLayoutDesc( _In_reads_(32) const DXUT::D3DVERTEXELEMENT9 decl[], std::vector<D3D11_INPUT_ELEMENT_DESC>& inputDesc, bool &perVertexColor )
+static void GetInputLayoutDesc( _In_reads_(32) const DXUT::D3DVERTEXELEMENT9 decl[], std::vector<D3D11_INPUT_ELEMENT_DESC>& inputDesc,
+                                bool &perVertexColor, bool& enableSkinning )
 {
     static const D3D11_INPUT_ELEMENT_DESC elements[] =
     {
@@ -504,11 +507,13 @@ static void GetInputLayoutDesc( _In_reads_(32) const DXUT::D3DVERTEXELEMENT9 dec
         }
         else if ( decl[index].Usage == D3DDECLUSAGE_BLENDINDICES && decl[index].Type == D3DDECLTYPE_UBYTE4 )
         {
+            enableSkinning = true;
             inputDesc.push_back( elements[6] );
             offset += 4;
         }
         else if ( decl[index].Usage == D3DDECLUSAGE_BLENDWEIGHT && decl[index].Type == D3DDECLTYPE_UBYTE4N )
         {
+            enableSkinning = true;
             inputDesc.push_back( elements[7] );
             offset += 4;
         }
@@ -621,6 +626,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH( ID3D11Device* d3dDevic
     vbDecls.resize( header->NumVertexBuffers );
 
     bool perVertexColor = false;
+    bool enableSkinning = false;
     for( UINT j=0; j < header->NumVertexBuffers; ++j )
     {
         auto& vh = vbArray[j];
@@ -630,7 +636,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH( ID3D11Device* d3dDevic
         throw std::exception("End of file");
 
         vbDecls[j] = std::make_shared<std::vector<D3D11_INPUT_ELEMENT_DESC>>();
-        GetInputLayoutDesc( vh.Decl, *vbDecls[j].get(), perVertexColor );
+        GetInputLayoutDesc( vh.Decl, *vbDecls[j].get(), perVertexColor, enableSkinning );
 
         auto verts = reinterpret_cast<const uint8_t*>( bufferData + (vh.DataOffset - bufferDataOffset) );
 
@@ -683,7 +689,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH( ID3D11Device* d3dDevic
 
     // Load materials
     std::vector<MaterialRecordSDKMESH> materials;
-    LoadMaterials( materialArray, header->NumMaterials, perVertexColor, fxFactory, materials );
+    LoadMaterials( materialArray, header->NumMaterials, perVertexColor, enableSkinning, fxFactory, materials );
 
     // Create meshes
     std::unique_ptr<Model> model(new Model());
@@ -709,7 +715,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH( ID3D11Device* d3dDevic
 
         auto subsets = reinterpret_cast<const UINT*>( meshData + mh.SubsetOffset );
         // TODO - auto influences = reinterpret_cast<const UINT*>( meshData + mh.FrameInfluenceOffset );
-      
+
         auto mesh = std::make_shared<ModelMesh>();
         WCHAR meshName[ DXUT::MAX_MESH_NAME ];
         MultiByteToWideChar( CP_ACP, MB_PRECOMPOSED, mh.Name, -1, meshName, DXUT::MAX_MESH_NAME );

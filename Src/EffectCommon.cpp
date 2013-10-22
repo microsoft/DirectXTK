@@ -384,3 +384,45 @@ ID3D11PixelShader* EffectDeviceResources::DemandCreatePixelShader(_Inout_ ComPtr
         return hr;
     });
 }
+
+
+// Gets or lazily creates the default texture
+ID3D11ShaderResourceView* EffectDeviceResources::GetDefaultTexture()
+{
+    return DemandCreate(mDefaultTexture, mMutex, [&](ID3D11ShaderResourceView** pResult) -> HRESULT
+    {
+        static const uint32_t s_pixel = 0xffffffff;
+                
+        D3D11_SUBRESOURCE_DATA initData = { &s_pixel, sizeof(uint32_t), 0 };
+
+        D3D11_TEXTURE2D_DESC desc;
+        memset( &desc, 0, sizeof(desc) );
+        desc.Width = desc.Height = desc.MipLevels = desc.ArraySize = 1;
+        desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        desc.SampleDesc.Count = 1;
+        desc.Usage = D3D11_USAGE_IMMUTABLE;
+        desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+
+        ID3D11Texture2D* tex = nullptr;
+        HRESULT hr = mDevice->CreateTexture2D( &desc, &initData, &tex );
+
+        if (SUCCEEDED(hr))
+        {
+            SetDebugObjectName(tex, "DirectXTK:Effect");
+
+            D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
+            memset( &SRVDesc, 0, sizeof( SRVDesc ) );
+            SRVDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+            SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+            SRVDesc.Texture2D.MipLevels = 1;
+
+            hr = mDevice->CreateShaderResourceView( tex, &SRVDesc, pResult );
+            if (SUCCEEDED(hr))
+                SetDebugObjectName(*pResult, "DirectXTK:Effect");
+            else
+                tex->Release();
+        }
+
+        return hr;
+    });
+}

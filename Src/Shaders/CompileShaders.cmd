@@ -95,6 +95,12 @@ call :CompileShader SpriteEffect ps SpritePixelShader
 
 call :CompileShader DGSLEffect vs main
 call :CompileShader DGSLEffect vs mainVc
+call :CompileShader DGSLEffect vs main1Bones
+call :CompileShader DGSLEffect vs main1BonesVc
+call :CompileShader DGSLEffect vs main2Bones
+call :CompileShader DGSLEffect vs main2BonesVc
+call :CompileShader DGSLEffect vs main4Bones
+call :CompileShader DGSLEffect vs main4BonesVc
 
 call :CompileShaderHLSL DGSLUnlit ps main
 call :CompileShaderHLSL DGSLLambert ps main

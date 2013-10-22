@@ -30,6 +30,7 @@ namespace EffectDirtyFlags
     const int ConstantBufferLight       = 0x20000;
     const int ConstantBufferObject      = 0x40000;
     const int ConstantBufferMisc        = 0x80000;
+    const int ConstantBufferBones       = 0x100000;
 }
 
 }
@@ -92,12 +93,19 @@ struct MiscConstants
     float Padding1;
 };
 
+// Slot 4
+struct BoneConstants
+{
+    XMVECTOR Bones[DGSLEffect::MaxBones][3];
+};
+
 #pragma pack(pop)
 
 static_assert( ( sizeof(MaterialConstants) % 16 ) == 0, "CB size not padded correctly" );
 static_assert( ( sizeof(LightConstants) % 16 ) == 0, "CB size not padded correctly" );
 static_assert( ( sizeof(ObjectConstants) % 16 ) == 0, "CB size not padded correctly" );
 static_assert( ( sizeof(MiscConstants) % 16 ) == 0, "CB size not padded correctly" );
+static_assert( ( sizeof(BoneConstants) % 16 ) == 0, "CB size not padded correctly" );
 
 __declspec(align(16)) struct DGSLEffectConstants
 {
@@ -105,11 +113,12 @@ __declspec(align(16)) struct DGSLEffectConstants
     LightConstants      light;
     ObjectConstants     object;
     MiscConstants       misc;
+    BoneConstants       bones;
 };
 
 struct DGSLEffectTraits
 {
-    static const int VertexShaderCount = 2;
+    static const int VertexShaderCount = 8;
     static const int PixelShaderCount = 12;
 
     static const ShaderBytecode VertexShaderBytecode[VertexShaderCount];
@@ -123,6 +132,12 @@ namespace
     // VS
     #include "Shaders/Compiled/DGSLEffect_main.inc"
     #include "Shaders/Compiled/DGSLEffect_mainVc.inc"
+    #include "Shaders/Compiled/DGSLEffect_main1Bones.inc"
+    #include "Shaders/Compiled/DGSLEffect_main1BonesVc.inc"
+    #include "Shaders/Compiled/DGSLEffect_main2Bones.inc"
+    #include "Shaders/Compiled/DGSLEffect_main2BonesVc.inc"
+    #include "Shaders/Compiled/DGSLEffect_main4Bones.inc"
+    #include "Shaders/Compiled/DGSLEffect_main4BonesVc.inc"
 
     // PS
     #include "Shaders/Compiled/DGSLUnlit_main.inc"
@@ -147,6 +162,12 @@ const ShaderBytecode DGSLEffectTraits::VertexShaderBytecode[] =
 {
     { DGSLEffect_main, sizeof(DGSLEffect_main) },
     { DGSLEffect_mainVc, sizeof(DGSLEffect_mainVc) },
+    { DGSLEffect_main1Bones, sizeof(DGSLEffect_main1Bones) },
+    { DGSLEffect_main1BonesVc, sizeof(DGSLEffect_main1BonesVc) },
+    { DGSLEffect_main2Bones, sizeof(DGSLEffect_main2Bones) },
+    { DGSLEffect_main2BonesVc, sizeof(DGSLEffect_main2BonesVc) },
+    { DGSLEffect_main4Bones, sizeof(DGSLEffect_main4Bones) },
+    { DGSLEffect_main4BonesVc, sizeof(DGSLEffect_main4BonesVc) },
 };
 
 
@@ -173,12 +194,13 @@ const ShaderBytecode DGSLEffectTraits::PixelShaderBytecode[] =
 class DGSLEffect::Impl : public AlignedNew<DGSLEffectConstants>
 {
 public:
-    Impl( _In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader ) :
+    Impl( _In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader, _In_ bool enableSkinning ) :
         dirtyFlags( INT_MAX ),
         vertexColorEnabled(false),
         textureEnabled(false),
         specularEnabled(false),
         alphaDiscardEnabled(false),
+        weightsPerVertex( enableSkinning ? 4 : 0 ),
         mPixelShader( pixelShader ),
         mCBMaterial( device ),
         mCBLight( device ),
@@ -186,6 +208,9 @@ public:
         mCBMisc( device ),
         mDeviceResources( deviceResourcesPool.DemandCreate(device) )
     {
+        static_assert( _countof(DGSLEffectTraits::VertexShaderBytecode) == DGSLEffectTraits::VertexShaderCount, "array/max mismatch" );
+        static_assert( _countof(DGSLEffectTraits::PixelShaderBytecode) == DGSLEffectTraits::PixelShaderCount, "array/max mismatch" );
+
         memset( &constants, 0, sizeof(constants) );
 
         XMMATRIX id = XMMatrixIdentity();
@@ -193,6 +218,18 @@ public:
         view = id;
         projection = id;
         constants.object.UvTransform4x4 = id;
+
+        if ( enableSkinning )
+        {
+            mCBBone.Create( device );
+
+            for( size_t j = 0; j < MaxBones; ++j )
+            {
+                constants.bones.Bones[ j ][0] = g_XMIdentityR0;
+                constants.bones.Bones[ j ][1] = g_XMIdentityR1;
+                constants.bones.Bones[ j ][2] = g_XMIdentityR2;
+            }
+        }
     }
 
     // Methods
@@ -214,14 +251,17 @@ public:
     bool textureEnabled;
     bool specularEnabled;
     bool alphaDiscardEnabled;
+    int weightsPerVertex;
 
 private:
     ConstantBuffer<MaterialConstants>           mCBMaterial;
     ConstantBuffer<LightConstants>              mCBLight;
     ConstantBuffer<ObjectConstants>             mCBObject;
     ConstantBuffer<MiscConstants>               mCBMisc;
+    ConstantBuffer<BoneConstants>               mCBBone;
     Microsoft::WRL::ComPtr<ID3D11PixelShader>   mPixelShader;
 
+    int GetCurrentVSPermutation() const;
     int GetCurrentPSPermutation() const;
 
     // Only one of these helpers is allocated per D3D device, even if there are multiple effect instances.
@@ -231,10 +271,8 @@ private:
         DeviceResources(_In_ ID3D11Device* device) : EffectDeviceResources(device) {}
 
         // Gets or lazily creates the vertex shader.
-        ID3D11VertexShader* GetVertexShader( bool vertexColorEnabled )
+        ID3D11VertexShader* GetVertexShader( int permutation )
         {
-            int permutation = (vertexColorEnabled) ? 1 : 0;
-
             assert( permutation < DGSLEffectTraits::VertexShaderCount );
 
             return DemandCreateVertexShader(mVertexShaders[permutation], DGSLEffectTraits::VertexShaderBytecode[permutation]);
@@ -248,45 +286,9 @@ private:
             return DemandCreatePixelShader(mPixelShaders[permutation], DGSLEffectTraits::PixelShaderBytecode[permutation]);
         }
 
-        ID3D11ShaderResourceView* GetDefaultTexture()
-        {
-            return DemandCreate(mDefaultTexture, mMutex, [&](ID3D11ShaderResourceView** pResult) -> HRESULT
-            {
-                static const uint32_t s_pixel = 0xffffffff;
-                
-                D3D11_SUBRESOURCE_DATA initData = { &s_pixel, sizeof(uint32_t), 0 };
+        // Gets or lazily creates the default texture
+        ID3D11ShaderResourceView* GetDefaultTexture() { return EffectDeviceResources::GetDefaultTexture(); }
 
-                D3D11_TEXTURE2D_DESC desc;
-                memset( &desc, 0, sizeof(desc) );
-                desc.Width = desc.Height = desc.MipLevels = desc.ArraySize = 1;
-                desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-                desc.SampleDesc.Count = 1;
-                desc.Usage = D3D11_USAGE_IMMUTABLE;
-                desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-
-                ID3D11Texture2D* tex = nullptr;
-                HRESULT hr = mDevice->CreateTexture2D( &desc, &initData, &tex );
-
-                if (SUCCEEDED(hr))
-                {
-                    SetDebugObjectName(tex, "DirectXTK:DGSLEffect");
-
-                    D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
-                    memset( &SRVDesc, 0, sizeof( SRVDesc ) );
-                    SRVDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-                    SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-                    SRVDesc.Texture2D.MipLevels = 1;
-
-                    hr = mDevice->CreateShaderResourceView( tex, &SRVDesc, pResult );
-                    if (SUCCEEDED(hr))
-                        SetDebugObjectName(*pResult, "DirectXTK:DGSLEffect");
-                    else
-                        tex->Release();
-                }
-
-                return hr;
-            });
-        }
 
     private:
         Microsoft::WRL::ComPtr<ID3D11VertexShader> mVertexShaders[DGSLEffectTraits::VertexShaderCount];
@@ -306,7 +308,7 @@ SharedResourcePool<ID3D11Device*, DGSLEffect::Impl::DeviceResources> DGSLEffect:
 
 void DGSLEffect::Impl::Apply( _In_ ID3D11DeviceContext* deviceContext )
 {
-    auto vertexShader = mDeviceResources->GetVertexShader( vertexColorEnabled );
+    auto vertexShader = mDeviceResources->GetVertexShader( GetCurrentVSPermutation() );
     auto pixelShader = mPixelShader.Get();
     if( !pixelShader )
     {
@@ -379,11 +381,28 @@ void DGSLEffect::Impl::Apply( _In_ ID3D11DeviceContext* deviceContext )
         dirtyFlags &= ~EffectDirtyFlags::ConstantBufferMisc;
     }
 
-    // Set the constant buffer.
-    ID3D11Buffer* buffers[4] = { mCBMaterial.GetBuffer(), mCBLight.GetBuffer(), mCBObject.GetBuffer(), mCBMisc.GetBuffer() };
+    if ( weightsPerVertex > 0 )
+    {
+        if (dirtyFlags & EffectDirtyFlags::ConstantBufferBones)
+        {
+            mCBBone.SetData(deviceContext, constants.bones);
 
-    deviceContext->VSSetConstantBuffers( 0, 4, buffers );
-    deviceContext->PSSetConstantBuffers( 0, 4, buffers );
+            dirtyFlags &= ~EffectDirtyFlags::ConstantBufferBones;
+        }
+
+        ID3D11Buffer* buffers[5] = { mCBMaterial.GetBuffer(), mCBLight.GetBuffer(), mCBObject.GetBuffer(),
+                                     mCBMisc.GetBuffer(), mCBBone.GetBuffer() };
+
+        deviceContext->VSSetConstantBuffers( 0, 5, buffers );
+        deviceContext->PSSetConstantBuffers( 0, 4, buffers );
+    }
+    else
+    {
+        ID3D11Buffer* buffers[4] = { mCBMaterial.GetBuffer(), mCBLight.GetBuffer(), mCBObject.GetBuffer(), mCBMisc.GetBuffer() };
+
+        deviceContext->VSSetConstantBuffers( 0, 4, buffers );
+        deviceContext->PSSetConstantBuffers( 0, 4, buffers );
+    }
 
     // Set the textures
     if ( textureEnabled )
@@ -402,13 +421,36 @@ void DGSLEffect::Impl::Apply( _In_ ID3D11DeviceContext* deviceContext )
 
 void DGSLEffect::Impl::GetVertexShaderBytecode(_Out_ void const** pShaderByteCode, _Out_ size_t* pByteCodeLength)
 {
-    int permutation = (vertexColorEnabled) ? 1 : 0;
+    int permutation = GetCurrentVSPermutation();
 
     assert( permutation < DGSLEffectTraits::VertexShaderCount );
 
     auto shader = DGSLEffectTraits::VertexShaderBytecode[permutation];
     *pShaderByteCode = shader.code;
     *pByteCodeLength = shader.length;
+}
+
+
+int DGSLEffect::Impl::GetCurrentVSPermutation() const
+{
+    int permutation = (vertexColorEnabled) ? 1 : 0;
+
+    if( weightsPerVertex > 0 )
+    {
+        // Evaluate 1, 2, or 4 weights per vertex?
+        permutation += 2;
+
+        if (weightsPerVertex == 2)
+        {
+            permutation += 2;
+        }
+        else if (weightsPerVertex == 4)
+        {
+            permutation += 4;
+        }
+    }
+
+    return permutation;
 }
 
 
@@ -436,8 +478,8 @@ int DGSLEffect::Impl::GetCurrentPSPermutation() const
 // DGSLEffect
 //--------------------------------------------------------------------------------------
 
-DGSLEffect::DGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader)
-    : pImpl(new Impl(device, pixelShader))
+DGSLEffect::DGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader, _In_ bool enableSkinning)
+    : pImpl(new Impl(device, pixelShader, enableSkinning))
 {
 }
 
@@ -698,10 +740,12 @@ void DGSLEffect::SetTextureEnabled(bool value)
     pImpl->textureEnabled = value;
 }
 
+
 void DGSLEffect::SetTexture(_In_opt_ ID3D11ShaderResourceView* value)
 {
     pImpl->textures[0] = value;
 }
+
 
 void DGSLEffect::SetTexture(int whichTexture, _In_opt_ ID3D11ShaderResourceView* value)
 {
@@ -709,4 +753,61 @@ void DGSLEffect::SetTexture(int whichTexture, _In_opt_ ID3D11ShaderResourceView*
         throw std::out_of_range("whichTexture parameter out of range");
 
     pImpl->textures[ whichTexture ] = value;
+}
+
+
+// Animation setting
+void DGSLEffect::SetWeightsPerVertex(int value)
+{
+    if ((value != 1) &&
+        (value != 2) &&
+        (value != 4))
+    {
+        throw std::out_of_range("WeightsPerVertex must be 1, 2, or 4");
+    }
+
+    pImpl->weightsPerVertex = value;
+}
+
+
+void DGSLEffect::SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, size_t count)
+{
+    if ( !pImpl->weightsPerVertex ) 
+        throw std::exception("Skinning not enabled for this effect");
+
+    if (count > MaxBones)
+        throw std::out_of_range("count parameter out of range");
+
+    auto boneConstant = pImpl->constants.bones.Bones;
+
+    for (size_t i = 0; i < count; i++)
+    {
+        XMMATRIX boneMatrix = XMMatrixTranspose(value[i]);
+
+        boneConstant[i][0] = boneMatrix.r[0];
+        boneConstant[i][1] = boneMatrix.r[1];
+        boneConstant[i][2] = boneMatrix.r[2];
+    }
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBufferBones;
+}
+
+
+void DGSLEffect::ResetBoneTransforms()
+{
+    if ( !pImpl->weightsPerVertex ) 
+        return;
+
+    auto boneConstant = pImpl->constants.bones.Bones;
+
+    XMMATRIX id = XMMatrixIdentity();
+
+    for(size_t i = 0; i < MaxBones; ++i)
+    {
+        boneConstant[i][0] = g_XMIdentityR0;
+        boneConstant[i][1] = g_XMIdentityR1;
+        boneConstant[i][2] = g_XMIdentityR2;
+    }
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBufferBones;
 }

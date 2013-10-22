@@ -116,6 +116,8 @@ namespace VSD3DStarter
 
     const uint32_t NUM_BONE_INFLUENCES = 4;
 
+    static_assert( sizeof(VertexPositionNormalTangentColorTexture) == 52, "mismatch with CMO vertex type" );
+
     struct SkinningVertex
     {
         UINT boneIndex[NUM_BONE_INFLUENCES];
@@ -169,19 +171,31 @@ struct MaterialRecordCMO
 };
 
 // Helper for creating a D3D input layout.
-static void CreateInputLayout(_In_ ID3D11Device* device, IEffect* effect, _Out_ ID3D11InputLayout** pInputLayout )
+static void CreateInputLayout(_In_ ID3D11Device* device, IEffect* effect, _Out_ ID3D11InputLayout** pInputLayout, bool skinning )
 {
     void const* shaderByteCode;
     size_t byteCodeLength;
 
     effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
 
-    ThrowIfFailed(
-        device->CreateInputLayout( VertexPositionNormalTangentColorTexture::InputElements,
-                                   VertexPositionNormalTangentColorTexture::InputElementCount,
-                                   shaderByteCode, byteCodeLength,
-                                   pInputLayout)
-    );
+    if ( skinning )
+    {
+        ThrowIfFailed(
+            device->CreateInputLayout( VertexPositionNormalTangentColorTextureSkinning::InputElements,
+                                       VertexPositionNormalTangentColorTextureSkinning::InputElementCount,
+                                       shaderByteCode, byteCodeLength,
+                                       pInputLayout)
+        );
+    }
+    else
+    {
+        ThrowIfFailed(
+            device->CreateInputLayout( VertexPositionNormalTangentColorTexture::InputElements,
+                                       VertexPositionNormalTangentColorTexture::InputElementCount,
+                                       shaderByteCode, byteCodeLength,
+                                       pInputLayout)
+        );
+    }
 
     SetDebugObjectName(*pInputLayout, "ModelCMO");
 }
@@ -189,14 +203,19 @@ static void CreateInputLayout(_In_ ID3D11Device* device, IEffect* effect, _Out_ 
 // Shared VB input element description
 static INIT_ONCE g_InitOnce = INIT_ONCE_STATIC_INIT;
 static std::shared_ptr<std::vector<D3D11_INPUT_ELEMENT_DESC>> g_vbdecl;
+static std::shared_ptr<std::vector<D3D11_INPUT_ELEMENT_DESC>> g_vbdeclSkinning;
 
 static BOOL CALLBACK InitializeDecl( PINIT_ONCE initOnce, PVOID Parameter, PVOID *lpContext )
 {
     UNREFERENCED_PARAMETER( initOnce );
     UNREFERENCED_PARAMETER( Parameter );
     UNREFERENCED_PARAMETER( lpContext );
+
     g_vbdecl = std::make_shared<std::vector<D3D11_INPUT_ELEMENT_DESC>>( VertexPositionNormalTangentColorTexture::InputElements,
            VertexPositionNormalTangentColorTexture::InputElements + VertexPositionNormalTangentColorTexture::InputElementCount );
+
+    g_vbdeclSkinning = std::make_shared<std::vector<D3D11_INPUT_ELEMENT_DESC>>( VertexPositionNormalTangentColorTextureSkinning::InputElements,
+           VertexPositionNormalTangentColorTextureSkinning::InputElements + VertexPositionNormalTangentColorTextureSkinning::InputElementCount );
     return TRUE;
 }
 
@@ -307,50 +326,10 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
                 m.texture[t].assign( txtName, *nName );
             }
 
-            if ( fxFactoryDGSL )
-            {
-                DGSLEffectFactory::DGSLEffectInfo info;
-                info.name = m.name.c_str();
-                info.specularPower = m.pMaterial->SpecularPower;
-                info.perVertexColor = true;
-                info.alpha = m.pMaterial->Diffuse.w;
-                info.ambientColor = XMFLOAT3( m.pMaterial->Ambient.x, m.pMaterial->Ambient.y, m.pMaterial->Ambient.z );
-                info.diffuseColor = XMFLOAT3( m.pMaterial->Diffuse.x, m.pMaterial->Diffuse.y, m.pMaterial->Diffuse.z );
-                info.specularColor = XMFLOAT3( m.pMaterial->Specular.x, m.pMaterial->Specular.y, m.pMaterial->Specular.z );
-                info.emissiveColor = XMFLOAT3( m.pMaterial->Emissive.x, m.pMaterial->Emissive.y, m.pMaterial->Emissive.z );
-                info.texture = m.texture[0].c_str();
-                info.pixelShader = m.pixelShader.c_str();
-                
-                for( int i = 0; i < 7; ++i )
-                {
-                    info.textures[i] = m.texture[ i+1 ].empty() ? nullptr : m.texture[i].c_str();
-                }
-
-                m.effect = fxFactoryDGSL->CreateDGSLEffect( info, nullptr );
-
-                auto dgslEffect = reinterpret_cast<DGSLEffect*>( m.effect.get() );
-                dgslEffect->SetUVTransform( XMLoadFloat4x4( &m.pMaterial->UVTransform ) );
-            }
-            else
-            {
-                EffectFactory::EffectInfo info;
-                info.name = m.name.c_str();
-                info.specularPower = m.pMaterial->SpecularPower;
-                info.perVertexColor = true;
-                info.alpha = m.pMaterial->Diffuse.w;
-                info.ambientColor = XMFLOAT3( m.pMaterial->Ambient.x, m.pMaterial->Ambient.y, m.pMaterial->Ambient.z );
-                info.diffuseColor = XMFLOAT3( m.pMaterial->Diffuse.x, m.pMaterial->Diffuse.y, m.pMaterial->Diffuse.z );
-                info.specularColor = XMFLOAT3( m.pMaterial->Specular.x, m.pMaterial->Specular.y, m.pMaterial->Specular.z );
-                info.emissiveColor = XMFLOAT3( m.pMaterial->Emissive.x, m.pMaterial->Emissive.y, m.pMaterial->Emissive.z );
-                info.texture = m.texture[0].c_str();
-
-                m.effect = fxFactory.CreateEffect( info, nullptr );
-            }
-
-            CreateInputLayout( d3dDevice, m.effect.get(), &m.il );
-
             materials.emplace_back( m );
         }
+
+        assert( materials.size() == *nMats );
 
         // Skeletal data?
         auto bSkeleton = reinterpret_cast<const BYTE*>( meshData + usedSize );
@@ -611,28 +590,29 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
         bSkeleton;
 #endif
 
+        bool enableSkinning = ( *nSkinVBs ) != 0;
+
         // Build vertex buffers
         std::vector<ComPtr<ID3D11Buffer>> vbs;
         vbs.resize( *nVBs );
 
-        if ( *nSkinVBs )
-        {
-            // TODO - combine skinning data into a single VB
-        }
+        const size_t stride = enableSkinning ? sizeof(VertexPositionNormalTangentColorTextureSkinning)
+                                             : sizeof(VertexPositionNormalTangentColorTexture);
 
         for( UINT j = 0; j < *nVBs; ++j )
         {
             size_t nVerts = vbData[ j ].nVerts;
 
-            size_t bytes = sizeof( VertexPositionNormalTangentColorTexture ) * nVerts;
+            size_t bytes = stride * nVerts;
 
             D3D11_BUFFER_DESC desc = {0};
             desc.Usage = D3D11_USAGE_DEFAULT;
             desc.ByteWidth = static_cast<UINT>( bytes );
             desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
             
-            if ( fxFactoryDGSL )
+            if ( fxFactoryDGSL && !enableSkinning )
             {
+                // Can use CMO vertex data directly
                 D3D11_SUBRESOURCE_DATA initData = {0};
                 initData.pSysMem = vbData[j].ptr;
 
@@ -642,72 +622,103 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
             }
             else
             {
-                // Need to fix up VB tex coords for UV transform which is not supported by BasicEffect
                 std::unique_ptr<uint8_t> temp( new uint8_t[ bytes + ( sizeof(UINT) * nVerts ) ] );
 
-                auto verts = reinterpret_cast<VertexPositionNormalTangentColorTexture*>( temp.get() );
                 auto visited = reinterpret_cast<UINT*>( temp.get() + bytes );
-
-                memcpy( verts, vbData[j].ptr, bytes );
                 memset( visited, 0xff, sizeof(UINT) * nVerts );
 
-                for( UINT k = 0; k < *nSubmesh; ++k )
+                assert( vbData[j].ptr != 0 );
+
+                if ( enableSkinning )
                 {
-                    auto& sm = subMesh[ k ];
+                    // Combine CMO multi-stream data into a single stream
+                    auto skinptr = vbData[j].skinPtr;
+                    assert( skinptr != 0 );
 
-                    if ( sm.VertexBufferIndex != j )
-                        continue;
+                    uint8_t* ptr = temp.get();
 
-                    if ( (sm.IndexBufferIndex >= *nIBs)
-                         || (sm.MaterialIndex >= *nMats) )
-                         throw std::exception("Invalid submesh found\n");
+                    auto sptr = vbData[j].ptr;
 
-                    XMMATRIX uvTransform = XMLoadFloat4x4( &materials[ sm.MaterialIndex ].pMaterial->UVTransform );
-
-                    auto ib = ibData[ sm.IndexBufferIndex ].ptr;
-
-                    size_t count = ibData[ sm.IndexBufferIndex ].nIndices;
-
-                    for( size_t q = 0; q < count; ++q )
+                    for( size_t v = 0; v < nVerts; ++v )
                     {
-                        size_t v = ib[ q ];
+                        *reinterpret_cast<VertexPositionNormalTangentColorTexture*>( ptr ) = *sptr;
+                        ++sptr;
 
-                        if ( v >= nVerts )
-                            throw std::exception("Invalid index found\n");
+                        auto skinv = reinterpret_cast<VertexPositionNormalTangentColorTextureSkinning*>( ptr );
+                        skinv->SetBlendIndices( *reinterpret_cast<const XMUINT4*>( skinptr->boneIndex ) );
+                        skinv->SetBlendWeights( *reinterpret_cast<const XMFLOAT4*>( skinptr->boneWeight ) );
 
-                        if ( visited[v] == UINT(-1) )
+                        ptr += stride;
+                    }
+                }
+                else
+                {
+                    memcpy( temp.get(), vbData[j].ptr, bytes );
+                }
+
+                if ( !fxFactoryDGSL )
+                {
+                    // Need to fix up VB tex coords for UV transform which is not supported by basic effects
+                    for( UINT k = 0; k < *nSubmesh; ++k )
+                    {
+                        auto& sm = subMesh[ k ];
+
+                        if ( sm.VertexBufferIndex != j )
+                            continue;
+
+                        if ( (sm.IndexBufferIndex >= *nIBs)
+                             || (sm.MaterialIndex >= *nMats) )
+                             throw std::exception("Invalid submesh found\n");
+
+                        XMMATRIX uvTransform = XMLoadFloat4x4( &materials[ sm.MaterialIndex ].pMaterial->UVTransform );
+
+                        auto ib = ibData[ sm.IndexBufferIndex ].ptr;
+
+                        size_t count = ibData[ sm.IndexBufferIndex ].nIndices;
+
+                        for( size_t q = 0; q < count; ++q )
                         {
-                            visited[v] = sm.MaterialIndex;
+                            size_t v = ib[ q ];
 
-                            XMVECTOR t = XMLoadFloat2( &verts[v].textureCoordinate );
+                            if ( v >= nVerts )
+                                throw std::exception("Invalid index found\n");
 
-                            t = XMVectorSelect( g_XMIdentityR3, t, g_XMSelect1110 );
-
-                            t = XMVector4Transform( t, uvTransform );
-
-                            XMStoreFloat2( &verts[v].textureCoordinate, t );
-                        }
-                        else if ( visited[v] != sm.MaterialIndex )
-                        {
-#ifdef _DEBUG
-                            XMMATRIX uv2 = XMLoadFloat4x4( &materials[ visited[v] ].pMaterial->UVTransform );
-
-                            if ( XMVector4NotEqual( uvTransform.r[0], uv2.r[0] )
-                                 || XMVector4NotEqual( uvTransform.r[1], uv2.r[1] )
-                                 || XMVector4NotEqual( uvTransform.r[2], uv2.r[2] )
-                                 || XMVector4NotEqual( uvTransform.r[3], uv2.r[3] ) )
+                            auto verts = reinterpret_cast<VertexPositionNormalTangentColorTexture*>( temp.get() + ( v * stride ) );
+                            if ( visited[v] == UINT(-1) )
                             {
-                                wchar_t buff[1024];
-                                swprintf_s( buff, L"WARNING: %s - mismatched UV transforms for the same vertex; texture coordinates may not be correct\n", mesh->name.c_str() );
-                                OutputDebugString( buff );
+                                visited[v] = sm.MaterialIndex;
+
+                                XMVECTOR t = XMLoadFloat2( &verts->textureCoordinate );
+
+                                t = XMVectorSelect( g_XMIdentityR3, t, g_XMSelect1110 );
+
+                                t = XMVector4Transform( t, uvTransform );
+
+                                XMStoreFloat2( &verts->textureCoordinate, t );
                             }
+                            else if ( visited[v] != sm.MaterialIndex )
+                            {
+#ifdef _DEBUG
+                                XMMATRIX uv2 = XMLoadFloat4x4( &materials[ visited[v] ].pMaterial->UVTransform );
+
+                                if ( XMVector4NotEqual( uvTransform.r[0], uv2.r[0] )
+                                     || XMVector4NotEqual( uvTransform.r[1], uv2.r[1] )
+                                     || XMVector4NotEqual( uvTransform.r[2], uv2.r[2] )
+                                     || XMVector4NotEqual( uvTransform.r[3], uv2.r[3] ) )
+                                {
+                                    wchar_t buff[1024];
+                                    swprintf_s( buff, L"WARNING: %s - mismatched UV transforms for the same vertex; texture coordinates may not be correct\n", mesh->name.c_str() );
+                                    OutputDebugString( buff );
+                                }
 #endif
+                            }
                         }
                     }
                 }
 
+                // Create vertex buffer from temporary buffer
                 D3D11_SUBRESOURCE_DATA initData = {0};
-                initData.pSysMem = verts;
+                initData.pSysMem = temp.get();
 
                 ThrowIfFailed(
                     d3dDevice->CreateBuffer( &desc, &initData, &vbs[j] )
@@ -718,6 +729,56 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
         }
 
         assert( vbs.size() == *nVBs );
+        
+        // Create Effects
+        for( UINT j = 0; j < *nMats; ++j )
+        {
+            auto& m = materials[ j ];
+
+            if ( fxFactoryDGSL )
+            {
+                DGSLEffectFactory::DGSLEffectInfo info;
+                info.name = m.name.c_str();
+                info.specularPower = m.pMaterial->SpecularPower;
+                info.perVertexColor = true;
+                info.enableSkinning = enableSkinning;
+                info.alpha = m.pMaterial->Diffuse.w;
+                info.ambientColor = XMFLOAT3( m.pMaterial->Ambient.x, m.pMaterial->Ambient.y, m.pMaterial->Ambient.z );
+                info.diffuseColor = XMFLOAT3( m.pMaterial->Diffuse.x, m.pMaterial->Diffuse.y, m.pMaterial->Diffuse.z );
+                info.specularColor = XMFLOAT3( m.pMaterial->Specular.x, m.pMaterial->Specular.y, m.pMaterial->Specular.z );
+                info.emissiveColor = XMFLOAT3( m.pMaterial->Emissive.x, m.pMaterial->Emissive.y, m.pMaterial->Emissive.z );
+                info.texture = m.texture[0].c_str();
+                info.pixelShader = m.pixelShader.c_str();
+                
+                for( int i = 0; i < 7; ++i )
+                {
+                    info.textures[i] = m.texture[ i+1 ].empty() ? nullptr : m.texture[i].c_str();
+                }
+
+                m.effect = fxFactoryDGSL->CreateDGSLEffect( info, nullptr );
+
+                auto dgslEffect = reinterpret_cast<DGSLEffect*>( m.effect.get() );
+                dgslEffect->SetUVTransform( XMLoadFloat4x4( &m.pMaterial->UVTransform ) );
+            }
+            else
+            {
+                EffectFactory::EffectInfo info;
+                info.name = m.name.c_str();
+                info.specularPower = m.pMaterial->SpecularPower;
+                info.perVertexColor = true;
+                info.enableSkinning = enableSkinning;
+                info.alpha = m.pMaterial->Diffuse.w;
+                info.ambientColor = XMFLOAT3( m.pMaterial->Ambient.x, m.pMaterial->Ambient.y, m.pMaterial->Ambient.z );
+                info.diffuseColor = XMFLOAT3( m.pMaterial->Diffuse.x, m.pMaterial->Diffuse.y, m.pMaterial->Diffuse.z );
+                info.specularColor = XMFLOAT3( m.pMaterial->Specular.x, m.pMaterial->Specular.y, m.pMaterial->Specular.z );
+                info.emissiveColor = XMFLOAT3( m.pMaterial->Emissive.x, m.pMaterial->Emissive.y, m.pMaterial->Emissive.z );
+                info.texture = m.texture[0].c_str();
+
+                m.effect = fxFactory.CreateEffect( info, nullptr );
+            }
+
+            CreateInputLayout( d3dDevice, m.effect.get(), &m.il, enableSkinning );
+        }
 
         // Build mesh parts
         for( UINT j = 0; j < *nSubmesh; ++j )
@@ -738,12 +799,12 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
 
             part->indexCount = sm.PrimCount * 3;
             part->startIndex = sm.StartIndex;
-            part->vertexStride = sizeof(VertexPositionNormalTangentColorTexture);
+            part->vertexStride = static_cast<UINT>( stride );
             part->inputLayout = mat.il;
             part->indexBuffer = ibs[ sm.IndexBufferIndex ];
             part->vertexBuffer = vbs[ sm.VertexBufferIndex ];
             part->effect = mat.effect;
-            part->vbDecl = g_vbdecl;
+            part->vbDecl = enableSkinning ? g_vbdeclSkinning : g_vbdecl;
 
             mesh->meshParts.emplace_back( part );
         }

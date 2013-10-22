@@ -88,6 +88,19 @@ namespace DirectX
     };
 
 
+    // Abstract interface for effects which support skinning
+    class IEffectSkinning
+    {
+    public:
+        virtual ~IEffectSkinning() { } 
+
+        virtual void SetWeightsPerVertex(int value) = 0;
+        virtual void SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, size_t count) = 0;
+        virtual void ResetBoneTransforms() = 0;
+
+        static const int MaxBones = 72;
+    };
+
 
     //----------------------------------------------------------------------------------
     // Built-in shader supports optional texture mapping, vertex coloring, directional lighting, and fog.
@@ -323,7 +336,7 @@ namespace DirectX
 
 
     // Built-in shader supports skinned animation.
-    class SkinnedEffect : public IEffect, public IEffectMatrices, public IEffectLights, public IEffectFog
+    class SkinnedEffect : public IEffect, public IEffectMatrices, public IEffectLights, public IEffectFog, public IEffectSkinning
     {
     public:
         explicit SkinnedEffect(_In_ ID3D11Device* device);
@@ -370,10 +383,9 @@ namespace DirectX
         void SetTexture(_In_opt_ ID3D11ShaderResourceView* value);
         
         // Animation settings.
-        void SetWeightsPerVertex(int value);
-        void SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, size_t count);
-
-        static const int MaxBones = 72;
+        void SetWeightsPerVertex(int value) override;
+        void SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, size_t count) override;
+        void ResetBoneTransforms() override;
 
     private:
         // Private implementation.
@@ -393,10 +405,11 @@ namespace DirectX
 
     //----------------------------------------------------------------------------------
     // Built-in effect for Visual Studio Shader Designer (DGSL) shaders
-    class DGSLEffect : public IEffect, public IEffectMatrices, public IEffectLights
+    class DGSLEffect : public IEffect, public IEffectMatrices, public IEffectLights, public IEffectSkinning
     {
     public:
-        explicit DGSLEffect( _In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader = nullptr );
+        explicit DGSLEffect( _In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader = nullptr,
+                             _In_ bool enableSkinning = false );
         DGSLEffect(DGSLEffect&& moveFrom);
         DGSLEffect& operator= (DGSLEffect&& moveFrom);
         virtual ~DGSLEffect();
@@ -448,6 +461,11 @@ namespace DirectX
 
         static const int MaxTextures = 8;
 
+        // Animation setting.
+        void SetWeightsPerVertex(int value) override;
+        void SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, size_t count) override;
+        void ResetBoneTransforms() override;
+
     private:
         // Private implementation.
         class Impl;
@@ -472,6 +490,7 @@ namespace DirectX
         {
             const WCHAR*        name;
             bool                perVertexColor;
+            bool                enableSkinning;
             float               specularPower;
             float               alpha;
             DirectX::XMFLOAT3   ambientColor;

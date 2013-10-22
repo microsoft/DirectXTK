@@ -52,6 +52,7 @@ private:
     typedef std::map< std::wstring, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> > TextureCache;
 
     EffectCache  mEffectCache;
+    EffectCache  mEffectCacheSkinning;
     TextureCache mTextureCache;
 
     bool mSharing;
@@ -67,14 +68,75 @@ SharedResourcePool<ID3D11Device*, EffectFactory::Impl> EffectFactory::Impl::inst
 _Use_decl_annotations_
 std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect( IEffectFactory* factory, const IEffectFactory::EffectInfo& info, ID3D11DeviceContext* deviceContext )
 {
-    auto it = (info.name && *info.name) ? mEffectCache.find( info.name ) : mEffectCache.end();
-
-    if ( mSharing && it != mEffectCache.end() )
+    if ( info.enableSkinning )
     {
-        return it->second;
+        // SkinnedEffect
+        if ( mSharing && info.name && *info.name )
+        {
+            auto it = mEffectCacheSkinning.find( info.name );
+            if ( mSharing && it != mEffectCacheSkinning.end() )
+            {
+                return it->second;
+            }
+        }
+
+        std::shared_ptr<SkinnedEffect> effect = std::make_shared<SkinnedEffect>( device.Get() );
+
+        effect->EnableDefaultLighting();
+
+        effect->SetAlpha( info.alpha );
+
+        // Skinned Effect does not have an ambient material color, or per-vertex color support
+
+        XMVECTOR color = XMLoadFloat3( &info.diffuseColor );
+        effect->SetDiffuseColor( color );
+
+        if ( info.specularColor.x != 0 || info.specularColor.y != 0 || info.specularColor.z != 0 )
+        {
+            color = XMLoadFloat3( &info.specularColor );
+            effect->SetSpecularColor( color );
+            effect->SetSpecularPower( info.specularPower );
+        }
+        else
+        {
+            effect->DisableSpecular();
+        }
+
+        if ( info.emissiveColor.x != 0 || info.emissiveColor.y != 0 || info.emissiveColor.z != 0 )
+        {
+            color = XMLoadFloat3( &info.emissiveColor );
+            effect->SetEmissiveColor( color );
+        }
+
+        if ( info.texture && *info.texture )
+        {
+            Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
+
+            factory->CreateTexture( info.texture, deviceContext, &srv );
+
+            effect->SetTexture( srv.Get() );
+        }
+
+        if ( mSharing && info.name && *info.name )
+        {
+            std::lock_guard<std::mutex> lock(mutex);
+            mEffectCacheSkinning.insert( EffectCache::value_type( info.name, effect) );
+        }
+
+        return effect;
     }
     else
     {
+        // BasicEffect
+        if ( mSharing && info.name && *info.name )
+        {
+            auto it = mEffectCache.find( info.name );
+            if ( mSharing && it != mEffectCache.end() )
+            {
+                return it->second;
+            }
+        }
+
         std::shared_ptr<BasicEffect> effect = std::make_shared<BasicEffect>( device.Get() );
 
         effect->EnableDefaultLighting();
@@ -119,7 +181,7 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect( IEffectFactory* fact
             effect->SetTextureEnabled( true );
         }
 
-        if ( mSharing && info.name && *info.name && it == mEffectCache.end() )
+        if ( mSharing && info.name && *info.name )
         {
             std::lock_guard<std::mutex> lock(mutex);
             mEffectCache.insert( EffectCache::value_type( info.name, effect) );
@@ -190,6 +252,7 @@ void EffectFactory::Impl::ReleaseCache()
 {
     std::lock_guard<std::mutex> lock(mutex);
     mEffectCache.clear();
+    mEffectCacheSkinning.clear();
     mTextureCache.clear();
 }
 

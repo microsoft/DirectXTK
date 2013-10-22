@@ -238,9 +238,11 @@ void SkinnedEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
     lights.SetConstants(dirtyFlags, matrices, constants.world, constants.worldInverseTranspose, constants.eyePosition, constants.diffuseColor, constants.emissiveColor, true);
 
     // Set the texture.
-    ID3D11ShaderResourceView* textures[1] = { texture.Get() };
+    auto textures = texture.Get();
+    if ( !textures )
+        textures = GetDefaultTexture();
 
-    deviceContext->PSSetShaderResources(0, 1, textures);
+    deviceContext->PSSetShaderResources(0, 1, &textures );
     
     // Set shaders and constant buffers.
     ApplyShaders(deviceContext, GetCurrentShaderPermutation());
@@ -484,6 +486,23 @@ void SkinnedEffect::SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, s
         boneConstant[i][0] = boneMatrix.r[0];
         boneConstant[i][1] = boneMatrix.r[1];
         boneConstant[i][2] = boneMatrix.r[2];
+    }
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
+}
+
+
+void SkinnedEffect::ResetBoneTransforms()
+{
+    auto boneConstant = pImpl->constants.bones;
+
+    XMMATRIX id = XMMatrixIdentity();
+
+    for(size_t i = 0; i < MaxBones; ++i)
+    {
+        boneConstant[i][0] = g_XMIdentityR0;
+        boneConstant[i][1] = g_XMIdentityR1;
+        boneConstant[i][2] = g_XMIdentityR2;
     }
 
     pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
