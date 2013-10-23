@@ -441,7 +441,6 @@ namespace DirectX
 
         // Light settings.
         void SetLightingEnabled(bool value) override;
-        void SetPerPixelLighting(bool value) override;
         void XM_CALLCONV SetAmbientLightColor(FXMVECTOR value) override;
 
         void SetLightEnabled(int whichLight, bool value) override;
@@ -450,6 +449,8 @@ namespace DirectX
         void XM_CALLCONV SetLightSpecularColor(int whichLight, FXMVECTOR value) override;
 
         void EnableDefaultLighting() override;
+
+        static const int MaxDirectionalLights = 4;
 
         // Vertex color setting.
         void SetVertexColorEnabled(bool value);
@@ -471,6 +472,9 @@ namespace DirectX
         class Impl;
 
         std::unique_ptr<Impl> pImpl;
+
+        // Unsupported interface methods.
+        void SetPerPixelLighting(bool value) override;
 
         // Prevent copying.
         DGSLEffect(DGSLEffect const&);

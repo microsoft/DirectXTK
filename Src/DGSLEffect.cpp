@@ -55,16 +55,14 @@ struct MaterialConstants
 };
 
 // Slot 1
-const int DGSLMaxLights = 4;
-
 struct LightConstants
 {
     XMVECTOR    Ambient;
-    XMVECTOR    LightColor[DGSLMaxLights];
-    XMVECTOR    LightAttenuation[DGSLMaxLights];
-    XMVECTOR    LightDirection[DGSLMaxLights];
-    XMVECTOR    LightSpecularIntensity[DGSLMaxLights];
-    UINT        IsPointLight[DGSLMaxLights];
+    XMVECTOR    LightColor[DGSLEffect::MaxDirectionalLights];
+    XMVECTOR    LightAttenuation[DGSLEffect::MaxDirectionalLights];
+    XMVECTOR    LightDirection[DGSLEffect::MaxDirectionalLights];
+    XMVECTOR    LightSpecularIntensity[DGSLEffect::MaxDirectionalLights];
+    UINT        IsPointLight[DGSLEffect::MaxDirectionalLights];
     UINT        ActiveLights;
     float       Padding0;
     float       Padding1;
@@ -217,7 +215,21 @@ public:
         world = id;
         view = id;
         projection = id;
+        constants.material.Specular = g_XMOne;
+        constants.material.SpecularPower = 16;
         constants.object.UvTransform4x4 = id;
+
+        static_assert( MaxDirectionalLights == 4, "Mismatch with DGSL pipline" );
+        for( int i = 0; i < MaxDirectionalLights; ++i )
+        {
+            lightEnabled[i] = (i == 0);
+            lightDiffuseColor[i] = g_XMZero;
+            lightSpecularColor[i] = g_XMOne;
+
+            constants.light.LightDirection[i] = g_XMNegIdentityR1;
+            constants.light.LightColor[i] = lightEnabled[i] ? lightDiffuseColor[i] : g_XMZero;
+            constants.light.LightSpecularIntensity[i] = lightEnabled[i] ? lightSpecularColor[i] : g_XMZero;
+        }
 
         if ( enableSkinning )
         {
@@ -242,6 +254,10 @@ public:
     XMMATRIX world;
     XMMATRIX view;
     XMMATRIX projection;
+
+    bool lightEnabled[MaxDirectionalLights];
+    XMVECTOR lightDiffuseColor[MaxDirectionalLights];
+    XMVECTOR lightSpecularColor[MaxDirectionalLights];
 
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> textures[MaxTextures];
 
@@ -651,10 +667,9 @@ void DGSLEffect::SetLightingEnabled(bool value)
 }
 
 
-void DGSLEffect::SetPerPixelLighting(bool value)
+void DGSLEffect::SetPerPixelLighting(bool)
 {
-    UNREFERENCED_PARAMETER(value);
-    // DGSL shaders never implement vertex lighting
+    // Unsupported interface method.
 }
 
 
@@ -668,18 +683,25 @@ void XM_CALLCONV DGSLEffect::SetAmbientLightColor(FXMVECTOR value)
 
 void DGSLEffect::SetLightEnabled(int whichLight, bool value)
 {
-    if ( whichLight < 0 || whichLight >= DGSLMaxLights )
+    if ( whichLight < 0 || whichLight >= MaxDirectionalLights )
         throw std::out_of_range("whichLight parameter out of range");
+
+    if ( pImpl->lightEnabled[whichLight] == value )
+        return;
+
+    pImpl->lightEnabled[whichLight] = value;
 
     if ( value )
     {
         if ( whichLight >= (int)pImpl->constants.light.ActiveLights )
             pImpl->constants.light.ActiveLights = static_cast<UINT>( whichLight + 1 );
+
+        pImpl->constants.light.LightColor[whichLight] = pImpl->lightDiffuseColor[whichLight];
+        pImpl->constants.light.LightSpecularIntensity[whichLight] = pImpl->lightSpecularColor[whichLight];
     }
     else
     {
-        // Only way to disable individual lights with DGSL is to set the colors to black
-        pImpl->constants.light.LightColor[whichLight] = g_XMZero;
+        pImpl->constants.light.LightColor[whichLight] =
         pImpl->constants.light.LightSpecularIntensity[whichLight] = g_XMZero;
     }
 
@@ -689,7 +711,7 @@ void DGSLEffect::SetLightEnabled(int whichLight, bool value)
 
 void XM_CALLCONV DGSLEffect::SetLightDirection(int whichLight, FXMVECTOR value)
 {
-    if ( whichLight < 0 || whichLight >= DGSLMaxLights )
+    if ( whichLight < 0 || whichLight >= MaxDirectionalLights )
         throw std::out_of_range("whichLight parameter out of range");
 
     // DGSL effects lights do not negate the direction like BasicEffect
@@ -701,23 +723,33 @@ void XM_CALLCONV DGSLEffect::SetLightDirection(int whichLight, FXMVECTOR value)
 
 void XM_CALLCONV DGSLEffect::SetLightDiffuseColor(int whichLight, FXMVECTOR value)
 {
-    if ( whichLight < 0 || whichLight >= DGSLMaxLights )
+    if ( whichLight < 0 || whichLight >= MaxDirectionalLights )
         throw std::out_of_range("whichLight parameter out of range");
 
-    pImpl->constants.light.LightColor[whichLight] = value;
+    pImpl->lightDiffuseColor[whichLight] = value;
 
-    pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBufferLight;
+    if ( pImpl->lightEnabled[whichLight] )
+    {
+        pImpl->constants.light.LightColor[whichLight] = value;
+
+        pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBufferLight;
+    }
 }
 
 
 void XM_CALLCONV DGSLEffect::SetLightSpecularColor(int whichLight, FXMVECTOR value)
 {
-    if ( whichLight < 0 || whichLight >= DGSLMaxLights )
+    if ( whichLight < 0 || whichLight >= MaxDirectionalLights )
         throw std::out_of_range("whichLight parameter out of range");
 
-    pImpl->constants.light.LightSpecularIntensity[whichLight] = value;
+    pImpl->lightSpecularColor[whichLight] = value;
 
-    pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBufferLight;
+    if ( pImpl->lightEnabled[whichLight] )
+    {
+        pImpl->constants.light.LightSpecularIntensity[whichLight] = value;
+
+        pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBufferLight;
+    }
 }
 
 
@@ -759,6 +791,12 @@ void DGSLEffect::SetTexture(int whichTexture, _In_opt_ ID3D11ShaderResourceView*
 // Animation setting
 void DGSLEffect::SetWeightsPerVertex(int value)
 {
+    if ( !pImpl->weightsPerVertex )
+    {
+        // Safe to ignore since it's only an optimization hint
+        return;
+    }
+
     if ((value != 1) &&
         (value != 2) &&
         (value != 4))
@@ -796,7 +834,10 @@ void DGSLEffect::SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, size
 void DGSLEffect::ResetBoneTransforms()
 {
     if ( !pImpl->weightsPerVertex ) 
+    {
+        // Safe to ignore since it just returns things back to default settings
         return;
+    }
 
     auto boneConstant = pImpl->constants.bones.Bones;
 
