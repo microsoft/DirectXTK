@@ -708,7 +708,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
                                 {
                                     wchar_t buff[1024];
                                     swprintf_s( buff, L"WARNING: %s - mismatched UV transforms for the same vertex; texture coordinates may not be correct\n", mesh->name.c_str() );
-                                    OutputDebugString( buff );
+                                    OutputDebugStringW( buff );
                                 }
 #endif
                             }
