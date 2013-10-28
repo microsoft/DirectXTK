@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-July 1, 2013
+October 28, 2013
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Windows Store apps, Windows 8.x Win32 desktop
@@ -20,7 +20,7 @@ Details on using the Windows 8.x SDK with VS 2010 are described on the Visual C+
 <http://blogs.msdn.com/b/vcblog/archive/2012/11/23/using-the-windows-8-sdk-with-visual-studio-2010-configuring-multiple-projects.aspx>
 
 These components are designed to work without requiring any content from the DirectX SDK. For details,
-see "Where is the DirectX SDK"? <http://msdn.microsoft.com/en-us/library/ee663275.aspx>
+see "Where is the DirectX SDK?" <http://msdn.microsoft.com/en-us/library/ee663275.aspx>.
 
 Inc\
     Public Header Files (in the DirectX C++ namespace):
@@ -30,7 +30,7 @@ Inc\
     Effects.h - set of built-in shaders for common rendering tasks
     PrimitiveBatch.h - simple and efficient way to draw user primitives
     GeometricPrimitive.h - draws basic shapes such as cubes and spheres
-    Model.h - draws simple meshes loaded from .CMO or .SDKMESH files
+    Model.h - draws rigid and skinned meshes loaded from .CMO or .SDKMESH files
     CommonStates.h - factory providing commonly used D3D state objects
     VertexTypes.h - structures for commonly used vertex data formats
     DDSTextureLoader.h - light-weight DDS file texture loader
@@ -292,6 +292,10 @@ Game Studio, providing identical functionality and API:
     - EnvironmentMapEffect supports cubic environment mapping
     - SkinnedEffect supports skinned animation
 
+The library also includes support for the Visual Studio Shader Designer (DGSL) shaders
+
+    - DGSLEffect supports both rigid and skinned animation with up to 8 textures.
+
 During initialization:
 
     std::unique_ptr<BasicEffect> effect(new BasicEffect(device));
@@ -521,8 +525,7 @@ This is a class hierarchy for drawing simple meshes with support for loading rig
 Visual Studio 3D Starter Kit .CMO files and legacy DirectX SDK .SDKMESH files.  It is an
 implementation of a mesh renderer similar to the XNA Game Studio Model, ModelMesh, ModelMeshPart design.
 
-NOTE: Currently Model only supports rigid models. Support for animation, skinning, and frame hierarchy
-is not yet implemented.
+NOTE: Support for loading keyframe animations is not yet included.
 
 A Model consists of one or more ModelMesh instances. The ModelMesh instances can be shared by multiple
 instances of Model. A ModelMesh instance consists of one or more ModelMeshPart instances.
@@ -538,7 +541,7 @@ Initialization:
     textures between models. For simplicity, provided Model loaders always return built-in Effect instances.
     Any references to specific shaders in the runtime mesh files are ignored.
 
-    NOTE: The EffectFactory is declared in the Effects.h header.
+    NOTE: EffectFactory and DGSLEffectFactory are declared in the Effects.h header.
 
     Visual Studio 2012 and 2013 include a built-in content pipeline that can generate .CMO files from an
     Autodesk FBX, as well as DDS texture files from various bitmap image formats, as part of the
@@ -738,6 +741,8 @@ VertexTypes.h defines these commonly used vertex data structures:
     - VertexPositionNormalColor
     - VertexPositionNormalTexture
     - VertexPositionNormalColorTexture
+    - VertexPositionNormalTangentColorTexture
+    - VertexPositionNormalTangentColorTextureSkinning
 
 Each type also provides a D3D11_INPUT_ELEMENT_DESC array which can be used to 
 create a matching input layout, for example:
@@ -978,6 +983,16 @@ DirectXMath for performance hotspots where runtime efficiency is more important.
 ---------------
 RELEASE HISTORY
 ---------------
+
+October 28, 2013
+    Updated for Visual Studio 2013 and Windows 8.1 SDK RTM
+    Added DGSLEffect, DGSLEffectFactory, VertexPositionNormalTangentColorTexture, and VertexPositionNormalTangentColorTextureSkinning
+    Model loading and effect factories support loading skinned models
+    MakeSpriteFont now has a smooth vs. sharp antialiasing option: /sharp
+    Model loading from CMOs now handles UV transforms for texture coordinates
+    A number of small fixes for EffectFactory
+    Minor code and project cleanup
+    Added NO_D3D11_DEBUG_NAME compilation define to control population of Direct3D debug layer names for debug builds
 
 July 1, 2013
     VS 2013 Preview projects added and updates for DirectXMath 3.05 __vectorcall
