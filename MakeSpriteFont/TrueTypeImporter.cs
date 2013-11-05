@@ -52,11 +52,30 @@ namespace MakeSpriteFont
                 var glyphList = new List<Glyph>();
 
                 // Rasterize each character in turn.
+                int count = 0;
+
                 foreach (char character in characters)
                 {
+                    ++count;
+
+                    if (count == 500)
+                    {
+                        Console.WriteLine("WARNING: capturing a large font. This may take a long time to complete and could result in too large a texture. Consider using a smaller set of character regions.");
+                        Console.Write(".");
+                    }
+                    else if ((count % 500) == 0)
+                    {
+                        Console.Write(".");
+                    }
+
                     Glyph glyph = ImportGlyph(character, font, brush, stringFormat, bitmap, graphics);
 
                     glyphList.Add(glyph);
+                }
+
+                if (count > 500)
+                {
+                    Console.WriteLine();
                 }
 
                 Glyphs = glyphList;
@@ -214,7 +233,7 @@ namespace MakeSpriteFont
             [DllImport("gdi32.dll")]
             public static extern bool DeleteObject(IntPtr hObject);
 
-            [DllImport("gdi32.dll")]
+            [DllImport("gdi32.dll", CharSet = CharSet.Unicode)]
             public static extern bool GetCharABCWidthsFloat(IntPtr hdc, uint iFirstChar, uint iLastChar, [Out] ABCFloat[] lpABCF);
 
 

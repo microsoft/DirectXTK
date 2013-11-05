@@ -47,9 +47,19 @@ namespace MakeSpriteFont
             // Choose positions for each glyph, one at a time.
             for (int i = 0; i < glyphs.Count; i++)
             {
+                if (i > 0 && (i % 500) == 0)
+                {
+                    Console.Write(".");
+                }
+
                 PositionGlyph(glyphs, i, outputWidth);
 
                 outputHeight = Math.Max(outputHeight, glyphs[i].Y + glyphs[i].Height);
+            }
+
+            if (glyphs.Count >= 500)
+            {
+                Console.WriteLine();
             }
 
             // Create the merged output bitmap.

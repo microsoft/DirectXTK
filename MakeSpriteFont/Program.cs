@@ -66,6 +66,24 @@ namespace MakeSpriteFont
 
             Bitmap bitmap = GlyphPacker.ArrangeGlyphs(glyphs);
 
+            // Emit texture size warning based on known Feature Level limits.
+            if (bitmap.Width > 16384 || bitmap.Height > 16384)
+            {
+                Console.WriteLine("WARNING: Resulting texture is too large for all known Feature Levels (9.1 - 11.1)\n");
+            }
+            else if (bitmap.Width > 8192 || bitmap.Height > 8192)
+            {
+                Console.WriteLine("WARNING: Resulting texture requires a Feature Level 11.0 or later device.\n");
+            }
+            else if (bitmap.Width > 4096 || bitmap.Height > 4096)
+            {
+                Console.WriteLine("WARNING: Resulting texture requires a Feature Level 10.0 or later device.\n");
+            }
+            else if (bitmap.Width > 2048 || bitmap.Height > 2048)
+            {
+                Console.WriteLine("WARNING: Resulting texture requires a Feature Level 9.3 or later device.\n");
+            }
+
             // Adjust line and character spacing.
             lineSpacing += options.LineSpacing;
 
