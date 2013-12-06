@@ -30,7 +30,7 @@
 
 #include "pch.h"
 
-#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
+#if ((_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)) && !defined(_XBOX_ONE)
 #include <d2d1.h>
 #endif
 

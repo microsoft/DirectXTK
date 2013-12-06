@@ -78,6 +78,17 @@ public:
 // Include the precompiled shader code.
 namespace
 {
+#if defined(_XBOX_ONE) && defined(_TITLE)
+    #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_VSEnvMap.inc"
+    #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_VSEnvMapFresnel.inc"
+    #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_VSEnvMapOneLight.inc"
+    #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_VSEnvMapOneLightFresnel.inc"
+
+    #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_PSEnvMap.inc"
+    #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_PSEnvMapNoFog.inc"
+    #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_PSEnvMapSpecular.inc"
+    #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_PSEnvMapSpecularNoFog.inc"
+#else
     #include "Shaders/Compiled/EnvironmentMapEffect_VSEnvMap.inc"
     #include "Shaders/Compiled/EnvironmentMapEffect_VSEnvMapFresnel.inc"
     #include "Shaders/Compiled/EnvironmentMapEffect_VSEnvMapOneLight.inc"
@@ -87,6 +98,7 @@ namespace
     #include "Shaders/Compiled/EnvironmentMapEffect_PSEnvMapNoFog.inc"
     #include "Shaders/Compiled/EnvironmentMapEffect_PSEnvMapSpecular.inc"
     #include "Shaders/Compiled/EnvironmentMapEffect_PSEnvMapSpecularNoFog.inc"
+#endif
 }
 
 

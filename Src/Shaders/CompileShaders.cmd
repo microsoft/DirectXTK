@@ -9,114 +9,124 @@ rem Copyright (c) Microsoft Corporation. All rights reserved.
 setlocal
 set error=0
 
-call :CompileShader AlphaTestEffect vs VSAlphaTest
-call :CompileShader AlphaTestEffect vs VSAlphaTestNoFog
-call :CompileShader AlphaTestEffect vs VSAlphaTestVc
-call :CompileShader AlphaTestEffect vs VSAlphaTestVcNoFog
+if %1.==xbox. goto continuexbox
+if %1.==. goto continue
+echo usage: CompileShaders [xbox]
+exit /b
 
-call :CompileShader AlphaTestEffect ps PSAlphaTestLtGt
-call :CompileShader AlphaTestEffect ps PSAlphaTestLtGtNoFog
-call :CompileShader AlphaTestEffect ps PSAlphaTestEqNe
-call :CompileShader AlphaTestEffect ps PSAlphaTestEqNeNoFog
+:continuexbox
+if not exist "%DurangoXDK%xdk\FXC\amd64\FXC.exe" goto needxdk
 
-call :CompileShader BasicEffect vs VSBasic
-call :CompileShader BasicEffect vs VSBasicNoFog
-call :CompileShader BasicEffect vs VSBasicVc
-call :CompileShader BasicEffect vs VSBasicVcNoFog
-call :CompileShader BasicEffect vs VSBasicTx
-call :CompileShader BasicEffect vs VSBasicTxNoFog
-call :CompileShader BasicEffect vs VSBasicTxVc
-call :CompileShader BasicEffect vs VSBasicTxVcNoFog
+:continue
 
-call :CompileShader BasicEffect vs VSBasicVertexLighting
-call :CompileShader BasicEffect vs VSBasicVertexLightingVc
-call :CompileShader BasicEffect vs VSBasicVertexLightingTx
-call :CompileShader BasicEffect vs VSBasicVertexLightingTxVc
+call :CompileShader%1 AlphaTestEffect vs VSAlphaTest
+call :CompileShader%1 AlphaTestEffect vs VSAlphaTestNoFog
+call :CompileShader%1 AlphaTestEffect vs VSAlphaTestVc
+call :CompileShader%1 AlphaTestEffect vs VSAlphaTestVcNoFog
 
-call :CompileShader BasicEffect vs VSBasicOneLight
-call :CompileShader BasicEffect vs VSBasicOneLightVc
-call :CompileShader BasicEffect vs VSBasicOneLightTx
-call :CompileShader BasicEffect vs VSBasicOneLightTxVc
+call :CompileShader%1 AlphaTestEffect ps PSAlphaTestLtGt
+call :CompileShader%1 AlphaTestEffect ps PSAlphaTestLtGtNoFog
+call :CompileShader%1 AlphaTestEffect ps PSAlphaTestEqNe
+call :CompileShader%1 AlphaTestEffect ps PSAlphaTestEqNeNoFog
 
-call :CompileShader BasicEffect vs VSBasicPixelLighting
-call :CompileShader BasicEffect vs VSBasicPixelLightingVc
-call :CompileShader BasicEffect vs VSBasicPixelLightingTx
-call :CompileShader BasicEffect vs VSBasicPixelLightingTxVc
+call :CompileShader%1 BasicEffect vs VSBasic
+call :CompileShader%1 BasicEffect vs VSBasicNoFog
+call :CompileShader%1 BasicEffect vs VSBasicVc
+call :CompileShader%1 BasicEffect vs VSBasicVcNoFog
+call :CompileShader%1 BasicEffect vs VSBasicTx
+call :CompileShader%1 BasicEffect vs VSBasicTxNoFog
+call :CompileShader%1 BasicEffect vs VSBasicTxVc
+call :CompileShader%1 BasicEffect vs VSBasicTxVcNoFog
 
-call :CompileShader BasicEffect ps PSBasic
-call :CompileShader BasicEffect ps PSBasicNoFog
-call :CompileShader BasicEffect ps PSBasicTx
-call :CompileShader BasicEffect ps PSBasicTxNoFog
+call :CompileShader%1 BasicEffect vs VSBasicVertexLighting
+call :CompileShader%1 BasicEffect vs VSBasicVertexLightingVc
+call :CompileShader%1 BasicEffect vs VSBasicVertexLightingTx
+call :CompileShader%1 BasicEffect vs VSBasicVertexLightingTxVc
 
-call :CompileShader BasicEffect ps PSBasicVertexLighting
-call :CompileShader BasicEffect ps PSBasicVertexLightingNoFog
-call :CompileShader BasicEffect ps PSBasicVertexLightingTx
-call :CompileShader BasicEffect ps PSBasicVertexLightingTxNoFog
+call :CompileShader%1 BasicEffect vs VSBasicOneLight
+call :CompileShader%1 BasicEffect vs VSBasicOneLightVc
+call :CompileShader%1 BasicEffect vs VSBasicOneLightTx
+call :CompileShader%1 BasicEffect vs VSBasicOneLightTxVc
 
-call :CompileShader BasicEffect ps PSBasicPixelLighting
-call :CompileShader BasicEffect ps PSBasicPixelLightingTx
+call :CompileShader%1 BasicEffect vs VSBasicPixelLighting
+call :CompileShader%1 BasicEffect vs VSBasicPixelLightingVc
+call :CompileShader%1 BasicEffect vs VSBasicPixelLightingTx
+call :CompileShader%1 BasicEffect vs VSBasicPixelLightingTxVc
 
-call :CompileShader DualTextureEffect vs VSDualTexture
-call :CompileShader DualTextureEffect vs VSDualTextureNoFog
-call :CompileShader DualTextureEffect vs VSDualTextureVc
-call :CompileShader DualTextureEffect vs VSDualTextureVcNoFog
+call :CompileShader%1 BasicEffect ps PSBasic
+call :CompileShader%1 BasicEffect ps PSBasicNoFog
+call :CompileShader%1 BasicEffect ps PSBasicTx
+call :CompileShader%1 BasicEffect ps PSBasicTxNoFog
 
-call :CompileShader DualTextureEffect ps PSDualTexture
-call :CompileShader DualTextureEffect ps PSDualTextureNoFog
+call :CompileShader%1 BasicEffect ps PSBasicVertexLighting
+call :CompileShader%1 BasicEffect ps PSBasicVertexLightingNoFog
+call :CompileShader%1 BasicEffect ps PSBasicVertexLightingTx
+call :CompileShader%1 BasicEffect ps PSBasicVertexLightingTxNoFog
 
-call :CompileShader EnvironmentMapEffect vs VSEnvMap
-call :CompileShader EnvironmentMapEffect vs VSEnvMapFresnel
-call :CompileShader EnvironmentMapEffect vs VSEnvMapOneLight
-call :CompileShader EnvironmentMapEffect vs VSEnvMapOneLightFresnel
+call :CompileShader%1 BasicEffect ps PSBasicPixelLighting
+call :CompileShader%1 BasicEffect ps PSBasicPixelLightingTx
 
-call :CompileShader EnvironmentMapEffect ps PSEnvMap
-call :CompileShader EnvironmentMapEffect ps PSEnvMapNoFog
-call :CompileShader EnvironmentMapEffect ps PSEnvMapSpecular
-call :CompileShader EnvironmentMapEffect ps PSEnvMapSpecularNoFog
+call :CompileShader%1 DualTextureEffect vs VSDualTexture
+call :CompileShader%1 DualTextureEffect vs VSDualTextureNoFog
+call :CompileShader%1 DualTextureEffect vs VSDualTextureVc
+call :CompileShader%1 DualTextureEffect vs VSDualTextureVcNoFog
 
-call :CompileShader SkinnedEffect vs VSSkinnedVertexLightingOneBone
-call :CompileShader SkinnedEffect vs VSSkinnedVertexLightingTwoBones
-call :CompileShader SkinnedEffect vs VSSkinnedVertexLightingFourBones
+call :CompileShader%1 DualTextureEffect ps PSDualTexture
+call :CompileShader%1 DualTextureEffect ps PSDualTextureNoFog
 
-call :CompileShader SkinnedEffect vs VSSkinnedOneLightOneBone
-call :CompileShader SkinnedEffect vs VSSkinnedOneLightTwoBones
-call :CompileShader SkinnedEffect vs VSSkinnedOneLightFourBones
+call :CompileShader%1 EnvironmentMapEffect vs VSEnvMap
+call :CompileShader%1 EnvironmentMapEffect vs VSEnvMapFresnel
+call :CompileShader%1 EnvironmentMapEffect vs VSEnvMapOneLight
+call :CompileShader%1 EnvironmentMapEffect vs VSEnvMapOneLightFresnel
 
-call :CompileShader SkinnedEffect vs VSSkinnedPixelLightingOneBone
-call :CompileShader SkinnedEffect vs VSSkinnedPixelLightingTwoBones
-call :CompileShader SkinnedEffect vs VSSkinnedPixelLightingFourBones
+call :CompileShader%1 EnvironmentMapEffect ps PSEnvMap
+call :CompileShader%1 EnvironmentMapEffect ps PSEnvMapNoFog
+call :CompileShader%1 EnvironmentMapEffect ps PSEnvMapSpecular
+call :CompileShader%1 EnvironmentMapEffect ps PSEnvMapSpecularNoFog
 
-call :CompileShader SkinnedEffect ps PSSkinnedVertexLighting
-call :CompileShader SkinnedEffect ps PSSkinnedVertexLightingNoFog
-call :CompileShader SkinnedEffect ps PSSkinnedPixelLighting
+call :CompileShader%1 SkinnedEffect vs VSSkinnedVertexLightingOneBone
+call :CompileShader%1 SkinnedEffect vs VSSkinnedVertexLightingTwoBones
+call :CompileShader%1 SkinnedEffect vs VSSkinnedVertexLightingFourBones
 
-call :CompileShader SpriteEffect vs SpriteVertexShader
-call :CompileShader SpriteEffect ps SpritePixelShader
+call :CompileShader%1 SkinnedEffect vs VSSkinnedOneLightOneBone
+call :CompileShader%1 SkinnedEffect vs VSSkinnedOneLightTwoBones
+call :CompileShader%1 SkinnedEffect vs VSSkinnedOneLightFourBones
 
-call :CompileShader DGSLEffect vs main
-call :CompileShader DGSLEffect vs mainVc
-call :CompileShader DGSLEffect vs main1Bones
-call :CompileShader DGSLEffect vs main1BonesVc
-call :CompileShader DGSLEffect vs main2Bones
-call :CompileShader DGSLEffect vs main2BonesVc
-call :CompileShader DGSLEffect vs main4Bones
-call :CompileShader DGSLEffect vs main4BonesVc
+call :CompileShader%1 SkinnedEffect vs VSSkinnedPixelLightingOneBone
+call :CompileShader%1 SkinnedEffect vs VSSkinnedPixelLightingTwoBones
+call :CompileShader%1 SkinnedEffect vs VSSkinnedPixelLightingFourBones
 
-call :CompileShaderHLSL DGSLUnlit ps main
-call :CompileShaderHLSL DGSLLambert ps main
-call :CompileShaderHLSL DGSLPhong ps main
+call :CompileShader%1 SkinnedEffect ps PSSkinnedVertexLighting
+call :CompileShader%1 SkinnedEffect ps PSSkinnedVertexLightingNoFog
+call :CompileShader%1 SkinnedEffect ps PSSkinnedPixelLighting
 
-call :CompileShaderHLSL DGSLUnlit ps mainTk
-call :CompileShaderHLSL DGSLLambert ps mainTk
-call :CompileShaderHLSL DGSLPhong ps mainTk
+call :CompileShader%1 SpriteEffect vs SpriteVertexShader
+call :CompileShader%1 SpriteEffect ps SpritePixelShader
 
-call :CompileShaderHLSL DGSLUnlit ps mainTx
-call :CompileShaderHLSL DGSLLambert ps mainTx
-call :CompileShaderHLSL DGSLPhong ps mainTx
+call :CompileShader%1 DGSLEffect vs main
+call :CompileShader%1 DGSLEffect vs mainVc
+call :CompileShader%1 DGSLEffect vs main1Bones
+call :CompileShader%1 DGSLEffect vs main1BonesVc
+call :CompileShader%1 DGSLEffect vs main2Bones
+call :CompileShader%1 DGSLEffect vs main2BonesVc
+call :CompileShader%1 DGSLEffect vs main4Bones
+call :CompileShader%1 DGSLEffect vs main4BonesVc
 
-call :CompileShaderHLSL DGSLUnlit ps mainTxTk
-call :CompileShaderHLSL DGSLLambert ps mainTxTk
-call :CompileShaderHLSL DGSLPhong ps mainTxTk
+call :CompileShaderHLSL%1 DGSLUnlit ps main
+call :CompileShaderHLSL%1 DGSLLambert ps main
+call :CompileShaderHLSL%1 DGSLPhong ps main
+
+call :CompileShaderHLSL%1 DGSLUnlit ps mainTk
+call :CompileShaderHLSL%1 DGSLLambert ps mainTk
+call :CompileShaderHLSL%1 DGSLPhong ps mainTk
+
+call :CompileShaderHLSL%1 DGSLUnlit ps mainTx
+call :CompileShaderHLSL%1 DGSLLambert ps mainTx
+call :CompileShaderHLSL%1 DGSLPhong ps mainTx
+
+call :CompileShaderHLSL%1 DGSLUnlit ps mainTxTk
+call :CompileShaderHLSL%1 DGSLLambert ps mainTxTk
+call :CompileShaderHLSL%1 DGSLPhong ps mainTxTk
 echo.
 
 if %error% == 0 (
@@ -141,3 +151,20 @@ echo.
 echo %fxc%
 %fxc% || set error=1
 exit /b
+
+:CompileShaderxbox
+set fxc="%DurangoXDK%\xdk\FXC\amd64\FXC.exe" /nologo %1.fx /T%2_4_0_level_9_1 /Zpc /Qstrip_reflect /Qstrip_debug /E%3 /FhCompiled\XboxOne%1_%3.inc /Vn%1_%3
+echo.
+echo %fxc%
+%fxc% || set error=1
+exit /b
+
+:CompileShaderHLSLxbox
+set fxc="%DurangoXDK%\xdk\FXC\amd64\FXC.exe" /nologo %1.hlsl /T%2_4_0_level_9_1 /Zpc /Qstrip_reflect /Qstrip_debug /E%3 /FhCompiled\XboxOne%1_%3.inc /Vn%1_%3
+echo.
+echo %fxc%
+%fxc% || set error=1
+exit /b
+
+:needxdk
+echo ERROR: CompileShaders xbox requires the Microsoft Xbox One XDK

@@ -74,6 +74,23 @@ public:
 // Include the precompiled shader code.
 namespace
 {
+#if defined(_XBOX_ONE) && defined(_TITLE)
+    #include "Shaders/Compiled/XboxOneSkinnedEffect_VSSkinnedVertexLightingOneBone.inc"
+    #include "Shaders/Compiled/XboxOneSkinnedEffect_VSSkinnedVertexLightingTwoBones.inc"
+    #include "Shaders/Compiled/XboxOneSkinnedEffect_VSSkinnedVertexLightingFourBones.inc"
+
+    #include "Shaders/Compiled/XboxOneSkinnedEffect_VSSkinnedOneLightOneBone.inc"
+    #include "Shaders/Compiled/XboxOneSkinnedEffect_VSSkinnedOneLightTwoBones.inc"
+    #include "Shaders/Compiled/XboxOneSkinnedEffect_VSSkinnedOneLightFourBones.inc"
+
+    #include "Shaders/Compiled/XboxOneSkinnedEffect_VSSkinnedPixelLightingOneBone.inc"
+    #include "Shaders/Compiled/XboxOneSkinnedEffect_VSSkinnedPixelLightingTwoBones.inc"
+    #include "Shaders/Compiled/XboxOneSkinnedEffect_VSSkinnedPixelLightingFourBones.inc"
+
+    #include "Shaders/Compiled/XboxOneSkinnedEffect_PSSkinnedVertexLighting.inc"
+    #include "Shaders/Compiled/XboxOneSkinnedEffect_PSSkinnedVertexLightingNoFog.inc"
+    #include "Shaders/Compiled/XboxOneSkinnedEffect_PSSkinnedPixelLighting.inc"
+#else
     #include "Shaders/Compiled/SkinnedEffect_VSSkinnedVertexLightingOneBone.inc"
     #include "Shaders/Compiled/SkinnedEffect_VSSkinnedVertexLightingTwoBones.inc"
     #include "Shaders/Compiled/SkinnedEffect_VSSkinnedVertexLightingFourBones.inc"
@@ -89,6 +106,7 @@ namespace
     #include "Shaders/Compiled/SkinnedEffect_PSSkinnedVertexLighting.inc"
     #include "Shaders/Compiled/SkinnedEffect_PSSkinnedVertexLightingNoFog.inc"
     #include "Shaders/Compiled/SkinnedEffect_PSSkinnedPixelLighting.inc"
+#endif
 }
 
 

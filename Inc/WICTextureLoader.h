@@ -33,7 +33,11 @@
 #error WIC is not supported on Windows Phone
 #endif
 
+#if defined(_XBOX_ONE) && defined(_TITLE) && MONOLITHIC
+#include <d3d11_x.h>
+#else
 #include <d3d11_1.h>
+#endif
 
 #pragma warning(push)
 #pragma warning(disable : 4005)

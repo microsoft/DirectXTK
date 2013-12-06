@@ -176,8 +176,13 @@ const XMFLOAT2 SpriteBatch::Float2Zero(0, 0);
 namespace
 {
     // Include the precompiled shader code.
+#if defined(_XBOX_ONE) && defined(_TITLE)
+    #include "Shaders/Compiled/XboxOneSpriteEffect_SpriteVertexShader.inc"
+    #include "Shaders/Compiled/XboxOneSpriteEffect_SpritePixelShader.inc"
+#else
     #include "Shaders/Compiled/SpriteEffect_SpriteVertexShader.inc"
     #include "Shaders/Compiled/SpriteEffect_SpritePixelShader.inc"
+#endif
 
 
     // Helper looks up the D3D device corresponding to a context interface.

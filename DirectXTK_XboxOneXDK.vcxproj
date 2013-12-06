@@ -1,0 +1,418 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug_MonoD3D|Durango">
+      <Configuration>Debug_MonoD3D</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile_MonoD3D|Durango">
+      <Configuration>Profile_MonoD3D</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_MonoD3D|Durango">
+      <Configuration>Release_MonoD3D</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Durango">
+      <Configuration>Release</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|Durango">
+      <Configuration>Profile</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Durango">
+      <Configuration>Debug</Configuration>
+      <Platform>Durango</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Src\AlphaTestEffect.cpp" />
+    <ClCompile Include="Src\BasicEffect.cpp" />
+    <ClCompile Include="Src\BinaryReader.cpp" />
+    <ClCompile Include="Src\CommonStates.cpp" />
+    <ClCompile Include="Src\DDSTextureLoader.cpp" />
+    <ClCompile Include="Src\DGSLEffect.cpp" />
+    <ClCompile Include="Src\DGSLEffectFactory.cpp" />
+    <ClCompile Include="Src\DualTextureEffect.cpp" />
+    <ClCompile Include="Src\EffectCommon.cpp" />
+    <ClCompile Include="Src\EffectFactory.cpp" />
+    <ClCompile Include="Src\EnvironmentMapEffect.cpp" />
+    <ClCompile Include="Src\GeometricPrimitive.cpp" />
+    <ClCompile Include="Src\Model.cpp" />
+    <ClCompile Include="Src\ModelLoadCMO.cpp" />
+    <ClCompile Include="Src\ModelLoadSDKMESH.cpp" />
+    <ClCompile Include="Src\pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Durango'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_MonoD3D|Durango'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Durango'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_MonoD3D|Durango'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|Durango'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile_MonoD3D|Durango'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Src\PrimitiveBatch.cpp" />
+    <ClCompile Include="Src\ScreenGrab.cpp" />
+    <ClCompile Include="Src\SkinnedEffect.cpp" />
+    <ClCompile Include="Src\SpriteBatch.cpp" />
+    <ClCompile Include="Src\SpriteFont.cpp" />
+    <ClCompile Include="Src\VertexTypes.cpp" />
+    <ClCompile Include="Src\WICTextureLoader.cpp" />
+    <ClCompile Include="Src\XboxDDSTextureLoader.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Inc\CommonStates.h" />
+    <ClInclude Include="Inc\DDSTextureLoader.h" />
+    <ClInclude Include="Inc\Effects.h" />
+    <ClInclude Include="Inc\GeometricPrimitive.h" />
+    <ClInclude Include="Inc\Model.h" />
+    <ClInclude Include="Inc\PrimitiveBatch.h" />
+    <ClInclude Include="Inc\ScreenGrab.h" />
+    <ClInclude Include="Inc\SimpleMath.h" />
+    <ClInclude Include="Inc\SpriteBatch.h" />
+    <ClInclude Include="Inc\SpriteFont.h" />
+    <ClInclude Include="Inc\VertexTypes.h" />
+    <ClInclude Include="Inc\WICTextureLoader.h" />
+    <ClInclude Include="Inc\XboxDDSTextureLoader.h" />
+    <ClInclude Include="Src\AlignedNew.h" />
+    <ClInclude Include="Src\Bezier.h" />
+    <ClInclude Include="Src\BinaryReader.h" />
+    <ClInclude Include="Src\ConstantBuffer.h" />
+    <ClInclude Include="Src\dds.h" />
+    <ClInclude Include="Src\DemandCreate.h" />
+    <ClInclude Include="Src\EffectCommon.h" />
+    <ClInclude Include="Src\pch.h" />
+    <ClInclude Include="Src\PlatformHelpers.h" />
+    <ClInclude Include="Src\SharedResourcePool.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Inc\SimpleMath.inl" />
+    <None Include="Src\Shaders\Common.fxh" />
+    <None Include="Src\Shaders\CompileShaders.cmd" />
+    <None Include="Src\Shaders\Lighting.fxh" />
+    <None Include="Src\Shaders\Structures.fxh" />
+    <None Include="Src\TeapotData.inc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Src\Shaders\AlphaTestEffect.fx">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Src\Shaders\BasicEffect.fx">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Src\Shaders\DGSLEffect.fx">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Src\Shaders\DGSLLambert.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Src\Shaders\DGSLPhong.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Src\Shaders\DGSLUnlit.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Src\Shaders\DualTextureEffect.fx">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Src\Shaders\EnvironmentMapEffect.fx">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Src\Shaders\SkinnedEffect.fx">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Src\Shaders\SpriteEffect.fx">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <RootNamespace>DirectXTK_XboxOneXDK</RootNamespace>
+    <ProjectGuid>{82343615-ec75-4d49-9aa9-74c8c864d3b4}</ProjectGuid>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <Keyword>Win32Proj</Keyword>
+    <ApplicationEnvironment>title</ApplicationEnvironment>
+    <PlatformToolset>v110</PlatformToolset>
+    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+    <TargetRuntime>Native</TargetRuntime>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <EmbedManifest>false</EmbedManifest>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_MonoD3D|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <EmbedManifest>false</EmbedManifest>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <EmbedManifest>false</EmbedManifest>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile_MonoD3D|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <EmbedManifest>false</EmbedManifest>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <EmbedManifest>false</EmbedManifest>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_MonoD3D|Durango'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <EmbedManifest>false</EmbedManifest>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_MonoD3D|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile_MonoD3D|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_MonoD3D|Durango'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Durango'">
+    <ReferencePath>$(Console_SdkLibPath);$(Console_SdkWindowsMetadataPath)</ReferencePath>
+    <LibraryPath>$(Console_SdkLibPath)</LibraryPath>
+    <LibraryWPath>$(Console_SdkLibPath);$(Console_SdkWindowsMetadataPath)</LibraryWPath>
+    <IncludePath>$(Console_SdkIncludeRoot)</IncludePath>
+    <ExecutablePath>$(Console_SdkRoot)bin;$(VCInstallDir)bin\x86_amd64;$(VCInstallDir)bin;$(WindowsSDK_ExecutablePath_x86);$(VSInstallDir)Common7\Tools\bin;$(VSInstallDir)Common7\tools;$(VSInstallDir)Common7\ide;$(ProgramFiles)\HTML Help Workshop;$(MSBuildToolsPath32);$(FxCopDir);$(PATH);</ExecutablePath>
+    <OutDir>Bin\XboxOneXDK\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\XboxOneXDK\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>DirectXTK</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_MonoD3D|Durango'">
+    <ReferencePath>$(Console_SdkLibPath);$(Console_SdkWindowsMetadataPath)</ReferencePath>
+    <LibraryPath>$(Console_SdkLibPath)</LibraryPath>
+    <LibraryWPath>$(Console_SdkLibPath);$(Console_SdkWindowsMetadataPath)</LibraryWPath>
+    <IncludePath>$(Console_SdkIncludeRoot)</IncludePath>
+    <ExecutablePath>$(Console_SdkRoot)bin;$(VCInstallDir)bin\x86_amd64;$(VCInstallDir)bin;$(WindowsSDK_ExecutablePath_x86);$(VSInstallDir)Common7\Tools\bin;$(VSInstallDir)Common7\tools;$(VSInstallDir)Common7\ide;$(ProgramFiles)\HTML Help Workshop;$(MSBuildToolsPath32);$(FxCopDir);$(PATH);</ExecutablePath>
+    <OutDir>Bin\XboxOneXDK\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\XboxOneXDK\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>DirectXTK</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Durango'">
+    <ReferencePath>$(Console_SdkLibPath);$(Console_SdkWindowsMetadataPath)</ReferencePath>
+    <LibraryPath>$(Console_SdkLibPath)</LibraryPath>
+    <LibraryWPath>$(Console_SdkLibPath);$(Console_SdkWindowsMetadataPath)</LibraryWPath>
+    <IncludePath>$(Console_SdkIncludeRoot)</IncludePath>
+    <ExecutablePath>$(Console_SdkRoot)bin;$(VCInstallDir)bin\x86_amd64;$(VCInstallDir)bin;$(WindowsSDK_ExecutablePath_x86);$(VSInstallDir)Common7\Tools\bin;$(VSInstallDir)Common7\tools;$(VSInstallDir)Common7\ide;$(ProgramFiles)\HTML Help Workshop;$(MSBuildToolsPath32);$(FxCopDir);$(PATH);</ExecutablePath>
+    <OutDir>Bin\XboxOneXDK\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\XboxOneXDK\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>DirectXTK</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile_MonoD3D|Durango'">
+    <ReferencePath>$(Console_SdkLibPath);$(Console_SdkWindowsMetadataPath)</ReferencePath>
+    <LibraryPath>$(Console_SdkLibPath)</LibraryPath>
+    <LibraryWPath>$(Console_SdkLibPath);$(Console_SdkWindowsMetadataPath)</LibraryWPath>
+    <IncludePath>$(Console_SdkIncludeRoot)</IncludePath>
+    <ExecutablePath>$(Console_SdkRoot)bin;$(VCInstallDir)bin\x86_amd64;$(VCInstallDir)bin;$(WindowsSDK_ExecutablePath_x86);$(VSInstallDir)Common7\Tools\bin;$(VSInstallDir)Common7\tools;$(VSInstallDir)Common7\ide;$(ProgramFiles)\HTML Help Workshop;$(MSBuildToolsPath32);$(FxCopDir);$(PATH);</ExecutablePath>
+    <OutDir>Bin\XboxOneXDK\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\XboxOneXDK\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>DirectXTK</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Durango'">
+    <ReferencePath>$(Console_SdkLibPath);$(Console_SdkWindowsMetadataPath)</ReferencePath>
+    <LibraryPath>$(Console_SdkLibPath)</LibraryPath>
+    <LibraryWPath>$(Console_SdkLibPath);$(Console_SdkWindowsMetadataPath)</LibraryWPath>
+    <IncludePath>$(Console_SdkIncludeRoot)</IncludePath>
+    <ExecutablePath>$(Console_SdkRoot)bin;$(VCInstallDir)bin\x86_amd64;$(VCInstallDir)bin;$(WindowsSDK_ExecutablePath_x86);$(VSInstallDir)Common7\Tools\bin;$(VSInstallDir)Common7\tools;$(VSInstallDir)Common7\ide;$(ProgramFiles)\HTML Help Workshop;$(MSBuildToolsPath32);$(FxCopDir);$(PATH);</ExecutablePath>
+    <OutDir>Bin\XboxOneXDK\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\XboxOneXDK\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>DirectXTK</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_MonoD3D|Durango'">
+    <ReferencePath>$(Console_SdkLibPath);$(Console_SdkWindowsMetadataPath)</ReferencePath>
+    <LibraryPath>$(Console_SdkLibPath)</LibraryPath>
+    <LibraryWPath>$(Console_SdkLibPath);$(Console_SdkWindowsMetadataPath)</LibraryWPath>
+    <IncludePath>$(Console_SdkIncludeRoot)</IncludePath>
+    <ExecutablePath>$(Console_SdkRoot)bin;$(VCInstallDir)bin\x86_amd64;$(VCInstallDir)bin;$(WindowsSDK_ExecutablePath_x86);$(VSInstallDir)Common7\Tools\bin;$(VSInstallDir)Common7\tools;$(VSInstallDir)Common7\ide;$(ProgramFiles)\HTML Help Workshop;$(MSBuildToolsPath32);$(FxCopDir);$(PATH);</ExecutablePath>
+    <OutDir>Bin\XboxOneXDK\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\XboxOneXDK\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>DirectXTK</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Durango'">
+    <Link>
+      <AdditionalDependencies>d3d11.lib;combase.lib;kernelx.lib;uuid.lib;</AdditionalDependencies>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+    </Link>
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories>$(Console_SdkPackagesRoot);$(Console_SdkWindowsMetadataPath);%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <Optimization>MaxSpeed</Optimization>
+      <PreprocessorDefinitions>NDEBUG;__WRL_NO_DEFAULT_LIB__;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level4</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <AdditionalIncludeDirectories>$(ProjectDir)Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_MonoD3D|Durango'">
+    <Link>
+      <AdditionalDependencies>d3d11.lib;combase.lib;kernelx.lib;uuid.lib;</AdditionalDependencies>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+    </Link>
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories>$(Console_SdkPackagesRoot);$(Console_SdkWindowsMetadataPath);%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <Optimization>MaxSpeed</Optimization>
+      <PreprocessorDefinitions>MONOLITHIC=1;NDEBUG;__WRL_NO_DEFAULT_LIB__;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level4</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <AdditionalIncludeDirectories>$(ProjectDir)Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Durango'">
+    <Link>
+      <AdditionalDependencies>pixEvt.lib;d3d11i.lib;combase.lib;kernelx.lib;uuid.lib;</AdditionalDependencies>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+    </Link>
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories>$(Console_SdkPackagesRoot);$(Console_SdkWindowsMetadataPath);%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <Optimization>MaxSpeed</Optimization>
+      <PreprocessorDefinitions>NDEBUG;__WRL_NO_DEFAULT_LIB__;_LIB;PROFILE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level4</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <AdditionalIncludeDirectories>$(ProjectDir)Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile_MonoD3D|Durango'">
+    <Link>
+      <AdditionalDependencies>pixEvt.lib;d3d11i.lib;combase.lib;kernelx.lib;uuid.lib;</AdditionalDependencies>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+    </Link>
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories>$(Console_SdkPackagesRoot);$(Console_SdkWindowsMetadataPath);%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <Optimization>MaxSpeed</Optimization>
+      <PreprocessorDefinitions>MONOLITHIC=1;NDEBUG;__WRL_NO_DEFAULT_LIB__;_LIB;PROFILE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level4</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <AdditionalIncludeDirectories>$(ProjectDir)Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Durango'">
+    <Link>
+      <AdditionalDependencies>d3d11i.lib;combase.lib;kernelx.lib;uuid.lib;</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+    </Link>
+    <ClCompile>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <MinimalRebuild>false</MinimalRebuild>
+      <AdditionalUsingDirectories>$(Console_SdkPackagesRoot);$(Console_SdkWindowsMetadataPath);%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;__WRL_NO_DEFAULT_LIB__;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <AdditionalIncludeDirectories>$(ProjectDir)Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_MonoD3D|Durango'">
+    <Link>
+      <AdditionalDependencies>d3d11i.lib;combase.lib;kernelx.lib;uuid.lib;</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+    </Link>
+    <ClCompile>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <MinimalRebuild>false</MinimalRebuild>
+      <AdditionalUsingDirectories>$(Console_SdkPackagesRoot);$(Console_SdkWindowsMetadataPath);%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>MONOLITHIC=1;_DEBUG;__WRL_NO_DEFAULT_LIB__;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <AdditionalIncludeDirectories>$(ProjectDir)Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
