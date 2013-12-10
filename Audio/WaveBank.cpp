@@ -362,6 +362,9 @@ bool WaveBank::IsStreamingBank() const
 
 uint32_t WaveBank::SampleSizeInBytes( uint32_t index ) const
 {
+    if ( index >= pImpl->mReader.Count() )
+        return 0;
+
     WaveBankReader::Metadata metadata;
     HRESULT hr = pImpl->mReader.GetMetadata( index, metadata );
     ThrowIfFailed( hr );
@@ -371,6 +374,9 @@ uint32_t WaveBank::SampleSizeInBytes( uint32_t index ) const
 
 uint32_t WaveBank::SampleDuration( uint32_t index ) const
 {
+    if ( index >= pImpl->mReader.Count() )
+        return 0;
+
     WaveBankReader::Metadata metadata;
     HRESULT hr = pImpl->mReader.GetMetadata( index, metadata );
     ThrowIfFailed( hr );
@@ -378,15 +384,27 @@ uint32_t WaveBank::SampleDuration( uint32_t index ) const
 }
 
 
+_Use_decl_annotations_
 const WAVEFORMATEX* WaveBank::GetFormat( uint32_t index, WAVEFORMATEX* wfx, size_t maxsize ) const
 {
+    if ( index >= pImpl->mReader.Count() )
+        return nullptr;
+
     HRESULT hr = pImpl->mReader.GetFormat( index, wfx, maxsize );
     ThrowIfFailed( hr );
     return wfx;
 }
 
 
-void WaveBank::FillSubmitBuffer( uint32_t index, _Out_ XAUDIO2_BUFFER& buffer ) const
+_Use_decl_annotations_
+uint32_t WaveBank::Find( const char* name ) const
+{
+    return pImpl->mReader.Find( name );
+}
+
+
+_Use_decl_annotations_
+void WaveBank::FillSubmitBuffer( uint32_t index, XAUDIO2_BUFFER& buffer ) const
 {
     memset( &buffer, 0, sizeof(buffer) );
 

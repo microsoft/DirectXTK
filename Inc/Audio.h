@@ -263,7 +263,9 @@ namespace DirectX
         uint32_t SampleDuration( uint32_t index ) const;
             // Returns the duration in samples
 
-        const WAVEFORMATEX* GetFormat( uint32_t index, WAVEFORMATEX* wfx, size_t maxsize ) const;
+        const WAVEFORMATEX* GetFormat( uint32_t index, _Out_writes_bytes_(maxsize) WAVEFORMATEX* wfx, size_t maxsize ) const;
+
+        uint32_t Find( _In_z_ const char* name ) const;
 
         void FillSubmitBuffer( uint32_t index, _Out_ XAUDIO2_BUFFER& buffer ) const;
 
