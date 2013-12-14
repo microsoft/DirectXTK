@@ -106,6 +106,11 @@ public:
         if ( !mStreaming )
         {
             stats.audioBytes += mReader.BankAudioSize();
+
+#if defined(_XBOX_ONE) && defined(_TITLE)
+        if ( mReader.HasXMA() )
+            stats.xmaAudioBytes += mReader.BankAudioSize();
+#endif
         }
     }
 
@@ -187,7 +192,24 @@ void WaveBank::Impl::Play( uint32_t index )
     buffer.Flags = XAUDIO2_END_OF_STREAM;
     buffer.pContext = this;
 
-    hr = voice->SubmitSourceBuffer( &buffer, nullptr );
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+
+    XAUDIO2_BUFFER_WMA wmaBuffer;
+    memset( &wmaBuffer, 0, sizeof(wmaBuffer) );
+
+    uint32_t tag;
+    hr = mReader.GetSeekTable( index, &wmaBuffer.pDecodedPacketCumulativeBytes, wmaBuffer.PacketCount, tag );
+    ThrowIfFailed( hr );
+
+    if ( tag == WAVE_FORMAT_WMAUDIO2 || tag == WAVE_FORMAT_WMAUDIO3 )
+    {
+        hr = voice->SubmitSourceBuffer( &buffer, &wmaBuffer );
+    }
+    else
+#endif
+    {
+        hr = voice->SubmitSourceBuffer( &buffer, nullptr );
+    }
     if ( FAILED(hr) )
     {
 #ifdef _DEBUG
@@ -403,6 +425,33 @@ uint32_t WaveBank::Find( const char* name ) const
 }
 
 
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+
+_Use_decl_annotations_
+bool WaveBank::FillSubmitBuffer( uint32_t index, XAUDIO2_BUFFER& buffer, XAUDIO2_BUFFER_WMA& wmaBuffer ) const
+{
+    memset( &buffer, 0, sizeof(buffer) );
+    memset( &wmaBuffer, 0, sizeof(wmaBuffer) );
+
+    HRESULT hr = pImpl->mReader.GetWaveData( index, &buffer.pAudioData, buffer.AudioBytes );
+    ThrowIfFailed( hr );
+
+    WaveBankReader::Metadata metadata;
+    hr = pImpl->mReader.GetMetadata( index, metadata );
+    ThrowIfFailed( hr );
+
+    buffer.LoopBegin = metadata.loopStart;
+    buffer.LoopLength = metadata.loopLength;
+
+    uint32_t tag;
+    hr = pImpl->mReader.GetSeekTable( index, &wmaBuffer.pDecodedPacketCumulativeBytes, wmaBuffer.PacketCount, tag );
+    ThrowIfFailed( hr );
+
+    return ( tag == WAVE_FORMAT_WMAUDIO2 || tag == WAVE_FORMAT_WMAUDIO3 );
+}
+
+#else
+
 _Use_decl_annotations_
 void WaveBank::FillSubmitBuffer( uint32_t index, XAUDIO2_BUFFER& buffer ) const
 {
@@ -414,6 +463,9 @@ void WaveBank::FillSubmitBuffer( uint32_t index, XAUDIO2_BUFFER& buffer ) const
     WaveBankReader::Metadata metadata;
     hr = pImpl->mReader.GetMetadata( index, metadata );
     ThrowIfFailed( hr );
+
     buffer.LoopBegin = metadata.loopStart;
     buffer.LoopLength = metadata.loopLength;
 }
+
+#endif

@@ -29,8 +29,11 @@ const uint32_t FOURCC_RIFF_TAG      = 'FFIR';
 const uint32_t FOURCC_FORMAT_TAG    = ' tmf';
 const uint32_t FOURCC_DATA_TAG      = 'atad';
 const uint32_t FOURCC_WAVE_FILE_TAG = 'EVAW';
+const uint32_t FOURCC_XWMA_FILE_TAG = 'AMWX';
 const uint32_t FOURCC_DLS_SAMPLE    = 'pmsw';
 const uint32_t FOURCC_MIDI_SAMPLE   = 'lpms';
+const uint32_t FOURCC_XWMA_DPDS     = 'sdpd';
+const uint32_t FOURCC_XMA_SEEK      = 'kees';
 
 #pragma pack(push,1)
 struct RIFFChunk
@@ -96,7 +99,6 @@ struct RIFFMIDISample
     uint32_t        loopCount;
     uint32_t        samplerData;
 };
-
 #pragma pack(pop)
 
 static_assert( sizeof(RIFFChunk) == 8, "structure size mismatch");
@@ -134,10 +136,13 @@ static const RIFFChunk* FindChunk( _In_reads_bytes_(sizeBytes) const uint8_t* da
 
 //--------------------------------------------------------------------------------------
 static HRESULT WaveFindFormatAndData( _In_reads_bytes_(wavDataSize) const uint8_t* wavData, _In_ size_t wavDataSize,
-                                      _Outptr_ const WAVEFORMATEX** pwfx, _Outptr_ const uint8_t** pdata, _Out_ uint32_t* dataSize )
+                                      _Outptr_ const WAVEFORMATEX** pwfx, _Outptr_ const uint8_t** pdata, _Out_ uint32_t* dataSize,
+                                      _Out_ bool& dpds, _Out_ bool& seek )
 {
     if ( !wavData || !pwfx )
         return E_POINTER;
+
+    dpds = seek = false;
 
     if (wavDataSize < (sizeof(RIFFChunk)*2 + sizeof(uint32_t) + sizeof(WAVEFORMAT) ) )
     {
@@ -154,7 +159,7 @@ static HRESULT WaveFindFormatAndData( _In_reads_bytes_(wavDataSize) const uint8_
     }
 
     auto riffHeader = reinterpret_cast<const RIFFChunkHeader*>( riffChunk );
-    if ( riffHeader->riff != FOURCC_WAVE_FILE_TAG )
+    if ( riffHeader->riff != FOURCC_WAVE_FILE_TAG && riffHeader->riff != FOURCC_XWMA_FILE_TAG )
     {
         return E_FAIL;
     }
@@ -191,6 +196,11 @@ static HRESULT WaveFindFormatAndData( _In_reads_bytes_(wavDataSize) const uint8_
 
     default:
         {
+            if ( fmtChunk->size < sizeof(WAVEFORMATEX) )
+            {
+                return E_FAIL;
+            }
+
             auto wfx = reinterpret_cast<const WAVEFORMATEX*>( ptr );
 
             if ( fmtChunk->size < ( sizeof(WAVEFORMATEX) + wfx->cbSize ) )
@@ -200,6 +210,19 @@ static HRESULT WaveFindFormatAndData( _In_reads_bytes_(wavDataSize) const uint8_
 
             switch( wfx->wFormatTag )
             {
+            case WAVE_FORMAT_WMAUDIO2:
+            case WAVE_FORMAT_WMAUDIO3: // xWMA is supported by XAudio 2.7 and by Xbox One
+                dpds = true;
+                break;
+
+            case  0x166 /*WAVE_FORMAT_XMA2*/: // XMA2 is supported by Xbox One
+                if ( ( fmtChunk->size < 52 /*sizeof(XMA2WAVEFORMATEX)*/ ) || ( wfx->cbSize < 34 ) )
+                {
+                    return E_FAIL;
+                }
+                seek = true;
+                break;
+
             case WAVE_FORMAT_ADPCM:
                 if ( ( fmtChunk->size < sizeof(ADPCMWAVEFORMAT) ) || ( wfx->cbSize < 32 ) )
                 {
@@ -230,7 +253,12 @@ static HRESULT WaveFindFormatAndData( _In_reads_bytes_(wavDataSize) const uint8_
                     case WAVE_FORMAT_IEEE_FLOAT:
                         break;
 
-                    // MS-ADPCM is not supported as WAVEFORMATEXTENSIBLE
+                    // MS-ADPCM and XMA2 are not supported as WAVEFORMATEXTENSIBLE
+
+                    case WAVE_FORMAT_WMAUDIO2:
+                    case WAVE_FORMAT_WMAUDIO3:
+                        dpds = true;
+                        break;
 
                     default:
                         return HRESULT_FROM_WIN32( ERROR_NOT_SUPPORTED );
@@ -265,7 +293,7 @@ static HRESULT WaveFindFormatAndData( _In_reads_bytes_(wavDataSize) const uint8_
     }
 
     *pwfx = reinterpret_cast<const WAVEFORMATEX*>( wf );
-    *pdata = const_cast<uint8_t*>( ptr );
+    *pdata = ptr;
     *dataSize = dataChunk->size;
     return S_OK;
 }
@@ -296,6 +324,12 @@ static HRESULT WaveFindLoopInfo( _In_reads_bytes_(wavDataSize) const uint8_t* wa
     }
 
     auto riffHeader = reinterpret_cast<const RIFFChunkHeader*>( riffChunk );
+    if ( riffHeader->riff == FOURCC_XWMA_FILE_TAG )
+    {
+        // xWMA files do not contain loop information
+        return S_OK;
+    }
+
     if ( riffHeader->riff != FOURCC_WAVE_FILE_TAG )
     {
         return E_FAIL;
@@ -367,6 +401,65 @@ static HRESULT WaveFindLoopInfo( _In_reads_bytes_(wavDataSize) const uint8_t* wa
                 }
             }
         }
+    }
+
+    return S_OK;
+}
+
+
+//--------------------------------------------------------------------------------------
+static HRESULT WaveFindTable( _In_reads_bytes_(wavDataSize) const uint8_t* wavData, _In_ size_t wavDataSize, _In_ uint32_t tag,
+                              _Outptr_ const uint32_t** pData, _Out_ uint32_t* dataCount )
+{
+    if ( !wavData || !pData || !dataCount )
+        return E_POINTER;
+
+    if (wavDataSize < ( sizeof(RIFFChunk) + sizeof(uint32_t) ) )
+    {
+        return E_FAIL;
+    }
+
+    *pData = nullptr;
+    *dataCount = 0;
+
+    const uint8_t* wavEnd = wavData + wavDataSize;
+
+    // Locate RIFF 'WAVE'
+    auto riffChunk = FindChunk( wavData, wavDataSize, FOURCC_RIFF_TAG );
+    if ( !riffChunk || riffChunk->size < 4 )
+    {
+        return E_FAIL;
+    }
+
+    auto riffHeader = reinterpret_cast<const RIFFChunkHeader*>( riffChunk );
+    if ( riffHeader->riff != FOURCC_WAVE_FILE_TAG && riffHeader->riff != FOURCC_XWMA_FILE_TAG )
+    {
+        return E_FAIL;
+    }
+
+    // Locate tag
+    auto ptr = reinterpret_cast<const uint8_t*>( riffHeader ) + sizeof(RIFFChunkHeader);
+    if ( ( ptr + sizeof(RIFFChunk) ) > wavEnd )
+    {
+        return HRESULT_FROM_WIN32( ERROR_HANDLE_EOF );
+    }
+
+    auto tableChunk = FindChunk( ptr, riffChunk->size, tag );
+    if ( tableChunk )
+    {
+        ptr = reinterpret_cast<const uint8_t*>( tableChunk ) + sizeof( RIFFChunk );
+        if ( ptr + tableChunk->size > wavEnd )
+        {
+            return HRESULT_FROM_WIN32( ERROR_HANDLE_EOF );
+        }
+
+        if ( ( tableChunk->size % sizeof(uint32_t) ) != 0 )
+        {
+            return E_FAIL;
+        }
+
+        *pData = reinterpret_cast<const uint32_t*>( ptr );
+        *dataCount = tableChunk->size / 4;
     }
 
     return S_OK;
@@ -470,7 +563,12 @@ HRESULT DirectX::LoadWAVAudioInMemory( const uint8_t* wavData,
         return E_FAIL;
     }
 
-    return WaveFindFormatAndData( wavData, wavDataSize, wfx, startAudio, audioBytes );
+    bool dpds, seek;
+    HRESULT hr = WaveFindFormatAndData( wavData, wavDataSize, wfx, startAudio, audioBytes, dpds, seek );
+    if ( FAILED(hr) )
+        return hr;
+
+    return (dpds || seek) ? E_FAIL : S_OK;
 }
 
 
@@ -496,7 +594,12 @@ HRESULT DirectX::LoadWAVAudioFromFile( const wchar_t* szFileName,
         return hr;
     }
 
-    return WaveFindFormatAndData( wavData.get(), bytesRead, wfx, startAudio, audioBytes );
+    bool dpds, seek;
+    hr = WaveFindFormatAndData( wavData.get(), bytesRead, wfx, startAudio, audioBytes, dpds, seek );
+    if ( FAILED(hr) )
+        return hr;
+
+    return (dpds || seek) ? E_FAIL : S_OK;
 }
 
 
@@ -515,11 +618,29 @@ HRESULT DirectX::LoadWAVAudioInMemoryEx( const uint8_t* wavData, size_t wavDataS
         return E_FAIL;
     }
 
-    HRESULT hr = WaveFindFormatAndData( wavData, wavDataSize, &result.wfx, &result.startAudio, &result.audioBytes );
+    bool dpds, seek;
+    HRESULT hr = WaveFindFormatAndData( wavData, wavDataSize, &result.wfx, &result.startAudio, &result.audioBytes, dpds, seek );
     if ( FAILED(hr) )
         return hr;
 
-    return WaveFindLoopInfo( wavData, wavDataSize, &result.loopStart, &result.loopLength );
+    hr = WaveFindLoopInfo( wavData, wavDataSize, &result.loopStart, &result.loopLength );
+    if ( FAILED(hr) )
+        return hr;
+
+    if ( dpds )
+    {
+        hr = WaveFindTable( wavData, wavDataSize, FOURCC_XWMA_DPDS, &result.seek, &result.seekCount );
+        if ( FAILED(hr) )
+            return hr;
+    }
+    else if ( seek )
+    {
+        hr = WaveFindTable( wavData, wavDataSize, FOURCC_XMA_SEEK, &result.seek, &result.seekCount );
+        if ( FAILED(hr) )
+            return hr;
+    }
+
+    return S_OK;
 }
 
 
@@ -539,10 +660,28 @@ HRESULT DirectX::LoadWAVAudioFromFileEx( const wchar_t* szFileName, std::unique_
         return hr;
     }
 
-    hr = WaveFindFormatAndData( wavData.get(), bytesRead, &result.wfx, &result.startAudio, &result.audioBytes );
+    bool dpds, seek;
+    hr = WaveFindFormatAndData( wavData.get(), bytesRead, &result.wfx, &result.startAudio, &result.audioBytes, dpds, seek );
     if ( FAILED(hr) )
         return hr;
 
-    return WaveFindLoopInfo( wavData.get(), bytesRead, &result.loopStart, &result.loopLength );
+    hr = WaveFindLoopInfo( wavData.get(), bytesRead, &result.loopStart, &result.loopLength );
+    if ( FAILED(hr) )
+        return hr;
+
+    if ( dpds )
+    {
+        hr = WaveFindTable( wavData.get(), bytesRead, FOURCC_XWMA_DPDS, &result.seek, &result.seekCount );
+        if ( FAILED(hr) )
+            return hr;
+    }
+    else if ( seek )
+    {
+        hr = WaveFindTable( wavData.get(), bytesRead, FOURCC_XMA_SEEK, &result.seek, &result.seekCount );
+        if ( FAILED(hr) )
+            return hr;
+    }
+
+    return S_OK;
 }
 

@@ -43,6 +43,10 @@ namespace DirectX
         bool HasNames() const;
         bool IsStreamingBank() const;
 
+#if defined(_XBOX_ONE) && defined(_TITLE)
+        bool HasXMA() const;
+#endif
+
         const char* BankName() const;
 
         uint32_t Count() const;
@@ -52,6 +56,8 @@ namespace DirectX
         HRESULT GetFormat( _In_ uint32_t index, _Out_ WAVEFORMATEX* pFormat, _In_ size_t maxsize ) const;
 
         HRESULT GetWaveData( _In_ uint32_t index, _Outptr_ const uint8_t** pData, _Out_ uint32_t& dataSize ) const;
+
+        HRESULT GetSeekTable( _In_ uint32_t index, _Out_ const uint32_t** pData, _Out_ uint32_t& dataCount, _Out_ uint32_t& tag ) const;
 
         HANDLE GetAsyncHandle() const;
 

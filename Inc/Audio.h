@@ -19,6 +19,11 @@
 #include <mmreg.h>
 #include <audioclient.h>
 
+#if defined(_XBOX_ONE) && defined(_TITLE)
+#include <xma2defs.h>
+#pragma comment(lib,"acphal.lib")
+#endif
+
 #if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
 #if defined(_MSC_VER) && (_MSC_VER < 1700)
 #error DirectX Tool Kit for Audio does not support VS 2010 without the DirectX SDK 
@@ -74,6 +79,9 @@ namespace DirectX
         size_t  allocatedVoices3d;      // Number of XAudio2 voices allocated for 3D
         size_t  allocatedVoicesOneShot; // Number of XAudio2 voices allocated for one-shot sounds
         size_t  audioBytes;             // Total wave data (in bytes) in SoundEffects and in-memory WaveBanks
+#if defined(_XBOX_ONE) && defined(_TITLE)
+        size_t  xmaAudioBytes;          // Total wave data (in bytes) in SoundEffects and in-memory WaveBanks allocated with ApuAlloc
+#endif
     };
 
 
@@ -267,7 +275,11 @@ namespace DirectX
 
         uint32_t Find( _In_z_ const char* name ) const;
 
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+        bool FillSubmitBuffer( uint32_t index, _Out_ XAUDIO2_BUFFER& buffer, _Out_ XAUDIO2_BUFFER_WMA& wmaBuffer ) const;
+#else
         void FillSubmitBuffer( uint32_t index, _Out_ XAUDIO2_BUFFER& buffer ) const;
+#endif
 
     private:
         // Private implementation.
@@ -293,11 +305,19 @@ namespace DirectX
         SoundEffect( _In_ AudioEngine* engine, _In_z_ const wchar_t* waveFileName );
 
         SoundEffect( _In_ AudioEngine* engine, _Inout_ std::unique_ptr<uint8_t[]>& wavData,
-                     _In_ const WAVEFORMATEX* wfx, _In_ const uint8_t* startAudio, uint32_t audioBytes );
+                     _In_ const WAVEFORMATEX* wfx, _In_reads_bytes_(audioBytes) const uint8_t* startAudio, uint32_t audioBytes );
 
         SoundEffect( _In_ AudioEngine* engine, _Inout_ std::unique_ptr<uint8_t[]>& wavData,
-                     _In_ const WAVEFORMATEX* wfx, _In_ const uint8_t* startAudio, uint32_t audioBytes,
+                     _In_ const WAVEFORMATEX* wfx, _In_reads_bytes_(audioBytes) const uint8_t* startAudio, uint32_t audioBytes,
                      uint32_t loopStart, uint32_t loopLength );
+
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+
+        SoundEffect( _In_ AudioEngine* engine, _Inout_ std::unique_ptr<uint8_t[]>& wavData,
+                     _In_ const WAVEFORMATEX* wfx, _In_reads_bytes_(audioBytes) const uint8_t* startAudio, uint32_t audioBytes,
+                     _In_reads_(seekCount) const uint32_t* seekTable, uint32_t seekCount );
+
+#endif
 
         SoundEffect(SoundEffect&& moveFrom);
         SoundEffect& operator= (SoundEffect&& moveFrom);
@@ -316,7 +336,11 @@ namespace DirectX
 
         const WAVEFORMATEX* GetFormat() const;
 
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+        bool FillSubmitBuffer( _Out_ XAUDIO2_BUFFER& buffer, _Out_ XAUDIO2_BUFFER_WMA& wmaBuffer ) const;
+#else
         void FillSubmitBuffer( _Out_ XAUDIO2_BUFFER& buffer ) const;
+#endif
 
     private:
         // Private implementation.

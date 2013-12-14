@@ -219,6 +219,23 @@ void SoundEffectInstance::Impl::Play( bool loop )
         ThrowIfFailed( hr );
 
         XAUDIO2_BUFFER buffer;
+
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+
+        bool iswma = false;
+        XAUDIO2_BUFFER_WMA wmaBuffer;
+        if ( mWaveBank )
+        {
+            iswma = mWaveBank->FillSubmitBuffer( mIndex, buffer, wmaBuffer );
+        }
+        else
+        {
+            assert( mEffect != 0 );
+            iswma = mEffect->FillSubmitBuffer( buffer, wmaBuffer );
+        }
+
+#else
+
         if ( mWaveBank )
         {
             mWaveBank->FillSubmitBuffer( mIndex, buffer );
@@ -228,6 +245,8 @@ void SoundEffectInstance::Impl::Play( bool loop )
             assert( mEffect != 0 );
             mEffect->FillSubmitBuffer( buffer );
         }
+
+#endif
     
         buffer.Flags = XAUDIO2_END_OF_STREAM;
         if ( loop )
@@ -240,7 +259,17 @@ void SoundEffectInstance::Impl::Play( bool loop )
         }
         buffer.pContext = nullptr;
 
-        hr = mVoice->SubmitSourceBuffer( &buffer, nullptr );
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+        if ( iswma )
+        {
+            hr = mVoice->SubmitSourceBuffer( &buffer, &wmaBuffer );
+        }
+        else
+#endif
+        {
+            hr = mVoice->SubmitSourceBuffer( &buffer, nullptr );
+        }
+
         if ( FAILED(hr) )
         {
 #ifdef _DEBUG

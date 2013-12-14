@@ -3,8 +3,7 @@
 //
 // Simple command-line tool for building wave banks from 1 or more .WAV files. This
 // generates binary wave banks compliant with XACT 3's Wave Bank .XWB format. The
-// .WAV files are not format converted or compressed, and this tool only supports
-// 8-bit PCM, 16-bit PCM, and MS ADPCM formats.
+// .WAV files are not format converted or compressed.
 //
 // For a more full-featured builder, see XACT 3 and the XACTBLD tool in the legacy
 // DirectX SDK (June 2010) release.
@@ -29,6 +28,44 @@
 #include <vector>
 
 #include "WAVFileReader.h"
+
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+#ifndef WAVE_FORMAT_XMA2
+#define WAVE_FORMAT_XMA2 0x166
+
+#pragma pack(push,1)
+typedef struct XMA2WAVEFORMATEX
+{
+    WAVEFORMATEX wfx;
+    // Meaning of the WAVEFORMATEX fields here:
+    //    wFormatTag;        // Audio format type; always WAVE_FORMAT_XMA2
+    //    nChannels;         // Channel count of the decoded audio
+    //    nSamplesPerSec;    // Sample rate of the decoded audio
+    //    nAvgBytesPerSec;   // Used internally by the XMA encoder
+    //    nBlockAlign;       // Decoded sample size; channels * wBitsPerSample / 8
+    //    wBitsPerSample;    // Bits per decoded mono sample; always 16 for XMA
+    //    cbSize;            // Size in bytes of the rest of this structure (34)
+
+    WORD  NumStreams;        // Number of audio streams (1 or 2 channels each)
+    DWORD ChannelMask;       // Spatial positions of the channels in this file,
+                             // stored as SPEAKER_xxx values (see audiodefs.h)
+    DWORD SamplesEncoded;    // Total number of PCM samples per channel the file decodes to
+    DWORD BytesPerBlock;     // XMA block size (but the last one may be shorter)
+    DWORD PlayBegin;         // First valid sample in the decoded audio
+    DWORD PlayLength;        // Length of the valid part of the decoded audio
+    DWORD LoopBegin;         // Beginning of the loop region in decoded sample terms
+    DWORD LoopLength;        // Length of the loop region in decoded sample terms
+    BYTE  LoopCount;         // Number of loop repetitions; 255 = infinite
+    BYTE  EncoderVersion;    // Version of XMA encoder that generated the file
+    WORD  BlockCount;        // XMA blocks in file (and entries in its seek table)
+} XMA2WAVEFORMATEX;
+#pragma pack(pop)
+#endif
+
+static_assert(sizeof(XMA2WAVEFORMATEX) == 52, "Mismatch of XMA2 type" );
 
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
@@ -128,108 +165,6 @@ union MINIWAVEFORMAT
 
         // wFormatTag must be TAG_PCM (2 bits can only represent 4 different values)
         return (wBitsPerSample == BITDEPTH_16) ? 16 : 8;
-    }
-
-    DWORD BlockAlign() const
-    {
-        switch (wFormatTag)
-        {
-        case TAG_PCM:
-            return wBlockAlign;
-            
-        case TAG_XMA:
-            return (nChannels * 16 / 8); // XMA_OUTPUT_SAMPLE_BITS = 16
-
-        case TAG_ADPCM:
-            return (wBlockAlign + ADPCM_BLOCKALIGN_CONVERSION_OFFSET) * nChannels;
-
-        case TAG_WMA:
-            {
-                static const uint32_t aWMABlockAlign[] =
-                {
-                    929,
-                    1487,
-                    1280,
-                    2230,
-                    8917,
-                    8192,
-                    4459,
-                    5945,
-                    2304,
-                    1536,
-                    1485,
-                    1008,
-                    2731,
-                    4096,
-                    6827,
-                    5462,
-                    1280
-                };
-
-                uint32_t dwBlockAlignIndex = wBlockAlign & 0x1F;
-                if ( dwBlockAlignIndex < _countof(aWMABlockAlign) )
-                    return aWMABlockAlign[dwBlockAlignIndex];
-            }
-            break;
-        }
-
-        return 0;
-    }
-
-    DWORD AvgBytesPerSec() const
-    {
-        switch (wFormatTag)
-        {
-        case TAG_PCM:
-        case TAG_XMA:
-            return nSamplesPerSec * wBlockAlign;
-            break;
-
-        case TAG_ADPCM:
-            {
-                uint32_t blockAlign = BlockAlign();
-                uint32_t samplesPerAdpcmBlock = AdpcmSamplesPerBlock();
-                return blockAlign * nSamplesPerSec / samplesPerAdpcmBlock;
-            }
-            break;
-
-        case TAG_WMA:
-            {
-                static const uint32_t aWMAAvgBytesPerSec[] =
-                {
-                    12000,
-                    24000,
-                    4000,
-                    6000,
-                    8000,
-                    20000,
-                    2500
-                };
-                // bitrate = entry * 8
-
-                uint32_t dwBytesPerSecIndex = wBlockAlign >> 5;
-                if ( dwBytesPerSecIndex < _countof(aWMAAvgBytesPerSec) )
-                    return aWMAAvgBytesPerSec[dwBytesPerSecIndex];
-            }
-            break;
-        }
-
-        return 0;
-    }
-
-    DWORD AdpcmSamplesPerBlock() const
-    {
-        uint32_t nBlockAlign = (wBlockAlign + ADPCM_BLOCKALIGN_CONVERSION_OFFSET) * nChannels;
-        return nBlockAlign * 2 / (uint32_t)nChannels - 12;
-    }
-
-    void AdpcmFillCoefficientTable(ADPCMWAVEFORMAT *fmt) const
-    {
-        // These are fixed since we are always using MS ADPCM
-        fmt->wNumCoef = 7; /* MSADPCM_NUM_COEFFICIENTS */
-
-        static ADPCMCOEFSET aCoef[7] = { { 256, 0}, {512, -256}, {0,0}, {192,64}, {240,0}, {460, -208}, {392,-232} };
-        memcpy( &fmt->aCoef, aCoef, sizeof(aCoef) );
     }
 };
 
@@ -342,7 +277,63 @@ WORD AdpcmBlockSizeFromPcmFrames(WORD nPcmFrames, WORD nChannels)
     }
 }
 
-bool ConvertToMiniFormat( const WAVEFORMATEX* wfx, MINIWAVEFORMAT& miniFmt )
+DWORD EncodeWMABlockAlign(DWORD dwBlockAlign, DWORD dwAvgBytesPerSec)
+{
+    static const uint32_t aWMABlockAlign[] =
+    {
+        929,
+        1487,
+        1280,
+        2230,
+        8917,
+        8192,
+        4459,
+        5945,
+        2304,
+        1536,
+        1485,
+        1008,
+        2731,
+        4096,
+        6827,
+        5462,
+        1280
+    };
+
+    static const uint32_t aWMAAvgBytesPerSec[] =
+    {
+        12000,
+        24000,
+        4000,
+        6000,
+        8000,
+        20000,
+        2500
+    };
+
+    const uint32_t MAX_WMA_AVG_BYTES_PER_SEC_ENTRIES = 7;
+    const uint32_t MAX_WMA_BLOCK_ALIGN_ENTRIES = 17;
+
+    DWORD blockAlignIndex = 0;
+    for (; blockAlignIndex < MAX_WMA_BLOCK_ALIGN_ENTRIES && dwBlockAlign != aWMABlockAlign[blockAlignIndex]; ++blockAlignIndex);
+
+    DWORD encoded = 0;
+
+    if (blockAlignIndex < MAX_WMA_BLOCK_ALIGN_ENTRIES)
+    {
+        DWORD bytesPerSecIndex = 0;
+        for (; bytesPerSecIndex < MAX_WMA_AVG_BYTES_PER_SEC_ENTRIES && dwAvgBytesPerSec != aWMAAvgBytesPerSec[bytesPerSecIndex]; ++bytesPerSecIndex);
+
+        if (bytesPerSecIndex < MAX_WMA_AVG_BYTES_PER_SEC_ENTRIES)
+        {
+            encoded = blockAlignIndex | (bytesPerSecIndex << 5);
+        }
+    }
+
+    return encoded;
+}
+
+bool ConvertToMiniFormat( const WAVEFORMATEX* wfx, bool hasSeek, MINIWAVEFORMAT& miniFmt )
 {
     if ( !wfx )
         return false;
@@ -353,12 +344,19 @@ bool ConvertToMiniFormat( const WAVEFORMATEX* wfx, MINIWAVEFORMAT& miniFmt )
         return false;
     }
 
+    if ( !wfx->nChannels )
+    {
+        wprintf( L"ERROR: Wave bank entry should have at least 1 channel\n" );
+        return false;
+    }
+
     if ( wfx->nChannels > 7 )
     {
         wprintf( L"ERROR: Wave banks only support up to 7 channels\n" );
         return false;
     }
 
+    miniFmt.dwValue = 0;
     miniFmt.nSamplesPerSec = wfx->nSamplesPerSec;
     miniFmt.nChannels = wfx->nChannels;
 
@@ -452,9 +450,16 @@ bool ConvertToMiniFormat( const WAVEFORMATEX* wfx, MINIWAVEFORMAT& miniFmt )
                 return false;
             }
 
-            if ( !wfadpcm->wSamplesPerBlock )
+            if ( ( wfadpcm->wSamplesPerBlock < 4 /*MSADPCM_MIN_SAMPLES_PER_BLOCK*/ )
+                  ||  ( wfadpcm->wSamplesPerBlock > 64000 /*MSADPCM_MAX_SAMPLES_PER_BLOCK*/ ) )
             {
-                wprintf( L"ERROR: Microsoft ADPCM wave format cannot have zero wSamplesPerBlock\n" );
+                wprintf( L"ERROR: Microsoft ADPCM wave format wSamplesPerBlock must be 4..64000\n" );
+                return false;
+            }
+
+            if ( wfadpcm->wfx.nChannels == 1 && ( wfadpcm->wSamplesPerBlock % 2 ) )
+            {
+                wprintf( L"ERROR: Microsoft ADPCM wave format mono files must have even wSamplesPerBlock\n" );
                 return false;
             }
 
@@ -475,6 +480,101 @@ bool ConvertToMiniFormat( const WAVEFORMATEX* wfx, MINIWAVEFORMAT& miniFmt )
         }
         return true;
 
+    case WAVE_FORMAT_WMAUDIO2:
+    case WAVE_FORMAT_WMAUDIO3:
+        if ( wfx->wBitsPerSample != 16 )
+        {
+            wprintf( L"ERROR: Wave banks only support 16-bit xWMA data\n");
+            return false;
+        }
+
+        if ( wfx->cbSize != 0 )
+        {
+            wprintf( L"ERROR: Unexpected data found in xWMA header\n");
+            return false;
+        }
+
+        if ( !hasSeek )
+        {
+            wprintf( L"ERROR: xWMA requires seek tables ('dpds' chunk)\n");
+            return false;
+        }
+
+        miniFmt.wFormatTag = MINIWAVEFORMAT::TAG_WMA;
+        miniFmt.wBitsPerSample = ( wfx->wFormatTag == WAVE_FORMAT_WMAUDIO3 ) ? MINIWAVEFORMAT::BITDEPTH_16 : MINIWAVEFORMAT::BITDEPTH_8;
+        miniFmt.wBlockAlign = EncodeWMABlockAlign( wfx->nBlockAlign, wfx->nAvgBytesPerSec );
+        return true;
+
+    case WAVE_FORMAT_XMA2:
+        if ( !hasSeek )
+        {
+            wprintf( L"ERROR: XMA2 requires seek tables ('seek' chunk)\n");
+            return false;
+        }
+        else
+        {
+            auto xmaFmt = reinterpret_cast<const XMA2WAVEFORMATEX*>( wfx );
+            
+            if ( wfx->nBlockAlign != wfx->nChannels * 2 /*XMA_OUTPUT_SAMPLE_BYTES*/)
+            {
+                wprintf( L"ERROR: XMA2 nBlockAlign (%u) != nChannels(%u) * 2\n", wfx->nBlockAlign, wfx->nChannels );
+                return false;
+            }
+
+            if ( wfx->wBitsPerSample != 16 /*XMA_OUTPUT_SAMPLE_BITS*/ )
+            {
+                wprintf( L"ERROR: XMA2 wBitsPerSample (%u) should be 16\n", wfx->wBitsPerSample );
+                return false;
+            }
+
+            if ( xmaFmt->EncoderVersion < 3 )
+            {
+                wprintf( L"ERROR: XMA2 endoder version (%u) - 3 or higher is required", xmaFmt->EncoderVersion );
+                return false;
+            }
+
+            if ( !xmaFmt->BlockCount )
+            {
+                wprintf( L"ERROR: XMA2 BlockCount must be non-zero\n" );
+                return false;
+            }
+
+            if ( !xmaFmt->BytesPerBlock || ( xmaFmt->BytesPerBlock > 8386560 /*XMA_READBUFFER_MAX_BYTES*/ ) )
+            {
+                wprintf( L"ERROR: XMA2 BytesPerBlock (%u) is invalid\n", xmaFmt->BytesPerBlock );
+                return false;
+            }
+
+            if ( xmaFmt->NumStreams != ( ( wfx->nChannels + 1) / 2 ) )
+            {
+                wprintf( L"ERROR: XMA2 NumStreams (%u) != ( nChannels(%u) + 1 ) / 2\n", xmaFmt->NumStreams, wfx->nChannels );
+                return false;
+            }
+
+            if ( !xmaFmt->SamplesEncoded )
+            {
+                wprintf( L"ERROR: XMA2 SamplesEncoded must be non-zero\n" );
+                return false;
+            }
+
+            if ( ( xmaFmt->PlayBegin + xmaFmt->PlayLength ) > xmaFmt->SamplesEncoded )
+            {
+                wprintf( L"ERROR: XMA2 play regtion too large (%u + %u > %u)", xmaFmt->PlayBegin, xmaFmt->PlayLength, xmaFmt->SamplesEncoded );
+                return false;
+            }
+
+            if ( ( xmaFmt->LoopBegin + xmaFmt->LoopLength ) > xmaFmt->SamplesEncoded )
+            {
+                wprintf( L"ERROR: XMA2 loop regtion too large (%u + %u > %u)", xmaFmt->LoopBegin, xmaFmt->LoopLength, xmaFmt->SamplesEncoded );
+                return false;
+            }
+
+            miniFmt.wFormatTag = MINIWAVEFORMAT::TAG_XMA;
+            miniFmt.wBlockAlign = 2 * wfx->nChannels;
+            miniFmt.wBitsPerSample = MINIWAVEFORMAT::BITDEPTH_16;
+        }
+        return true;
+
     case WAVE_FORMAT_EXTENSIBLE:
         {
             static const GUID s_wfexBase = {0x00000000, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71};
@@ -492,7 +592,7 @@ bool ConvertToMiniFormat( const WAVEFORMATEX* wfx, MINIWAVEFORMAT& miniFmt )
             case WAVE_FORMAT_PCM:
                 if ( ( wfx->wBitsPerSample != 8 ) && ( wfx->wBitsPerSample != 16 ) )
                 {
-                    wprintf( L"ERROR: Wave banks only support 8-bit or 16-bit integer PCM data\n");
+                    wprintf( L"ERROR: Wave banks only support 8-bit or 16-bit integer PCM data (%u)\n", wfx->wBitsPerSample );
                     return false;
                 }
 
@@ -553,6 +653,29 @@ bool ConvertToMiniFormat( const WAVEFORMATEX* wfx, MINIWAVEFORMAT& miniFmt )
 
             case WAVE_FORMAT_ADPCM:
                 wprintf( L"ERROR: MS ADPCM is not supported as a WAVEFORMATEXTENSIBLE\n" );
+                return false;
+
+            case WAVE_FORMAT_WMAUDIO2:
+            case WAVE_FORMAT_WMAUDIO3:
+                if ( wfx->wBitsPerSample != 16 )
+                {
+                    wprintf( L"ERROR: Wave banks only support 16-bit xWMA data\n");
+                    return false;
+                }
+
+                if ( !hasSeek )
+                {
+                    wprintf( L"ERROR: xWMA requires seek tables (dpds chunk)\n");
+                    return false;
+                }
+
+                miniFmt.wFormatTag = MINIWAVEFORMAT::TAG_WMA;
+                miniFmt.wBitsPerSample = ( wfx->wFormatTag == WAVE_FORMAT_WMAUDIO3 ) ? 0x1 : 0;
+                miniFmt.wBlockAlign = EncodeWMABlockAlign( wfx->nBlockAlign, wfx->nAvgBytesPerSec );
+                return true;
+
+            case WAVE_FORMAT_XMA2:
+                wprintf( L"ERROR: XMA2 is not supported as a WAVEFORMATEXTENSIBLE\n" );
                 return false;
 
             default:
@@ -871,6 +994,8 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     std::vector<WaveFile> waves; 
     MINIWAVEFORMAT compactFormat={0};
 
+    bool xma = false;
+
     for( SConversion *pConv = pConversion; pConv; pConv = pConv->pNext )
     {
         WCHAR ext[_MAX_EXT];
@@ -909,12 +1034,19 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
 
         PrintInfo( wave );
 
+        if ( wave.data.wfx->wFormatTag == WAVE_FORMAT_XMA2 )
+            xma = true;
+
         waves.emplace_back( wave );
     }
 
     wprintf( L"\n" );
 
-    DWORD dwAlignment = (dwOptions & (1 << OPT_STREAMING)) ? ALIGNMENT_DVD : ALIGNMENT_MIN;
+    DWORD dwAlignment = ALIGNMENT_MIN;
+    if (dwOptions & (1 << OPT_STREAMING))
+        dwAlignment = ALIGNMENT_DVD;
+    else if ( xma )
+        dwAlignment = 2048;
 
     // Convert wave format to miniformat, failing if any won't map
     // Check to see if we can use the compact wave bank format
@@ -924,7 +1056,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
 
     for( auto it = waves.begin(); it != waves.end(); ++it )
     {
-        if ( !ConvertToMiniFormat( it->data.wfx, it->miniFmt ) )
+        if ( !ConvertToMiniFormat( it->data.wfx, it->data.seek != 0, it->miniFmt ) )
         {
             wprintf( L"Failed encoding %s\n", it->conv->szSrc );
             goto LError;
@@ -991,9 +1123,49 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
 
     waveOffset = 0;
     size_t count = 0;
+    size_t seekEntries = 0;
     for( auto it = waves.begin(); it != waves.end(); ++it, ++count )
     {
         DWORD alignedSize = BLOCKALIGNPAD( it->data.audioBytes, dwAlignment );
+
+        auto wfx = it->data.wfx;
+
+        uint64_t duration = 0;
+
+        switch( it->miniFmt.wFormatTag )
+        {
+        case MINIWAVEFORMAT::TAG_XMA:
+            if ( it->data.seekCount > 0 )
+                seekEntries += it->data.seekCount + 1;
+
+            duration = reinterpret_cast<const XMA2WAVEFORMATEX*>( wfx )->SamplesEncoded;
+            break;
+
+        case MINIWAVEFORMAT::TAG_ADPCM:
+            {
+                auto adpcmFmt = reinterpret_cast<const ADPCMEWAVEFORMAT*>( wfx ); 
+                duration = ( it->data.audioBytes / wfx->nBlockAlign ) * adpcmFmt->wSamplesPerBlock;
+                int partial = it->data.audioBytes % wfx->nBlockAlign;
+                if ( partial )
+                {
+                    if ( partial >= ( 7 * wfx->nChannels ) )
+                        duration += ( partial * 2 / wfx->nChannels - 12 );
+                }
+            }
+            break;
+
+        case MINIWAVEFORMAT::TAG_WMA:
+            if ( it->data.seekCount > 0 )
+            {
+                seekEntries += it->data.seekCount + 1;
+                duration = it->data.seek[ it->data.seekCount - 1 ] / uint32_t( 2 * wfx->nChannels );
+            }
+            break;
+
+        default: // MINIWAVEFORMAT::TAG_PCM
+            duration = ( uint64_t( it->data.audioBytes) * 8 ) / uint64_t( wfx->wBitsPerSample * wfx->nChannels );
+            break;
+        }
 
         if ( compact )
         {
@@ -1010,8 +1182,6 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         {
             auto entry = reinterpret_cast<ENTRY*>( entries.get() + count * sizeof(ENTRY) );
             memset( entry, 0, sizeof(ENTRY) );
-
-            uint64_t duration = ( uint64_t(it->data.audioBytes) * 8 ) / uint64_t( it->miniFmt.BitsPerSample() * it->miniFmt.nChannels );
 
             if ( duration > 268435455 )
             {
@@ -1046,7 +1216,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         waveOffset += alignedSize;
     }
 
-    assert( count > 0 );
+    assert( count > 0 && count == waves.size() );
 
     // Create wave bank
     assert( *szOutputFile != 0 );
@@ -1094,7 +1264,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     BANKDATA data;
     memset( &data, 0, sizeof(data) );
 
-    data.dwEntryCount = uint32_t( count );
+    data.dwEntryCount = uint32_t( waves.size() );
     data.dwAlignment = dwAlignment;
 
     GetSystemTimeAsFileTime( &data.BuildTime );
@@ -1156,7 +1326,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         goto LError;
     }
 
-    uint32_t entryBytes = uint32_t( count * data.dwEntryMetaDataElementSize );
+    uint32_t entryBytes = uint32_t( waves.size() * data.dwEntryMetaDataElementSize );
     if ( !WriteFile( hFile.get(), entries.get(), entryBytes, nullptr, nullptr ) )
     {
         wprintf( L"ERROR: Failed writing entry metadata to %s, %u\n", szOutputFile, GetLastError() );
@@ -1167,10 +1337,77 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     header.Segments[ HEADER::SEGIDX_ENTRYMETADATA ].dwLength = entryBytes;
     segmentOffset += entryBytes;
 
-    // Write seektables
+    // Write seek tables
     assert( ( segmentOffset % 4 ) == 0 );
+
     header.Segments[ HEADER::SEGIDX_SEEKTABLES ].dwOffset = segmentOffset;
-    header.Segments[ HEADER::SEGIDX_SEEKTABLES ].dwLength = 0;
+
+    if ( seekEntries > 0 )
+    {
+        seekEntries += waves.size(); // Room for an offset per entry
+
+        std::unique_ptr<uint32_t> seekTables( new uint32_t[ seekEntries ] );
+
+        if ( SetFilePointer( hFile.get(), segmentOffset, 0, FILE_BEGIN ) == INVALID_SET_FILE_POINTER )
+        {
+            wprintf( L"ERROR: Failed writing seek tables to %s, SFP %u\n", szOutputFile, GetLastError() );
+            goto LError;
+        }
+
+        uint32_t seekoffset = 0;
+        uint32_t index = 0;
+        for( auto it = waves.begin(); it != waves.end(); ++it, ++index )
+        {
+            if ( it->miniFmt.wFormatTag == MINIWAVEFORMAT::TAG_WMA )
+            {
+                seekTables.get()[ index ] = seekoffset * sizeof(uint32_t);
+
+                uint32_t baseoffset = waves.size() + seekoffset;
+                seekTables.get()[ baseoffset ] = it->data.seekCount;
+
+                for( uint32_t j = 0; j < it->data.seekCount; ++j )
+                {
+                    seekTables.get()[ baseoffset + j + 1 ]  = it->data.seek[ j ];
+                }
+
+                seekoffset += it->data.seekCount + 1;
+            }
+            else if ( it->miniFmt.wFormatTag == MINIWAVEFORMAT::TAG_XMA )
+            {
+                seekTables.get()[ index ] = seekoffset * sizeof(uint32_t);
+
+                uint32_t baseoffset = waves.size() + seekoffset;
+                seekTables.get()[ baseoffset ] = it->data.seekCount;
+
+                for( uint32_t j = 0; j < it->data.seekCount; ++j )
+                {
+                    seekTables.get()[ baseoffset + j + 1 ]  = _byteswap_ulong( it->data.seek[ j ] );
+                }
+
+                seekoffset += it->data.seekCount + 1;
+            }
+            else
+            {
+                seekTables.get()[ index ] = uint32_t( -1 );
+            }
+        }
+
+        uint32_t seekLen = sizeof(uint32_t) * seekEntries;
+
+        if ( !WriteFile( hFile.get(), seekTables.get(), seekLen, nullptr, nullptr ) )
+        {
+            wprintf( L"ERROR: Failed writing seek tables to %s, %u\n", szOutputFile, GetLastError() );
+            goto LError;
+        }
+
+        segmentOffset += seekLen;
+
+        header.Segments[ HEADER::SEGIDX_SEEKTABLES ].dwLength = seekLen;
+    }
+    else
+    {
+        header.Segments[ HEADER::SEGIDX_SEEKTABLES ].dwLength = 0;
+    }
 
     // Write entry names
     if ( dwOptions & (1 << OPT_FRIENDLY_NAMES ) )

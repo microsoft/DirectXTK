@@ -46,6 +46,8 @@ namespace DirectX
         uint32_t audioBytes;
         uint32_t loopStart;
         uint32_t loopLength;
+        const uint32_t* seek;       // Note: XMA Seek data is Big-Endian
+        uint32_t seekCount;
     };
 
     HRESULT LoadWAVAudioInMemoryEx( _In_reads_bytes_(wavDataSize) const uint8_t* wavData,
