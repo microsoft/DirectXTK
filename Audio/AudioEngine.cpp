@@ -1024,32 +1024,27 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
 #if defined(__cplusplus_winrt)
 
     // Enumerating with WinRT using C++/CX (Windows Store apps)
-    using namespace concurrency;
     using Windows::Devices::Enumeration::DeviceClass;
     using Windows::Devices::Enumeration::DeviceInformation;
     using Windows::Devices::Enumeration::DeviceInformationCollection;
- 
+
     auto operation = DeviceInformation::FindAllAsync(DeviceClass::AudioRender);
+    while (operation->Status != Windows::Foundation::AsyncStatus::Completed)
+        ;
 
-    auto task = create_task( operation );
+    DeviceInformationCollection^ devices = operation->GetResults();
 
-    task.then( [&list]( DeviceInformationCollection^ devices )
+    for (unsigned i = 0; i < devices->Size; ++i)
     {
-        for( unsigned i=0; i < devices->Size; ++i )
-        {
-            using Windows::Devices::Enumeration::DeviceInformation;
- 
-            DeviceInformation^ d = devices->GetAt(i);
+        using Windows::Devices::Enumeration::DeviceInformation;
 
-            RendererDetail device;
-            device.deviceId = d->Id->Data();
-            device.description = d->Name->Data();
-            list.emplace_back( device );
-        }
-    });
+        DeviceInformation^ d = devices->GetAt(i);
 
-    task.wait();
-
+        RendererDetail device;
+        device.deviceId = d->Id->Data();
+        device.description = d->Name->Data();
+        list.emplace_back(device);
+    }
 #else
 
     // Enumerating with WinRT using WRL (Win32 desktop app for Windows 8.x)
@@ -1086,7 +1081,7 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
 
     operation->put_Completed( callback.Get() );
 
-    WaitForSingleObject( findCompleted.Get(), INFINITE );
+    (void)WaitForSingleObjectEx( findCompleted.Get(), INFINITE, FALSE );
 
     ComPtr<IVectorView<DeviceInformation*>> devices;
     operation->GetResults( devices.GetAddressOf() );
