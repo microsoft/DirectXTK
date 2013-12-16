@@ -24,6 +24,10 @@
 #pragma comment(lib,"acphal.lib")
 #endif
 
+#if defined(WINAPI_FAMILY) && WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
+#pragma comment(lib,"PhoneAudioSes.lib")
+#endif
+
 #if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
 #if defined(_MSC_VER) && (_MSC_VER < 1700)
 #error DirectX Tool Kit for Audio does not support VS 2010 without the DirectX SDK 
