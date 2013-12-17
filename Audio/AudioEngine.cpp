@@ -981,7 +981,6 @@ X3DAUDIO_HANDLE& AudioEngine::Get3DHandle() const
 #pragma comment(lib,"runtimeobject.lib")
 #include <Windows.Devices.Enumeration.h>
 #include <wrl.h>
-#include <ppltasks.h>
 #endif
 
 std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
