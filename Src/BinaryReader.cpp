@@ -23,9 +23,12 @@ BinaryReader::BinaryReader(_In_z_ wchar_t const* fileName)
 {
     size_t dataSize;
 
-    ThrowIfFailed(
-        ReadEntireFile(fileName, mOwnedData, &dataSize)
-    );
+    HRESULT hr = ReadEntireFile(fileName, mOwnedData, &dataSize);
+    if ( FAILED(hr) )
+    {
+        DebugTrace( "BinaryReader failed (%08X) to load '%S'\n", hr, fileName );
+        throw std::exception( "BinaryReader" );
+    }
 
     mPos = mOwnedData.get();
     mEnd = mOwnedData.get() + dataSize;

@@ -273,9 +273,7 @@ void SoundEffectInstance::Impl::Play( bool loop )
         if ( FAILED(hr) )
         {
 #ifdef _DEBUG
-            char buff[256];
-            sprintf_s( buff, "ERROR: SoundEffect failed (%08X) when submitting buffer:\n", hr );
-            OutputDebugStringA( buff );
+            DebugTrace( "ERROR: SoundEffect failed (%08X) when submitting buffer:\n", hr );
 
             char buff2[64];
             auto wfx = ( mWaveBank ) ? mWaveBank->GetFormat( mIndex, reinterpret_cast<WAVEFORMATEX*>( buff2 ), 64 )
@@ -283,9 +281,8 @@ void SoundEffectInstance::Impl::Play( bool loop )
 
             uint32_t length = ( mWaveBank ) ? mWaveBank->SampleSizeInBytes( mIndex ) : mEffect->SampleSizeInBytes();
 
-            sprintf_s( buff, "\tFormat Tag %u, %u channels, %u-bit, %u Hz, %u bytes\n", wfx->wFormatTag, 
+            DebugTrace( "\tFormat Tag %u, %u channels, %u-bit, %u Hz, %u bytes\n", wfx->wFormatTag, 
                        wfx->nChannels, wfx->wBitsPerSample, wfx->nSamplesPerSec, length );
-            OutputDebugStringA( buff );
 #endif
             throw std::exception( "SubmitSourceBuffer" );
         }
@@ -338,11 +335,7 @@ void SoundEffectInstance::Impl::SetPan( float pan )
 {
     if ( mDSPSettings.SrcChannelCount != 1 )
     {
-#if _DEBUG
-        char buff2[256];
-        sprintf_s( buff2, "ERROR: SoundEffectInstance only supports panning on mono source data\n" );
-        OutputDebugStringA( buff2 );
-#endif
+        DebugTrace( "ERROR: SoundEffectInstance only supports panning on mono source data\n" );
         throw std::exception( "SoundEffectInstance::SetPan" );
     }
 
@@ -408,9 +401,7 @@ void SoundEffectInstance::Impl::Apply3D( const AudioListener& listener, const Au
 
     if ( !( mFlags & SoundEffectInstance_Use3D ) )
     {
-#ifdef _DEBUG
-        OutputDebugStringA( "ERROR: SoundEffectInstance::Apply3D called for an instance created without SoundEffectInstance_Use3D set" );
-#endif
+        DebugTrace( "ERROR: SoundEffectInstance::Apply3D called for an instance created without SoundEffectInstance_Use3D set" );
         throw std::exception( "SoundEffectInstance::Apply3D" );
     }
 

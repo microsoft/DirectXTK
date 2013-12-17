@@ -341,27 +341,40 @@ void DGSLEffectFactory::Impl::CreateTexture( const WCHAR* name, ID3D11DeviceCont
 
         if ( _wcsicmp( ext, L".dds" ) == 0 )
         {
-            ThrowIfFailed(
-                CreateDDSTextureFromFile( device.Get(), fullName, nullptr, textureView )
-                );
+            HRESULT hr = CreateDDSTextureFromFile( device.Get(), fullName, nullptr, textureView );
+            if ( FAILED(hr) )
+            {
+                DebugTrace( "CreateDDSTextureFromFile failed (%08X) for '%S'\n", hr, fullName );
+                throw std::exception( "CreateDDSTextureFromFile" );
+            }
         }
         else if ( deviceContext )
         {
             std::lock_guard<std::mutex> lock(mutex);
-            DirectX::ThrowIfFailed(
-                CreateWICTextureFromFile( device.Get(), deviceContext, fullName, nullptr, textureView )
-                );
+            HRESULT hr = CreateWICTextureFromFile( device.Get(), deviceContext, fullName, nullptr, textureView );
+            if ( FAILED(hr) )
+            {
+                DebugTrace( "CreateWICTextureFromFile failed (%08X) for '%S'\n", hr, fullName );
+                throw std::exception( "CreateWICTextureFromFile" );
+            }
         }
         else
         {
-            DirectX::ThrowIfFailed(
-                CreateWICTextureFromFile( device.Get(), nullptr, fullName, nullptr, textureView )
-                );
+            HRESULT hr = CreateWICTextureFromFile( device.Get(), nullptr, fullName, nullptr, textureView );
+            if ( FAILED(hr) )
+            {
+                DebugTrace( "CreateWICTextureFromFile failed (%08X) for '%S'\n", hr, fullName );
+                throw std::exception( "CreateWICTextureFromFile" );
+            }
         }
 #else
         UNREFERENCED_PARAMETER( deviceContext );
-        ThrowIfFailed(
-            CreateDDSTextureFromFile( device.Get(), fullName, nullptr, textureView ) );
+        HRESULT hr = CreateDDSTextureFromFile( device.Get(), fullName, nullptr, textureView );
+        if ( FAILED(hr) )
+        {
+            DebugTrace( "CreateDDSTextureFromFile failed (%08X) for '%S'\n", hr, fullName );
+            throw std::exception( "CreateDDSTextureFromFile" );
+        }
 #endif
 
         if ( mSharing && *name && it == mTextureCache.end() )
@@ -395,9 +408,12 @@ void DGSLEffectFactory::Impl::CreatePixelShader( const WCHAR* name, ID3D11PixelS
 
         size_t dataSize = 0;
         std::unique_ptr<uint8_t[]> data;
-        ThrowIfFailed(
-            BinaryReader::ReadEntireFile( fullName, data, &dataSize )
-        );
+        HRESULT hr = BinaryReader::ReadEntireFile( fullName, data, &dataSize );
+        if ( FAILED(hr) )
+        {
+            DebugTrace( "CreatePixelShader failed (%08X) to load shader file '%S'\n", hr, fullName );
+            throw std::exception( "CreatePixelShader" );
+        }
        
         ThrowIfFailed(
             device->CreatePixelShader( data.get(), dataSize, nullptr, pixelShader ) );

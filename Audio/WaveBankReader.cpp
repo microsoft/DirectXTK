@@ -16,6 +16,7 @@
 #include "pch.h"
 #include "WaveBankReader.h"
 #include "Audio.h"
+#include "PlatformHelpers.h"
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
 #include <apu.h>
@@ -583,11 +584,7 @@ HRESULT WaveBankReader::Impl::Open( const wchar_t* szFileName )
     bool be = ( m_header.dwSignature == HEADER::BE_SIGNATURE );
     if ( be )
     {
-#ifdef _DEBUG
-        char buff[ 1024 ];
-        sprintf_s( buff, "INFO: \"%S\" is a big-endian (Xbox 360) wave bank\n", szFileName );
-        OutputDebugStringA( buff );
-#endif
+        DebugTrace( "INFO: \"%S\" is a big-endian (Xbox 360) wave bank\n", szFileName );
         m_header.BigEndian();
     }
 
@@ -886,9 +883,7 @@ HRESULT WaveBankReader::Impl::Open( const wchar_t* szFileName )
             HRESULT hr = ApuAlloc( &m_xmaMemory, nullptr, waveLen, SHAPE_XMA_INPUT_BUFFER_ALIGNMENT );
             if ( FAILED(hr) )
             {
-#ifdef _DEBUG
-                OutputDebugStringA( "ERROR: ApuAlloc failed. Did you allocate a large enough heap with ApuCreateHeap for all your XMA wave data?" );
-#endif
+                DebugTrace( "ERROR: ApuAlloc failed. Did you allocate a large enough heap with ApuCreateHeap for all your XMA wave data?" );
                 return hr;
             }
 

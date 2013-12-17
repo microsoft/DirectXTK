@@ -43,11 +43,7 @@ public:
     {
         if ( !mInstances.empty() )
         {
-#ifdef _DEBUG
-            char buff[256];
-            sprintf_s( buff, "WARNING: Destroying WaveBank \"%s\" with %Iu outstanding SoundEffectInstances\n", mReader.BankName(), mInstances.size() );
-            OutputDebugStringA( buff );
-#endif
+            DebugTrace( "WARNING: Destroying WaveBank \"%s\" with %Iu outstanding SoundEffectInstances\n", mReader.BankName(), mInstances.size() );
 
             for( auto it = mInstances.begin(); it != mInstances.end(); ++it )
             {
@@ -60,11 +56,7 @@ public:
 
         if ( mOneShots > 0 )
         {
-#ifdef _DEBUG
-            char buff[256];
-            sprintf_s( buff, "WARNING: Destroying WaveBank \"%s\" with %u outstanding one shot effects\n", mReader.BankName(), mOneShots );
-            OutputDebugStringA( buff );
-#endif
+            DebugTrace( "WARNING: Destroying WaveBank \"%s\" with %u outstanding one shot effects\n", mReader.BankName(), mOneShots );
         }
 
         if ( mEngine )
@@ -143,19 +135,13 @@ void WaveBank::Impl::Play( uint32_t index )
 {
     if ( mStreaming )
     {
-#ifdef _DEBUG
-        OutputDebugStringA( "ERROR: One-shots can only be created from an in-memory wave bank\n");
-#endif
+        DebugTrace( "ERROR: One-shots can only be created from an in-memory wave bank\n");
         throw std::exception( "WaveBank::Play" );
     }
 
     if ( index >= mReader.Count() )
     {
-#ifndef NDEBUG
-        char buff[128];
-        sprintf_s( buff, "WARNING: Index %u not found in wave bank with only %u entries, one-shot not triggered\n", index, mReader.Count() );
-        OutputDebugStringA( buff );
-#endif
+        DebugTrace( "WARNING: Index %u not found in wave bank with only %u entries, one-shot not triggered\n", index, mReader.Count() );
         return;
     }
 
@@ -212,15 +198,9 @@ void WaveBank::Impl::Play( uint32_t index )
     }
     if ( FAILED(hr) )
     {
-#ifdef _DEBUG
-        char buff[256];
-        sprintf_s( buff, "ERROR: WaveBank failed (%08X) when submitting buffer:\n", hr );
-        OutputDebugStringA( buff );
-        
-        sprintf_s( buff, "\tFormat Tag %u, %u channels, %u-bit, %u Hz, %u bytes\n", wfx->wFormatTag, 
+        DebugTrace( "ERROR: WaveBank failed (%08X) when submitting buffer:\n", hr );
+        DebugTrace( "\tFormat Tag %u, %u channels, %u-bit, %u Hz, %u bytes\n", wfx->wFormatTag, 
                     wfx->nChannels, wfx->wBitsPerSample, wfx->nSamplesPerSec, metadata.lengthBytes );
-        OutputDebugStringA( buff );
-#endif
         throw std::exception( "SubmitSourceBuffer" );
     }
 
@@ -240,20 +220,12 @@ WaveBank::WaveBank( AudioEngine* engine, const wchar_t* wbFileName )
     HRESULT hr = pImpl->Initialize( engine, wbFileName );
     if ( FAILED(hr) )
     {
-#ifdef _DEBUG
-        char buff[1024];
-        sprintf_s( buff, "ERROR: WaveBank failed (%08X) to intialize from .xwb file \"%S\"\n", hr, wbFileName );
-        OutputDebugStringA( buff );
-#endif
+        DebugTrace( "ERROR: WaveBank failed (%08X) to intialize from .xwb file \"%S\"\n", hr, wbFileName );
         throw std::exception( "WaveBank" );
     }
 
-#ifdef _DEBUG
-    char buff[1024];
-    sprintf_s( buff, "INFO: WaveBank \"%s\" with %u entries loaded from .xwb file \"%S\"\n",
+    DebugTrace( "INFO: WaveBank \"%s\" with %u entries loaded from .xwb file \"%S\"\n",
                 pImpl->mReader.BankName(), pImpl->mReader.Count(), wbFileName );
-    OutputDebugStringA( buff );
-#endif
 }
 
 
@@ -290,11 +262,7 @@ void WaveBank::Play( _In_z_ const char* name )
     uint32_t index = pImpl->mReader.Find( name );
     if ( index == uint32_t(-1) )
     {
-#ifndef NDEBUG
-        char buff[128];
-        sprintf_s( buff, "WARNING: Name '%s' not found in wave bank, one-shot not triggered\n", name );
-        OutputDebugStringA( buff );
-#endif
+        DebugTrace( "WARNING: Name '%s' not found in wave bank, one-shot not triggered\n", name );
         return;
     }
 
@@ -308,9 +276,7 @@ std::unique_ptr<SoundEffectInstance> WaveBank::CreateInstance( uint32_t index, S
 
     if ( pImpl->mStreaming )
     {
-#ifdef _DEBUG
-        OutputDebugStringA( "ERROR: SoundEffectInstances can only be created from an in-memory wave bank\n");
-#endif
+        DebugTrace( "ERROR: SoundEffectInstances can only be created from an in-memory wave bank\n");
         throw std::exception( "WaveBank::CreateInstance" );
     }
 

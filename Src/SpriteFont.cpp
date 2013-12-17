@@ -81,6 +81,7 @@ SpriteFont::Impl::Impl(_In_ ID3D11Device* device, _In_ BinaryReader* reader)
     {
         if (reader->Read<uint8_t>() != *magic)
         {
+            DebugTrace( "SpriteFont provided with an invalid .spritefont file\n" );
             throw std::exception("Not a MakeSpriteFont output binary");
         }
     }
@@ -152,6 +153,7 @@ SpriteFont::Glyph const* SpriteFont::Impl::FindGlyph(wchar_t character) const
         return defaultGlyph;
     }
 
+    DebugTrace( "SpriteFont encountered a character not in the font (%u, %C), and no default glyph was provided\n", character, character );
     throw std::exception("Character not in font");
 }
 

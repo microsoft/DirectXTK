@@ -48,13 +48,10 @@ namespace
 
         STDMETHOD_(void, OnCriticalError) (THIS_ HRESULT error)
         {
-#ifdef _DEBUG
-            char buff[256];
-            sprintf_s( buff, "ERROR: AudioEngine encountered critical error (%08X)\n", error );
-            OutputDebugStringA( buff );
-#else
+#ifndef _DEBUG
             UNREFERENCED_PARAMETER(error);
 #endif
+            DebugTrace( "ERROR: AudioEngine encountered critical error (%08X)\n", error );
             SetEvent( mCriticalError );
         }
 
@@ -259,8 +256,8 @@ HRESULT AudioEngine::Impl::Reset( const WAVEFORMATEX* wfx, const wchar_t* device
     HRESULT hr = XAudio2Create( xaudio2.ReleaseAndGetAddressOf(), eflags );
     if( FAILED( hr ) )
     {
-#if (_WIN32_WINNT < _WIN32_WINNT_WIN8) && defined(_DEBUG)
-        OutputDebugStringA( "ERROR: XAudio 2.7 not found (have you called CoInitialize? Do you have the Developer Runtime installed?)\n");
+#if (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+        DebugTrace( "ERROR: XAudio 2.7 not found (have you called CoInitialize? Do you have the Developer Runtime installed?)\n" );
 #endif
         return hr;
     }
@@ -640,11 +637,7 @@ void AudioEngine::Impl::AllocateVoice( const WAVEFORMATEX* wfx, SOUND_EFFECT_INS
 
     if ( FAILED(hr) )
     {
-#ifdef _DEBUG
-        char buff[128];
-        sprintf_s( buff, "ERROR: CreateSourceVoice failed with error %08X\n", hr );
-        OutputDebugStringA( buff );
-#endif
+        DebugTrace( "ERROR: CreateSourceVoice failed with error %08X\n", hr );
         throw std::exception( "CreateSourceVoice" );
     }
 
@@ -717,25 +710,17 @@ AudioEngine::AudioEngine( AUDIO_ENGINE_FLAGS flags, const WAVEFORMATEX* wfx, con
         {
             if ( flags & AudioEngine_ThrowOnNoAudioHW )
             {
-#ifdef _DEBUG
-                OutputDebugStringA( "ERROR: AudioEngine found no default audio device\n" );
-#endif
+                DebugTrace( "ERROR: AudioEngine found no default audio device\n" );
                 throw std::exception( "AudioEngineNoAudioHW" );
             }
-#ifdef _DEBUG
             else
             {
-                OutputDebugStringA( "WARNING: AudioEngine found no default audio device; running in 'silent mode'\n" );
+                DebugTrace( "WARNING: AudioEngine found no default audio device; running in 'silent mode'\n" );
             }
-#endif
         }
         else
         {
-#ifdef _DEBUG
-            char buff[256];
-            sprintf_s( buff, "ERROR: AudioEngine failed (%08X) to initialize using device [%S]\n", hr, ( deviceId ) ? deviceId : L"default" );
-            OutputDebugStringA( buff );
-#endif
+            DebugTrace( "ERROR: AudioEngine failed (%08X) to initialize using device [%S]\n", hr, ( deviceId ) ? deviceId : L"default" );
             throw std::exception( "AudioEngine" );
         }
     }
@@ -779,9 +764,7 @@ bool AudioEngine::Reset( const WAVEFORMATEX* wfx, const wchar_t* deviceId )
 {
     if ( pImpl->xaudio2 )
     {
-#ifdef _DEBUG
-        OutputDebugStringA( "WARNING: Called Reset for active audio graph; going silent in preparation for migration" );
-#endif
+        DebugTrace( "WARNING: Called Reset for active audio graph; going silent in preparation for migration" );
         pImpl->SetSilentMode();
     }
 
@@ -792,35 +775,23 @@ bool AudioEngine::Reset( const WAVEFORMATEX* wfx, const wchar_t* deviceId )
         {
             if ( pImpl->mEngineFlags & AudioEngine_ThrowOnNoAudioHW )
             {
-#ifdef _DEBUG
-                OutputDebugStringA( "ERROR: AudioEngine found no default audio device on Reset\n" );
-#endif
+                DebugTrace( "ERROR: AudioEngine found no default audio device on Reset\n" );
                 throw std::exception( "AudioEngineNoAudioHW" );
             }
-#ifdef _DEBUG
             else
             {
-                OutputDebugStringA( "WARNING: AudioEngine found no default audio device on Reset; running in 'silent mode'\n" );
+                DebugTrace( "WARNING: AudioEngine found no default audio device on Reset; running in 'silent mode'\n" );
                 return false;
             }
-#endif
         }
         else
         {
-#ifdef _DEBUG
-            char buff[256];
-            sprintf_s( buff, "ERROR: AudioEngine failed (%08X) to Reset using device [%S]\n", hr, ( deviceId ) ? deviceId : L"default" );
-            OutputDebugStringA( buff );
-#endif
+            DebugTrace( "ERROR: AudioEngine failed (%08X) to Reset using device [%S]\n", hr, ( deviceId ) ? deviceId : L"default" );
             throw std::exception( "AudioEngine::Reset" );
         }
     }
 
-#ifdef _DEBUG
-    char buff[256];
-    sprintf_s( buff, "INFO: AudioEngine Reset using device [%S]\n", ( deviceId ) ? deviceId : L"default" );
-    OutputDebugStringA( buff );
-#endif
+    DebugTrace( "INFO: AudioEngine Reset using device [%S]\n", ( deviceId ) ? deviceId : L"default" );
 
     return true;
 }
@@ -1121,9 +1092,7 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
     HRESULT hr = XAudio2Create( pXAudio2.GetAddressOf() );
     if ( FAILED(hr) )
     {
-#ifdef _DEBUG
-        OutputDebugStringA( "ERROR: XAudio 2.7 not found (have you called CoInitialize?)\n");
-#endif
+        DebugTrace( "ERROR: XAudio 2.7 not found (have you called CoInitialize?)\n");
         throw std::exception( "XAudio2Create" );
     }
 

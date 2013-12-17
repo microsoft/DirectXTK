@@ -845,9 +845,12 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH( ID3D11Device* d3dDevic
 {
     size_t dataSize = 0;
     std::unique_ptr<uint8_t[]> data;
-    ThrowIfFailed(
-        BinaryReader::ReadEntireFile( szFileName, data, &dataSize )
-    );
+    HRESULT hr = BinaryReader::ReadEntireFile( szFileName, data, &dataSize );
+    if ( FAILED(hr) )
+    {
+        DebugTrace( "CreateFromSDKMESH failed (%08X) loading '%S'\n", hr, szFileName );
+        throw std::exception( "CreateFromSDKMESH" );
+    }
 
     auto model = CreateFromSDKMESH( d3dDevice, data.get(), dataSize, fxFactory, ccw, pmalpha );
 

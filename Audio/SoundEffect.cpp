@@ -86,11 +86,7 @@ public:
     {
         if ( !mInstances.empty() )
         {
-#ifdef _DEBUG
-            char buff[256];
-            sprintf_s( buff, "WARNING: Destroying SoundEffect with %Iu outstanding SoundEffectInstances\n", mInstances.size() );
-            OutputDebugStringA( buff );
-#endif
+            DebugTrace( "WARNING: Destroying SoundEffect with %Iu outstanding SoundEffectInstances\n", mInstances.size() );
 
             for( auto it = mInstances.begin(); it != mInstances.end(); ++it )
             {
@@ -103,11 +99,7 @@ public:
 
         if ( mOneShots > 0 )
         {
-#ifdef _DEBUG
-            char buff[256];
-            sprintf_s( buff, "WARNING: Destroying SoundEffect with %u outstanding one shot effects\n", mOneShots );
-            OutputDebugStringA( buff );
-#endif
+            DebugTrace( "WARNING: Destroying SoundEffect with %u outstanding one shot effects\n", mOneShots );
         }
 
         if ( mEngine )
@@ -219,9 +211,7 @@ HRESULT SoundEffect::Impl::Initialize( AudioEngine* engine, std::unique_ptr<uint
     case WAVE_FORMAT_WMAUDIO3:
         if ( !seekCount || !seekTable )
         {
-#ifdef _DEBUG
-            OutputDebugStringA( "ERROR: SoundEffect format xWMA requires seek table\n" );
-#endif
+            DebugTrace( "ERROR: SoundEffect format xWMA requires seek table\n" );
             return E_FAIL;
         }
 
@@ -242,9 +232,7 @@ HRESULT SoundEffect::Impl::Initialize( AudioEngine* engine, std::unique_ptr<uint
     case WAVE_FORMAT_XMA2:
         if ( !seekCount || !seekTable )
         {
-#ifdef _DEBUG
-            OutputDebugStringA( "ERROR: SoundEffect format XMA2 requires seek table\n" );
-#endif
+            DebugTrace( "ERROR: SoundEffect format XMA2 requires seek table\n" );
             return E_FAIL;
         }
 
@@ -252,9 +240,7 @@ HRESULT SoundEffect::Impl::Initialize( AudioEngine* engine, std::unique_ptr<uint
             HRESULT hr = ApuAlloc( &mXMAMemory, nullptr, audioBytes, SHAPE_XMA_INPUT_BUFFER_ALIGNMENT );
             if ( FAILED(hr) )
             {
-#ifdef _DEBUG
-                OutputDebugStringA( "ERROR: ApuAlloc failed. Did you allocate a large enough heap with ApuCreateHeap for all your XMA wave data?" );
-#endif
+                DebugTrace( "ERROR: ApuAlloc failed. Did you allocate a large enough heap with ApuCreateHeap for all your XMA wave data?" );
                 return hr;
             }
         }
@@ -286,11 +272,7 @@ HRESULT SoundEffect::Impl::Initialize( AudioEngine* engine, std::unique_ptr<uint
 
     default:
         {
-#ifdef _DEBUG
-            char buff[256];
-            sprintf_s( buff, "ERROR: SoundEffect encountered an unsupported format tag (%u)\n", wfx->wFormatTag );
-            OutputDebugStringA( buff );
-#endif
+            DebugTrace( "ERROR: SoundEffect encountered an unsupported format tag (%u)\n", wfx->wFormatTag );
             return HRESULT_FROM_WIN32( ERROR_NOT_SUPPORTED );
         }
     }
@@ -341,15 +323,9 @@ void SoundEffect::Impl::Play()
     }
     if ( FAILED(hr) )
     {
-#ifdef _DEBUG
-        char buff[256];
-        sprintf_s( buff, "ERROR: SoundEffect failed (%08X) when submitting buffer:\n", hr );
-        OutputDebugStringA( buff );
-
-        sprintf_s( buff, "\tFormat Tag %u, %u channels, %u-bit, %u Hz, %u bytes\n", mWaveFormat->wFormatTag, 
-                   mWaveFormat->nChannels, mWaveFormat->wBitsPerSample, mWaveFormat->nSamplesPerSec, mAudioBytes );
-        OutputDebugStringA( buff );
-#endif
+        DebugTrace( "ERROR: SoundEffect failed (%08X) when submitting buffer:\n", hr );
+        DebugTrace( "\tFormat Tag %u, %u channels, %u-bit, %u Hz, %u bytes\n", mWaveFormat->wFormatTag, 
+                    mWaveFormat->nChannels, mWaveFormat->wBitsPerSample, mWaveFormat->nSamplesPerSec, mAudioBytes );
         throw std::exception( "SubmitSourceBuffer" );
     }
 
@@ -371,11 +347,7 @@ SoundEffect::SoundEffect( AudioEngine* engine, const wchar_t* waveFileName )
     HRESULT hr = LoadWAVAudioFromFileEx( waveFileName, wavData, wavInfo );
     if ( FAILED(hr) )
     {
-#ifdef _DEBUG
-        char buff[1024];
-        sprintf_s( buff, "ERROR: SoundEffect failed (%08X) to load from .wav file \"%S\"\n", hr, waveFileName );
-        OutputDebugStringA( buff );
-#endif
+        DebugTrace( "ERROR: SoundEffect failed (%08X) to load from .wav file \"%S\"\n", hr, waveFileName );
         throw std::exception( "SoundEffect" );
     }
 
@@ -390,11 +362,7 @@ SoundEffect::SoundEffect( AudioEngine* engine, const wchar_t* waveFileName )
 
     if ( FAILED(hr) )
     {
-#ifdef _DEBUG
-        char buff[1024];
-        sprintf_s( buff, "ERROR: SoundEffect failed (%08X) to intialize from .wav file \"%S\"\n", hr, waveFileName );
-        OutputDebugStringA( buff );
-#endif
+        DebugTrace( "ERROR: SoundEffect failed (%08X) to intialize from .wav file \"%S\"\n", hr, waveFileName );
         throw std::exception( "SoundEffect" );
     }
 }
@@ -412,11 +380,7 @@ SoundEffect::SoundEffect( AudioEngine* engine, std::unique_ptr<uint8_t[]>& wavDa
 #endif
     if ( FAILED(hr) )
     {
-#ifdef _DEBUG
-        char buff[1024];
-        sprintf_s( buff, "ERROR: SoundEffect failed (%08X) to intialize\n", hr );
-        OutputDebugStringA( buff );
-#endif
+        DebugTrace( "ERROR: SoundEffect failed (%08X) to intialize\n", hr );
         throw std::exception( "SoundEffect" );
     }
 }
@@ -435,11 +399,7 @@ SoundEffect::SoundEffect( AudioEngine* engine, std::unique_ptr<uint8_t[]>& wavDa
 #endif
     if ( FAILED(hr) )
     {
-#ifdef _DEBUG
-        char buff[1024];
-        sprintf_s( buff, "ERROR: SoundEffect failed (%08X) to intialize\n", hr );
-        OutputDebugStringA( buff );
-#endif
+        DebugTrace( "ERROR: SoundEffect failed (%08X) to intialize\n", hr );
         throw std::exception( "SoundEffect" );
     }
 }
@@ -455,11 +415,7 @@ SoundEffect::SoundEffect( AudioEngine* engine, std::unique_ptr<uint8_t[]>& wavDa
     HRESULT hr = pImpl->Initialize( engine, wavData, wfx, startAudio, audioBytes, seekTable, seekCount, 0, 0 );
     if ( FAILED(hr) )
     {
-#ifdef _DEBUG
-        char buff[1024];
-        sprintf_s( buff, "ERROR: SoundEffect failed (%08X) to intialize\n", hr );
-        OutputDebugStringA( buff );
-#endif
+        DebugTrace( "ERROR: SoundEffect failed (%08X) to intialize\n", hr );
         throw std::exception( "SoundEffect" );
     }
 }
