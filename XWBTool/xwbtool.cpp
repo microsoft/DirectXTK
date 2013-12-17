@@ -1362,7 +1362,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
             {
                 seekTables.get()[ index ] = seekoffset * sizeof(uint32_t);
 
-                uint32_t baseoffset = waves.size() + seekoffset;
+                uint32_t baseoffset = uint32_t( waves.size() + seekoffset );
                 seekTables.get()[ baseoffset ] = it->data.seekCount;
 
                 for( uint32_t j = 0; j < it->data.seekCount; ++j )
@@ -1376,7 +1376,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
             {
                 seekTables.get()[ index ] = seekoffset * sizeof(uint32_t);
 
-                uint32_t baseoffset = waves.size() + seekoffset;
+                uint32_t baseoffset = uint32_t( waves.size() + seekoffset );
                 seekTables.get()[ baseoffset ] = it->data.seekCount;
 
                 for( uint32_t j = 0; j < it->data.seekCount; ++j )
@@ -1392,7 +1392,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
             }
         }
 
-        uint32_t seekLen = sizeof(uint32_t) * seekEntries;
+        uint32_t seekLen = uint32_t( sizeof(uint32_t) * seekEntries );
 
         if ( !WriteFile( hFile.get(), seekTables.get(), seekLen, nullptr, nullptr ) )
         {
