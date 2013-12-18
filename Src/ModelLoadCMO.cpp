@@ -750,7 +750,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
                 
                 for( int i = 0; i < 7; ++i )
                 {
-                    info.textures[i] = m.texture[ i+1 ].empty() ? nullptr : m.texture[i].c_str();
+                    info.textures[i] = m.texture[ i+1 ].empty() ? nullptr : m.texture[ i+1 ].c_str();
                 }
 
                 m.effect = fxFactoryDGSL->CreateDGSLEffect( info, nullptr );
