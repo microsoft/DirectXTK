@@ -22,16 +22,10 @@
 #include <apu.h>
 #endif
 
-//--------------------------------------------------------------------------------------
+
 namespace
 {
     
-struct handle_closer { void operator()(HANDLE h) { if (h) CloseHandle(h); } };
-
-typedef public std::unique_ptr<void, handle_closer> ScopedHandle;
-
-inline HANDLE safe_handle( HANDLE h ) { return (h == INVALID_HANDLE_VALUE) ? 0 : h; }
-
 //--------------------------------------------------------------------------------------
 #pragma pack(push, 1)
 
@@ -981,11 +975,11 @@ HRESULT WaveBankReader::Impl::GetFormat( uint32_t index, WAVEFORMATEX* pFormat, 
             break;
 
         case MINIWAVEFORMAT::TAG_ADPCM:
-            if ( maxsize < ( sizeof(ADPCMWAVEFORMAT) + 30 ) )
+            if ( maxsize < ( sizeof(WAVEFORMATEX) + 32 /*MSADPCM_FORMAT_EXTRA_BYTES*/ ) )
                 return HRESULT_FROM_WIN32( ERROR_MORE_DATA );
 
             pFormat->wFormatTag = WAVE_FORMAT_ADPCM;
-            pFormat->cbSize = 32 /* MSADPCM_FORMAT_EXTRA_BYTES */;
+            pFormat->cbSize = 32 /*MSADPCM_FORMAT_EXTRA_BYTES*/;
             {
                 auto adpcmFmt = reinterpret_cast<ADPCMWAVEFORMAT*>(pFormat);
                 adpcmFmt->wSamplesPerBlock = (WORD) miniFmt.AdpcmSamplesPerBlock();
@@ -1001,7 +995,7 @@ HRESULT WaveBankReader::Impl::GetFormat( uint32_t index, WAVEFORMATEX* pFormat, 
             pFormat->cbSize = 0;
             break;
 
-        case MINIWAVEFORMAT::TAG_XMA:
+        case MINIWAVEFORMAT::TAG_XMA: // XMA2 is supported by Xbox One
 #if defined(_XBOX_ONE) && defined(_TITLE)
             if ( maxsize < sizeof(XMA2WAVEFORMATEX) )
                 return HRESULT_FROM_WIN32( ERROR_MORE_DATA );

@@ -12,9 +12,8 @@
 //--------------------------------------------------------------------------------------
 
 #include "pch.h"
-#include "Audio.h"
 #include "WAVFileReader.h"
-#include "PlatformHelpers.h"
+#include "SoundCommon.h"
 
 #include <list>
 
@@ -23,35 +22,6 @@
 #endif
 
 using namespace DirectX;
-
-
-namespace
-{
-    inline uint32_t GetFormatTag( const WAVEFORMATEX* wfx )
-    {
-        if ( wfx->wFormatTag == WAVE_FORMAT_EXTENSIBLE )
-        {
-            if ( wfx->cbSize < 22 )
-                return 0;
-
-            static const GUID s_wfexBase = {0x00000000, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71};
-
-            auto wfex = reinterpret_cast<const WAVEFORMATEXTENSIBLE*>( wfx );
-
-            if ( memcmp( reinterpret_cast<const BYTE*>(&wfex->SubFormat) + sizeof(DWORD),
-                         reinterpret_cast<const BYTE*>(&s_wfexBase) + sizeof(DWORD), sizeof(GUID) - sizeof(DWORD) ) != 0 )
-            {
-                return 0;
-            }
-
-            return wfex->SubFormat.Data1;
-        }
-        else
-        {
-            return wfx->wFormatTag;
-        }
-    }
-}
 
 
 //======================================================================================
@@ -79,7 +49,7 @@ public:
 #endif
     {
         assert( mEngine != 0 );
-        mEngine->RegisterNotify( this );
+        mEngine->RegisterNotify( this, false );
     }
 
     ~Impl()
@@ -104,7 +74,7 @@ public:
 
         if ( mEngine )
         {
-            mEngine->UnregisterNotify( this, true );
+            mEngine->UnregisterNotify( this, true, false );
             mEngine = nullptr;
         }
 
@@ -139,6 +109,13 @@ public:
 
     virtual void OnReset() override
     {
+        // No action required
+    }
+
+    virtual void OnUpdate() override
+    {
+        // We do not register for update notification
+        assert(false);
     }
 
     virtual void OnDestroyEngine() override
@@ -189,7 +166,7 @@ HRESULT SoundEffect::Impl::Initialize( AudioEngine* engine, std::unique_ptr<uint
 #endif
                                        uint32_t loopStart, uint32_t loopLength )
 {
-    if ( !engine || !wfx || !startAudio || !audioBytes || !wavData )
+    if ( !engine || !IsValid( wfx ) || !startAudio || !audioBytes || !wavData )
         return E_INVALIDARG;
 
     switch( GetFormatTag( wfx ) )
@@ -477,13 +454,13 @@ bool SoundEffect::IsInUse() const
 }
 
 
-uint32_t SoundEffect::SampleSizeInBytes() const
+size_t SoundEffect::GetSampleSizeInBytes() const
 {
     return pImpl->mAudioBytes;
 }
 
 
-uint32_t SoundEffect::SampleDuration() const
+size_t SoundEffect::GetSampleDuration() const
 {
     if ( !pImpl->mWaveFormat || !pImpl->mWaveFormat->nChannels )
         return 0;
@@ -494,14 +471,14 @@ uint32_t SoundEffect::SampleDuration() const
         {
             auto adpcmFmt = reinterpret_cast<const ADPCMWAVEFORMAT*>( pImpl->mWaveFormat ); 
 
-            uint32_t duration = ( pImpl->mAudioBytes / adpcmFmt->wfx.nBlockAlign ) * adpcmFmt->wSamplesPerBlock;
+            uint64_t duration = uint64_t( pImpl->mAudioBytes / adpcmFmt->wfx.nBlockAlign ) * adpcmFmt->wSamplesPerBlock;
             int partial = pImpl->mAudioBytes % adpcmFmt->wfx.nBlockAlign;
             if ( partial )
             {
                 if ( partial >= ( 7 * adpcmFmt->wfx.nChannels ) )
                     duration += ( partial * 2 / adpcmFmt->wfx.nChannels - 12 );
             }
-            return duration;
+            return static_cast<size_t>( duration );
         }
 
 #if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
@@ -526,12 +503,22 @@ uint32_t SoundEffect::SampleDuration() const
     default:
         if ( pImpl->mWaveFormat->wBitsPerSample > 0 )
         {
-            return uint32_t( ( uint64_t( pImpl->mAudioBytes ) * 8 )
-                             / uint64_t( pImpl->mWaveFormat->wBitsPerSample * pImpl->mWaveFormat->nChannels ) );
+            return static_cast<size_t>( ( uint64_t( pImpl->mAudioBytes ) * 8 )
+                                        / uint64_t( pImpl->mWaveFormat->wBitsPerSample * pImpl->mWaveFormat->nChannels ) );
         }
     }
 
     return 0;
+}
+
+
+size_t SoundEffect::GetSampleDurationMS() const
+{
+    if ( !pImpl->mWaveFormat || !pImpl->mWaveFormat->nSamplesPerSec )
+        return 0;
+
+    uint64_t samples = GetSampleDuration();
+    return static_cast<size_t>( ( samples * 1000 ) / pImpl->mWaveFormat->nSamplesPerSec );
 }
 
 

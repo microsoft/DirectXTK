@@ -20,6 +20,9 @@
     <ClInclude Include="..\Inc\Audio.h">
       <Filter>Inc</Filter>
     </ClInclude>
+    <ClInclude Include="SoundCommon.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AudioEngine.cpp">
@@ -38,6 +41,12 @@
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="SoundEffectInstance.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicSoundEffectInstance.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundCommon.cpp">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>

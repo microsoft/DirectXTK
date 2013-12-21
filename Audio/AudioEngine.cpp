@@ -176,8 +176,8 @@ public:
     
     void AllocateVoice( _In_ const WAVEFORMATEX* wfx, SOUND_EFFECT_INSTANCE_FLAGS flags, bool oneshot, _Outptr_ IXAudio2SourceVoice** voice );
 
-    void RegisterNotify( _In_ IVoiceNotify* notify );
-    void UnregisterNotify( _In_ IVoiceNotify* notify, bool oneshots );
+    void RegisterNotify( _In_ IVoiceNotify* notify, bool usesUpdate );
+    void UnregisterNotify( _In_ IVoiceNotify* notify, bool oneshots, bool usesUpdate );
 
     ComPtr<IXAudio2>                    xaudio2;
     IXAudio2MasteringVoice*             mMasterVoice;
@@ -199,6 +199,7 @@ private:
     ComPtr<IUnknown>                    mReverbEffect;
     std::list<IXAudio2SourceVoice*>     mOneShots;
     std::set<IVoiceNotify*>             mNotifyObjects;
+    std::set<IVoiceNotify*>             mNotifyUpdates;
     VoiceCallback                       mVoiceCallback;
     EngineCallback                      mEngineCallback;
 };
@@ -559,6 +560,15 @@ bool AudioEngine::Impl::Update()
         throw std::exception( "WaitForMultipleObjects" );
     }
 
+    //
+    // Inform any notify objects of updates
+    //
+    for( auto it = mNotifyUpdates.begin(); it != mNotifyUpdates.end(); ++it )
+    {
+        assert( *it != 0 );
+        (*it)->OnUpdate();
+    }
+
     return true;
 }
 
@@ -613,6 +623,8 @@ void AudioEngine::Impl::AllocateVoice( const WAVEFORMATEX* wfx, SOUND_EFFECT_INS
         return;
     }
 
+    // No need to call IsValid on wfx because CreateSourceVoice will do that
+
     if ( oneshot )
     {
         // TODO - Add voice resuse (similiar format, can change rate, flags)
@@ -649,14 +661,19 @@ void AudioEngine::Impl::AllocateVoice( const WAVEFORMATEX* wfx, SOUND_EFFECT_INS
 }
 
 
-void AudioEngine::Impl::RegisterNotify( _In_ IVoiceNotify* notify )
+void AudioEngine::Impl::RegisterNotify( _In_ IVoiceNotify* notify, bool usesUpdate )
 {
     assert( notify != 0 );
     mNotifyObjects.insert( notify );
+
+    if ( usesUpdate )
+    {
+        mNotifyUpdates.insert( notify );
+    }
 }
 
 
-void AudioEngine::Impl::UnregisterNotify( _In_ IVoiceNotify* notify, bool usesOneShots )
+void AudioEngine::Impl::UnregisterNotify( _In_ IVoiceNotify* notify, bool usesOneShots, bool usesUpdate )
 {
     assert( notify != 0 );
     mNotifyObjects.erase( notify );
@@ -690,6 +707,11 @@ void AudioEngine::Impl::UnregisterNotify( _In_ IVoiceNotify* notify, bool usesOn
             // Trigger scan on next call to Update...
             SetEvent( mVoiceCallback.mBufferEnd );
         }
+    }
+
+    if ( usesUpdate )
+    {
+        mNotifyUpdates.erase( notify );
     }
 }
 
@@ -858,7 +880,7 @@ WAVEFORMATEXTENSIBLE AudioEngine::GetOutputFormat() const
 
     wfx.Format.wFormatTag = WAVE_FORMAT_EXTENSIBLE;
     wfx.Format.wBitsPerSample = wfx.Samples.wValidBitsPerSample = 16; // This is a guess
-    wfx.Format.cbSize = 22;
+    wfx.Format.cbSize = sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX);
 
     wfx.Format.nChannels = static_cast<WORD>( pImpl->masterChannels );
     wfx.Format.nSamplesPerSec = pImpl->masterRate;
@@ -906,15 +928,15 @@ void AudioEngine::AllocateVoice( const WAVEFORMATEX* wfx, SOUND_EFFECT_INSTANCE_
 }
 
 
-void AudioEngine::RegisterNotify( _In_ IVoiceNotify* notify )
+void AudioEngine::RegisterNotify( _In_ IVoiceNotify* notify, bool usesUpdate )
 {
-    pImpl->RegisterNotify( notify );
+    pImpl->RegisterNotify( notify, usesUpdate );
 }
 
 
-void AudioEngine::UnregisterNotify( _In_ IVoiceNotify* notify, bool oneshots )
+void AudioEngine::UnregisterNotify( _In_ IVoiceNotify* notify, bool oneshots, bool usesUpdate )
 {
-    pImpl->UnregisterNotify( notify, oneshots );
+    pImpl->UnregisterNotify( notify, oneshots, usesUpdate );
 }
 
 

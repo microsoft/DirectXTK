@@ -36,7 +36,7 @@ public:
         mStreaming( false )
     {
         assert( mEngine != 0 );
-        mEngine->RegisterNotify( this );
+        mEngine->RegisterNotify( this, false );
     }
 
     ~Impl()
@@ -61,7 +61,7 @@ public:
 
         if ( mEngine )
         {
-            mEngine->UnregisterNotify( this, true );
+            mEngine->UnregisterNotify( this, true, false );
             mEngine = nullptr;
         }
     }
@@ -83,6 +83,13 @@ public:
 
     virtual void OnReset() override
     {
+        // No action required
+    }
+
+    virtual void OnUpdate() override
+    {
+        // We do not register for update notification
+        assert(false);
     }
 
     virtual void OnDestroyEngine() override
@@ -348,7 +355,7 @@ bool WaveBank::IsStreamingBank() const
 }
 
 
-uint32_t WaveBank::SampleSizeInBytes( uint32_t index ) const
+size_t WaveBank::GetSampleSizeInBytes( uint32_t index ) const
 {
     if ( index >= pImpl->mReader.Count() )
         return 0;
@@ -360,7 +367,7 @@ uint32_t WaveBank::SampleSizeInBytes( uint32_t index ) const
 }
 
 
-uint32_t WaveBank::SampleDuration( uint32_t index ) const
+size_t WaveBank::GetSampleDuration( uint32_t index ) const
 {
     if ( index >= pImpl->mReader.Count() )
         return 0;
@@ -369,6 +376,23 @@ uint32_t WaveBank::SampleDuration( uint32_t index ) const
     HRESULT hr = pImpl->mReader.GetMetadata( index, metadata );
     ThrowIfFailed( hr );
     return metadata.duration;
+}
+
+
+size_t WaveBank::GetSampleDurationMS( uint32_t index ) const
+{
+    if ( index >= pImpl->mReader.Count() )
+        return 0;
+
+    char buff[64];
+    auto wfx = reinterpret_cast<WAVEFORMATEX*>( buff );
+    HRESULT hr = pImpl->mReader.GetFormat( index, wfx, 64 );
+    ThrowIfFailed( hr );
+
+    WaveBankReader::Metadata metadata;
+    hr = pImpl->mReader.GetMetadata( index, metadata );
+    ThrowIfFailed( hr );
+    return static_cast<size_t>( ( uint64_t(metadata.duration) * 1000 ) / wfx->nSamplesPerSec );
 }
 
 

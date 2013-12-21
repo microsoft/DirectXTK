@@ -131,6 +131,8 @@ struct HEADER
     REGION      Segments[SEGIDX_COUNT]; // Segment lookup table
 };
 
+#pragma warning( disable : 4201 4203 )
+
 union MINIWAVEFORMAT
 {
     static const uint32_t TAG_PCM   = 0x0;
@@ -338,21 +340,27 @@ bool ConvertToMiniFormat( const WAVEFORMATEX* wfx, bool hasSeek, MINIWAVEFORMAT&
     if ( !wfx )
         return false;
 
-    if ( wfx->nSamplesPerSec > 262143 )
-    {
-        wprintf( L"ERROR: Wave banks only support sample rates up to 2^18 (262143)\n" );
-        return false;
-    }
-
     if ( !wfx->nChannels )
     {
-        wprintf( L"ERROR: Wave bank entry should have at least 1 channel\n" );
+        wprintf( L"ERROR: Wave bank entry must have at least 1 channel\n" );
         return false;
     }
 
     if ( wfx->nChannels > 7 )
     {
         wprintf( L"ERROR: Wave banks only support up to 7 channels\n" );
+        return false;
+    }
+
+    if ( !wfx->nSamplesPerSec )
+    {
+        wprintf( L"ERROR: Wave banks entry sample rate must be non-zero\n" );
+        return false;
+    }
+
+    if ( wfx->nSamplesPerSec > 262143 )
+    {
+        wprintf( L"ERROR: Wave banks only support sample rates up to 2^18 (262143)\n" );
         return false;
     }
 
@@ -363,39 +371,35 @@ bool ConvertToMiniFormat( const WAVEFORMATEX* wfx, bool hasSeek, MINIWAVEFORMAT&
     switch ( wfx->wFormatTag )
     {
     case WAVE_FORMAT_PCM:
+        if ( ( wfx->wBitsPerSample != 8 ) && ( wfx->wBitsPerSample != 16 ) )
         {
-            auto pcm = reinterpret_cast<const PCMWAVEFORMAT*>( wfx );
-
-            if ( ( pcm->wBitsPerSample != 8 ) && ( pcm->wBitsPerSample != 16 ) )
-            {
-                wprintf( L"ERROR: Wave banks only support 8-bit or 16-bit integer PCM data\n");
-                return false;
-            }
-
-            if ( wfx->nBlockAlign > 255 )
-            {
-                wprintf( L"ERROR: Wave banks only support block alignments up to 255 %(%u)\n", wfx->nBlockAlign );
-                return false;
-            }
-
-            if ( wfx->nBlockAlign != ( wfx->nChannels * wfx->wBitsPerSample / 8 ) )
-            {
-                wprintf( L"ERROR: nBlockAlign (%u) != nChannels (%u) * wBitsPerSample (%u) / 8\n",
-                         wfx->nBlockAlign, wfx->nChannels, wfx->wBitsPerSample );
-                return false;
-            }
-
-            if ( wfx->nAvgBytesPerSec != ( wfx->nSamplesPerSec * wfx->nBlockAlign ) )
-            {
-                wprintf( L"ERROR: nAvgBytesPerSec (%lu) != nSamplesPerSec (%lu) * nBlockAlign (%u)\n",
-                         wfx->nAvgBytesPerSec, wfx->nSamplesPerSec, wfx->nBlockAlign );
-                return false;
-            }
-
-            miniFmt.wFormatTag = MINIWAVEFORMAT::TAG_PCM;
-            miniFmt.wBitsPerSample = (pcm->wBitsPerSample == 16) ? MINIWAVEFORMAT::BITDEPTH_16 : MINIWAVEFORMAT::BITDEPTH_8;
-            miniFmt.wBlockAlign = wfx->nBlockAlign;
+            wprintf( L"ERROR: Wave banks only support 8-bit or 16-bit integer PCM data\n");
+            return false;
         }
+
+        if ( wfx->nBlockAlign > 255 )
+        {
+            wprintf( L"ERROR: Wave banks only support block alignments up to 255 %(%u)\n", wfx->nBlockAlign );
+            return false;
+        }
+
+        if ( wfx->nBlockAlign != ( wfx->nChannels * wfx->wBitsPerSample / 8 ) )
+        {
+            wprintf( L"ERROR: nBlockAlign (%u) != nChannels (%u) * wBitsPerSample (%u) / 8\n",
+                        wfx->nBlockAlign, wfx->nChannels, wfx->wBitsPerSample );
+            return false;
+        }
+
+        if ( wfx->nAvgBytesPerSec != ( wfx->nSamplesPerSec * wfx->nBlockAlign ) )
+        {
+            wprintf( L"ERROR: nAvgBytesPerSec (%lu) != nSamplesPerSec (%lu) * nBlockAlign (%u)\n",
+                        wfx->nAvgBytesPerSec, wfx->nSamplesPerSec, wfx->nBlockAlign );
+            return false;
+        }
+
+        miniFmt.wFormatTag = MINIWAVEFORMAT::TAG_PCM;
+        miniFmt.wBitsPerSample = (wfx->wBitsPerSample == 16) ? MINIWAVEFORMAT::BITDEPTH_16 : MINIWAVEFORMAT::BITDEPTH_8;
+        miniFmt.wBlockAlign = wfx->nBlockAlign;
         return true;
 
     case WAVE_FORMAT_IEEE_FLOAT:
@@ -403,30 +407,30 @@ bool ConvertToMiniFormat( const WAVEFORMATEX* wfx, bool hasSeek, MINIWAVEFORMAT&
         return false;
 
     case WAVE_FORMAT_ADPCM:
+        if ( ( wfx->nChannels != 1 ) && ( wfx->nChannels != 2 ) )
+        {
+            wprintf( L"ERROR: ADPCM wave format must have 1 or 2 channels (not %u)\n", wfx->nChannels );
+            return false;
+        }
+
+        if ( wfx->wBitsPerSample != 4 /*MSADPCM_BITS_PER_SAMPLE*/ )
+        {
+            wprintf( L"ERROR: ADPCM wave format must have 4 bits per sample (not %u)\n", wfx->wBitsPerSample );
+            return false;
+        }
+
+        if ( wfx->cbSize != 32 /*MSADPCM_FORMAT_EXTRA_BYTES*/ )
+        {
+            wprintf( L"ERROR: ADPCM wave format must have cbSize = 32 (not %u)\n", wfx->cbSize );
+            return false;
+        }
+        else
         {
             auto wfadpcm = reinterpret_cast<const ADPCMWAVEFORMAT*>( wfx );
 
-            if ( ( wfx->nChannels != 1 ) && ( wfx->nChannels != 2 ) )
-            {
-                wprintf( L"ERROR: Microsoft ADPCM wave format must have 1 or 2 channels (not %u)\n", wfx->nChannels );
-                return false;
-            }
-
-            if ( wfx->wBitsPerSample != 4 /*MSADPCM_BITS_PER_SAMPLE*/ )
-            {
-                wprintf( L"ERROR: Microsoft ADPCM wave format must have 4 bits per sample (not %u)\n", wfx->wBitsPerSample );
-                return false;
-            }
-
-            if ( wfx->cbSize != 32 /*MSADPCM_FORMAT_EXTRA_BYTES*/ )
-            {
-                wprintf( L"ERROR: Microsoft ADPCM wave format must have cbSize = 32 (not %u)\n", wfx->cbSize );
-                return false;
-            }
-
             if ( wfadpcm->wNumCoef != 7 /*MSADPCM_NUM_COEFFICIENTS*/ )
             {
-                wprintf( L"ERROR: Microsoft ADPCM wave format must have 7 coefficients (not %u)\n", wfadpcm->wNumCoef );
+                wprintf( L"ERROR: ADPCM wave format must have 7 coefficients (not %u)\n", wfadpcm->wNumCoef );
                 return false;
             }
 
@@ -446,20 +450,20 @@ bool ConvertToMiniFormat( const WAVEFORMATEX* wfx, bool hasSeek, MINIWAVEFORMAT&
 
             if ( !valid )
             {
-                wprintf( L"ERROR: Non-standard coefficients for Microsoft ADPCM found\n" );
+                wprintf( L"ERROR: Non-standard coefficients for ADPCM found\n" );
                 return false;
             }
 
             if ( ( wfadpcm->wSamplesPerBlock < 4 /*MSADPCM_MIN_SAMPLES_PER_BLOCK*/ )
                   ||  ( wfadpcm->wSamplesPerBlock > 64000 /*MSADPCM_MAX_SAMPLES_PER_BLOCK*/ ) )
             {
-                wprintf( L"ERROR: Microsoft ADPCM wave format wSamplesPerBlock must be 4..64000\n" );
+                wprintf( L"ERROR: ADPCM wave format wSamplesPerBlock must be 4..64000\n" );
                 return false;
             }
 
             if ( wfadpcm->wfx.nChannels == 1 && ( wfadpcm->wSamplesPerBlock % 2 ) )
             {
-                wprintf( L"ERROR: Microsoft ADPCM wave format mono files must have even wSamplesPerBlock\n" );
+                wprintf( L"ERROR: ADPCM wave format mono files must have even wSamplesPerBlock\n" );
                 return false;
             }
 
@@ -469,7 +473,7 @@ bool ConvertToMiniFormat( const WAVEFORMATEX* wfx, bool hasSeek, MINIWAVEFORMAT&
 
             if ( wfadpcm->wSamplesPerBlock != nPcmFramesPerBlock )
             {
-                wprintf( L"ERROR: Microsoft ADPCM %u-channel format with nBlockAlign = %u must have wSamplesPerBlock = %u (not %u)\n",
+                wprintf( L"ERROR: ADPCM %u-channel format with nBlockAlign = %u must have wSamplesPerBlock = %u (not %u)\n",
                          wfx->nChannels, wfx->nBlockAlign, nPcmFramesPerBlock, wfadpcm->wSamplesPerBlock );
                 return false;
             }
@@ -482,21 +486,33 @@ bool ConvertToMiniFormat( const WAVEFORMATEX* wfx, bool hasSeek, MINIWAVEFORMAT&
 
     case WAVE_FORMAT_WMAUDIO2:
     case WAVE_FORMAT_WMAUDIO3:
+        if ( !hasSeek )
+        {
+            wprintf( L"ERROR: xWMA requires seek tables ('dpds' chunk)\n");
+            return false;
+        }
+
         if ( wfx->wBitsPerSample != 16 )
         {
             wprintf( L"ERROR: Wave banks only support 16-bit xWMA data\n");
             return false;
         }
 
-        if ( wfx->cbSize != 0 )
+        if ( !wfx->nBlockAlign )
         {
-            wprintf( L"ERROR: Unexpected data found in xWMA header\n");
+            wprintf( L"ERROR: Wave bank xWMA must have a non-zero nBlockAlign\n" );
             return false;
         }
 
-        if ( !hasSeek )
+        if ( !wfx->nAvgBytesPerSec )
         {
-            wprintf( L"ERROR: xWMA requires seek tables ('dpds' chunk)\n");
+            wprintf( L"ERROR: Wave bank xWMA must have a non-zero nAvgBytesPerSec\n" );
+            return false;
+        }
+
+        if ( wfx->cbSize != 0 )
+        {
+            wprintf( L"ERROR: Unexpected data found in xWMA header\n");
             return false;
         }
 
@@ -511,25 +527,31 @@ bool ConvertToMiniFormat( const WAVEFORMATEX* wfx, bool hasSeek, MINIWAVEFORMAT&
             wprintf( L"ERROR: XMA2 requires seek tables ('seek' chunk)\n");
             return false;
         }
+
+        if ( wfx->nBlockAlign != wfx->nChannels * 2 /*XMA_OUTPUT_SAMPLE_BYTES*/)
+        {
+            wprintf( L"ERROR: XMA2 nBlockAlign (%u) != nChannels(%u) * 2\n", wfx->nBlockAlign, wfx->nChannels );
+            return false;
+        }
+
+        if ( wfx->wBitsPerSample != 16 /*XMA_OUTPUT_SAMPLE_BITS*/ )
+        {
+            wprintf( L"ERROR: XMA2 wBitsPerSample (%u) should be 16\n", wfx->wBitsPerSample );
+            return false;
+        }
+
+        if ( wfx->cbSize != ( sizeof(XMA2WAVEFORMATEX) - sizeof(WAVEFORMATEX) ) )
+        {
+            wprintf( L"ERROR: XMA2 cbSize must be %Iu (%u)", ( sizeof(XMA2WAVEFORMATEX) - sizeof(WAVEFORMATEX) ), wfx->cbSize );
+            return false;
+        }
         else
         {
             auto xmaFmt = reinterpret_cast<const XMA2WAVEFORMATEX*>( wfx );
             
-            if ( wfx->nBlockAlign != wfx->nChannels * 2 /*XMA_OUTPUT_SAMPLE_BYTES*/)
-            {
-                wprintf( L"ERROR: XMA2 nBlockAlign (%u) != nChannels(%u) * 2\n", wfx->nBlockAlign, wfx->nChannels );
-                return false;
-            }
-
-            if ( wfx->wBitsPerSample != 16 /*XMA_OUTPUT_SAMPLE_BITS*/ )
-            {
-                wprintf( L"ERROR: XMA2 wBitsPerSample (%u) should be 16\n", wfx->wBitsPerSample );
-                return false;
-            }
-
             if ( xmaFmt->EncoderVersion < 3 )
             {
-                wprintf( L"ERROR: XMA2 endoder version (%u) - 3 or higher is required", xmaFmt->EncoderVersion );
+                wprintf( L"ERROR: XMA2 encoder version (%u) - 3 or higher is required", xmaFmt->EncoderVersion );
                 return false;
             }
 
@@ -543,6 +565,17 @@ bool ConvertToMiniFormat( const WAVEFORMATEX* wfx, bool hasSeek, MINIWAVEFORMAT&
             {
                 wprintf( L"ERROR: XMA2 BytesPerBlock (%u) is invalid\n", xmaFmt->BytesPerBlock );
                 return false;
+            }
+
+            if ( xmaFmt->ChannelMask )
+            {
+                auto channelBits = ChannelsSpecifiedInMask( xmaFmt->ChannelMask );
+                if ( channelBits != wfx->nChannels )
+                {
+                    wprintf( L"ERROR: XMA2 nChannels=%u but ChannelMask (%08X) has %u bits set\n", 
+                             xmaFmt->ChannelMask, wfx->nChannels, channelBits );
+                    return false;
+                }
             }
 
             if ( xmaFmt->NumStreams != ( ( wfx->nChannels + 1) / 2 ) )
@@ -559,13 +592,13 @@ bool ConvertToMiniFormat( const WAVEFORMATEX* wfx, bool hasSeek, MINIWAVEFORMAT&
 
             if ( ( xmaFmt->PlayBegin + xmaFmt->PlayLength ) > xmaFmt->SamplesEncoded )
             {
-                wprintf( L"ERROR: XMA2 play regtion too large (%u + %u > %u)", xmaFmt->PlayBegin, xmaFmt->PlayLength, xmaFmt->SamplesEncoded );
+                wprintf( L"ERROR: XMA2 play region too large (%u + %u > %u)", xmaFmt->PlayBegin, xmaFmt->PlayLength, xmaFmt->SamplesEncoded );
                 return false;
             }
 
             if ( ( xmaFmt->LoopBegin + xmaFmt->LoopLength ) > xmaFmt->SamplesEncoded )
             {
-                wprintf( L"ERROR: XMA2 loop regtion too large (%u + %u > %u)", xmaFmt->LoopBegin, xmaFmt->LoopLength, xmaFmt->SamplesEncoded );
+                wprintf( L"ERROR: XMA2 loop region too large (%u + %u > %u)", xmaFmt->LoopBegin, xmaFmt->LoopLength, xmaFmt->SamplesEncoded );
                 return false;
             }
 
@@ -576,6 +609,12 @@ bool ConvertToMiniFormat( const WAVEFORMATEX* wfx, bool hasSeek, MINIWAVEFORMAT&
         return true;
 
     case WAVE_FORMAT_EXTENSIBLE:
+        if ( wfx->cbSize < ( sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX) ) )
+        {
+            wprintf( L"ERROR: WAVEFORMATEXTENSIBLE cbSize must be at least %Iu (%u)", ( sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX) ), wfx->cbSize );
+            return false;
+        }
+        else
         {
             static const GUID s_wfexBase = {0x00000000, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71};
 
@@ -584,6 +623,10 @@ bool ConvertToMiniFormat( const WAVEFORMATEX* wfx, bool hasSeek, MINIWAVEFORMAT&
             if ( memcmp( reinterpret_cast<const BYTE*>(&wfex->SubFormat) + sizeof(DWORD),
                         reinterpret_cast<const BYTE*>(&s_wfexBase) + sizeof(DWORD), sizeof(GUID) - sizeof(DWORD) ) != 0 )
             {
+                wprintf( L"ERROR: WAVEFORMATEXTENSIBLE encountered with unknown GUID ({%8.8lX-%4.4X-%4.4X-%2.2X%2.2X-%2.2X%2.2X%2.2X%2.2X%2.2X%2.2X})\n", 
+                         wfex->SubFormat.Data1, wfex->SubFormat.Data2, wfex->SubFormat.Data3,
+                         wfex->SubFormat.Data4[0], wfex->SubFormat.Data4[1], wfex->SubFormat.Data4[2], wfex->SubFormat.Data4[3], 
+                         wfex->SubFormat.Data4[4], wfex->SubFormat.Data4[5], wfex->SubFormat.Data4[6], wfex->SubFormat.Data4[7] );
                 return false;
             }
 
@@ -627,52 +670,49 @@ bool ConvertToMiniFormat( const WAVEFORMATEX* wfx, bool hasSeek, MINIWAVEFORMAT&
                     return false;
                 }
 
-                if ( wfex->dwChannelMask )
-                {
-                    auto channelBits = ChannelsSpecifiedInMask( wfex->dwChannelMask );
-                    if ( channelBits != wfx->nChannels )
-                    {
-                        wprintf( L"ERROR: WAVEFORMATEXTENSIBLE: nChannels=%u but ChannelMask has %u bits set\n", 
-                                 wfx->nChannels, channelBits );
-                        return false;
-                    }
-                    else
-                    {
-                        wprintf( L"WARNING: WAVEFORMATEXTENSIBLE ChannelMask is ignored in wave banks\n" );
-                    }
-                }
-
                 miniFmt.wFormatTag = MINIWAVEFORMAT::TAG_PCM;
                 miniFmt.wBitsPerSample = (wfex->Samples.wValidBitsPerSample == 16) ? MINIWAVEFORMAT::BITDEPTH_16 : MINIWAVEFORMAT::BITDEPTH_8;
                 miniFmt.wBlockAlign = wfx->nBlockAlign;
-                return true;
+                break;
 
             case WAVE_FORMAT_IEEE_FLOAT:
-                wprintf( L"ERROR: Wave banks do not support IEEE float PCM data\n" );
+                wprintf( L"ERROR: Wave banks do not support float PCM data\n" );
                 return false;
 
             case WAVE_FORMAT_ADPCM:
-                wprintf( L"ERROR: MS ADPCM is not supported as a WAVEFORMATEXTENSIBLE\n" );
+                wprintf( L"ERROR: ADPCM is not supported as a WAVEFORMATEXTENSIBLE\n" );
                 return false;
 
             case WAVE_FORMAT_WMAUDIO2:
             case WAVE_FORMAT_WMAUDIO3:
-                if ( wfx->wBitsPerSample != 16 )
-                {
-                    wprintf( L"ERROR: Wave banks only support 16-bit xWMA data\n");
-                    return false;
-                }
-
                 if ( !hasSeek )
                 {
                     wprintf( L"ERROR: xWMA requires seek tables (dpds chunk)\n");
                     return false;
                 }
 
+                if ( wfx->wBitsPerSample != 16 )
+                {
+                    wprintf( L"ERROR: Wave banks only support 16-bit xWMA data\n");
+                    return false;
+                }
+
+                if ( !wfx->nBlockAlign )
+                {
+                    wprintf( L"ERROR: Wvae bank xWMA must have a non-zero nBlockAlign\n" );
+                    return false;
+                }
+
+                if ( !wfx->nAvgBytesPerSec )
+                {
+                    wprintf( L"ERROR: Wave bank xWMA must have a non-zero nAvgBytesPerSec\n" );
+                    return false;
+                }
+
                 miniFmt.wFormatTag = MINIWAVEFORMAT::TAG_WMA;
-                miniFmt.wBitsPerSample = ( wfx->wFormatTag == WAVE_FORMAT_WMAUDIO3 ) ? 0x1 : 0;
+                miniFmt.wBitsPerSample = ( wfx->wFormatTag == WAVE_FORMAT_WMAUDIO3 ) ? MINIWAVEFORMAT::BITDEPTH_16 : MINIWAVEFORMAT::BITDEPTH_8;
                 miniFmt.wBlockAlign = EncodeWMABlockAlign( wfx->nBlockAlign, wfx->nAvgBytesPerSec );
-                return true;
+                break;
 
             case WAVE_FORMAT_XMA2:
                 wprintf( L"ERROR: XMA2 is not supported as a WAVEFORMATEXTENSIBLE\n" );
@@ -682,6 +722,23 @@ bool ConvertToMiniFormat( const WAVEFORMATEX* wfx, bool hasSeek, MINIWAVEFORMAT&
                 wprintf( L"ERROR: Unknown WAVEFORMATEXTENSIBLE format tag\n" );
                 return false;
             }
+
+            if ( wfex->dwChannelMask )
+            {
+                auto channelBits = ChannelsSpecifiedInMask( wfex->dwChannelMask );
+                if ( channelBits != wfx->nChannels )
+                {
+                    wprintf( L"ERROR: WAVEFORMATEXTENSIBLE: nChannels=%u but ChannelMask has %u bits set\n", 
+                                wfx->nChannels, channelBits );
+                    return false;
+                }
+                else
+                {
+                    wprintf( L"WARNING: WAVEFORMATEXTENSIBLE ChannelMask is ignored in wave banks\n" );
+                }
+            }
+
+            return true;
         }
 
     default:

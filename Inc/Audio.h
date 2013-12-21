@@ -55,6 +55,7 @@
 #include <stdint.h>
 #pragma warning(pop)
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -102,6 +103,9 @@ namespace DirectX
 
         virtual void OnReset() = 0;
             // Notification of an audio engine reset
+
+        virtual void OnUpdate() = 0;
+            // Notification of an audio engine per-frame update (opt-in)
 
         virtual void OnDestroyEngine() = 0;
             // Notification that the audio engine is being destroyed
@@ -172,6 +176,13 @@ namespace DirectX
         Reverb_MAX
     };
 
+    enum SoundState
+    {
+        STOPPED = 0,
+        PLAYING,
+        PAUSED
+    };
+
 
     //----------------------------------------------------------------------------------
     class AudioEngine
@@ -221,8 +232,8 @@ namespace DirectX
         // Voice pool management.
         void AllocateVoice( _In_ const WAVEFORMATEX* wfx, SOUND_EFFECT_INSTANCE_FLAGS flags, bool oneshot, _Outptr_ IXAudio2SourceVoice** voice );
 
-        void RegisterNotify( _In_ IVoiceNotify* notify );
-        void UnregisterNotify( _In_ IVoiceNotify* notify, bool usesOneShots );
+        void RegisterNotify( _In_ IVoiceNotify* notify, bool usesUpdate );
+        void UnregisterNotify( _In_ IVoiceNotify* notify, bool usesOneShots, bool usesUpdate );
 
         // XAudio2 interface access
         IXAudio2* GetInterface() const;
@@ -270,10 +281,14 @@ namespace DirectX
         bool IsInUse() const;
         bool IsStreamingBank() const;
 
-        uint32_t SampleSizeInBytes( uint32_t index ) const;
+        size_t GetSampleSizeInBytes( uint32_t index ) const;
+            // Returns size of wave audio data
 
-        uint32_t SampleDuration( uint32_t index ) const;
+        size_t GetSampleDuration( uint32_t index ) const;
             // Returns the duration in samples
+
+        size_t GetSampleDurationMS( uint32_t index ) const;
+            // Returns the duration in milliseconds
 
         const WAVEFORMATEX* GetFormat( uint32_t index, _Out_writes_bytes_(maxsize) WAVEFORMATEX* wfx, size_t maxsize ) const;
 
@@ -333,10 +348,14 @@ namespace DirectX
 
         bool IsInUse() const;
 
-        uint32_t SampleSizeInBytes() const;
+        size_t GetSampleSizeInBytes() const;
+            // Returns size of wave audio data
 
-        uint32_t SampleDuration() const;
+        size_t GetSampleDuration() const;
             // Returns the duration in samples
+
+        size_t GetSampleDurationMS() const;
+            // Returns the duration in milliseconds
 
         const WAVEFORMATEX* GetFormat() const;
 
@@ -547,6 +566,7 @@ namespace DirectX
         void Play( bool loop = false );
         void Stop( bool immediate = true );
         void Pause();
+        void Resume();
 
         void SetVolume( float volume );
         void SetPitch( float pitch );
@@ -555,13 +575,6 @@ namespace DirectX
         void Apply3D( const AudioListener& listener, const AudioEmitter& emitter );
 
         bool IsLooped() const;
-
-        enum SoundState
-        {
-            STOPPED = 0,
-            PLAYING,
-            PAUSED
-        };
 
         SoundState GetState();
 
@@ -575,8 +588,8 @@ namespace DirectX
         std::unique_ptr<Impl> pImpl;
 
         // Private constructors
-        SoundEffectInstance( AudioEngine* engine, SoundEffect* effect, SOUND_EFFECT_INSTANCE_FLAGS flags );
-        SoundEffectInstance( AudioEngine* engine, WaveBank* effect, uint32_t index, SOUND_EFFECT_INSTANCE_FLAGS flags );
+        SoundEffectInstance( _In_ AudioEngine* engine, _In_ SoundEffect* effect, SOUND_EFFECT_INSTANCE_FLAGS flags );
+        SoundEffectInstance( _In_ AudioEngine* engine, _In_ WaveBank* effect, uint32_t index, SOUND_EFFECT_INSTANCE_FLAGS flags );
 
         friend std::unique_ptr<SoundEffectInstance> SoundEffect::CreateInstance( SOUND_EFFECT_INSTANCE_FLAGS );
         friend std::unique_ptr<SoundEffectInstance> WaveBank::CreateInstance( uint32_t, SOUND_EFFECT_INSTANCE_FLAGS );
@@ -584,6 +597,59 @@ namespace DirectX
         // Prevent copying.
         SoundEffectInstance(SoundEffectInstance const&);
         SoundEffectInstance& operator= (SoundEffectInstance const&);
+    };
+
+
+    //----------------------------------------------------------------------------------
+    class DynamicSoundEffectInstance
+    {
+    public:
+        DynamicSoundEffectInstance( _In_ AudioEngine* engine,
+                                    _In_opt_ std::function<void(DynamicSoundEffectInstance*)> bufferNeeded,
+                                    int sampleRate, int channels, int sampleBits = 16,
+                                    SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default );
+        DynamicSoundEffectInstance(DynamicSoundEffectInstance&& moveFrom);
+        DynamicSoundEffectInstance& operator= (DynamicSoundEffectInstance&& moveFrom);
+        virtual ~DynamicSoundEffectInstance();
+
+        void Play();
+        void Stop( bool immediate = true );
+        void Pause();
+        void Resume();
+
+        void SetVolume( float volume );
+        void SetPitch( float pitch );
+        void SetPan( float pan );
+
+        void Apply3D( const AudioListener& listener, const AudioEmitter& emitter );
+
+        void SubmitBuffer( _In_reads_bytes_(audioBytes) const uint8_t* pAudioData, uint32_t audioBytes );
+        void SubmitBuffer( _In_reads_bytes_(audioBytes) const uint8_t* pAudioData, uint32_t offset, uint32_t audioBytes );
+
+        SoundState GetState();
+
+        size_t GetSampleDuration( size_t bytes ) const;
+            // Returns duration in samples of a buffer of a given size
+
+        size_t GetSampleDurationMS( size_t bytes ) const;
+            // Returns duration in milliseconds of a buffer of a given size
+
+        size_t GetSampleSizeInBytes( uint64_t duration ) const;
+            // Returns size of a buffer for a duration given in milliseconds
+
+        uint32_t PendingBufferCount() const;
+
+        const WAVEFORMATEX* GetFormat() const;
+
+    private:
+        // Private implementation.
+        class Impl;
+
+        std::unique_ptr<Impl> pImpl;
+
+        // Prevent copying.
+        DynamicSoundEffectInstance(DynamicSoundEffectInstance const&);
+        DynamicSoundEffectInstance& operator= (DynamicSoundEffectInstance const&);
     };
 }
 

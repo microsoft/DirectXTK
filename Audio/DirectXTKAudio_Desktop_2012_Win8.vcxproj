@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Inc\Audio.h" />
+    <ClInclude Include="SoundCommon.h" />
     <ClInclude Include="WaveBankReader.h" />
     <ClInclude Include="WAVFileReader.h" />
   </ItemGroup>
@@ -30,6 +31,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="DynamicSoundEffectInstance.cpp" />
+    <ClCompile Include="SoundCommon.cpp" />
     <ClCompile Include="SoundEffect.cpp" />
     <ClCompile Include="SoundEffectInstance.cpp" />
     <ClCompile Include="WaveBank.cpp" />

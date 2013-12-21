@@ -19,6 +19,7 @@
 
 using namespace DirectX;
 
+
 namespace
 {
     
@@ -216,7 +217,7 @@ static HRESULT WaveFindFormatAndData( _In_reads_bytes_(wavDataSize) const uint8_
                 break;
 
             case  0x166 /*WAVE_FORMAT_XMA2*/: // XMA2 is supported by Xbox One
-                if ( ( fmtChunk->size < 52 /*sizeof(XMA2WAVEFORMATEX)*/ ) || ( wfx->cbSize < 34 ) )
+                if ( ( fmtChunk->size < 52 /*sizeof(XMA2WAVEFORMATEX)*/ ) || ( wfx->cbSize < 34 /*( sizeof(XMA2WAVEFORMATEX) - sizeof(WAVEFORMATEX) )*/ ) )
                 {
                     return E_FAIL;
                 }
@@ -224,14 +225,14 @@ static HRESULT WaveFindFormatAndData( _In_reads_bytes_(wavDataSize) const uint8_
                 break;
 
             case WAVE_FORMAT_ADPCM:
-                if ( ( fmtChunk->size < sizeof(ADPCMWAVEFORMAT) ) || ( wfx->cbSize < 32 ) )
+                if ( ( fmtChunk->size < ( sizeof(WAVEFORMATEX) + 32 ) ) || ( wfx->cbSize < 32 /*MSADPCM_FORMAT_EXTRA_BYTES*/ ) )
                 {
                     return E_FAIL;
                 }
                 break;
 
             case WAVE_FORMAT_EXTENSIBLE:
-                if ( ( fmtChunk->size < sizeof(WAVEFORMATEXTENSIBLE) ) || ( wfx->cbSize < 22 ) )
+                if ( ( fmtChunk->size < sizeof(WAVEFORMATEXTENSIBLE) ) || ( wfx->cbSize < ( sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX) ) ) )
                 {
                     return E_FAIL;
                 }

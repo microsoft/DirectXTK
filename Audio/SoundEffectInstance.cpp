@@ -12,9 +12,7 @@
 //--------------------------------------------------------------------------------------
 
 #include "pch.h"
-#include "Audio.h"
-#include "WAVFileReader.h"
-#include "PlatformHelpers.h"
+#include "SoundCommon.h"
 
 using namespace DirectX;
 
@@ -28,98 +26,45 @@ class SoundEffectInstance::Impl : public IVoiceNotify
 {
 public:
     Impl( _In_ AudioEngine* engine, _In_ SoundEffect* effect, SOUND_EFFECT_INSTANCE_FLAGS flags ) :
-        mVoice( nullptr ),
-        mDirectVoice( nullptr ),
-        mReverbVoice( nullptr ),
+        mBase(),
         mEffect( effect ),
         mWaveBank( nullptr ),
         mIndex( 0 ),
-        mLooped( false ),
-        mFlags( flags ),
-        mState( STOPPED ),
-        mEngine( engine )
+        mLooped( false )
     {
+        assert( engine != 0 );
+        engine->RegisterNotify( this, false );
+
         assert( mEffect != 0 );
-        assert( mEngine != 0 );
-        mEngine->RegisterNotify( this );
-
-        mDirectVoice = mEngine->GetMasterVoice();
-        mReverbVoice = mEngine->GetReverbVoice();
-        if ( mEngine->GetChannelMask() & SPEAKER_LOW_FREQUENCY )
-            mFlags = mFlags | SoundEffectInstance_UseRedirectLFE;
-
-        memset( &mDSPSettings, 0, sizeof(X3DAUDIO_DSP_SETTINGS) );
-
-        assert( mEffect->GetFormat() != 0 );
-        mDSPSettings.SrcChannelCount = mEffect->GetFormat()->nChannels;
-        mDSPSettings.DstChannelCount = mEngine->GetOutputChannels();
+        mBase.Initialize( engine, effect->GetFormat(), flags );
     }
 
     Impl( _In_ AudioEngine* engine, _In_ WaveBank* waveBank, uint32_t index, SOUND_EFFECT_INSTANCE_FLAGS flags ) :
-        mVoice( nullptr ),
-        mDirectVoice( nullptr ),
-        mReverbVoice( nullptr ),
+        mBase(),
         mEffect( nullptr ),
         mWaveBank( waveBank ),
         mIndex( index ),
-        mLooped( false ),
-        mFlags( flags ),
-        mState( STOPPED ),
-        mEngine( engine )
+        mLooped( false )
     {
-        assert( mWaveBank != 0 );
-        assert( mEngine != 0 );
-        mEngine->RegisterNotify( this );
+        assert( engine != 0 );
+        engine->RegisterNotify( this, false );
 
-        mDirectVoice = mEngine->GetMasterVoice();
-        mReverbVoice = mEngine->GetReverbVoice();
-        if ( mEngine->GetChannelMask() & SPEAKER_LOW_FREQUENCY )
-            mFlags = mFlags | SoundEffectInstance_UseRedirectLFE;
-
-        memset( &mDSPSettings, 0, sizeof(X3DAUDIO_DSP_SETTINGS) );
- 
         char buff[64];
         auto wfx = reinterpret_cast<WAVEFORMATEX*>( buff );
-        mWaveBank->GetFormat( index, wfx, 64 );
-        mDSPSettings.SrcChannelCount = wfx->nChannels;
-        mDSPSettings.DstChannelCount = mEngine->GetOutputChannels();
+        assert( mWaveBank != 0 );
+        mBase.Initialize( engine, mWaveBank->GetFormat( index, wfx, 64 ), flags );
     }
 
     ~Impl()
     {
-        if ( mVoice )
+        if ( mBase.engine )
         {
-            mVoice->DestroyVoice();
-            mVoice = nullptr;
-        }
-
-        if ( mEngine )
-        {
-            mEngine->UnregisterNotify( this, false );
-            mEngine = nullptr;
+            mBase.engine->UnregisterNotify( this, false, false );
+            mBase.engine = nullptr;
         }
     }
 
     void Play( bool loop );
-    void Stop( bool immediate );
-    void Pause();
-    void SetPan( float pan );
-
-    void Apply3D( const AudioListener& listener, const AudioEmitter& emitter );
-
-    SoundEffectInstance::SoundState GetState();
-
-    void Halt()
-    {
-        if ( mVoice )
-        {
-            mVoice->Stop( 0 );
-            mVoice->FlushSourceBuffers();
-            mVoice = nullptr;
-        }
-
-        mState = STOPPED;
-    }
 
     // IVoiceNotify
     virtual void OnBufferEnd() override
@@ -130,351 +75,131 @@ public:
 
     virtual void OnCriticalError() override
     {
-        mVoice = nullptr;
-        mDirectVoice = nullptr;
-        mReverbVoice = nullptr;
-        mState = STOPPED;
+        mBase.OnCriticalError();
     }
 
     virtual void OnReset() override
     {
-        assert( mEngine != 0 );
-        mDirectVoice = mEngine->GetMasterVoice();
-        mReverbVoice = mEngine->GetReverbVoice();
+        mBase.OnReset();
+    }
 
-        mFlags = static_cast<SOUND_EFFECT_INSTANCE_FLAGS>( static_cast<int>(mFlags) & ~SoundEffectInstance_UseRedirectLFE );
-        if ( mEngine->GetChannelMask() & SPEAKER_LOW_FREQUENCY )
-            mFlags = mFlags | SoundEffectInstance_UseRedirectLFE;
-
-        mDSPSettings.DstChannelCount = mEngine->GetOutputChannels();
+    virtual void OnUpdate() override
+    {
+        // We do not register for update notification
+        assert(false);
     }
 
     virtual void OnDestroyEngine() override
     {
-        Halt();
-        mDirectVoice = nullptr;
-        mReverbVoice = nullptr;
-        mEngine = nullptr;
+        mBase.OnDestroy();
     }
 
     virtual void GatherStatistics( AudioStatistics& stats ) const override
     {
-        ++stats.allocatedInstances;
-        if ( mVoice )
-        {
-            ++stats.allocatedVoices;
-
-            if ( mFlags & SoundEffectInstance_Use3D )
-                ++stats.allocatedVoices3d;
-
-            if ( mState == PLAYING )
-                ++stats.playingInstances;
-        }
+        mBase.GatherStatistics(stats);
     }
 
-    IXAudio2SourceVoice*            mVoice;
-    IXAudio2Voice*                  mDirectVoice;
-    IXAudio2Voice*                  mReverbVoice;
+    SoundEffectInstanceBase         mBase;
     SoundEffect*                    mEffect;
     WaveBank*                       mWaveBank;
     uint32_t                        mIndex;
     bool                            mLooped;
-    SOUND_EFFECT_INSTANCE_FLAGS     mFlags;
-    SoundEffectInstance::SoundState mState;
-
-private:
-    X3DAUDIO_DSP_SETTINGS           mDSPSettings;
-    AudioEngine*                    mEngine;
 };
 
 
 void SoundEffectInstance::Impl::Play( bool loop )
 {
-    if ( !mVoice )
+    if ( !mBase.voice )
     {
         if ( mWaveBank )
         {
             char buff[64];
-            mEngine->AllocateVoice( mWaveBank->GetFormat( mIndex, reinterpret_cast<WAVEFORMATEX*>( buff ), 64 ), mFlags, false, &mVoice );
+            auto wfx = reinterpret_cast<WAVEFORMATEX*>( buff );
+            mBase.AllocateVoice( mWaveBank->GetFormat( mIndex, wfx, 64) );
         }
         else
         {
             assert( mEffect != 0 );
-            mEngine->AllocateVoice( mEffect->GetFormat(), mFlags, false, &mVoice );
+            mBase.AllocateVoice( mEffect->GetFormat() );
         }
     }
 
-    if ( !mVoice )
+    if ( !mBase.Play() )
         return;
 
-    if ( mState == PAUSED )
-    {
-        mState = PLAYING;
-        HRESULT hr = mVoice->Start( 0 );
-        ThrowIfFailed( hr );
-    }
-    else if ( mState != PLAYING )
-    {
-        HRESULT hr = mVoice->Start( 0 );
-        ThrowIfFailed( hr );
-
-        XAUDIO2_BUFFER buffer;
+    // Submit audio data for STOPPED -> PLAYING state transition
+    XAUDIO2_BUFFER buffer;
 
 #if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
 
-        bool iswma = false;
-        XAUDIO2_BUFFER_WMA wmaBuffer;
-        if ( mWaveBank )
-        {
-            iswma = mWaveBank->FillSubmitBuffer( mIndex, buffer, wmaBuffer );
-        }
-        else
-        {
-            assert( mEffect != 0 );
-            iswma = mEffect->FillSubmitBuffer( buffer, wmaBuffer );
-        }
-
-#else
-
-        if ( mWaveBank )
-        {
-            mWaveBank->FillSubmitBuffer( mIndex, buffer );
-        }
-        else
-        {
-            assert( mEffect != 0 );
-            mEffect->FillSubmitBuffer( buffer );
-        }
-
-#endif
-    
-        buffer.Flags = XAUDIO2_END_OF_STREAM;
-        if ( loop )
-        {
-            buffer.LoopCount = XAUDIO2_LOOP_INFINITE;
-        }
-        else
-        {
-            buffer.LoopCount = buffer.LoopBegin = buffer.LoopLength = 0;
-        }
-        buffer.pContext = nullptr;
-
-#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
-        if ( iswma )
-        {
-            hr = mVoice->SubmitSourceBuffer( &buffer, &wmaBuffer );
-        }
-        else
-#endif
-        {
-            hr = mVoice->SubmitSourceBuffer( &buffer, nullptr );
-        }
-
-        if ( FAILED(hr) )
-        {
-#ifdef _DEBUG
-            DebugTrace( "ERROR: SoundEffect failed (%08X) when submitting buffer:\n", hr );
-
-            char buff2[64];
-            auto wfx = ( mWaveBank ) ? mWaveBank->GetFormat( mIndex, reinterpret_cast<WAVEFORMATEX*>( buff2 ), 64 )
-                                     : mEffect->GetFormat();
-
-            uint32_t length = ( mWaveBank ) ? mWaveBank->SampleSizeInBytes( mIndex ) : mEffect->SampleSizeInBytes();
-
-            DebugTrace( "\tFormat Tag %u, %u channels, %u-bit, %u Hz, %u bytes\n", wfx->wFormatTag, 
-                       wfx->nChannels, wfx->wBitsPerSample, wfx->nSamplesPerSec, length );
-#endif
-            throw std::exception( "SubmitSourceBuffer" );
-        }
-
-        mState = PLAYING;
-    }
-}
-
-
-void SoundEffectInstance::Impl::Stop( bool immediate )
-{
-    if ( !mVoice )
+    bool iswma = false;
+    XAUDIO2_BUFFER_WMA wmaBuffer;
+    if ( mWaveBank )
     {
-        mState = STOPPED;
-        return;
-    }
-
-    if ( immediate )
-    {
-        mState = STOPPED;
-        mVoice->Stop( 0 );
-    }
-    else if ( mLooped )
-    {
-        mLooped = false;
-        mVoice->ExitLoop();
+        iswma = mWaveBank->FillSubmitBuffer( mIndex, buffer, wmaBuffer );
     }
     else
     {
-        mVoice->Stop( XAUDIO2_PLAY_TAILS );
-    }
-}
-
-
-void SoundEffectInstance::Impl::Pause()
-{
-    if ( mState != PLAYING )
-        return;
-
-    mState = PAUSED;
-
-    if ( mVoice )
-    {
-        mVoice->Stop( 0 );
-    }
-}
-
-
-void SoundEffectInstance::Impl::SetPan( float pan )
-{
-    if ( mDSPSettings.SrcChannelCount != 1 )
-    {
-        DebugTrace( "ERROR: SoundEffectInstance only supports panning on mono source data\n" );
-        throw std::exception( "SoundEffectInstance::SetPan" );
+        assert( mEffect != 0 );
+        iswma = mEffect->FillSubmitBuffer( buffer, wmaBuffer );
     }
 
-    if ( !mVoice )
-        return;
-
-    pan = std::min<float>( 1.f, pan );
-    pan = std::max<float>( -1.f, pan );
-
-    float left = ( pan >= 0 ) ? ( 1.f - pan ) : 1.f;
-    float right = ( pan <= 0 ) ? ( - pan - 1.f ) : 1.f;
-
-    float matrix[8];
-    for( size_t j = 0; j < 8; ++j )
-        matrix[j] = 1.f;
-
-    switch( mEngine->GetChannelMask() )
-    {
-    case SPEAKER_STEREO:
-    case SPEAKER_2POINT1:
-    case SPEAKER_SURROUND:
-        matrix[ 0 ] = left;
-        matrix[ 1 ] = right;
-        break;
-
-    case SPEAKER_QUAD:
-        matrix[ 0 ] = matrix[ 2 ] = left;
-        matrix[ 1 ] = matrix[ 3 ] = right;
-        break;
-
-    case SPEAKER_4POINT1:
-        matrix[ 0 ] = matrix[ 3 ] = left;
-        matrix[ 1 ] = matrix[ 4 ] = right;
-        break;
-
-    case SPEAKER_5POINT1:
-    case SPEAKER_7POINT1:
-    case SPEAKER_5POINT1_SURROUND:
-        matrix[ 0 ] = matrix[ 4 ] = left;
-        matrix[ 1 ] = matrix[ 5 ] = right;
-        break;
-
-    case SPEAKER_7POINT1_SURROUND:
-        matrix[ 0 ] = matrix[ 4 ] = matrix[ 6 ] = left;
-        matrix[ 1 ] = matrix[ 5 ] = matrix[ 7 ] = right;
-        break;
-
-    case SPEAKER_MONO:
-    default:
-        // No panning...
-        return;
-    }
-
-    HRESULT hr = mVoice->SetOutputMatrix( nullptr, 1, mEngine->GetOutputChannels(), matrix );
-    ThrowIfFailed( hr );
-}
-
-
-void SoundEffectInstance::Impl::Apply3D( const AudioListener& listener, const AudioEmitter& emitter )
-{
-    if ( !mVoice )
-        return;
-
-    if ( !( mFlags & SoundEffectInstance_Use3D ) )
-    {
-        DebugTrace( "ERROR: SoundEffectInstance::Apply3D called for an instance created without SoundEffectInstance_Use3D set" );
-        throw std::exception( "SoundEffectInstance::Apply3D" );
-    }
-
-    DWORD dwCalcFlags = X3DAUDIO_CALCULATE_MATRIX | X3DAUDIO_CALCULATE_DOPPLER | X3DAUDIO_CALCULATE_LPF_DIRECT;
-
-    if ( mFlags & SoundEffectInstance_UseRedirectLFE )
-    {
-        // On devices with an LFE channel, allow the mono source data to be routed to the LFE destination channel.
-        dwCalcFlags |= X3DAUDIO_CALCULATE_REDIRECT_TO_LFE;
-    }
-
-    auto reverb = mReverbVoice;
-    if ( reverb )
-    {
-        dwCalcFlags |= X3DAUDIO_CALCULATE_LPF_REVERB | X3DAUDIO_CALCULATE_REVERB;
-    }
-
-    float matrix[ XAUDIO2_MAX_AUDIO_CHANNELS * 8 ];
-    assert( mDSPSettings.SrcChannelCount <= XAUDIO2_MAX_AUDIO_CHANNELS );
-    assert( mDSPSettings.DstChannelCount <= 8 );
-    mDSPSettings.pMatrixCoefficients = matrix;
-
-    X3DAudioCalculate( mEngine->Get3DHandle(), &listener, &emitter, dwCalcFlags, &mDSPSettings );
-
-    mDSPSettings.pMatrixCoefficients = nullptr;
-
-    auto voice = mVoice;
-    voice->SetFrequencyRatio( mDSPSettings.DopplerFactor );
-
-    auto direct = mDirectVoice;
-    voice->SetOutputMatrix( direct, mDSPSettings.SrcChannelCount, mDSPSettings.DstChannelCount, matrix );
-
-    if ( reverb )
-    {
-        voice->SetOutputMatrix( reverb, 1, 1, &mDSPSettings.ReverbLevel );
-    }
-
-    if ( mFlags & SoundEffectInstance_ReverbUseFilters )
-    {
-        XAUDIO2_FILTER_PARAMETERS filterDirect = { LowPassFilter, 2.0f * sinf(X3DAUDIO_PI/6.0f * mDSPSettings.LPFDirectCoefficient), 1.0f };
-        // see XAudio2CutoffFrequencyToRadians() in XAudio2.h for more information on the formula used here
-        voice->SetOutputFilterParameters( direct, &filterDirect );
-
-        if ( reverb )
-        {
-            XAUDIO2_FILTER_PARAMETERS filterReverb = { LowPassFilter, 2.0f * sinf(X3DAUDIO_PI/6.0f * mDSPSettings.LPFReverbCoefficient), 1.0f };
-            // see XAudio2CutoffFrequencyToRadians() in XAudio2.h for more information on the formula used here
-            voice->SetOutputFilterParameters( reverb, &filterReverb );
-        }
-    }
-}
-
-
-SoundEffectInstance::SoundState SoundEffectInstance::Impl::GetState()
-{
-    if ( !mVoice || mState != PLAYING )
-        return mState;
-
-	XAUDIO2_VOICE_STATE state;
-#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
-	mVoice->GetState(&state, XAUDIO2_VOICE_NOSAMPLESPLAYED );
 #else
-	mVoice->GetState(&state);
-#endif
 
-    if ( !state.BuffersQueued )
+    if ( mWaveBank )
     {
-        // Automatic stop if the buffer has finished playing
-        mVoice->Stop();
-        mState = STOPPED;
+        mWaveBank->FillSubmitBuffer( mIndex, buffer );
+    }
+    else
+    {
+        assert( mEffect != 0 );
+        mEffect->FillSubmitBuffer( buffer );
     }
 
-    return mState;
+#endif
+    
+    buffer.Flags = XAUDIO2_END_OF_STREAM;
+    if ( loop )
+    {
+        mLooped = true;
+        buffer.LoopCount = XAUDIO2_LOOP_INFINITE;
+    }
+    else
+    {
+        mLooped = false;
+        buffer.LoopCount = buffer.LoopBegin = buffer.LoopLength = 0;
+    }
+    buffer.pContext = nullptr;
+
+    HRESULT hr;
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+    if ( iswma )
+    {
+        hr = mBase.voice->SubmitSourceBuffer( &buffer, &wmaBuffer );
+    }
+    else
+#endif
+    {
+        hr = mBase.voice->SubmitSourceBuffer( &buffer, nullptr );
+    }
+
+    if ( FAILED(hr) )
+    {
+#ifdef _DEBUG
+        DebugTrace( "ERROR: SoundEffectInstance failed (%08X) when submitting buffer:\n", hr );
+
+        char buff[64];
+        auto wfx = ( mWaveBank ) ? mWaveBank->GetFormat( mIndex, reinterpret_cast<WAVEFORMATEX*>( buff ), 64 )
+                                 : mEffect->GetFormat();
+
+        size_t length = ( mWaveBank ) ? mWaveBank->GetSampleSizeInBytes( mIndex ) : mEffect->GetSampleSizeInBytes();
+
+        DebugTrace( "\tFormat Tag %u, %u channels, %u-bit, %u Hz, %Iu bytes\n", wfx->wFormatTag, 
+                    wfx->nChannels, wfx->wBitsPerSample, wfx->nSamplesPerSec, length );
+#endif
+        mBase.Stop( true, mLooped );
+        throw std::exception( "SubmitSourceBuffer" );
+    }
 }
 
 
@@ -483,11 +208,13 @@ SoundEffectInstance::SoundState SoundEffectInstance::Impl::GetState()
 //--------------------------------------------------------------------------------------
 
 // Private constructors
+_Use_decl_annotations_
 SoundEffectInstance::SoundEffectInstance( AudioEngine* engine, SoundEffect* effect, SOUND_EFFECT_INSTANCE_FLAGS flags ) :
     pImpl( new Impl( engine, effect, flags ) )
 {
 }
 
+_Use_decl_annotations_
 SoundEffectInstance::SoundEffectInstance( AudioEngine* engine, WaveBank* waveBank, uint32_t index, SOUND_EFFECT_INSTANCE_FLAGS flags ) :
     pImpl( new Impl( engine, waveBank, index, flags ) )
 {
@@ -538,43 +265,49 @@ void SoundEffectInstance::Play( bool loop )
 
 void SoundEffectInstance::Stop( bool immediate )
 {
-    pImpl->Stop( immediate );
+    pImpl->mBase.Stop( immediate, pImpl->mLooped );
 }
 
 
 void SoundEffectInstance::Pause()
 {
-    pImpl->Pause();
+    pImpl->mBase.Pause();
+}
+
+
+void SoundEffectInstance::Resume()
+{
+    pImpl->mBase.Resume();
 }
 
 
 void SoundEffectInstance::SetVolume( float volume )
 {
-    if ( pImpl->mVoice )
+    if ( pImpl->mBase.voice )
     {
-        pImpl->mVoice->SetVolume( volume );
+        pImpl->mBase.voice->SetVolume( volume );
     }
 }
 
 
 void SoundEffectInstance::SetPitch( float pitch )
 {
-    if ( pImpl->mVoice )
+    if ( pImpl->mBase.voice )
     {
-        pImpl->mVoice->SetFrequencyRatio( pitch );
+        pImpl->mBase.voice->SetFrequencyRatio( pitch );
     }
 }
 
 
 void SoundEffectInstance::SetPan( float pan )
 {
-    pImpl->SetPan( pan );
+    pImpl->mBase.SetPan( pan );
 }
 
 
 void SoundEffectInstance::Apply3D( const AudioListener& listener, const AudioEmitter& emitter )
 {
-    pImpl->Apply3D( listener, emitter );
+    pImpl->mBase.Apply3D( listener, emitter );
 }
 
 
@@ -584,16 +317,17 @@ bool SoundEffectInstance::IsLooped() const
     return pImpl->mLooped;
 }
 
-SoundEffectInstance::SoundState SoundEffectInstance::GetState()
+
+SoundState SoundEffectInstance::GetState()
 {
-    return pImpl->GetState();
+    return pImpl->mBase.GetState( true );
 }
 
 
 // Notifications.
 void SoundEffectInstance::OnDestroyParent()
 {
-    pImpl->Halt();
+    pImpl->mBase.OnDestroy();
     pImpl->mWaveBank = nullptr;
     pImpl->mEffect = nullptr;
 }
