@@ -215,7 +215,7 @@ SoundEffectInstance::SoundEffectInstance( AudioEngine* engine, SoundEffect* effe
 }
 
 _Use_decl_annotations_
-SoundEffectInstance::SoundEffectInstance( AudioEngine* engine, WaveBank* waveBank, uint32_t index, SOUND_EFFECT_INSTANCE_FLAGS flags ) :
+SoundEffectInstance::SoundEffectInstance( AudioEngine* engine, WaveBank* waveBank, int index, SOUND_EFFECT_INSTANCE_FLAGS flags ) :
     pImpl( new Impl( engine, waveBank, index, flags ) )
 {
 }

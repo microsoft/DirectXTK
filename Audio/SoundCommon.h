@@ -180,11 +180,11 @@ namespace DirectX
         {
             if ( autostop && voice && ( state == PLAYING ) )
             {
-	            XAUDIO2_VOICE_STATE xstate;
+                XAUDIO2_VOICE_STATE xstate;
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
-    	        voice->GetState( &xstate, XAUDIO2_VOICE_NOSAMPLESPLAYED );
+                voice->GetState( &xstate, XAUDIO2_VOICE_NOSAMPLESPLAYED );
 #else
-	            voice->GetState( &xstate );
+                voice->GetState( &xstate );
 #endif
 
                 if ( !xstate.BuffersQueued )
@@ -198,18 +198,18 @@ namespace DirectX
             return state;
         }
 
-        uint32_t PendingBufferCount() const
+        int GetPendingBufferCount() const
         {
             if ( !voice )
                 return 0;
 
-	        XAUDIO2_VOICE_STATE xstate;
+            XAUDIO2_VOICE_STATE xstate;
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
-	        voice->GetState( &xstate, XAUDIO2_VOICE_NOSAMPLESPLAYED );
+            voice->GetState( &xstate, XAUDIO2_VOICE_NOSAMPLESPLAYED );
 #else
-    	    voice->GetState( &xstate );
+            voice->GetState( &xstate );
 #endif
-            return xstate.BuffersQueued;
+            return static_cast<int>( xstate.BuffersQueued );
         }
 
         void OnCriticalError()

@@ -220,7 +220,7 @@ namespace DirectX
         uint32_t GetChannelMask() const;
             // Returns the output channel mask
 
-        uint32_t GetOutputChannels() const;
+        int GetOutputChannels() const;
             // Returns the number of output channels
 
         bool IsAudioDevicePresent() const;
@@ -271,33 +271,33 @@ namespace DirectX
         WaveBank& operator= (WaveBank&& moveFrom);
         virtual ~WaveBank();
 
-        void Play( uint32_t index );
+        void Play( int index );
         void Play( _In_z_ const char* name );
 
-        std::unique_ptr<SoundEffectInstance> CreateInstance( uint32_t index, SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default );
+        std::unique_ptr<SoundEffectInstance> CreateInstance( int index, SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default );
         std::unique_ptr<SoundEffectInstance> CreateInstance( _In_z_ const char* name, SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default );
 
         bool IsPrepared() const;
         bool IsInUse() const;
         bool IsStreamingBank() const;
 
-        size_t GetSampleSizeInBytes( uint32_t index ) const;
+        size_t GetSampleSizeInBytes( int index ) const;
             // Returns size of wave audio data
 
-        size_t GetSampleDuration( uint32_t index ) const;
+        size_t GetSampleDuration( int index ) const;
             // Returns the duration in samples
 
-        size_t GetSampleDurationMS( uint32_t index ) const;
+        size_t GetSampleDurationMS( int index ) const;
             // Returns the duration in milliseconds
 
-        const WAVEFORMATEX* GetFormat( uint32_t index, _Out_writes_bytes_(maxsize) WAVEFORMATEX* wfx, size_t maxsize ) const;
+        const WAVEFORMATEX* GetFormat( int index, _Out_writes_bytes_(maxsize) WAVEFORMATEX* wfx, size_t maxsize ) const;
 
-        uint32_t Find( _In_z_ const char* name ) const;
+        int Find( _In_z_ const char* name ) const;
 
 #if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
-        bool FillSubmitBuffer( uint32_t index, _Out_ XAUDIO2_BUFFER& buffer, _Out_ XAUDIO2_BUFFER_WMA& wmaBuffer ) const;
+        bool FillSubmitBuffer( int index, _Out_ XAUDIO2_BUFFER& buffer, _Out_ XAUDIO2_BUFFER_WMA& wmaBuffer ) const;
 #else
-        void FillSubmitBuffer( uint32_t index, _Out_ XAUDIO2_BUFFER& buffer ) const;
+        void FillSubmitBuffer( int index, _Out_ XAUDIO2_BUFFER& buffer ) const;
 #endif
 
     private:
@@ -324,17 +324,17 @@ namespace DirectX
         SoundEffect( _In_ AudioEngine* engine, _In_z_ const wchar_t* waveFileName );
 
         SoundEffect( _In_ AudioEngine* engine, _Inout_ std::unique_ptr<uint8_t[]>& wavData,
-                     _In_ const WAVEFORMATEX* wfx, _In_reads_bytes_(audioBytes) const uint8_t* startAudio, uint32_t audioBytes );
+                     _In_ const WAVEFORMATEX* wfx, _In_reads_bytes_(audioBytes) const uint8_t* startAudio, size_t audioBytes );
 
         SoundEffect( _In_ AudioEngine* engine, _Inout_ std::unique_ptr<uint8_t[]>& wavData,
-                     _In_ const WAVEFORMATEX* wfx, _In_reads_bytes_(audioBytes) const uint8_t* startAudio, uint32_t audioBytes,
+                     _In_ const WAVEFORMATEX* wfx, _In_reads_bytes_(audioBytes) const uint8_t* startAudio, size_t audioBytes,
                      uint32_t loopStart, uint32_t loopLength );
 
 #if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
 
         SoundEffect( _In_ AudioEngine* engine, _Inout_ std::unique_ptr<uint8_t[]>& wavData,
-                     _In_ const WAVEFORMATEX* wfx, _In_reads_bytes_(audioBytes) const uint8_t* startAudio, uint32_t audioBytes,
-                     _In_reads_(seekCount) const uint32_t* seekTable, uint32_t seekCount );
+                     _In_ const WAVEFORMATEX* wfx, _In_reads_bytes_(audioBytes) const uint8_t* startAudio, size_t audioBytes,
+                     _In_reads_(seekCount) const uint32_t* seekTable, size_t seekCount );
 
 #endif
 
@@ -589,10 +589,10 @@ namespace DirectX
 
         // Private constructors
         SoundEffectInstance( _In_ AudioEngine* engine, _In_ SoundEffect* effect, SOUND_EFFECT_INSTANCE_FLAGS flags );
-        SoundEffectInstance( _In_ AudioEngine* engine, _In_ WaveBank* effect, uint32_t index, SOUND_EFFECT_INSTANCE_FLAGS flags );
+        SoundEffectInstance( _In_ AudioEngine* engine, _In_ WaveBank* effect, int index, SOUND_EFFECT_INSTANCE_FLAGS flags );
 
         friend std::unique_ptr<SoundEffectInstance> SoundEffect::CreateInstance( SOUND_EFFECT_INSTANCE_FLAGS );
-        friend std::unique_ptr<SoundEffectInstance> WaveBank::CreateInstance( uint32_t, SOUND_EFFECT_INSTANCE_FLAGS );
+        friend std::unique_ptr<SoundEffectInstance> WaveBank::CreateInstance( int, SOUND_EFFECT_INSTANCE_FLAGS );
 
         // Prevent copying.
         SoundEffectInstance(SoundEffectInstance const&);
@@ -623,8 +623,8 @@ namespace DirectX
 
         void Apply3D( const AudioListener& listener, const AudioEmitter& emitter );
 
-        void SubmitBuffer( _In_reads_bytes_(audioBytes) const uint8_t* pAudioData, uint32_t audioBytes );
-        void SubmitBuffer( _In_reads_bytes_(audioBytes) const uint8_t* pAudioData, uint32_t offset, uint32_t audioBytes );
+        void SubmitBuffer( _In_reads_bytes_(audioBytes) const uint8_t* pAudioData, size_t audioBytes );
+        void SubmitBuffer( _In_reads_bytes_(audioBytes) const uint8_t* pAudioData, uint32_t offset, size_t audioBytes );
 
         SoundState GetState();
 
@@ -637,7 +637,7 @@ namespace DirectX
         size_t GetSampleSizeInBytes( uint64_t duration ) const;
             // Returns size of a buffer for a duration given in milliseconds
 
-        uint32_t PendingBufferCount() const;
+        int GetPendingBufferCount() const;
 
         const WAVEFORMATEX* GetFormat() const;
 

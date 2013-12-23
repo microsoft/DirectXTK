@@ -902,7 +902,7 @@ uint32_t AudioEngine::GetChannelMask() const
 }
 
 
-uint32_t AudioEngine::GetOutputChannels() const
+int AudioEngine::GetOutputChannels() const
 {
     return pImpl->masterChannels;
 }

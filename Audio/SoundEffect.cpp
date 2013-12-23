@@ -88,9 +88,9 @@ public:
     }
 
     HRESULT Initialize( _In_ AudioEngine* engine, _Inout_ std::unique_ptr<uint8_t[]>& wavData,
-                        _In_ const WAVEFORMATEX* wfx, _In_reads_bytes_(audioBytes) const uint8_t* startAudio, uint32_t audioBytes,
+                        _In_ const WAVEFORMATEX* wfx, _In_reads_bytes_(audioBytes) const uint8_t* startAudio, size_t audioBytes,
 #if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
-                        _In_reads_opt_(seekCount) const uint32_t* seekTable, uint32_t seekCount,
+                        _In_reads_opt_(seekCount) const uint32_t* seekTable, size_t seekCount,
 #endif
                         uint32_t loopStart, uint32_t loopLength );
 
@@ -160,14 +160,19 @@ private:
 
 _Use_decl_annotations_
 HRESULT SoundEffect::Impl::Initialize( AudioEngine* engine, std::unique_ptr<uint8_t[]>& wavData,
-                                       const WAVEFORMATEX* wfx, const uint8_t* startAudio, uint32_t audioBytes,
+                                       const WAVEFORMATEX* wfx, const uint8_t* startAudio, size_t audioBytes,
 #if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
-                                       const uint32_t* seekTable, uint32_t seekCount,
+                                       const uint32_t* seekTable, size_t seekCount,
 #endif
                                        uint32_t loopStart, uint32_t loopLength )
 {
     if ( !engine || !IsValid( wfx ) || !startAudio || !audioBytes || !wavData )
         return E_INVALIDARG;
+
+#ifdef _M_X64
+    if ( audioBytes > 0xFFFFFFFF )
+        return E_INVALIDARG;
+#endif
 
     switch( GetFormatTag( wfx ) )
     {
@@ -192,13 +197,18 @@ HRESULT SoundEffect::Impl::Initialize( AudioEngine* engine, std::unique_ptr<uint
             return E_FAIL;
         }
 
+#ifdef _M_X64
+        if ( seekCount > 0xFFFFFFFF )
+            return E_INVALIDARG;
+#endif
+
         // Take ownership of the buffer
         mWavData.reset( wavData.release() );
 
         // WARNING: We assume the wfx, startAudio, and mSeekTable parameters are pointers into the wavData memory buffer
         mWaveFormat = wfx;
         mStartAudio = startAudio;
-        mSeekCount = seekCount;
+        mSeekCount = static_cast<uint32_t>( seekCount );
         mSeekTable = seekTable;
         break;
 
@@ -213,8 +223,14 @@ HRESULT SoundEffect::Impl::Initialize( AudioEngine* engine, std::unique_ptr<uint
             return E_FAIL;
         }
 
+#ifdef _M_X64
+        if ( seekCount > 0xFFFFFFFF )
+            return E_INVALIDARG;
+#endif
+
         {
-            HRESULT hr = ApuAlloc( &mXMAMemory, nullptr, audioBytes, SHAPE_XMA_INPUT_BUFFER_ALIGNMENT );
+            HRESULT hr = ApuAlloc( &mXMAMemory, nullptr,
+                                   static_cast<UINT32>( audioBytes ), SHAPE_XMA_INPUT_BUFFER_ALIGNMENT );
             if ( FAILED(hr) )
             {
                 DebugTrace( "ERROR: ApuAlloc failed. Did you allocate a large enough heap with ApuCreateHeap for all your XMA wave data?" );
@@ -239,7 +255,7 @@ HRESULT SoundEffect::Impl::Initialize( AudioEngine* engine, std::unique_ptr<uint
             }
         }
 
-        mSeekCount = seekCount;
+        mSeekCount = static_cast<uint32_t>( seekCount );
         mSeekTable = reinterpret_cast<const uint32_t*>( mWavData.get() + sizeof(XMA2WAVEFORMATEX) );
 
         wavData.reset();
@@ -254,7 +270,7 @@ HRESULT SoundEffect::Impl::Initialize( AudioEngine* engine, std::unique_ptr<uint
         }
     }
 
-    mAudioBytes = audioBytes;
+    mAudioBytes = static_cast<uint32_t>( audioBytes );
     mLoopStart = loopStart;
     mLoopLength = loopLength;
 
@@ -347,7 +363,7 @@ SoundEffect::SoundEffect( AudioEngine* engine, const wchar_t* waveFileName )
 
 _Use_decl_annotations_
 SoundEffect::SoundEffect( AudioEngine* engine, std::unique_ptr<uint8_t[]>& wavData,
-                          const WAVEFORMATEX* wfx, const uint8_t* startAudio, uint32_t audioBytes )
+                          const WAVEFORMATEX* wfx, const uint8_t* startAudio, size_t audioBytes )
   : pImpl(new Impl(engine) )
 {
 #if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
@@ -365,7 +381,7 @@ SoundEffect::SoundEffect( AudioEngine* engine, std::unique_ptr<uint8_t[]>& wavDa
 
 _Use_decl_annotations_
 SoundEffect::SoundEffect( AudioEngine* engine, std::unique_ptr<uint8_t[]>& wavData,
-                          const WAVEFORMATEX* wfx, const uint8_t* startAudio, uint32_t audioBytes,
+                          const WAVEFORMATEX* wfx, const uint8_t* startAudio, size_t audioBytes,
                           uint32_t loopStart, uint32_t loopLength )
   : pImpl(new Impl(engine) )
 {
@@ -386,8 +402,8 @@ SoundEffect::SoundEffect( AudioEngine* engine, std::unique_ptr<uint8_t[]>& wavDa
 
 _Use_decl_annotations_
 SoundEffect::SoundEffect( AudioEngine* engine, std::unique_ptr<uint8_t[]>& wavData,
-                          const WAVEFORMATEX* wfx, const uint8_t* startAudio, uint32_t audioBytes,
-                          const uint32_t* seekTable, uint32_t seekCount )
+                          const WAVEFORMATEX* wfx, const uint8_t* startAudio, size_t audioBytes,
+                          const uint32_t* seekTable, size_t seekCount )
 {
     HRESULT hr = pImpl->Initialize( engine, wavData, wfx, startAudio, audioBytes, seekTable, seekCount, 0, 0 );
     if ( FAILED(hr) )

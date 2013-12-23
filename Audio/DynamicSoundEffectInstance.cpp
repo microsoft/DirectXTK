@@ -92,7 +92,7 @@ public:
 
     void Resume();
 
-    void SubmitBuffer( _In_reads_bytes_(audioBytes) const uint8_t* pAudioData, uint32_t offset, uint32_t audioBytes );
+    void SubmitBuffer( _In_reads_bytes_(audioBytes) const uint8_t* pAudioData, uint32_t offset, size_t audioBytes );
 
     const WAVEFORMATEX* GetFormat() const { return &mWaveFormat; } ;
 
@@ -143,7 +143,7 @@ void DynamicSoundEffectInstance::Impl::Play()
 
     (void)mBase.Play();
 
-    if ( mBase.voice && ( mBase.state == PLAYING ) && ( mBase.PendingBufferCount() <= 2 ) )
+    if ( mBase.voice && ( mBase.state == PLAYING ) && ( mBase.GetPendingBufferCount() <= 2 ) )
     {
         SetEvent( mBufferEvent );
     }
@@ -156,7 +156,7 @@ void DynamicSoundEffectInstance::Impl::Resume()
     {
         mBase.Resume();
 
-        if ( ( mBase.state == PLAYING ) && ( mBase.PendingBufferCount() <= 2 ) )
+        if ( ( mBase.state == PLAYING ) && ( mBase.GetPendingBufferCount() <= 2 ) )
         {
             SetEvent( mBufferEvent );
         }
@@ -165,19 +165,27 @@ void DynamicSoundEffectInstance::Impl::Resume()
 
 
 _Use_decl_annotations_
-void DynamicSoundEffectInstance::Impl::SubmitBuffer( const uint8_t* pAudioData, uint32_t offset, uint32_t audioBytes )
+void DynamicSoundEffectInstance::Impl::SubmitBuffer( const uint8_t* pAudioData, uint32_t offset, size_t audioBytes )
 {
+    if ( !pAudioData || !audioBytes )
+        throw std::exception( "Invalid audio data buffer" );
+
+#ifdef _M_X64
+    if ( audioBytes > 0xFFFFFFFF )
+        throw std::out_of_range( "SubmitBuffer" );
+#endif
+
     XAUDIO2_BUFFER buffer;
     memset( &buffer, 0, sizeof(buffer) );
 
-    buffer.AudioBytes = audioBytes;
+    buffer.AudioBytes = static_cast<UINT32>( audioBytes );
     buffer.pAudioData = pAudioData;
 
     if( offset )
     {
         assert( mWaveFormat.wFormatTag == WAVE_FORMAT_PCM );
         buffer.PlayBegin = offset / mWaveFormat.nBlockAlign;
-        buffer.PlayLength = static_cast<uint32_t>( ( audioBytes - offset ) / mWaveFormat.nBlockAlign );
+        buffer.PlayLength = static_cast<UINT32>( ( audioBytes - offset ) / mWaveFormat.nBlockAlign );
     }
 
     buffer.pContext = this;
@@ -188,7 +196,7 @@ void DynamicSoundEffectInstance::Impl::SubmitBuffer( const uint8_t* pAudioData, 
 #ifdef _DEBUG
         DebugTrace( "ERROR: DynamicSoundEffectInstance failed (%08X) when submitting buffer:\n", hr );
 
-        DebugTrace( "\tFormat Tag %u, %u channels, %u-bit, %u Hz, %u bytes [%u offset)\n", mWaveFormat.wFormatTag, 
+        DebugTrace( "\tFormat Tag %u, %u channels, %u-bit, %u Hz, %Iu bytes [%u offset)\n", mWaveFormat.wFormatTag, 
                     mWaveFormat.nChannels, mWaveFormat.wBitsPerSample, mWaveFormat.nSamplesPerSec, audioBytes, offset );
 #endif
         throw std::exception( "SubmitSourceBuffer" );
@@ -313,14 +321,14 @@ void DynamicSoundEffectInstance::Apply3D( const AudioListener& listener, const A
 
 
 _Use_decl_annotations_
-void DynamicSoundEffectInstance::SubmitBuffer( const uint8_t* pAudioData, uint32_t audioBytes )
+void DynamicSoundEffectInstance::SubmitBuffer( const uint8_t* pAudioData, size_t audioBytes )
 {
     pImpl->SubmitBuffer( pAudioData, 0, audioBytes );
 }
 
 
 _Use_decl_annotations_
-void DynamicSoundEffectInstance::SubmitBuffer( const uint8_t* pAudioData, uint32_t offset, uint32_t audioBytes )
+void DynamicSoundEffectInstance::SubmitBuffer( const uint8_t* pAudioData, uint32_t offset, size_t audioBytes )
 {
     pImpl->SubmitBuffer( pAudioData, offset, audioBytes );
 }
@@ -364,9 +372,9 @@ size_t DynamicSoundEffectInstance::GetSampleSizeInBytes( uint64_t duration ) con
 }
 
 
-uint32_t DynamicSoundEffectInstance::PendingBufferCount() const
+int DynamicSoundEffectInstance::GetPendingBufferCount() const
 {
-    return pImpl->mBase.PendingBufferCount();
+    return pImpl->mBase.GetPendingBufferCount();
 }
 
 
