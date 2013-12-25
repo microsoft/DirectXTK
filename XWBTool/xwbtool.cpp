@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -313,26 +314,19 @@ DWORD EncodeWMABlockAlign(DWORD dwBlockAlign, DWORD dwAvgBytesPerSec)
         2500
     };
 
-    const uint32_t MAX_WMA_AVG_BYTES_PER_SEC_ENTRIES = 7;
-    const uint32_t MAX_WMA_BLOCK_ALIGN_ENTRIES = 17;
+    auto bit = std::find( std::begin(aWMABlockAlign), std::end(aWMABlockAlign), dwBlockAlign );
+    if ( bit == std::end(aWMABlockAlign) )
+        return DWORD(-1);
 
-    DWORD blockAlignIndex = 0;
-    for (; blockAlignIndex < MAX_WMA_BLOCK_ALIGN_ENTRIES && dwBlockAlign != aWMABlockAlign[blockAlignIndex]; ++blockAlignIndex);
+    DWORD blockAlignIndex = bit - std::begin(aWMABlockAlign);
 
-    DWORD encoded = 0;
+    auto ait = std::find( std::begin(aWMAAvgBytesPerSec), std::end(aWMAAvgBytesPerSec), dwAvgBytesPerSec );
+    if ( ait == std::end(aWMAAvgBytesPerSec) )
+        return DWORD(-1);
 
-    if (blockAlignIndex < MAX_WMA_BLOCK_ALIGN_ENTRIES)
-    {
-        DWORD bytesPerSecIndex = 0;
-        for (; bytesPerSecIndex < MAX_WMA_AVG_BYTES_PER_SEC_ENTRIES && dwAvgBytesPerSec != aWMAAvgBytesPerSec[bytesPerSecIndex]; ++bytesPerSecIndex);
+    DWORD bytesPerSecIndex = ait - std::begin(aWMAAvgBytesPerSec);
 
-        if (bytesPerSecIndex < MAX_WMA_AVG_BYTES_PER_SEC_ENTRIES)
-        {
-            encoded = blockAlignIndex | (bytesPerSecIndex << 5);
-        }
-    }
-
-    return encoded;
+    return DWORD( blockAlignIndex | (bytesPerSecIndex << 5) );
 }
 
 bool ConvertToMiniFormat( const WAVEFORMATEX* wfx, bool hasSeek, MINIWAVEFORMAT& miniFmt )
@@ -518,7 +512,15 @@ bool ConvertToMiniFormat( const WAVEFORMATEX* wfx, bool hasSeek, MINIWAVEFORMAT&
 
         miniFmt.wFormatTag = MINIWAVEFORMAT::TAG_WMA;
         miniFmt.wBitsPerSample = ( wfx->wFormatTag == WAVE_FORMAT_WMAUDIO3 ) ? MINIWAVEFORMAT::BITDEPTH_16 : MINIWAVEFORMAT::BITDEPTH_8;
-        miniFmt.wBlockAlign = EncodeWMABlockAlign( wfx->nBlockAlign, wfx->nAvgBytesPerSec );
+        {
+            DWORD blockAlign = EncodeWMABlockAlign( wfx->nBlockAlign, wfx->nAvgBytesPerSec );
+            if ( blockAlign == DWORD(-1) )
+            {
+                wprintf( L"ERROR: Failed encoding nBlockAlign and nAvgBytesPerSec for xWMA\n");
+                return false;
+            }
+            miniFmt.wBlockAlign = blockAlign;
+        }
         return true;
 
     case WAVE_FORMAT_XMA2:
@@ -711,7 +713,15 @@ bool ConvertToMiniFormat( const WAVEFORMATEX* wfx, bool hasSeek, MINIWAVEFORMAT&
 
                 miniFmt.wFormatTag = MINIWAVEFORMAT::TAG_WMA;
                 miniFmt.wBitsPerSample = ( wfx->wFormatTag == WAVE_FORMAT_WMAUDIO3 ) ? MINIWAVEFORMAT::BITDEPTH_16 : MINIWAVEFORMAT::BITDEPTH_8;
-                miniFmt.wBlockAlign = EncodeWMABlockAlign( wfx->nBlockAlign, wfx->nAvgBytesPerSec );
+                {
+                    DWORD blockAlign = EncodeWMABlockAlign( wfx->nBlockAlign, wfx->nAvgBytesPerSec );
+                    if ( blockAlign == DWORD(-1) )
+                    {
+                        wprintf( L"ERROR: Failed encoding nBlockAlign and nAvgBytesPerSec for xWMA\n");
+                        return false;
+                    }
+                    miniFmt.wBlockAlign = blockAlign;
+                }
                 break;
 
             case WAVE_FORMAT_XMA2:

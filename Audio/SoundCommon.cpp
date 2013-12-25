@@ -487,6 +487,23 @@ bool DirectX::IsValid( _In_ const WAVEFORMATEX* wfx )
 }
 
 
+uint32_t DirectX::GetDefaultChannelMask( int channels )
+{
+    switch( channels )
+    {
+        case 1: return SPEAKER_MONO;
+        case 2: return SPEAKER_STEREO;
+        case 3: return SPEAKER_2POINT1;
+        case 4: return SPEAKER_QUAD;
+        case 5: return SPEAKER_4POINT1;
+        case 6: return SPEAKER_5POINT1;
+        case 7: return SPEAKER_5POINT1 | SPEAKER_BACK_CENTER;
+        case 8: return SPEAKER_7POINT1;
+        default: return 0;
+    }
+}
+
+
 _Use_decl_annotations_
 void DirectX::CreateIntegerPCM( WAVEFORMATEX* wfx, int sampleRate, int channels, int sampleBits )
 {
@@ -498,6 +515,23 @@ void DirectX::CreateIntegerPCM( WAVEFORMATEX* wfx, int sampleRate, int channels,
     wfx->nAvgBytesPerSec = static_cast<DWORD>( blockAlign * sampleRate );
     wfx->nBlockAlign = static_cast<WORD>( blockAlign );
     wfx->wBitsPerSample = static_cast<WORD>( sampleBits );
+    wfx->cbSize = 0;
+
+    assert( IsValid( wfx ) );
+}
+
+
+_Use_decl_annotations_
+void DirectX::CreateFloatPCM( WAVEFORMATEX* wfx, int sampleRate, int channels )
+{
+    int blockAlign = channels * 4;
+
+    wfx->wFormatTag = WAVE_FORMAT_IEEE_FLOAT;
+    wfx->nChannels = static_cast<WORD>( channels );
+    wfx->nSamplesPerSec = static_cast<DWORD>( sampleRate );
+    wfx->nAvgBytesPerSec = static_cast<DWORD>( blockAlign * sampleRate );
+    wfx->nBlockAlign = static_cast<WORD>( blockAlign );
+    wfx->wBitsPerSample = 32;
     wfx->cbSize = 0;
 
     assert( IsValid( wfx ) );
@@ -541,19 +575,36 @@ void DirectX::CreateADPCM( WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, in
 }
 
 
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+_Use_decl_annotations_
+void DirectX::CreateXWMA( WAVEFORMATEX* wfx, int sampleRate, int channels, int blockAlign, int avgBytes, bool wma3 )
+{
+    wfx->wFormatTag = (wma3) ? WAVE_FORMAT_WMAUDIO3 : WAVE_FORMAT_WMAUDIO2;
+    wfx->nChannels = static_cast<WORD>( channels );
+    wfx->nSamplesPerSec = static_cast<DWORD>( sampleRate );
+    wfx->nAvgBytesPerSec = static_cast<DWORD>( avgBytes );
+    wfx->nBlockAlign = static_cast<WORD>( blockAlign );
+    wfx->wBitsPerSample = 16;
+    wfx->cbSize = 0;
+
+    assert( IsValid( wfx ) );
+}
+#endif // _XBOX_ONE || _WIN32_WINNT < _WIN32_WINNT_WIN8
+
+
 #if defined(_XBOX_ONE) && defined(_TITLE)
 _Use_decl_annotations_
-void DirectX::CreateXMA( WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int bytesPerBlock, int blockCount, int samplesEncoded )
+void DirectX::CreateXMA2( WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int bytesPerBlock, int blockCount, int samplesEncoded )
 {
     if ( wfxSize < sizeof(XMA2WAVEFORMATEX) )
     {
-        DebugTrace( "CreateXMA needs at least %Iu bytes for the result\n", sizeof(XMA2WAVEFORMATEX) );
+        DebugTrace( "XMA2 needs at least %Iu bytes for the result\n", sizeof(XMA2WAVEFORMATEX) );
         throw std::invalid_argument( "XMA2WAVEFORMATEX" );
     }
 
     if ( !bytesPerBlock || ( bytesPerBlock > XMA_READBUFFER_MAX_BYTES ) )
     {
-        DebugTrace( "CreateXMA needs a valid bytes per block" );
+        DebugTrace( "XMA2 needs a valid bytes per block" );
         throw std::invalid_argument( "XMA2WAVEFORMATEX" );
     }
 
@@ -571,18 +622,7 @@ void DirectX::CreateXMA( WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int 
 
     xmaFmt->NumStreams = static_cast<WORD>( (channels + 1) / 2 );
 
-    switch( channels )
-    {
-    case 1: xmaFmt->ChannelMask = SPEAKER_MONO; break; 
-    case 2: xmaFmt->ChannelMask = SPEAKER_STEREO; break;
-    case 3: xmaFmt->ChannelMask = SPEAKER_2POINT1; break;
-    case 4: xmaFmt->ChannelMask = SPEAKER_QUAD; break;
-    case 5: xmaFmt->ChannelMask = SPEAKER_4POINT1; break;
-    case 6: xmaFmt->ChannelMask = SPEAKER_5POINT1; break;
-    case 7: xmaFmt->ChannelMask = SPEAKER_5POINT1 | SPEAKER_BACK_CENTER; break;
-    case 8: xmaFmt->ChannelMask = SPEAKER_7POINT1; break;
-    default: xmaFmt->ChannelMask = DWORD(-1); break;
-    }
+    xmaFmt->ChannelMask = GetDefaultChannelMask( channels );
 
     xmaFmt->SamplesEncoded = static_cast<DWORD>( samplesEncoded );
     xmaFmt->BytesPerBlock = bytesPerBlock;
@@ -593,7 +633,7 @@ void DirectX::CreateXMA( WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int 
 
     assert( IsValid( wfx ) );
 }
-#endif
+#endif // _XBOX_ONE && _TITLE
 
 
 //======================================================================================

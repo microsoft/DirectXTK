@@ -50,11 +50,19 @@ namespace DirectX
     bool IsValid( _In_ const WAVEFORMATEX* wfx );
 
 
+    // Helper for getting a default channel mask from channels
+    uint32_t GetDefaultChannelMask( int channels );
+
+
     // Helpers for creating various wave format structures
     void CreateIntegerPCM( _Out_ WAVEFORMATEX* wfx, int sampleRate, int channels, int sampleBits );
+    void CreateFloatPCM( _Out_ WAVEFORMATEX* wfx, int sampleRate, int channels );
     void CreateADPCM( _Out_writes_bytes_(wfxSize) WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int samplesPerBlock );
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+    void CreateXWMA( _Out_ WAVEFORMATEX* wfx, int sampleRate, int channels, int blockAlign, int avgBytes, bool wma3 );
+#endif
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    void CreateXMA( _Out_writes_bytes_(wfxSize) WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int bytesPerBlock, int blockCount, int samplesEncoded );
+    void CreateXMA2( _Out_writes_bytes_(wfxSize) WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int bytesPerBlock, int blockCount, int samplesEncoded );
 #endif
 
     // Helper class for implementing SoundEffectInstance
