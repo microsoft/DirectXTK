@@ -4,12 +4,12 @@ DirectXTK - the DirectX Tool Kit
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-October 28, 2013
+December 24, 2013
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
-writing Direct3D 11 C++ code for Windows Store apps, Windows 8.x Win32 desktop
-applications, Windows Phone 8 applications, Windows 7 applications, and
-Windows Vista Direct3D 11.0 applications.
+writing Direct3D 11 C++ code for Windows Store apps, Windows Phone 8 applications,
+Xbox One exclusive apps, Xbox One hub apps, Windows 8.x Win32 desktop applications,
+Windows 7 applications, and Windows Vista Direct3D 11.0 applications.
 
 This code is designed to build with Visual Studio 2010, 2012, or 2013. It requires
 the Windows 8.x SDK for functionality such as the DirectXMath library and optionally
@@ -25,24 +25,32 @@ see "Where is the DirectX SDK?" <http://msdn.microsoft.com/en-us/library/ee66327
 Inc\
     Public Header Files (in the DirectX C++ namespace):
 
-    SpriteBatch.h - simple & efficient 2D sprite rendering
-    SpriteFont.h - bitmap based text rendering
+    Audio.h - low-level audio API using XAudio2 (DirectXTK for Audio public header)
+    CommonStates.h - factory providing commonly used D3D state objects
+    DDSTextureLoader.h - light-weight DDS file texture loader
     Effects.h - set of built-in shaders for common rendering tasks
-    PrimitiveBatch.h - simple and efficient way to draw user primitives
     GeometricPrimitive.h - draws basic shapes such as cubes and spheres
     Model.h - draws rigid and skinned meshes loaded from .CMO or .SDKMESH files
-    CommonStates.h - factory providing commonly used D3D state objects
-    VertexTypes.h - structures for commonly used vertex data formats
-    DDSTextureLoader.h - light-weight DDS file texture loader
-    WICTextureLoader.h - WIC-based image file texture loader
+    PrimitiveBatch.h - simple and efficient way to draw user primitives
     ScreenGrab.h - light-weight screen shot saver
     SimpleMath.h - simplified C++ wrapper for DirectXMath
+    SpriteBatch.h - simple & efficient 2D sprite rendering
+    SpriteFont.h - bitmap based text rendering
+    VertexTypes.h - structures for commonly used vertex data formats
+    WICTextureLoader.h - WIC-based image file texture loader
+    XboxDDSTextureLoader.h - Xbox One exclusive apps variant of DDSTextureLoader
 
 Src\
     DirectXTK source files and internal implementation headers
 
+Audio\
+    DirectXTK for Audio source files and internal implementation headers
+
 MakeSpriteFont\
     Command line tool used to generate binary resources for use with SpriteFont
+
+XWBTool\
+    Command line tool for building XACT-style wave banks for use with DirectXTK for Audio's WaveBank class
 
 All content and source code for this package are bound to the Microsoft Public License (Ms-PL)
 <http://www.microsoft.com/en-us/openness/licenses.aspx#MPL>.
@@ -51,6 +59,13 @@ For the latest version of DirectXTK, more detailed documentation, discussion for
 reports and feature requests, please visit the Codeplex site.
 
 http://go.microsoft.com/fwlink/?LinkId=248929
+
+Note: Xbox One exclusive apps developers using the Xbox One XDK need to generate the
+      Src\Shaders\Compiled\XboxOne*.inc files to build the library as they are not
+      included in the distribution package. They are built by running the script
+      in Src\Shaders - "CompileShaders xbox", and should be generated with the matching
+      FXC compiler from the Xbox One XDK. While they will continue to work if outdated,
+      a mismatch will cause runtime compilation overhead that would otherwise be avoided.
 
 
 
@@ -220,7 +235,7 @@ grid should be filled with bright pink (red=255, green=0, blue=255). It doesn't
 matter if your grid includes lots of wasted space, because the converter will 
 rearrange characters, packing everything as tightly as possible.
 
-Commandline options for the MakeSpriteFont tool:
+Command-line options for the MakeSpriteFont tool:
 
     /CharacterRegion:<region>
         Specifies which Unicode codepoints to include in the font. Can be 
@@ -606,7 +621,7 @@ Effects control:
         if ( fog )
         {
             fog->SetFogEnabled(true);
-            fog->SetFogStart(6); // assuming RH coordiantes
+            fog->SetFogStart(6); // assuming RH coordinates
             fog->SetFogEnd(8);
             fog->SetFogColor(Colors::CornflowerBlue);
         }
@@ -980,9 +995,236 @@ DirectXMath for performance hotspots where runtime efficiency is more important.
 
 
 
+-------------------
+DirectXTK for Audio
+-------------------
+
+The DirectXTK for Audio components implement a low-level audio API similar to 
+XNA Game Studio's Microsoft.Xna.Framework.Audio. This consists of the following
+classes all declared in the Audio.h header (in the Inc folder of the distribution):
+
+    AudioEngine - This class represents an XAudio2 audio graph, device, and mastering voice
+    SoundEffect - A container class for sound resources which can be loaded from .wav files
+    SoundEffectInstance - Provides a single playing, paused, or stopped instance of a sound
+    DynamicSoundEffectInstance - SoundEffectInstance where the application provides the audio data on demand
+    WaveBank - A container class for sound resources packaged into an XACT-style .xwb wave bank
+    AudioListener, AudioEmitter - Utility classes used with SoundEffectInstance::Apply3D
+
+Note: DirectXTK for Audio uses XAudio 2.8 or XAudio 2.7. It does not make use of the legacy XACT Engine, XACT Cue, or XACT SoundBank.
+
+During initialization:
+
+    The first step in using DirectXTK for Audio is to create the AudioEngine, which creates an XAudio2 interface, an XAudio2 mastering voice,
+    and other global resources.
+
+    // This is only needed in Win32 desktop apps
+    CoInitializeEx( nullptr, COINIT_MULTITHREADED );
+
+    AUDIO_ENGINE_FLAGS eflags = AudioEngine_Default;
+    #ifdef _DEBUG
+    eflags = eflags | AudioEngine_Debug;
+    #endif
+    std::unique_ptr<AudioEngine> audEngine( new AudioEngine( eflags ) );
+
+Per-frame processing:
+
+    The application should call Update() every frame to allow for per-frame engine updates,
+    such as one-shot voice management. This could also be done in a worker thread rather than on the
+    main rendering thread.
+
+    if ( !audEngine->Update() )
+    {
+        // No audio device is active
+        if ( audEngine->IsCriticalError() )
+        {
+            ...
+        }    
+    }
+
+    Update() returns false if no audio is actually playing (either due to there being no
+    audio device on the system at the time AudioEngine was created, or because XAudio2 encountered a
+    Critical Error--typically due to speakers being unplugged). Calls to various DirectXTK for Audio
+    methods can still be made in this state but no actual audio processing will take place.
+
+Loading and a playing a looping sound:
+
+    Creating SoundEffectInstances allows full control over the playback, and are provided with a
+    dedicated XAudio2 source voice. This allows control of playback, looping, volume control,
+    panning, and pitch-shifting.
+
+    std::unique_ptr<SoundEffect> soundEffect( new SoundEffect( audEngine.get(), L"Sound.wav" ) );
+    auto effect = soundEffect->CreateInstance();
+
+    ...
+
+    effect->Play( true );
+
+Playing one-shots:
+
+    A common way to play sounds is to trigger them in a 'fire-and-forget' mode. This is done by calling
+    SoundEffect::Play() rather than creating a SoundEffectInstance. These use XAudio2 source voices
+    managed by AudioEngine, are cleaned up automatically when they finish playing, and can overlap in time.
+    One-shot sounds cannot be looped, have 3D positional effects, or have individual volume, pan,
+    or pitch control.
+
+    std::unique_ptr<SoundEffect> soundEffect( new SoundEffect( audEngine.get(), L"Explosion.wav" ) );
+
+    soundEffect->Play();
+
+    ...
+
+    soundEffect->Play();
+
+Applying 3D audio effects to a sound:
+
+    DirectXTK for Audio supports 3D positional audio with optional environmental reverb effects using X3DAudio.
+
+    AUDIO_ENGINE_FLAGS eflags =  AudioEngine_EnvironmentalReverb | AudioEngine_ReverbUseFilters;
+    #ifdef _DEBUG
+    eflags = eflags | AudioEngine_Debug;
+    #endif
+    std::unique_ptr<AudioEngine> audEngine( new AudioEngine( eflags ) );
+
+    audEngine->SetReverb( Reverb_ConcertHall );
+
+    std::unique_ptr<SoundEffect> soundEffect( new SoundEffect( audEngine.get(), L"Sound.wav" ) );
+    auto effect = soundEffect->CreateInstance( SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters );
+
+    ...
+
+    effect->Play(true);
+
+    ...
+
+    AudioListener listener;
+    listener.SetPosition( ... );
+
+    AudioEmitter emitter;
+    emitter.SetPosition( ... );
+
+    effect->Apply3D( listener, emitter );
+
+    Note: A C++ exception is thrown if you call Apply3D for a SoundEffectInstance that was not created with SoundEffectInstance_Use3D
+
+Using wave banks:
+
+    Rather than loading individual .wav files, a more efficient method is to package them into a 
+    "wave bank". This allows for more efficient loading and memory organization. DirectXTK for Audio's
+    WaveBank class can be used to play one-shots or to create SoundEffectInstances from 'in-memory' wave banks.
+
+    std::unique_ptr<WaveBank> wb( new WaveBank( audEngine.get(), L"wavebank.xwb" ) );
+
+    A SoundEffectInstance can be created from a wavebank referencing a particular wave in the bank:
+
+    auto effect = wb->CreateInstance( 10 );
+    if ( !effect )
+        // Error (invalid index for wave bank)
+
+    ...
+
+    effect->Play( true );
+
+    One-shot sounds can also be played directly from the wave bank.
+
+    wb->Play( 2 );
+    wb->Play( 6 );
+
+    XACT3-style "wave banks" can be created by using the XWBTool command-line tool, or they can be authored
+    using XACT3 in the DirectX SDK. Note that the XWBTool will not perform any format conversions
+    or compression, so more full-featured options are better handled with the XACT3 GUI or XACTBLD, or it can
+    be used on .wav files already compressed by adpcmencode.exe, xwmaencode.exe, xma2encode.exe, etc.
+
+    xwbtool -o wavebank.xwb Sound.wav Explosion.wav Music.wav
+
+    DirectXTK for Audio does not make use of the XACT engine, nor does it make use of XACT "sound banks" .xsb
+    or "cues". We only use .xwb wave banks as a method for packing .wav data.
+
+Command-line options for the XWBTool:
+
+    -s
+        Creates as streaming wave bank, otherwise defaults to in-memory wave bank
+
+    -o <filename>
+        Sets output filename for .xwb file. Otherwise, it defaults to the same base name as the first input .wav file
+
+    -h <h-filename>
+        Generates a C/C++ header file with #defines for each of the sounds in the bank matched to their index
+
+    -n
+        Disables the default warning of overwriting an existing .xwb file
+
+    -c / -nc
+        Forces creation or prevents use of compact wave banks. By default, it will try to use a compact wave bank if possible.
+
+    -f
+        Includes entry friendly name strings in the wave bank for use with 'string' based versions of WaveBank::Play() and
+        WaveBank::CreateInstance() rather than index-based versions.
+
+Platform support:
+
+    Windows 8.x, Windows Store apps, Windows phone 8, and Xbox One all include XAudio 2.8. Therefore, the
+    standard DirectXTK.lib includes DirectXTK for Audio for all these platforms.
+
+        * DirectXTK_Windows81
+        * DirectXTK_Windows8
+        * DirectXTK_WindowsPhone8
+        * DirectXTK_XboxOneXDK
+        * DirectXTK_XboxOneADK
+
+    For Win32 desktop applications targeting Windows 8.x or later, you can make use of XAudio 2.8. The
+    DirectXTKAudioWin8.lib contains the XAudio 2.8 version of DirectXTK for Audio, while DirectXTK.lib
+    for Win32 desktop contains only the math/graphics components. To support Win32 desktop applications
+    on Windows 7 and Windows Vista, we must make use XAudio 2.7, the legacy DirectX SDK, and the legacy
+    DirectX End-User Runtime Redistribution packages (aka DirectSetup). The DirectXTKAudioDX.lib is the
+    XAudio 2.7 version of DirectXTK for Audio.
+
+        * DirectXTK_Desktop_201x + Audio\DirectXTKAudio_Desktop_201x_Win8
+        * DirectXTK_Desktop_201x + Audio\DirectXTKAudio_Desktop_201x_DXSDK
+
+    VS 2010 Note: We only support DirectXTK for Audio with the legacy DirectX SDK due to some issues with
+    using the VS 2010 toolset and the Windows 8.x SDK WinRT headers.
+
+    http://msdn.microsoft.com/en-us/library/windows/desktop/ee415802.aspx
+    http://support.microsoft.com/kb/2728613
+    http://msdn.microsoft.com/en-us/library/windows/desktop/ee663275.aspx
+
+    DirectXTK for Audio supports wave content in PCM and a variant of MS-ADPCM formats. When built for Xbox One
+    or using XAudio 2.7, it also supports xWMA. XMA2 is supported by the Xbox One XDK version only.
+
+    DirectXTK makes use of the latest Direct3D 11.1 headers available in the Windows 8.x SDK, and there are a
+    number of file conflicts between the Windows 8.x SDK and the legacy DirectX SDK. Therefore, when building
+    for down-level support with XAudio 2.7, Audio.h explicitly includes the DirectX SDK version of XAudio2 headers
+    with a full path name. These reflect the default install locations, and if you have installed it elsewhere you
+    will need to update this header. The *_DXSDK.vcxproj files use the DXSDK_DIR environment variable, so only the
+    Audio.h references need updating for an alternative location.
+    
+Threading model:
+
+    The DirectXTK for Audio methods assume it is always called from a single thread. This is generally
+    either the main thread or a worker thread dedicated to audio processing.  The XAudio2 engine itself
+    makes use of lock-free mechanism to make it 'thread-safe'.
+    
+    Note that IVoiceNotify::OnBufferEnd is called from XAudio2's thread, so the callback must be very
+    fast and use thread-safe operations.
+
+Further reading:
+
+    http://blogs.msdn.com/b/chuckw/archive/2012/05/15/learning-xaudio2.aspx
+    http://blogs.msdn.com/b/chuckw/archive/2012/04/02/xaudio2-and-windows-8-consumer-preview.aspx
+
+
+
 ---------------
 RELEASE HISTORY
 ---------------
+
+December 24, 2013
+    DirectXTK for Audio
+    Xbox One platform support
+    MakeSpriteFont tool updated with more progress feedback when capturing large fonts
+    Minor updates for .SDKMESH Model loader
+    Fixed bug in .CMO Model loader when handling multiple textures
+    Improved debugging output
 
 October 28, 2013
     Updated for Visual Studio 2013 and Windows 8.1 SDK RTM
