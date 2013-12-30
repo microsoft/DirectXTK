@@ -80,9 +80,10 @@ namespace DirectX
         size_t  playingOneShots;        // Number of one-shot sounds currently playing
         size_t  playingInstances;       // Number of sound effect instances currently playing
         size_t  allocatedInstances;     // Number of SoundEffectInstance allocated
-        size_t  allocatedVoices;        // Number of XAudio2 voices allocated (standard, 3D, and one-shots) 
+        size_t  allocatedVoices;        // Number of XAudio2 voices allocated (standard, 3D, one-shots, and idle one-shots) 
         size_t  allocatedVoices3d;      // Number of XAudio2 voices allocated for 3D
         size_t  allocatedVoicesOneShot; // Number of XAudio2 voices allocated for one-shot sounds
+        size_t  allocatedVoicesIdle;    // Number of XAudio2 voices allocated for one-shot sounds but not currently in use
         size_t  audioBytes;             // Total wave data (in bytes) in SoundEffects and in-memory WaveBanks
 #if defined(_XBOX_ONE) && defined(_TITLE)
         size_t  xmaAudioBytes;          // Total wave data (in bytes) in SoundEffects and in-memory WaveBanks allocated with ApuAlloc
@@ -110,6 +111,9 @@ namespace DirectX
         virtual void OnDestroyEngine() = 0;
             // Notification that the audio engine is being destroyed
 
+        virtual void OnTrim() = 0;
+            // Notification of a request to trim the voice pool
+
         virtual void GatherStatistics( AudioStatistics& stats ) const = 0;
             // Contribute to statistics request
     };
@@ -124,6 +128,7 @@ namespace DirectX
 
         AudioEngine_Debug               = 0x10000,
         AudioEngine_ThrowOnNoAudioHW    = 0x20000,
+        AudioEngine_DisableVoiceReuse   = 0x40000,
     };
 
     inline AUDIO_ENGINE_FLAGS operator|(AUDIO_ENGINE_FLAGS a, AUDIO_ENGINE_FLAGS b) { return static_cast<AUDIO_ENGINE_FLAGS>( static_cast<int>(a) | static_cast<int>(b) ); }
@@ -134,6 +139,7 @@ namespace DirectX
 
         SoundEffectInstance_Use3D               = 0x1,
         SoundEffectInstance_ReverbUseFilters    = 0x2,
+        SoundEffectInstance_NoSetPitch          = 0x4,
 
         SoundEffectInstance_UseRedirectLFE      = 0x10000,
     };
@@ -230,7 +236,20 @@ namespace DirectX
             // Returns true if the audio graph is halted due to a critical error (which also places the engine into 'silent mode')
 
         // Voice pool management.
-        void AllocateVoice( _In_ const WAVEFORMATEX* wfx, SOUND_EFFECT_INSTANCE_FLAGS flags, bool oneshot, _Outptr_ IXAudio2SourceVoice** voice );
+        void SetDefaultSampleRate( int sampleRate );
+            // Sample rate for voices in the reuse pool (defaults to 44100)
+
+        void SetMaxVoicePool( size_t maxOneShots, size_t maxInstances );
+            // Maximum number of voices to allocate for one-shots and instances
+            // Note: one-shots over this limit are ignored; too many instance voices throws an exception
+
+        void TrimVoicePool();
+            // Releases any currently unused voices
+
+        void AllocateVoice( _In_ const WAVEFORMATEX* wfx, SOUND_EFFECT_INSTANCE_FLAGS flags, bool oneshot, _Outptr_result_maybenull_ IXAudio2SourceVoice** voice );
+
+        void DestroyVoice( _In_ IXAudio2SourceVoice* voice );
+            // Should only be called for instance voices, not one-shots
 
         void RegisterNotify( _In_ IVoiceNotify* notify, bool usesUpdate );
         void UnregisterNotify( _In_ IVoiceNotify* notify, bool usesOneShots, bool usesUpdate );

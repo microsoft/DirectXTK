@@ -124,6 +124,11 @@ public:
         mOneShots = 0;
     }
 
+    virtual void OnTrim() override
+    {
+        // No action required
+    }
+
     virtual void GatherStatistics( AudioStatistics& stats ) const override
     {
         stats.playingOneShots += mOneShots;

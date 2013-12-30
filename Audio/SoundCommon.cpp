@@ -286,12 +286,6 @@ bool DirectX::IsValid( _In_ const WAVEFORMATEX* wfx )
                 return false;
             }
 
-            if ( !xmaFmt->SamplesEncoded )
-            {
-                DebugTrace( "ERROR: Wave format XMA2 SamplesEncoded must be non-zero\n" );
-                return false;
-            }
-
             if ( ( xmaFmt->PlayBegin + xmaFmt->PlayLength ) > xmaFmt->SamplesEncoded )
             {
                 DebugTrace( "ERROR: Wave format XMA2 play region too large (%u + %u > %u)", xmaFmt->PlayBegin, xmaFmt->PlayLength, xmaFmt->SamplesEncoded );

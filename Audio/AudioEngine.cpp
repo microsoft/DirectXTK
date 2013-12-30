@@ -13,12 +13,15 @@
 
 #include "pch.h"
 #include "Audio.h"
-#include "PlatformHelpers.h"
+#include "SoundCommon.h"
 
 #include <list>
+#include <unordered_map>
 
 using namespace DirectX;
 using namespace Microsoft::WRL;
+
+//#define VERBOSE_TRACE
 
 
 namespace
@@ -133,6 +136,113 @@ namespace
         XAUDIO2FX_I3DL2_PRESET_LARGEHALL,           // Reverb_LargeHall
         XAUDIO2FX_I3DL2_PRESET_PLATE,               // Reverb_Plate
     };
+
+    inline unsigned int makeVoiceKey( _In_ const WAVEFORMATEX* wfx )
+    {
+        assert( IsValid(wfx) );
+
+        if ( wfx->nChannels > 0x7F )
+            return 0;
+
+        union KeyGen
+        {
+            struct
+            {
+                unsigned int tag : 9;
+                unsigned int channels : 7;
+                unsigned int bitsPerSample : 8;
+            } pcm;
+
+            struct
+            {
+                unsigned int tag : 9;
+                unsigned int channels : 7;
+                unsigned int samplesPerBlock : 16;
+            } adpcm;
+
+#if defined(_XBOX_ONE) && defined(_TITLE)
+            struct
+            {
+                unsigned int tag : 9;
+                unsigned int channels : 7;
+                unsigned int encoderVersion : 8;
+            } xma;
+#endif
+
+            unsigned int key;
+        } result;
+
+        static_assert( sizeof(KeyGen) == sizeof(unsigned int), "KeyGen is invalid" ); 
+
+        result.key = 0;
+
+        if ( wfx->wFormatTag == WAVE_FORMAT_EXTENSIBLE )
+        {
+            // We reuse EXTENSIBLE only if it is equivalent to the standard form
+            auto wfex = reinterpret_cast<const WAVEFORMATEXTENSIBLE*>( wfx );
+            if ( wfex->Samples.wValidBitsPerSample != 0 && wfex->Samples.wValidBitsPerSample != wfx->wBitsPerSample )
+                return 0;
+
+            if ( wfex->dwChannelMask != 0 && wfex->dwChannelMask != GetDefaultChannelMask( wfx->nChannels ) )
+                return 0;
+        }
+
+        uint32_t tag = GetFormatTag( wfx );
+        switch( tag )
+        {
+        case WAVE_FORMAT_PCM:
+            static_assert( WAVE_FORMAT_PCM < 0x1ff, "KeyGen tag is too small" );
+            result.pcm.tag = WAVE_FORMAT_PCM;
+            result.pcm.channels = wfx->nChannels;
+            result.pcm.bitsPerSample = wfx->wBitsPerSample;
+            break;
+
+        case WAVE_FORMAT_IEEE_FLOAT:
+            static_assert( WAVE_FORMAT_IEEE_FLOAT < 0x1ff, "KeyGen tag is too small" );
+
+            if ( wfx->wBitsPerSample != 32 )
+                return 0;
+
+            result.pcm.tag = WAVE_FORMAT_IEEE_FLOAT;
+            result.pcm.channels = wfx->nChannels;
+            result.pcm.bitsPerSample = 32;
+            break;
+
+        case WAVE_FORMAT_ADPCM:
+            static_assert( WAVE_FORMAT_ADPCM < 0x1ff, "KeyGen tag is too small" );
+            result.adpcm.tag = WAVE_FORMAT_ADPCM;
+            result.adpcm.channels = wfx->nChannels;
+
+            {
+                auto wfadpcm = reinterpret_cast<const ADPCMWAVEFORMAT*>( wfx );
+                result.adpcm.samplesPerBlock = wfadpcm->wSamplesPerBlock;
+            }
+            break;
+
+#if defined(_XBOX_ONE) && defined(_TITLE)
+        case WAVE_FORMAT_XMA2:
+            static_assert( WAVE_FORMAT_XMA2 < 0x1ff, "KeyGen tag is too small" );
+            result.xma.tag = WAVE_FORMAT_XMA2;
+            result.xma.channels = wfx->nChannels;
+
+            {
+                auto xmaFmt = reinterpret_cast<const XMA2WAVEFORMATEX*>( wfx );
+
+                if ( ( xmaFmt->LoopBegin > 0 )
+                     || ( xmaFmt->PlayBegin > 0 ) )
+                    return 0;
+
+                result.xma.encoderVersion = xmaFmt->EncoderVersion;
+            }
+            break;
+#endif
+
+        default:
+            return 0;
+        }
+
+        return result.key;
+    }
 }
 
 static_assert( _countof(gReverbPresets) == Reverb_MAX, "AUDIO_ENGINE_REVERB enum mismatch" );
@@ -152,10 +262,14 @@ public:
         masterChannelMask( 0 ),
         masterChannels( 0 ),
         masterRate( 0 ),
+        defaultRate( 44100 ),
+        maxVoiceOneshots( SIZE_MAX ),
+        maxVoiceInstances( SIZE_MAX ),
         mCriticalError( false ),
         mReverbEnabled( false ),
         mEngineFlags( AudioEngine_Default ),
-        mCategory( AudioCategory_GameEffects )
+        mCategory( AudioCategory_GameEffects ),
+        mVoiceInstances( 0 )
     {
         memset( &mX3DAudio, 0, X3DAUDIO_HANDLE_BYTESIZE );
     };
@@ -173,8 +287,11 @@ public:
     void SetReverb( _In_opt_ const XAUDIO2FX_REVERB_PARAMETERS* native );
 
     AudioStatistics GetStatistics() const;
+
+    void TrimVoicePool();
     
-    void AllocateVoice( _In_ const WAVEFORMATEX* wfx, SOUND_EFFECT_INSTANCE_FLAGS flags, bool oneshot, _Outptr_ IXAudio2SourceVoice** voice );
+    void AllocateVoice( _In_ const WAVEFORMATEX* wfx, SOUND_EFFECT_INSTANCE_FLAGS flags, bool oneshot, _Outptr_result_maybenull_ IXAudio2SourceVoice** voice );
+    void DestroyVoice( _In_ IXAudio2SourceVoice* voice );
 
     void RegisterNotify( _In_ IVoiceNotify* notify, bool usesUpdate );
     void UnregisterNotify( _In_ IVoiceNotify* notify, bool oneshots, bool usesUpdate );
@@ -187,6 +304,10 @@ public:
     uint32_t                            masterChannels;
     uint32_t                            masterRate;
 
+    int                                 defaultRate;
+    size_t                              maxVoiceOneshots;
+    size_t                              maxVoiceInstances;
+
     X3DAUDIO_HANDLE                     mX3DAudio;
 
     bool                                mCriticalError;
@@ -195,11 +316,17 @@ public:
     AUDIO_ENGINE_FLAGS                  mEngineFlags;
 
 private:
+    typedef std::set<IVoiceNotify*> notifylist_t;
+    typedef std::list<std::pair<unsigned int, IXAudio2SourceVoice*>> oneshotlist_t;
+    typedef std::unordered_multimap<unsigned int,IXAudio2SourceVoice*> voicepool_t;
+
     AUDIO_STREAM_CATEGORY               mCategory;
     ComPtr<IUnknown>                    mReverbEffect;
-    std::list<IXAudio2SourceVoice*>     mOneShots;
-    std::set<IVoiceNotify*>             mNotifyObjects;
-    std::set<IVoiceNotify*>             mNotifyUpdates;
+    oneshotlist_t                       mOneShots;
+    voicepool_t                         mVoicePool;
+    notifylist_t                        mNotifyObjects;
+    notifylist_t                        mNotifyUpdates;
+    size_t                              mVoiceInstances;
     VoiceCallback                       mVoiceCallback;
     EngineCallback                      mEngineCallback;
 };
@@ -232,6 +359,7 @@ HRESULT AudioEngine::Impl::Reset( const WAVEFORMATEX* wfx, const wchar_t* device
         // We don't use other data members of WAVEFORMATEX here to describe the device format, so no need to fully validate
     }
 
+    assert( !xaudio2 );
     assert( !mMasterVoice );
     assert( !mReverbVoice );
 
@@ -278,6 +406,11 @@ HRESULT AudioEngine::Impl::Reset( const WAVEFORMATEX* wfx, const wchar_t* device
         OutputDebugStringA( "INFO: XAudio 2.8 debugging enabled\n" );
     }
 #endif
+
+    if ( mEngineFlags & AudioEngine_DisableVoiceReuse )
+    {
+        DebugTrace( "INFO: Voice reuse is disabled\n" );
+    }
 
     hr = xaudio2->RegisterForCallbacks( &mEngineCallback );
     if ( FAILED(hr) )
@@ -476,6 +609,9 @@ void AudioEngine::Impl::SetSilentMode()
     }
 
     mOneShots.clear();
+    mVoicePool.clear();
+
+    mVoiceInstances = 0;
 
     mMasterVoice = nullptr;
     mReverbVoice = nullptr;
@@ -498,6 +634,11 @@ void AudioEngine::Impl::Shutdown()
         xaudio2->UnregisterForCallbacks( &mEngineCallback );
 
         xaudio2->StopEngine();
+
+        mOneShots.clear();
+        mVoicePool.clear();
+
+        mVoiceInstances = 0;
 
         mMasterVoice = nullptr;
         mReverbVoice = nullptr;
@@ -534,21 +675,38 @@ bool AudioEngine::Impl::Update()
         return false;
     
     case WAIT_OBJECT_0 + 1: // OnBufferEnd
+        // Scan for completed one-shot voices
         for( auto it = mOneShots.begin(); it != mOneShots.end(); )
         {
-            assert( *it != 0 );
+            assert( it->second != 0 );
 
-            XAUDIO2_VOICE_STATE state;
+            XAUDIO2_VOICE_STATE xstate;
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
-            (*it)->GetState(&state, XAUDIO2_VOICE_NOSAMPLESPLAYED );
+            it->second->GetState( &xstate, XAUDIO2_VOICE_NOSAMPLESPLAYED );
 #else
-            (*it)->GetState(&state);
+            it->second->GetState( &xstate );
 #endif
 
-            if ( !state.BuffersQueued )
+            if ( !xstate.BuffersQueued )
             {
-                (*it)->Stop( 0 );
-                (*it)->DestroyVoice();
+                it->second->Stop( 0 );
+                if ( it->first )
+                {
+                    // Put voice back into voice pool for reuse since it has a non-zero voiceKey
+#ifdef VERBOSE_TRACE
+                    DebugTrace( "INFO: One-shot voice being saved for reuse (%08X)\n", it->first );
+#endif
+                    voicepool_t::value_type v( it->first, it->second );
+                    mVoicePool.emplace( v );
+                }
+                else
+                {
+                    // Voice is to be destroyed rather than reused
+#ifdef VERBOSE_TRACE
+                    DebugTrace( "INFO: Destroying one-shot voice\n" );
+#endif
+                    it->second->DestroyVoice();
+                }
                 it = mOneShots.erase( it );
             }
             else
@@ -602,7 +760,8 @@ AudioStatistics AudioEngine::Impl::GetStatistics() const
     AudioStatistics stats;
     memset( &stats, 0, sizeof(stats) );
 
-    stats.allocatedVoices = stats.allocatedVoicesOneShot = mOneShots.size();
+    stats.allocatedVoices = stats.allocatedVoicesOneShot = mOneShots.size() + mVoicePool.size();
+    stats.allocatedVoicesIdle = mVoicePool.size();
 
     for( auto it = mNotifyObjects.begin(); it != mNotifyObjects.end(); ++it )
     {
@@ -610,54 +769,238 @@ AudioStatistics AudioEngine::Impl::GetStatistics() const
         (*it)->GatherStatistics( stats );
     }
 
+    assert( stats.allocatedVoices == ( mOneShots.size() + mVoicePool.size() + mVoiceInstances ) );
+
     return stats;
+}
+
+
+void AudioEngine::Impl::TrimVoicePool()
+{
+    for( auto it = mNotifyObjects.begin(); it != mNotifyObjects.end(); ++it )
+    {
+        assert( *it != 0 );
+        (*it)->OnTrim();
+    }
+
+    for( auto it = mVoicePool.begin(); it != mVoicePool.end(); ++it )
+    {
+        assert( it->second != 0 );
+        it->second->DestroyVoice();
+    }
+    mVoicePool.clear();
 }
 
 
 _Use_decl_annotations_
 void AudioEngine::Impl::AllocateVoice( const WAVEFORMATEX* wfx, SOUND_EFFECT_INSTANCE_FLAGS flags, bool oneshot, IXAudio2SourceVoice** voice )
 {
-    if ( !xaudio2 || mCriticalError )
-    {
-        voice = nullptr;
-        return;
-    }
+    if ( !wfx )
+        throw std::exception( "Wave format is required\n" );
 
     // No need to call IsValid on wfx because CreateSourceVoice will do that
 
+    if ( !voice )
+        throw std::exception("Voice pointer must be non-null");
+
+    *voice = nullptr;
+
+    if ( !xaudio2 || mCriticalError )
+        return;
+
+    unsigned int voiceKey = 0;
     if ( oneshot )
     {
-        // TODO - Add voice resuse (similiar format, can change rate, flags)
-        // Need DefaultSampleRate and MaxFrequencyRatio as settings
+        if ( flags & ( SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters | SoundEffectInstance_NoSetPitch ) )
+        {
+            DebugTrace( ( flags & SoundEffectInstance_NoSetPitch )
+                        ? "ERROR: One-shot voices must support pitch-shifting for voice reuse"
+                        : "ERROR: One-use voices cannot use 3D positional audio" );
+            throw std::exception( "Invalid flags for one-shot voice" );
+        }
+
+#ifdef VERBOSE_TRACE
+        if ( wfx->wFormatTag == WAVE_FORMAT_EXTENSIBLE )
+        {
+            DebugTrace( "INFO: Requesting one-shot: Format Tag EXTENSIBLE %u, %u channels, %u-bit, %u blkalign, %u Hz\n", GetFormatTag( wfx ), 
+                        wfx->nChannels, wfx->wBitsPerSample, wfx->nBlockAlign, wfx->nSamplesPerSec );
+        }
+        else
+        {
+            DebugTrace( "INFO: Requesting one-shot: Format Tag %u, %u channels, %u-bit, %u blkalign, %u Hz\n", wfx->wFormatTag, 
+                        wfx->nChannels, wfx->wBitsPerSample, wfx->nBlockAlign, wfx->nSamplesPerSec );
+        }
+#endif
+
+        if ( !( mEngineFlags & AudioEngine_DisableVoiceReuse ) )
+        {
+            voiceKey = makeVoiceKey( wfx );
+            if ( voiceKey != 0 )
+            {
+                auto it = mVoicePool.find( voiceKey );
+                if ( it != mVoicePool.end() )
+                {
+                    // Found a matching (stopped) voice to reuse
+                    assert( it->second != 0 );
+                    *voice = it->second;
+                    mVoicePool.erase( it );
+                }
+                else if ( ( mVoicePool.size() + mOneShots.size() + 1 ) >= maxVoiceOneshots )
+                {
+                    DebugTrace( "WARNING: Too many one-shot voices in use (%Iu + %Iu >= %Iu); one-shot not played\n",
+                                mVoicePool.size(), mOneShots.size() + 1, maxVoiceOneshots );
+                    return;
+                }
+                else
+                {
+                    // makeVoiceKey already constrained the supported wfx formats to those supported for reuse
+
+                    char buff[64] = {0};
+                    auto wfmt = reinterpret_cast<WAVEFORMATEX*>( buff );
+
+                    uint32_t tag = GetFormatTag( wfx );
+                    switch( tag )
+                    {
+                    case WAVE_FORMAT_PCM:
+                        CreateIntegerPCM( wfmt, defaultRate, wfx->nChannels, wfx->wBitsPerSample );
+                        break;
+
+                    case WAVE_FORMAT_IEEE_FLOAT:
+                        CreateFloatPCM( wfmt, defaultRate, wfx->nChannels );
+                        break;
+
+                    case WAVE_FORMAT_ADPCM:
+                        {
+                            auto wfadpcm = reinterpret_cast<const ADPCMWAVEFORMAT*>( wfx );
+                            CreateADPCM( wfmt, 64, defaultRate, wfx->nChannels, wfadpcm->wSamplesPerBlock );
+                        }
+                        break;
+
+#if defined(_XBOX_ONE) && defined(_TITLE)
+                    case WAVE_FORMAT_XMA2:
+                        CreateXMA2( wfmt, 64, defaultRate, wfx->nChannels, 65536, 2, 0 );
+                        break;
+#endif
+                    }
+
+#ifdef VERBOSE_TRACE
+                    DebugTrace( "INFO: Allocate reuse voice: Format Tag %u, %u channels, %u-bit, %u blkalign, %u Hz\n", wfmt->wFormatTag,
+                                wfmt->nChannels, wfmt->wBitsPerSample, wfmt->nBlockAlign, wfmt->nSamplesPerSec );
+#endif
+
+                    assert( voiceKey == makeVoiceKey( wfmt ) );
+
+                    HRESULT hr = xaudio2->CreateSourceVoice( voice, wfmt, 0, XAUDIO2_DEFAULT_FREQ_RATIO, &mVoiceCallback, nullptr, nullptr );
+                    if ( FAILED(hr) )
+                    {
+                        DebugTrace( "ERROR: CreateSourceVoice (reuse) failed with error %08X\n", hr );
+                        throw std::exception( "CreateSourceVoice" );
+                    }
+                }
+
+                assert( *voice != 0 );
+                HRESULT hr = (*voice)->SetSourceSampleRate( wfx->nSamplesPerSec );
+                if ( FAILED(hr) )
+                {
+                    DebugTrace( "ERROR: SetSourceSampleRate failed with error %08X\n", hr );
+                    throw std::exception( "SetSourceSampleRate" );
+                }
+            }
+        }
     }
 
-    HRESULT hr;
-    if ( flags & SoundEffectInstance_Use3D )
+    if ( !*voice )
     {
-        XAUDIO2_SEND_DESCRIPTOR sendDescriptors[2];      
-        sendDescriptors[0].Flags = sendDescriptors[1].Flags = (flags & SoundEffectInstance_ReverbUseFilters) ? XAUDIO2_SEND_USEFILTER : 0;
-        sendDescriptors[0].pOutputVoice = mMasterVoice;
-        sendDescriptors[1].pOutputVoice = mReverbVoice;
-        const XAUDIO2_VOICE_SENDS sendList = { mReverbVoice ? 2 : 1, sendDescriptors };
+        if ( oneshot )
+        {
+            if ( ( mVoicePool.size() + mOneShots.size() + 1 ) >= maxVoiceOneshots )
+            {
+                DebugTrace( "WARNING: Too many one-shot voices in use (%Iu + %Iu >= %Iu); one-shot not played; see TrimVoicePool\n",
+                            mVoicePool.size(), mOneShots.size() + 1, maxVoiceOneshots );
+                return;
+            }
+        }
+        else if ( ( mVoiceInstances + 1 ) >= maxVoiceInstances )
+        {
+            DebugTrace( "ERROR: Too many instance voices (%Iu >= %Iu); see TrimVoicePool\n", mVoiceInstances + 1, maxVoiceInstances );
+            throw std::exception( "Too many instance voices" );
+        }
 
-        hr = xaudio2->CreateSourceVoice( voice, wfx, 0, XAUDIO2_DEFAULT_FREQ_RATIO, &mVoiceCallback, &sendList, nullptr );
-    }
-    else
-    {
-        hr = xaudio2->CreateSourceVoice( voice, wfx, 0, XAUDIO2_DEFAULT_FREQ_RATIO, &mVoiceCallback, nullptr, nullptr );
-    }
+        UINT32 vflags = ( flags & SoundEffectInstance_NoSetPitch ) ? XAUDIO2_VOICE_NOPITCH : 0;
 
-    if ( FAILED(hr) )
-    {
-        DebugTrace( "ERROR: CreateSourceVoice failed with error %08X\n", hr );
-        throw std::exception( "CreateSourceVoice" );
+        HRESULT hr;
+        if ( flags & SoundEffectInstance_Use3D )
+        {
+            XAUDIO2_SEND_DESCRIPTOR sendDescriptors[2];      
+            sendDescriptors[0].Flags = sendDescriptors[1].Flags = (flags & SoundEffectInstance_ReverbUseFilters) ? XAUDIO2_SEND_USEFILTER : 0;
+            sendDescriptors[0].pOutputVoice = mMasterVoice;
+            sendDescriptors[1].pOutputVoice = mReverbVoice;
+            const XAUDIO2_VOICE_SENDS sendList = { mReverbVoice ? 2 : 1, sendDescriptors };
+
+#ifdef VERBOSE_TRACE
+            DebugTrace( "INFO: Allocate voice 3D: Format Tag %u, %u channels, %u-bit, %u blkalign, %u Hz\n", wfx->wFormatTag, 
+                        wfx->nChannels, wfx->wBitsPerSample, wfx->nBlockAlign, wfx->nSamplesPerSec );
+#endif
+
+            hr = xaudio2->CreateSourceVoice( voice, wfx, vflags, XAUDIO2_DEFAULT_FREQ_RATIO, &mVoiceCallback, &sendList, nullptr );
+        }
+        else
+        {
+#ifdef VERBOSE_TRACE
+            DebugTrace( "INFO: Allocate voice: Format Tag %u, %u channels, %u-bit, %u blkalign, %u Hz\n", wfx->wFormatTag, 
+                        wfx->nChannels, wfx->wBitsPerSample, wfx->nBlockAlign, wfx->nSamplesPerSec );
+#endif
+
+            hr = xaudio2->CreateSourceVoice( voice, wfx, vflags, XAUDIO2_DEFAULT_FREQ_RATIO, &mVoiceCallback, nullptr, nullptr );
+        }
+
+        if ( FAILED(hr) )
+        {
+            DebugTrace( "ERROR: CreateSourceVoice failed with error %08X\n", hr );
+            throw std::exception( "CreateSourceVoice" );
+        }
+        else if ( !oneshot )
+        {
+            ++mVoiceInstances;
+        }
     }
 
     if ( oneshot )
     {
         assert( *voice != 0 );
-        mOneShots.push_back( *voice );
+        mOneShots.emplace_back( std::make_pair( voiceKey, *voice ) );
     }
+}
+
+
+void AudioEngine::Impl::DestroyVoice( _In_ IXAudio2SourceVoice* voice )
+{
+    if ( !voice )
+        return;
+
+#ifndef NDEBUG
+    for( auto it = mOneShots.cbegin(); it != mOneShots.cend(); ++it )
+    {
+        if ( it->second == voice )
+        {
+            DebugTrace( "ERROR: DestroyVoice should not be called for a one-shot voice\n" );
+            throw std::exception( "DestroyVoice" );
+        }
+    }
+
+    for( auto it = mVoicePool.cbegin(); it != mVoicePool.cend(); ++it )
+    {
+        if ( it->second == voice )
+        {
+            DebugTrace( "ERROR: DestroyVoice should not be called for a one-shot voice; see TrimVoicePool\n" );
+            throw std::exception( "DestroyVoice" );
+        }
+    }
+#endif
+
+    assert( mVoiceInstances > 0 );
+    --mVoiceInstances;
+    voice->DestroyVoice();
 }
 
 
@@ -685,19 +1028,19 @@ void AudioEngine::Impl::UnregisterNotify( _In_ IVoiceNotify* notify, bool usesOn
 
         for( auto it = mOneShots.begin(); it != mOneShots.end(); ++it )
         {
-            assert( *it != 0 );
+            assert( it->second != 0 );
 
             XAUDIO2_VOICE_STATE state;
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
-            (*it)->GetState(&state, XAUDIO2_VOICE_NOSAMPLESPLAYED );
+            it->second->GetState(&state, XAUDIO2_VOICE_NOSAMPLESPLAYED );
 #else
-            (*it)->GetState(&state);
+            it->second->GetState(&state);
 #endif
 
             if ( state.pCurrentBufferContext == notify )
             {
-                (*it)->Stop( 0 );
-                (*it)->FlushSourceBuffers();
+                it->second->Stop( 0 );
+                it->second->FlushSourceBuffers();
                 setevent = true;
             }
         }
@@ -921,10 +1264,41 @@ bool AudioEngine::IsCriticalError() const
 
 
 // Voice management.
+void AudioEngine::SetDefaultSampleRate( int sampleRate )
+{
+    if ( ( sampleRate < XAUDIO2_MIN_SAMPLE_RATE ) || ( sampleRate > XAUDIO2_MAX_SAMPLE_RATE ) )
+        throw std::exception( "Default sample rate is out of range" );
+
+    pImpl->defaultRate = sampleRate;
+}
+
+
+void AudioEngine::SetMaxVoicePool( size_t maxOneShots, size_t maxInstances )
+{
+    if ( maxOneShots > 0 )
+        pImpl->maxVoiceOneshots = maxOneShots;
+
+    if ( maxInstances > 0 )
+        pImpl->maxVoiceInstances = maxInstances;
+}
+
+
+void AudioEngine::TrimVoicePool()
+{
+    pImpl->TrimVoicePool();
+}
+
+
 _Use_decl_annotations_
 void AudioEngine::AllocateVoice( const WAVEFORMATEX* wfx, SOUND_EFFECT_INSTANCE_FLAGS flags, bool oneshot, IXAudio2SourceVoice** voice )
 {
     pImpl->AllocateVoice( wfx, flags, oneshot, voice );
+}
+
+
+void AudioEngine::DestroyVoice( _In_ IXAudio2SourceVoice* voice )
+{
+    pImpl->DestroyVoice( voice );
 }
 
 

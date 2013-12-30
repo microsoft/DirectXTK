@@ -79,6 +79,8 @@ public:
 
     ~Impl()
     {
+        mBase.DestroyVoice();
+
         if ( mBase.engine )
         {
             mBase.engine->UnregisterNotify( this, false, true );
@@ -117,6 +119,11 @@ public:
     virtual void OnDestroyEngine() override
     {
         mBase.OnDestroy();
+    }
+
+    virtual void OnTrim() override
+    {
+        mBase.OnTrim();
     }
 
     virtual void GatherStatistics( AudioStatistics& stats ) const override
@@ -301,10 +308,7 @@ void DynamicSoundEffectInstance::SetVolume( float volume )
 
 void DynamicSoundEffectInstance::SetPitch( float pitch )
 {
-    if ( pImpl->mBase.voice )
-    {
-        pImpl->mBase.voice->SetFrequencyRatio( pitch );
-    }
+    pImpl->mBase.SetPitch( pitch );
 }
 
 

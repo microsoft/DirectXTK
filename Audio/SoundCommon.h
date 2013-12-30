@@ -81,11 +81,7 @@ namespace DirectX
 
         ~SoundEffectInstanceBase()
         {
-            if ( voice )
-            {
-                voice->DestroyVoice();
-                voice = nullptr;
-            }
+            assert( !voice );
         }
 
         void Initialize( _In_ AudioEngine* eng, _In_ const WAVEFORMATEX* wfx, SOUND_EFFECT_INSTANCE_FLAGS flags )
@@ -113,6 +109,16 @@ namespace DirectX
 
             assert( engine != 0 );
             engine->AllocateVoice( wfx, mFlags, false, &voice );
+        }
+
+        void DestroyVoice()
+        {
+            if ( voice )
+            {
+                assert( engine != 0 );
+                engine->DestroyVoice( voice );
+                voice = nullptr;
+            }
         }
 
         bool Play() // Returns true if STOPPED -> PLAYING
@@ -177,6 +183,23 @@ namespace DirectX
                 HRESULT hr = voice->Start( 0 );
                 ThrowIfFailed( hr );
                 state = PLAYING;
+            }
+        }
+
+        void SetPitch( float pitch )
+        {
+            if ( ( mFlags & SoundEffectInstance_NoSetPitch ) && pitch != 1.f )
+            {
+                DebugTrace( "ERROR: Sound effect instance was created with the NoSetPitch flag\n" );
+                throw std::exception( "SetPitch" );
+            }
+
+            assert( pitch >= XAUDIO2_MIN_FREQ_RATIO && pitch <= XAUDIO2_DEFAULT_FREQ_RATIO );
+
+            if ( voice )
+            {
+                HRESULT hr = voice->SetFrequencyRatio( pitch );
+                ThrowIfFailed( hr );
             }
         }
 
@@ -254,6 +277,15 @@ namespace DirectX
             engine = nullptr;
             mDirectVoice = nullptr;
             mReverbVoice = nullptr;
+        }
+
+        void OnTrim()
+        {
+            if ( voice && ( state == STOPPED ) )
+            {
+                engine->DestroyVoice( voice );
+                voice = nullptr;
+            }
         }
 
         void GatherStatistics( AudioStatistics& stats ) const
