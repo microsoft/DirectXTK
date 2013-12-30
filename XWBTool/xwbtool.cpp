@@ -318,13 +318,13 @@ DWORD EncodeWMABlockAlign(DWORD dwBlockAlign, DWORD dwAvgBytesPerSec)
     if ( bit == std::end(aWMABlockAlign) )
         return DWORD(-1);
 
-    DWORD blockAlignIndex = bit - std::begin(aWMABlockAlign);
+    DWORD blockAlignIndex = DWORD(bit - std::begin(aWMABlockAlign));
 
     auto ait = std::find( std::begin(aWMAAvgBytesPerSec), std::end(aWMAAvgBytesPerSec), dwAvgBytesPerSec );
     if ( ait == std::end(aWMAAvgBytesPerSec) )
         return DWORD(-1);
 
-    DWORD bytesPerSecIndex = ait - std::begin(aWMAAvgBytesPerSec);
+    DWORD bytesPerSecIndex = DWORD(ait - std::begin(aWMAAvgBytesPerSec));
 
     return DWORD( blockAlignIndex | (bytesPerSecIndex << 5) );
 }
