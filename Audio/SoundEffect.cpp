@@ -238,7 +238,7 @@ HRESULT SoundEffect::Impl::Initialize( AudioEngine* engine, std::unique_ptr<uint
                                    static_cast<UINT32>( audioBytes ), SHAPE_XMA_INPUT_BUFFER_ALIGNMENT );
             if ( FAILED(hr) )
             {
-                DebugTrace( "ERROR: ApuAlloc failed. Did you allocate a large enough heap with ApuCreateHeap for all your XMA wave data?" );
+                DebugTrace( "ERROR: ApuAlloc failed. Did you allocate a large enough heap with ApuCreateHeap for all your XMA wave data?\n" );
                 return hr;
             }
         }

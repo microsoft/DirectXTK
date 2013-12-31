@@ -244,7 +244,7 @@ bool DirectX::IsValid( _In_ const WAVEFORMATEX* wfx )
 
         if ( wfx->cbSize != ( sizeof(XMA2WAVEFORMATEX) - sizeof(WAVEFORMATEX) ) )
         {
-            DebugTrace( "ERROR: Wave format XMA2 - cbSize must be %Iu (%u)", ( sizeof(XMA2WAVEFORMATEX) - sizeof(WAVEFORMATEX) ), wfx->cbSize );
+            DebugTrace( "ERROR: Wave format XMA2 - cbSize must be %Iu (%u)\n", ( sizeof(XMA2WAVEFORMATEX) - sizeof(WAVEFORMATEX) ), wfx->cbSize );
             return false;
         }
         else
@@ -253,7 +253,7 @@ bool DirectX::IsValid( _In_ const WAVEFORMATEX* wfx )
 
             if ( xmaFmt->EncoderVersion < 3 )
             {
-                DebugTrace( "ERROR: Wave format XMA2 encoder version (%u) - 3 or higher is required", xmaFmt->EncoderVersion );
+                DebugTrace( "ERROR: Wave format XMA2 encoder version (%u) - 3 or higher is required\n", xmaFmt->EncoderVersion );
                 return false;
             }
 
@@ -288,13 +288,13 @@ bool DirectX::IsValid( _In_ const WAVEFORMATEX* wfx )
 
             if ( ( xmaFmt->PlayBegin + xmaFmt->PlayLength ) > xmaFmt->SamplesEncoded )
             {
-                DebugTrace( "ERROR: Wave format XMA2 play region too large (%u + %u > %u)", xmaFmt->PlayBegin, xmaFmt->PlayLength, xmaFmt->SamplesEncoded );
+                DebugTrace( "ERROR: Wave format XMA2 play region too large (%u + %u > %u)\n", xmaFmt->PlayBegin, xmaFmt->PlayLength, xmaFmt->SamplesEncoded );
                 return false;
             }
 
             if ( ( xmaFmt->LoopBegin + xmaFmt->LoopLength ) > xmaFmt->SamplesEncoded )
             {
-                DebugTrace( "ERROR: Wave format XMA2 loop region too large (%u + %u > %u)", xmaFmt->LoopBegin, xmaFmt->LoopLength, xmaFmt->SamplesEncoded );
+                DebugTrace( "ERROR: Wave format XMA2 loop region too large (%u + %u > %u)\n", xmaFmt->LoopBegin, xmaFmt->LoopLength, xmaFmt->SamplesEncoded );
                 return false;
             }
         }
@@ -308,7 +308,7 @@ bool DirectX::IsValid( _In_ const WAVEFORMATEX* wfx )
     case WAVE_FORMAT_EXTENSIBLE:
         if ( wfx->cbSize < ( sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX) ) )
         {
-            DebugTrace( "ERROR: Wave format WAVE_FORMAT_EXTENSIBLE - cbSize must be %Iu (%u)", ( sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX) ), wfx->cbSize );
+            DebugTrace( "ERROR: Wave format WAVE_FORMAT_EXTENSIBLE - cbSize must be %Iu (%u)\n", ( sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX) ), wfx->cbSize );
             return false;
         }
         else
@@ -543,7 +543,7 @@ void DirectX::CreateADPCM( WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, in
 
     if ( !samplesPerBlock )
     {
-        DebugTrace( "CreateADPCM needs a non-zero samples per block count" );
+        DebugTrace( "CreateADPCM needs a non-zero samples per block count\n" );
         throw std::invalid_argument( "ADPCMWAVEFORMAT" );
     }
 
@@ -598,7 +598,7 @@ void DirectX::CreateXMA2( WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int
 
     if ( !bytesPerBlock || ( bytesPerBlock > XMA_READBUFFER_MAX_BYTES ) )
     {
-        DebugTrace( "XMA2 needs a valid bytes per block" );
+        DebugTrace( "XMA2 needs a valid bytes per block\n" );
         throw std::invalid_argument( "XMA2WAVEFORMATEX" );
     }
 
@@ -705,7 +705,7 @@ void SoundEffectInstanceBase::Apply3D( const AudioListener& listener, const Audi
 
     if ( !( mFlags & SoundEffectInstance_Use3D ) )
     {
-        DebugTrace( "ERROR: Apply3D called for an instance created without SoundEffectInstance_Use3D set" );
+        DebugTrace( "ERROR: Apply3D called for an instance created without SoundEffectInstance_Use3D set\n" );
         throw std::exception( "Apply3D" );
     }
 

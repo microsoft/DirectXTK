@@ -286,6 +286,8 @@ public:
 
     void SetReverb( _In_opt_ const XAUDIO2FX_REVERB_PARAMETERS* native );
 
+    void SetMasteringLimit( int release, int loudness );
+        
     AudioStatistics GetStatistics() const;
 
     void TrimVoicePool();
@@ -322,6 +324,7 @@ private:
 
     AUDIO_STREAM_CATEGORY               mCategory;
     ComPtr<IUnknown>                    mReverbEffect;
+    ComPtr<IUnknown>                    mVolumeLimiter;
     oneshotlist_t                       mOneShots;
     voicepool_t                         mVoicePool;
     notifylist_t                        mNotifyObjects;
@@ -519,6 +522,58 @@ HRESULT AudioEngine::Impl::Reset( const WAVEFORMATEX* wfx, const wchar_t* device
 
 #endif
 
+    DebugTrace( "INFO: mastering voice has %u channels, %u sample rate, %08X channel mask\n", masterChannels, masterRate, masterChannelMask );
+
+    //
+    // Setup mastering volume limiter (optional)
+    //
+    if ( mEngineFlags & AudioEngine_UseMasteringLimiter )
+    {
+        FXMASTERINGLIMITER_PARAMETERS params = {0};
+        params.Release = FXMASTERINGLIMITER_DEFAULT_RELEASE;
+        params.Loudness = FXMASTERINGLIMITER_DEFAULT_LOUDNESS;
+
+#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
+        hr = CreateFX( __uuidof(FXMasteringLimiter), mVolumeLimiter.ReleaseAndGetAddressOf(), &params, sizeof(params) );
+#else
+        hr = CreateFX( __uuidof(FXMasteringLimiter), mVolumeLimiter.ReleaseAndGetAddressOf() );
+#endif
+        if ( FAILED(hr) )
+        {
+            mMasterVoice = nullptr;
+            xaudio2.Reset();
+            return hr;
+        }
+
+        XAUDIO2_EFFECT_DESCRIPTOR desc = {0};
+        desc.InitialState = TRUE;
+        desc.OutputChannels = masterChannels;
+        desc.pEffect = mVolumeLimiter.Get();
+
+        XAUDIO2_EFFECT_CHAIN chain = { 1, &desc };
+        hr = mMasterVoice->SetEffectChain( &chain );
+        if ( FAILED(hr) )
+        {
+            mMasterVoice = nullptr;
+            mVolumeLimiter.Reset();
+            xaudio2.Reset();
+            return hr;
+        }
+
+#if (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+        hr = mMasterVoice->SetEffectParameters( 0, &params, sizeof(params) );
+        if ( FAILED(hr) )
+        {
+            mMasterVoice = nullptr;
+            mVolumeLimiter.Reset();
+            xaudio2.Reset();
+            return hr;
+        }
+#endif
+
+        DebugTrace( "INFO: Mastering volume limiter enabled\n" );
+    }
+
     //
     // Setup environmental reverb for 3D audio (optional)
     //
@@ -535,6 +590,7 @@ HRESULT AudioEngine::Impl::Reset( const WAVEFORMATEX* wfx, const wchar_t* device
         if ( FAILED(hr) )
         {
             mMasterVoice = nullptr;
+            mVolumeLimiter.Reset();
             xaudio2.Reset();
             return hr;
         }
@@ -551,6 +607,7 @@ HRESULT AudioEngine::Impl::Reset( const WAVEFORMATEX* wfx, const wchar_t* device
         {
             mMasterVoice = nullptr;
             mReverbEffect.Reset();
+            mVolumeLimiter.Reset();
             xaudio2.Reset();
             return hr;
         }
@@ -563,9 +620,12 @@ HRESULT AudioEngine::Impl::Reset( const WAVEFORMATEX* wfx, const wchar_t* device
             mMasterVoice = nullptr;
             mReverbVoice = nullptr;
             mReverbEffect.Reset();
+            mVolumeLimiter.Reset();
             xaudio2.Reset();
             return hr;
         }
+
+        DebugTrace( "INFO: I3DL2 reverb effect enabled for 3D positional audio\n" );
     }
 
     //
@@ -580,6 +640,7 @@ HRESULT AudioEngine::Impl::Reset( const WAVEFORMATEX* wfx, const wchar_t* device
         mMasterVoice = nullptr;
         mReverbVoice = nullptr;
         mReverbEffect.Reset();
+        mVolumeLimiter.Reset();
         xaudio2.Reset();
         return hr;
     }
@@ -617,6 +678,7 @@ void AudioEngine::Impl::SetSilentMode()
     mReverbVoice = nullptr;
 
     mReverbEffect.Reset();
+    mVolumeLimiter.Reset();
     xaudio2.Reset();
 }
 
@@ -644,6 +706,7 @@ void AudioEngine::Impl::Shutdown()
         mReverbVoice = nullptr;
 
         mReverbEffect.Reset();
+        mVolumeLimiter.Reset();
         xaudio2.Reset();
 
         masterChannelMask = masterChannels = masterRate = 0;
@@ -755,6 +818,26 @@ void AudioEngine::Impl::SetReverb( const XAUDIO2FX_REVERB_PARAMETERS* native )
 }
 
 
+void AudioEngine::Impl::SetMasteringLimit( int release, int loudness )
+{
+    if ( !mVolumeLimiter || !mMasterVoice )
+        return;
+    
+    if ( ( release < FXMASTERINGLIMITER_MIN_RELEASE ) || ( release > FXMASTERINGLIMITER_MAX_RELEASE ) )
+        throw std::out_of_range( "AudioEngine::SetMasteringLimit" );
+
+    if ( ( loudness < FXMASTERINGLIMITER_MIN_LOUDNESS ) || ( loudness > FXMASTERINGLIMITER_MAX_LOUDNESS ) )
+        throw std::out_of_range( "AudioEngine::SetMasteringLimit" );
+
+    FXMASTERINGLIMITER_PARAMETERS params = {0};
+    params.Release = static_cast<UINT32>( release );
+    params.Loudness = static_cast<UINT32>( loudness );
+
+    HRESULT hr = mMasterVoice->SetEffectParameters( 0, &params, sizeof(params) );
+    ThrowIfFailed( hr );
+}
+
+
 AudioStatistics AudioEngine::Impl::GetStatistics() const
 {
     AudioStatistics stats;
@@ -814,8 +897,8 @@ void AudioEngine::Impl::AllocateVoice( const WAVEFORMATEX* wfx, SOUND_EFFECT_INS
         if ( flags & ( SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters | SoundEffectInstance_NoSetPitch ) )
         {
             DebugTrace( ( flags & SoundEffectInstance_NoSetPitch )
-                        ? "ERROR: One-shot voices must support pitch-shifting for voice reuse"
-                        : "ERROR: One-use voices cannot use 3D positional audio" );
+                        ? "ERROR: One-shot voices must support pitch-shifting for voice reuse\n"
+                        : "ERROR: One-use voices cannot use 3D positional audio\n" );
             throw std::exception( "Invalid flags for one-shot voice" );
         }
 
@@ -1129,7 +1212,7 @@ bool AudioEngine::Reset( const WAVEFORMATEX* wfx, const wchar_t* deviceId )
 {
     if ( pImpl->xaudio2 )
     {
-        DebugTrace( "WARNING: Called Reset for active audio graph; going silent in preparation for migration" );
+        DebugTrace( "WARNING: Called Reset for active audio graph; going silent in preparation for migration\n" );
         pImpl->SetSilentMode();
     }
 
@@ -1203,6 +1286,12 @@ _Use_decl_annotations_
 void AudioEngine::SetReverb( const XAUDIO2FX_REVERB_PARAMETERS* native )
 {
     pImpl->SetReverb( native );
+}
+
+
+void AudioEngine::SetMasteringLimit( int release, int loudness )
+{
+    pImpl->SetMasteringLimit( release, loudness );
 }
 
 

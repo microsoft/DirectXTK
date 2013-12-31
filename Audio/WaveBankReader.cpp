@@ -877,7 +877,7 @@ HRESULT WaveBankReader::Impl::Open( const wchar_t* szFileName )
             HRESULT hr = ApuAlloc( &m_xmaMemory, nullptr, waveLen, SHAPE_XMA_INPUT_BUFFER_ALIGNMENT );
             if ( FAILED(hr) )
             {
-                DebugTrace( "ERROR: ApuAlloc failed. Did you allocate a large enough heap with ApuCreateHeap for all your XMA wave data?" );
+                DebugTrace( "ERROR: ApuAlloc failed. Did you allocate a large enough heap with ApuCreateHeap for all your XMA wave data?\n" );
                 return hr;
             }
 
