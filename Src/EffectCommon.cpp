@@ -419,8 +419,8 @@ ID3D11ShaderResourceView* EffectDeviceResources::GetDefaultTexture()
             hr = mDevice->CreateShaderResourceView( tex, &SRVDesc, pResult );
             if (SUCCEEDED(hr))
                 SetDebugObjectName(*pResult, "DirectXTK:Effect");
-            else
-                tex->Release();
+
+            tex->Release();
         }
 
         return hr;
