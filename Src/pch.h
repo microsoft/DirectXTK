@@ -49,10 +49,6 @@
 
 #include <wrl.h>
 
-#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) && !defined(DXGI_1_2_FORMATS)
-#define DXGI_1_2_FORMATS
-#endif
-
 namespace DirectX
 {
     #if (DIRECTXMATH_VERSION < 305) && !defined(XM_CALLCONV)
