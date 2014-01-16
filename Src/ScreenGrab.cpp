@@ -40,6 +40,7 @@
 #include "dds.h"
 #include "PlatformHelpers.h"
 
+using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 
 //--------------------------------------------------------------------------------------
@@ -340,7 +341,7 @@ static DXGI_FORMAT EnsureNotTypeless( DXGI_FORMAT fmt )
 static HRESULT CaptureTexture( _In_ ID3D11DeviceContext* pContext,
                                _In_ ID3D11Resource* pSource,
                                _Inout_ D3D11_TEXTURE2D_DESC& desc,
-                               _Inout_ ScopedObject<ID3D11Texture2D>& pStaging )
+                               _Inout_ ComPtr<ID3D11Texture2D>& pStaging )
 {
     if ( !pContext || !pSource )
         return E_INVALIDARG;
@@ -351,7 +352,7 @@ static HRESULT CaptureTexture( _In_ ID3D11DeviceContext* pContext,
     if ( resType != D3D11_RESOURCE_DIMENSION_TEXTURE2D )
         return HRESULT_FROM_WIN32( ERROR_NOT_SUPPORTED );
 
-    ScopedObject<ID3D11Texture2D> pTexture;
+    ComPtr<ID3D11Texture2D> pTexture;
     HRESULT hr = pSource->QueryInterface( __uuidof(ID3D11Texture2D), reinterpret_cast<void**>( pTexture.GetAddressOf() ) );
     if ( FAILED(hr) )
         return hr;
@@ -360,8 +361,8 @@ static HRESULT CaptureTexture( _In_ ID3D11DeviceContext* pContext,
 
     pTexture->GetDesc( &desc );
 
-    ScopedObject<ID3D11Device> d3dDevice;
-    pContext->GetDevice( &d3dDevice );
+    ComPtr<ID3D11Device> d3dDevice;
+    pContext->GetDevice( d3dDevice.GetAddressOf() );
 
     if ( desc.SampleDesc.Count > 1 )
     {
@@ -369,8 +370,8 @@ static HRESULT CaptureTexture( _In_ ID3D11DeviceContext* pContext,
         desc.SampleDesc.Count = 1;
         desc.SampleDesc.Quality = 0;
 
-        ScopedObject<ID3D11Texture2D> pTemp;
-        hr = d3dDevice->CreateTexture2D( &desc, 0, &pTemp );
+        ComPtr<ID3D11Texture2D> pTemp;
+        hr = d3dDevice->CreateTexture2D( &desc, 0, pTemp.GetAddressOf() );
         if ( FAILED(hr) )
             return hr;
 
@@ -400,7 +401,7 @@ static HRESULT CaptureTexture( _In_ ID3D11DeviceContext* pContext,
         desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
         desc.Usage = D3D11_USAGE_STAGING;
 
-        hr = d3dDevice->CreateTexture2D( &desc, 0, &pStaging );
+        hr = d3dDevice->CreateTexture2D( &desc, 0, pStaging.GetAddressOf() );
         if ( FAILED(hr) )
             return hr;
 
@@ -421,7 +422,7 @@ static HRESULT CaptureTexture( _In_ ID3D11DeviceContext* pContext,
         desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
         desc.Usage = D3D11_USAGE_STAGING;
 
-        hr = d3dDevice->CreateTexture2D( &desc, 0, &pStaging );
+        hr = d3dDevice->CreateTexture2D( &desc, 0, pStaging.GetAddressOf() );
         if ( FAILED(hr) )
             return hr;
 
@@ -443,7 +444,7 @@ HRESULT DirectX::SaveDDSTextureToFile( _In_ ID3D11DeviceContext* pContext,
         return E_INVALIDARG;
 
     D3D11_TEXTURE2D_DESC desc = { 0 };
-    ScopedObject<ID3D11Texture2D> pStaging;
+    ComPtr<ID3D11Texture2D> pStaging;
     HRESULT hr = CaptureTexture( pContext, pSource, desc, pStaging );
     if ( FAILED(hr) )
         return hr;
@@ -600,7 +601,7 @@ HRESULT DirectX::SaveWICTextureToFile( _In_ ID3D11DeviceContext* pContext,
         return E_INVALIDARG;
 
     D3D11_TEXTURE2D_DESC desc = { 0 };
-    ScopedObject<ID3D11Texture2D> pStaging;
+    ComPtr<ID3D11Texture2D> pStaging;
     HRESULT hr = CaptureTexture( pContext, pSource, desc, pStaging );
     if ( FAILED(hr) )
         return hr;
@@ -658,8 +659,8 @@ HRESULT DirectX::SaveWICTextureToFile( _In_ ID3D11DeviceContext* pContext,
     if ( !pWIC )
         return E_NOINTERFACE;
 
-    ScopedObject<IWICStream> stream;
-    hr = pWIC->CreateStream( &stream );
+    ComPtr<IWICStream> stream;
+    hr = pWIC->CreateStream( stream.GetAddressOf() );
     if ( FAILED(hr) )
         return hr;
 
@@ -667,8 +668,8 @@ HRESULT DirectX::SaveWICTextureToFile( _In_ ID3D11DeviceContext* pContext,
     if ( FAILED(hr) )
         return hr;
 
-    ScopedObject<IWICBitmapEncoder> encoder;
-    hr = pWIC->CreateEncoder( guidContainerFormat, 0, &encoder );
+    ComPtr<IWICBitmapEncoder> encoder;
+    hr = pWIC->CreateEncoder( guidContainerFormat, 0, encoder.GetAddressOf() );
     if ( FAILED(hr) )
         return hr;
 
@@ -676,9 +677,9 @@ HRESULT DirectX::SaveWICTextureToFile( _In_ ID3D11DeviceContext* pContext,
     if ( FAILED(hr) )
         return hr;
 
-    ScopedObject<IWICBitmapFrameEncode> frame;
-    ScopedObject<IPropertyBag2> props;
-    hr = encoder->CreateNewFrame( &frame, &props );
+    ComPtr<IWICBitmapFrameEncode> frame;
+    ComPtr<IPropertyBag2> props;
+    hr = encoder->CreateNewFrame( frame.GetAddressOf(), props.GetAddressOf() );
     if ( FAILED(hr) )
         return hr;
 
@@ -765,8 +766,8 @@ HRESULT DirectX::SaveWICTextureToFile( _In_ ID3D11DeviceContext* pContext,
     }
 
     // Encode WIC metadata
-    ScopedObject<IWICMetadataQueryWriter> metawriter;
-    if ( SUCCEEDED( frame->GetMetadataQueryWriter( &metawriter ) ) )
+    ComPtr<IWICMetadataQueryWriter> metawriter;
+    if ( SUCCEEDED( frame->GetMetadataQueryWriter( metawriter.GetAddressOf() ) ) )
     {
         PROPVARIANT value;
         PropVariantInit( &value );
@@ -810,18 +811,18 @@ HRESULT DirectX::SaveWICTextureToFile( _In_ ID3D11DeviceContext* pContext,
     if ( memcmp( &targetGuid, &pfGuid, sizeof(WICPixelFormatGUID) ) != 0 )
     {
         // Conversion required to write
-        ScopedObject<IWICBitmap> source;
+        ComPtr<IWICBitmap> source;
         hr = pWIC->CreateBitmapFromMemory( desc.Width, desc.Height, pfGuid,
                                            mapped.RowPitch, mapped.RowPitch * desc.Height,
-                                           reinterpret_cast<BYTE*>( mapped.pData ), &source );
+                                           reinterpret_cast<BYTE*>( mapped.pData ), source.GetAddressOf() );
         if ( FAILED(hr) )
         {
             pContext->Unmap( pStaging.Get(), 0 );
             return hr;
         }
 
-        ScopedObject<IWICFormatConverter> FC;
-        hr = pWIC->CreateFormatConverter( &FC );
+        ComPtr<IWICFormatConverter> FC;
+        hr = pWIC->CreateFormatConverter( FC.GetAddressOf() );
         if ( FAILED(hr) )
         {
             pContext->Unmap( pStaging.Get(), 0 );

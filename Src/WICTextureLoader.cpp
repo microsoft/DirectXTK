@@ -39,6 +39,7 @@
 
 #include "PlatformHelpers.h"
 
+using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 
 //-------------------------------------------------------------------------------------
@@ -242,8 +243,8 @@ static size_t _WICBitsPerPixel( REFGUID targetGuid )
     if ( !pWIC )
         return 0;
  
-    ScopedObject<IWICComponentInfo> cinfo;
-    if ( FAILED( pWIC->CreateComponentInfo( targetGuid, &cinfo ) ) )
+    ComPtr<IWICComponentInfo> cinfo;
+    if ( FAILED( pWIC->CreateComponentInfo( targetGuid, cinfo.GetAddressOf() ) ) )
         return 0;
 
     WICComponentType type;
@@ -253,7 +254,7 @@ static size_t _WICBitsPerPixel( REFGUID targetGuid )
     if ( type != WICPixelFormat )
         return 0;
 
-    ScopedObject<IWICPixelFormatInfo> pfinfo;
+    ComPtr<IWICPixelFormatInfo> pfinfo;
     if ( FAILED( cinfo.As( &pfinfo ) ) )
         return 0;
 
@@ -448,8 +449,8 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
     }
     else
     {
-        ScopedObject<IWICMetadataQueryReader> metareader;
-        if ( SUCCEEDED( frame->GetMetadataQueryReader( &metareader ) ) )
+        ComPtr<IWICMetadataQueryReader> metareader;
+        if ( SUCCEEDED( frame->GetMetadataQueryReader( metareader.GetAddressOf() ) ) )
         {
             GUID containerFormat;
             if ( SUCCEEDED( metareader->GetContainerFormat( &containerFormat ) ) )
@@ -518,8 +519,8 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
         if ( !pWIC )
             return E_NOINTERFACE;
 
-        ScopedObject<IWICBitmapScaler> scaler;
-        hr = pWIC->CreateBitmapScaler( &scaler );
+        ComPtr<IWICBitmapScaler> scaler;
+        hr = pWIC->CreateBitmapScaler( scaler.GetAddressOf() );
         if ( FAILED(hr) )
             return hr;
 
@@ -541,8 +542,8 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
         }
         else
         {
-            ScopedObject<IWICFormatConverter> FC;
-            hr = pWIC->CreateFormatConverter( &FC );
+            ComPtr<IWICFormatConverter> FC;
+            hr = pWIC->CreateFormatConverter( FC.GetAddressOf() );
             if ( FAILED(hr) )
                 return hr;
 
@@ -562,8 +563,8 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
         if ( !pWIC )
             return E_NOINTERFACE;
 
-        ScopedObject<IWICFormatConverter> FC;
-        hr = pWIC->CreateFormatConverter( &FC );
+        ComPtr<IWICFormatConverter> FC;
+        hr = pWIC->CreateFormatConverter( FC.GetAddressOf() );
         if ( FAILED(hr) )
             return hr;
 
@@ -712,8 +713,8 @@ HRESULT DirectX::CreateWICTextureFromMemoryEx( ID3D11Device* d3dDevice,
         return E_NOINTERFACE;
 
     // Create input stream for memory
-    ScopedObject<IWICStream> stream;
-    HRESULT hr = pWIC->CreateStream( &stream );
+    ComPtr<IWICStream> stream;
+    HRESULT hr = pWIC->CreateStream( stream.GetAddressOf() );
     if ( FAILED(hr) )
         return hr;
 
@@ -722,13 +723,13 @@ HRESULT DirectX::CreateWICTextureFromMemoryEx( ID3D11Device* d3dDevice,
         return hr;
 
     // Initialize WIC
-    ScopedObject<IWICBitmapDecoder> decoder;
-    hr = pWIC->CreateDecoderFromStream( stream.Get(), 0, WICDecodeMetadataCacheOnDemand, &decoder );
+    ComPtr<IWICBitmapDecoder> decoder;
+    hr = pWIC->CreateDecoderFromStream( stream.Get(), 0, WICDecodeMetadataCacheOnDemand, decoder.GetAddressOf() );
     if ( FAILED(hr) )
         return hr;
 
-    ScopedObject<IWICBitmapFrameDecode> frame;
-    hr = decoder->GetFrame( 0, &frame );
+    ComPtr<IWICBitmapFrameDecode> frame;
+    hr = decoder->GetFrame( 0, frame.GetAddressOf() );
     if ( FAILED(hr) )
         return hr;
 
@@ -795,13 +796,13 @@ HRESULT DirectX::CreateWICTextureFromFileEx( ID3D11Device* d3dDevice,
         return E_NOINTERFACE;
 
     // Initialize WIC
-    ScopedObject<IWICBitmapDecoder> decoder;
-    HRESULT hr = pWIC->CreateDecoderFromFilename( fileName, 0, GENERIC_READ, WICDecodeMetadataCacheOnDemand, &decoder );
+    ComPtr<IWICBitmapDecoder> decoder;
+    HRESULT hr = pWIC->CreateDecoderFromFilename( fileName, 0, GENERIC_READ, WICDecodeMetadataCacheOnDemand, decoder.GetAddressOf() );
     if ( FAILED(hr) )
         return hr;
 
-    ScopedObject<IWICBitmapFrameDecode> frame;
-    hr = decoder->GetFrame( 0, &frame );
+    ComPtr<IWICBitmapFrameDecode> frame;
+    hr = decoder->GetFrame( 0, frame.GetAddressOf() );
     if ( FAILED(hr) )
         return hr;
 

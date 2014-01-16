@@ -68,8 +68,6 @@ namespace DirectX
     typedef public std::unique_ptr<void, handle_closer> ScopedHandle;
 
     inline HANDLE safe_handle( HANDLE h ) { return (h == INVALID_HANDLE_VALUE) ? 0 : h; }
-
-    template<class T> class ScopedObject : public Microsoft::WRL::ComPtr<T> {};
 }
 
 
