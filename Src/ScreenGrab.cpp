@@ -29,6 +29,7 @@
 
 #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP)
 
+// VS 2010's stdint.h conflicts with intsafe.h
 #pragma warning(push)
 #pragma warning(disable : 4005)
 #include <wincodec.h>
