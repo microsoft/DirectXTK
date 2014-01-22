@@ -58,6 +58,7 @@ public:
         static_assert((SpriteEffects_FlipBoth & (SourceInTexels | DestSizeInPixels)) == 0, "Flag bits must not overlap");
     };
 
+    DXGI_MODE_ROTATION mRotation;
 
 private:
     // Implementation helper methods.
@@ -72,7 +73,7 @@ private:
     static void XM_CALLCONV RenderSprite(_In_ SpriteInfo const* sprite, _Out_cap_c_(VerticesPerSprite) VertexPositionColorTexture* vertices, FXMVECTOR textureSize, FXMVECTOR inverseTextureSize);
 
     static XMVECTOR GetTextureSize(_In_ ID3D11ShaderResourceView* texture);
-    static XMMATRIX GetViewportTransform(_In_ ID3D11DeviceContext* deviceContext);
+    static XMMATRIX GetViewportTransform(_In_ ID3D11DeviceContext* deviceContext, DXGI_MODE_ROTATION rotation );
 
 
     // Constants.
@@ -329,7 +330,8 @@ void SpriteBatch::Impl::ContextResources::CreateVertexBuffer()
 
 // Per-SpriteBatch constructor.
 SpriteBatch::Impl::Impl(_In_ ID3D11DeviceContext* deviceContext)
-  : mSpriteQueueCount(0),
+  : mRotation( DXGI_MODE_ROTATION_IDENTITY ),
+    mSpriteQueueCount(0),
     mSpriteQueueArraySize(0),
     mInBeginEndPair(false),
     mSortMode(SpriteSortMode_Deferred),
@@ -526,7 +528,7 @@ void SpriteBatch::Impl::PrepareForRendering()
     deviceContext->IASetIndexBuffer(mDeviceResources->indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
 
     // Set the viewport transform matrix.
-    XMMATRIX transformMatrix = mTransformMatrix * GetViewportTransform(deviceContext);
+    XMMATRIX transformMatrix = mTransformMatrix * GetViewportTransform(deviceContext, mRotation);
 
     mContextResources->constantBuffer.SetData(deviceContext, transformMatrix);
 
@@ -862,7 +864,7 @@ XMVECTOR SpriteBatch::Impl::GetTextureSize(_In_ ID3D11ShaderResourceView* textur
 
 
 // Generates a viewport transform matrix for rendering sprites using x-right y-down screen pixel coordinates.
-XMMATRIX SpriteBatch::Impl::GetViewportTransform(_In_ ID3D11DeviceContext* deviceContext)
+XMMATRIX SpriteBatch::Impl::GetViewportTransform(_In_ ID3D11DeviceContext* deviceContext, DXGI_MODE_ROTATION rotation )
 {
     // Look up the current viewport.
     D3D11_VIEWPORT viewport;
@@ -877,13 +879,44 @@ XMMATRIX SpriteBatch::Impl::GetViewportTransform(_In_ ID3D11DeviceContext* devic
     float xScale = (viewport.Width  > 0) ? 2.0f / viewport.Width  : 0.0f;
     float yScale = (viewport.Height > 0) ? 2.0f / viewport.Height : 0.0f;
 
-    return XMMATRIX
-    (
-         xScale,  0,       0,  0,
-         0,      -yScale,  0,  0,
-         0,       0,       1,  0,
-        -1,       1,       0,  1
-    );
+    switch( rotation )
+    {
+    case DXGI_MODE_ROTATION_ROTATE90:
+        return XMMATRIX
+        (
+             0,       -yScale,  0,  0,
+             -xScale, 0,        0,  0,
+             0,       0,        1,  0,
+             1,       1,        0,  1
+        );
+
+    case DXGI_MODE_ROTATION_ROTATE270:
+        return XMMATRIX
+        (
+             0,       yScale,   0,  0,
+             xScale,  0,        0,  0,
+             0,       0,        1,  0,
+            -1,      -1,        0,  1
+        );
+
+    case DXGI_MODE_ROTATION_ROTATE180:
+        return XMMATRIX
+        (
+            -xScale,  0,       0,  0,
+             0,       yScale,  0,  0,
+             0,       0,       1,  0,
+             1,      -1,       0,  1
+        );
+
+    default:
+        return XMMATRIX
+        (
+             xScale,  0,       0,  0,
+             0,      -yScale,  0,  0,
+             0,       0,       1,  0,
+            -1,       1,       0,  1
+        );
+    }
 }
 
 
@@ -1002,4 +1035,16 @@ void XM_CALLCONV SpriteBatch::Draw(_In_ ID3D11ShaderResourceView* texture, RECT 
     XMVECTOR originRotationDepth = XMVectorSet(origin.x, origin.y, rotation, layerDepth);
     
     pImpl->Draw(texture, destination, sourceRectangle, color, originRotationDepth, effects | Impl::SpriteInfo::DestSizeInPixels);
+}
+
+
+void SpriteBatch::SetRotation( DXGI_MODE_ROTATION mode )
+{
+    pImpl->mRotation = mode;
+}
+
+
+DXGI_MODE_ROTATION SpriteBatch::GetRotation() const
+{
+    return pImpl->mRotation;
 }
