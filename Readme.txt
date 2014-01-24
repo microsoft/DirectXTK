@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-December 24, 2013
+January 24, 2014
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Windows Store apps, Windows Phone 8 applications,
@@ -12,10 +12,10 @@ Xbox One exclusive apps, Xbox One hub apps, Windows 8.x Win32 desktop applicatio
 Windows 7 applications, and Windows Vista Direct3D 11.0 applications.
 
 This code is designed to build with Visual Studio 2010, 2012, or 2013. It requires
-the Windows 8.x SDK for functionality such as the DirectXMath library and optionally
-the DXGI 1.2 headers. Visual Studio 2012 and 2013 already include the appropriate 
-Windows SDK, but Visual Studio 2010 users must install the standalone Windows 8.x SDK.
-Details on using the Windows 8.x SDK with VS 2010 are described on the Visual C++ Team Blog:
+the Windows 8.x SDK for functionality such as the DirectXMath library and the DXGI
+1.2 headers. Visual Studio 2012 and 2013 already include the appropriate Windows SDK,
+but Visual Studio 2010 users must install the standalone Windows 8.1 SDK. Details on
+using the Windows 8.1 SDK with VS 2010 are described on the Visual C++ Team Blog:
 
 <http://blogs.msdn.com/b/vcblog/archive/2012/11/23/using-the-windows-8-sdk-with-visual-studio-2010-configuring-multiple-projects.aspx>
 
@@ -164,6 +164,43 @@ Threading model:
     only supports drawing from one thread at a time, but you can simultaneously 
     submit sprites on multiple threads if you create a separate SpriteBatch 
     instance per D3D11 deferred context.
+
+Orientation:
+
+    For phones, laptops, and tablets the orientation of the display can be changed
+    by the user. For Windows Store apps, DirectX applications are encouraged to
+    handle the rotation internally rather than relying on DXGI's auto-rotation handling.
+    In older versions of DirectXTK, you had to handle orientation changes via the custom
+    transform matrix on Begin(). In the latest version of DirectXTK, you can handle it
+    via a rotation setting (which is applied after any custom transformation).
+
+    Windows Store apps for Windows 8:
+
+    DXGI_MODE_ROTATION rotation = DXGI_MODE_ROTATION_UNSPECIFIED;
+    switch (m_orientation)
+    {
+    case DisplayOrientations::Landscape: rotation = DXGI_MODE_ROTATION_IDENTITY;  break;
+    case DisplayOrientations::Portrait: rotation = DXGI_MODE_ROTATION_ROTATE270; break;
+    case DisplayOrientations::LandscapeFlipped: rotation = DXGI_MODE_ROTATION_ROTATE180; break;
+    case DisplayOrientations::PortraitFlipped: rotation = DXGI_MODE_ROTATION_ROTATE90; break;
+    }
+    spriteBatch->SetRotation( rotation );
+
+    Windows phone 8 apps (see http://www.catalinzima.com/2012/12/handling-orientation-in-a-windows-phone-8-game/):
+
+    DXGI_MODE_ROTATION rotation = DXGI_MODE_ROTATION_UNSPECIFIED;
+    switch (m_orientation)
+    {
+    case DisplayOrientations::Portrait: rotation = DXGI_MODE_ROTATION_IDENTITY;  break;
+    case DisplayOrientations::Landscape: rotation = DXGI_MODE_ROTATION_ROTATE90; break;
+    case DisplayOrientations::PortraitFlipped: rotation = DXGI_MODE_ROTATION_ROTATE180; break;
+    case DisplayOrientations::LandscapeFlipped: rotation = DXGI_MODE_ROTATION_ROTATE270; break;
+    }
+    spriteBatch->SetRotation( rotation );
+
+    Windows Store apps for Windows 8.1:
+
+    spriteBatch->SetRotation( m_deviceResources->ComputeDisplayRotation() );
 
 Further reading:
 
@@ -1160,6 +1197,24 @@ Command-line options for the XWBTool:
         Includes entry friendly name strings in the wave bank for use with 'string' based versions of WaveBank::Play() and
         WaveBank::CreateInstance() rather than index-based versions.
 
+Voice management
+
+   Each instance of a SoundEffectInstance will allocate it's own source voice when played, which won't be released until it is
+   destroyed. Each time a one-shot sound is played from a SoundEffect or a WaveBank, a voice will be created or a previously used
+   one-shot voice will be reused if possible.
+
+   SetDefaultSampleRate() is used to control the sample rate for voices in the one-shot pool. This should be the same rate
+   as used by the majority of your content. It defaults to 44100 Hz.
+
+   TrimVoicePool() can be used to free up any source voices in the 'idle' list for one-shots, and will cause all non-playing
+   SoundEffectInstance objects to release their source voice. This is used for keeping the total source voice count under
+   a limit for performance or when switching sections where audio content formats change dramatically.
+
+   SetMaxVoicePool() can be used to set a limit on the number of one-shot source voices allocated and/or to put a limit on the
+   source voices available for SoundEffectInstance. If there are insufficient one-shot voices, those sounds will not be heard.
+   If there are insufficient voices for a SoundEffectInstance to play, then a C++ exception is thrown. These values default to
+   'unlimited'.
+
 Platform support:
 
     Windows 8.x, Windows Store apps, Windows phone 8, and Xbox One all include XAudio 2.8. Therefore, the
@@ -1217,6 +1272,12 @@ Further reading:
 ---------------
 RELEASE HISTORY
 ---------------
+
+January 24, 2014
+    DirectXTK for Audio updated with voice management and optional mastering volume limiter
+    Added orientation rotation support to SpriteBatch
+    Fixed a resource leak with GetDefaultTexture() used by some Effects
+    Code cleanup (removed DXGI_1_2_FORMATS control define; d2d1.h workaround not needed; ScopedObject typedef removed)
 
 December 24, 2013
     DirectXTK for Audio
