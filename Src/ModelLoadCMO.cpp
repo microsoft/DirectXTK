@@ -587,7 +587,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
             }
         }
 #else
-        bSkeleton;
+        UNREFERENCED_PARAMETER(bSkeleton);
 #endif
 
         bool enableSkinning = ( *nSkinVBs ) != 0;
@@ -755,7 +755,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
 
                 m.effect = fxFactoryDGSL->CreateDGSLEffect( info, nullptr );
 
-                auto dgslEffect = reinterpret_cast<DGSLEffect*>( m.effect.get() );
+                auto dgslEffect = static_cast<DGSLEffect*>( m.effect.get() );
                 dgslEffect->SetUVTransform( XMLoadFloat4x4( &m.pMaterial->UVTransform ) );
             }
             else
