@@ -527,8 +527,10 @@ void SpriteBatch::Impl::PrepareForRendering()
 
     deviceContext->IASetIndexBuffer(mDeviceResources->indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
 
-    // Set the viewport transform matrix.
-    XMMATRIX transformMatrix = mTransformMatrix * GetViewportTransform(deviceContext, mRotation);
+    // Set the transform matrix.
+    XMMATRIX transformMatrix = (mRotation == DXGI_MODE_ROTATION_UNSPECIFIED)
+                               ? mTransformMatrix
+                               : ( mTransformMatrix * GetViewportTransform(deviceContext, mRotation) );
 
     mContextResources->constantBuffer.SetData(deviceContext, transformMatrix);
 
