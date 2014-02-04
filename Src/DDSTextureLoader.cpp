@@ -186,6 +186,9 @@ static size_t BitsPerPixel( _In_ DXGI_FORMAT fmt )
     case DXGI_FORMAT_D32_FLOAT_S8X24_UINT:
     case DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS:
     case DXGI_FORMAT_X32_TYPELESS_G8X24_UINT:
+    case DXGI_FORMAT_Y416:
+    case DXGI_FORMAT_Y210:
+    case DXGI_FORMAT_Y216:
         return 64;
 
     case DXGI_FORMAT_R10G10B10A2_TYPELESS:
@@ -223,7 +226,14 @@ static size_t BitsPerPixel( _In_ DXGI_FORMAT fmt )
     case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
     case DXGI_FORMAT_B8G8R8X8_TYPELESS:
     case DXGI_FORMAT_B8G8R8X8_UNORM_SRGB:
+    case DXGI_FORMAT_AYUV:
+    case DXGI_FORMAT_Y410:
+    case DXGI_FORMAT_YUY2:
         return 32;
+
+    case DXGI_FORMAT_P010:
+    case DXGI_FORMAT_P016:
+        return 24;
 
     case DXGI_FORMAT_R8G8_TYPELESS:
     case DXGI_FORMAT_R8G8_UNORM:
@@ -239,8 +249,14 @@ static size_t BitsPerPixel( _In_ DXGI_FORMAT fmt )
     case DXGI_FORMAT_R16_SINT:
     case DXGI_FORMAT_B5G6R5_UNORM:
     case DXGI_FORMAT_B5G5R5A1_UNORM:
+    case DXGI_FORMAT_A8P8:
     case DXGI_FORMAT_B4G4R4A4_UNORM:
         return 16;
+
+    case DXGI_FORMAT_NV12:
+    case DXGI_FORMAT_420_OPAQUE:
+    case DXGI_FORMAT_NV11:
+        return 12;
 
     case DXGI_FORMAT_R8_TYPELESS:
     case DXGI_FORMAT_R8_UNORM:
@@ -248,6 +264,9 @@ static size_t BitsPerPixel( _In_ DXGI_FORMAT fmt )
     case DXGI_FORMAT_R8_SNORM:
     case DXGI_FORMAT_R8_SINT:
     case DXGI_FORMAT_A8_UNORM:
+    case DXGI_FORMAT_AI44:
+    case DXGI_FORMAT_IA44:
+    case DXGI_FORMAT_P8:
         return 8;
 
     case DXGI_FORMAT_R1_UNORM:
@@ -278,6 +297,21 @@ static size_t BitsPerPixel( _In_ DXGI_FORMAT fmt )
     case DXGI_FORMAT_BC7_UNORM_SRGB:
         return 8;
 
+#if defined(_XBOX_ONE) && defined(_TITLE)
+
+    case DXGI_FORMAT_R10G10B10_7E3_A2_FLOAT:
+    case DXGI_FORMAT_R10G10B10_6E4_A2_FLOAT:
+        return 32;
+
+#if MONOLITHIC
+    case DXGI_FORMAT_D16_UNORM_S8_UINT:
+    case DXGI_FORMAT_R16_UNORM_X8_TYPELESS:
+    case DXGI_FORMAT_X16_TYPELESS_G8_UINT:
+        return 24;
+#endif
+
+#endif // _XBOX_ONE && _TITLE
+
     default:
         return 0;
     }
@@ -299,8 +333,9 @@ static void GetSurfaceInfo( _In_ size_t width,
     size_t numRows = 0;
 
     bool bc = false;
-    bool packed  = false;
-    size_t bcnumBytesPerBlock = 0;
+    bool packed = false;
+    bool planar = false;
+    size_t bpe = 0;
     switch (fmt)
     {
     case DXGI_FORMAT_BC1_TYPELESS:
@@ -310,7 +345,7 @@ static void GetSurfaceInfo( _In_ size_t width,
     case DXGI_FORMAT_BC4_UNORM:
     case DXGI_FORMAT_BC4_SNORM:
         bc=true;
-        bcnumBytesPerBlock = 8;
+        bpe = 8;
         break;
 
     case DXGI_FORMAT_BC2_TYPELESS:
@@ -329,13 +364,44 @@ static void GetSurfaceInfo( _In_ size_t width,
     case DXGI_FORMAT_BC7_UNORM:
     case DXGI_FORMAT_BC7_UNORM_SRGB:
         bc = true;
-        bcnumBytesPerBlock = 16;
+        bpe = 16;
         break;
 
     case DXGI_FORMAT_R8G8_B8G8_UNORM:
     case DXGI_FORMAT_G8R8_G8B8_UNORM:
+    case DXGI_FORMAT_YUY2:
         packed = true;
+        bpe = 4;
         break;
+
+    case DXGI_FORMAT_Y210:
+    case DXGI_FORMAT_Y216:
+        packed = true;
+        bpe = 8;
+        break;
+
+    case DXGI_FORMAT_NV12:
+    case DXGI_FORMAT_420_OPAQUE:
+        planar = true;
+        bpe = 2;
+        break;
+
+    case DXGI_FORMAT_P010:
+    case DXGI_FORMAT_P016:
+        planar = true;
+        bpe = 4;
+        break;
+
+#if defined(_XBOX_ONE) && defined(_TITLE) && MONOLITHIC
+
+    case DXGI_FORMAT_D16_UNORM_S8_UINT:
+    case DXGI_FORMAT_R16_UNORM_X8_TYPELESS:
+    case DXGI_FORMAT_X16_TYPELESS_G8_UINT:
+        planar = true;
+        bpe = 4;
+        break;
+
+#endif
     }
 
     if (bc)
@@ -350,22 +416,36 @@ static void GetSurfaceInfo( _In_ size_t width,
         {
             numBlocksHigh = std::max<size_t>( 1, (height + 3) / 4 );
         }
-        rowBytes = numBlocksWide * bcnumBytesPerBlock;
+        rowBytes = numBlocksWide * bpe;
         numRows = numBlocksHigh;
+        numBytes = rowBytes * numBlocksHigh;
     }
     else if (packed)
     {
-        rowBytes = ( ( width + 1 ) >> 1 ) * 4;
+        rowBytes = ( ( width + 1 ) >> 1 ) * bpe;
         numRows = height;
+        numBytes = rowBytes * height;
+    }
+    else if ( fmt == DXGI_FORMAT_NV11 )
+    {
+        rowBytes = ( ( width + 1 ) >> 1 ) * 2;
+        numBytes = rowBytes * ( ( height + 1 ) >> 1 ) * 4;
+        numRows = height * 2; // Direct3D makes this simplifying assumption, although it is larger than the 4:1:1 data
+    }
+    else if (planar)
+    {
+        rowBytes = ( ( width + 1 ) >> 1 ) * bpe;
+        numBytes = ( rowBytes * height ) + ( ( rowBytes * height + 1 ) >> 1 );
+        numRows = height + ( ( height + 1 ) >> 1 );
     }
     else
     {
         size_t bpp = BitsPerPixel( fmt );
         rowBytes = ( width * bpp + 7 ) / 8; // round up to nearest byte
         numRows = height;
+        numBytes = rowBytes * height;
     }
 
-    numBytes = rowBytes * numRows;
     if (outNumBytes)
     {
         *outNumBytes = numBytes;
@@ -557,6 +637,11 @@ static DXGI_FORMAT GetDXGIFormat( const DDS_PIXELFORMAT& ddpf )
             return DXGI_FORMAT_G8R8_G8B8_UNORM;
         }
 
+        if (MAKEFOURCC('Y','U','Y','2') == ddpf.fourCC)
+        {
+            return DXGI_FORMAT_YUY2;
+        }
+
         // Check for D3DFORMAT enums being set here
         switch( ddpf.fourCC )
         {
@@ -650,7 +735,6 @@ static HRESULT FillInitData( _In_ size_t width,
 
     size_t NumBytes = 0;
     size_t RowBytes = 0;
-    size_t NumRows = 0;
     const uint8_t* pSrcBits = bitData;
     const uint8_t* pEndBits = bitData + bitSize;
 
@@ -667,7 +751,7 @@ static HRESULT FillInitData( _In_ size_t width,
                             format,
                             &NumBytes,
                             &RowBytes,
-                            &NumRows
+                            nullptr
                           );
 
             if ( (mipCount <= 1) || !maxsize || (w <= maxsize && h <= maxsize && d <= maxsize) )
@@ -1000,9 +1084,19 @@ static HRESULT CreateTextureFromDDS( _In_ ID3D11Device* d3dDevice,
            return HRESULT_FROM_WIN32( ERROR_INVALID_DATA );
         }
 
-        if (BitsPerPixel( d3d10ext->dxgiFormat ) == 0)
+        switch( d3d10ext->dxgiFormat )
         {
+        case DXGI_FORMAT_AI44:
+        case DXGI_FORMAT_IA44:
+        case DXGI_FORMAT_P8:
+        case DXGI_FORMAT_A8P8:
             return HRESULT_FROM_WIN32( ERROR_NOT_SUPPORTED );
+
+        default:
+            if ( BitsPerPixel( d3d10ext->dxgiFormat ) == 0 )
+            {
+                return HRESULT_FROM_WIN32( ERROR_NOT_SUPPORTED );
+            }
         }
            
         format = d3d10ext->dxgiFormat;

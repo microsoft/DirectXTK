@@ -101,6 +101,9 @@ extern __declspec(selectany) const DDS_PIXELFORMAT DDSPF_R8G8_B8G8 =
 extern __declspec(selectany) const DDS_PIXELFORMAT DDSPF_G8R8_G8B8 =
     { sizeof(DDS_PIXELFORMAT), DDS_FOURCC, MAKEFOURCC('G','R','G','B'), 0, 0, 0, 0, 0 };
 
+extern __declspec(selectany) const DDS_PIXELFORMAT DDSPF_YUY2 =
+    { sizeof(DDS_PIXELFORMAT), DDS_FOURCC, MAKEFOURCC('Y','U','Y','2'), 0, 0, 0, 0, 0 };
+
 extern __declspec(selectany) const DDS_PIXELFORMAT DDSPF_A8R8G8B8 =
     { sizeof(DDS_PIXELFORMAT), DDS_RGBA, 0, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000 };
 
