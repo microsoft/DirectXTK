@@ -612,13 +612,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateGeoSphere(_In_ ID3
             uint16_t iv1 = indices[iTriangle*3+1];
             uint16_t iv2 = indices[iTriangle*3+2];
             
-            // The existing vertices
-            XMFLOAT3 v0 = vertexPositions[iv0];
-            XMFLOAT3 v1 = vertexPositions[iv1];
-            XMFLOAT3 v2 = vertexPositions[iv2];
-
             // Get the new vertices
-
             XMFLOAT3 v01; // vertex on the midpoint of v0 and v1
             XMFLOAT3 v12; // ditto v1 and v2
             XMFLOAT3 v20; // ditto v2 and v0

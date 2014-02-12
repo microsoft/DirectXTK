@@ -142,6 +142,9 @@ EffectLights::EffectLights()
 }
 
 
+#pragma prefast(push)
+#pragma prefast(disable:22103, "PREFAST doesn't understand buffer is bounded by a static const value even with SAL" )
+
 // Initializes constant buffer fields to match the current lighting state.
 _Use_decl_annotations_ void EffectLights::InitializeConstants(XMVECTOR& specularColorAndPowerConstant, XMVECTOR* lightDirectionConstant, XMVECTOR* lightDiffuseConstant, XMVECTOR* lightSpecularConstant)
 {
@@ -158,6 +161,8 @@ _Use_decl_annotations_ void EffectLights::InitializeConstants(XMVECTOR& specular
         lightSpecularConstant[i] = lightEnabled[i] ? lightSpecularColor[i] : g_XMZero;
     }
 }
+
+#pragma prefast(pop)
 
 
 // Lazily recomputes derived parameter values used by shader lighting calculations.
@@ -238,6 +243,9 @@ _Use_decl_annotations_ void EffectLights::SetConstants(int& dirtyFlags, EffectMa
 }
 
 
+#pragma prefast(push)
+#pragma prefast(disable:26015, "PREFAST doesn't understand that ValidateLightIndex bounds whichLight" )
+
 // Helper for turning one of the directional lights on or off.
 _Use_decl_annotations_ int EffectLights::SetLightEnabled(int whichLight, bool value, XMVECTOR* lightDiffuseConstant, XMVECTOR* lightSpecularConstant)
 {
@@ -305,6 +313,8 @@ int XM_CALLCONV EffectLights::SetLightSpecularColor(int whichLight, FXMVECTOR va
     
     return 0;
 }
+
+#pragma prefast(pop)
 
 
 // Parameter validation helper.

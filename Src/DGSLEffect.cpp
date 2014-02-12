@@ -469,6 +469,7 @@ void DGSLEffect::Impl::GetVertexShaderBytecode(_Out_ void const** pShaderByteCod
     int permutation = GetCurrentVSPermutation();
 
     assert( permutation < DGSLEffectTraits::VertexShaderCount );
+    _Analysis_assume_( permutation < DGSLEffectTraits::VertexShaderCount );
 
     auto shader = DGSLEffectTraits::VertexShaderBytecode[permutation];
     *pShaderByteCode = shader.code;
