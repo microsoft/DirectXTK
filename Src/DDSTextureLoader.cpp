@@ -428,9 +428,9 @@ static void GetSurfaceInfo( _In_ size_t width,
     }
     else if ( fmt == DXGI_FORMAT_NV11 )
     {
-        rowBytes = ( ( width + 1 ) >> 1 ) * 2;
-        numBytes = rowBytes * ( ( height + 1 ) >> 1 ) * 4;
+        rowBytes = ( ( width + 3 ) >> 2 ) * 4;
         numRows = height * 2; // Direct3D makes this simplifying assumption, although it is larger than the 4:1:1 data
+        numBytes = rowBytes * numRows;
     }
     else if (planar)
     {
