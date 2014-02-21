@@ -53,7 +53,7 @@ namespace DirectX
         va_list args;
         va_start( args, format );
 
-        char buff[1024];
+        char buff[1024]={0};
         vsprintf_s( buff, format, args );
         OutputDebugStringA( buff );
 #else

@@ -1157,7 +1157,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateTetrahedron(_In_ I
     // Create the primitive object.
     std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
     
-    primitive->pImpl->Initialize(deviceContext, vertices, indices, rhcoords);
+    primitive->pImpl->Initialize(deviceContext, vertices, indices, !rhcoords);
 
     return primitive;
 }
@@ -1226,7 +1226,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateOctahedron(_In_ ID
     // Create the primitive object.
     std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
     
-    primitive->pImpl->Initialize(deviceContext, vertices, indices, rhcoords);
+    primitive->pImpl->Initialize(deviceContext, vertices, indices, !rhcoords);
 
     return primitive;
 }
@@ -1360,7 +1360,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateDodecahedron(_In_ 
     // Create the primitive object.
     std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
     
-    primitive->pImpl->Initialize(deviceContext, vertices, indices, rhcoords);
+    primitive->pImpl->Initialize(deviceContext, vertices, indices, !rhcoords);
 
     return primitive;
 }
@@ -1450,7 +1450,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateIcosahedron(_In_ I
     // Create the primitive object.
     std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
     
-    primitive->pImpl->Initialize(deviceContext, vertices, indices, rhcoords);
+    primitive->pImpl->Initialize(deviceContext, vertices, indices, !rhcoords);
 
     return primitive;
 }
