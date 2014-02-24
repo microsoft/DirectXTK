@@ -95,6 +95,9 @@
     <ClInclude Include="Audio\SoundCommon.h">
       <Filter>Audio</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\DirectXHelpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\AlphaTestEffect.cpp">

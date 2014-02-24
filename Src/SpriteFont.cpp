@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "SpriteFont.h"
+#include "DirectXHelpers.h"
 #include "BinaryReader.h"
 
 using namespace DirectX;

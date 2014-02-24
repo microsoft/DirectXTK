@@ -15,6 +15,7 @@
 #include "Model.h"
 
 #include "CommonStates.h"
+#include "DirectXHelpers.h"
 #include "Effects.h"
 #include "PlatformHelpers.h"
 

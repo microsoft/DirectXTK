@@ -13,6 +13,7 @@
 
 #include "pch.h"
 #include "PrimitiveBatch.h"
+#include "DirectXHelpers.h"
 #include "PlatformHelpers.h"
 
 using namespace DirectX;

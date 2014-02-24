@@ -13,6 +13,7 @@
 
 #pragma once
 
+#include "DirectXHelpers.h"
 #include "PlatformHelpers.h"
 
 

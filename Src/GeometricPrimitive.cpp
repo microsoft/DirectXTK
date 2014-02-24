@@ -15,6 +15,7 @@
 #include "GeometricPrimitive.h"
 #include "Effects.h"
 #include "CommonStates.h"
+#include "DirectXHelpers.h"
 #include "VertexTypes.h"
 #include "SharedResourcePool.h"
 #include "Bezier.h"

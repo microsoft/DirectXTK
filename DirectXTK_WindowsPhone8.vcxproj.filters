@@ -93,6 +93,9 @@
     <ClInclude Include="Audio\SoundCommon.h">
       <Filter>Audio</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\DirectXHelpers.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\CommonStates.cpp">

@@ -17,9 +17,6 @@
 
 #include <exception>
 
-#if defined(_DEBUG) || defined(PROFILE)
-#pragma comment(lib,"dxguid.lib")
-#endif
 
 namespace DirectX
 {
@@ -30,19 +27,6 @@ namespace DirectX
         {
             throw std::exception();
         }
-    }
-
-
-    // Helper sets a D3D resource name string (used by PIX and debug layer leak reporting).
-    template<UINT TNameLength>
-    inline void SetDebugObjectName(_In_ ID3D11DeviceChild* resource, _In_z_ const char (&name)[TNameLength])
-    {
-        #if !defined(NO_D3D11_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
-            resource->SetPrivateData(WKPDID_D3DDebugObjectName, TNameLength - 1, name);
-        #else
-            UNREFERENCED_PARAMETER(resource);
-            UNREFERENCED_PARAMETER(name);
-        #endif
     }
 
 

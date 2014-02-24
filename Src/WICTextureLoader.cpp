@@ -38,6 +38,7 @@
 
 #include "WICTextureLoader.h"
 
+#include "DirectXHelpers.h"
 #include "PlatformHelpers.h"
 
 using Microsoft::WRL::ComPtr;

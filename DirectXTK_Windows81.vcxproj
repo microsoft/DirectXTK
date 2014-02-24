@@ -33,6 +33,7 @@
     <ClInclude Include="Inc\Audio.h" />
     <ClInclude Include="Inc\CommonStates.h" />
     <ClInclude Include="Inc\DDSTextureLoader.h" />
+    <ClInclude Include="Inc\DirectXHelpers.h" />
     <ClInclude Include="Inc\Effects.h" />
     <ClInclude Include="Inc\GeometricPrimitive.h" />
     <ClInclude Include="Inc\Model.h" />

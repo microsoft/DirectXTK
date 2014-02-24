@@ -14,6 +14,7 @@
 #include "pch.h"
 #include "CommonStates.h"
 #include "DemandCreate.h"
+#include "DirectXHelpers.h"
 #include "SharedResourcePool.h"
 
 using namespace DirectX;

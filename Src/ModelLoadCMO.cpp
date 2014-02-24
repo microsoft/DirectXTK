@@ -18,6 +18,7 @@
 #include "Effects.h"
 #include "VertexTypes.h"
 
+#include "DirectXHelpers.h"
 #include "PlatformHelpers.h"
 #include "BinaryReader.h"
 

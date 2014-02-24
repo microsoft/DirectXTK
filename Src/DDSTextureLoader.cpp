@@ -23,6 +23,7 @@
 #include "DDSTextureLoader.h"
 
 #include "dds.h"
+#include "DirectXHelpers.h"
 #include "PlatformHelpers.h"
 
 using namespace DirectX;
