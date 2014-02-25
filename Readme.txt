@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-January 24, 2014
+February 24, 2014
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Windows Store apps, Windows Phone 8 applications,
@@ -27,10 +27,11 @@ Inc\
 
     Audio.h - low-level audio API using XAudio2 (DirectXTK for Audio public header)
     CommonStates.h - factory providing commonly used D3D state objects
+    DirectXHelpers.h - misc C++ helpers for D3D programming
     DDSTextureLoader.h - light-weight DDS file texture loader
     Effects.h - set of built-in shaders for common rendering tasks
     GeometricPrimitive.h - draws basic shapes such as cubes and spheres
-    Model.h - draws rigid and skinned meshes loaded from .CMO or .SDKMESH files
+    Model.h - draws meshes loaded from .CMO or .SDKMESH files
     PrimitiveBatch.h - simple and efficient way to draw user primitives
     ScreenGrab.h - light-weight screen shot saver
     SimpleMath.h - simplified C++ wrapper for DirectXMath
@@ -201,6 +202,18 @@ Orientation:
     Windows Store apps for Windows 8.1:
 
     spriteBatch->SetRotation( m_deviceResources->ComputeDisplayRotation() );
+
+3D sprites:
+
+    As explained in this article, you can use SpriteBatch to render particles and billboard text in 3D as well
+    as the default 2D behavior.
+
+    http://blogs.msdn.com/b/shawnhar/archive/2011/01/12/spritebatch-billboards-in-a-3d-world.aspx
+
+    To simplify this application, you can set the rotation mode so that SpriteBatch doesn't apply a view transform
+    matrix internally and assumes the full transform is accomplished by Begin's matrix parameter.
+
+    spriteBatch->SetRotation( DXGI_MODE_ROTATION_UNSPECIFIED );
 
 Further reading:
 
@@ -780,6 +793,39 @@ Available states:
 
 
 
+--------------
+DirectXHelpers
+--------------
+
+C++ helpers for writing D3D code.
+
+Exception-safe Direct3D 11 resource locking:
+
+    Modern C++ development strongly encourages use of the RAII pattern for exception-safe resource management, ensuring that resources
+    are properly cleaned up if C++ exceptions are thrown. Even without exception handling, it's generally cleaner code to use RAII and
+    rely on the C++ scope variables rules to handle cleanup. Most of these cases are handled by the STL classes such as std::unique_ptr,
+    std::shared_ptr, etc. and the recommended COM smart pointer Microsoft::WRL::ComPtr for Direct3D reference counted objects. One case
+    that isn't so easily managed with existing classes is when you are mapping staging/dynamic Direct3D 11 resources. MapGuard solves
+    this problem, and is modeled after std::lock_mutex.
+
+    MapGuard map( context.Get(), tex.Get(), 0, D3D11_MAP_WRITE, 0 );
+ 
+    for( size_t j = 0; j < 128; ++j )
+    {
+        auto ptr = map.scanline(j);
+        ...
+    }
+
+Debug object naming:
+
+   To help track down resource leaks, the Direct3D 11 debug layer allows you to provide ASCII debug names to Direct3D 11 objects. This
+   is done with a specific GUID and the SetPrivateData method. Since you typically want to exclude this for release builds, it can get
+   somewhat messy to add these to code. The SetDebugObjectName template greatly simplifies this for static debug name strings.
+
+   SetDebugObjectName( tex.Get(), "MyTexture" );
+
+
+
 -----------
 VertexTypes
 -----------
@@ -832,6 +878,12 @@ If maxsize is 0 and the initial attempt to create the texture fails, it will att
 to trim off any mipmap levels larger than the minimum required size for the given
 device Feature Level and retry. Note this requires the .dds file contains mipmaps to
 retry with a smaller size.
+
+If a Direct3D 11 context is provided and a shader resource view is requested (i.e.
+textureView is non-null), then the texture will be created to support auto-generated
+mipmaps and will have GenerateMips called on it before returning. If no context is
+provided (i.e. d3dContext is null) or the pixel format is unsupported for auto-gen
+mips by the current device, then the resulting texture will have only a single level.
 
 DDSTextureLoader will load BGR 5:6:5 and BGRA 5:5:5:1 DDS files, but these formats will
 fail to create on a system with DirectX 11.0 Runtime. The DXGI 1.2 version of
@@ -1272,6 +1324,14 @@ Further reading:
 ---------------
 RELEASE HISTORY
 ---------------
+
+February 24, 2014
+    DirectXHelper: new utility header with MapGuard and public version of SetDebugObjectName template
+    DDSTextureLoader: Optional support for auto-gen mipmaps
+    DDSTextureLoader/ScreenGrab: support for Direct3D 11 video formats including legacy "YUY2" DDS files
+    GeometricPrimtive: Handedness fix for tetrahedron, octahedron, dodecahedron, and icosahedron
+    SpriteBatch::SetRotation(DXGI_MODE_ROTATION_UNSPECIFIED) to disable viewport matrix
+    XboxDDSTextureLoader: optional forceSRGB parameter
 
 January 24, 2014
     DirectXTK for Audio updated with voice management and optional mastering volume limiter
