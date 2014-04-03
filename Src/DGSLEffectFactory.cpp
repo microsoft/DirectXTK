@@ -20,7 +20,7 @@
 
 #include <string.h>
 
-#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP)
+#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP) || (_WIN32_WINNT > _WIN32_WINNT_WIN8)
 #include "WICTextureLoader.h"
 #endif
 
@@ -335,7 +335,7 @@ void DGSLEffectFactory::Impl::CreateTexture( const WCHAR* name, ID3D11DeviceCont
         wcscpy_s( fullName, mPath );
         wcscat_s( fullName, name );
 
-#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP)
+#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP) || (_WIN32_WINNT > _WIN32_WINNT_WIN8)
         WCHAR ext[_MAX_EXT];
         _wsplitpath_s( name, nullptr, 0, nullptr, 0, nullptr, 0, ext, _MAX_EXT );
 
