@@ -4,10 +4,10 @@ DirectXTK - the DirectX Tool Kit
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-February 24, 2014
+April 3, 2014
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
-writing Direct3D 11 C++ code for Windows Store apps, Windows Phone 8 applications,
+writing Direct3D 11 C++ code for Windows Store apps, Windows phone 8.x applications,
 Xbox One exclusive apps, Xbox One hub apps, Windows 8.x Win32 desktop applications,
 Windows 7 applications, and Windows Vista Direct3D 11.0 applications.
 
@@ -187,7 +187,7 @@ Orientation:
     }
     spriteBatch->SetRotation( rotation );
 
-    Windows phone 8 apps (see http://www.catalinzima.com/2012/12/handling-orientation-in-a-windows-phone-8-game/):
+    Windows phone 8.0 apps (see http://www.catalinzima.com/2012/12/handling-orientation-in-a-windows-phone-8-game/):
 
     DXGI_MODE_ROTATION rotation = DXGI_MODE_ROTATION_UNSPECIFIED;
     switch (m_orientation)
@@ -321,7 +321,7 @@ Command-line options for the MakeSpriteFont tool:
             Rgba32
                 High quality and supports multicolored fonts, but wastes space.
             Bgra4444
-                Good choice for color fonts on Windows Store apps and Windows Phone
+                Good choice for color fonts on Windows Store apps and Windows phone
                 platforms, as this format requires the DirectX 11.1 Runtime and a
                 WDDM 1.2 driver.
             CompressedMono
@@ -913,8 +913,8 @@ WICTextureLoader.h contains a loader for BMP, JPEG, PNG, TIFF, GIF, HD Photo, an
 other WIC-supported image formats. This performs any required pixel format conversions
 or image resizing using WIC at load time as well.
 
-NOTE: WICTextureLoader is not supported on Windows Phone 8, because WIC is not 
-available on that platform.
+NOTE: WICTextureLoader is not supported on Windows phone 8.0 because WIC is not 
+available on that platform. It is available on Windows phone starting in version 8.1.
 
 NOTE: WICTextureLoader cannot load .TGA files unless the system has a 3rd party WIC
 codec installed. You must use the DirectXTex library for TGA file format support
@@ -988,8 +988,8 @@ strange looking screenshot files). The caller can also provide a specific
 pixel target format GUID to use as well. The caller provides the GUID of the
 specific file container format to use.
 
-NOTE: SaveWICTextureToFile is not supported on Windows Phone 8, because WIC is not 
-available on that platform.
+NOTE: SaveWICTextureToFile is not supported on Windows phone 8.0 because WIC is not 
+available on that platform. It is available on Windows phone starting in version 8.1.
 
 Capturing a screenshot:
 
@@ -1033,7 +1033,7 @@ Why wrap DirectXMath?
 DirectXMath provides highly optimized vector and matrix math functions, which 
 take advantage of SSE SIMD intrinsics when compiled for x86/x64, or the ARM 
 NEON instruction set when compiled for an ARM platform such as Windows RT or 
-Windows Phone. The downside of being designed for efficient SIMD usage is that 
+Windows phone. The downside of being designed for efficient SIMD usage is that 
 DirectXMath can be somewhat complicated to work with. Developers must be aware 
 of correct type usage (understanding the difference between SIMD register types 
 such as XMVECTOR vs. memory storage types such as XMFLOAT4), must take care to 
@@ -1269,11 +1269,12 @@ Voice management
 
 Platform support:
 
-    Windows 8.x, Windows Store apps, Windows phone 8, and Xbox One all include XAudio 2.8. Therefore, the
+    Windows 8.x, Windows Store apps, Windows phone 8.x, and Xbox One all include XAudio 2.8. Therefore, the
     standard DirectXTK.lib includes DirectXTK for Audio for all these platforms.
 
         * DirectXTK_Windows81
         * DirectXTK_Windows8
+        * DirectXTK_WindowsPhone81
         * DirectXTK_WindowsPhone8
         * DirectXTK_XboxOneXDK
         * DirectXTK_XboxOneADK
@@ -1324,6 +1325,9 @@ Further reading:
 ---------------
 RELEASE HISTORY
 ---------------
+
+April 3, 2014
+    Windows phone 8.1 platform support
 
 February 24, 2014
     DirectXHelper: new utility header with MapGuard and public version of SetDebugObjectName template
@@ -1395,7 +1399,7 @@ November 15, 2012
     Cleaned up warning level 4 warnings
 
 October 30, 2012
-    Added project files for Windows Phone 8
+    Added project files for Windows phone 8
 
 October 12, 2012
     Added PrimitiveBatch for drawing user primitives
