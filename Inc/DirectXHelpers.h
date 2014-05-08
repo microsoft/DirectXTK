@@ -13,7 +13,7 @@
 
 #pragma once
 
-#if defined(_XBOX_ONE) && defined(_TITLE) && MONOLITHIC
+#if defined(_XBOX_ONE) && defined(_TITLE)
 #include <d3d11_x.h>
 #define NO_D3D11_DEBUG_NAME
 #else

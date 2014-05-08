@@ -304,12 +304,10 @@ static size_t BitsPerPixel( _In_ DXGI_FORMAT fmt )
     case DXGI_FORMAT_R10G10B10_6E4_A2_FLOAT:
         return 32;
 
-#if MONOLITHIC
     case DXGI_FORMAT_D16_UNORM_S8_UINT:
     case DXGI_FORMAT_R16_UNORM_X8_TYPELESS:
     case DXGI_FORMAT_X16_TYPELESS_G8_UINT:
         return 24;
-#endif
 
 #endif // _XBOX_ONE && _TITLE
 
@@ -393,7 +391,7 @@ static void GetSurfaceInfo( _In_ size_t width,
         bpe = 4;
         break;
 
-#if defined(_XBOX_ONE) && defined(_TITLE) && MONOLITHIC
+#if defined(_XBOX_ONE) && defined(_TITLE)
 
     case DXGI_FORMAT_D16_UNORM_S8_UINT:
     case DXGI_FORMAT_R16_UNORM_X8_TYPELESS:
