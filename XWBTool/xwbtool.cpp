@@ -804,9 +804,10 @@ void FileNameToIdentifier( _Inout_updates_all_(count) WCHAR* str, size_t count )
     size_t j = 0;
     for( WCHAR* c = str; j < count && *c != 0; ++c, ++j )
     {
-        if ( *c == ' ' || *c == '.' )
-            *c = '_';
-        *c = towupper( *c );
+        WCHAR t = towupper( *c );
+        if ( !iswdigit(t) && !iswalpha(t) )
+            t = '_';
+        *c = t;
     }
 }
 
