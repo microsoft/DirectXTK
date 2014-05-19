@@ -299,10 +299,7 @@ void DynamicSoundEffectInstance::Resume()
 
 void DynamicSoundEffectInstance::SetVolume( float volume )
 {
-    if ( pImpl->mBase.voice )
-    {
-        pImpl->mBase.voice->SetVolume( volume );
-    }
+    pImpl->mBase.SetVolume( volume );
 }
 
 

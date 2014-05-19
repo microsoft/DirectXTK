@@ -73,6 +73,9 @@ namespace DirectX
             voice( nullptr ),
             state( STOPPED ),
             engine( nullptr ),
+            mVolume( 1.f ),
+            mPitch( 1.f ),
+            mPan( 0.f ),
             mFlags( SoundEffectInstance_Default ),
             mDirectVoice( nullptr ),
             mReverbVoice( nullptr )
@@ -127,12 +130,29 @@ namespace DirectX
             {
                 if ( state == PAUSED )
                 {
-                    state = PLAYING;
                     HRESULT hr = voice->Start( 0 );
                     ThrowIfFailed( hr );
+                    state = PLAYING;
                 }
                 else if ( state != PLAYING )
                 {
+                    if ( mVolume != 1.f )
+                    {
+                        HRESULT hr = voice->SetVolume( mVolume );
+                        ThrowIfFailed( hr );
+                    }
+
+                    if ( mPitch != 1.f )
+                    {
+                        HRESULT hr = voice->SetFrequencyRatio( mPitch );
+                        ThrowIfFailed( hr );
+                    }
+
+                    if ( mPan != 0.f )
+                    {
+                        SetPan( mPan );
+                    }
+
                     HRESULT hr = voice->Start( 0 );
                     ThrowIfFailed( hr );
                     state = PLAYING;
@@ -186,6 +206,19 @@ namespace DirectX
             }
         }
 
+        void SetVolume( float volume )
+        {
+            assert( volume >= -XAUDIO2_MAX_VOLUME_LEVEL && volume <= XAUDIO2_MAX_VOLUME_LEVEL );
+
+            mVolume = volume;
+
+            if ( voice )
+            {
+                HRESULT hr = voice->SetVolume( volume );
+                ThrowIfFailed( hr );
+            }
+        }
+
         void SetPitch( float pitch )
         {
             if ( ( mFlags & SoundEffectInstance_NoSetPitch ) && pitch != 1.f )
@@ -195,6 +228,8 @@ namespace DirectX
             }
 
             assert( pitch >= XAUDIO2_MIN_FREQ_RATIO && pitch <= XAUDIO2_DEFAULT_FREQ_RATIO );
+
+            mPitch = pitch;
 
             if ( voice )
             {
@@ -308,6 +343,9 @@ namespace DirectX
         AudioEngine*                engine;
 
     private:
+        float                       mVolume;
+        float                       mPitch;
+        float                       mPan;
         SOUND_EFFECT_INSTANCE_FLAGS mFlags;
         IXAudio2Voice*              mDirectVoice;
         IXAudio2Voice*              mReverbVoice;

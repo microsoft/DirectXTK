@@ -642,11 +642,13 @@ void SoundEffectInstanceBase::SetPan( float pan )
         throw std::exception( "SetPan" );
     }
 
-    if ( !voice )
-        return;
-
     pan = std::min<float>( 1.f, pan );
     pan = std::max<float>( -1.f, pan );
+
+    mPan = pan;
+
+    if ( !voice )
+        return;
 
     float left = ( pan >= 0 ) ? ( 1.f - pan ) : 1.f;
     float right = ( pan <= 0 ) ? ( - pan - 1.f ) : 1.f;
