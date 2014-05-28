@@ -381,7 +381,7 @@ HRESULT AudioEngine::Impl::Reset( const WAVEFORMATEX* wfx, const wchar_t* device
     if ( mEngineFlags & AudioEngine_Debug )
     {
         eflags |= XAUDIO2_DEBUG_ENGINE;
-        OutputDebugStringA( "INFO: XAudio 2.7 debugging enabled\n" );
+        DebugTrace( "INFO: XAudio 2.7 debugging enabled\n" );
     }
 #endif
 
@@ -406,7 +406,7 @@ HRESULT AudioEngine::Impl::Reset( const WAVEFORMATEX* wfx, const wchar_t* device
         debug.TraceMask = XAUDIO2_LOG_ERRORS | XAUDIO2_LOG_WARNINGS;
         debug.BreakMask = XAUDIO2_LOG_ERRORS;
         xaudio2->SetDebugConfiguration( &debug, 0 );
-        OutputDebugStringA( "INFO: XAudio 2.8 debugging enabled\n" );
+        DebugTrace( "INFO: XAudio 2.8 debugging enabled\n" );
     }
 #endif
 
