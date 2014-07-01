@@ -447,7 +447,7 @@ public:
     HRESULT Open( _In_z_ const wchar_t* szFileName );
     void Close();
 
-    HRESULT GetFormat( _In_ uint32_t index, _Out_ WAVEFORMATEX* pFormat, _In_ size_t maxsize ) const;
+    HRESULT GetFormat( _In_ uint32_t index, _Out_writes_bytes_(maxsize) WAVEFORMATEX* pFormat, _In_ size_t maxsize ) const;
 
     HRESULT GetWaveData( _In_ uint32_t index, _Outptr_ const uint8_t** pData, _Out_ uint32_t& dataSize ) const;
 
@@ -971,7 +971,11 @@ HRESULT WaveBankReader::Impl::GetFormat( uint32_t index, WAVEFORMATEX* pFormat, 
                 return HRESULT_FROM_WIN32( ERROR_MORE_DATA );
 
             pFormat->wFormatTag = WAVE_FORMAT_PCM;
-            pFormat->cbSize = 0;
+
+            if ( maxsize >= sizeof(WAVEFORMATEX) )
+            {
+                pFormat->cbSize = 0;
+            }
             break;
 
         case MINIWAVEFORMAT::TAG_ADPCM:

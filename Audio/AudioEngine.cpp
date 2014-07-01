@@ -1266,7 +1266,7 @@ void AudioEngine::Resume()
 
 void AudioEngine::SetReverb( AUDIO_ENGINE_REVERB reverb )
 {
-    if ( reverb >= Reverb_MAX )
+    if ( reverb < 0 || reverb >= Reverb_MAX )
         throw std::out_of_range( "AudioEngine::SetReverb" );
 
     if ( reverb == Reverb_Off )

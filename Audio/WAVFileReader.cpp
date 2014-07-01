@@ -410,7 +410,7 @@ static HRESULT WaveFindLoopInfo( _In_reads_bytes_(wavDataSize) const uint8_t* wa
 
 //--------------------------------------------------------------------------------------
 static HRESULT WaveFindTable( _In_reads_bytes_(wavDataSize) const uint8_t* wavData, _In_ size_t wavDataSize, _In_ uint32_t tag,
-                              _Outptr_ const uint32_t** pData, _Out_ uint32_t* dataCount )
+                              _Outptr_result_maybenull_ const uint32_t** pData, _Out_ uint32_t* dataCount )
 {
     if ( !wavData || !pData || !dataCount )
         return E_POINTER;

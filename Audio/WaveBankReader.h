@@ -53,7 +53,7 @@ namespace DirectX
 
         uint32_t BankAudioSize() const;
 
-        HRESULT GetFormat( _In_ uint32_t index, _Out_ WAVEFORMATEX* pFormat, _In_ size_t maxsize ) const;
+        HRESULT GetFormat( _In_ uint32_t index, _Out_writes_bytes_(maxsize) WAVEFORMATEX* pFormat, _In_ size_t maxsize ) const;
 
         HRESULT GetWaveData( _In_ uint32_t index, _Outptr_ const uint8_t** pData, _Out_ uint32_t& dataSize ) const;
 
