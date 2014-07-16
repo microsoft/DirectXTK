@@ -92,32 +92,32 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>Bin\Desktop_2010\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Desktop_2010\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>Bin\Desktop_2010_DXSDK\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\Desktop_2010_DXSDK\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DirectXTKAudioDX</TargetName>
     <ExecutablePath>$(ExecutablePath);$(DXSDK_DIR)Utilities\bin\x86</ExecutablePath>
     <IncludePath>$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>Bin\Desktop_2010\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Desktop_2010\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>Bin\Desktop_2010_DXSDK\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\Desktop_2010_DXSDK\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DirectXTKAudioDX</TargetName>
     <ExecutablePath>$(ExecutablePath);$(DXSDK_DIR)Utilities\bin\x64;$(DXSDK_DIR)Utilities\bin\x86</ExecutablePath>
     <IncludePath>$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x64;</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>Bin\Desktop_2010\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Desktop_2010\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>Bin\Desktop_2010_DXSDK\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\Desktop_2010_DXSDK\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DirectXTKAudioDX</TargetName>
     <ExecutablePath>$(ExecutablePath);$(DXSDK_DIR)Utilities\bin\x86</ExecutablePath>
     <IncludePath>$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>Bin\Desktop_2010\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Desktop_2010\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>Bin\Desktop_2010_DXSDK\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\Desktop_2010_DXSDK\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DirectXTKAudioDX</TargetName>
     <ExecutablePath>$(ExecutablePath);$(DXSDK_DIR)Utilities\bin\x64;$(DXSDK_DIR)Utilities\bin\x86</ExecutablePath>
     <IncludePath>$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
