@@ -82,6 +82,9 @@ namespace DirectX
         void SetRotation( DXGI_MODE_ROTATION mode );
         DXGI_MODE_ROTATION GetRotation() const;
 
+        // Set viewport for sprite transformation
+        void SetViewport( const D3D11_VIEWPORT& viewPort );
+
     private:
         // Private implementation.
         class Impl;

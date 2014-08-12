@@ -201,8 +201,7 @@ static DXGI_FORMAT MakeSRGB( _In_ DXGI_FORMAT format )
 
 
 //--------------------------------------------------------------------------------------
-static HRESULT CreateD3DResources( _In_ ID3D11Device1* d3dDevice,
-                                   _In_ ID3DXboxPerformanceDevice* perfDevice,
+static HRESULT CreateD3DResources( _In_ ID3D11DeviceX* d3dDevice,
                                    _In_ const DDS_HEADER_XBOX* xboxext,
                                    _In_ uint32_t width,
                                    _In_ uint32_t height,
@@ -215,7 +214,7 @@ static HRESULT CreateD3DResources( _In_ ID3D11Device1* d3dDevice,
                                    _Outptr_opt_ ID3D11Resource** texture,
                                    _Outptr_opt_ ID3D11ShaderResourceView** textureView )
 {
-    if ( !d3dDevice || !perfDevice || !grfxMemory )
+    if ( !d3dDevice || !grfxMemory )
         return E_POINTER;
 
     HRESULT hr = E_FAIL;
@@ -240,7 +239,7 @@ static HRESULT CreateD3DResources( _In_ ID3D11Device1* d3dDevice,
                 desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 
                 ID3D11Texture1D* tex = nullptr;
-                hr = perfDevice->CreatePlacementTexture1D( &desc, xboxext->tileMode, 0, grfxMemory, &tex );
+                hr = d3dDevice->CreatePlacementTexture1D( &desc, xboxext->tileMode, 0, grfxMemory, &tex );
                 if (SUCCEEDED( hr ) && tex != 0)
                 {
                     if (textureView != 0)
@@ -300,7 +299,7 @@ static HRESULT CreateD3DResources( _In_ ID3D11Device1* d3dDevice,
                 desc.MiscFlags = ( isCubeMap ) ? D3D11_RESOURCE_MISC_TEXTURECUBE : 0;
 
                 ID3D11Texture2D* tex = nullptr;
-                hr = perfDevice->CreatePlacementTexture2D( &desc, xboxext->tileMode, 0, grfxMemory, &tex );
+                hr = d3dDevice->CreatePlacementTexture2D( &desc, xboxext->tileMode, 0, grfxMemory, &tex );
                 if (SUCCEEDED( hr ) && tex != 0)
                 {
                     if (textureView != 0)
@@ -374,7 +373,7 @@ static HRESULT CreateD3DResources( _In_ ID3D11Device1* d3dDevice,
                 desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 
                 ID3D11Texture3D* tex = nullptr;
-                hr = perfDevice->CreatePlacementTexture3D( &desc, xboxext->tileMode, 0, grfxMemory, &tex );
+                hr = d3dDevice->CreatePlacementTexture3D( &desc, xboxext->tileMode, 0, grfxMemory, &tex );
                 if (SUCCEEDED( hr ) && tex != 0)
                 {
                     if (textureView != 0)
@@ -416,8 +415,7 @@ static HRESULT CreateD3DResources( _In_ ID3D11Device1* d3dDevice,
 
 
 //--------------------------------------------------------------------------------------
-static HRESULT CreateTextureFromDDS( _In_ ID3D11Device1* d3dDevice,
-                                     _In_ ID3DXboxPerformanceDevice* perfDevice,
+static HRESULT CreateTextureFromDDS( _In_ ID3D11DeviceX* d3dDevice,
                                      _In_ const DDS_HEADER* header,
                                      _In_reads_bytes_(bitSize) const uint8_t* bitData,
                                      _In_ size_t bitSize,
@@ -572,7 +570,7 @@ static HRESULT CreateTextureFromDDS( _In_ ID3D11Device1* d3dDevice,
     memcpy( *grfxMemory, bitData, xboxext->dataSize );
 
     // Create the texture
-    hr = CreateD3DResources( d3dDevice, perfDevice, xboxext,
+    hr = CreateD3DResources( d3dDevice, xboxext,
                              width, height, depth, mipCount, arraySize,
                              forceSRGB, isCubeMap, *grfxMemory,
                              texture, textureView );
@@ -612,8 +610,7 @@ static DDS_ALPHA_MODE GetAlphaMode( _In_ const DDS_HEADER* header )
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_
-HRESULT Xbox::CreateDDSTextureFromMemory( ID3D11Device1* d3dDevice,
-                                          ID3DXboxPerformanceDevice* perfDevice,
+HRESULT Xbox::CreateDDSTextureFromMemory( ID3D11DeviceX* d3dDevice,
                                           const uint8_t* ddsData,
                                           size_t ddsDataSize,
                                           ID3D11Resource** texture,
@@ -635,7 +632,7 @@ HRESULT Xbox::CreateDDSTextureFromMemory( ID3D11Device1* d3dDevice,
         *alphaMode = DDS_ALPHA_MODE_UNKNOWN;
     }
 
-    if ( !d3dDevice || !perfDevice || !ddsData || (!texture && !textureView) || !grfxMemory )
+    if ( !d3dDevice || !ddsData || (!texture && !textureView) || !grfxMemory )
     {
         return E_INVALIDARG;
     }
@@ -679,7 +676,7 @@ HRESULT Xbox::CreateDDSTextureFromMemory( ID3D11Device1* d3dDevice,
 
     ptrdiff_t offset = sizeof( uint32_t ) + sizeof( DDS_HEADER ) + sizeof( DDS_HEADER_XBOX );
 
-    HRESULT hr = CreateTextureFromDDS( d3dDevice, perfDevice, header,
+    HRESULT hr = CreateTextureFromDDS( d3dDevice, header,
                                        ddsData + offset, ddsDataSize - offset, forceSRGB,
                                        texture, textureView,
                                        grfxMemory );
@@ -704,8 +701,7 @@ HRESULT Xbox::CreateDDSTextureFromMemory( ID3D11Device1* d3dDevice,
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_
-HRESULT Xbox::CreateDDSTextureFromFile( ID3D11Device1* d3dDevice,
-                                        ID3DXboxPerformanceDevice* perfDevice,
+HRESULT Xbox::CreateDDSTextureFromFile( ID3D11DeviceX* d3dDevice,
                                         const wchar_t* fileName,
                                         ID3D11Resource** texture,
                                         ID3D11ShaderResourceView** textureView,
@@ -726,7 +722,7 @@ HRESULT Xbox::CreateDDSTextureFromFile( ID3D11Device1* d3dDevice,
         *alphaMode = DDS_ALPHA_MODE_UNKNOWN;
     }
 
-    if ( !d3dDevice || !perfDevice || !fileName || (!texture && !textureView) || !grfxMemory )
+    if ( !d3dDevice || !fileName || (!texture && !textureView) || !grfxMemory )
     {
         return E_INVALIDARG;
     }
@@ -749,7 +745,7 @@ HRESULT Xbox::CreateDDSTextureFromFile( ID3D11Device1* d3dDevice,
         return hr;
     }
 
-    hr = CreateTextureFromDDS( d3dDevice, perfDevice, header,
+    hr = CreateTextureFromDDS( d3dDevice, header,
                                bitData, bitSize, forceSRGB,
                                texture, textureView,
                                grfxMemory );

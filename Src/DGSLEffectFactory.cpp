@@ -321,6 +321,10 @@ void DGSLEffectFactory::Impl::CreateTexture( const WCHAR* name, ID3D11DeviceCont
     if ( !name || !textureView )
         throw std::exception("invalid arguments");
 
+#if defined(_XBOX_ONE) && defined(_TITLE)
+    UNREFERENCED_PARAMETER(deviceContext);
+#endif
+
     auto it = mTextureCache.find( name );
 
     if ( mSharing && it != mTextureCache.end() )
@@ -348,6 +352,7 @@ void DGSLEffectFactory::Impl::CreateTexture( const WCHAR* name, ID3D11DeviceCont
                 throw std::exception( "CreateDDSTextureFromFile" );
             }
         }
+#if !defined(_XBOX_ONE) || !defined(_TITLE)
         else if ( deviceContext )
         {
             std::lock_guard<std::mutex> lock(mutex);
@@ -358,9 +363,10 @@ void DGSLEffectFactory::Impl::CreateTexture( const WCHAR* name, ID3D11DeviceCont
                 throw std::exception( "CreateWICTextureFromFile" );
             }
         }
+#endif
         else
         {
-            HRESULT hr = CreateWICTextureFromFile( device.Get(), nullptr, fullName, nullptr, textureView );
+            HRESULT hr = CreateWICTextureFromFile( device.Get(), fullName, nullptr, textureView );
             if ( FAILED(hr) )
             {
                 DebugTrace( "CreateWICTextureFromFile failed (%08X) for '%S'\n", hr, fullName );

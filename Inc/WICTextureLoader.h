@@ -63,8 +63,13 @@ namespace DirectX
                                     );
 
     // Standard version with optional auto-gen mipmap support
+    #if defined(_XBOX_ONE) && defined(_TITLE)
+    HRESULT CreateWICTextureFromMemory( _In_ ID3D11DeviceX* d3dDevice,
+                                        _In_opt_ ID3D11DeviceContextX* d3dContext,
+    #else
     HRESULT CreateWICTextureFromMemory( _In_ ID3D11Device* d3dDevice,
                                         _In_opt_ ID3D11DeviceContext* d3dContext,
+    #endif
                                         _In_reads_bytes_(wicDataSize) const uint8_t* wicData,
                                         _In_ size_t wicDataSize,
                                         _Out_opt_ ID3D11Resource** texture,
@@ -72,8 +77,13 @@ namespace DirectX
                                         _In_ size_t maxsize = 0
                                       );
 
+    #if defined(_XBOX_ONE) && defined(_TITLE)
+    HRESULT CreateWICTextureFromFile( _In_ ID3D11DeviceX* d3dDevice,
+                                      _In_opt_ ID3D11DeviceContextX* d3dContext,
+    #else
     HRESULT CreateWICTextureFromFile( _In_ ID3D11Device* d3dDevice,
                                       _In_opt_ ID3D11DeviceContext* d3dContext,
+    #endif
                                       _In_z_ const wchar_t* szFileName,
                                       _Out_opt_ ID3D11Resource** texture,
                                       _Out_opt_ ID3D11ShaderResourceView** textureView,
@@ -107,8 +117,13 @@ namespace DirectX
                                     );
 
     // Extended version with optional auto-gen mipmap support
+    #if defined(_XBOX_ONE) && defined(_TITLE)
+    HRESULT CreateWICTextureFromMemoryEx( _In_ ID3D11DeviceX* d3dDevice,
+                                          _In_opt_ ID3D11DeviceContextX* d3dContext,
+    #else
     HRESULT CreateWICTextureFromMemoryEx( _In_ ID3D11Device* d3dDevice,
                                           _In_opt_ ID3D11DeviceContext* d3dContext,
+    #endif
                                           _In_reads_bytes_(wicDataSize) const uint8_t* wicData,
                                           _In_ size_t wicDataSize,
                                           _In_ size_t maxsize,
@@ -121,8 +136,13 @@ namespace DirectX
                                           _Out_opt_ ID3D11ShaderResourceView** textureView
                                       );
 
+    #if defined(_XBOX_ONE) && defined(_TITLE)
+    HRESULT CreateWICTextureFromFileEx( _In_ ID3D11DeviceX* d3dDevice,
+                                        _In_opt_ ID3D11DeviceContextX* d3dContext,
+    #else
     HRESULT CreateWICTextureFromFileEx( _In_ ID3D11Device* d3dDevice,
                                         _In_opt_ ID3D11DeviceContext* d3dContext,
+    #endif
                                         _In_z_ const wchar_t* szFileName,
                                         _In_ size_t maxsize,
                                         _In_ D3D11_USAGE usage,

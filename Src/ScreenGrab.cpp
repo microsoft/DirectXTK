@@ -510,6 +510,30 @@ static HRESULT CaptureTexture( _In_ ID3D11DeviceContext* pContext,
         pContext->CopyResource( pStaging.Get(), pSource );
     }
 
+#if defined(_XBOX_ONE) && defined(_TITLE)
+
+    if ( d3dDevice->GetCreationFlags() & D3D11_CREATE_DEVICE_IMMEDIATE_CONTEXT_FAST_SEMANTICS )
+    {
+        ComPtr<ID3D11DeviceX> d3dDeviceX;
+        hr = d3dDevice.As( &d3dDeviceX );
+        if ( FAILED(hr) )
+            return hr;
+
+        ComPtr<ID3D11DeviceContextX> d3dContextX;
+        hr = pContext->QueryInterface( __uuidof(ID3D11DeviceContextX), reinterpret_cast<void**>( d3dContextX.GetAddressOf() ) );
+        if ( FAILED(hr) )
+            return hr;
+
+        UINT64 copyFence = d3dContextX->InsertFence(0);
+        
+        while ( d3dDeviceX->IsFencePending( copyFence ) )
+        {
+            SwitchToThread();
+        }
+    }
+
+#endif
+
     return S_OK;
 }
 

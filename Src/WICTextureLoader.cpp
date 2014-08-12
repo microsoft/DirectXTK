@@ -303,6 +303,10 @@ static DXGI_FORMAT MakeSRGB( _In_ DXGI_FORMAT format )
 //---------------------------------------------------------------------------------
 static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
                                      _In_opt_ ID3D11DeviceContext* d3dContext,
+#if defined(_XBOX_ONE) && defined(_TITLE)
+                                     _In_opt_ ID3D11DeviceX* d3dDeviceX,
+                                     _In_opt_ ID3D11DeviceContextX* d3dContextX,
+#endif
                                      _In_ IWICBitmapFrameDecode *frame,
                                      _In_ size_t maxsize,
                                      _In_ D3D11_USAGE usage,
@@ -588,6 +592,10 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
         if ( SUCCEEDED(hr) && ( fmtSupport & D3D11_FORMAT_SUPPORT_MIP_AUTOGEN ) )
         {
             autogen = true;
+#if defined(_XBOX_ONE) && defined(_TITLE)
+            if ( !d3dDeviceX || !d3dContextX )
+                return E_INVALIDARG;
+#endif
         }
     }
 
@@ -642,7 +650,27 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
             if ( autogen )
             {
                 assert( d3dContext != 0 );
+
+#if defined(_XBOX_ONE) && defined(_TITLE)
+                ID3D11Texture2D *pStaging = nullptr;
+                CD3D11_TEXTURE2D_DESC stagingDesc( format, twidth, theight, 1, 1, 0, D3D11_USAGE_STAGING, D3D11_CPU_ACCESS_READ, 1, 0, 0 );
+                D3D11_SUBRESOURCE_DATA initData;
+                initData.pSysMem =  temp.get();
+                initData.SysMemPitch = static_cast<UINT>(rowPitch);
+                initData.SysMemSlicePitch = static_cast<UINT>(imageSize);
+
+                hr = d3dDevice->CreateTexture2D( &stagingDesc, &initData, &pStaging );
+                if ( SUCCEEDED(hr) )
+                {
+                    d3dContext->CopySubresourceRegion( tex, 0, 0, 0, 0, pStaging, 0, nullptr );
+
+                    UINT64 copyFence = d3dContextX->InsertFence(0);
+                    while( d3dDeviceX->IsFencePending( copyFence ) ) { SwitchToThread(); }
+                    pStaging->Release();
+                }
+#else
                 d3dContext->UpdateSubresource( tex, 0, nullptr, temp.get(), static_cast<UINT>(rowPitch), static_cast<UINT>(imageSize) );
+#endif
                 d3dContext->GenerateMips( *textureView );
             }
         }
@@ -670,14 +698,19 @@ HRESULT DirectX::CreateWICTextureFromMemory( ID3D11Device* d3dDevice,
                                              ID3D11ShaderResourceView** textureView,
                                              size_t maxsize )
 {
-    return CreateWICTextureFromMemoryEx( d3dDevice, nullptr, wicData, wicDataSize, maxsize,
+    return CreateWICTextureFromMemoryEx( d3dDevice, wicData, wicDataSize, maxsize,
                                          D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0, false,
                                          texture, textureView );
 }
 
 _Use_decl_annotations_
+#if defined(_XBOX_ONE) && defined(_TITLE)
+HRESULT DirectX::CreateWICTextureFromMemory( ID3D11DeviceX* d3dDevice,
+                                             ID3D11DeviceContextX* d3dContext,
+#else
 HRESULT DirectX::CreateWICTextureFromMemory( ID3D11Device* d3dDevice,
                                              ID3D11DeviceContext* d3dContext,
+#endif
                                              const uint8_t* wicData,
                                              size_t wicDataSize,
                                              ID3D11Resource** texture,
@@ -691,25 +724,6 @@ HRESULT DirectX::CreateWICTextureFromMemory( ID3D11Device* d3dDevice,
 
 _Use_decl_annotations_
 HRESULT DirectX::CreateWICTextureFromMemoryEx( ID3D11Device* d3dDevice,
-                                               const uint8_t* wicData,
-                                               size_t wicDataSize,
-                                               size_t maxsize,
-                                               D3D11_USAGE usage,
-                                               unsigned int bindFlags,
-                                               unsigned int cpuAccessFlags,
-                                               unsigned int miscFlags,
-                                               bool forceSRGB,
-                                               ID3D11Resource** texture,
-                                               ID3D11ShaderResourceView** textureView )
-{
-    return CreateWICTextureFromMemoryEx( d3dDevice, nullptr, wicData, wicDataSize, maxsize,
-                                         usage, bindFlags, cpuAccessFlags, miscFlags, forceSRGB,
-                                         texture, textureView );
-}
-
-_Use_decl_annotations_
-HRESULT DirectX::CreateWICTextureFromMemoryEx( ID3D11Device* d3dDevice,
-                                               ID3D11DeviceContext* d3dContext,
                                                const uint8_t* wicData,
                                                size_t wicDataSize,
                                                size_t maxsize,
@@ -766,7 +780,98 @@ HRESULT DirectX::CreateWICTextureFromMemoryEx( ID3D11Device* d3dDevice,
     if ( FAILED(hr) )
         return hr;
 
-    hr = CreateTextureFromWIC( d3dDevice, d3dContext, frame.Get(), maxsize,
+    hr = CreateTextureFromWIC( d3dDevice, nullptr,
+#if defined(_XBOX_ONE) && defined(_TITLE)
+                               nullptr, nullptr,
+#endif
+                               frame.Get(), maxsize,
+                               usage, bindFlags, cpuAccessFlags, miscFlags, forceSRGB,
+                               texture, textureView );
+    if ( FAILED(hr)) 
+        return hr;
+
+    if (texture != 0 && *texture != 0)
+    {
+        SetDebugObjectName(*texture, "WICTextureLoader");
+    }
+
+    if (textureView != 0 && *textureView != 0)
+    {
+        SetDebugObjectName(*textureView, "WICTextureLoader");
+    }
+
+    return hr;
+}
+
+_Use_decl_annotations_
+#if defined(_XBOX_ONE) && defined(_TITLE)
+HRESULT DirectX::CreateWICTextureFromMemoryEx( ID3D11DeviceX* d3dDevice,
+                                               ID3D11DeviceContextX* d3dContext,
+#else
+HRESULT DirectX::CreateWICTextureFromMemoryEx( ID3D11Device* d3dDevice,
+                                               ID3D11DeviceContext* d3dContext,
+#endif
+                                               const uint8_t* wicData,
+                                               size_t wicDataSize,
+                                               size_t maxsize,
+                                               D3D11_USAGE usage,
+                                               unsigned int bindFlags,
+                                               unsigned int cpuAccessFlags,
+                                               unsigned int miscFlags,
+                                               bool forceSRGB,
+                                               ID3D11Resource** texture,
+                                               ID3D11ShaderResourceView** textureView )
+{
+    if ( texture )
+    {
+        *texture = nullptr;
+    }
+    if ( textureView )
+    {
+        *textureView = nullptr;
+    }
+
+    if (!d3dDevice || !wicData || (!texture && !textureView))
+        return E_INVALIDARG;
+
+    if ( !wicDataSize )
+        return E_FAIL;
+
+#ifdef _M_AMD64
+    if ( wicDataSize > 0xFFFFFFFF )
+        return HRESULT_FROM_WIN32( ERROR_FILE_TOO_LARGE );
+#endif
+
+    IWICImagingFactory* pWIC = _GetWIC();
+    if ( !pWIC )
+        return E_NOINTERFACE;
+
+    // Create input stream for memory
+    ComPtr<IWICStream> stream;
+    HRESULT hr = pWIC->CreateStream( stream.GetAddressOf() );
+    if ( FAILED(hr) )
+        return hr;
+
+    hr = stream->InitializeFromMemory( const_cast<uint8_t*>( wicData ), static_cast<DWORD>( wicDataSize ) );
+    if ( FAILED(hr) )
+        return hr;
+
+    // Initialize WIC
+    ComPtr<IWICBitmapDecoder> decoder;
+    hr = pWIC->CreateDecoderFromStream( stream.Get(), 0, WICDecodeMetadataCacheOnDemand, decoder.GetAddressOf() );
+    if ( FAILED(hr) )
+        return hr;
+
+    ComPtr<IWICBitmapFrameDecode> frame;
+    hr = decoder->GetFrame( 0, frame.GetAddressOf() );
+    if ( FAILED(hr) )
+        return hr;
+
+    hr = CreateTextureFromWIC( d3dDevice, d3dContext,
+#if defined(_XBOX_ONE) && defined(_TITLE)
+                               d3dDevice, d3dContext,
+#endif
+                               frame.Get(), maxsize,
                                usage, bindFlags, cpuAccessFlags, miscFlags, forceSRGB,
                                texture, textureView );
     if ( FAILED(hr)) 
@@ -793,14 +898,19 @@ HRESULT DirectX::CreateWICTextureFromFile( ID3D11Device* d3dDevice,
                                            ID3D11ShaderResourceView** textureView,
                                            size_t maxsize )
 {
-    return CreateWICTextureFromFileEx( d3dDevice, nullptr, fileName, maxsize,
+    return CreateWICTextureFromFileEx( d3dDevice, fileName, maxsize,
                                        D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0, false,
                                        texture, textureView );
 }
 
 _Use_decl_annotations_
+#if defined(_XBOX_ONE) && defined(_TITLE)
+HRESULT DirectX::CreateWICTextureFromFile( ID3D11DeviceX* d3dDevice,
+                                           ID3D11DeviceContextX* d3dContext,
+#else
 HRESULT DirectX::CreateWICTextureFromFile( ID3D11Device* d3dDevice,
                                            ID3D11DeviceContext* d3dContext,
+#endif
                                            const wchar_t* fileName,
                                            ID3D11Resource** texture,
                                            ID3D11ShaderResourceView** textureView,
@@ -813,24 +923,6 @@ HRESULT DirectX::CreateWICTextureFromFile( ID3D11Device* d3dDevice,
 
 _Use_decl_annotations_
 HRESULT DirectX::CreateWICTextureFromFileEx( ID3D11Device* d3dDevice,
-                                             const wchar_t* fileName,
-                                             size_t maxsize,
-                                             D3D11_USAGE usage,
-                                             unsigned int bindFlags,
-                                             unsigned int cpuAccessFlags,
-                                             unsigned int miscFlags,
-                                             bool forceSRGB,
-                                             ID3D11Resource** texture,
-                                             ID3D11ShaderResourceView** textureView )
-{
-    return CreateWICTextureFromFileEx( d3dDevice, nullptr, fileName, maxsize,
-                                       usage, bindFlags, cpuAccessFlags, miscFlags, forceSRGB,
-                                       texture, textureView );
-}
-
-_Use_decl_annotations_
-HRESULT DirectX::CreateWICTextureFromFileEx( ID3D11Device* d3dDevice,
-                                             ID3D11DeviceContext* d3dContext,
                                              const wchar_t* fileName,
                                              size_t maxsize,
                                              D3D11_USAGE usage,
@@ -868,7 +960,114 @@ HRESULT DirectX::CreateWICTextureFromFileEx( ID3D11Device* d3dDevice,
     if ( FAILED(hr) )
         return hr;
 
-    hr = CreateTextureFromWIC( d3dDevice, d3dContext, frame.Get(), maxsize,
+    hr = CreateTextureFromWIC( d3dDevice, nullptr,
+#if defined(_XBOX_ONE) && defined(_TITLE)
+                               nullptr, nullptr,
+#endif
+                               frame.Get(), maxsize,
+                               usage, bindFlags, cpuAccessFlags, miscFlags, forceSRGB,
+                               texture, textureView );
+
+#if !defined(NO_D3D11_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
+    if ( SUCCEEDED(hr) )
+    {
+        if (texture != 0 || textureView != 0)
+        {
+            CHAR strFileA[MAX_PATH];
+            int result = WideCharToMultiByte( CP_ACP,
+                                              WC_NO_BEST_FIT_CHARS,
+                                              fileName,
+                                              -1,
+                                              strFileA,
+                                              MAX_PATH,
+                                              nullptr,
+                                              FALSE
+                               );
+            if ( result > 0 )
+            {
+                const CHAR* pstrName = strrchr( strFileA, '\\' );
+                if (!pstrName)
+                {
+                    pstrName = strFileA;
+                }
+                else
+                {
+                    pstrName++;
+                }
+
+                if (texture != 0 && *texture != 0)
+                {
+                    (*texture)->SetPrivateData( WKPDID_D3DDebugObjectName,
+                                                static_cast<UINT>( strnlen_s(pstrName, MAX_PATH) ),
+                                                pstrName
+                                              );
+                }
+
+                if (textureView != 0 && *textureView != 0 )
+                {
+                    (*textureView)->SetPrivateData( WKPDID_D3DDebugObjectName,
+                                                    static_cast<UINT>( strnlen_s(pstrName, MAX_PATH) ),
+                                                    pstrName
+                                                  );
+                }
+            }
+        }
+    }
+#endif
+
+    return hr;
+}
+
+_Use_decl_annotations_
+#if defined(_XBOX_ONE) && defined(_TITLE)
+HRESULT DirectX::CreateWICTextureFromFileEx( ID3D11DeviceX* d3dDevice,
+                                             ID3D11DeviceContextX* d3dContext,
+#else
+HRESULT DirectX::CreateWICTextureFromFileEx( ID3D11Device* d3dDevice,
+                                             ID3D11DeviceContext* d3dContext,
+#endif
+                                             const wchar_t* fileName,
+                                             size_t maxsize,
+                                             D3D11_USAGE usage,
+                                             unsigned int bindFlags,
+                                             unsigned int cpuAccessFlags,
+                                             unsigned int miscFlags,
+                                             bool forceSRGB,
+                                             ID3D11Resource** texture,
+                                             ID3D11ShaderResourceView** textureView )
+{
+    if ( texture )
+    {
+        *texture = nullptr;
+    }
+    if ( textureView )
+    {
+        *textureView = nullptr;
+    }
+
+    if (!d3dDevice || !fileName || (!texture && !textureView))
+        return E_INVALIDARG;
+
+    IWICImagingFactory* pWIC = _GetWIC();
+    if ( !pWIC )
+        return E_NOINTERFACE;
+
+    // Initialize WIC
+    ComPtr<IWICBitmapDecoder> decoder;
+    HRESULT hr = pWIC->CreateDecoderFromFilename( fileName, 0, GENERIC_READ, WICDecodeMetadataCacheOnDemand, decoder.GetAddressOf() );
+    if ( FAILED(hr) )
+        return hr;
+
+    ComPtr<IWICBitmapFrameDecode> frame;
+    hr = decoder->GetFrame( 0, frame.GetAddressOf() );
+    if ( FAILED(hr) )
+        return hr;
+
+    hr = CreateTextureFromWIC( d3dDevice, d3dContext,
+#if defined(_XBOX_ONE) && defined(_TITLE)
+                               d3dDevice, d3dContext,
+#endif
+                               frame.Get(), maxsize,
                                usage, bindFlags, cpuAccessFlags, miscFlags, forceSRGB,
                                texture, textureView );
 

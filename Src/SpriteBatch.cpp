@@ -60,6 +60,9 @@ public:
 
     DXGI_MODE_ROTATION mRotation;
 
+    bool mSetViewport;
+    D3D11_VIEWPORT mViewPort;
+
 private:
     // Implementation helper methods.
     void GrowSpriteQueue();
@@ -73,7 +76,7 @@ private:
     static void XM_CALLCONV RenderSprite(_In_ SpriteInfo const* sprite, _Out_cap_c_(VerticesPerSprite) VertexPositionColorTexture* vertices, FXMVECTOR textureSize, FXMVECTOR inverseTextureSize);
 
     static XMVECTOR GetTextureSize(_In_ ID3D11ShaderResourceView* texture);
-    static XMMATRIX GetViewportTransform(_In_ ID3D11DeviceContext* deviceContext, DXGI_MODE_ROTATION rotation );
+    XMMATRIX GetViewportTransform(_In_ ID3D11DeviceContext* deviceContext, DXGI_MODE_ROTATION rotation );
 
 
     // Constants.
@@ -331,6 +334,7 @@ void SpriteBatch::Impl::ContextResources::CreateVertexBuffer()
 // Per-SpriteBatch constructor.
 SpriteBatch::Impl::Impl(_In_ ID3D11DeviceContext* deviceContext)
   : mRotation( DXGI_MODE_ROTATION_IDENTITY ),
+    mSetViewport(false),
     mSpriteQueueCount(0),
     mSpriteQueueArraySize(0),
     mInBeginEndPair(false),
@@ -869,17 +873,19 @@ XMVECTOR SpriteBatch::Impl::GetTextureSize(_In_ ID3D11ShaderResourceView* textur
 XMMATRIX SpriteBatch::Impl::GetViewportTransform(_In_ ID3D11DeviceContext* deviceContext, DXGI_MODE_ROTATION rotation )
 {
     // Look up the current viewport.
-    D3D11_VIEWPORT viewport;
-    UINT viewportCount = 1;
+    if ( !mSetViewport )
+    {
+        UINT viewportCount = 1;
 
-    deviceContext->RSGetViewports(&viewportCount, &viewport);
+        deviceContext->RSGetViewports(&viewportCount, &mViewPort);
 
-    if (viewportCount != 1)
-        throw std::exception("No viewport is set");
-
+        if (viewportCount != 1)
+            throw std::exception("No viewport is set");
+    }
+    
     // Compute the matrix.
-    float xScale = (viewport.Width  > 0) ? 2.0f / viewport.Width  : 0.0f;
-    float yScale = (viewport.Height > 0) ? 2.0f / viewport.Height : 0.0f;
+    float xScale = (mViewPort.Width  > 0) ? 2.0f / mViewPort.Width  : 0.0f;
+    float yScale = (mViewPort.Height > 0) ? 2.0f / mViewPort.Height : 0.0f;
 
     switch( rotation )
     {
@@ -1049,4 +1055,11 @@ void SpriteBatch::SetRotation( DXGI_MODE_ROTATION mode )
 DXGI_MODE_ROTATION SpriteBatch::GetRotation() const
 {
     return pImpl->mRotation;
+}
+
+
+void SpriteBatch::SetViewport( const D3D11_VIEWPORT& viewPort )
+{
+    pImpl->mSetViewport = true;
+    pImpl->mViewPort = viewPort;
 }

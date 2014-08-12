@@ -27,11 +27,7 @@
 #error This module only supports Xbox One exclusive apps
 #endif
 
-#if defined(_XBOX_ONE) && defined(_TITLE)
 #include <d3d11_x.h>
-#else
-#include <d3d11_1.h>
-#endif
 
 #include <stdint.h>
 
@@ -46,8 +42,7 @@ namespace Xbox
         DDS_ALPHA_MODE_CUSTOM        = 4,
     };
 
-    HRESULT CreateDDSTextureFromMemory( _In_ ID3D11Device1* d3dDevice,
-                                        _In_ ID3DXboxPerformanceDevice* perfDevice,
+    HRESULT CreateDDSTextureFromMemory( _In_ ID3D11DeviceX* d3dDevice,
                                         _In_reads_bytes_(ddsDataSize) const uint8_t* ddsData,
                                         _In_ size_t ddsDataSize,
                                         _Outptr_opt_ ID3D11Resource** texture,
@@ -57,8 +52,7 @@ namespace Xbox
                                         _In_ bool forceSRGB = false
                                       );
 
-    HRESULT CreateDDSTextureFromFile( _In_ ID3D11Device1* d3dDevice,
-                                      _In_ ID3DXboxPerformanceDevice* perfDevice,
+    HRESULT CreateDDSTextureFromFile( _In_ ID3D11DeviceX* d3dDevice,
                                       _In_z_ const wchar_t* szFileName,
                                       _Outptr_opt_ ID3D11Resource** texture,
                                       _Outptr_opt_ ID3D11ShaderResourceView** textureView,
