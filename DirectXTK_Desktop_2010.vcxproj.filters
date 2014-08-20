@@ -155,6 +155,9 @@
     <ClCompile Include="Src\DGSLEffectFactory.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="Src\SimpleMath.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Src\Shaders\CompileShaders.cmd">

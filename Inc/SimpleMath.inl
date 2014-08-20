@@ -2174,13 +2174,121 @@ inline float Matrix::Determinant() const
 // Static functions
 //------------------------------------------------------------------------------
 
-inline Matrix Matrix::Identity()
+_Use_decl_annotations_
+inline Matrix Matrix::CreateBillboard( const Vector3& object, const Vector3& cameraPosition, const Vector3& cameraUp, const Vector3* cameraForward )
 {
     using namespace DirectX;
-    return Matrix( 1.f,   0,   0,   0,
-                   0,   1.f,   0,   0,
-                   0,     0, 1.f,   0,
-                   0,     0,   0, 1.f );
+    XMVECTOR O = XMLoadFloat3( &object );
+    XMVECTOR C = XMLoadFloat3( &cameraPosition );
+    XMVECTOR Z = XMVectorSubtract( O, C );
+
+    XMVECTOR N = XMVector3LengthSq( Z );
+    if ( XMVector3Less( N, g_XMEpsilon ) )
+    {
+        if ( cameraForward )
+        {
+            XMVECTOR F = XMLoadFloat3( cameraForward );
+            Z = XMVectorNegate( F );
+        }
+        else
+            Z = g_XMNegIdentityR2;
+    }
+    else
+    {
+        Z = XMVector3Normalize( Z );
+    }
+
+    XMVECTOR up = XMLoadFloat3( &cameraUp );
+    XMVECTOR X = XMVector3Cross( up, Z );
+    X = XMVector3Normalize( X );
+
+    XMVECTOR Y = XMVector3Cross( Z, X );
+
+    XMMATRIX M;
+    M.r[0] = X;
+    M.r[1] = Y;
+    M.r[2] = Z;
+    M.r[3] = XMVectorSetW( O, 1.f );
+
+    Matrix R;
+    XMStoreFloat4x4( &R, M );
+    return R;
+}
+
+_Use_decl_annotations_
+inline Matrix Matrix::CreateConstrainedBillboard( const Vector3& object, const Vector3& cameraPosition, const Vector3& rotateAxis,
+                                                  const Vector3* cameraForward, const Vector3* objectForward )
+{
+    using namespace DirectX;
+
+    static const XMVECTORF32 s_minAngle = { 0.99825467075f, 0.99825467075f, 0.99825467075f, 0.99825467075f }; // 1.0 - XMConvertToRadians( 0.1f );
+
+    XMVECTOR O = XMLoadFloat3( &object );
+    XMVECTOR C = XMLoadFloat3( &cameraPosition );
+    XMVECTOR faceDir = XMVectorSubtract( O, C );
+
+    XMVECTOR N = XMVector3LengthSq( faceDir );
+    if (XMVector3Less(N, g_XMEpsilon))
+    {
+        if (cameraForward)
+        {
+            XMVECTOR F = XMLoadFloat3( cameraForward );
+            faceDir = XMVectorNegate( F );
+        }
+        else
+            faceDir = g_XMNegIdentityR2;
+    }
+    else
+    {
+        faceDir = XMVector3Normalize( faceDir );
+    }
+
+    XMVECTOR Y = XMLoadFloat3( &rotateAxis );
+    XMVECTOR X, Z;
+
+    XMVECTOR dot = XMVectorAbs( XMVector3Dot( Y, faceDir ) );
+    if ( XMVector3Greater( dot, s_minAngle ) )
+    {
+        if ( objectForward )
+        {
+            Z = XMLoadFloat3( objectForward );
+            dot = XMVectorAbs( XMVector3Dot( Y, Z ) );
+            if ( XMVector3Greater( dot, s_minAngle ) )
+            {
+                dot = XMVectorAbs( XMVector3Dot( Y, g_XMNegIdentityR2 ) );
+                Z = ( XMVector3Greater( dot, s_minAngle ) ) ? g_XMIdentityR0 : g_XMNegIdentityR2;
+            }
+        }
+        else
+        {
+            dot = XMVectorAbs( XMVector3Dot( Y, g_XMNegIdentityR2 ) );
+            Z = ( XMVector3Greater( dot, s_minAngle ) ) ? g_XMIdentityR0 : g_XMNegIdentityR2;
+        }
+
+        X = XMVector3Cross( Y, Z );
+        X = XMVector3Normalize( X );
+
+        Z = XMVector3Cross( X, Y );
+        Z = XMVector3Normalize( Z );
+    }
+    else
+    {
+        X = XMVector3Cross( Y, faceDir );
+        X = XMVector3Normalize( X );
+
+        Z = XMVector3Cross( X, Y );
+        Z = XMVector3Normalize( Z );
+    }
+
+    XMMATRIX M;
+    M.r[0] = X;
+    M.r[1] = Y;
+    M.r[2] = Z;
+    M.r[3] = XMVectorSetW( O, 1.f );
+
+    Matrix R;
+    XMStoreFloat4x4( &R, M );
+    return R;
 }
 
 inline Matrix Matrix::CreateTranslation( const Vector3& position )

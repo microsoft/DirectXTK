@@ -188,6 +188,9 @@
     <ClCompile Include="Audio\SoundCommon.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
+    <ClCompile Include="Src\SimpleMath.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Src\Shaders\CompileShaders.cmd">

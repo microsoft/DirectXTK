@@ -69,6 +69,7 @@
     </ClCompile>
     <ClCompile Include="Src\PrimitiveBatch.cpp" />
     <ClCompile Include="Src\ScreenGrab.cpp" />
+    <ClCompile Include="Src\SimpleMath.cpp" />
     <ClCompile Include="Src\SkinnedEffect.cpp" />
     <ClCompile Include="Src\SpriteBatch.cpp" />
     <ClCompile Include="Src\SpriteFont.cpp" />

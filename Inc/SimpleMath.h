@@ -121,6 +121,12 @@ struct Vector2 : public XMFLOAT2
     static void TransformNormal( const Vector2& v, const Matrix& m, Vector2& result );
     static Vector2 TransformNormal( const Vector2& v, const Matrix& m );
     static void TransformNormal( _In_reads_(count) const Vector2* varray, size_t count, const Matrix& m, _Out_writes_(count) Vector2* resultArray );
+
+    // Constants
+    static const Vector2 Zero;
+    static const Vector2 One;
+    static const Vector2 UnitX;
+    static const Vector2 UnitY;
 };
 
 // Binary operators
@@ -219,6 +225,19 @@ struct Vector3 : public XMFLOAT3
     static void TransformNormal( const Vector3& v, const Matrix& m, Vector3& result );
     static Vector3 TransformNormal( const Vector3& v, const Matrix& m );
     static void TransformNormal( _In_reads_(count) const Vector3* varray, size_t count, const Matrix& m, _Out_writes_(count) Vector3* resultArray );
+
+    // Constants
+    static const Vector3 Zero;
+    static const Vector3 One;
+    static const Vector3 UnitX;
+    static const Vector3 UnitY;
+    static const Vector3 UnitZ;
+    static const Vector3 Up;
+    static const Vector3 Down;
+    static const Vector3 Right;
+    static const Vector3 Left;
+    static const Vector3 Forward;
+    static const Vector3 Backward;
 };
 
 // Binary operators
@@ -316,6 +335,14 @@ struct Vector4 : public XMFLOAT4
     static void Transform( const Vector4& v, const Matrix& m, Vector4& result );
     static Vector4 Transform( const Vector4& v, const Matrix& m );
     static void Transform( _In_reads_(count) const Vector4* varray, size_t count, const Matrix& m, _Out_writes_(count) Vector4* resultArray );
+
+    // Constants
+    static const Vector4 Zero;
+    static const Vector4 One;
+    static const Vector4 UnitX;
+    static const Vector4 UnitY;
+    static const Vector4 UnitZ;
+    static const Vector4 UnitW;
 };
 
 // Binary operators
@@ -407,7 +434,10 @@ struct Matrix : public XMFLOAT4X4
     float Determinant() const;
 
     // Static functions
-    static Matrix Identity();
+    static Matrix CreateBillboard( const Vector3& object, const Vector3& cameraPosition, const Vector3& cameraUp, _In_opt_ const Vector3* cameraForward = nullptr );
+
+    static Matrix CreateConstrainedBillboard( const Vector3& object, const Vector3& cameraPosition, const Vector3& rotateAxis,
+                                              _In_opt_ const Vector3* cameraForward = nullptr, _In_opt_ const Vector3* objectForward = nullptr);
 
     static Matrix CreateTranslation( const Vector3& position );
     static Matrix CreateTranslation( float x, float y, float z );
@@ -444,6 +474,9 @@ struct Matrix : public XMFLOAT4X4
 
     static void Transform( const Matrix& M, const Quaternion& rotation, Matrix& result );
     static Matrix Transform( const Matrix& M, const Quaternion& rotation );
+
+    // Constants
+    static const Matrix Identity;
 };
 
 // Binary operators
@@ -559,6 +592,9 @@ struct Quaternion : public XMFLOAT4
 
     static void Concatenate( const Quaternion& q1, const Quaternion& q2, Quaternion& result );
     static Quaternion Concatenate( const Quaternion& q1, const Quaternion& q2 );
+
+    // Constants
+    static const Quaternion Identity;
 };
 
 // Binary operators

@@ -113,6 +113,9 @@
     <ClCompile Include="Audio\DynamicSoundEffectInstance.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
+    <ClCompile Include="Src\SimpleMath.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\AlignedNew.h">
