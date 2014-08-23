@@ -203,7 +203,9 @@ void SpriteFont::Impl::ForEachGlyph(_In_z_ wchar_t const* text, TAction action)
                 if (x < 0)
                     x = 0;
 
-                if (!iswspace(character))
+                if ( !iswspace(character)
+                     || ( ( glyph->Subrect.right - glyph->Subrect.left ) > 1 )
+                     || ( ( glyph->Subrect.bottom - glyph->Subrect.top ) > 1 ) )
                 {
                     action(glyph, x, y);
                 }
