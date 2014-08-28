@@ -203,69 +203,42 @@ public:
         {
             if ( mGamePad[ player ] )
             {
-                ComPtr<IGamepadReading> reading;
-                HRESULT hr = mGamePad[ player ]->GetCurrentReading( reading.GetAddressOf() );
+                RawGamepadReading reading;
+                HRESULT hr = mGamePad[ player ]->GetRawCurrentReading( &reading );
                 if ( SUCCEEDED(hr) )
                 {
                     state.connected = true;
+                    state.packet = reading.Timestamp;
 
-                    GamepadButtons buttons;
-                    hr = reading->get_Buttons( &buttons );
-                    if ( FAILED(hr) )
-                        buttons = GamepadButtons::GamepadButtons_None;
+                    state.buttons.a  = (reading.Buttons & GamepadButtons::GamepadButtons_A) != 0;
+                    state.buttons.b  = (reading.Buttons & GamepadButtons::GamepadButtons_B) != 0;
+                    state.buttons.x  = (reading.Buttons & GamepadButtons::GamepadButtons_X) != 0;
+                    state.buttons.y  = (reading.Buttons & GamepadButtons::GamepadButtons_Y) != 0;
 
-                    state.buttons.a  = (buttons & GamepadButtons::GamepadButtons_A) != 0;
-                    state.buttons.b  = (buttons & GamepadButtons::GamepadButtons_B) != 0;
-                    state.buttons.x  = (buttons & GamepadButtons::GamepadButtons_X) != 0;
-                    state.buttons.y  = (buttons & GamepadButtons::GamepadButtons_Y) != 0;
+                    state.buttons.leftStick = (reading.Buttons& GamepadButtons::GamepadButtons_LeftThumbstick) != 0;
+                    state.buttons.rightStick = (reading.Buttons& GamepadButtons::GamepadButtons_RightThumbstick) != 0;
 
-                    state.buttons.leftStick = (buttons & GamepadButtons::GamepadButtons_LeftThumbstick) != 0;
-                    state.buttons.rightStick = (buttons & GamepadButtons::GamepadButtons_RightThumbstick) != 0;
+                    state.buttons.leftShoulder = (reading.Buttons& GamepadButtons::GamepadButtons_LeftShoulder) != 0;
+                    state.buttons.rightShoulder = (reading.Buttons& GamepadButtons::GamepadButtons_RightShoulder) != 0;
 
-                    state.buttons.leftShoulder = (buttons & GamepadButtons::GamepadButtons_LeftShoulder) != 0;
-                    state.buttons.rightShoulder = (buttons & GamepadButtons::GamepadButtons_RightShoulder) != 0;
+                    state.buttons.back = (reading.Buttons& GamepadButtons::GamepadButtons_View) != 0;
+                    state.buttons.start = (reading.Buttons& GamepadButtons::GamepadButtons_Menu) != 0;
 
-                    state.buttons.back = (buttons & GamepadButtons::GamepadButtons_View) != 0;
-                    state.buttons.start = (buttons & GamepadButtons::GamepadButtons_Menu) != 0;
+                    state.dpad.up = (reading.Buttons & GamepadButtons::GamepadButtons_DPadUp) != 0;
+                    state.dpad.down = (reading.Buttons & GamepadButtons::GamepadButtons_DPadDown) != 0;
+                    state.dpad.right = (reading.Buttons & GamepadButtons::GamepadButtons_DPadRight) != 0;
+                    state.dpad.left = (reading.Buttons & GamepadButtons::GamepadButtons_DPadLeft) != 0;
 
-                    state.dpad.up = (buttons & GamepadButtons::GamepadButtons_DPadUp) != 0;
-                    state.dpad.down = (buttons & GamepadButtons::GamepadButtons_DPadDown) != 0;
-                    state.dpad.right = (buttons & GamepadButtons::GamepadButtons_DPadRight) != 0;
-                    state.dpad.left = (buttons & GamepadButtons::GamepadButtons_DPadLeft) != 0;
-
-                    float stickX;
-                    hr = reading->get_LeftThumbstickX( &stickX );
-                    if ( FAILED(hr) )
-                        stickX = 0.f;
-
-                    float stickY;
-                    hr = reading->get_LeftThumbstickY( &stickY );
-                    if ( FAILED(hr) )
-                        stickY = 0.f;
-
-                    ApplyStickDeadZone( stickX, stickY,
+                    ApplyStickDeadZone( reading.LeftThumbstickX, reading.LeftThumbstickY,
                                         deadZoneMode, 1.f, .24f /* Recommend Xbox One deadzone */,
                                         state.thumbSticks.leftX, state.thumbSticks.leftY );
 
-                    hr = reading->get_RightThumbstickX( &stickX );
-                    if ( FAILED(hr) )
-                        stickX = 0.f;
-
-                    hr = reading->get_RightThumbstickY( &stickY );
-                    if ( FAILED(hr) )
-                        stickY = 0.f;
-
-                    ApplyStickDeadZone( stickX, stickY,
+                    ApplyStickDeadZone( reading.RightThumbstickX, reading.RightThumbstickY,
                                         deadZoneMode, 1.f, .24f /* Recommend Xbox One deadzone */,
                                         state.thumbSticks.rightX, state.thumbSticks.rightY );
 
-                    hr = reading->get_LeftTrigger( &state.triggers.left );
-                    if ( FAILED(hr) )
-                        state.triggers.left = 0.f;
-
-                    hr = reading->get_RightTrigger( &state.triggers.right );
-                    if ( FAILED(hr) )
-                        state.triggers.right = 0.f;
+                    state.triggers.left = reading.LeftTrigger;
+                    state.triggers.right = reading.RightTrigger;
                      
                     return;
                 }

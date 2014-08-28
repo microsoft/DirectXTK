@@ -95,7 +95,7 @@ namespace DirectX
         struct State
         {
             bool        connected;
-            uint32_t    packet;
+            uint64_t    packet;
             Buttons     buttons;
             DPad        dpad;
             ThumbSticks thumbSticks;
