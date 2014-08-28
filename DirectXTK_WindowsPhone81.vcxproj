@@ -27,6 +27,7 @@
     <ClInclude Include="Inc\DDSTextureLoader.h" />
     <ClInclude Include="Inc\DirectXHelpers.h" />
     <ClInclude Include="Inc\Effects.h" />
+    <ClInclude Include="Inc\GamePad.h" />
     <ClInclude Include="Inc\GeometricPrimitive.h" />
     <ClInclude Include="Inc\Model.h" />
     <ClInclude Include="Inc\SimpleMath.h" />
@@ -98,6 +99,7 @@
     <ClCompile Include="Src\EffectFactory.cpp" />
     <ClCompile Include="Src\BinaryReader.cpp" />
     <ClCompile Include="Src\EnvironmentMapEffect.cpp" />
+    <ClCompile Include="Src\GamePad.cpp" />
     <ClCompile Include="Src\GeometricPrimitive.cpp" />
     <ClCompile Include="Src\Model.cpp" />
     <ClCompile Include="Src\ModelLoadCMO.cpp" />

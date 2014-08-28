@@ -84,6 +84,9 @@
     <ClInclude Include="Inc\DirectXHelpers.h">
       <Filter>Inc</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\GamePad.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\CommonStates.cpp">
@@ -156,6 +159,9 @@
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="Src\SimpleMath.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\GamePad.cpp">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>

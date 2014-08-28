@@ -98,6 +98,9 @@
     <ClInclude Include="Inc\DirectXHelpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\GamePad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\AlphaTestEffect.cpp">
@@ -194,6 +197,9 @@
       <Filter>Audio</Filter>
     </ClCompile>
     <ClCompile Include="Src\SimpleMath.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\GamePad.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
