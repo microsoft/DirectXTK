@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-July 15, 2014
+September 5, 2014
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Windows Store apps, Windows phone 8.x applications,
@@ -30,6 +30,7 @@ Inc\
     DirectXHelpers.h - misc C++ helpers for D3D programming
     DDSTextureLoader.h - light-weight DDS file texture loader
     Effects.h - set of built-in shaders for common rendering tasks
+    GamePad.h - gamepad controller helper using XInput
     GeometricPrimitive.h - draws basic shapes such as cubes and spheres
     Model.h - draws meshes loaded from .CMO or .SDKMESH files
     PrimitiveBatch.h - simple and efficient way to draw user primitives
@@ -1085,6 +1086,117 @@ DirectXMath for performance hotspots where runtime efficiency is more important.
 
 
 -------------------
+GamePad
+-------------------
+
+This is a helper for simplified access to gamepad controllers through the XInput API modeled after the XNA C# GamePad class.
+
+    GamePad is supported on Windows and Xbox One. On Windows Phone 8.x, you can create and query the GamePad class, but it
+    will always report no devices are connected since gamepads are not currently supported by the Windows Phone platform.
+
+Initialization:
+
+    GamePad is a singleton.
+
+    std::unique_ptr<GamePad> gamePad( new GamePad );
+
+Basic use:
+
+    GetState queries the controller status given a player index. If connected, it returns the status of the buttons (A, B,
+    X, Y, left & right stick, left & right shoulder, back, and start), the directional pad (DPAD), the left & right thumb
+    sticks, and the left & right triggers.
+
+    auto state = gamePad->GetState( 0 );
+
+    if ( state.IsConnected() )
+    {
+        if ( state.IsAPressed() )
+            // Do action for button A being down
+
+        if ( state.buttons.y )
+            // Do action for button Y being down
+
+        if ( state.IsDPadLeftPressed() )
+            // Do action for DPAD Left being down
+
+        if ( state.dpad.up || state.dpad.down || state.dpad.left || state.dpad.right )
+            // Do action based on any DPAD change
+
+        float posx = state.thumbSticks.leftX;
+        float posy = state.thumbSticks.leftY;
+            // These values are normalized to -1 to 1
+
+        float throttle = state.triggers.right;
+            // This value is normalized 0 -> 1
+
+        if ( state.IsLeftTriggerPressed() )
+            // Do action based on a left trigger pressed more than halfway
+
+        if ( state.IsViewPressed() )
+            // This is an alias for the Xbox 360 'Back' button
+            // which is called 'View' on the Xbox One Controller. 
+    }
+
+Vibration:
+
+    Many controllers include vibration motors to provide force-feedback to the user, which can be controlled with
+    SetVibration and the player index. The motor values range from 0 to 1.
+
+    if ( gamePad->SetVibration( 0, 0.5f, 0.25f ) )
+        // If true, the vibration was successfully set.
+
+    Note: The trigger impulse motors on the Xbox One Controller are not accessible via XInput on Windows, and these
+          motors are not present on the Xbox 360 Common Controller.
+
+Device capabilities:
+
+    The GamePad class provides a simplified model for the device capabilties.
+
+    auto caps = gamePad->GetCapabilities( 0 );
+    if ( caps.IsConnected() )
+    {
+        if ( caps.gamepadType == GamePad::Capabilities::FLIGHT_STICK )
+            // Use specific controller layout based on a flight stick controller
+        else
+            // Default to treating any unknown type as a standard gamepad
+    }
+
+Button state tracker:
+
+    A common pattern for gamepads is to trigger an event when a button is pressed or released, but that
+    you don't want to trigger the event every single frame if the button is held down for more than a
+    single frame. This helper class simplifies this.
+
+    std::unique_ptr<GamePad::ButtonStateTracker> tracker( new  GamePad::ButtonStateTracker );
+
+    ...
+
+    auto state = gamdPad->GetState( 0 );
+    if ( state.IsConnected() )
+    {
+        tracker->Update( state );
+
+        if ( tracker->a == GamePad::ButtonStateTracker::PRESSED )
+            // Take an action when Button A is first pressed, but don't do it again until
+            // the button is released and then pressed again
+    }
+
+    Each button is reported by the tracker with a state UP, HELD, PRESSED, or RELEASED.
+
+    When resuming from a pause or suspend, be sure to call Reset() on the tracker object to clear the state history.
+
+Threading model:
+
+    The GamePad class provides no special synchronziation above the underlying API. XInput on Windows is thread-safe
+    through a internal global lock, so performance is best when only a single thread accesses the controller.
+
+Further reading:
+
+    http://blogs.msdn.com/b/chuckw/archive/2012/04/26/xinput-and-windows-8-consumer-preview.aspx
+
+
+
+-------------------
 DirectXTK for Audio
 -------------------
 
@@ -1325,6 +1437,16 @@ Further reading:
 ---------------
 RELEASE HISTORY
 ---------------
+
+September 5, 2014
+    GamePad class: gamepad controller helper using XInput on Windows, IGamepad for Xbox One
+    SimpleMath updates; Matrix billboard methods; breaking change: Matrix::Identity() -> Matrix::Identity
+    SpriteBatch new optional SetViewport method
+    SpriteFont fix for white-space character rendering optimization
+    DDSTextureLoader fix for auto-gen mipmaps for volume textures
+    Explicit calling-convention annotation for public headers
+    Updates for Xbox One platform support
+    Minor code and project cleanup
 
 July 15, 2014
     DirectXTK for Audio and XWBTool fixes
