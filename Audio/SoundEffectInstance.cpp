@@ -69,39 +69,39 @@ public:
     void Play( bool loop );
 
     // IVoiceNotify
-    virtual void OnBufferEnd() override
+    virtual void __cdecl OnBufferEnd() override
     {
         // We don't register for this notification for SoundEffectInstances, so this should not be invoked
         assert( false );
     }
 
-    virtual void OnCriticalError() override
+    virtual void __cdecl OnCriticalError() override
     {
         mBase.OnCriticalError();
     }
 
-    virtual void OnReset() override
+    virtual void __cdecl OnReset() override
     {
         mBase.OnReset();
     }
 
-    virtual void OnUpdate() override
+    virtual void __cdecl OnUpdate() override
     {
         // We do not register for update notification
         assert(false);
     }
 
-    virtual void OnDestroyEngine() override
+    virtual void __cdecl OnDestroyEngine() override
     {
         mBase.OnDestroy();
     }
 
-    virtual void OnTrim() override
+    virtual void __cdecl OnTrim() override
     {
         mBase.OnTrim();
     }
 
-    virtual void GatherStatistics( AudioStatistics& stats ) const override
+    virtual void __cdecl GatherStatistics( AudioStatistics& stats ) const override
     {
         mBase.GatherStatistics(stats);
     }

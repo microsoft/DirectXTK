@@ -36,15 +36,15 @@ namespace DirectX
         void XM_CALLCONV DrawString(_In_ SpriteBatch* spriteBatch, _In_z_ wchar_t const* text, FXMVECTOR position, FXMVECTOR color = Colors::White, float rotation = 0, FXMVECTOR origin = g_XMZero, float scale = 1, SpriteEffects effects = SpriteEffects_None, float layerDepth = 0);
         void XM_CALLCONV DrawString(_In_ SpriteBatch* spriteBatch, _In_z_ wchar_t const* text, FXMVECTOR position, FXMVECTOR color, float rotation, FXMVECTOR origin, GXMVECTOR scale, SpriteEffects effects = SpriteEffects_None, float layerDepth = 0);
 
-        XMVECTOR MeasureString(_In_z_ wchar_t const* text) const;
+        XMVECTOR XM_CALLCONV MeasureString(_In_z_ wchar_t const* text) const;
 
-        float GetLineSpacing() const;
-        void SetLineSpacing(float spacing);
+        float __cdecl GetLineSpacing() const;
+        void __cdecl SetLineSpacing(float spacing);
 
-        wchar_t GetDefaultCharacter() const;
-        void SetDefaultCharacter(wchar_t character);
+        wchar_t __cdecl GetDefaultCharacter() const;
+        void __cdecl SetDefaultCharacter(wchar_t character);
 
-        bool ContainsCharacter(wchar_t character) const;
+        bool __cdecl ContainsCharacter(wchar_t character) const;
 
 
         // Describes a single character glyph.

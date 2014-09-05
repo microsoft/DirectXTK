@@ -270,7 +270,7 @@ namespace DirectX
             SetColor( color );
         }
 
-        void SetColor( XMFLOAT4 const& color ) { SetColor( XMLoadFloat4( &color ) ); }
+        void __cdecl SetColor( XMFLOAT4 const& color ) { SetColor( XMLoadFloat4( &color ) ); }
         void XM_CALLCONV SetColor( FXMVECTOR color );
 
         static const int InputElementCount = 5;
@@ -320,9 +320,9 @@ namespace DirectX
             SetBlendWeights( weights );
         }
 
-        void SetBlendIndices( XMUINT4 const& indices );
+        void __cdecl SetBlendIndices( XMUINT4 const& indices );
 
-        void SetBlendWeights( XMFLOAT4 const& weights ) { SetBlendWeights( XMLoadFloat4( &weights ) ); }
+        void __cdecl SetBlendWeights( XMFLOAT4 const& weights ) { SetBlendWeights( XMLoadFloat4( &weights ) ); }
         void XM_CALLCONV SetBlendWeights( FXMVECTOR weights );
 
         static const int InputElementCount = 7;

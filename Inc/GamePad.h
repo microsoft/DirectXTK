@@ -11,9 +11,7 @@
 // http://go.microsoft.com/fwlink/?LinkId=248929
 //--------------------------------------------------------------------------------------
 
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #ifndef _XBOX_ONE
 #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP)
@@ -101,42 +99,42 @@ namespace DirectX
             ThumbSticks thumbSticks;
             Triggers    triggers;
 
-            bool IsConnected() const { return connected; }
+            bool __cdecl IsConnected() const { return connected; }
 
             // Is the button pressed currently?
-            bool IsAPressed() const { return buttons.a; }
-            bool IsBPressed() const { return buttons.b; }
-            bool IsXPressed() const { return buttons.x; }
-            bool IsYPressed() const { return buttons.y; }
+            bool __cdecl IsAPressed() const { return buttons.a; }
+            bool __cdecl IsBPressed() const { return buttons.b; }
+            bool __cdecl IsXPressed() const { return buttons.x; }
+            bool __cdecl IsYPressed() const { return buttons.y; }
 
-            bool IsLeftStickPressed() const { return buttons.leftStick; }
-            bool IsRightStickPressed() const { return buttons.rightStick; }
+            bool __cdecl IsLeftStickPressed() const { return buttons.leftStick; }
+            bool __cdecl IsRightStickPressed() const { return buttons.rightStick; }
 
-            bool IsLeftShoulderPressed() const { return buttons.leftShoulder; }
-            bool IsRightShoulderPressed() const { return buttons.rightShoulder; }
+            bool __cdecl IsLeftShoulderPressed() const { return buttons.leftShoulder; }
+            bool __cdecl IsRightShoulderPressed() const { return buttons.rightShoulder; }
 
-            bool IsBackPressed() const { return buttons.back; }
-            bool IsViewPressed() const { return buttons.back; }
-            bool IsStartPressed() const { return buttons.start; }
-            bool IsMenuPressed() const { return buttons.start; }
+            bool __cdecl IsBackPressed() const { return buttons.back; }
+            bool __cdecl IsViewPressed() const { return buttons.back; }
+            bool __cdecl IsStartPressed() const { return buttons.start; }
+            bool __cdecl IsMenuPressed() const { return buttons.start; }
 
-            bool IsDPadDownPressed() const { return dpad.down; };
-            bool IsDPadUpPressed() const { return dpad.up; };
-            bool IsDPadLeftPressed() const { return dpad.left; };
-            bool IsDPadRightPressed() const { return dpad.right; };
+            bool __cdecl IsDPadDownPressed() const { return dpad.down; };
+            bool __cdecl IsDPadUpPressed() const { return dpad.up; };
+            bool __cdecl IsDPadLeftPressed() const { return dpad.left; };
+            bool __cdecl IsDPadRightPressed() const { return dpad.right; };
 
-            bool IsLeftThumbStickUp() const { return (thumbSticks.leftY > 0.5f) != 0; }
-            bool IsLeftThumbStickDown() const { return (thumbSticks.leftY < -0.5f) != 0; }
-            bool IsLeftThumbStickLeft() const { return (thumbSticks.leftX < -0.5f) != 0; }
-            bool IsLeftThumbStickRight() const { return (thumbSticks.leftX > 0.5f) != 0; }
+            bool __cdecl IsLeftThumbStickUp() const { return (thumbSticks.leftY > 0.5f) != 0; }
+            bool __cdecl IsLeftThumbStickDown() const { return (thumbSticks.leftY < -0.5f) != 0; }
+            bool __cdecl IsLeftThumbStickLeft() const { return (thumbSticks.leftX < -0.5f) != 0; }
+            bool __cdecl IsLeftThumbStickRight() const { return (thumbSticks.leftX > 0.5f) != 0; }
 
-            bool IsRightThumbStickUp() const { return (thumbSticks.rightY > 0.5f ) != 0; }
-            bool IsRightThumbStickDown() const { return (thumbSticks.rightY < -0.5f) != 0; }
-            bool IsRightThumbStickLeft() const { return (thumbSticks.rightX < -0.5f) != 0; }
-            bool IsRightThumbStickRight() const { return (thumbSticks.rightX > 0.5f) != 0; }
+            bool __cdecl IsRightThumbStickUp() const { return (thumbSticks.rightY > 0.5f ) != 0; }
+            bool __cdecl IsRightThumbStickDown() const { return (thumbSticks.rightY < -0.5f) != 0; }
+            bool __cdecl IsRightThumbStickLeft() const { return (thumbSticks.rightX < -0.5f) != 0; }
+            bool __cdecl IsRightThumbStickRight() const { return (thumbSticks.rightX > 0.5f) != 0; }
 
-            bool IsLeftTriggerPressed() const { return (triggers.left > 0.5f) != 0; }
-            bool IsRightTriggerPressed() const { return (triggers.right > 0.5f) != 0; }
+            bool __cdecl IsLeftTriggerPressed() const { return (triggers.left > 0.5f) != 0; }
+            bool __cdecl IsRightTriggerPressed() const { return (triggers.right > 0.5f) != 0; }
         };
 
         struct Capabilities
@@ -160,7 +158,7 @@ namespace DirectX
             Type        gamepadType;
             uint64_t    id;
 
-            bool IsConnected() const { return connected; }
+            bool __cdecl IsConnected() const { return connected; }
         };
 
         class ButtonStateTracker
@@ -195,26 +193,26 @@ namespace DirectX
 
             ButtonStateTracker() { Reset(); }
 
-            void Update( const State& state );
+            void __cdecl Update( const State& state );
 
-            void Reset();
+            void __cdecl Reset();
 
         private:
             State lastState;
         };
 
         // Retrieve the current state of the gamepad of the associated player index
-        State GetState(int player, DeadZone deadZoneMode = DEAD_ZONE_INDEPENDENT_AXES);
+        State __cdecl GetState(int player, DeadZone deadZoneMode = DEAD_ZONE_INDEPENDENT_AXES);
 
         // Retrieve the current capabilities of the gamepad of the associated player index
-        Capabilities GetCapabilities(int player);
+        Capabilities __cdecl GetCapabilities(int player);
 
         // Set the vibration motor speeds of the gamepad
-        bool SetVibration( int player, float leftMotor, float rightMotor );
+        bool __cdecl SetVibration( int player, float leftMotor, float rightMotor );
 
         // Handle suspending/resuming
-        void Suspend();
-        void Resume();
+        void __cdecl Suspend();
+        void __cdecl Resume();
 
     private:
         // Private implementation.

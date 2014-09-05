@@ -63,6 +63,15 @@
 #include <string>
 #include <vector>
 
+// VS 2010 doesn't support explicit calling convention for std::function
+#ifndef DIRECTX_STD_CALLCONV
+#if defined(_MSC_VER) && (_MSC_VER < 1700)
+#define DIRECTX_STD_CALLCONV
+#else
+#define DIRECTX_STD_CALLCONV __cdecl
+#endif
+#endif
+
 #pragma warning(push)
 #pragma warning(disable : 4481)
 // VS 2010 considers 'override' to be a extension, but it's part of C++11 as of VS 2012
@@ -98,26 +107,26 @@ namespace DirectX
     class IVoiceNotify
     {
     public:
-        virtual void OnBufferEnd() = 0;
+        virtual void __cdecl OnBufferEnd() = 0;
             // Notfication that a voice buffer has finished
             // Note this is called from XAudio2's worker thread, so it should perform very minimal and thread-safe operations
 
-        virtual void OnCriticalError() = 0;
+        virtual void __cdecl OnCriticalError() = 0;
             // Notification that the audio engine encountered a critical error
 
-        virtual void OnReset() = 0;
+        virtual void __cdecl OnReset() = 0;
             // Notification of an audio engine reset
 
-        virtual void OnUpdate() = 0;
+        virtual void __cdecl OnUpdate() = 0;
             // Notification of an audio engine per-frame update (opt-in)
 
-        virtual void OnDestroyEngine() = 0;
+        virtual void __cdecl OnDestroyEngine() = 0;
             // Notification that the audio engine is being destroyed
 
-        virtual void OnTrim() = 0;
+        virtual void __cdecl OnTrim() = 0;
             // Notification of a request to trim the voice pool
 
-        virtual void GatherStatistics( AudioStatistics& stats ) const = 0;
+        virtual void __cdecl GatherStatistics( AudioStatistics& stats ) const = 0;
             // Contribute to statistics request
     };
 
@@ -205,67 +214,67 @@ namespace DirectX
         AudioEngine& operator= (AudioEngine&& moveFrom);
         virtual ~AudioEngine();
 
-        bool Update();
+        bool __cdecl Update();
             // Performs per-frame processing for the audio engine, returns false if in 'silent mode'
 
-        bool Reset( _In_opt_ const WAVEFORMATEX* wfx = nullptr, _In_opt_z_ const wchar_t* deviceId = nullptr );
+        bool __cdecl Reset( _In_opt_ const WAVEFORMATEX* wfx = nullptr, _In_opt_z_ const wchar_t* deviceId = nullptr );
             // Reset audio engine from critical error/silent mode using a new device; can also 'migrate' the graph
             // Returns true if succesfully reset, false if in 'silent mode' due to no default device
             // Note: One shots are lost, all SoundEffectInstances are in the STOPPED state after successful reset
 
-        void Suspend();
-        void Resume();
+        void __cdecl Suspend();
+        void __cdecl Resume();
             // Suspend/resumes audio processing (i.e. global pause/resume)
 
-        void SetReverb( AUDIO_ENGINE_REVERB reverb );
-        void SetReverb( _In_opt_ const XAUDIO2FX_REVERB_PARAMETERS* native );
+        void __cdecl SetReverb( AUDIO_ENGINE_REVERB reverb );
+        void __cdecl SetReverb( _In_opt_ const XAUDIO2FX_REVERB_PARAMETERS* native );
             // Sets environmental reverb for 3D positional audio (if active)
 
-        void SetMasteringLimit( int release, int loudness );
+        void __cdecl SetMasteringLimit( int release, int loudness );
             // Sets the mastering volume limiter properties (if active)
 
-        AudioStatistics GetStatistics() const;
+        AudioStatistics __cdecl GetStatistics() const;
             // Gathers audio engine statistics
 
-        WAVEFORMATEXTENSIBLE GetOutputFormat() const;
+        WAVEFORMATEXTENSIBLE __cdecl GetOutputFormat() const;
             // Returns the format consumed by the mastering voice (which is the same as the device output if defaults are used)
 
-        uint32_t GetChannelMask() const;
+        uint32_t __cdecl GetChannelMask() const;
             // Returns the output channel mask
 
-        int GetOutputChannels() const;
+        int __cdecl GetOutputChannels() const;
             // Returns the number of output channels
 
-        bool IsAudioDevicePresent() const;
+        bool __cdecl IsAudioDevicePresent() const;
             // Returns true if the audio graph is operating normally, false if in 'silent mode'
 
-        bool IsCriticalError() const;
+        bool __cdecl IsCriticalError() const;
             // Returns true if the audio graph is halted due to a critical error (which also places the engine into 'silent mode')
 
         // Voice pool management.
-        void SetDefaultSampleRate( int sampleRate );
+        void __cdecl SetDefaultSampleRate( int sampleRate );
             // Sample rate for voices in the reuse pool (defaults to 44100)
 
-        void SetMaxVoicePool( size_t maxOneShots, size_t maxInstances );
+        void __cdecl SetMaxVoicePool( size_t maxOneShots, size_t maxInstances );
             // Maximum number of voices to allocate for one-shots and instances
             // Note: one-shots over this limit are ignored; too many instance voices throws an exception
 
-        void TrimVoicePool();
+        void __cdecl TrimVoicePool();
             // Releases any currently unused voices
 
-        void AllocateVoice( _In_ const WAVEFORMATEX* wfx, SOUND_EFFECT_INSTANCE_FLAGS flags, bool oneshot, _Outptr_result_maybenull_ IXAudio2SourceVoice** voice );
+        void __cdecl AllocateVoice( _In_ const WAVEFORMATEX* wfx, SOUND_EFFECT_INSTANCE_FLAGS flags, bool oneshot, _Outptr_result_maybenull_ IXAudio2SourceVoice** voice );
 
-        void DestroyVoice( _In_ IXAudio2SourceVoice* voice );
+        void __cdecl DestroyVoice( _In_ IXAudio2SourceVoice* voice );
             // Should only be called for instance voices, not one-shots
 
-        void RegisterNotify( _In_ IVoiceNotify* notify, bool usesUpdate );
-        void UnregisterNotify( _In_ IVoiceNotify* notify, bool usesOneShots, bool usesUpdate );
+        void __cdecl RegisterNotify( _In_ IVoiceNotify* notify, bool usesUpdate );
+        void __cdecl UnregisterNotify( _In_ IVoiceNotify* notify, bool usesOneShots, bool usesUpdate );
 
         // XAudio2 interface access
-        IXAudio2* GetInterface() const;
-        IXAudio2MasteringVoice* GetMasterVoice() const;
-        IXAudio2SubmixVoice* GetReverbVoice() const;
-        X3DAUDIO_HANDLE& Get3DHandle() const;
+        IXAudio2* __cdecl GetInterface() const;
+        IXAudio2MasteringVoice* __cdecl GetMasterVoice() const;
+        IXAudio2SubmixVoice* __cdecl GetReverbVoice() const;
+        X3DAUDIO_HANDLE& __cdecl Get3DHandle() const;
 
         struct RendererDetail
         {
@@ -273,7 +282,7 @@ namespace DirectX
             std::wstring description;
         };
 
-        static std::vector<RendererDetail> GetRendererDetails();
+        static std::vector<RendererDetail> __cdecl GetRendererDetails();
             // Returns a list of valid audio endpoint devices
 
     private:
@@ -297,33 +306,33 @@ namespace DirectX
         WaveBank& operator= (WaveBank&& moveFrom);
         virtual ~WaveBank();
 
-        void Play( int index );
-        void Play( _In_z_ const char* name );
+        void __cdecl Play( int index );
+        void __cdecl Play( _In_z_ const char* name );
 
-        std::unique_ptr<SoundEffectInstance> CreateInstance( int index, SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default );
-        std::unique_ptr<SoundEffectInstance> CreateInstance( _In_z_ const char* name, SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default );
+        std::unique_ptr<SoundEffectInstance> __cdecl CreateInstance( int index, SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default );
+        std::unique_ptr<SoundEffectInstance> __cdecl CreateInstance( _In_z_ const char* name, SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default );
 
-        bool IsPrepared() const;
-        bool IsInUse() const;
-        bool IsStreamingBank() const;
+        bool __cdecl IsPrepared() const;
+        bool __cdecl IsInUse() const;
+        bool __cdecl IsStreamingBank() const;
 
-        size_t GetSampleSizeInBytes( int index ) const;
+        size_t __cdecl GetSampleSizeInBytes( int index ) const;
             // Returns size of wave audio data
 
-        size_t GetSampleDuration( int index ) const;
+        size_t __cdecl GetSampleDuration( int index ) const;
             // Returns the duration in samples
 
-        size_t GetSampleDurationMS( int index ) const;
+        size_t __cdecl GetSampleDurationMS( int index ) const;
             // Returns the duration in milliseconds
 
-        const WAVEFORMATEX* GetFormat( int index, _Out_writes_bytes_(maxsize) WAVEFORMATEX* wfx, size_t maxsize ) const;
+        const WAVEFORMATEX* __cdecl GetFormat( int index, _Out_writes_bytes_(maxsize) WAVEFORMATEX* wfx, size_t maxsize ) const;
 
-        int Find( _In_z_ const char* name ) const;
+        int __cdecl Find( _In_z_ const char* name ) const;
 
 #if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
-        bool FillSubmitBuffer( int index, _Out_ XAUDIO2_BUFFER& buffer, _Out_ XAUDIO2_BUFFER_WMA& wmaBuffer ) const;
+        bool __cdecl FillSubmitBuffer( int index, _Out_ XAUDIO2_BUFFER& buffer, _Out_ XAUDIO2_BUFFER_WMA& wmaBuffer ) const;
 #else
-        void FillSubmitBuffer( int index, _Out_ XAUDIO2_BUFFER& buffer ) const;
+        void __cdecl FillSubmitBuffer( int index, _Out_ XAUDIO2_BUFFER& buffer ) const;
 #endif
 
     private:
@@ -368,27 +377,27 @@ namespace DirectX
         SoundEffect& operator= (SoundEffect&& moveFrom);
         virtual ~SoundEffect();
 
-        void Play();
+        void __cdecl Play();
 
-        std::unique_ptr<SoundEffectInstance> CreateInstance( SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default );
+        std::unique_ptr<SoundEffectInstance> __cdecl CreateInstance( SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default );
 
-        bool IsInUse() const;
+        bool __cdecl IsInUse() const;
 
-        size_t GetSampleSizeInBytes() const;
+        size_t __cdecl GetSampleSizeInBytes() const;
             // Returns size of wave audio data
 
-        size_t GetSampleDuration() const;
+        size_t __cdecl GetSampleDuration() const;
             // Returns the duration in samples
 
-        size_t GetSampleDurationMS() const;
+        size_t __cdecl GetSampleDurationMS() const;
             // Returns the duration in milliseconds
 
-        const WAVEFORMATEX* GetFormat() const;
+        const WAVEFORMATEX* __cdecl GetFormat() const;
 
 #if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
-        bool FillSubmitBuffer( _Out_ XAUDIO2_BUFFER& buffer, _Out_ XAUDIO2_BUFFER_WMA& wmaBuffer ) const;
+        bool __cdecl FillSubmitBuffer( _Out_ XAUDIO2_BUFFER& buffer, _Out_ XAUDIO2_BUFFER_WMA& wmaBuffer ) const;
 #else
-        void FillSubmitBuffer( _Out_ XAUDIO2_BUFFER& buffer ) const;
+        void __cdecl FillSubmitBuffer( _Out_ XAUDIO2_BUFFER& buffer ) const;
 #endif
 
     private:
@@ -423,7 +432,7 @@ namespace DirectX
         {
             XMStoreFloat3( reinterpret_cast<XMFLOAT3*>( &Position ), v );
         }
-        void SetPosition( const XMFLOAT3& pos )
+        void __cdecl SetPosition( const XMFLOAT3& pos )
         {
             Position.x = pos.x;
             Position.y = pos.y;
@@ -434,7 +443,7 @@ namespace DirectX
         {
             XMStoreFloat3( reinterpret_cast<XMFLOAT3*>( &Velocity ), v );
         }
-        void SetVelocity( const XMFLOAT3& vel )
+        void __cdecl SetVelocity( const XMFLOAT3& vel )
         {
             Velocity.x = vel.x;
             Velocity.y = vel.y;
@@ -446,7 +455,7 @@ namespace DirectX
             XMStoreFloat3( reinterpret_cast<XMFLOAT3*>( &OrientFront ), forward );
             XMStoreFloat3( reinterpret_cast<XMFLOAT3*>( &OrientTop ), up );
         }
-        void SetOrientation( const XMFLOAT3& forward, const XMFLOAT3& up )
+        void __cdecl SetOrientation( const XMFLOAT3& forward, const XMFLOAT3& up )
         {
             OrientFront.x = forward.x;  OrientTop.x = up.x;
             OrientFront.y = forward.y;  OrientTop.y = up.y;
@@ -515,7 +524,7 @@ namespace DirectX
         {
             XMStoreFloat3( reinterpret_cast<XMFLOAT3*>( &Position ), v );
         }
-        void SetPosition( const XMFLOAT3& pos )
+        void __cdecl SetPosition( const XMFLOAT3& pos )
         {
             Position.x = pos.x;
             Position.y = pos.y;
@@ -526,7 +535,7 @@ namespace DirectX
         {
             XMStoreFloat3( reinterpret_cast<XMFLOAT3*>( &Velocity ), v );
         }
-        void SetVelocity( const XMFLOAT3& vel )
+        void __cdecl SetVelocity( const XMFLOAT3& vel )
         {
             Velocity.x = vel.x;
             Velocity.y = vel.y;
@@ -538,7 +547,7 @@ namespace DirectX
             XMStoreFloat3( reinterpret_cast<XMFLOAT3*>( &OrientFront ), forward );
             XMStoreFloat3( reinterpret_cast<XMFLOAT3*>( &OrientTop ), up );
         }
-        void SetOrientation( const XMFLOAT3& forward, const XMFLOAT3& up )
+        void __cdecl SetOrientation( const XMFLOAT3& forward, const XMFLOAT3& up )
         {
             OrientFront.x = forward.x;  OrientTop.x = up.x;
             OrientFront.y = forward.y;  OrientTop.y = up.y;
@@ -589,23 +598,23 @@ namespace DirectX
         SoundEffectInstance& operator= (SoundEffectInstance&& moveFrom);
         virtual ~SoundEffectInstance();
 
-        void Play( bool loop = false );
-        void Stop( bool immediate = true );
-        void Pause();
-        void Resume();
+        void __cdecl Play( bool loop = false );
+        void __cdecl Stop( bool immediate = true );
+        void __cdecl Pause();
+        void __cdecl Resume();
 
-        void SetVolume( float volume );
-        void SetPitch( float pitch );
-        void SetPan( float pan );
+        void __cdecl SetVolume( float volume );
+        void __cdecl SetPitch( float pitch );
+        void __cdecl SetPan( float pan );
 
-        void Apply3D( const AudioListener& listener, const AudioEmitter& emitter );
+        void __cdecl Apply3D( const AudioListener& listener, const AudioEmitter& emitter );
 
-        bool IsLooped() const;
+        bool __cdecl IsLooped() const;
 
-        SoundState GetState();
+        SoundState __cdecl GetState();
 
         // Notifications.
-        void OnDestroyParent();
+        void __cdecl OnDestroyParent();
 
     private:
         // Private implementation.
@@ -631,41 +640,41 @@ namespace DirectX
     {
     public:
         DynamicSoundEffectInstance( _In_ AudioEngine* engine,
-                                    _In_opt_ std::function<void(DynamicSoundEffectInstance*)> bufferNeeded,
+                                    _In_opt_ std::function<void DIRECTX_STD_CALLCONV(DynamicSoundEffectInstance*)> bufferNeeded,
                                     int sampleRate, int channels, int sampleBits = 16,
                                     SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default );
         DynamicSoundEffectInstance(DynamicSoundEffectInstance&& moveFrom);
         DynamicSoundEffectInstance& operator= (DynamicSoundEffectInstance&& moveFrom);
         virtual ~DynamicSoundEffectInstance();
 
-        void Play();
-        void Stop( bool immediate = true );
-        void Pause();
-        void Resume();
+        void __cdecl Play();
+        void __cdecl Stop( bool immediate = true );
+        void __cdecl Pause();
+        void __cdecl Resume();
 
-        void SetVolume( float volume );
-        void SetPitch( float pitch );
-        void SetPan( float pan );
+        void __cdecl SetVolume( float volume );
+        void __cdecl SetPitch( float pitch );
+        void __cdecl SetPan( float pan );
 
-        void Apply3D( const AudioListener& listener, const AudioEmitter& emitter );
+        void __cdecl Apply3D( const AudioListener& listener, const AudioEmitter& emitter );
 
-        void SubmitBuffer( _In_reads_bytes_(audioBytes) const uint8_t* pAudioData, size_t audioBytes );
-        void SubmitBuffer( _In_reads_bytes_(audioBytes) const uint8_t* pAudioData, uint32_t offset, size_t audioBytes );
+        void __cdecl SubmitBuffer( _In_reads_bytes_(audioBytes) const uint8_t* pAudioData, size_t audioBytes );
+        void __cdecl SubmitBuffer( _In_reads_bytes_(audioBytes) const uint8_t* pAudioData, uint32_t offset, size_t audioBytes );
 
-        SoundState GetState();
+        SoundState __cdecl GetState();
 
-        size_t GetSampleDuration( size_t bytes ) const;
+        size_t __cdecl GetSampleDuration( size_t bytes ) const;
             // Returns duration in samples of a buffer of a given size
 
-        size_t GetSampleDurationMS( size_t bytes ) const;
+        size_t __cdecl GetSampleDurationMS( size_t bytes ) const;
             // Returns duration in milliseconds of a buffer of a given size
 
-        size_t GetSampleSizeInBytes( uint64_t duration ) const;
+        size_t __cdecl GetSampleSizeInBytes( uint64_t duration ) const;
             // Returns size of a buffer for a duration given in milliseconds
 
-        int GetPendingBufferCount() const;
+        int __cdecl GetPendingBufferCount() const;
 
-        const WAVEFORMATEX* GetFormat() const;
+        const WAVEFORMATEX* __cdecl GetFormat() const;
 
     private:
         // Private implementation.

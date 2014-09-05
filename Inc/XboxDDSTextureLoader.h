@@ -19,9 +19,7 @@
 // http://go.microsoft.com/fwlink/?LinkId=248929
 //--------------------------------------------------------------------------------------
 
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #if !defined(_XBOX_ONE) || !defined(_TITLE)
 #error This module only supports Xbox One exclusive apps
@@ -42,22 +40,22 @@ namespace Xbox
         DDS_ALPHA_MODE_CUSTOM        = 4,
     };
 
-    HRESULT CreateDDSTextureFromMemory( _In_ ID3D11DeviceX* d3dDevice,
-                                        _In_reads_bytes_(ddsDataSize) const uint8_t* ddsData,
-                                        _In_ size_t ddsDataSize,
-                                        _Outptr_opt_ ID3D11Resource** texture,
-                                        _Outptr_opt_ ID3D11ShaderResourceView** textureView,
-                                        _Outptr_ void** grfxMemory,
-                                        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr, 
-                                        _In_ bool forceSRGB = false
-                                      );
+    HRESULT __cdecl CreateD DSTextureFromMemory( _In_ ID3D11DeviceX* d3dDevice,
+                                                 _In_reads_bytes_(ddsDataSize) const uint8_t* ddsData,
+                                                 _In_ size_t ddsDataSize,
+                                                 _Outptr_opt_ ID3D11Resource** texture,
+                                                 _Outptr_opt_ ID3D11ShaderResourceView** textureView,
+                                                 _Outptr_ void** grfxMemory,
+                                                 _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr, 
+                                                 _In_ bool forceSRGB = false
+                                               );
 
-    HRESULT CreateDDSTextureFromFile( _In_ ID3D11DeviceX* d3dDevice,
-                                      _In_z_ const wchar_t* szFileName,
-                                      _Outptr_opt_ ID3D11Resource** texture,
-                                      _Outptr_opt_ ID3D11ShaderResourceView** textureView,
-                                      _Outptr_ void** grfxMemory,
-                                      _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr,
-                                      _In_ bool forceSRGB = false
-                                    );
+    HRESULT __cdecl CreateDDSTextureFromFile( _In_ ID3D11DeviceX* d3dDevice,
+                                              _In_z_ const wchar_t* szFileName,
+                                              _Outptr_opt_ ID3D11Resource** texture,
+                                              _Outptr_opt_ ID3D11ShaderResourceView** textureView,
+                                              _Outptr_ void** grfxMemory,
+                                              _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr,
+                                              _In_ bool forceSRGB = false
+                                            );
 }

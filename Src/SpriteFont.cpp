@@ -333,7 +333,7 @@ void XM_CALLCONV SpriteFont::DrawString(_In_ SpriteBatch* spriteBatch, _In_z_ wc
 }
 
 
-XMVECTOR SpriteFont::MeasureString(_In_z_ wchar_t const* text) const
+XMVECTOR XM_CALLCONV SpriteFont::MeasureString(_In_z_ wchar_t const* text) const
 {
     XMVECTOR result = XMVectorZero();
 

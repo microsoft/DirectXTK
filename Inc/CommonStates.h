@@ -33,29 +33,29 @@ namespace DirectX
         virtual ~CommonStates();
 
         // Blend states.
-        ID3D11BlendState* Opaque() const;
-        ID3D11BlendState* AlphaBlend() const;
-        ID3D11BlendState* Additive() const;
-        ID3D11BlendState* NonPremultiplied() const;
+        ID3D11BlendState* __cdecl Opaque() const;
+        ID3D11BlendState* __cdecl AlphaBlend() const;
+        ID3D11BlendState* __cdecl Additive() const;
+        ID3D11BlendState* __cdecl NonPremultiplied() const;
 
         // Depth stencil states.
-        ID3D11DepthStencilState* DepthNone() const;
-        ID3D11DepthStencilState* DepthDefault() const;
-        ID3D11DepthStencilState* DepthRead() const;
+        ID3D11DepthStencilState* __cdecl DepthNone() const;
+        ID3D11DepthStencilState* __cdecl DepthDefault() const;
+        ID3D11DepthStencilState* __cdecl DepthRead() const;
 
         // Rasterizer states.
-        ID3D11RasterizerState* CullNone() const;
-        ID3D11RasterizerState* CullClockwise() const;
-        ID3D11RasterizerState* CullCounterClockwise() const;
-        ID3D11RasterizerState* Wireframe() const;
+        ID3D11RasterizerState* __cdecl CullNone() const;
+        ID3D11RasterizerState* __cdecl CullClockwise() const;
+        ID3D11RasterizerState* __cdecl CullCounterClockwise() const;
+        ID3D11RasterizerState* __cdecl Wireframe() const;
 
         // Sampler states.
-        ID3D11SamplerState* PointWrap() const;
-        ID3D11SamplerState* PointClamp() const;
-        ID3D11SamplerState* LinearWrap() const;
-        ID3D11SamplerState* LinearClamp() const;
-        ID3D11SamplerState* AnisotropicWrap() const;
-        ID3D11SamplerState* AnisotropicClamp() const;
+        ID3D11SamplerState* __cdecl PointWrap() const;
+        ID3D11SamplerState* __cdecl PointClamp() const;
+        ID3D11SamplerState* __cdecl LinearWrap() const;
+        ID3D11SamplerState* __cdecl LinearClamp() const;
+        ID3D11SamplerState* __cdecl AnisotropicWrap() const;
+        ID3D11SamplerState* __cdecl AnisotropicClamp() const;
 
     private:
         // Private implementation.

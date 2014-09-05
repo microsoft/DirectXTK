@@ -97,39 +97,39 @@ public:
     void Play();
 
     // IVoiceNotify
-    virtual void OnBufferEnd() override
+    virtual void __cdecl OnBufferEnd() override
     {
         InterlockedDecrement( &mOneShots );
     }
 
-    virtual void OnCriticalError() override
+    virtual void __cdecl OnCriticalError() override
     {
         mOneShots = 0;
     }
 
-    virtual void OnReset() override
+    virtual void __cdecl OnReset() override
     {
         // No action required
     }
 
-    virtual void OnUpdate() override
+    virtual void __cdecl OnUpdate() override
     {
         // We do not register for update notification
         assert(false);
     }
 
-    virtual void OnDestroyEngine() override
+    virtual void __cdecl OnDestroyEngine() override
     {
         mEngine = nullptr;
         mOneShots = 0;
     }
 
-    virtual void OnTrim() override
+    virtual void __cdecl OnTrim() override
     {
         // No action required
     }
 
-    virtual void GatherStatistics( AudioStatistics& stats ) const override
+    virtual void __cdecl GatherStatistics( AudioStatistics& stats ) const override
     {
         stats.playingOneShots += mOneShots;
         stats.audioBytes += mAudioBytes;

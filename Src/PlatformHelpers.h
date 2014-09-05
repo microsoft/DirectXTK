@@ -55,7 +55,7 @@ namespace DirectX
 }
 
 
-#if defined(_MSC_VER) && (_MSC_VER < 1610)
+#if (defined(_MSC_VER) && (_MSC_VER < 1610)) || defined(DIRECTX_EMULATE_MUTEX)
 
 // Emulate the C++0x mutex and lock_guard types when building with Visual Studio versions < 2012.
 namespace std

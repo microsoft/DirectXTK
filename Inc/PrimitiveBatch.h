@@ -43,12 +43,12 @@ namespace DirectX
 
         public:
             // Begin/End a batch of primitive drawing operations.
-            void Begin();
-            void End();
+            void __cdecl Begin();
+            void __cdecl End();
 
         protected:
             // Internal, untyped drawing method.
-            void Draw(D3D11_PRIMITIVE_TOPOLOGY topology, bool isIndexed, _In_opt_count_(indexCount) uint16_t const* indices, size_t indexCount, size_t vertexCount, _Out_ void** pMappedVertices);
+            void __cdecl Draw(D3D11_PRIMITIVE_TOPOLOGY topology, bool isIndexed, _In_opt_count_(indexCount) uint16_t const* indices, size_t indexCount, size_t vertexCount, _Out_ void** pMappedVertices);
 
         private:
             // Private implementation.
@@ -78,7 +78,7 @@ namespace DirectX
           : PrimitiveBatchBase(std::move(moveFrom))
         { }
 
-        PrimitiveBatch& operator= (PrimitiveBatch&& moveFrom)
+        PrimitiveBatch& __cdecl operator= (PrimitiveBatch&& moveFrom)
         {
             PrimitiveBatchBase::operator=(std::move(moveFrom));
             return *this;
@@ -86,7 +86,7 @@ namespace DirectX
 
 
         // Similar to the D3D9 API DrawPrimitiveUP.
-        void Draw(D3D11_PRIMITIVE_TOPOLOGY topology, _In_reads_(vertexCount) TVertex const* vertices, size_t vertexCount)
+        void __cdecl Draw(D3D11_PRIMITIVE_TOPOLOGY topology, _In_reads_(vertexCount) TVertex const* vertices, size_t vertexCount)
         {
             void* mappedVertices;
 
@@ -97,7 +97,7 @@ namespace DirectX
 
 
         // Similar to the D3D9 API DrawIndexedPrimitiveUP.
-        void DrawIndexed(D3D11_PRIMITIVE_TOPOLOGY topology, _In_reads_(indexCount) uint16_t const* indices, size_t indexCount, _In_reads_(vertexCount) TVertex const* vertices, size_t vertexCount)
+        void __cdecl DrawIndexed(D3D11_PRIMITIVE_TOPOLOGY topology, _In_reads_(indexCount) uint16_t const* indices, size_t indexCount, _In_reads_(vertexCount) TVertex const* vertices, size_t vertexCount)
         {
             void* mappedVertices;
 
@@ -107,7 +107,7 @@ namespace DirectX
         }
 
 
-        void DrawLine(TVertex const& v1, TVertex const& v2)
+        void __cdecl DrawLine(TVertex const& v1, TVertex const& v2)
         {
             TVertex* mappedVertices;
 
@@ -118,7 +118,7 @@ namespace DirectX
         }
 
 
-        void DrawTriangle(TVertex const& v1, TVertex const& v2, TVertex const& v3)
+        void __cdecl DrawTriangle(TVertex const& v1, TVertex const& v2, TVertex const& v3)
         {
             TVertex* mappedVertices;
 
@@ -130,7 +130,7 @@ namespace DirectX
         }
 
 
-        void DrawQuad(TVertex const& v1, TVertex const& v2, TVertex const& v3, TVertex const& v4)
+        void __cdecl DrawQuad(TVertex const& v1, TVertex const& v2, TVertex const& v3, TVertex const& v4)
         {
             static const uint16_t quadIndices[] = { 0, 1, 2, 0, 2, 3 };
 
