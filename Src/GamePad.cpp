@@ -280,7 +280,7 @@ public:
         memset( &caps, 0, sizeof(Capabilities) );
     }
 
-    bool SetVibration( int player, float leftMotor, float rightMotor )
+    bool SetVibration( int player, float leftMotor, float rightMotor, float leftTrigger, float rightTrigger )
     {
         using namespace ABI::Windows::Xbox::Input;
 
@@ -293,9 +293,9 @@ public:
                 {
                     GamepadVibration vib;
                     vib.LeftMotorLevel = leftMotor;
-                    vib.LeftTriggerLevel = 0.f;
                     vib.RightMotorLevel = rightMotor;
-                    vib.RightTriggerLevel = 0.f;
+                    vib.LeftTriggerLevel = leftTrigger;
+                    vib.RightTriggerLevel = rightTrigger;
                     hr = mGamePad[ player ]->SetVibration(vib);
                 }
                 catch( ... )
@@ -448,11 +448,13 @@ public:
         memset( &caps, 0, sizeof(Capabilities) );
     }
 
-    bool SetVibration(int player, float leftMotor, float rightMotor)
+    bool SetVibration(int player, float leftMotor, float rightMotor, float leftTrigger, float rightTrigger)
     {
         UNREFERENCED_PARAMETER(player);
         UNREFERENCED_PARAMETER(leftMotor);
         UNREFERENCED_PARAMETER(rightMotor);
+        UNREFERENCED_PARAMETER(leftTrigger);
+        UNREFERENCED_PARAMETER(rightTrigger);
 
         return false;
     }
@@ -592,12 +594,17 @@ public:
         memset( &caps, 0, sizeof(Capabilities) );
     }
 
-    bool SetVibration( int player, float leftMotor, float rightMotor )
+    bool SetVibration( int player, float leftMotor, float rightMotor, float leftTrigger, float rightTrigger )
     {
         if ( ThrottleRetry(player) )
         {
             return false;
         }
+
+        // XInput does not provide a way to set the left/right trigger impulse motors on the Xbox One Controller,
+        // and these motors are not present on the Xbox 360 Common Controller
+        UNREFERENCED_PARAMETER(leftTrigger);
+        UNREFERENCED_PARAMETER(rightTrigger);
 
         XINPUT_VIBRATION xvibration;
         xvibration.wLeftMotorSpeed = WORD( leftMotor * 0xFFFF );
@@ -636,6 +643,10 @@ private:
 
     bool ThrottleRetry( int player )
     {
+        // This function minimizes a potential performance issue with XInput on Windows when
+        // checking a disconnected controller slot which requires device enumeration.
+        // This throttling keeps checks for newly connected gamepads to about once a second
+
         if ( ( player < 0 ) || ( player >= XUSER_MAX_COUNT ) )
             return true;
 
@@ -710,9 +721,9 @@ GamePad::Capabilities GamePad::GetCapabilities(int player)
 }
 
 
-bool GamePad::SetVibration( int player, float leftMotor, float rightMotor )
+bool GamePad::SetVibration( int player, float leftMotor, float rightMotor, float leftTrigger, float rightTrigger )
 {
-    return pImpl->SetVibration( player, leftMotor, rightMotor );
+    return pImpl->SetVibration( player, leftMotor, rightMotor, leftTrigger, rightTrigger );
 }
 
 

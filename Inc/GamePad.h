@@ -208,7 +208,7 @@ namespace DirectX
         Capabilities __cdecl GetCapabilities(int player);
 
         // Set the vibration motor speeds of the gamepad
-        bool __cdecl SetVibration( int player, float leftMotor, float rightMotor );
+        bool __cdecl SetVibration( int player, float leftMotor, float rightMotor, float leftTrigger = 0.f, float rightTrigger = 0.f );
 
         // Handle suspending/resuming
         void __cdecl Suspend();
