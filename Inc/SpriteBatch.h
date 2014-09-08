@@ -89,7 +89,7 @@ namespace DirectX
 
         // Rotation mode to be applied to the sprite transformation
         void __cdecl SetRotation( DXGI_MODE_ROTATION mode );
-        DXGI_MODE_ROTATION GetRotation() const;
+        DXGI_MODE_ROTATION __cdecl GetRotation() const;
 
         // Set viewport for sprite transformation
         void __cdecl SetViewport( const D3D11_VIEWPORT& viewPort );

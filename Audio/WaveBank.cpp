@@ -71,7 +71,7 @@ public:
     void Play( int index );
 
     // IVoiceNotify
-    virtual void __cdecl OnBufferEnd()
+    virtual void __cdecl OnBufferEnd() override
     {
         InterlockedDecrement( &mOneShots );
     }

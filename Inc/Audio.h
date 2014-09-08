@@ -346,7 +346,7 @@ namespace DirectX
         WaveBank& operator= (WaveBank const&);
 
         // Private interface
-        void UnregisterInstance( _In_ SoundEffectInstance* instance );
+        void __cdecl UnregisterInstance( _In_ SoundEffectInstance* instance );
 
         friend class SoundEffectInstance;
     };
@@ -411,7 +411,7 @@ namespace DirectX
         SoundEffect& operator= (SoundEffect const&);
 
         // Private interface
-        void UnregisterInstance( _In_ SoundEffectInstance* instance );
+        void __cdecl UnregisterInstance( _In_ SoundEffectInstance* instance );
 
         friend class SoundEffectInstance;
     };
@@ -626,8 +626,8 @@ namespace DirectX
         SoundEffectInstance( _In_ AudioEngine* engine, _In_ SoundEffect* effect, SOUND_EFFECT_INSTANCE_FLAGS flags );
         SoundEffectInstance( _In_ AudioEngine* engine, _In_ WaveBank* effect, int index, SOUND_EFFECT_INSTANCE_FLAGS flags );
 
-        friend std::unique_ptr<SoundEffectInstance> SoundEffect::CreateInstance( SOUND_EFFECT_INSTANCE_FLAGS );
-        friend std::unique_ptr<SoundEffectInstance> WaveBank::CreateInstance( int, SOUND_EFFECT_INSTANCE_FLAGS );
+        friend std::unique_ptr<SoundEffectInstance> __cdecl SoundEffect::CreateInstance( SOUND_EFFECT_INSTANCE_FLAGS );
+        friend std::unique_ptr<SoundEffectInstance> __cdecl WaveBank::CreateInstance( int, SOUND_EFFECT_INSTANCE_FLAGS );
 
         // Prevent copying.
         SoundEffectInstance(SoundEffectInstance const&);
