@@ -434,6 +434,21 @@ HANDLE GamePad::Impl::s_changed = nullptr;
 class GamePad::Impl
 {
 public:
+    Impl()
+    {
+        if ( s_gamePad )
+        {
+            throw std::exception( "GamePad is a singleton" );
+        }
+
+        s_gamePad = this;
+    }
+
+    ~Impl()
+    {
+        s_gamePad = nullptr;
+    }
+
     void GetState(int player, _Out_ State& state, DeadZone)
     {
         UNREFERENCED_PARAMETER(player);
@@ -466,7 +481,12 @@ public:
     void Resume()
     {
     }
+
+private:
+    static GamePad::Impl* s_gamePad;
 };
+
+GamePad::Impl* GamePad::Impl::s_gamePad = nullptr;
 
 
 #else
@@ -489,6 +509,18 @@ public:
             mConnected[ j ] = false;
             mLastReadTime[ j ] = 0;
         }
+
+        if ( s_gamePad )
+        {
+            throw std::exception( "GamePad is a singleton" );
+        }
+
+        s_gamePad = this;
+    }
+
+    ~Impl()
+    {
+        s_gamePad = nullptr;
     }
 
     void GetState( int player, _Out_ State& state, DeadZone deadZoneMode )
@@ -641,6 +673,8 @@ private:
     bool        mConnected[ XUSER_MAX_COUNT ];
     ULONGLONG   mLastReadTime[ XUSER_MAX_COUNT ];
 
+    static GamePad::Impl* s_gamePad;
+
     bool ThrottleRetry( int player )
     {
         // This function minimizes a potential performance issue with XInput on Windows when
@@ -673,6 +707,8 @@ private:
         return false;
     }
 };
+
+GamePad::Impl* GamePad::Impl::s_gamePad = nullptr;
 
 #endif
 
