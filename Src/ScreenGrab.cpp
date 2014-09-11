@@ -939,6 +939,13 @@ HRESULT DirectX::SaveWICTextureToFile( _In_ ID3D11DeviceContext* pContext,
             return hr;
         }
 
+        BOOL canConvert = FALSE;
+        hr = FC->CanConvert( pfGuid, targetGuid, &canConvert );
+        if ( FAILED(hr) || !canConvert )
+        {
+            return E_UNEXPECTED;
+        }
+
         hr = FC->Initialize( source.Get(), targetGuid, WICBitmapDitherTypeNone, 0, 0, WICBitmapPaletteTypeCustom );
         if ( FAILED(hr) )
         {

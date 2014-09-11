@@ -553,6 +553,13 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
             if ( FAILED(hr) )
                 return hr;
 
+            BOOL canConvert = FALSE;
+            hr = FC->CanConvert( pfScaler, convertGUID, &canConvert );
+            if ( FAILED(hr) || !canConvert )
+            {
+                return E_UNEXPECTED;
+            }
+
             hr = FC->Initialize( scaler.Get(), convertGUID, WICBitmapDitherTypeErrorDiffusion, 0, 0, WICBitmapPaletteTypeCustom );
             if ( FAILED(hr) )
                 return hr;
@@ -573,6 +580,13 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
         hr = pWIC->CreateFormatConverter( FC.GetAddressOf() );
         if ( FAILED(hr) )
             return hr;
+
+        BOOL canConvert = FALSE;
+        hr = FC->CanConvert( pixelFormat, convertGUID, &canConvert );
+        if ( FAILED(hr) || !canConvert )
+        {
+            return E_UNEXPECTED;
+        }
 
         hr = FC->Initialize( frame, convertGUID, WICBitmapDitherTypeErrorDiffusion, 0, 0, WICBitmapPaletteTypeCustom );
         if ( FAILED(hr) )
