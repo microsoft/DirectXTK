@@ -475,10 +475,27 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
                         sRGB = true;
                     }
                 }
+#if defined(_XBOX_ONE) && defined(_TITLE)
+                else if ( memcmp( &containerFormat, &GUID_ContainerFormatJpeg, sizeof(GUID) ) == 0 )
+                {
+                    if ( SUCCEEDED( metareader->GetMetadataByName( L"/app1/ifd/exif/{ushort=40961}", &value ) ) && value.vt == VT_UI2 && value.uiVal == 1 )
+                    {
+                        sRGB = true;
+                    }
+                }
+                else if ( memcmp( &containerFormat, &GUID_ContainerFormatTiff, sizeof(GUID) ) == 0 )
+                {
+                    if ( SUCCEEDED( metareader->GetMetadataByName( L"/ifd/exif/{ushort=40961}", &value ) ) && value.vt == VT_UI2 && value.uiVal == 1 )
+                    {
+                        sRGB = true;
+                    }
+                }
+#else
                 else if ( SUCCEEDED( metareader->GetMetadataByName( L"System.Image.ColorSpace", &value ) ) && value.vt == VT_UI2 && value.uiVal == 1 )
                 {
                     sRGB = true;
                 }
+#endif
 
                 PropVariantClear( &value );
 

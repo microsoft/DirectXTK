@@ -898,6 +898,34 @@ HRESULT DirectX::SaveWICTextureToFile( _In_ ID3D11DeviceContext* pContext,
                 (void)metawriter->SetMetadataByName( L"/sRGB/RenderingIntent", &value );
             }
         }
+#if defined(_XBOX_ONE) && defined(_TITLE)
+        else if ( memcmp( &guidContainerFormat, &GUID_ContainerFormatJpeg, sizeof(GUID) ) == 0 )
+        {
+            // Set Software name
+            (void)metawriter->SetMetadataByName( L"/app1/ifd/{ushort=305}", &value );
+
+            if ( sRGB )
+            {
+                // Set EXIF Colorspace of sRGB
+                value.vt = VT_UI2;
+                value.uiVal = 1;
+                (void)metawriter->SetMetadataByName( L"/app1/ifd/exif/{ushort=40961}", &value );
+            }
+        }
+        else if ( memcmp( &guidContainerFormat, &GUID_ContainerFormatTiff, sizeof(GUID) ) == 0 )
+        {
+            // Set Software name
+            (void)metawriter->SetMetadataByName( L"/ifd/{ushort=305}", &value );
+
+            if ( sRGB )
+            {
+                // Set EXIF Colorspace of sRGB
+                value.vt = VT_UI2;
+                value.uiVal = 1;
+                (void)metawriter->SetMetadataByName( L"/ifd/exif/{ushort=40961}", &value );
+            }
+        }
+#else
         else
         {
             // Set Software name
@@ -905,12 +933,13 @@ HRESULT DirectX::SaveWICTextureToFile( _In_ ID3D11DeviceContext* pContext,
 
             if ( sRGB )
             {
-                // Set JPEG EXIF Colorspace of sRGB
+                // Set EXIF Colorspace of sRGB
                 value.vt = VT_UI2;
                 value.uiVal = 1;
                 (void)metawriter->SetMetadataByName( L"System.Image.ColorSpace", &value );
             }
         }
+#endif
     }
 
     D3D11_MAPPED_SUBRESOURCE mapped;
