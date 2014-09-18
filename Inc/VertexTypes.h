@@ -270,8 +270,8 @@ namespace DirectX
             SetColor( color );
         }
 
-        void __cdecl SetColor( XMFLOAT4 const& color ) { SetColor( XMLoadFloat4( &color ) ); }
-        void XM_CALLCONV SetColor( FXMVECTOR color );
+        void __cdecl SetColor( XMFLOAT4 const& icolor ) { SetColor( XMLoadFloat4( &icolor ) ); }
+        void XM_CALLCONV SetColor( FXMVECTOR icolor );
 
         static const int InputElementCount = 5;
         static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
@@ -320,10 +320,10 @@ namespace DirectX
             SetBlendWeights( weights );
         }
 
-        void __cdecl SetBlendIndices( XMUINT4 const& indices );
+        void __cdecl SetBlendIndices( XMUINT4 const& iindices );
 
-        void __cdecl SetBlendWeights( XMFLOAT4 const& weights ) { SetBlendWeights( XMLoadFloat4( &weights ) ); }
-        void XM_CALLCONV SetBlendWeights( FXMVECTOR weights );
+        void __cdecl SetBlendWeights( XMFLOAT4 const& iweights ) { SetBlendWeights( XMLoadFloat4( &iweights ) ); }
+        void XM_CALLCONV SetBlendWeights( FXMVECTOR iweights );
 
         static const int InputElementCount = 7;
         static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];

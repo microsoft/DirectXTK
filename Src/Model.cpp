@@ -42,9 +42,9 @@ ModelMeshPart::ModelMeshPart() :
 
 
 _Use_decl_annotations_
-void ModelMeshPart::Draw( ID3D11DeviceContext* deviceContext, IEffect* effect, ID3D11InputLayout* inputLayout, std::function<void()> setCustomState ) const
+void ModelMeshPart::Draw( ID3D11DeviceContext* deviceContext, IEffect* ieffect, ID3D11InputLayout* iinputLayout, std::function<void()> setCustomState ) const
 {
-    deviceContext->IASetInputLayout( inputLayout );
+    deviceContext->IASetInputLayout( iinputLayout );
 
     auto vb = vertexBuffer.Get();
     UINT vbStride = vertexStride;
@@ -54,8 +54,8 @@ void ModelMeshPart::Draw( ID3D11DeviceContext* deviceContext, IEffect* effect, I
     // Note that if indexFormat is DXGI_FORMAT_R32_UINT, this model mesh part requires a Feature Level 9.2 or greater device
     deviceContext->IASetIndexBuffer( indexBuffer.Get(), indexFormat, 0 );
 
-    assert( effect != 0 );
-    effect->Apply( deviceContext );
+    assert( ieffect != 0 );
+    ieffect->Apply( deviceContext );
 
     // Hook lets the caller replace our shaders or state settings with whatever else they see fit.
     if ( setCustomState )
@@ -71,7 +71,7 @@ void ModelMeshPart::Draw( ID3D11DeviceContext* deviceContext, IEffect* effect, I
 
 
 _Use_decl_annotations_
-void ModelMeshPart::CreateInputLayout( ID3D11Device* d3dDevice, IEffect* effect, ID3D11InputLayout** inputLayout )
+void ModelMeshPart::CreateInputLayout( ID3D11Device* d3dDevice, IEffect* ieffect, ID3D11InputLayout** iinputLayout )
 {
     if ( !vbDecl || vbDecl->empty() )
         throw std::exception("Model mesh part missing vertex buffer input elements data");
@@ -79,8 +79,8 @@ void ModelMeshPart::CreateInputLayout( ID3D11Device* d3dDevice, IEffect* effect,
     void const* shaderByteCode;
     size_t byteCodeLength;
 
-    assert( effect != 0 );
-    effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
+    assert( ieffect != 0 );
+    ieffect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
 
     assert( d3dDevice != 0 );
 
@@ -88,19 +88,19 @@ void ModelMeshPart::CreateInputLayout( ID3D11Device* d3dDevice, IEffect* effect,
         d3dDevice->CreateInputLayout(&(vbDecl->front()),
                                      static_cast<UINT>( vbDecl->size() ),
                                      shaderByteCode, byteCodeLength,
-                                     inputLayout )
+                                     iinputLayout )
     );
 }
 
 
 _Use_decl_annotations_
-void ModelMeshPart::ModifyEffect( ID3D11Device* d3dDevice, std::shared_ptr<IEffect>& effect, bool isalpha )
+void ModelMeshPart::ModifyEffect( ID3D11Device* d3dDevice, std::shared_ptr<IEffect>& ieffect, bool isalpha )
 {
     if ( !vbDecl || vbDecl->empty() )
         throw std::exception("Model mesh part missing vertex buffer input elements data");
 
-    assert( effect != 0 );
-    this->effect = effect;
+    assert( ieffect != 0 );
+    this->effect = ieffect;
     this->isAlpha = isalpha;
 
     void const* shaderByteCode;

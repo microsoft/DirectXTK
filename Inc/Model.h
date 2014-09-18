@@ -80,14 +80,14 @@ namespace DirectX
         typedef std::vector<std::unique_ptr<ModelMeshPart>> Collection;
 
         // Draw mesh part with custom effect
-        void __cdecl Draw( _In_ ID3D11DeviceContext* deviceContext, _In_ IEffect* effect, _In_ ID3D11InputLayout* inputLayout,
+        void __cdecl Draw( _In_ ID3D11DeviceContext* deviceContext, _In_ IEffect* ieffect, _In_ ID3D11InputLayout* iinputLayout,
                            _In_opt_ std::function<void DIRECTX_STD_CALLCONV()> setCustomState = nullptr ) const;
 
         // Create input layout for drawing with a custom effect.
-        void __cdecl CreateInputLayout( _In_ ID3D11Device* d3dDevice, _In_ IEffect* effect, _Outptr_ ID3D11InputLayout** inputLayout );
+        void __cdecl CreateInputLayout( _In_ ID3D11Device* d3dDevice, _In_ IEffect* ieffect, _Outptr_ ID3D11InputLayout** iinputLayout );
 
         // Change effect used by part and regenerate input layout (be sure to call Model::Modified as well)
-        void __cdecl ModifyEffect( _In_ ID3D11Device* d3dDevice, _In_ std::shared_ptr<IEffect>& effect, bool isalpha = false );
+        void __cdecl ModifyEffect( _In_ ID3D11Device* d3dDevice, _In_ std::shared_ptr<IEffect>& ieffect, bool isalpha = false );
     };
 
 

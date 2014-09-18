@@ -1018,7 +1018,7 @@ void AudioEngine::Impl::AllocateVoice( const WAVEFORMATEX* wfx, SOUND_EFFECT_INS
             sendDescriptors[0].Flags = sendDescriptors[1].Flags = (flags & SoundEffectInstance_ReverbUseFilters) ? XAUDIO2_SEND_USEFILTER : 0;
             sendDescriptors[0].pOutputVoice = mMasterVoice;
             sendDescriptors[1].pOutputVoice = mReverbVoice;
-            const XAUDIO2_VOICE_SENDS sendList = { mReverbVoice ? 2 : 1, sendDescriptors };
+            const XAUDIO2_VOICE_SENDS sendList = { mReverbVoice ? 2U : 1U, sendDescriptors };
 
 #ifdef VERBOSE_TRACE
             DebugTrace( "INFO: Allocate voice 3D: Format Tag %u, %u channels, %u-bit, %u blkalign, %u Hz\n", wfx->wFormatTag, 

@@ -116,10 +116,10 @@ const D3D11_INPUT_ELEMENT_DESC VertexPositionNormalTangentColorTexture::InputEle
 
 static_assert( sizeof(VertexPositionNormalTangentColorTexture) == 52, "Vertex struct/layout mismatch" );
 
-void XM_CALLCONV VertexPositionNormalTangentColorTexture::SetColor( FXMVECTOR color )
+void XM_CALLCONV VertexPositionNormalTangentColorTexture::SetColor( FXMVECTOR icolor )
 {
     XMUBYTEN4 rgba;
-    XMStoreUByteN4( &rgba, color );
+    XMStoreUByteN4( &rgba, icolor );
     this->color = rgba.v;
 }
 
@@ -142,14 +142,14 @@ static_assert( VertexPositionNormalTangentColorTextureSkinning::InputElementCoun
 
 static_assert( sizeof(VertexPositionNormalTangentColorTextureSkinning) == 60, "Vertex struct/layout mismatch" );
 
-void VertexPositionNormalTangentColorTextureSkinning::SetBlendIndices( XMUINT4 const& indices )
+void VertexPositionNormalTangentColorTextureSkinning::SetBlendIndices( XMUINT4 const& iindices )
 {
-    this->indices = ( (indices.w & 0xff) << 24 ) | ( (indices.z & 0xff) << 16 ) | ( (indices.y & 0xff) << 8 ) | ( indices.x & 0xff );
+    this->indices = ( (iindices.w & 0xff) << 24 ) | ( (iindices.z & 0xff) << 16 ) | ( (iindices.y & 0xff) << 8 ) | ( iindices.x & 0xff );
 }
 
-void XM_CALLCONV VertexPositionNormalTangentColorTextureSkinning::SetBlendWeights( FXMVECTOR weights )
+void XM_CALLCONV VertexPositionNormalTangentColorTextureSkinning::SetBlendWeights( FXMVECTOR iweights )
 {
     XMUBYTEN4 packed;
-    XMStoreUByteN4( &packed, weights );
+    XMStoreUByteN4( &packed, iweights );
     this->weights = packed.v;
 }
