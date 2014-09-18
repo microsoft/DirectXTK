@@ -518,7 +518,7 @@ HRESULT WaveBankReader::Impl::Open( const wchar_t* szFileName )
     }
 
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
-	CREATEFILE2_EXTENDED_PARAMETERS params = { sizeof(CREATEFILE2_EXTENDED_PARAMETERS), 0 };
+    CREATEFILE2_EXTENDED_PARAMETERS params = { sizeof(CREATEFILE2_EXTENDED_PARAMETERS), 0 };
     params.dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
     params.dwFileFlags = FILE_FLAG_OVERLAPPED | FILE_FLAG_SEQUENTIAL_SCAN;
     ScopedHandle hFile( safe_handle( CreateFile2( szFileName,
@@ -821,7 +821,7 @@ HRESULT WaveBankReader::Impl::Open( const wchar_t* szFileName )
         hFile.reset();
 
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
-		CREATEFILE2_EXTENDED_PARAMETERS params2 = { sizeof(CREATEFILE2_EXTENDED_PARAMETERS), 0 };
+        CREATEFILE2_EXTENDED_PARAMETERS params2 = { sizeof(CREATEFILE2_EXTENDED_PARAMETERS), 0 };
         params2.dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
         params2.dwFileFlags = FILE_FLAG_OVERLAPPED | FILE_FLAG_NO_BUFFERING;
         params2.dwSecurityQosFlags = SECURITY_IMPERSONATION;
