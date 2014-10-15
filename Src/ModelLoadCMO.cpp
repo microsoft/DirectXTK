@@ -160,6 +160,14 @@ namespace VSD3DStarter
 
 }; // namespace
 
+static_assert( sizeof(VSD3DStarter::Material) == 132, "CMO Mesh structure size incorrect" );
+static_assert( sizeof(VSD3DStarter::SubMesh) == 20, "CMO Mesh structure size incorrect" );
+static_assert( sizeof(VSD3DStarter::SkinningVertex)== 32, "CMO Mesh structure size incorrect" );
+static_assert( sizeof(VSD3DStarter::MeshExtents)== 40, "CMO Mesh structure size incorrect" );
+static_assert( sizeof(VSD3DStarter::Bone) == 196, "CMO Mesh structure size incorrect" );
+static_assert( sizeof(VSD3DStarter::Clip) == 12, "CMO Mesh structure size incorrect" );
+static_assert( sizeof(VSD3DStarter::Keyframe)== 72, "CMO Mesh structure size incorrect" );
+
 //--------------------------------------------------------------------------------------
 struct MaterialRecordCMO
 {
