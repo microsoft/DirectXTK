@@ -443,6 +443,9 @@ static void GetInputLayoutDesc( _In_reads_(32) const DXUT::D3DVERTEXELEMENT9 dec
         if ( decl[index].Usage == 0xFF )
             break;
 
+        if ( decl[index].Type == D3DDECLTYPE_UNUSED )
+            break;
+
         if ( decl[index].Offset != offset )
             break;
 
@@ -609,6 +612,12 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH( ID3D11Device* d3dDevic
     if ( !header->NumIndexBuffers )
         throw std::exception("No index buffers found");
 
+    if ( !header->NumTotalSubsets )
+        throw std::exception("No subsets found");
+
+    if ( !header->NumMaterials )
+        throw std::exception("No materials found");
+
     // Sub-headers
     if ( dataSize < header->VertexStreamHeadersOffset
          || ( dataSize < (header->VertexStreamHeadersOffset + header->NumVertexBuffers * sizeof(DXUT::SDKMESH_VERTEX_BUFFER_HEADER) ) ) )
@@ -666,7 +675,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH( ID3D11Device* d3dDevic
 
         if ( dataSize < vh.DataOffset
              || ( dataSize < vh.DataOffset + vh.SizeBytes ) )
-        throw std::exception("End of file");
+            throw std::exception("End of file");
 
         vbDecls[j] = std::make_shared<std::vector<D3D11_INPUT_ELEMENT_DESC>>();
         bool vertColor = false;
@@ -707,7 +716,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH( ID3D11Device* d3dDevic
         if ( ih.IndexType != DXUT::IT_16BIT && ih.IndexType != DXUT::IT_32BIT )
             throw std::exception("Invalid index buffer type found");
 
-        auto indexes = reinterpret_cast<const uint8_t*>( bufferData + (ih.DataOffset - bufferDataOffset) );
+        auto indices = reinterpret_cast<const uint8_t*>( bufferData + (ih.DataOffset - bufferDataOffset) );
 
         D3D11_BUFFER_DESC desc = {0};
         desc.Usage = D3D11_USAGE_DEFAULT;
@@ -715,7 +724,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH( ID3D11Device* d3dDevic
         desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
         D3D11_SUBRESOURCE_DATA initData = {0};
-        initData.pSysMem = indexes;
+        initData.pSysMem = indices;
 
         ThrowIfFailed(
             d3dDevice->CreateBuffer( &desc, &initData, &ibs[j] )
