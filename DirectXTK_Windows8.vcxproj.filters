@@ -203,6 +203,9 @@
     <ClCompile Include="Src\GamePad.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="Src\ModelLoadVBO.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Src\Shaders\CompileShaders.cmd">
