@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-September 5, 2014
+October 28, 2014
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Windows Store apps, Windows phone 8.x applications,
@@ -1444,6 +1444,12 @@ Further reading:
 ---------------
 RELEASE HISTORY
 ---------------
+
+October 28, 2014
+    Model support for loading from VBO files
+    Model render now sets samplers on slots 0,1 by default for dual-texture effects
+    Updates for Xbox One platform support
+    Minor code cleanup
 
 September 5, 2014
     GamePad class: gamepad controller helper using XInput on Windows, IGamepad for Xbox One
