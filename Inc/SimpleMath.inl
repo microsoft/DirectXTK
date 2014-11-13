@@ -1783,9 +1783,9 @@ inline bool Matrix::operator != ( const Matrix& M ) const
     XMVECTOR y4 = XMLoadFloat4( reinterpret_cast<const XMFLOAT4*>(&M._41) );
 
     return ( XMVector4NotEqual( x1, y1 )
-             && XMVector4NotEqual( x2, y2 )
-             && XMVector4NotEqual( x3, y3 )
-             && XMVector4NotEqual( x4, y4 ) ) != 0;
+             || XMVector4NotEqual( x2, y2 )
+             || XMVector4NotEqual( x3, y3 )
+             || XMVector4NotEqual( x4, y4 ) ) != 0;
 }
 
 //------------------------------------------------------------------------------
