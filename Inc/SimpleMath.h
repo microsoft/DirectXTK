@@ -16,9 +16,9 @@
 #include <functional>
 #include <memory.h>
 
-#include "DirectXMath.h"
-#include "DirectXPackedVector.h"
-#include "DirectXCollision.h"
+#include <DirectXMath.h>
+#include <DirectXPackedVector.h>
+#include <DirectXCollision.h>
 
 namespace DirectX
 {
