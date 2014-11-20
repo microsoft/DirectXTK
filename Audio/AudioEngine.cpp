@@ -416,7 +416,7 @@ HRESULT AudioEngine::Impl::Reset( const WAVEFORMATEX* wfx, const wchar_t* device
         mDLL = LoadLibraryEx( L"XAudio2_7.DLL", nullptr, 0x00000800 /* LOAD_LIBRARY_SEARCH_SYSTEM32 */ );
         if ( !mDLL )
         {
-            DebugTrace( "ERROR: XAudio 2.7 not installed on system (install the DirectX End-user Runtimes (June 2010)\n" );
+            DebugTrace( "ERROR: XAudio 2.7 not installed on system (install the DirectX End-user Runtimes (June 2010))\n" );
             return HRESULT_FROM_WIN32( ERROR_NOT_FOUND );
         }
     }
