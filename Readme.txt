@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-October 28, 2014
+November 24, 2014
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Windows Store apps, Windows phone 8.x applications,
@@ -1394,6 +1394,7 @@ Platform support:
         * DirectXTK_Windows81
         * DirectXTK_Windows8
         * DirectXTK_WindowsPhone81
+        * DirectXTK_XAMLSilverlight_WindowsPhone81
         * DirectXTK_WindowsPhone8
         * DirectXTK_XboxOneXDK
         * DirectXTK_XboxOneADK
@@ -1444,6 +1445,13 @@ Further reading:
 ---------------
 RELEASE HISTORY
 ---------------
+
+November 24, 2014
+    SimpleMath fix for Matrix operator !=
+    DirectXTK for Audio workaround for XAudio 2.7 on Windows 7 problem
+    Updates for Windows phone 8.1 platform support
+    Updates for Visual Studio 2015 Technical Preview
+    Minor code cleanup
 
 October 28, 2014
     Model support for loading from VBO files
