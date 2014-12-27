@@ -40,6 +40,7 @@ namespace DirectX
         char buff[1024]={0};
         vsprintf_s( buff, format, args );
         OutputDebugStringA( buff );
+        va_end( args );
 #else
         UNREFERENCED_PARAMETER( format );
 #endif
