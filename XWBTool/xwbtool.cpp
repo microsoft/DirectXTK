@@ -461,9 +461,9 @@ bool ConvertToMiniFormat( const WAVEFORMATEX* wfx, bool hasSeek, MINIWAVEFORMAT&
                 return false;
             }
 
-            int nHeaderBytes = 7 /*MSADPCM_HEADER_LENGTH*/ * wfx->nChannels;
-            int nBitsPerFrame = 4 /*MSADPCM_BITS_PER_SAMPLE*/ * wfx->nChannels;
-            int nPcmFramesPerBlock = (wfx->nBlockAlign - nHeaderBytes) * 8 / nBitsPerFrame + 2;
+            unsigned int nHeaderBytes = 7 /*MSADPCM_HEADER_LENGTH*/ * wfx->nChannels;
+            unsigned int nBitsPerFrame = 4 /*MSADPCM_BITS_PER_SAMPLE*/ * wfx->nChannels;
+            unsigned int nPcmFramesPerBlock = (wfx->nBlockAlign - nHeaderBytes) * 8 / nBitsPerFrame + 2;
 
             if ( wfadpcm->wSamplesPerBlock != nPcmFramesPerBlock )
             {
