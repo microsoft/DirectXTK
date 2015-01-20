@@ -493,18 +493,24 @@ HRESULT AudioEngine::Impl::Reset( const WAVEFORMATEX* wfx, const wchar_t* device
 
 #else
 
+    UINT32 count = 0;
+    hr = xaudio2->GetDeviceCount( &count );
+    if ( FAILED(hr) )
+    {
+        xaudio2.Reset();
+        return hr;
+    }
+
+    if ( !count )
+    {
+        xaudio2.Reset();
+        return HRESULT_FROM_WIN32( ERROR_NOT_FOUND );
+    }
+
     UINT32 devIndex = 0;
     if ( deviceId )
     {
         // Translate device ID back into device index
-        UINT32 count = 0;
-        hr = xaudio2->GetDeviceCount( &count );
-        if ( FAILED(hr) )
-        {
-            xaudio2.Reset();
-            return hr;
-        }
-
         devIndex = UINT32(-1);
         for( UINT32 j = 0; j < count; ++j )
         {
@@ -524,7 +530,7 @@ HRESULT AudioEngine::Impl::Reset( const WAVEFORMATEX* wfx, const wchar_t* device
         if ( devIndex == UINT32(-1) )
         {
             xaudio2.Reset();
-            return E_FAIL;
+            return HRESULT_FROM_WIN32( ERROR_NOT_FOUND );
         }
     }
     else
