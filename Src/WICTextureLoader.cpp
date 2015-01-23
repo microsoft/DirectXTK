@@ -1002,6 +1002,16 @@ HRESULT DirectX::CreateWICTextureFromFileEx( ID3D11Device* d3dDevice,
 #if !defined(NO_D3D11_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
     if ( SUCCEEDED(hr) )
     {
+        #if defined(_XBOX_ONE) && defined(_TITLE)
+        if (texture != 0 && *texture != 0)
+        {
+            (*texture)->SetName( fileName );
+        }
+        if (textureView != 0 && *textureView != 0 )
+        {
+            (*textureView)->SetName( fileName );
+        }
+        #else
         if (texture != 0 || textureView != 0)
         {
             CHAR strFileA[MAX_PATH];
@@ -1043,6 +1053,7 @@ HRESULT DirectX::CreateWICTextureFromFileEx( ID3D11Device* d3dDevice,
                 }
             }
         }
+        #endif
     }
 #endif
 
@@ -1105,6 +1116,16 @@ HRESULT DirectX::CreateWICTextureFromFileEx( ID3D11Device* d3dDevice,
 #if !defined(NO_D3D11_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
     if ( SUCCEEDED(hr) )
     {
+        #if defined(_XBOX_ONE) && defined(_TITLE)
+        if (texture != 0 && *texture != 0)
+        {
+            (*texture)->SetName( fileName );
+        }
+        if (textureView != 0 && *textureView != 0 )
+        {
+            (*textureView)->SetName( fileName );
+        }
+        #else
         if (texture != 0 || textureView != 0)
         {
             CHAR strFileA[MAX_PATH];
@@ -1146,6 +1167,7 @@ HRESULT DirectX::CreateWICTextureFromFileEx( ID3D11Device* d3dDevice,
                 }
             }
         }
+        #endif
     }
 #endif
 

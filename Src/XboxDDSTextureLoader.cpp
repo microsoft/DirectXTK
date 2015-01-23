@@ -753,46 +753,13 @@ HRESULT Xbox::CreateDDSTextureFromFile( ID3D11DeviceX* d3dDevice,
     if ( SUCCEEDED(hr) )
     {
 #if !defined(NO_D3D11_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
-        if (texture != 0 || textureView != 0)
+        if (texture != 0 && *texture != 0)
         {
-            CHAR strFileA[MAX_PATH];
-            int result = WideCharToMultiByte( CP_ACP,
-                                              WC_NO_BEST_FIT_CHARS,
-                                              fileName,
-                                              -1,
-                                              strFileA,
-                                              MAX_PATH,
-                                              nullptr,
-                                              FALSE
-                               );
-            if ( result > 0 )
-            {
-                const CHAR* pstrName = strrchr( strFileA, '\\' );
-                if (!pstrName)
-                {
-                    pstrName = strFileA;
-                }
-                else
-                {
-                    pstrName++;
-                }
-
-                if (texture != 0 && *texture != 0)
-                {
-                    (*texture)->SetPrivateData( WKPDID_D3DDebugObjectName,
-                                                static_cast<UINT>( strnlen_s(pstrName, MAX_PATH) ),
-                                                pstrName
-                                              );
-                }
-
-                if (textureView != 0 && *textureView != 0 )
-                {
-                    (*textureView)->SetPrivateData( WKPDID_D3DDebugObjectName,
-                                                    static_cast<UINT>( strnlen_s(pstrName, MAX_PATH) ),
-                                                    pstrName
-                                                  );
-                }
-            }
+            (*texture)->SetName( fileName );
+        }
+        if (textureView != 0 && *textureView != 0 )
+        {
+            (*textureView)->SetName( fileName );
         }
 #endif
 
