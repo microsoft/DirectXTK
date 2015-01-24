@@ -224,7 +224,7 @@ void EffectFactory::Impl::CreateTexture( const WCHAR* name, ID3D11DeviceContext*
             HRESULT hr = CreateDDSTextureFromFile( device.Get(), fullName, nullptr, textureView );
             if ( FAILED(hr) )
             {
-                DebugTrace( "CreateDDSTextureFromFile failed (%08X) for '%S'\n", hr, fullName );
+                DebugTrace( "CreateDDSTextureFromFile failed (%08X) for '%ls'\n", hr, fullName );
                 throw std::exception( "CreateDDSTextureFromFile" );
             }
         }
@@ -235,7 +235,7 @@ void EffectFactory::Impl::CreateTexture( const WCHAR* name, ID3D11DeviceContext*
             HRESULT hr = CreateWICTextureFromFile( device.Get(), deviceContext, fullName, nullptr, textureView );
             if ( FAILED(hr) )
             {
-                DebugTrace( "CreateWICTextureFromFile failed (%08X) for '%S'\n", hr, fullName );
+                DebugTrace( "CreateWICTextureFromFile failed (%08X) for '%ls'\n", hr, fullName );
                 throw std::exception( "CreateWICTextureFromFile" );
             }
         }
@@ -245,7 +245,7 @@ void EffectFactory::Impl::CreateTexture( const WCHAR* name, ID3D11DeviceContext*
             HRESULT hr = CreateWICTextureFromFile( device.Get(), fullName, nullptr, textureView );
             if ( FAILED(hr) )
             {
-                DebugTrace( "CreateWICTextureFromFile failed (%08X) for '%S'\n", hr, fullName );
+                DebugTrace( "CreateWICTextureFromFile failed (%08X) for '%ls'\n", hr, fullName );
                 throw std::exception( "CreateWICTextureFromFile" );
             }
         }
@@ -254,7 +254,7 @@ void EffectFactory::Impl::CreateTexture( const WCHAR* name, ID3D11DeviceContext*
         HRESULT hr = CreateDDSTextureFromFile( device.Get(), fullName, nullptr, textureView );
         if ( FAILED(hr) )
         {
-            DebugTrace( "CreateDDSTextureFromFile failed (%08X) for '%S'\n", hr, fullName );
+            DebugTrace( "CreateDDSTextureFromFile failed (%08X) for '%ls'\n", hr, fullName );
             throw std::exception( "CreateDDSTextureFromFile" );
         }
 #endif

@@ -43,7 +43,7 @@ public:
     {
         if ( !mInstances.empty() )
         {
-            DebugTrace( "WARNING: Destroying WaveBank \"%s\" with %Iu outstanding SoundEffectInstances\n", mReader.BankName(), mInstances.size() );
+            DebugTrace( "WARNING: Destroying WaveBank \"%hs\" with %Iu outstanding SoundEffectInstances\n", mReader.BankName(), mInstances.size() );
 
             for( auto it = mInstances.begin(); it != mInstances.end(); ++it )
             {
@@ -56,7 +56,7 @@ public:
 
         if ( mOneShots > 0 )
         {
-            DebugTrace( "WARNING: Destroying WaveBank \"%s\" with %u outstanding one shot effects\n", mReader.BankName(), mOneShots );
+            DebugTrace( "WARNING: Destroying WaveBank \"%hs\" with %u outstanding one shot effects\n", mReader.BankName(), mOneShots );
         }
 
         if ( mEngine )
@@ -232,11 +232,11 @@ WaveBank::WaveBank( AudioEngine* engine, const wchar_t* wbFileName )
     HRESULT hr = pImpl->Initialize( engine, wbFileName );
     if ( FAILED(hr) )
     {
-        DebugTrace( "ERROR: WaveBank failed (%08X) to intialize from .xwb file \"%S\"\n", hr, wbFileName );
+        DebugTrace( "ERROR: WaveBank failed (%08X) to intialize from .xwb file \"%ls\"\n", hr, wbFileName );
         throw std::exception( "WaveBank" );
     }
 
-    DebugTrace( "INFO: WaveBank \"%s\" with %u entries loaded from .xwb file \"%S\"\n",
+    DebugTrace( "INFO: WaveBank \"%hs\" with %u entries loaded from .xwb file \"%ls\"\n",
                 pImpl->mReader.BankName(), pImpl->mReader.Count(), wbFileName );
 }
 
@@ -274,7 +274,7 @@ void WaveBank::Play( _In_z_ const char* name )
     int index = static_cast<int>( pImpl->mReader.Find( name ) );
     if ( index == -1 )
     {
-        DebugTrace( "WARNING: Name '%s' not found in wave bank, one-shot not triggered\n", name );
+        DebugTrace( "WARNING: Name '%hs' not found in wave bank, one-shot not triggered\n", name );
         return;
     }
 

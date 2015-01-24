@@ -578,7 +578,7 @@ HRESULT WaveBankReader::Impl::Open( const wchar_t* szFileName )
     bool be = ( m_header.dwSignature == HEADER::BE_SIGNATURE );
     if ( be )
     {
-        DebugTrace( "INFO: \"%S\" is a big-endian (Xbox 360) wave bank\n", szFileName );
+        DebugTrace( "INFO: \"%ls\" is a big-endian (Xbox 360) wave bank\n", szFileName );
         m_header.BigEndian();
     }
 

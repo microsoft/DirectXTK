@@ -715,7 +715,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
                                      || XMVector4NotEqual( uvTransform.r[2], uv2.r[2] )
                                      || XMVector4NotEqual( uvTransform.r[3], uv2.r[3] ) )
                                 {
-                                    DebugTrace( "WARNING: %S - mismatched UV transforms for the same vertex; texture coordinates may not be correct\n", mesh->name.c_str() );
+                                    DebugTrace( "WARNING: %ls - mismatched UV transforms for the same vertex; texture coordinates may not be correct\n", mesh->name.c_str() );
                                 }
 #endif
                             }
@@ -832,7 +832,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
     HRESULT hr = BinaryReader::ReadEntireFile( szFileName, data, &dataSize );
     if ( FAILED(hr) )
     {
-        DebugTrace( "CreateFromCMO failed (%08X) loading '%S'\n", hr, szFileName );
+        DebugTrace( "CreateFromCMO failed (%08X) loading '%ls'\n", hr, szFileName );
         throw std::exception( "CreateFromCMO" );
     }
 

@@ -345,7 +345,7 @@ SoundEffect::SoundEffect( AudioEngine* engine, const wchar_t* waveFileName )
     HRESULT hr = LoadWAVAudioFromFileEx( waveFileName, wavData, wavInfo );
     if ( FAILED(hr) )
     {
-        DebugTrace( "ERROR: SoundEffect failed (%08X) to load from .wav file \"%S\"\n", hr, waveFileName );
+        DebugTrace( "ERROR: SoundEffect failed (%08X) to load from .wav file \"%ls\"\n", hr, waveFileName );
         throw std::exception( "SoundEffect" );
     }
 
@@ -360,7 +360,7 @@ SoundEffect::SoundEffect( AudioEngine* engine, const wchar_t* waveFileName )
 
     if ( FAILED(hr) )
     {
-        DebugTrace( "ERROR: SoundEffect failed (%08X) to intialize from .wav file \"%S\"\n", hr, waveFileName );
+        DebugTrace( "ERROR: SoundEffect failed (%08X) to intialize from .wav file \"%ls\"\n", hr, waveFileName );
         throw std::exception( "SoundEffect" );
     }
 }

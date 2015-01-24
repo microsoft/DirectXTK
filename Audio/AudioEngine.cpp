@@ -1211,7 +1211,7 @@ AudioEngine::AudioEngine( AUDIO_ENGINE_FLAGS flags, const WAVEFORMATEX* wfx, con
         }
         else
         {
-            DebugTrace( "ERROR: AudioEngine failed (%08X) to initialize using device [%S]\n", hr, ( deviceId ) ? deviceId : L"default" );
+            DebugTrace( "ERROR: AudioEngine failed (%08X) to initialize using device [%ls]\n", hr, ( deviceId ) ? deviceId : L"default" );
             throw std::exception( "AudioEngine" );
         }
     }
@@ -1277,12 +1277,12 @@ bool AudioEngine::Reset( const WAVEFORMATEX* wfx, const wchar_t* deviceId )
         }
         else
         {
-            DebugTrace( "ERROR: AudioEngine failed (%08X) to Reset using device [%S]\n", hr, ( deviceId ) ? deviceId : L"default" );
+            DebugTrace( "ERROR: AudioEngine failed (%08X) to Reset using device [%ls]\n", hr, ( deviceId ) ? deviceId : L"default" );
             throw std::exception( "AudioEngine::Reset" );
         }
     }
 
-    DebugTrace( "INFO: AudioEngine Reset using device [%S]\n", ( deviceId ) ? deviceId : L"default" );
+    DebugTrace( "INFO: AudioEngine Reset using device [%ls]\n", ( deviceId ) ? deviceId : L"default" );
 
     return true;
 }
