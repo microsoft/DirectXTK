@@ -174,6 +174,7 @@ namespace DirectX
             {
                 state = STOPPED;
                 voice->Stop( 0 );
+                voice->FlushSourceBuffers();
             }
             else if ( looped )
             {
