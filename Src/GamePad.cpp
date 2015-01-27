@@ -504,11 +504,14 @@ class GamePad::Impl
 public:
     Impl()
     {
-        for( size_t j = 0; j < XUSER_MAX_COUNT; ++j )
+        for( int j = 0; j < XUSER_MAX_COUNT; ++j )
         {
-            mConnected[ j ] = false;
-            mLastReadTime[ j ] = 0;
+            ClearSlot( j, 0 );
         }
+
+#if (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+        mSuspended = false;
+#endif
 
         if ( s_gamePad )
         {
@@ -527,12 +530,20 @@ public:
     {
         if ( !ThrottleRetry(player) )
         {
+#if (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+            if ( mSuspended )
+            {
+                memset( &state, 0, sizeof(State) );
+                state.connected = mConnected[ player ];
+                return;
+            }
+#endif
+
             XINPUT_STATE xstate;
             DWORD result = XInputGetState( DWORD(player), &xstate );
             if ( result == ERROR_DEVICE_NOT_CONNECTED )
             {
-                mConnected[ player ] = false;
-                mLastReadTime[ player ] = GetTickCount64();
+                ClearSlot( player, GetTickCount64() );
             }
             else
             {
@@ -592,8 +603,7 @@ public:
             DWORD result = XInputGetCapabilities( DWORD(player), 0, &xcaps );
             if ( result == ERROR_DEVICE_NOT_CONNECTED )
             {
-                mConnected[ player ] = false;
-                mLastReadTime[ player ] = GetTickCount64();
+                ClearSlot( player, GetTickCount64() );
             }
             else
             {
@@ -638,14 +648,21 @@ public:
         UNREFERENCED_PARAMETER(leftTrigger);
         UNREFERENCED_PARAMETER(rightTrigger);
 
+#if (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+        mLeftMotor[ player ] = leftMotor;
+        mRightMotor[ player ] = rightMotor;
+
+        if ( mSuspended )
+            return mConnected[ player ];
+#endif
+
         XINPUT_VIBRATION xvibration;
         xvibration.wLeftMotorSpeed = WORD( leftMotor * 0xFFFF );
         xvibration.wRightMotorSpeed = WORD( rightMotor * 0xFFFF );
         DWORD result = XInputSetState( DWORD(player), &xvibration );
         if ( result == ERROR_DEVICE_NOT_CONNECTED )
         {
-            mConnected[ player ] = false;
-            mLastReadTime[ player ] = GetTickCount64();
+            ClearSlot( player, GetTickCount64() );
             return false;
         }
         else
@@ -659,6 +676,22 @@ public:
     {
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
         XInputEnable( FALSE );
+#else
+        // For XInput 9.1.0, we have to emulate the behavior of XInputEnable( FALSE )
+        if ( !mSuspended )
+        {
+            for( size_t j = 0; j < XUSER_MAX_COUNT; ++j )
+            {
+                if ( mConnected[ j ] )
+                {
+                    XINPUT_VIBRATION xvibration;
+                    xvibration.wLeftMotorSpeed = xvibration.wRightMotorSpeed = 0;
+                    (void)XInputSetState( DWORD(j), &xvibration );
+                }
+            }
+
+            mSuspended = true;
+        }
 #endif
     }
 
@@ -666,12 +699,40 @@ public:
     {
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
         XInputEnable( TRUE );
+#else
+        // For XInput 9.1.0, we have to emulate the behavior of XInputEnable( TRUE )
+        if ( mSuspended )
+        {
+            for( int j = 0; j < XUSER_MAX_COUNT; ++j )
+            {
+                if ( mConnected[ j ] )
+                {
+                    XINPUT_VIBRATION xvibration;
+                    xvibration.wLeftMotorSpeed = WORD( mLeftMotor[ j ] * 0xFFFF );
+                    xvibration.wRightMotorSpeed = WORD( mRightMotor[ j ] * 0xFFFF );
+                    DWORD result = XInputSetState( DWORD(j), &xvibration );
+                    if ( result == ERROR_DEVICE_NOT_CONNECTED )
+                    {
+                        ClearSlot( j, GetTickCount64() );
+                    }
+                }
+            }
+
+            mSuspended = false;
+        }
 #endif
     }
 
 private:
     bool        mConnected[ XUSER_MAX_COUNT ];
     ULONGLONG   mLastReadTime[ XUSER_MAX_COUNT ];
+
+#if (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+    // Variables for emulating XInputEnable on XInput 9.1.0
+    float       mLeftMotor[ XUSER_MAX_COUNT ];
+    float       mRightMotor[ XUSER_MAX_COUNT ];
+    bool        mSuspended;
+#endif
 
     static GamePad::Impl* s_gamePad;
 
@@ -705,6 +766,15 @@ private:
         }
 
         return false;
+    }
+
+    void ClearSlot( int player, ULONGLONG time )
+    {
+        mConnected[ player ] = false;
+        mLastReadTime[ player ] = time;
+#if (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+        mLeftMotor[ player ] = mRightMotor[ player ] = 0.f;
+#endif
     }
 };
 
