@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-November 24, 2014
+January 26, 2015
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Windows Store apps, Windows phone 8.x applications,
@@ -127,7 +127,7 @@ Alpha blending:
     Alpha blending defaults to using premultiplied alpha. To make use of 'straight'
     alpha textures, override the blending mode via the optional callback:
 
-    CommonStates states(deviceContext);
+    CommonStates states(device);
 
     spriteBatch->Begin(SpriteSortMode_Deferred, nullptr, nullptr, nullptr, nullptr, [=]
     {
@@ -483,6 +483,11 @@ To set up a suitable BasicEffect and input layout:
 
 To draw a line:
 
+    CommonStates states(device);
+    deviceContext->OMSetBlendState( states.Opaque(), nullptr, 0xFFFFFFFF );
+    deviceContext->OMSetDepthStencilState( states.DepthNone(), 0 );
+    deviceContext->RSSetState( states.CullCounterClockwise() );
+
     basicEffect->Apply(deviceContext);
     deviceContext->IASetInputLayout(inputLayout.Get());
 
@@ -574,7 +579,7 @@ Alpha blending:
     Alpha blending defaults to using premultiplied alpha. To make use of 'straight' alpha
     textures, override the blending mode via the optional callback:
 
-    CommonStates states(deviceContext);
+    CommonStates states(device);
     
     shape->Draw(world, view, projection, Colors::White, catTexture, false, [=]
     {
@@ -1445,6 +1450,13 @@ Further reading:
 ---------------
 RELEASE HISTORY
 ---------------
+
+January 26, 2015
+    GamePad class: emulate XInputEnable behavior for XInput 9.1.0
+    DirectXTK for Audio fix for Stop followed by Play doing a proper restart
+    DirectXTK for Audio fix when using XAudio 2.7 on a system with no audio device
+    Updates for Xbox One platform support
+    Minor code cleanup and C99 printf string conformance
 
 November 24, 2014
     SimpleMath fix for Matrix operator !=
