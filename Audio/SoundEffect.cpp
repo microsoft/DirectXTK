@@ -52,7 +52,7 @@ public:
         mEngine->RegisterNotify( this, false );
     }
 
-    ~Impl()
+    virtual ~Impl()
     {
         if ( !mInstances.empty() )
         {

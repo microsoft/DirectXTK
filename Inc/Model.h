@@ -34,7 +34,7 @@
 #include <intsafe.h>
 #pragma warning(pop)
 
-#include <wrl.h>
+#include <wrl\client.h>
 
 // VS 2010 doesn't support explicit calling convention for std::function
 #ifndef DIRECTX_STD_CALLCONV

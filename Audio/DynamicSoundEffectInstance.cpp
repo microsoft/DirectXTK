@@ -77,7 +77,7 @@ public:
         mBufferNeeded = bufferNeeded;
     }
 
-    ~Impl()
+    virtual ~Impl()
     {
         mBase.DestroyVoice();
 

@@ -41,7 +41,7 @@ namespace
             }
         };
 
-        ~EngineCallback()
+        virtual ~EngineCallback()
         {
             CloseHandle( mCriticalError );
         }
@@ -76,7 +76,7 @@ namespace
             }
         }
 
-        ~VoiceCallback()
+        virtual ~VoiceCallback()
         {
             CloseHandle( mBufferEnd ); 
         }

@@ -55,7 +55,7 @@ public:
         mBase.Initialize( engine, mWaveBank->GetFormat( index, wfx, 64 ), flags );
     }
 
-    ~Impl()
+    virtual ~Impl()
     {
         mBase.DestroyVoice();
 
