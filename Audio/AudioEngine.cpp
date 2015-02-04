@@ -265,6 +265,7 @@ public:
         defaultRate( 44100 ),
         maxVoiceOneshots( SIZE_MAX ),
         maxVoiceInstances( SIZE_MAX ),
+        mMasterVolume( 1.f ),
         mCriticalError( false ),
         mReverbEnabled( false ),
         mEngineFlags( AudioEngine_Default ),
@@ -323,6 +324,7 @@ public:
     int                                 defaultRate;
     size_t                              maxVoiceOneshots;
     size_t                              maxVoiceInstances;
+    float                               mMasterVolume;
 
     X3DAUDIO_HANDLE                     mX3DAudio;
 
@@ -566,6 +568,17 @@ HRESULT AudioEngine::Impl::Reset( const WAVEFORMATEX* wfx, const wchar_t* device
 #endif
 
     DebugTrace( "INFO: mastering voice has %u channels, %u sample rate, %08X channel mask\n", masterChannels, masterRate, masterChannelMask );
+
+    if ( mMasterVolume != 1.f )
+    {
+        hr = mMasterVoice->SetVolume( mMasterVolume );
+        if ( FAILED(hr) )
+        {
+            mMasterVoice = nullptr;
+            xaudio2.Reset();
+            return hr;
+        }
+    }
 
     //
     // Setup mastering volume limiter (optional)
@@ -934,6 +947,11 @@ void AudioEngine::Impl::AllocateVoice( const WAVEFORMATEX* wfx, SOUND_EFFECT_INS
     if ( !xaudio2 || mCriticalError )
         return;
 
+#ifndef NDEBUG
+    float maxFrequencyRatio = XAudio2SemitonesToFrequencyRatio(12);
+    assert( maxFrequencyRatio <= XAUDIO2_DEFAULT_FREQ_RATIO );
+#endif
+
     unsigned int voiceKey = 0;
     if ( oneshot )
     {
@@ -970,6 +988,24 @@ void AudioEngine::Impl::AllocateVoice( const WAVEFORMATEX* wfx, SOUND_EFFECT_INS
                     assert( it->second != 0 );
                     *voice = it->second;
                     mVoicePool.erase( it );
+
+                    // Reset any volume/pitch-shifting
+                    HRESULT hr = (*voice)->SetVolume(1.f);
+                    ThrowIfFailed( hr );
+
+                    hr = (*voice)->SetFrequencyRatio(1.f);
+                    ThrowIfFailed( hr );
+
+                    if (wfx->nChannels == 1 || wfx->nChannels == 2)
+                    {
+                        // Reset any panning
+                        float matrix[16];
+                        memset( matrix, 0, sizeof(float) * 16 );
+                        ComputePan( 0.f, wfx->nChannels, matrix );
+
+                        hr = (*voice)->SetOutputMatrix(nullptr, wfx->nChannels, masterChannels, matrix);
+                        ThrowIfFailed( hr );
+                    }
                 }
                 else if ( ( mVoicePool.size() + mOneShots.size() + 1 ) >= maxVoiceOneshots )
                 {
@@ -1304,6 +1340,26 @@ void AudioEngine::Resume()
 
     HRESULT hr = pImpl->xaudio2->StartEngine();
     ThrowIfFailed( hr );
+}
+
+
+float AudioEngine::GetMasterVolume() const
+{
+    return pImpl->mMasterVolume;
+}
+
+
+void AudioEngine::SetMasterVolume( float volume )
+{
+    assert( volume >= -XAUDIO2_MAX_VOLUME_LEVEL && volume <= XAUDIO2_MAX_VOLUME_LEVEL );
+
+    pImpl->mMasterVolume = volume;
+
+    if ( pImpl->mMasterVoice )
+    {
+        HRESULT hr = pImpl->mMasterVoice->SetVolume( volume );
+        ThrowIfFailed( hr );
+    }
 }
 
 

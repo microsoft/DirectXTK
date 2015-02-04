@@ -28,6 +28,10 @@
 #pragma comment(lib,"PhoneAudioSes.lib")
 #endif
 
+#ifndef XAUDIO2_HELPER_FUNCTIONS
+#define XAUDIO2_HELPER_FUNCTIONS
+#endif
+
 #if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
 #if defined(_MSC_VER) && (_MSC_VER < 1700)
 #error DirectX Tool Kit for Audio does not support VS 2010 without the DirectX SDK 
@@ -226,6 +230,10 @@ namespace DirectX
         void __cdecl Resume();
             // Suspend/resumes audio processing (i.e. global pause/resume)
 
+        float __cdecl GetMasterVolume() const;
+        void __cdecl SetMasterVolume( float volume );
+            // Master volume property for all sounds
+
         void __cdecl SetReverb( AUDIO_ENGINE_REVERB reverb );
         void __cdecl SetReverb( _In_opt_ const XAUDIO2FX_REVERB_PARAMETERS* native );
             // Sets environmental reverb for 3D positional audio (if active)
@@ -262,6 +270,7 @@ namespace DirectX
         void __cdecl TrimVoicePool();
             // Releases any currently unused voices
 
+        // Internal-use functions
         void __cdecl AllocateVoice( _In_ const WAVEFORMATEX* wfx, SOUND_EFFECT_INSTANCE_FLAGS flags, bool oneshot, _Outptr_result_maybenull_ IXAudio2SourceVoice** voice );
 
         void __cdecl DestroyVoice( _In_ IXAudio2SourceVoice* voice );
@@ -276,6 +285,7 @@ namespace DirectX
         IXAudio2SubmixVoice* __cdecl GetReverbVoice() const;
         X3DAUDIO_HANDLE& __cdecl Get3DHandle() const;
 
+        // Static functions
         struct RendererDetail
         {
             std::wstring deviceId;
@@ -307,7 +317,10 @@ namespace DirectX
         virtual ~WaveBank();
 
         void __cdecl Play( int index );
+        void __cdecl Play( int index, float volume, float pitch, float pan );
+
         void __cdecl Play( _In_z_ const char* name );
+        void __cdecl Play( _In_z_ const char* name, float volume, float pitch, float pan );
 
         std::unique_ptr<SoundEffectInstance> __cdecl CreateInstance( int index, SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default );
         std::unique_ptr<SoundEffectInstance> __cdecl CreateInstance( _In_z_ const char* name, SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default );
@@ -378,6 +391,7 @@ namespace DirectX
         virtual ~SoundEffect();
 
         void __cdecl Play();
+        void __cdecl Play(float volume, float pitch, float pan);
 
         std::unique_ptr<SoundEffectInstance> __cdecl CreateInstance( SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default );
 

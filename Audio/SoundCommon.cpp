@@ -630,73 +630,75 @@ void DirectX::CreateXMA2( WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int
 #endif // _XBOX_ONE && _TITLE
 
 
+_Use_decl_annotations_
+bool DirectX::ComputePan( float pan, int channels, float* matrix )
+{
+    memset( matrix, 0, sizeof(float) * 16 );
+
+    if (channels == 1)
+    {
+        // Mono panning
+        float left = ( pan >= 0 ) ? ( 1.f - pan ) : 1.f;
+        left = std::min<float>( 1.f, left );
+        left = std::max<float>( -1.f, left );
+
+        float right = ( pan <= 0 ) ? ( - pan - 1.f ) : 1.f;
+        right = std::min<float>( 1.f, right );
+        right = std::max<float>( -1.f, right );
+
+        matrix[0] = left;
+        matrix[1] = right;
+    }
+    else if (channels == 2)
+    {
+        // Stereo panning
+        if ( -1.f <= pan && pan <= 0.f )
+        {
+            matrix[0] = .5f * pan + 1.f;    // .5 when pan is -1, 1 when pan is 0
+            matrix[1] = .5f * -pan;         // .5 when pan is -1, 0 when pan is 0
+            matrix[2] = 0.f;                //  0 when pan is -1, 0 when pan is 0
+            matrix[3] = pan + 1.f;          //  0 when pan is -1, 1 when pan is 0
+        }
+        else
+        {
+            matrix[0] = -pan + 1.f;         //  1 when pan is 0,   0 when pan is 1
+            matrix[1] = 0.f;                //  0 when pan is 0,   0 when pan is 1
+            matrix[2] = .5f * pan;          //  0 when pan is 0, .5f when pan is 1
+            matrix[3] = .5f * -pan + 1.f;   //  1 when pan is 0. .5f when pan is 1
+        }
+    }
+    else
+    {
+        if ( pan != 0.f )
+        {
+            DebugTrace( "WARNING: Only supports panning on mono or stereo source data, ignored\n" );
+        }
+        return false;
+    }
+
+    return true;
+}
+
+
 //======================================================================================
 // SoundEffectInstanceBase
 //======================================================================================
 
 void SoundEffectInstanceBase::SetPan( float pan )
 {
-    if ( mDSPSettings.SrcChannelCount != 1 )
-    {
-        DebugTrace( "ERROR: SetPan only supports panning on mono source data\n" );
-        throw std::exception( "SetPan" );
-    }
-
-    pan = std::min<float>( 1.f, pan );
-    pan = std::max<float>( -1.f, pan );
+    assert( pan >= -1.f && pan <= 1.f );
 
     mPan = pan;
 
     if ( !voice )
         return;
 
-    float left = ( pan >= 0 ) ? ( 1.f - pan ) : 1.f;
-    float right = ( pan <= 0 ) ? ( - pan - 1.f ) : 1.f;
-
-    float matrix[8];
-    for( size_t j = 0; j < 8; ++j )
-        matrix[j] = 1.f;
-
-    assert( engine != 0 );
-    switch( engine->GetChannelMask() )
+    float matrix[16];
+    if ( ComputePan( pan,  mDSPSettings.SrcChannelCount, matrix ) )
     {
-    case SPEAKER_STEREO:
-    case SPEAKER_2POINT1:
-    case SPEAKER_SURROUND:
-        matrix[ 0 ] = left;
-        matrix[ 1 ] = right;
-        break;
-
-    case SPEAKER_QUAD:
-        matrix[ 0 ] = matrix[ 2 ] = left;
-        matrix[ 1 ] = matrix[ 3 ] = right;
-        break;
-
-    case SPEAKER_4POINT1:
-        matrix[ 0 ] = matrix[ 3 ] = left;
-        matrix[ 1 ] = matrix[ 4 ] = right;
-        break;
-
-    case SPEAKER_5POINT1:
-    case SPEAKER_7POINT1:
-    case SPEAKER_5POINT1_SURROUND:
-        matrix[ 0 ] = matrix[ 4 ] = left;
-        matrix[ 1 ] = matrix[ 5 ] = right;
-        break;
-
-    case SPEAKER_7POINT1_SURROUND:
-        matrix[ 0 ] = matrix[ 4 ] = matrix[ 6 ] = left;
-        matrix[ 1 ] = matrix[ 5 ] = matrix[ 7 ] = right;
-        break;
-
-    case SPEAKER_MONO:
-    default:
-        // No panning...
-        return;
+        HRESULT hr = voice->SetOutputMatrix( nullptr, mDSPSettings.SrcChannelCount, mDSPSettings.DstChannelCount, matrix );
+        ThrowIfFailed( hr );
     }
-
-    HRESULT hr = voice->SetOutputMatrix( nullptr, 1, mDSPSettings.DstChannelCount, matrix );
-    ThrowIfFailed( hr );
 }
 
 
@@ -735,7 +737,7 @@ void SoundEffectInstanceBase::Apply3D( const AudioListener& listener, const Audi
 
     mDSPSettings.pMatrixCoefficients = nullptr;
 
-    voice->SetFrequencyRatio( mDSPSettings.DopplerFactor );
+    voice->SetFrequencyRatio( mFreqRatio * mDSPSettings.DopplerFactor );
 
     auto direct = mDirectVoice;
     assert( direct != 0 );
