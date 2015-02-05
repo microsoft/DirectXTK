@@ -289,7 +289,11 @@ namespace DirectX
 
         void OnCriticalError()
         {
-            voice = nullptr;
+            if ( voice )
+            {
+                voice->DestroyVoice();
+                voice = nullptr;
+            }
             state = STOPPED;
             mDirectVoice = nullptr;
             mReverbVoice = nullptr;
@@ -315,6 +319,7 @@ namespace DirectX
             {
                 voice->Stop( 0 );
                 voice->FlushSourceBuffers();
+                voice->DestroyVoice();
                 voice = nullptr;
             }
             state = STOPPED;
