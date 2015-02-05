@@ -49,7 +49,7 @@
 #include <intsafe.h>
 #pragma warning(pop)
 
-#include <wrl\client.h>
+#include <wrl.h>
 
 namespace DirectX
 {
