@@ -181,7 +181,7 @@ void WaveBank::Impl::Play( int index, float volume, float pitch, float pan )
 
     if ( volume != 1.f )
     {
-        HRESULT hr = voice->SetVolume( volume );
+        hr = voice->SetVolume( volume );
         ThrowIfFailed( hr );
     }
 
@@ -189,7 +189,7 @@ void WaveBank::Impl::Play( int index, float volume, float pitch, float pan )
     {
         float fr = XAudio2SemitonesToFrequencyRatio( pitch * 12.f );
 
-        HRESULT hr = voice->SetFrequencyRatio( fr );
+        hr = voice->SetFrequencyRatio( fr );
         ThrowIfFailed( hr );
     }
 
@@ -198,7 +198,7 @@ void WaveBank::Impl::Play( int index, float volume, float pitch, float pan )
         float matrix[16];
         if ( ComputePan( pan, wfx->nChannels, matrix ) )
         {
-            HRESULT hr = voice->SetOutputMatrix( nullptr, wfx->nChannels, mEngine->GetOutputChannels(), matrix );
+            hr = voice->SetOutputMatrix( nullptr, wfx->nChannels, mEngine->GetOutputChannels(), matrix );
             ThrowIfFailed( hr );
         }
     }
