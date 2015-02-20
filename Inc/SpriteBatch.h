@@ -19,6 +19,17 @@
 #include <d3d11_1.h>
 #endif
 
+// VS 2010/2012 do not support =default =delete
+#ifndef DIRECTX_CTOR_DEFAULT
+#if defined(_MSC_VER) && (_MSC_VER < 1800)
+#define DIRECTX_CTOR_DEFAULT {}
+#define DIRECTX_CTOR_DELETE ;
+#else
+#define DIRECTX_CTOR_DEFAULT =default;
+#define DIRECTX_CTOR_DELETE =delete;
+#endif
+#endif
+
 #include <DirectXMath.h>
 #include <DirectXColors.h>
 #include <functional>
@@ -104,7 +115,7 @@ namespace DirectX
         static const XMFLOAT2 Float2Zero;
 
         // Prevent copying.
-        SpriteBatch(SpriteBatch const&);
-        SpriteBatch& operator= (SpriteBatch const&);
+        SpriteBatch(SpriteBatch const&) DIRECTX_CTOR_DELETE
+        SpriteBatch& operator= (SpriteBatch const&) DIRECTX_CTOR_DELETE
     };
 }

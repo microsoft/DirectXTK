@@ -68,7 +68,7 @@ namespace DirectX
 
 
         // Prevent copying.
-        BinaryReader(BinaryReader const&);
-        BinaryReader& operator= (BinaryReader const&);
+        BinaryReader(BinaryReader const&) DIRECTX_CTOR_DELETE
+        BinaryReader& operator= (BinaryReader const&) DIRECTX_CTOR_DELETE
     };
 }

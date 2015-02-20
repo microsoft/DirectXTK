@@ -19,6 +19,17 @@
 #include <d3d11_1.h>
 #endif
 
+// VS 2010/2012 do not support =default =delete
+#ifndef DIRECTX_CTOR_DEFAULT
+#if defined(_MSC_VER) && (_MSC_VER < 1800)
+#define DIRECTX_CTOR_DEFAULT {}
+#define DIRECTX_CTOR_DELETE ;
+#else
+#define DIRECTX_CTOR_DEFAULT =default;
+#define DIRECTX_CTOR_DELETE =delete;
+#endif
+#endif
+
 #include <DirectXMath.h>
 #include <memory>
 
@@ -167,8 +178,8 @@ namespace DirectX
         std::unique_ptr<Impl> pImpl;
 
         // Prevent copying.
-        BasicEffect(BasicEffect const&);
-        BasicEffect& operator= (BasicEffect const&);
+        BasicEffect(BasicEffect const&) DIRECTX_CTOR_DELETE
+        BasicEffect& operator= (BasicEffect const&) DIRECTX_CTOR_DELETE
     };
 
 
@@ -219,8 +230,8 @@ namespace DirectX
         std::unique_ptr<Impl> pImpl;
 
         // Prevent copying.
-        AlphaTestEffect(AlphaTestEffect const&);
-        AlphaTestEffect& operator= (AlphaTestEffect const&);
+        AlphaTestEffect(AlphaTestEffect const&) DIRECTX_CTOR_DELETE
+        AlphaTestEffect& operator= (AlphaTestEffect const&) DIRECTX_CTOR_DELETE
     };
 
 
@@ -268,8 +279,8 @@ namespace DirectX
         std::unique_ptr<Impl> pImpl;
 
         // Prevent copying.
-        DualTextureEffect(DualTextureEffect const&);
-        DualTextureEffect& operator= (DualTextureEffect const&);
+        DualTextureEffect(DualTextureEffect const&) DIRECTX_CTOR_DELETE
+        DualTextureEffect& operator= (DualTextureEffect const&) DIRECTX_CTOR_DELETE
     };
 
 
@@ -334,8 +345,8 @@ namespace DirectX
         void XM_CALLCONV SetLightSpecularColor(int whichLight, FXMVECTOR value) override;
 
         // Prevent copying.
-        EnvironmentMapEffect(EnvironmentMapEffect const&);
-        EnvironmentMapEffect& operator= (EnvironmentMapEffect const&);
+        EnvironmentMapEffect(EnvironmentMapEffect const&) DIRECTX_CTOR_DELETE
+        EnvironmentMapEffect& operator= (EnvironmentMapEffect const&) DIRECTX_CTOR_DELETE
     };
 
 
@@ -402,8 +413,8 @@ namespace DirectX
         void __cdecl SetLightingEnabled(bool value) override;
 
         // Prevent copying.
-        SkinnedEffect(SkinnedEffect const&);
-        SkinnedEffect& operator= (SkinnedEffect const&);
+        SkinnedEffect(SkinnedEffect const&) DIRECTX_CTOR_DELETE
+        SkinnedEffect& operator= (SkinnedEffect const&) DIRECTX_CTOR_DELETE
     };
 
     
@@ -482,8 +493,8 @@ namespace DirectX
         void __cdecl SetPerPixelLighting(bool value) override;
 
         // Prevent copying.
-        DGSLEffect(DGSLEffect const&);
-        DGSLEffect& operator= (DGSLEffect const&);
+        DGSLEffect(DGSLEffect const&) DIRECTX_CTOR_DELETE
+        DGSLEffect& operator= (DGSLEffect const&) DIRECTX_CTOR_DELETE
     };
 
 
@@ -544,8 +555,8 @@ namespace DirectX
         std::shared_ptr<Impl> pImpl;
 
         // Prevent copying.
-        EffectFactory(EffectFactory const&);
-        EffectFactory& operator= (EffectFactory const&);
+        EffectFactory(EffectFactory const&) DIRECTX_CTOR_DELETE
+        EffectFactory& operator= (EffectFactory const&) DIRECTX_CTOR_DELETE
     };
 
 
@@ -589,8 +600,8 @@ namespace DirectX
         std::shared_ptr<Impl> pImpl;
 
         // Prevent copying.
-        DGSLEffectFactory(DGSLEffectFactory const&);
-        DGSLEffectFactory& operator= (DGSLEffectFactory const&);
+        DGSLEffectFactory(DGSLEffectFactory const&) DIRECTX_CTOR_DELETE
+        DGSLEffectFactory& operator= (DGSLEffectFactory const&) DIRECTX_CTOR_DELETE
     };
 
 }

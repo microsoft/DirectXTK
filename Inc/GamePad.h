@@ -23,6 +23,17 @@
 #endif
 #endif
 
+// VS 2010/2012 do not support =default =delete
+#ifndef DIRECTX_CTOR_DEFAULT
+#if defined(_MSC_VER) && (_MSC_VER < 1800)
+#define DIRECTX_CTOR_DEFAULT {}
+#define DIRECTX_CTOR_DELETE ;
+#else
+#define DIRECTX_CTOR_DEFAULT =default;
+#define DIRECTX_CTOR_DELETE =delete;
+#endif
+#endif
+
 #include <memory>
 
 #pragma warning(push)
@@ -30,6 +41,7 @@
 #include <stdint.h>
 #include <intsafe.h>
 #pragma warning(pop)
+
 
 namespace DirectX
 {
@@ -221,7 +233,7 @@ namespace DirectX
         std::unique_ptr<Impl> pImpl;
 
         // Prevent copying.
-        GamePad(GamePad const&);
-        GamePad& operator=(GamePad const&);
+        GamePad(GamePad const&) DIRECTX_CTOR_DELETE
+        GamePad& operator=(GamePad const&) DIRECTX_CTOR_DELETE
     };
 }

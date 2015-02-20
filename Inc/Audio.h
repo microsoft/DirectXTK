@@ -76,6 +76,17 @@
 #endif
 #endif
 
+// VS 2010/2012 do not support =default =delete
+#ifndef DIRECTX_CTOR_DEFAULT
+#if defined(_MSC_VER) && (_MSC_VER < 1800)
+#define DIRECTX_CTOR_DEFAULT {}
+#define DIRECTX_CTOR_DELETE ;
+#else
+#define DIRECTX_CTOR_DEFAULT =default;
+#define DIRECTX_CTOR_DELETE =delete;
+#endif
+#endif
+
 #pragma warning(push)
 #pragma warning(disable : 4481)
 // VS 2010 considers 'override' to be a extension, but it's part of C++11 as of VS 2012
@@ -301,8 +312,8 @@ namespace DirectX
         std::unique_ptr<Impl> pImpl;
 
         // Prevent copying.
-        AudioEngine(AudioEngine const&);
-        AudioEngine& operator= (AudioEngine const&);
+        AudioEngine(AudioEngine const&) DIRECTX_CTOR_DELETE
+        AudioEngine& operator= (AudioEngine const&) DIRECTX_CTOR_DELETE
     };
 
 
@@ -355,8 +366,8 @@ namespace DirectX
         std::unique_ptr<Impl> pImpl;
 
         // Prevent copying.
-        WaveBank(WaveBank const&);
-        WaveBank& operator= (WaveBank const&);
+        WaveBank(WaveBank const&) DIRECTX_CTOR_DELETE
+        WaveBank& operator= (WaveBank const&) DIRECTX_CTOR_DELETE
 
         // Private interface
         void __cdecl UnregisterInstance( _In_ SoundEffectInstance* instance );
@@ -421,8 +432,8 @@ namespace DirectX
         std::unique_ptr<Impl> pImpl;
 
         // Prevent copying.
-        SoundEffect(SoundEffect const&);
-        SoundEffect& operator= (SoundEffect const&);
+        SoundEffect(SoundEffect const&) DIRECTX_CTOR_DELETE
+        SoundEffect& operator= (SoundEffect const&) DIRECTX_CTOR_DELETE
 
         // Private interface
         void __cdecl UnregisterInstance( _In_ SoundEffectInstance* instance );
@@ -644,8 +655,8 @@ namespace DirectX
         friend std::unique_ptr<SoundEffectInstance> __cdecl WaveBank::CreateInstance( int, SOUND_EFFECT_INSTANCE_FLAGS );
 
         // Prevent copying.
-        SoundEffectInstance(SoundEffectInstance const&);
-        SoundEffectInstance& operator= (SoundEffectInstance const&);
+        SoundEffectInstance(SoundEffectInstance const&) DIRECTX_CTOR_DELETE
+        SoundEffectInstance& operator= (SoundEffectInstance const&) DIRECTX_CTOR_DELETE
     };
 
 
@@ -697,8 +708,8 @@ namespace DirectX
         std::unique_ptr<Impl> pImpl;
 
         // Prevent copying.
-        DynamicSoundEffectInstance(DynamicSoundEffectInstance const&);
-        DynamicSoundEffectInstance& operator= (DynamicSoundEffectInstance const&);
+        DynamicSoundEffectInstance(DynamicSoundEffectInstance const&) DIRECTX_CTOR_DELETE
+        DynamicSoundEffectInstance& operator= (DynamicSoundEffectInstance const&) DIRECTX_CTOR_DELETE
     };
 }
 

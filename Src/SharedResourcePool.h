@@ -102,7 +102,7 @@ namespace DirectX
 
 
         // Prevent copying.
-        SharedResourcePool(SharedResourcePool const&);
-        SharedResourcePool& operator= (SharedResourcePool const&);
+        SharedResourcePool(SharedResourcePool const&) DIRECTX_CTOR_DELETE
+        SharedResourcePool& operator= (SharedResourcePool const&) DIRECTX_CTOR_DELETE
     };
 }

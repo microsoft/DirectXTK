@@ -78,7 +78,7 @@ namespace DirectX
         std::unique_ptr<Impl> pImpl;
 
         // Prevent copying.
-        WaveBankReader(WaveBankReader const&);
-        WaveBankReader& operator= (WaveBankReader const&);
+        WaveBankReader(WaveBankReader const&) DIRECTX_CTOR_DELETE
+        WaveBankReader& operator= (WaveBankReader const&) DIRECTX_CTOR_DELETE
     };
 }

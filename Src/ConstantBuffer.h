@@ -25,7 +25,7 @@ namespace DirectX
     {
     public:
         // Constructor.
-        ConstantBuffer() {}
+        ConstantBuffer() DIRECTX_CTOR_DEFAULT
         explicit ConstantBuffer(_In_ ID3D11Device* device)
         {
             Create( device );
@@ -79,7 +79,7 @@ namespace DirectX
         
         
         // Prevent copying.
-        ConstantBuffer(ConstantBuffer const&);
-        ConstantBuffer& operator= (ConstantBuffer const&);
+        ConstantBuffer(ConstantBuffer const&) DIRECTX_CTOR_DELETE
+        ConstantBuffer& operator= (ConstantBuffer const&) DIRECTX_CTOR_DELETE
     };
 }
