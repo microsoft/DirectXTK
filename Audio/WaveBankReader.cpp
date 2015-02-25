@@ -623,6 +623,18 @@ HRESULT WaveBankReader::Impl::Open( const wchar_t* szFileName )
         return HRESULT_FROM_WIN32( ERROR_NO_DATA );
     }
 
+    if ( m_data.dwFlags & BANKDATA::TYPE_STREAMING )
+    {
+        if ( m_data.dwAlignment < ALIGNMENT_DVD )
+            return E_FAIL;
+        if ( m_data.dwAlignment % DVD_SECTOR_SIZE )
+            return E_FAIL;
+    }
+    else if ( m_data.dwAlignment < ALIGNMENT_MIN )
+    {
+        return E_FAIL;
+    }
+
     if ( m_data.dwFlags & BANKDATA::FLAGS_COMPACT )
     {
         if ( m_data.dwEntryMetaDataElementSize != sizeof(ENTRYCOMPACT) )
@@ -630,7 +642,7 @@ HRESULT WaveBankReader::Impl::Open( const wchar_t* szFileName )
             return E_FAIL;
         }
 
-        if (  m_header.Segments[HEADER::SEGIDX_ENTRYWAVEDATA].dwLength > MAX_COMPACT_DATA_SEGMENT_SIZE )
+        if (  m_header.Segments[HEADER::SEGIDX_ENTRYWAVEDATA].dwLength > ( MAX_COMPACT_DATA_SEGMENT_SIZE * m_data.dwAlignment ) )
         {
             // Data segment is too large to be valid compact wavebank
             return E_FAIL;
@@ -646,16 +658,6 @@ HRESULT WaveBankReader::Impl::Open( const wchar_t* szFileName )
 
     DWORD metadataBytes = m_header.Segments[HEADER::SEGIDX_ENTRYMETADATA].dwLength;
     if ( metadataBytes != ( m_data.dwEntryCount * m_data.dwEntryMetaDataElementSize ) )
-    {
-        return E_FAIL;
-    }
-
-    if ( m_data.dwFlags & BANKDATA::TYPE_STREAMING )
-    {
-        if ( m_data.dwAlignment < ALIGNMENT_DVD )
-            return E_FAIL;
-    }
-    else if ( m_data.dwAlignment < ALIGNMENT_MIN )
     {
         return E_FAIL;
     }
