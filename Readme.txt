@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-January 26, 2015
+February 25, 2015
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Windows Store apps, Windows phone 8.x applications,
@@ -1277,8 +1277,7 @@ Playing one-shots:
     A common way to play sounds is to trigger them in a 'fire-and-forget' mode. This is done by calling
     SoundEffect::Play() rather than creating a SoundEffectInstance. These use XAudio2 source voices
     managed by AudioEngine, are cleaned up automatically when they finish playing, and can overlap in time.
-    One-shot sounds cannot be looped, have 3D positional effects, or have individual volume, pan,
-    or pitch control.
+    One-shot sounds cannot be looped or have 3D positional effects.
 
     std::unique_ptr<SoundEffect> soundEffect( new SoundEffect( audEngine.get(), L"Explosion.wav" ) );
 
@@ -1450,6 +1449,15 @@ Further reading:
 ---------------
 RELEASE HISTORY
 ---------------
+
+February 25, 2015
+    DirectXTK for Audio updates
+    - *breaking change* pitch now defined as -1 to 1 with 0 as the default
+    - One-shot Play method with volume, pitch, and pan
+    - GetMasterVolume/SetMasterVolume method for AudioEngine
+    - Fix for compact wavebank validation
+    - Improved voice cleanup and shutdown
+    Minor code cleanup and C++11 =default/=delete usage
 
 January 26, 2015
     GamePad class: emulate XInputEnable behavior for XInput 9.1.0
