@@ -13,12 +13,14 @@
 
 #pragma once
 
+#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != WINAPI_FAMILY_APP) || (_WIN32_WINNT < 0x0A00)
 #ifndef _XBOX_ONE
 #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP)
 #if (_WIN32_WINNT >= 0x0602)
 #pragma comment(lib,"xinput.lib")
 #else
 #pragma comment(lib,"xinput9_1_0.lib")
+#endif
 #endif
 #endif
 #endif

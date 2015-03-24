@@ -74,7 +74,69 @@ namespace
 }
 
 
-#ifdef _XBOX_ONE
+#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP) && (_WIN32_WINNT >= 0x0A00)
+
+// TODO - Windows.Gaming.Input
+
+class GamePad::Impl
+{
+public:
+    Impl()
+    {
+        if ( s_gamePad )
+        {
+            throw std::exception( "GamePad is a singleton" );
+        }
+
+        s_gamePad = this;
+    }
+
+    ~Impl()
+    {
+        s_gamePad = nullptr;
+    }
+
+    void GetState(int player, _Out_ State& state, DeadZone)
+    {
+        UNREFERENCED_PARAMETER(player);
+
+        memset( &state, 0, sizeof(State) );
+    }
+
+    void GetCapabilities(int player, _Out_ Capabilities& caps)
+    {
+        UNREFERENCED_PARAMETER(player);
+
+        memset( &caps, 0, sizeof(Capabilities) );
+    }
+
+    bool SetVibration(int player, float leftMotor, float rightMotor, float leftTrigger, float rightTrigger)
+    {
+        UNREFERENCED_PARAMETER(player);
+        UNREFERENCED_PARAMETER(leftMotor);
+        UNREFERENCED_PARAMETER(rightMotor);
+        UNREFERENCED_PARAMETER(leftTrigger);
+        UNREFERENCED_PARAMETER(rightTrigger);
+
+        return false;
+    }
+
+    void Suspend()
+    {
+    }
+
+    void Resume()
+    {
+    }
+
+private:
+    static GamePad::Impl* s_gamePad;
+};
+
+GamePad::Impl* GamePad::Impl::s_gamePad = nullptr;
+
+
+#elif defined(_XBOX_ONE)
 
 //======================================================================================
 // Windows::Xbox::Input
