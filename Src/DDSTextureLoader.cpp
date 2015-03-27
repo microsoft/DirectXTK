@@ -588,7 +588,7 @@ static DXGI_FORMAT GetDXGIFormat( const DDS_PIXELFORMAT& ddpf )
             return DXGI_FORMAT_BC3_UNORM;
         }
 
-        // While pre-mulitplied alpha isn't directly supported by the DXGI formats,
+        // While pre-multiplied alpha isn't directly supported by the DXGI formats,
         // they are basically the same as these BC formats so they can be mapped
         if (MAKEFOURCC( 'D', 'X', 'T', '2' ) == ddpf.fourCC)
         {
