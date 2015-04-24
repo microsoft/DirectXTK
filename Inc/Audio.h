@@ -353,7 +353,7 @@ namespace DirectX
 
         int __cdecl Find( _In_z_ const char* name ) const;
 
-#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/ )
         bool __cdecl FillSubmitBuffer( int index, _Out_ XAUDIO2_BUFFER& buffer, _Out_ XAUDIO2_BUFFER_WMA& wmaBuffer ) const;
 #else
         void __cdecl FillSubmitBuffer( int index, _Out_ XAUDIO2_BUFFER& buffer ) const;
@@ -389,7 +389,7 @@ namespace DirectX
                      _In_ const WAVEFORMATEX* wfx, _In_reads_bytes_(audioBytes) const uint8_t* startAudio, size_t audioBytes,
                      uint32_t loopStart, uint32_t loopLength );
 
-#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/)
 
         SoundEffect( _In_ AudioEngine* engine, _Inout_ std::unique_ptr<uint8_t[]>& wavData,
                      _In_ const WAVEFORMATEX* wfx, _In_reads_bytes_(audioBytes) const uint8_t* startAudio, size_t audioBytes,
@@ -419,7 +419,7 @@ namespace DirectX
 
         const WAVEFORMATEX* __cdecl GetFormat() const;
 
-#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/)
         bool __cdecl FillSubmitBuffer( _Out_ XAUDIO2_BUFFER& buffer, _Out_ XAUDIO2_BUFFER_WMA& wmaBuffer ) const;
 #else
         void __cdecl FillSubmitBuffer( _Out_ XAUDIO2_BUFFER& buffer ) const;

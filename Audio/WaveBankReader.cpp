@@ -993,7 +993,7 @@ HRESULT WaveBankReader::Impl::GetFormat( uint32_t index, WAVEFORMATEX* pFormat, 
             }
             break;
 
-        case MINIWAVEFORMAT::TAG_WMA: // xWMA is supported by XAudio 2.7 and by Xbox One
+        case MINIWAVEFORMAT::TAG_WMA:
             if ( maxsize < sizeof(WAVEFORMATEX) )
                 return HRESULT_FROM_WIN32( ERROR_MORE_DATA );
 

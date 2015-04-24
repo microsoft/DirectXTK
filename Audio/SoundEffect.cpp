@@ -40,7 +40,7 @@ public:
         mLoopLength( 0 ),
         mEngine( engine ),
         mOneShots( 0 )
-#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
         , mSeekCount( 0 )
         , mSeekTable( nullptr )
 #endif
@@ -89,7 +89,7 @@ public:
 
     HRESULT Initialize( _In_ AudioEngine* engine, _Inout_ std::unique_ptr<uint8_t[]>& wavData,
                         _In_ const WAVEFORMATEX* wfx, _In_reads_bytes_(audioBytes) const uint8_t* startAudio, size_t audioBytes,
-#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
                         _In_reads_opt_(seekCount) const uint32_t* seekTable, size_t seekCount,
 #endif
                         uint32_t loopStart, uint32_t loopLength );
@@ -149,7 +149,7 @@ public:
     std::list<SoundEffectInstance*>     mInstances;
     uint32_t                            mOneShots;
 
-#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
     uint32_t                            mSeekCount;
     const uint32_t*                     mSeekTable;
 #endif
@@ -166,7 +166,7 @@ private:
 _Use_decl_annotations_
 HRESULT SoundEffect::Impl::Initialize( AudioEngine* engine, std::unique_ptr<uint8_t[]>& wavData,
                                        const WAVEFORMATEX* wfx, const uint8_t* startAudio, size_t audioBytes,
-#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
                                        const uint32_t* seekTable, size_t seekCount,
 #endif
                                        uint32_t loopStart, uint32_t loopLength )
@@ -192,7 +192,7 @@ HRESULT SoundEffect::Impl::Initialize( AudioEngine* engine, std::unique_ptr<uint
         mStartAudio = startAudio;
         break;
 
-#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
 
     case WAVE_FORMAT_WMAUDIO2:
     case WAVE_FORMAT_WMAUDIO3:
@@ -217,7 +217,7 @@ HRESULT SoundEffect::Impl::Initialize( AudioEngine* engine, std::unique_ptr<uint
         mSeekTable = seekTable;
         break;
 
-#endif // _XBOX_ONE || _WIN32_WINNT < _WIN32_WINNT_WIN8
+#endif // _XBOX_ONE || _WIN32_WINNT < _WIN32_WINNT_WIN8 || _WIN32_WINNT >= _WIN32_WINNT_WIN10
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
 
@@ -329,7 +329,7 @@ void SoundEffect::Impl::Play( float volume, float pitch, float pan )
     buffer.Flags = XAUDIO2_END_OF_STREAM;
     buffer.pContext = this;
 
-#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
 
     uint32_t tag = GetFormatTag( mWaveFormat );
     if ( tag == WAVE_FORMAT_WMAUDIO2 || tag == WAVE_FORMAT_WMAUDIO3 )
@@ -377,7 +377,7 @@ SoundEffect::SoundEffect( AudioEngine* engine, const wchar_t* waveFileName )
         throw std::exception( "SoundEffect" );
     }
 
-#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
     hr = pImpl->Initialize( engine, wavData, wavInfo.wfx, wavInfo.startAudio, wavInfo.audioBytes,
                             wavInfo.seek, wavInfo.seekCount,
                             wavInfo.loopStart, wavInfo.loopLength );
@@ -399,7 +399,7 @@ SoundEffect::SoundEffect( AudioEngine* engine, std::unique_ptr<uint8_t[]>& wavDa
                           const WAVEFORMATEX* wfx, const uint8_t* startAudio, size_t audioBytes )
   : pImpl(new Impl(engine) )
 {
-#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
     HRESULT hr = pImpl->Initialize( engine, wavData, wfx, startAudio, audioBytes, nullptr, 0, 0, 0 );
 #else
     HRESULT hr = pImpl->Initialize( engine, wavData, wfx, startAudio, audioBytes, 0, 0 );
@@ -418,7 +418,7 @@ SoundEffect::SoundEffect( AudioEngine* engine, std::unique_ptr<uint8_t[]>& wavDa
                           uint32_t loopStart, uint32_t loopLength )
   : pImpl(new Impl(engine) )
 {
-#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
     HRESULT hr = pImpl->Initialize( engine, wavData, wfx, startAudio, audioBytes, nullptr, 0, loopStart, loopLength );
 #else
     HRESULT hr = pImpl->Initialize( engine, wavData, wfx, startAudio, audioBytes, loopStart, loopLength );
@@ -431,7 +431,7 @@ SoundEffect::SoundEffect( AudioEngine* engine, std::unique_ptr<uint8_t[]>& wavDa
 }
 
 
-#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
 
 _Use_decl_annotations_
 SoundEffect::SoundEffect( AudioEngine* engine, std::unique_ptr<uint8_t[]>& wavData,
@@ -536,7 +536,7 @@ size_t SoundEffect::GetSampleDuration() const
             return static_cast<size_t>( duration );
         }
 
-#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
 
     case WAVE_FORMAT_WMAUDIO2:
     case WAVE_FORMAT_WMAUDIO3:
@@ -583,7 +583,7 @@ const WAVEFORMATEX* SoundEffect::GetFormat() const
 }
 
 
-#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
 
 bool SoundEffect::FillSubmitBuffer( _Out_ XAUDIO2_BUFFER& buffer, _Out_ XAUDIO2_BUFFER_WMA& wmaBuffer ) const
 {

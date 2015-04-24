@@ -440,7 +440,9 @@ HRESULT AudioEngine::Impl::Reset( const WAVEFORMATEX* wfx, const wchar_t* device
         debug.TraceMask = XAUDIO2_LOG_ERRORS | XAUDIO2_LOG_WARNINGS;
         debug.BreakMask = XAUDIO2_LOG_ERRORS;
         xaudio2->SetDebugConfiguration( &debug, nullptr );
-#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
+#if (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
+        DebugTrace("INFO: XAudio 2.9 debugging enabled\n");
+#elif (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
         // To see the trace output, you need to view ETW logs for this application:
         //    Go to Control Panel, Administrative Tools, Event Viewer.
         //    View->Show Analytic and Debug Logs.

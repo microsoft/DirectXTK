@@ -212,7 +212,7 @@ static HRESULT WaveFindFormatAndData( _In_reads_bytes_(wavDataSize) const uint8_
             switch( wfx->wFormatTag )
             {
             case WAVE_FORMAT_WMAUDIO2:
-            case WAVE_FORMAT_WMAUDIO3: // xWMA is supported by XAudio 2.7 and by Xbox One
+            case WAVE_FORMAT_WMAUDIO3:
                 dpds = true;
                 break;
 

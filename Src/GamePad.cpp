@@ -17,6 +17,7 @@
 #include "PlatformHelpers.h"
 
 using namespace DirectX;
+using Microsoft::WRL::ComPtr;
 
 namespace
 {
@@ -74,7 +75,7 @@ namespace
 }
 
 
-#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP) && (_WIN32_WINNT >= 0x0A00)
+#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP) && (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
 
 // TODO - Windows.Gaming.Input
 
@@ -139,7 +140,7 @@ GamePad::Impl* GamePad::Impl::s_gamePad = nullptr;
 #elif defined(_XBOX_ONE)
 
 //======================================================================================
-// Windows::Xbox::Input
+// Windows::Xbox::Input (Xbox One)
 //======================================================================================
 
 #include <Windows.Xbox.Input.h>
@@ -277,14 +278,14 @@ public:
                     state.buttons.x  = (reading.Buttons & GamepadButtons::GamepadButtons_X) != 0;
                     state.buttons.y  = (reading.Buttons & GamepadButtons::GamepadButtons_Y) != 0;
 
-                    state.buttons.leftStick = (reading.Buttons& GamepadButtons::GamepadButtons_LeftThumbstick) != 0;
-                    state.buttons.rightStick = (reading.Buttons& GamepadButtons::GamepadButtons_RightThumbstick) != 0;
+                    state.buttons.leftStick = (reading.Buttons & GamepadButtons::GamepadButtons_LeftThumbstick) != 0;
+                    state.buttons.rightStick = (reading.Buttons & GamepadButtons::GamepadButtons_RightThumbstick) != 0;
 
-                    state.buttons.leftShoulder = (reading.Buttons& GamepadButtons::GamepadButtons_LeftShoulder) != 0;
-                    state.buttons.rightShoulder = (reading.Buttons& GamepadButtons::GamepadButtons_RightShoulder) != 0;
+                    state.buttons.leftShoulder = (reading.Buttons & GamepadButtons::GamepadButtons_LeftShoulder) != 0;
+                    state.buttons.rightShoulder = (reading.Buttons & GamepadButtons::GamepadButtons_RightShoulder) != 0;
 
-                    state.buttons.back = (reading.Buttons& GamepadButtons::GamepadButtons_View) != 0;
-                    state.buttons.start = (reading.Buttons& GamepadButtons::GamepadButtons_Menu) != 0;
+                    state.buttons.back = (reading.Buttons & GamepadButtons::GamepadButtons_View) != 0;
+                    state.buttons.start = (reading.Buttons & GamepadButtons::GamepadButtons_Menu) != 0;
 
                     state.dpad.up = (reading.Buttons & GamepadButtons::GamepadButtons_DPadUp) != 0;
                     state.dpad.down = (reading.Buttons & GamepadButtons::GamepadButtons_DPadDown) != 0;
@@ -292,11 +293,11 @@ public:
                     state.dpad.left = (reading.Buttons & GamepadButtons::GamepadButtons_DPadLeft) != 0;
 
                     ApplyStickDeadZone( reading.LeftThumbstickX, reading.LeftThumbstickY,
-                                        deadZoneMode, 1.f, .24f /* Recommend Xbox One deadzone */,
+                                        deadZoneMode, 1.f, .24f /* Recommended Xbox One deadzone */,
                                         state.thumbSticks.leftX, state.thumbSticks.leftY );
 
                     ApplyStickDeadZone( reading.RightThumbstickX, reading.RightThumbstickY,
-                                        deadZoneMode, 1.f, .24f /* Recommend Xbox One deadzone */,
+                                        deadZoneMode, 1.f, .24f /* Recommended Xbox One deadzone */,
                                         state.thumbSticks.rightX, state.thumbSticks.rightY );
 
                     state.triggers.left = reading.LeftTrigger;
@@ -324,7 +325,7 @@ public:
                 caps.connected = true;
                 caps.gamepadType = Capabilities::GAMEPAD;
 
-                Microsoft::WRL::ComPtr<ABI::Windows::Xbox::Input::IController> ctrl;
+                ComPtr<ABI::Windows::Xbox::Input::IController> ctrl;
                 HRESULT hr = mGamePad[ player ].As( &ctrl );
                 if ( SUCCEEDED(hr) && ctrl )
                 {
@@ -391,7 +392,6 @@ public:
 private:
     void ScanGamePads()
     {
-        using namespace Microsoft::WRL;
         using namespace ABI::Windows::Foundation::Collections;
         using namespace ABI::Windows::Xbox::Input;
 
@@ -461,8 +461,8 @@ private:
         }
     }
 
-    Microsoft::WRL::ComPtr<ABI::Windows::Xbox::Input::IGamepadStatics> mStatics;
-    Microsoft::WRL::ComPtr<ABI::Windows::Xbox::Input::IGamepad> mGamePad[ MAX_PLAYER_COUNT ];
+    ComPtr<ABI::Windows::Xbox::Input::IGamepadStatics> mStatics;
+    ComPtr<ABI::Windows::Xbox::Input::IGamepad> mGamePad[ MAX_PLAYER_COUNT ];
 
     EventRegistrationToken mAddedToken;
     EventRegistrationToken mRemovedToken;
