@@ -58,7 +58,7 @@ namespace DirectX
     void CreateIntegerPCM( _Out_ WAVEFORMATEX* wfx, int sampleRate, int channels, int sampleBits );
     void CreateFloatPCM( _Out_ WAVEFORMATEX* wfx, int sampleRate, int channels );
     void CreateADPCM( _Out_writes_bytes_(wfxSize) WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int samplesPerBlock );
-#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
     void CreateXWMA( _Out_ WAVEFORMATEX* wfx, int sampleRate, int channels, int blockAlign, int avgBytes, bool wma3 );
 #endif
 #if defined(_XBOX_ONE) && defined(_TITLE)

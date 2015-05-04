@@ -199,7 +199,7 @@ bool DirectX::IsValid( _In_ const WAVEFORMATEX* wfx )
     case WAVE_FORMAT_WMAUDIO2:
     case WAVE_FORMAT_WMAUDIO3:
 
-#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
 
         if ( wfx->wBitsPerSample != 16 )
         {
@@ -424,7 +424,7 @@ bool DirectX::IsValid( _In_ const WAVEFORMATEX* wfx )
             case WAVE_FORMAT_WMAUDIO2:
             case WAVE_FORMAT_WMAUDIO3:
 
-#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
 
                 if ( wfx->wBitsPerSample != 16 )
                 {
@@ -569,7 +569,7 @@ void DirectX::CreateADPCM( WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, in
 }
 
 
-#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
 _Use_decl_annotations_
 void DirectX::CreateXWMA( WAVEFORMATEX* wfx, int sampleRate, int channels, int blockAlign, int avgBytes, bool wma3 )
 {
@@ -583,7 +583,7 @@ void DirectX::CreateXWMA( WAVEFORMATEX* wfx, int sampleRate, int channels, int b
 
     assert( IsValid( wfx ) );
 }
-#endif // _XBOX_ONE || _WIN32_WINNT < _WIN32_WINNT_WIN8
+#endif
 
 
 #if defined(_XBOX_ONE) && defined(_TITLE)

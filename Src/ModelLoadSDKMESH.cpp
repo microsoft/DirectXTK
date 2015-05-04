@@ -62,11 +62,11 @@ namespace DXUT
     // D3DDECLUSAGE_POSITION / D3DDECLTYPE_FLOAT3
     // (D3DDECLUSAGE_BLENDWEIGHT / D3DDECLTYPE_UBYTE4N
     // D3DDECLUSAGE_BLENDINDICES / D3DDECLTYPE_UBYTE4)?
-    // (D3DDECLUSAGE_NORMAL / D3DDECLTYPE_FLOAT3 or D3DDECLTYPE_FLOAT16_4)?
+    // (D3DDECLUSAGE_NORMAL / D3DDECLTYPE_FLOAT3, D3DDECLTYPE_FLOAT16_4, D3DDECLTYPE_SHORT4N, D3DDECLTYPE_UBYTE4N, or D3DDECLTYPE_DEC3N [not supported])?
     // (D3DDECLUSAGE_COLOR / D3DDECLTYPE_D3DCOLOR)?
     // (D3DDECLUSAGE_TEXCOORD / D3DDECLTYPE_FLOAT1, D3DDECLTYPE_FLOAT2 or D3DDECLTYPE_FLOAT16_2, D3DDECLTYPE_FLOAT3 or D3DDECLTYPE_FLOAT16_4, D3DDECLTYPE_FLOAT4 or D3DDECLTYPE_FLOAT16_4)*
-    // (D3DDECLUSAGE_TANGENT / D3DDECLTYPE_FLOAT3 or D3DDECLTYPE_FLOAT16_4)?
-    // (D3DDECLUSAGE_BINORMAL / D3DDECLTYPE_FLOAT3 or D3DDECLTYPE_FLOAT16_4)?
+    // (D3DDECLUSAGE_TANGENT / same as D3DDECLUSAGE_NORMAL)?
+    // (D3DDECLUSAGE_BINORMAL / same as D3DDECLUSAGE_NORMAL)?
 
     enum D3DDECLUSAGE
     {
@@ -90,6 +90,7 @@ namespace DXUT
                                      // Input is in D3DCOLOR format (ARGB) expanded to (R, G, B, A)
         D3DDECLTYPE_UBYTE4    =  5,  // 4D unsigned byte
         D3DDECLTYPE_UBYTE4N   =  8,  // Each of 4 bytes is normalized by dividing to 255.0
+        D3DDECLTYPE_SHORT4N   = 10,  // 4D signed short normalized (v[0]/32767.0,v[1]/32767.0,v[2]/32767.0,v[3]/32767.0)
         D3DDECLTYPE_DEC3N     = 14,  // 3D signed 10 10 10 format normalized and expanded to (v[0]/511.0, v[1]/511.0, v[2]/511.0, 1)
         D3DDECLTYPE_FLOAT16_2 = 15,  // Two 16-bit floating point values, expanded to (value, value, 0, 1)
         D3DDECLTYPE_FLOAT16_4 = 16,  // Four 16-bit floating point values
@@ -469,6 +470,20 @@ static void GetInputLayoutDesc( _In_reads_(32) const DXUT::D3DVERTEXELEMENT9 dec
                 inputDesc.push_back( desc );
                 offset += 8;
             }
+            else if ( decl[index].Type == D3DDECLTYPE_SHORT4N )
+            {
+                D3D11_INPUT_ELEMENT_DESC desc = elements[1];
+                desc.Format = DXGI_FORMAT_R16G16B16A16_SNORM;
+                inputDesc.push_back( desc );
+                offset += 8;
+            }
+            else if ( decl[index].Type == D3DDECLTYPE_UBYTE4N )
+            {
+                D3D11_INPUT_ELEMENT_DESC desc = elements[1];
+                desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+                inputDesc.push_back( desc );
+                offset += 4;
+            }
             else
                 break;
         }
@@ -492,6 +507,20 @@ static void GetInputLayoutDesc( _In_reads_(32) const DXUT::D3DVERTEXELEMENT9 dec
                 inputDesc.push_back( desc );
                 offset += 8;
             }
+            else if ( decl[index].Type == D3DDECLTYPE_SHORT4N )
+            {
+                D3D11_INPUT_ELEMENT_DESC desc = elements[3];
+                desc.Format = DXGI_FORMAT_R16G16B16A16_SNORM;
+                inputDesc.push_back( desc );
+                offset += 8;
+            }
+            else if ( decl[index].Type == D3DDECLTYPE_UBYTE4N )
+            {
+                D3D11_INPUT_ELEMENT_DESC desc = elements[3];
+                desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+                inputDesc.push_back( desc );
+                offset += 4;
+            }
             else
                 break;
         }
@@ -508,6 +537,20 @@ static void GetInputLayoutDesc( _In_reads_(32) const DXUT::D3DVERTEXELEMENT9 dec
                 desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
                 inputDesc.push_back( desc );
                 offset += 8;
+            }
+            else if ( decl[index].Type == D3DDECLTYPE_SHORT4N )
+            {
+                D3D11_INPUT_ELEMENT_DESC desc = elements[4];
+                desc.Format = DXGI_FORMAT_R16G16B16A16_SNORM;
+                inputDesc.push_back( desc );
+                offset += 8;
+            }
+            else if ( decl[index].Type == D3DDECLTYPE_UBYTE4N )
+            {
+                D3D11_INPUT_ELEMENT_DESC desc = elements[4];
+                desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+                inputDesc.push_back( desc );
+                offset += 4;
             }
             else
                 break;
