@@ -55,7 +55,7 @@ namespace DirectX
         GamePad& operator= (GamePad&& moveFrom);
         virtual ~GamePad();
 
-#ifdef _XBOX_ONE
+#if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/ ) || defined(_XBOX_ONE)
         static const int MAX_PLAYER_COUNT = 8;
 #else
         static const int MAX_PLAYER_COUNT = 4;
