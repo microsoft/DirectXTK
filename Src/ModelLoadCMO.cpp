@@ -229,7 +229,10 @@ static BOOL CALLBACK InitializeDecl( PINIT_ONCE initOnce, PVOID Parameter, PVOID
 }
 
 
-//--------------------------------------------------------------------------------------
+//======================================================================================
+// Model Loader
+//======================================================================================
+
 _Use_decl_annotations_
 std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, const uint8_t* meshData, size_t dataSize, IEffectFactory& fxFactory, bool ccw, bool pmalpha )
 {

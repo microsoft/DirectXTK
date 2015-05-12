@@ -58,6 +58,7 @@ namespace DirectX
     class CommonStates;
     class ModelMesh;
 
+    //----------------------------------------------------------------------------------
     // Each mesh part is a submesh with a single effect
     class ModelMeshPart
     {
@@ -91,7 +92,8 @@ namespace DirectX
     };
 
 
-    // A mesh consists of one or more model parts
+    //----------------------------------------------------------------------------------
+    // A mesh consists of one or more model mesh parts
     class ModelMesh
     {
     public:
@@ -115,6 +117,7 @@ namespace DirectX
     };
 
 
+    //----------------------------------------------------------------------------------
     // A model consists of one or more meshes
     class Model
     {

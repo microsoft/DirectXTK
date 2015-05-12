@@ -91,7 +91,7 @@ namespace DXUT
         D3DDECLTYPE_UBYTE4    =  5,  // 4D unsigned byte
         D3DDECLTYPE_UBYTE4N   =  8,  // Each of 4 bytes is normalized by dividing to 255.0
         D3DDECLTYPE_SHORT4N   = 10,  // 4D signed short normalized (v[0]/32767.0,v[1]/32767.0,v[2]/32767.0,v[3]/32767.0)
-        D3DDECLTYPE_DEC3N     = 14,  // 3D signed 10 10 10 format normalized and expanded to (v[0]/511.0, v[1]/511.0, v[2]/511.0, 1)
+        // Note: There is no equivalent to D3DDECLTYPE_DEC3N (14) as a DXGI_FORMAT
         D3DDECLTYPE_FLOAT16_2 = 15,  // Two 16-bit floating point values, expanded to (value, value, 0, 1)
         D3DDECLTYPE_FLOAT16_4 = 16,  // Four 16-bit floating point values
 
@@ -619,7 +619,10 @@ static void CreateInputLayout(_In_ ID3D11Device* device, _In_ IEffect* effect, s
 }
 
 
-//--------------------------------------------------------------------------------------
+//======================================================================================
+// Model Loader
+//======================================================================================
+
 _Use_decl_annotations_
 std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH( ID3D11Device* d3dDevice, const uint8_t* meshData, size_t dataSize, IEffectFactory& fxFactory, bool ccw, bool pmalpha )
 {
@@ -782,7 +785,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH( ID3D11Device* d3dDevic
 
     std::unique_ptr<Model> model(new Model());
     model->meshes.reserve( header->NumMeshes );
-  
+
     for( UINT meshIndex = 0; meshIndex < header->NumMeshes; ++meshIndex )
     {
         auto& mh = meshArray[ meshIndex ];
@@ -794,7 +797,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH( ID3D11Device* d3dDevic
             throw std::exception("Invalid mesh found");
 
         // mh.NumVertexBuffers is sometimes not what you'd expect, so we skip validating it
-      
+
         if ( dataSize < mh.SubsetOffset
              || (dataSize < mh.SubsetOffset + mh.NumSubsets*sizeof(UINT) ) )
             throw std::exception("End of file");
