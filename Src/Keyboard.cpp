@@ -101,7 +101,17 @@ void DirectX::Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lPara
     switch (vk)
     {
     case VK_SHIFT:
-        vk = MapVirtualKey( (lParam & 0x00ff0000) >> 16, MAPVK_VSC_TO_VK_EX );
+        vk = MapVirtualKey((lParam & 0x00ff0000) >> 16, MAPVK_VSC_TO_VK_EX);
+        if ( !down )
+        {
+            // Workaround to ensure left vs. right shift get cleared when both were pressed at same time
+            auto ptr = reinterpret_cast<uint32_t*>(&s_state);
+            unsigned int bf = 1u << (VK_LSHIFT & 0x1f);
+            ptr[(VK_LSHIFT >> 5)] &= ~bf;
+
+            bf = 1u << (VK_RSHIFT & 0x1f);
+            ptr[(VK_RSHIFT >> 5)] &= ~bf;
+        }
         break;
 
     case VK_CONTROL:
@@ -189,6 +199,16 @@ void DirectX::Keyboard::ProcessAcceleratorKeyEvent(Windows::UI::Core::CoreDispat
     {
     case VK_SHIFT:
         vk = (args->KeyStatus.ScanCode == 0x36) ? VK_RSHIFT : VK_LSHIFT;
+        if ( !down )
+        {
+            // Workaround to ensure left vs. right shift get cleared when both were pressed at same time
+            auto ptr = reinterpret_cast<uint32_t*>(&s_state);
+            unsigned int bf = 1u << (VK_LSHIFT & 0x1f);
+            ptr[(VK_LSHIFT >> 5)] &= ~bf;
+
+            bf = 1u << (VK_RSHIFT & 0x1f);
+            ptr[(VK_RSHIFT >> 5)] &= ~bf;
+        }
         break;
 
     case VK_CONTROL:
