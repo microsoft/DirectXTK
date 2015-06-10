@@ -469,7 +469,7 @@ namespace DirectX
 #endif
 
 #if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP) && defined(__cplusplus_winrt)
-        static void __cdecl ProcessAcceleratorKeyEvent(Windows::UI::Core::CoreDispatcher^ sender, Windows::UI::Core::AcceleratorKeyEventArgs^ args);
+        static void __cdecl ProcessAcceleratorKeyEvent(Windows::UI::Core::AcceleratorKeyEventArgs^ args);
 #endif
 
     private:

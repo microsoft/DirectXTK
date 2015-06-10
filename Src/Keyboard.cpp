@@ -22,7 +22,7 @@ Keyboard::State Keyboard::s_state = { 0 };
 
 
 //--------------------------------------------------------------------------------------
-void DirectX::Keyboard::KeyDown( int key )
+void Keyboard::KeyDown( int key )
 {
     if (key < 0 || key > 0xfe)
         return;
@@ -33,7 +33,7 @@ void DirectX::Keyboard::KeyDown( int key )
     ptr[(key >> 5)] |= bf;
 }
 
-void DirectX::Keyboard::KeyUp( int key )
+void Keyboard::KeyUp( int key )
 {
     if (key < 0 || key > 0xfe)
         return;
@@ -74,7 +74,7 @@ void DirectX::Keyboard::KeyUp( int key )
 
 #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
 
-void DirectX::Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
+void Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 {
     bool down = false;
 
@@ -152,7 +152,7 @@ void DirectX::Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lPara
 //
 // void App::OnAcceleratorKeyActivated(CoreDispatcher^ sender, AcceleratorKeyEventArgs^ args)
 // {
-//     Keyboard::ProcessAcceleratorKeyEvent(sender, args);
+//     Keyboard::ProcessAcceleratorKeyEvent(args);
 // }
 //
 // void App::OnWindowActivated(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::WindowActivatedEventArgs^ args)
@@ -167,10 +167,8 @@ void DirectX::Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lPara
 #error This implementation requires C++/CX (/ZW)
 #endif
 
-void DirectX::Keyboard::ProcessAcceleratorKeyEvent(Windows::UI::Core::CoreDispatcher^ sender, Windows::UI::Core::AcceleratorKeyEventArgs^ args)
+void Keyboard::ProcessAcceleratorKeyEvent(Windows::UI::Core::AcceleratorKeyEventArgs^ args)
 {
-    UNREFERENCED_PARAMETER(sender);
-
     using namespace Windows::System;
     using namespace Windows::UI::Core;
 
@@ -242,7 +240,7 @@ void DirectX::Keyboard::ProcessAcceleratorKeyEvent(Windows::UI::Core::CoreDispat
 // KeyboardStateTracker
 //======================================================================================
 
-void DirectX::Keyboard::KeyboardStateTracker::Update( const State& state )
+void Keyboard::KeyboardStateTracker::Update( const State& state )
 {
     auto currPtr = reinterpret_cast<const uint32_t*>(&state);
     auto prevPtr = reinterpret_cast<const uint32_t*>(&lastState);
