@@ -216,3 +216,28 @@ void DirectX::Keyboard::ProcessAcceleratorKeyEvent(Windows::UI::Core::CoreDispat
     }
 }
 #endif
+
+
+//======================================================================================
+// KeyboardStateTracker
+//======================================================================================
+
+void DirectX::Keyboard::KeyboardStateTracker::Update( const State& state )
+{
+    auto currPtr = reinterpret_cast<const uint32_t*>(&state);
+    auto prevPtr = reinterpret_cast<const uint32_t*>(&lastState);
+    auto releasedPtr = reinterpret_cast<uint32_t*>(&released);
+    auto pressedPtr = reinterpret_cast<uint32_t*>(&pressed);
+    for (size_t j = 0; j < (256 / 32); ++j)
+    {
+        *pressedPtr = *currPtr & ~(*prevPtr);
+        *releasedPtr = ~(*currPtr) & *prevPtr;
+
+        ++currPtr;
+        ++prevPtr;
+        ++releasedPtr;
+        ++pressedPtr;
+    }
+
+    lastState = state;
+}

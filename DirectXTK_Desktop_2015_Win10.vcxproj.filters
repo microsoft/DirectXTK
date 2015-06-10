@@ -99,6 +99,9 @@
     <ClInclude Include="Audio\SoundCommon.h">
       <Filter>Src</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Keyboard.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\CommonStates.cpp">
@@ -201,6 +204,9 @@
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="Audio\AudioEngine.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Keyboard.cpp">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>

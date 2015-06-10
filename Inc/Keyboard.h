@@ -406,7 +406,7 @@ namespace DirectX
             bool __cdecl IsKeyDown(Keys key) const
             {
                 assert(key >= 0 && key <= 0xff);
-                auto ptr = reinterpret_cast<uint32_t*>(&s_state);
+                auto ptr = reinterpret_cast<const uint32_t*>(this);
                 unsigned int bf = 1u << (key & 0x1f);
                 return (ptr[(key >> 5)] & bf) != 0;
             }
@@ -414,7 +414,7 @@ namespace DirectX
             bool __cdecl IsKeyUp(Keys key) const
             {
                 assert(key >= 0 && key <= 0xfe);
-                auto ptr = reinterpret_cast<uint32_t*>(&s_state);
+                auto ptr = reinterpret_cast<const uint32_t*>(this);
                 unsigned int bf = 1u << (key & 0x1f);
                 return (ptr[(key >> 5)] & bf) == 0;
             }
@@ -428,25 +428,7 @@ namespace DirectX
 
             KeyboardStateTracker() { Reset(); }
 
-            void __cdecl Update( const State& state )
-            {
-                auto currPtr = reinterpret_cast<const uint32_t*>(&state);
-                auto prevPtr = reinterpret_cast<const uint32_t*>(&lastState);
-                auto releasedPtr = reinterpret_cast<uint32_t*>(&released);
-                auto pressedPtr = reinterpret_cast<uint32_t*>(&pressed);
-                for (size_t j = 0; j < (256 / 32); ++j)
-                {
-                    *pressedPtr = *currPtr & ~*prevPtr;
-                    *releasedPtr = ~*currPtr & *prevPtr;
-
-                    ++currPtr;
-                    ++prevPtr;
-                    ++releasedPtr;
-                    ++pressedPtr;
-                }
-
-                lastState = state;
-            }
+            void __cdecl Update(const State& state);
 
             void __cdecl Reset()
             {

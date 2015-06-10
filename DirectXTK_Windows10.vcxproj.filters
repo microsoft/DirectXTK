@@ -99,6 +99,9 @@
     <ClInclude Include="Inc\GamePad.h">
       <Filter>Inc</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Keyboard.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Inc\SimpleMath.inl">
@@ -251,6 +254,9 @@
       <Filter>Audio</Filter>
     </ClCompile>
     <ClCompile Include="Src\GamePad.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Keyboard.cpp">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>
