@@ -31,6 +31,7 @@
     <ClInclude Include="Inc\GeometricPrimitive.h" />
     <ClInclude Include="Inc\Keyboard.h" />
     <ClInclude Include="Inc\Model.h" />
+    <ClInclude Include="Inc\Mouse.h" />
     <ClInclude Include="Inc\SimpleMath.h" />
     <ClInclude Include="Inc\SimpleMath.inl" />
     <ClInclude Include="Inc\ScreenGrab.h" />
@@ -107,6 +108,7 @@
     <ClCompile Include="Src\ModelLoadCMO.cpp" />
     <ClCompile Include="Src\ModelLoadSDKMESH.cpp" />
     <ClCompile Include="Src\ModelLoadVBO.cpp" />
+    <ClCompile Include="Src\Mouse.cpp" />
     <ClCompile Include="Src\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
