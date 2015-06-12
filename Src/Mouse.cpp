@@ -275,7 +275,7 @@ private:
             ThrowIfFailed(hr);
 
             HANDLE evt = s_mouse->mScrollWheelValue.get();
-            if (WaitForSingleObjectEx(evt), 0, FALSE) == WAIT_OBJECT_0)
+            if (WaitForSingleObjectEx(evt, 0, FALSE) == WAIT_OBJECT_0)
             {
                 s_mouse->mState.scrollWheelValue = 0;
                 ResetEvent(evt);

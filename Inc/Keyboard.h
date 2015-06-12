@@ -13,14 +13,6 @@
 
 #pragma once
 
-#include <assert.h>
-#include <memory.h>
-
-#pragma warning(push)
-#pragma warning(disable : 4005)
-#include <stdint.h>
-#pragma warning(pop)
-
 // VS 2010/2012 do not support =default =delete
 #ifndef DIRECTX_CTOR_DEFAULT
 #if defined(_MSC_VER) && (_MSC_VER < 1800)
@@ -32,12 +24,24 @@
 #endif
 #endif
 
+#pragma warning(push)
+#pragma warning(disable : 4005)
+#include <stdint.h>
+#pragma warning(pop)
+
+#include <memory>
+
 
 namespace DirectX
 {
     class Keyboard
     {
     public:
+        Keyboard();
+        Keyboard(Keyboard&& moveFrom);
+        Keyboard& operator= (Keyboard&& moveFrom);
+        virtual ~Keyboard();
+
         enum Keys
         {
             None                = 0,
@@ -405,18 +409,24 @@ namespace DirectX
 
             bool __cdecl IsKeyDown(Keys key) const
             {
-                assert(key >= 0 && key <= 0xff);
-                auto ptr = reinterpret_cast<const uint32_t*>(this);
-                unsigned int bf = 1u << (key & 0x1f);
-                return (ptr[(key >> 5)] & bf) != 0;
+                if (key >= 0 && key <= 0xff)
+                {
+                    auto ptr = reinterpret_cast<const uint32_t*>(this);
+                    unsigned int bf = 1u << (key & 0x1f);
+                    return (ptr[(key >> 5)] & bf) != 0;
+                }
+                return false;
             }
 
             bool __cdecl IsKeyUp(Keys key) const
             {
-                assert(key >= 0 && key <= 0xfe);
-                auto ptr = reinterpret_cast<const uint32_t*>(this);
-                unsigned int bf = 1u << (key & 0x1f);
-                return (ptr[(key >> 5)] & bf) == 0;
+                if (key >= 0 && key <= 0xfe)
+                {
+                    auto ptr = reinterpret_cast<const uint32_t*>(this);
+                    unsigned int bf = 1u << (key & 0x1f);
+                    return (ptr[(key >> 5)] & bf) == 0;
+                }
+                return false;
             }
         };
 
@@ -430,56 +440,37 @@ namespace DirectX
 
             void __cdecl Update(const State& state);
 
-            void __cdecl Reset()
-            {
-                memset(&released, 0, sizeof(State));
-                memset(&pressed, 0, sizeof(State));
-                memset(&lastState, 0, sizeof(State));
-            }
+            void __cdecl Reset();
 
-            bool __cdecl IsKeyPressed(Keys key) const
-            {
-                return pressed.IsKeyDown(key);
-            }
-
-            bool __cdecl IsKeyReleased(Keys key) const
-            {
-                return released.IsKeyDown(key);
-            }
+            bool __cdecl IsKeyPressed(Keys key) const { return pressed.IsKeyDown(key); }
+            bool __cdecl IsKeyReleased(Keys key) const { return released.IsKeyDown(key); }
 
         public:
             State lastState;
         };
 
-        static const State& __cdecl GetState()
-        {
-            return s_state;
-        }
+        // Retrieve the current state of the keyboard
+        State __cdecl GetState() const;
 
-        static void __cdecl Reset()
-        {
-            memset( &s_state, 0, sizeof(State) );
-        }
-
-        static void __cdecl KeyDown( int key );
-        static void __cdecl KeyUp( int key );
+        // Reset the keyboard state
+        void __cdecl Reset();
 
 #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP) && defined(WM_USER)
         static void __cdecl ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam);
 #endif
 
 #if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP) && defined(__cplusplus_winrt)
-        static void __cdecl ProcessAcceleratorKeyEvent(Windows::UI::Core::AcceleratorKeyEventArgs^ args);
+        void __cdecl SetWindow(Windows::UI::Core::CoreWindow^ window);
 #endif
 
     private:
-        // Static only
-        Keyboard() DIRECTX_CTOR_DEFAULT
+        // Private implementation.
+        class Impl;
+
+        std::unique_ptr<Impl> pImpl;
 
         // Prevent copying.
         Keyboard(Keyboard const&) DIRECTX_CTOR_DELETE
         Keyboard& operator=(Keyboard const&) DIRECTX_CTOR_DELETE
-
-        static State s_state;
     };
 }
