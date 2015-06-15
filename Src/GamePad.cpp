@@ -265,7 +265,7 @@ private:
         ThrowIfFailed( hr );
 
         unsigned int count = 0;
-        pads->get_Size( &count );
+        hr = pads->get_Size( &count );
         ThrowIfFailed( hr );
 
         // Check for removed gamepads
@@ -611,7 +611,7 @@ private:
         ThrowIfFailed( hr );
 
         unsigned int count = 0;
-        pads->get_Size( &count );
+        hr = pads->get_Size( &count );
         ThrowIfFailed( hr );
 
         // Check for removed gamepads
