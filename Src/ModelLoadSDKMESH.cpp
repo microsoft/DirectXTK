@@ -377,8 +377,7 @@ struct MaterialRecordSDKMESH
 
 
 static void LoadMaterial( _In_ const DXUT::SDKMESH_MATERIAL& mh,
-                          _In_ bool perVertexColor,
-                          _In_ bool enableSkinning,
+                          _In_ bool perVertexColor, _In_ bool enableSkinning, _In_ bool enableDualTexture,
                           _Inout_ IEffectFactory& fxFactory, _Inout_ MaterialRecordSDKMESH& m )
 {
     WCHAR matName[ DXUT::MAX_MATERIAL_NAME ];
@@ -387,10 +386,14 @@ static void LoadMaterial( _In_ const DXUT::SDKMESH_MATERIAL& mh,
     WCHAR txtName[ DXUT::MAX_TEXTURE_NAME ];
     MultiByteToWideChar( CP_ACP, MB_PRECOMPOSED, mh.DiffuseTexture, -1, txtName, DXUT::MAX_TEXTURE_NAME );
 
+    WCHAR txtName2[ DXUT::MAX_TEXTURE_NAME ];
+    MultiByteToWideChar( CP_ACP, MB_PRECOMPOSED, mh.SpecularTexture, -1, txtName2, DXUT::MAX_TEXTURE_NAME );
+
     EffectFactory::EffectInfo info;
     info.name = matName;
     info.perVertexColor = perVertexColor;
     info.enableSkinning = enableSkinning;
+    info.enableDualTexture = enableDualTexture;
     info.ambientColor = XMFLOAT3( mh.Ambient.x, mh.Ambient.y, mh.Ambient.z );
     info.diffuseColor = XMFLOAT3( mh.Diffuse.x, mh.Diffuse.y, mh.Diffuse.z );
     info.emissiveColor= XMFLOAT3( mh.Emissive.x, mh.Emissive.y, mh.Emissive.z );
@@ -409,6 +412,7 @@ static void LoadMaterial( _In_ const DXUT::SDKMESH_MATERIAL& mh,
     }
 
     info.texture = txtName;
+    info.texture2 = txtName2;
            
     m.effect = fxFactory.CreateEffect( info, nullptr );
     m.alpha = (info.alpha < 1.f);
@@ -419,7 +423,7 @@ static void LoadMaterial( _In_ const DXUT::SDKMESH_MATERIAL& mh,
 // Direct3D 9 Vertex Declaration to DirectInput 11 Input Layout mapping
 
 static void GetInputLayoutDesc( _In_reads_(32) const DXUT::D3DVERTEXELEMENT9 decl[], std::vector<D3D11_INPUT_ELEMENT_DESC>& inputDesc,
-                                bool &perVertexColor, bool& enableSkinning )
+                                bool &perVertexColor, bool& enableSkinning, bool& dualTexture )
 {
     static const D3D11_INPUT_ELEMENT_DESC elements[] =
     {
@@ -436,6 +440,7 @@ static void GetInputLayoutDesc( _In_reads_(32) const DXUT::D3DVERTEXELEMENT9 dec
     using namespace DXUT;
 
     uint32_t offset = 0;
+    uint32_t texcoords = 0;
 
     bool posfound = false;
 
@@ -578,6 +583,8 @@ static void GetInputLayoutDesc( _In_reads_(32) const DXUT::D3DVERTEXELEMENT9 dec
             if ( unk )
                 break;
 
+            ++texcoords;
+
             inputDesc.push_back( desc );
         }
         else if ( decl[index].Usage == D3DDECLUSAGE_BLENDINDICES && decl[index].Type == D3DDECLTYPE_UBYTE4 )
@@ -598,6 +605,11 @@ static void GetInputLayoutDesc( _In_reads_(32) const DXUT::D3DVERTEXELEMENT9 dec
 
     if ( !posfound )
         throw std::exception("SV_Position is required");
+
+    if ( texcoords == 2 )
+    {
+        dualTexture = true;
+    }
 }
 
 // Helper for creating a D3D input layout.
@@ -715,6 +727,9 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH( ID3D11Device* d3dDevic
     std::vector<bool> enableSkinning;
     enableSkinning.resize( header->NumVertexBuffers );
 
+    std::vector<bool> enableDualTexture;
+    enableDualTexture.resize( header->NumVertexBuffers );
+
     for( UINT j=0; j < header->NumVertexBuffers; ++j )
     {
         auto& vh = vbArray[j];
@@ -726,9 +741,11 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH( ID3D11Device* d3dDevic
         vbDecls[j] = std::make_shared<std::vector<D3D11_INPUT_ELEMENT_DESC>>();
         bool vertColor = false;
         bool skinning = false;
-        GetInputLayoutDesc( vh.Decl, *vbDecls[j].get(), vertColor, skinning );
+        bool dualTexture = false;
+        GetInputLayoutDesc( vh.Decl, *vbDecls[j].get(), vertColor, skinning, dualTexture );
         perVertexColor[j] = vertColor;
         enableSkinning[j] = skinning;
+        enableDualTexture[j] = dualTexture;
 
         auto verts = reinterpret_cast<const uint8_t*>( bufferData + (vh.DataOffset - bufferDataOffset) );
 
@@ -863,8 +880,9 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH( ID3D11Device* d3dDevic
 
             if ( !mat.effect )
             {
+                size_t vi = mh.VertexBuffers[0];
                 LoadMaterial( materialArray[ subset.MaterialID ],
-                              perVertexColor[ mh.VertexBuffers[0] ], enableSkinning[ mh.VertexBuffers[0] ],
+                              perVertexColor[vi], enableSkinning[vi], enableDualTexture[vi],
                               fxFactory, mat );
             }
 

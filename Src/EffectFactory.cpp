@@ -53,6 +53,7 @@ private:
 
     EffectCache  mEffectCache;
     EffectCache  mEffectCacheSkinning;
+    EffectCache  mEffectCacheDualTexture;
     TextureCache mTextureCache;
 
     bool mSharing;
@@ -120,7 +121,59 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect( IEffectFactory* fact
         if ( mSharing && info.name && *info.name )
         {
             std::lock_guard<std::mutex> lock(mutex);
-            mEffectCacheSkinning.insert( EffectCache::value_type( info.name, effect) );
+            mEffectCacheSkinning.insert( EffectCache::value_type( info.name, effect ) );
+        }
+
+        return effect;
+    }
+    else if ( info.enableDualTexture )
+    {
+        // DualTextureEffect
+        if ( mSharing && info.name && *info.name )
+        {
+            auto it = mEffectCacheDualTexture.find( info.name );
+            if ( mSharing && it != mEffectCacheDualTexture.end() )
+            {
+                return it->second;
+            }
+        }
+
+        std::shared_ptr<DualTextureEffect> effect = std::make_shared<DualTextureEffect>( device.Get() );
+
+        // Dual texture effect doesn't support lighting (usually it's lightmaps)
+
+        effect->SetAlpha( info.alpha );
+
+        if ( info.perVertexColor )
+        {
+            effect->SetVertexColorEnabled( true );
+        }
+
+        XMVECTOR color = XMLoadFloat3( &info.diffuseColor );
+        effect->SetDiffuseColor( color );
+
+        if ( info.texture && *info.texture )
+        {
+            Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
+
+            factory->CreateTexture( info.texture, deviceContext, &srv );
+
+            effect->SetTexture( srv.Get() );
+        }
+
+        if ( info.texture2 && *info.texture2 )
+        {
+            Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
+
+            factory->CreateTexture( info.texture2, deviceContext, &srv );
+
+            effect->SetTexture2( srv.Get() );
+        }
+
+        if ( mSharing && info.name && *info.name )
+        {
+            std::lock_guard<std::mutex> lock(mutex);
+            mEffectCacheDualTexture.insert( EffectCache::value_type( info.name, effect ) );
         }
 
         return effect;
@@ -184,7 +237,7 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect( IEffectFactory* fact
         if ( mSharing && info.name && *info.name )
         {
             std::lock_guard<std::mutex> lock(mutex);
-            mEffectCache.insert( EffectCache::value_type( info.name, effect) );
+            mEffectCache.insert( EffectCache::value_type( info.name, effect ) );
         }
 
         return effect;
@@ -272,6 +325,7 @@ void EffectFactory::Impl::ReleaseCache()
     std::lock_guard<std::mutex> lock(mutex);
     mEffectCache.clear();
     mEffectCacheSkinning.clear();
+    mEffectCacheDualTexture.clear();
     mTextureCache.clear();
 }
 

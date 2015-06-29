@@ -474,6 +474,7 @@ namespace DirectX
         // Texture settings.
         void __cdecl SetTextureEnabled(bool value);
         void __cdecl SetTexture(_In_opt_ ID3D11ShaderResourceView* value);
+        void __cdecl SetTexture2(_In_opt_ ID3D11ShaderResourceView* value);
         void __cdecl SetTexture(int whichTexture, _In_opt_ ID3D11ShaderResourceView* value);
 
         static const int MaxTextures = 8;
@@ -511,6 +512,7 @@ namespace DirectX
             const WCHAR*        name;
             bool                perVertexColor;
             bool                enableSkinning;
+            bool                enableDualTexture;
             float               specularPower;
             float               alpha;
             DirectX::XMFLOAT3   ambientColor;
@@ -518,6 +520,7 @@ namespace DirectX
             DirectX::XMFLOAT3   specularColor;
             DirectX::XMFLOAT3   emissiveColor;
             const WCHAR*        texture;
+            const WCHAR*        texture2;
 
             EffectInfo() { memset( this, 0, sizeof(EffectInfo) ); };
         };
@@ -576,7 +579,7 @@ namespace DirectX
         // DGSL methods.
         struct DGSLEffectInfo : public EffectInfo
         {
-            const WCHAR*        textures[7];
+            const WCHAR*        textures[6];
             const WCHAR*        pixelShader;
 
             DGSLEffectInfo() { memset( this, 0, sizeof(DGSLEffectInfo) ); };

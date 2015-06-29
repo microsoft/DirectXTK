@@ -76,6 +76,11 @@ SharedResourcePool<ID3D11Device*, DGSLEffectFactory::Impl> DGSLEffectFactory::Im
 _Use_decl_annotations_
 std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateEffect( DGSLEffectFactory* factory, const DGSLEffectFactory::EffectInfo& info, ID3D11DeviceContext* deviceContext )
 {
+    if ( info.enableDualTexture )
+    {
+        throw std::exception( "DGSLEffect does not support multiple texcoords" );
+    }
+
     if ( mSharing && info.name && *info.name )
     {
         if ( info.enableSkinning )
@@ -285,7 +290,17 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateDGSLEffect( DGSLEffectFa
         effect->SetTextureEnabled(true);
     }
 
-    for( int j = 0; j < 7; ++j )
+    if ( info.texture2 && *info.texture2 )
+    {
+        Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
+
+        factory->CreateTexture( info.texture2, deviceContext, srv.GetAddressOf() );
+
+        effect->SetTexture2( srv.Get() );
+        effect->SetTextureEnabled(true);
+    }
+
+    for( int j = 0; j < 6; ++j )
     {
         if ( info.textures[j] && *info.textures[j] )
         {
@@ -293,7 +308,7 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateDGSLEffect( DGSLEffectFa
 
             factory->CreateTexture( info.textures[j], deviceContext, srv.GetAddressOf() );
 
-            effect->SetTexture( j+1, srv.Get() );
+            effect->SetTexture( j+2, srv.Get() );
             effect->SetTextureEnabled(true);
         }
     }
