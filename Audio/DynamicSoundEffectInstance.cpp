@@ -29,7 +29,6 @@ public:
           _In_ DynamicSoundEffectInstance* object, _In_opt_ std::function<void(DynamicSoundEffectInstance*)> bufferNeeded,
           int sampleRate, int channels, int sampleBits, SOUND_EFFECT_INSTANCE_FLAGS flags ) :
         mBase(),
-        mBufferEvent( INVALID_HANDLE_VALUE ),
         mBufferNeeded( nullptr ),
         mObject( object )
     {
@@ -58,9 +57,9 @@ public:
         }
 
 #if (_WIN32_WINNT >= _WIN32_WINNT_VISTA)
-        mBufferEvent = CreateEventEx( nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE );
+        mBufferEvent.reset( CreateEventEx( nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE ) );
 #else
-        mBufferEvent = CreateEvent( nullptr, FALSE, FALSE, nullptr );
+        mBufferEvent.reset( CreateEvent( nullptr, FALSE, FALSE, nullptr ) );
 #endif
         if ( !mBufferEvent )
         {
@@ -86,8 +85,6 @@ public:
             mBase.engine->UnregisterNotify( this, false, true );
             mBase.engine = nullptr;
         }
-
-        CloseHandle( mBufferEvent );
     }
 
     void Play();
@@ -101,7 +98,7 @@ public:
     // IVoiceNotify
     virtual void __cdecl OnBufferEnd() override
     {
-        SetEvent( mBufferEvent );
+        SetEvent( mBufferEvent.get() );
     }
 
     virtual void __cdecl OnCriticalError() override
@@ -134,7 +131,7 @@ public:
     SoundEffectInstanceBase                             mBase;
 
 private:
-    HANDLE                                              mBufferEvent;
+    ScopedHandle                                        mBufferEvent;
     std::function<void(DynamicSoundEffectInstance*)>    mBufferNeeded;
     DynamicSoundEffectInstance*                         mObject;
     WAVEFORMATEX                                        mWaveFormat;
@@ -152,7 +149,7 @@ void DynamicSoundEffectInstance::Impl::Play()
 
     if ( mBase.voice && ( mBase.state == PLAYING ) && ( mBase.GetPendingBufferCount() <= 2 ) )
     {
-        SetEvent( mBufferEvent );
+        SetEvent( mBufferEvent.get() );
     }
 }
 
@@ -165,7 +162,7 @@ void DynamicSoundEffectInstance::Impl::Resume()
 
         if ( ( mBase.state == PLAYING ) && ( mBase.GetPendingBufferCount() <= 2 ) )
         {
-            SetEvent( mBufferEvent );
+            SetEvent( mBufferEvent.get() );
         }
     }
 }
@@ -213,7 +210,7 @@ void DynamicSoundEffectInstance::Impl::SubmitBuffer( const uint8_t* pAudioData, 
 
 void DynamicSoundEffectInstance::Impl::OnUpdate()
 {
-    DWORD result = WaitForSingleObjectEx( mBufferEvent, 0, FALSE );
+    DWORD result = WaitForSingleObjectEx( mBufferEvent.get(), 0, FALSE );
     switch( result )
     {
     case WAIT_TIMEOUT:

@@ -431,7 +431,6 @@ class WaveBankReader::Impl
 public:
     Impl() :
         m_async( INVALID_HANDLE_VALUE ),
-        m_event( INVALID_HANDLE_VALUE ),
         m_prepared(false)
 #if defined(_XBOX_ONE) && defined(_TITLE)
         , m_xmaMemory(nullptr)
@@ -477,7 +476,7 @@ public:
     }
 
     HANDLE                              m_async;
-    HANDLE                              m_event;
+    ScopedHandle                        m_event;
     OVERLAPPED                          m_request;
     bool                                m_prepared;
 
@@ -506,14 +505,13 @@ HRESULT WaveBankReader::Impl::Open( const wchar_t* szFileName )
     m_prepared = false;
 
 #if (_WIN32_WINNT >= _WIN32_WINNT_VISTA)
-    m_event = CreateEventEx( nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE );
+    m_event.reset( CreateEventEx( nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE ) );
 #else
-    m_event = CreateEvent( nullptr, TRUE, FALSE, nullptr );
+    m_event.reset( CreateEvent( nullptr, TRUE, FALSE, nullptr ) );
 #endif
 
     if ( !m_event )
     {
-        m_event = INVALID_HANDLE_VALUE;
         return HRESULT_FROM_WIN32( GetLastError() );
     }
 
@@ -544,7 +542,7 @@ HRESULT WaveBankReader::Impl::Open( const wchar_t* szFileName )
     // Read and verify header
     OVERLAPPED request;
     memset( &request, 0, sizeof(request) );
-    request.hEvent = m_event;
+    request.hEvent = m_event.get();
 
     bool wait = false;
     if( !ReadFile( hFile.get(), &m_header, sizeof( m_header ), nullptr, &request ) )
@@ -560,7 +558,7 @@ HRESULT WaveBankReader::Impl::Open( const wchar_t* szFileName )
     BOOL result = GetOverlappedResultEx( hFile.get(), &request, &bytes, INFINITE, FALSE );
 #else
     if ( wait  )
-        (void)WaitForSingleObject( m_event, INFINITE );
+        (void)WaitForSingleObject( m_event.get(), INFINITE );
 
     BOOL result = GetOverlappedResult( hFile.get(), &request, &bytes, FALSE );
 #endif
@@ -590,7 +588,7 @@ HRESULT WaveBankReader::Impl::Open( const wchar_t* szFileName )
     // Load bank data
     memset( &request, 0, sizeof(request) );
     request.Offset = m_header.Segments[HEADER::SEGIDX_BANKDATA].dwOffset;
-    request.hEvent = m_event;
+    request.hEvent = m_event.get();
 
     wait = false;
     if( !ReadFile( hFile.get(), &m_data, sizeof( m_data ), nullptr, &request ) )
@@ -605,7 +603,7 @@ HRESULT WaveBankReader::Impl::Open( const wchar_t* szFileName )
     result = GetOverlappedResultEx( hFile.get(), &request, &bytes, INFINITE, FALSE );
 #else
     if ( wait )
-        (void)WaitForSingleObject( m_event, INFINITE );
+        (void)WaitForSingleObject( m_event.get(), INFINITE );
 
     result = GetOverlappedResult( hFile.get(), &request, &bytes, FALSE );
 #endif
@@ -674,7 +672,7 @@ HRESULT WaveBankReader::Impl::Open( const wchar_t* szFileName )
 
             memset( &request, 0, sizeof(request) );
             request.Offset = m_header.Segments[HEADER::SEGIDX_ENTRYNAMES].dwOffset;
-            request.hEvent = m_event;
+            request.hEvent = m_event.get();
 
             wait = false;
             if ( !ReadFile( hFile.get(), temp.get(), namesBytes, nullptr, &request ) )
@@ -689,7 +687,7 @@ HRESULT WaveBankReader::Impl::Open( const wchar_t* szFileName )
             result = GetOverlappedResultEx( hFile.get(), &request, &bytes, INFINITE, FALSE );
 #else
             if ( wait )
-                (void)WaitForSingleObject( m_event, INFINITE );
+                (void)WaitForSingleObject( m_event.get(), INFINITE );
 
             result = GetOverlappedResult( hFile.get(), &request, &bytes, FALSE );
 #endif
@@ -725,7 +723,7 @@ HRESULT WaveBankReader::Impl::Open( const wchar_t* szFileName )
 
     memset( &request, 0, sizeof(request) );
     request.Offset = m_header.Segments[HEADER::SEGIDX_ENTRYMETADATA].dwOffset;
-    request.hEvent = m_event;
+    request.hEvent = m_event.get();
 
     wait = false;
     if ( !ReadFile( hFile.get(), m_entries.get(), metadataBytes, nullptr, &request ) )
@@ -740,7 +738,7 @@ HRESULT WaveBankReader::Impl::Open( const wchar_t* szFileName )
     result = GetOverlappedResultEx( hFile.get(), &request, &bytes, INFINITE, FALSE );
 #else
     if ( wait )
-        (void)WaitForSingleObject( m_event, INFINITE );
+        (void)WaitForSingleObject( m_event.get(), INFINITE );
 
     result = GetOverlappedResult( hFile.get(), &request, &bytes, FALSE );
 #endif
@@ -776,7 +774,7 @@ HRESULT WaveBankReader::Impl::Open( const wchar_t* szFileName )
 
         memset( &request, 0, sizeof(OVERLAPPED) );
         request.Offset = m_header.Segments[HEADER::SEGIDX_SEEKTABLES].dwOffset;
-        request.hEvent = m_event;
+        request.hEvent = m_event.get();
 
         wait = false;
         if ( !ReadFile( hFile.get(), m_seekData.get(), seekLen, nullptr, &request ) )
@@ -791,7 +789,7 @@ HRESULT WaveBankReader::Impl::Open( const wchar_t* szFileName )
         result = GetOverlappedResultEx( hFile.get(), &request, &bytes, INFINITE, FALSE );
 #else
         if ( wait )
-            (void)WaitForSingleObject( m_event, INFINITE );
+            (void)WaitForSingleObject( m_event.get(), INFINITE );
 
         result = GetOverlappedResult( hFile.get(), &request, &bytes, FALSE );
 #endif
@@ -897,7 +895,7 @@ HRESULT WaveBankReader::Impl::Open( const wchar_t* szFileName )
 
         memset( &m_request, 0, sizeof(OVERLAPPED) );
         m_request.Offset = m_header.Segments[HEADER::SEGIDX_ENTRYWAVEDATA].dwOffset;
-        m_request.hEvent = m_event;
+        m_request.hEvent = m_event.get();
 
         if ( !ReadFile( hFile.get(), dest, waveLen, nullptr, &m_request ) )
         {
@@ -937,11 +935,7 @@ void WaveBankReader::Impl::Close()
         CloseHandle( m_async );
         m_async = INVALID_HANDLE_VALUE;
     }
-    if ( m_event != INVALID_HANDLE_VALUE )
-    {
-        CloseHandle( m_event );
-        m_event = INVALID_HANDLE_VALUE;
-    }
+    m_event.reset();
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
     if ( m_xmaMemory )
