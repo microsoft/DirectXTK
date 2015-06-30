@@ -86,7 +86,8 @@ namespace
 class GamePad::Impl
 {
 public:
-    Impl()
+    Impl(GamePad* owner) :
+        mOwner(owner)
     {
         using namespace Microsoft::WRL;
         using namespace Microsoft::WRL::Wrappers;
@@ -95,13 +96,15 @@ public:
         mAddedToken.value = 0;
         mRemovedToken.value = 0;
 
-        if ( s_changed )
+        if ( s_gamePad )
         {
             throw std::exception( "GamePad is a singleton" );
         }
 
-        s_changed = CreateEventEx( nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE );
-        if ( !s_changed )
+        s_gamePad = this;
+
+        mChanged.reset( CreateEventEx( nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE ) );
+        if ( !mChanged )
         {
             throw std::exception( "CreateEventEx" );
         }
@@ -130,11 +133,7 @@ public:
             mStatics.Reset();
         }
 
-        if ( s_changed )
-        {
-            CloseHandle( s_changed );
-            s_changed = nullptr;
-        }
+        s_gamePad = nullptr;
     }
 
     void GetState( int player, _Out_ State& state, DeadZone deadZoneMode )
@@ -142,7 +141,7 @@ public:
         using namespace Microsoft::WRL;
         using namespace ABI::Windows::Gaming::Input;
 
-        if ( WaitForSingleObjectEx( s_changed, 0, FALSE ) == WAIT_OBJECT_0 )
+        if ( WaitForSingleObjectEx( mChanged.get(), 0, FALSE ) == WAIT_OBJECT_0 )
         {
             ScanGamePads();
         }
@@ -198,7 +197,7 @@ public:
 
     void GetCapabilities( int player, _Out_ Capabilities& caps )
     {
-        if ( WaitForSingleObjectEx( s_changed, 0, FALSE ) == WAIT_OBJECT_0 )
+        if ( WaitForSingleObjectEx( mChanged.get(), 0, FALSE ) == WAIT_OBJECT_0 )
         {
             ScanGamePads();
         }
@@ -251,8 +250,12 @@ public:
     void Resume()
     {
         // Make sure we rescan gamepads
-        SetEvent( s_changed );
+        SetEvent( mChanged.get() );
     }
+
+    GamePad*    mOwner;
+
+    static GamePad::Impl* s_gamePad;
 
 private:
     void ScanGamePads()
@@ -331,22 +334,28 @@ private:
     EventRegistrationToken mAddedToken;
     EventRegistrationToken mRemovedToken;
 
-    static HANDLE s_changed;
+    ScopedHandle mChanged;
 
     static HRESULT GamepadAdded( IInspectable *, ABI::Windows::Gaming::Input::IGamepad* )
     {
-        SetEvent( s_changed );
+        if ( s_gamePad )
+        {
+            SetEvent( s_gamePad->mChanged.get() );
+        }
         return S_OK;
     }
 
     static HRESULT GamepadRemoved( IInspectable *, ABI::Windows::Gaming::Input::IGamepad* )
     {
-        SetEvent( s_changed );
+        if ( s_gamePad )
+        {
+            SetEvent( s_gamePad->mChanged.get() );
+        }
         return S_OK;
     }
 };
 
-HANDLE GamePad::Impl::s_changed = nullptr;
+GamePad::Impl* GamePad::Impl::s_gamePad = nullptr;
 
 #elif defined(_XBOX_ONE)
 
@@ -402,7 +411,8 @@ private:
 class GamePad::Impl
 {
 public:
-    Impl()
+    Impl(GamePad *owner) :
+        mOwner(owner)
     {
         using namespace Microsoft::WRL;
         using namespace Microsoft::WRL::Wrappers;
@@ -411,13 +421,15 @@ public:
         mAddedToken.value = 0;
         mRemovedToken.value = 0;
 
-        if ( s_changed )
+        if ( s_gamePad )
         {
             throw std::exception( "GamePad is a singleton" );
         }
 
-        s_changed = CreateEventEx( nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE );
-        if ( !s_changed )
+        s_gamePad = this;
+
+        mChanged.reset( CreateEventEx( nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE ) );
+        if ( !mChanged )
         {
             throw std::exception( "CreateEventEx" );
         }
@@ -428,10 +440,10 @@ public:
 #ifdef _TITLE
         // This is a workaround for some registration issues in the GameOS
 
-        hr = mStatics->add_GamepadAdded(Make<GamepadAddedListener>(s_changed).Get(), &mAddedToken );
+        hr = mStatics->add_GamepadAdded(Make<GamepadAddedListener>(mChanged.get()).Get(), &mAddedToken );
         ThrowIfFailed( hr );
 
-        hr = mStatics->add_GamepadRemoved(Make<GamepadRemovedListener>(s_changed).Get(), &mRemovedToken );
+        hr = mStatics->add_GamepadRemoved(Make<GamepadRemovedListener>(mChanged.get()).Get(), &mRemovedToken );
         ThrowIfFailed( hr );
 #else
         typedef __FIEventHandler_1_Windows__CXbox__CInput__CGamepadAddedEventArgs AddedHandler;
@@ -456,11 +468,7 @@ public:
             mStatics.Reset();
         }
 
-        if ( s_changed )
-        {
-            CloseHandle( s_changed );
-            s_changed = nullptr;
-        }
+        s_gamePad = nullptr;
     }
 
     void GetState( int player, _Out_ State& state, DeadZone deadZoneMode )
@@ -468,7 +476,7 @@ public:
         using namespace Microsoft::WRL;
         using namespace ABI::Windows::Xbox::Input;
 
-        if ( WaitForSingleObjectEx( s_changed, 0, FALSE ) == WAIT_OBJECT_0 )
+        if ( WaitForSingleObjectEx( mChanged.get(), 0, FALSE ) == WAIT_OBJECT_0 )
         {
             ScanGamePads();
         }
@@ -524,7 +532,7 @@ public:
 
     void GetCapabilities( int player, _Out_ Capabilities& caps )
     {
-        if ( WaitForSingleObjectEx( s_changed, 0, FALSE ) == WAIT_OBJECT_0 )
+        if ( WaitForSingleObjectEx( mChanged.get(), 0, FALSE ) == WAIT_OBJECT_0 )
         {
             ScanGamePads();
         }
@@ -597,8 +605,12 @@ public:
     void Resume()
     {
         // Make sure we rescan gamepads
-        SetEvent( s_changed );
+        SetEvent( mChanged.get() );
     }
+
+    GamePad*    mOwner;
+
+    static GamePad::Impl* s_gamePad;
 
 private:
     void ScanGamePads()
@@ -678,24 +690,30 @@ private:
     EventRegistrationToken mAddedToken;
     EventRegistrationToken mRemovedToken;
 
-    static HANDLE s_changed;
+    ScopedHandle mChanged;
 
 #ifndef _TITLE
     static HRESULT GamepadAdded( IInspectable *, ABI::Windows::Xbox::Input::IGamepadAddedEventArgs * )
     {
-        SetEvent( s_changed );
+        if ( s_gamePad )
+        {
+            SetEvent( s_gamePad->mChanged.get() );
+        }
         return S_OK;
     }
 
     static HRESULT GamepadRemoved( IInspectable *, ABI::Windows::Xbox::Input::IGamepadRemovedEventArgs* )
     {
-        SetEvent( s_changed );
+        if ( s_gamePad )
+        {
+            SetEvent( s_gamePad->mChanged.get() );
+        }
         return S_OK;
     }
 #endif
 };
 
-HANDLE GamePad::Impl::s_changed = nullptr;
+GamePad::Impl* GamePad::Impl::s_gamePad = nullptr;
 
 
 #elif defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)
@@ -707,7 +725,8 @@ HANDLE GamePad::Impl::s_changed = nullptr;
 class GamePad::Impl
 {
 public:
-    Impl()
+    Impl(GamePad* owner) :
+        mOwner(owner)
     {
         if ( s_gamePad )
         {
@@ -755,7 +774,8 @@ public:
     {
     }
 
-private:
+    GamePad*    mOwner;
+
     static GamePad::Impl* s_gamePad;
 };
 
@@ -775,7 +795,8 @@ static_assert( GamePad::MAX_PLAYER_COUNT == XUSER_MAX_COUNT, "xinput.h mismatch"
 class GamePad::Impl
 {
 public:
-    Impl()
+    Impl(GamePad* owner) :
+        mOwner(owner)
     {
         for( int j = 0; j < XUSER_MAX_COUNT; ++j )
         {
@@ -996,6 +1017,10 @@ public:
 #endif
     }
 
+    GamePad*    mOwner;
+
+    static GamePad::Impl* s_gamePad;
+
 private:
     bool        mConnected[ XUSER_MAX_COUNT ];
     ULONGLONG   mLastReadTime[ XUSER_MAX_COUNT ];
@@ -1006,8 +1031,6 @@ private:
     float       mRightMotor[ XUSER_MAX_COUNT ];
     bool        mSuspended;
 #endif
-
-    static GamePad::Impl* s_gamePad;
 
     bool ThrottleRetry( int player )
     {
@@ -1055,10 +1078,11 @@ GamePad::Impl* GamePad::Impl::s_gamePad = nullptr;
 
 #endif
 
+#pragma warning( disable : 4355 )
 
 // Public constructor.
 GamePad::GamePad()
-    : pImpl( new Impl() )
+    : pImpl( new Impl(this) )
 {
 }
 
@@ -1067,6 +1091,7 @@ GamePad::GamePad()
 GamePad::GamePad(GamePad&& moveFrom)
   : pImpl(std::move(moveFrom.pImpl))
 {
+    pImpl->mOwner = this;
 }
 
 
@@ -1074,6 +1099,7 @@ GamePad::GamePad(GamePad&& moveFrom)
 GamePad& GamePad::operator= (GamePad&& moveFrom)
 {
     pImpl = std::move(moveFrom.pImpl);
+    pImpl->mOwner = this;
     return *this;
 }
 
@@ -1116,6 +1142,16 @@ void GamePad::Resume()
 {
     pImpl->Resume();
 }
+
+
+GamePad& GamePad::Get()
+{
+    if ( !Impl::s_gamePad || !Impl::s_gamePad->mOwner )
+        throw std::exception( "GamePad is a singleton" );
+
+    return *Impl::s_gamePad->mOwner;
+}
+
 
 
 //======================================================================================

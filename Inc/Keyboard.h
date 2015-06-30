@@ -463,6 +463,9 @@ namespace DirectX
         void __cdecl SetWindow(Windows::UI::Core::CoreWindow^ window);
 #endif
 
+        // Singleton
+        static Keyboard& __cdecl Get();
+
     private:
         // Private implementation.
         class Impl;

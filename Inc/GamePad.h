@@ -228,6 +228,9 @@ namespace DirectX
         void __cdecl Suspend();
         void __cdecl Resume();
 
+        // Singleton
+        static GamePad& __cdecl Get();
+
     private:
         // Private implementation.
         class Impl;

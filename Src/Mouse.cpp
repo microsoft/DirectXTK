@@ -52,7 +52,8 @@ using Microsoft::WRL::ComPtr;
 class Mouse::Impl
 {
 public:
-    Impl() :
+    Impl(Mouse* owner) :
+        mOwner(owner),
         mDPI(96.f)
     {
         mPointerPressedToken.value = 0;
@@ -132,6 +133,7 @@ public:
     State           mState;
     ScopedHandle    mScrollWheelValue;
     float           mDPI;
+    Mouse*          mOwner;
 
     static Mouse::Impl* s_mouse;
 
@@ -320,7 +322,8 @@ void Mouse::SetDpi(float dpi)
 class Mouse::Impl
 {
 public:
-    Impl()
+    Impl(Mouse* owner) :
+        mOwner(owner)
     {
         if ( s_mouse )
         {
@@ -344,7 +347,8 @@ public:
     {
     }
 
-private:
+    Mouse*  mOwner;
+
     static Mouse::Impl* s_mouse;
 };
 
@@ -383,7 +387,8 @@ Mouse::Impl* Mouse::Impl::s_mouse = nullptr;
 class Mouse::Impl
 {
 public:
-    Impl()
+    Impl(Mouse* owner) :
+        mOwner(owner)
     {
         if ( s_mouse )
         {
@@ -423,6 +428,7 @@ public:
 
     State           mState;
     ScopedHandle    mScrollWheelValue;
+    Mouse*          mOwner;
 
     static Mouse::Impl* s_mouse;
 };
@@ -516,10 +522,11 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 
 #endif
 
+#pragma warning( disable : 4355 )
 
 // Public constructor.
 Mouse::Mouse()
-    : pImpl( new Impl() )
+    : pImpl( new Impl(this) )
 {
 }
 
@@ -528,6 +535,7 @@ Mouse::Mouse()
 Mouse::Mouse(Mouse&& moveFrom)
   : pImpl(std::move(moveFrom.pImpl))
 {
+    pImpl->mOwner = this;
 }
 
 
@@ -535,6 +543,7 @@ Mouse::Mouse(Mouse&& moveFrom)
 Mouse& Mouse::operator= (Mouse&& moveFrom)
 {
     pImpl = std::move(moveFrom.pImpl);
+    pImpl->mOwner = this;
     return *this;
 }
 
@@ -556,6 +565,15 @@ Mouse::State Mouse::GetState() const
 void Mouse::ResetScrollWheelValue()
 {
     pImpl->ResetScrollWheelValue();
+}
+
+
+Mouse& Mouse::Get()
+{
+    if ( !Impl::s_mouse || !Impl::s_mouse->mOwner )
+        throw std::exception( "Mouse is a singleton" );
+
+    return *Impl::s_mouse->mOwner;
 }
 
 

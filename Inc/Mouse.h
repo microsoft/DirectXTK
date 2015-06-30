@@ -91,6 +91,9 @@ namespace DirectX
         static void __cdecl SetDpi(float dpi);
 #endif
 
+        // Singleton
+        static Mouse& __cdecl Get();
+
     private:
         // Private implementation.
         class Impl;

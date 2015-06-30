@@ -72,7 +72,8 @@ namespace
 class Keyboard::Impl
 {
 public:
-    Impl()
+    Impl(Keyboard* owner) :
+        mOwner(owner)
     {
         mAcceleratorKeyToken.value = 0;
         mActivatedToken.value = 0;
@@ -136,7 +137,8 @@ public:
         ThrowIfFailed(hr);
     }
 
-    State   mState;
+    State       mState;
+    Keyboard*   mOwner;
 
     static Keyboard::Impl* s_keyboard;
 
@@ -271,7 +273,8 @@ void Keyboard::SetWindow(Windows::UI::Core::CoreWindow^ window)
 class Keyboard::Impl
 {
 public:
-    Impl()
+    Impl(Keyboard* owner) :
+        mOwner(owner)
     {
         if ( s_keyboard )
         {
@@ -295,7 +298,8 @@ public:
     {
     }
 
-private:
+    Keyboard*   mOwner;
+
     static Keyboard::Impl* s_keyboard;
 };
 
@@ -333,7 +337,8 @@ Keyboard::Impl* Keyboard::Impl::s_keyboard = nullptr;
 class Keyboard::Impl
 {
 public:
-    Impl()
+    Impl(Keyboard* owner) :
+        mOwner(owner)
     {
         if ( s_keyboard )
         {
@@ -361,6 +366,7 @@ public:
     }
 
     State           mState;
+    Keyboard*       mOwner;
 
     static Keyboard::Impl* s_keyboard;
 };
@@ -431,10 +437,11 @@ void Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 
 #endif
 
+#pragma warning( disable : 4355 )
 
 // Public constructor.
 Keyboard::Keyboard()
-    : pImpl( new Impl() )
+    : pImpl( new Impl(this) )
 {
 }
 
@@ -443,6 +450,7 @@ Keyboard::Keyboard()
 Keyboard::Keyboard(Keyboard&& moveFrom)
   : pImpl(std::move(moveFrom.pImpl))
 {
+    pImpl->mOwner = this;
 }
 
 
@@ -450,6 +458,7 @@ Keyboard::Keyboard(Keyboard&& moveFrom)
 Keyboard& Keyboard::operator= (Keyboard&& moveFrom)
 {
     pImpl = std::move(moveFrom.pImpl);
+    pImpl->mOwner = this;
     return *this;
 }
 
@@ -471,6 +480,15 @@ Keyboard::State Keyboard::GetState() const
 void Keyboard::Reset()
 {
     pImpl->Reset();
+}
+
+
+Keyboard& Keyboard::Get()
+{
+    if ( !Impl::s_keyboard || !Impl::s_keyboard->mOwner )
+        throw std::exception( "Keyboard is a singleton" );
+
+    return *Impl::s_keyboard->mOwner;
 }
 
 
