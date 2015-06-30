@@ -49,14 +49,19 @@ namespace DirectX
 
         XMVECTOR XM_CALLCONV MeasureString(_In_z_ wchar_t const* text) const;
 
+        // Spacing properties
         float __cdecl GetLineSpacing() const;
         void __cdecl SetLineSpacing(float spacing);
 
+        // Font properties
         wchar_t __cdecl GetDefaultCharacter() const;
         void __cdecl SetDefaultCharacter(wchar_t character);
 
         bool __cdecl ContainsCharacter(wchar_t character) const;
 
+        // Custom layout/rendering
+        Glyph const* __cdecl FindGlyph(wchar_t character) const;
+        void GetSpriteSheet( ID3D11ShaderResourceView** texture ) const;
 
         // Describes a single character glyph.
         struct Glyph

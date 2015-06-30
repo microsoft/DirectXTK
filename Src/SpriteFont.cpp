@@ -351,6 +351,7 @@ XMVECTOR XM_CALLCONV SpriteFont::MeasureString(_In_z_ wchar_t const* text) const
 }
 
 
+// Spacing properties
 float SpriteFont::GetLineSpacing() const
 {
     return pImpl->lineSpacing;
@@ -363,6 +364,7 @@ void SpriteFont::SetLineSpacing(float spacing)
 }
 
 
+// Font properties
 wchar_t SpriteFont::GetDefaultCharacter() const
 {
     return pImpl->defaultGlyph ? (wchar_t)pImpl->defaultGlyph->Character : 0;
@@ -378,4 +380,20 @@ void SpriteFont::SetDefaultCharacter(wchar_t character)
 bool SpriteFont::ContainsCharacter(wchar_t character) const
 {
     return std::binary_search(pImpl->glyphs.begin(), pImpl->glyphs.end(), character);
+}
+
+
+// Custom layout/rendering
+SpriteFont::Glyph const* SpriteFont::FindGlyph(wchar_t character) const
+{
+    return pImpl->FindGlyph(character);
+}
+
+
+void SpriteFont::GetSpriteSheet( ID3D11ShaderResourceView** texture ) const
+{
+    if ( !texture )
+        return;
+
+    ThrowIfFailed( pImpl->texture.CopyTo( texture ) );
 }
