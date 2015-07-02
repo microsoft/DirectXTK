@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-March 27, 2015
+July 1, 2015
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for universal Windows apps for Windows 10,
@@ -31,7 +31,9 @@ Inc\
     Effects.h - set of built-in shaders for common rendering tasks
     GamePad.h - gamepad controller helper using XInput
     GeometricPrimitive.h - draws basic shapes such as cubes and spheres
+    Keyboard.h - keyboard state tracking helper
     Model.h - draws meshes loaded from .CMO, .SDKMESH, or .VBO files
+    Mouse.h - mouse helper
     PrimitiveBatch.h - simple and efficient way to draw user primitives
     ScreenGrab.h - light-weight screen shot saver
     SimpleMath.h - simplified C++ wrapper for DirectXMath
@@ -73,6 +75,13 @@ Note: Xbox One exclusive apps developers using the Xbox One XDK need to generate
 ---------------
 RELEASE HISTORY
 ---------------
+
+July 1, 2015
+    - Added Keyboard, Mouse class
+    - Support for loading pre-lit models with SDKMESH
+    - GamePad imlpemented using Windows.Gaming.Input for Windows 10
+    - DirectXTK for Audio updates for xWMA support with XAudio 2.9
+    - Added FindGlyph and GetSpriteSheet methods to SpriteFont
 
 March 27, 2015
     Added projects for Windows apps Technical Preview
