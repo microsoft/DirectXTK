@@ -88,7 +88,11 @@ public:
     {
         memcpy( &state, &mState, sizeof(State) );
 
-        if (WaitForSingleObjectEx(mScrollWheelValue.get(), 0, FALSE) == WAIT_OBJECT_0)
+        DWORD result = WaitForSingleObjectEx( mScrollWheelValue.get(), 0, FALSE );
+        if ( result == WAIT_FAILED )
+            throw std::exception( "WaitForSingleObjectEx" );
+
+        if ( result == WAIT_OBJECT_0 )
         {
             state.scrollWheelValue = 0;
         }
@@ -131,7 +135,6 @@ public:
     }
 
     State           mState;
-    ScopedHandle    mScrollWheelValue;
     float           mDPI;
     Mouse*          mOwner;
 
@@ -139,6 +142,8 @@ public:
 
 private:
     ComPtr<ABI::Windows::UI::Core::ICoreWindow> mWindow;
+
+    ScopedHandle    mScrollWheelValue;
 
     EventRegistrationToken mPointerPressedToken;
     EventRegistrationToken mPointerReleasedToken;
@@ -273,7 +278,7 @@ private:
             ThrowIfFailed(hr);
 
             INT32 value;
-            HRESULT hr = props->get_MouseWheelDelta(&value);
+            hr = props->get_MouseWheelDelta(&value);
             ThrowIfFailed(hr);
 
             HANDLE evt = s_mouse->mScrollWheelValue.get();
@@ -415,7 +420,11 @@ public:
     {
         memcpy( &state, &mState, sizeof(State) );
 
-        if (WaitForSingleObjectEx(mScrollWheelValue.get(), 0, FALSE) == WAIT_OBJECT_0)
+        DWORD result = WaitForSingleObjectEx( mScrollWheelValue.get(), 0, FALSE );
+        if ( result == WAIT_FAILED )
+            throw std::exception( "WaitForSingleObjectEx" );
+
+        if ( result == WAIT_OBJECT_0 )
         {
             state.scrollWheelValue = 0;
         }
@@ -427,10 +436,15 @@ public:
     }
 
     State           mState;
-    ScopedHandle    mScrollWheelValue;
+
     Mouse*          mOwner;
 
     static Mouse::Impl* s_mouse;
+
+private:
+    ScopedHandle    mScrollWheelValue;
+
+    friend void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam);
 };
 
 
@@ -485,7 +499,7 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
         return;
 
     case WM_XBUTTONDOWN:
-        switch ( GET_XBUTTON_WPARAM(wParam) )
+        switch (GET_XBUTTON_WPARAM(wParam))
         {
         case XBUTTON1:
             pImpl->mState.xButton1 = true;
@@ -498,7 +512,7 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
         break;
 
     case WM_XBUTTONUP:
-        switch ( GET_XBUTTON_WPARAM(wParam) )
+        switch (GET_XBUTTON_WPARAM(wParam))
         {
         case XBUTTON1:
             pImpl->mState.xButton1 = false;
