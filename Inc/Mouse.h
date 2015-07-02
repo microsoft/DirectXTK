@@ -1,4 +1,4 @@
-﻿//--------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------
 // File: Mouse.h
 //
 // THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
@@ -86,8 +86,12 @@ namespace DirectX
         static void __cdecl ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam);
 #endif
 
-#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP) && defined(__cplusplus_winrt)
+#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
+#ifdef __cplusplus_winrt
         void __cdecl SetWindow(Windows::UI::Core::CoreWindow^ window);
+#else
+        void __cdecl SetWindow(ABI::Windows::UI::Core::ICoreWindow* window);
+#endif
         static void __cdecl SetDpi(float dpi);
 #endif
 

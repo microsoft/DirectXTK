@@ -43,6 +43,10 @@
 #include <d3d11_1.h>
 #endif
 
+#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
+#include <Windows.UI.Core.h>
+#endif
+
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
 #include <DirectXCollision.h>
