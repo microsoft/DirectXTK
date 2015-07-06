@@ -62,8 +62,6 @@ namespace
 // }
 //
 
-#include <Windows.Foundation.h>
-
 class Keyboard::Impl
 {
 public:
@@ -251,19 +249,10 @@ private:
 Keyboard::Impl* Keyboard::Impl::s_keyboard = nullptr;
 
 
-#ifdef __cplusplus_winrt
-void Keyboard::SetWindow(Windows::UI::Core::CoreWindow^ window)
-{
-    // See https://msdn.microsoft.com/en-us/library/hh755802.aspx
-    auto iwindow = reinterpret_cast<ABI::Windows::UI::Core::ICoreWindow*>(window);
-    pImpl->SetWindow(iwindow);
-}
-#else
 void Keyboard::SetWindow(ABI::Windows::UI::Core::ICoreWindow* window)
 {
     pImpl->SetWindow(window);
 }
-#endif
 
 #elif defined(_XBOX_ONE) || ( defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP) )
 

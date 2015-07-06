@@ -41,7 +41,6 @@ using Microsoft::WRL::ComPtr;
 // }
 //
 
-#include <Windows.Foundation.h>
 #include <Windows.Devices.Input.h>
 
 class Mouse::Impl
@@ -294,19 +293,10 @@ private:
 Mouse::Impl* Mouse::Impl::s_mouse = nullptr;
 
 
-#ifdef __cplusplus_winrt
-void Mouse::SetWindow(Windows::UI::Core::CoreWindow^ window)
-{
-    // See https://msdn.microsoft.com/en-us/library/hh755802.aspx
-    auto iwindow = reinterpret_cast<ABI::Windows::UI::Core::ICoreWindow*>(window);
-    pImpl->SetWindow(iwindow);
-}
-#else
 void Mouse::SetWindow(ABI::Windows::UI::Core::ICoreWindow* window)
 {
     pImpl->SetWindow(window);
 }
-#endif
 
 
 void Mouse::SetDpi(float dpi)
