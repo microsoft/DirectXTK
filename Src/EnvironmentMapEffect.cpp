@@ -357,7 +357,7 @@ void XM_CALLCONV EnvironmentMapEffect::SetAmbientLightColor(FXMVECTOR value)
 
 void EnvironmentMapEffect::SetLightEnabled(int whichLight, bool value)
 {
-    XMVECTOR unwantedOutput[MaxDirectionalLights];
+    XMVECTOR unwantedOutput[MaxDirectionalLights] = {};
 
     pImpl->dirtyFlags |= pImpl->lights.SetLightEnabled(whichLight, value, pImpl->constants.lightDiffuseColor, unwantedOutput);
 }
