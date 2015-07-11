@@ -23,7 +23,7 @@
 #endif
 
 using namespace DirectX;
-using namespace Microsoft::WRL;
+using Microsoft::WRL::ComPtr;
 
 
 // Internal EffectFactory implementation class. Only one of these helpers is allocated
@@ -49,7 +49,7 @@ private:
     ComPtr<ID3D11Device> device;
 
     typedef std::map< std::wstring, std::shared_ptr<IEffect> > EffectCache;
-    typedef std::map< std::wstring, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> > TextureCache;
+    typedef std::map< std::wstring, ComPtr<ID3D11ShaderResourceView> > TextureCache;
 
     EffectCache  mEffectCache;
     EffectCache  mEffectCacheSkinning;
@@ -111,7 +111,7 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect( IEffectFactory* fact
 
         if ( info.texture && *info.texture )
         {
-            Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
+            ComPtr<ID3D11ShaderResourceView> srv;
 
             factory->CreateTexture( info.texture, deviceContext, &srv );
 
@@ -154,7 +154,7 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect( IEffectFactory* fact
 
         if ( info.texture && *info.texture )
         {
-            Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
+            ComPtr<ID3D11ShaderResourceView> srv;
 
             factory->CreateTexture( info.texture, deviceContext, &srv );
 
@@ -163,7 +163,7 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect( IEffectFactory* fact
 
         if ( info.texture2 && *info.texture2 )
         {
-            Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
+            ComPtr<ID3D11ShaderResourceView> srv;
 
             factory->CreateTexture( info.texture2, deviceContext, &srv );
 
@@ -226,7 +226,7 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect( IEffectFactory* fact
 
         if ( info.texture && *info.texture )
         {
-            Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
+            ComPtr<ID3D11ShaderResourceView> srv;
 
             factory->CreateTexture( info.texture, deviceContext, &srv );
 

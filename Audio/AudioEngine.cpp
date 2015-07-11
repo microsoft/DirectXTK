@@ -19,7 +19,7 @@
 #include <unordered_map>
 
 using namespace DirectX;
-using namespace Microsoft::WRL;
+using Microsoft::WRL::ComPtr;
 
 //#define VERBOSE_TRACE
 
@@ -1584,10 +1584,11 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
 
     using namespace Microsoft::WRL;
     using namespace Microsoft::WRL::Wrappers;
+    using namespace ABI::Windows::Foundation;
     using namespace ABI::Windows::Media::Devices;
 
-    Microsoft::WRL::ComPtr<IMediaDeviceStatics> mdStatics;
-    HRESULT hr = ABI::Windows::Foundation::GetActivationFactory( HStringReference(RuntimeClass_Windows_Media_Devices_MediaDevice).Get(), &mdStatics );
+    ComPtr<IMediaDeviceStatics> mdStatics;
+    HRESULT hr = GetActivationFactory( HStringReference(RuntimeClass_Windows_Media_Devices_MediaDevice).Get(), &mdStatics );
     ThrowIfFailed( hr );
 
     HString id;
@@ -1638,8 +1639,8 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
     HRESULT hr = initialize;
     ThrowIfFailed( hr );
 
-    Microsoft::WRL::ComPtr<IDeviceInformationStatics> diFactory;
-    hr = ABI::Windows::Foundation::GetActivationFactory( HStringReference(RuntimeClass_Windows_Devices_Enumeration_DeviceInformation).Get(), &diFactory );
+    ComPtr<IDeviceInformationStatics> diFactory;
+    hr = GetActivationFactory( HStringReference(RuntimeClass_Windows_Devices_Enumeration_DeviceInformation).Get(), &diFactory );
     ThrowIfFailed( hr );
 
     Event findCompleted( CreateEventEx( nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, WRITE_OWNER | EVENT_ALL_ACCESS ) );

@@ -23,7 +23,8 @@
 #include "BinaryReader.h"
 
 using namespace DirectX;
-using namespace Microsoft::WRL;
+using Microsoft::WRL::ComPtr;
+
 
 //--------------------------------------------------------------------------------------
 // .CMO files are built by Visual Studio 2012 and an example renderer is provided

@@ -16,7 +16,7 @@
 #include "DemandCreate.h"
 
 using namespace DirectX;
-using namespace Microsoft::WRL;
+using Microsoft::WRL::ComPtr;
 
 
 // Constructor initializes default matrix values.

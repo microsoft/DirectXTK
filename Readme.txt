@@ -79,7 +79,7 @@ RELEASE HISTORY
 July 1, 2015
     - Added Keyboard, Mouse class
     - Support for loading pre-lit models with SDKMESH
-    - GamePad imlpemented using Windows.Gaming.Input for Windows 10
+    - GamePad implemented using Windows.Gaming.Input for Windows 10
     - DirectXTK for Audio updates for xWMA support with XAudio 2.9
     - Added FindGlyph and GetSpriteSheet methods to SpriteFont
 

@@ -18,7 +18,7 @@
 
 using namespace DirectX;
 using namespace DirectX::Internal;
-using namespace Microsoft::WRL;
+using Microsoft::WRL::ComPtr;
 
 
 // Internal PrimitiveBatch implementation class.

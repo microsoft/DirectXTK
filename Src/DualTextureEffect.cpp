@@ -15,7 +15,7 @@
 #include "EffectCommon.h"
 
 using namespace DirectX;
-using namespace Microsoft::WRL;
+using Microsoft::WRL::ComPtr;
 
 
 // Constant buffer layout. Must match the shader!

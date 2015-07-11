@@ -18,7 +18,7 @@
 #include "SharedResourcePool.h"
 
 using namespace DirectX;
-using namespace Microsoft::WRL;
+using Microsoft::WRL::ComPtr;
 
 
 // Internal state object implementation class. Only one of these helpers is allocated

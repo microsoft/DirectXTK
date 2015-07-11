@@ -35,8 +35,8 @@ namespace EffectDirtyFlags
 
 }
 
-
 using namespace DirectX;
+using Microsoft::WRL::ComPtr;
 
 // Constant buffer layout. Must match the shader!
 #pragma pack(push,1)
@@ -288,7 +288,7 @@ public:
     XMVECTOR lightDiffuseColor[MaxDirectionalLights];
     XMVECTOR lightSpecularColor[MaxDirectionalLights];
 
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> textures[MaxTextures];
+    ComPtr<ID3D11ShaderResourceView> textures[MaxTextures];
 
     int dirtyFlags;
 
@@ -304,7 +304,7 @@ private:
     ConstantBuffer<ObjectConstants>             mCBObject;
     ConstantBuffer<MiscConstants>               mCBMisc;
     ConstantBuffer<BoneConstants>               mCBBone;
-    Microsoft::WRL::ComPtr<ID3D11PixelShader>   mPixelShader;
+    ComPtr<ID3D11PixelShader>                   mPixelShader;
 
     int GetCurrentVSPermutation() const;
     int GetCurrentPSPermutation() const;
@@ -336,9 +336,9 @@ private:
 
 
     private:
-        Microsoft::WRL::ComPtr<ID3D11VertexShader> mVertexShaders[DGSLEffectTraits::VertexShaderCount];
-        Microsoft::WRL::ComPtr<ID3D11PixelShader> mPixelShaders[DGSLEffectTraits::PixelShaderCount];
-        Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mDefaultTexture;
+        ComPtr<ID3D11VertexShader> mVertexShaders[DGSLEffectTraits::VertexShaderCount];
+        ComPtr<ID3D11PixelShader> mPixelShaders[DGSLEffectTraits::PixelShaderCount];
+        ComPtr<ID3D11ShaderResourceView> mDefaultTexture;
     };
 
     // Per-device resources.

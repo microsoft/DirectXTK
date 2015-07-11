@@ -22,7 +22,7 @@
 #include "BinaryReader.h"
 
 using namespace DirectX;
-using namespace Microsoft::WRL;
+using Microsoft::WRL::ComPtr;
 
 #pragma warning(disable : 4121)
 

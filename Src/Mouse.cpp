@@ -164,14 +164,18 @@ private:
 
     static HRESULT PointerEvent( IInspectable *, ABI::Windows::UI::Core::IPointerEventArgs*args )
     {
+        using namespace ABI::Windows::Foundation;
+        using namespace ABI::Windows::UI::Input;
+        using namespace ABI::Windows::Devices::Input;
+
         if (!s_mouse)
             return S_OK;
 
-        ComPtr<ABI::Windows::UI::Input::IPointerPoint> currentPoint;
+        ComPtr<IPointerPoint> currentPoint;
         HRESULT hr = args->get_CurrentPoint( currentPoint.GetAddressOf() );
         ThrowIfFailed(hr);
 
-        ABI::Windows::Foundation::Point pos;
+        Point pos;
         hr = currentPoint->get_Position( &pos );
         ThrowIfFailed(hr);
 
@@ -180,17 +184,17 @@ private:
         s_mouse->mState.x = static_cast<int>( pos.X * dpi / 96.f + 0.5f );
         s_mouse->mState.y = static_cast<int>( pos.Y * dpi / 96.f + 0.5f );
 
-        ComPtr<ABI::Windows::Devices::Input::IPointerDevice> pointerDevice;
+        ComPtr<IPointerDevice> pointerDevice;
         hr = currentPoint->get_PointerDevice( pointerDevice.GetAddressOf() );
         ThrowIfFailed(hr);
 
-        ABI::Windows::Devices::Input::PointerDeviceType devType;
+        PointerDeviceType devType;
         hr = pointerDevice->get_PointerDeviceType( &devType );
         ThrowIfFailed(hr);
 
-        if (devType == ABI::Windows::Devices::Input::PointerDeviceType::PointerDeviceType_Mouse)
+        if (devType == PointerDeviceType::PointerDeviceType_Mouse)
         {
-            ComPtr<ABI::Windows::UI::Input::IPointerPointProperties> props;
+            ComPtr<IPointerPointProperties> props;
             hr = currentPoint->get_Properties( props.GetAddressOf() );
             ThrowIfFailed(hr);
 
@@ -220,14 +224,17 @@ private:
 
     static HRESULT PointerMoved(IInspectable *, ABI::Windows::UI::Core::IPointerEventArgs* args)
     {
+        using namespace ABI::Windows::Foundation;
+        using namespace ABI::Windows::UI::Input;
+
         if (!s_mouse)
             return S_OK;
 
-        ComPtr<ABI::Windows::UI::Input::IPointerPoint> currentPoint;
+        ComPtr<IPointerPoint> currentPoint;
         HRESULT hr = args->get_CurrentPoint(currentPoint.GetAddressOf());
         ThrowIfFailed(hr);
 
-        ABI::Windows::Foundation::Point pos;
+        Point pos;
         hr = currentPoint->get_Position(&pos);
         ThrowIfFailed(hr);
 
@@ -241,14 +248,18 @@ private:
 
     static HRESULT PointerWheel( IInspectable *, ABI::Windows::UI::Core::IPointerEventArgs*args )
     {
+        using namespace ABI::Windows::Foundation;
+        using namespace ABI::Windows::UI::Input;
+        using namespace ABI::Windows::Devices::Input;
+
         if (!s_mouse)
             return S_OK;
 
-        ComPtr<ABI::Windows::UI::Input::IPointerPoint> currentPoint;
+        ComPtr<IPointerPoint> currentPoint;
         HRESULT hr = args->get_CurrentPoint( currentPoint.GetAddressOf() );
         ThrowIfFailed(hr);
 
-        ABI::Windows::Foundation::Point pos;
+        Point pos;
         hr = currentPoint->get_Position( &pos );
         ThrowIfFailed(hr);
 
@@ -257,17 +268,17 @@ private:
         s_mouse->mState.x = static_cast<int>( pos.X * dpi / 96.f + 0.5f );
         s_mouse->mState.y = static_cast<int>( pos.Y * dpi / 96.f + 0.5f );
 
-        ComPtr<ABI::Windows::Devices::Input::IPointerDevice> pointerDevice;
+        ComPtr<IPointerDevice> pointerDevice;
         hr = currentPoint->get_PointerDevice( pointerDevice.GetAddressOf() );
         ThrowIfFailed(hr);
 
-        ABI::Windows::Devices::Input::PointerDeviceType devType;
+        PointerDeviceType devType;
         hr = pointerDevice->get_PointerDeviceType( &devType );
         ThrowIfFailed(hr);
 
-        if (devType == ABI::Windows::Devices::Input::PointerDeviceType::PointerDeviceType_Mouse)
+        if (devType == PointerDeviceType::PointerDeviceType_Mouse)
         {
-            ComPtr<ABI::Windows::UI::Input::IPointerPointProperties> props;
+            ComPtr<IPointerPointProperties> props;
             hr = currentPoint->get_Properties( props.GetAddressOf() );
             ThrowIfFailed(hr);
 

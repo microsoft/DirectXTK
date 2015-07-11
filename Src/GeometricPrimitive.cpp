@@ -23,7 +23,7 @@
 #include <map>
 
 using namespace DirectX;
-using namespace Microsoft::WRL;
+using Microsoft::WRL::ComPtr;
 
 
 namespace

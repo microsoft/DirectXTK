@@ -25,7 +25,7 @@
 #include "AlignedNew.h"
 
 using namespace DirectX;
-using namespace Microsoft::WRL;
+using Microsoft::WRL::ComPtr;
 
 
 // Internal SpriteBatch implementation class.

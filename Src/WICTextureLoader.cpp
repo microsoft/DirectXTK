@@ -41,8 +41,8 @@
 #include "DirectXHelpers.h"
 #include "PlatformHelpers.h"
 
-using Microsoft::WRL::ComPtr;
 using namespace DirectX;
+using Microsoft::WRL::ComPtr;
 
 //-------------------------------------------------------------------------------------
 // WIC Pixel Format Translation Data

@@ -22,7 +22,8 @@
 #include "BinaryReader.h"
 
 using namespace DirectX;
-using namespace Microsoft::WRL;
+using Microsoft::WRL::ComPtr;
+
 
 //--------------------------------------------------------------------------------------
 // The VBO file format was introduced in the Windows 8.0 ResourceLoading sample. It's

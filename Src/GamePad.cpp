@@ -19,6 +19,7 @@
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
+
 namespace
 {
     float ApplyLinearDeadZone( float value, float maxValue, float deadZoneSize )
@@ -263,7 +264,7 @@ private:
         using namespace ABI::Windows::Foundation::Collections;
         using namespace ABI::Windows::Gaming::Input;
 
-        ComPtr<IVectorView<ABI::Windows::Gaming::Input::Gamepad*>> pads;
+        ComPtr<IVectorView<Gamepad*>> pads;
         HRESULT hr = mStatics->get_Gamepads( pads.GetAddressOf() );
         ThrowIfFailed( hr );
 
@@ -532,6 +533,8 @@ public:
 
     void GetCapabilities( int player, _Out_ Capabilities& caps )
     {
+        using namespace ABI::Windows::Xbox::Input;
+
         if ( WaitForSingleObjectEx( mChanged.get(), 0, FALSE ) == WAIT_OBJECT_0 )
         {
             ScanGamePads();
@@ -544,7 +547,7 @@ public:
                 caps.connected = true;
                 caps.gamepadType = Capabilities::GAMEPAD;
 
-                ComPtr<ABI::Windows::Xbox::Input::IController> ctrl;
+                ComPtr<IController> ctrl;
                 HRESULT hr = mGamePad[ player ].As( &ctrl );
                 if ( SUCCEEDED(hr) && ctrl )
                 {
