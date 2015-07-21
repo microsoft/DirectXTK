@@ -894,6 +894,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH( ID3D11Device* d3dDevic
 
             part->indexCount = static_cast<uint32_t>( subset.IndexCount );
             part->startIndex = static_cast<uint32_t>( subset.IndexStart );
+            part->vertexOffset = static_cast<uint32_t>( subset.VertexStart );
             part->vertexStride = static_cast<uint32_t>( vbArray[ mh.VertexBuffers[0] ].StrideBytes );
             part->indexFormat = ( ibArray[ mh.IndexBuffer ].IndexType == DXUT::IT_32BIT ) ? DXGI_FORMAT_R32_UINT : DXGI_FORMAT_R16_UINT;
             part->primitiveType = primType; 
