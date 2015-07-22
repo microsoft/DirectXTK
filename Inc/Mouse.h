@@ -27,7 +27,7 @@
 #include <memory>
 
 #if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
-#include <Windows.UI.Core.h>
+namespace ABI { namespace Windows { namespace UI { namespace Core { struct ICoreWindow; } } } }
 #endif
 
 
