@@ -546,7 +546,10 @@ class Mouse::Impl
 public:
     Impl(Mouse* owner) :
         mOwner(owner),
-        mMode(MODE_ABSOLUTE)
+        mMode(MODE_ABSOLUTE),
+        mLastX(0),
+        mLastY(0),
+        mInFocus(true)
     {
         if ( s_mouse )
         {
@@ -667,6 +670,8 @@ private:
     int             mLastX;
     int             mLastY;
 
+    bool            mInFocus;
+
     friend void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam);
 
     void ClipToWindow()
@@ -761,18 +766,29 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
     switch (message)
     {
     case WM_ACTIVATEAPP:
-        if (pImpl->mMode == MODE_RELATIVE && wParam)
+        if (wParam)
         {
-            pImpl->mState.x = pImpl->mState.y = 0;
+            pImpl->mInFocus = true;
 
-            ShowCursor(FALSE);
+            if (pImpl->mMode == MODE_RELATIVE)
+            {
+                pImpl->mState.x = pImpl->mState.y = 0;
 
-            pImpl->ClipToWindow();
+                ShowCursor(FALSE);
+
+                pImpl->ClipToWindow();
+            }
+        }
+        else
+        {
+            memset(&pImpl->mState, 0, sizeof(State));
+
+            pImpl->mInFocus = false;
         }
         return;
 
     case WM_INPUT:
-        if (pImpl->mMode == MODE_RELATIVE)
+        if (pImpl->mInFocus && pImpl->mMode == MODE_RELATIVE)
         {
             RAWINPUT raw;
             UINT rawSize = sizeof(raw);
