@@ -62,7 +62,8 @@ namespace DirectX
         
         // Factory methods.
         static std::unique_ptr<GeometricPrimitive> __cdecl CreateCube         (_In_ ID3D11DeviceContext* deviceContext, float size = 1, bool rhcoords = true);
-        static std::unique_ptr<GeometricPrimitive> __cdecl CreateSphere       (_In_ ID3D11DeviceContext* deviceContext, float diameter = 1, size_t tessellation = 16, bool rhcoords = true);
+        static std::unique_ptr<GeometricPrimitive> __cdecl CreateBox          (_In_ ID3D11DeviceContext* deviceContext, const XMFLOAT3& size, bool rhcoords = true, bool invertn = false);
+        static std::unique_ptr<GeometricPrimitive> __cdecl CreateSphere       (_In_ ID3D11DeviceContext* deviceContext, float diameter = 1, size_t tessellation = 16, bool rhcoords = true, bool invertn = false);
         static std::unique_ptr<GeometricPrimitive> __cdecl CreateGeoSphere    (_In_ ID3D11DeviceContext* deviceContext, float diameter = 1, size_t tessellation = 3, bool rhcoords = true);
         static std::unique_ptr<GeometricPrimitive> __cdecl CreateCylinder     (_In_ ID3D11DeviceContext* deviceContext, float height = 1, float diameter = 1, size_t tessellation = 32, bool rhcoords = true);
         static std::unique_ptr<GeometricPrimitive> __cdecl CreateCone         (_In_ ID3D11DeviceContext* deviceContext, float diameter = 1, float height = 1, size_t tessellation = 32, bool rhcoords = true);
@@ -96,4 +97,10 @@ namespace DirectX
         GeometricPrimitive(GeometricPrimitive const&) DIRECTX_CTOR_DELETE
         GeometricPrimitive& operator= (GeometricPrimitive const&) DIRECTX_CTOR_DELETE
     };
+
+    _Use_decl_annotations_
+    inline std::unique_ptr<GeometricPrimitive> __cdecl GeometricPrimitive::CreateCube(ID3D11DeviceContext* deviceContext, float size, bool rhcoords)
+    {
+        return CreateBox(deviceContext, XMFLOAT3(size,size,size), rhcoords);
+    }
 }

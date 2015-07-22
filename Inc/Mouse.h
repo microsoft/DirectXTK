@@ -27,7 +27,7 @@
 #include <memory>
 
 #if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
-#include <Windows.UI.Core.h>
+namespace ABI { namespace Windows { namespace UI { namespace Core { struct ICoreWindow; } } } }
 #endif
 
 
@@ -41,6 +41,12 @@ namespace DirectX
         Mouse& operator= (Mouse&& moveFrom);
         virtual ~Mouse();
 
+        enum Mode
+        {
+            MODE_ABSOLUTE = 0,
+            MODE_RELATIVE,
+        };
+
         struct State
         {
             bool    leftButton;
@@ -51,6 +57,7 @@ namespace DirectX
             int     x;
             int     y;
             int     scrollWheelValue;
+            Mode    positionMode;
         };
 
         class ButtonStateTracker
@@ -85,8 +92,12 @@ namespace DirectX
 
         // Resets the accumulated scroll wheel value
         void __cdecl ResetScrollWheelValue();
+
+        // Sets mouse mode (defaults to absolute)
+        void __cdecl SetMode(Mode mode);
         
 #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP) && defined(WM_USER)
+        void __cdecl SetWindow(HWND window);
         static void __cdecl ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam);
 #endif
 
