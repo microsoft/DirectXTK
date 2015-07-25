@@ -156,7 +156,7 @@ public:
             if (!mCursor)
             {
                 ComPtr<ICoreCursorFactory> factory;
-                HRESULT hr = GetActivationFactory( HStringReference(RuntimeClass_Windows_UI_Core_CoreCursor).Get(), factory.GetAddressOf() );
+                hr = GetActivationFactory( HStringReference(RuntimeClass_Windows_UI_Core_CoreCursor).Get(), factory.GetAddressOf() );
                 ThrowIfFailed( hr );
 
                 hr = factory->CreateCursor( CoreCursorType_Arrow, 0, mCursor.GetAddressOf() );
