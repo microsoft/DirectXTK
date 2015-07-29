@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-July 1, 2015
+July 29, 2015
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for universal Windows apps for Windows 10,
@@ -12,11 +12,8 @@ Windows Store apps, Windows phone 8.x applications, Xbox One exclusive apps,
 Xbox One hub apps, Windows 8.x Win32 desktop applications, Windows 7 applications,
 and Windows Vista Direct3D 11.0 applications.
 
-This code is designed to build with Visual Studio 2010, 2012, 2013, or 2015. It is recommended that you
+This code is designed to build with Visual Studio 2012, 2013, or 2015. It is recommended that you
 make use of the Windows 8.1 SDK and Windows 7 Service Pack 1 or later.
-
-Details on using the Windows 8.1 SDK with VS 2010 are described on the Visual C++ Team Blog:
-<http://blogs.msdn.com/b/vcblog/archive/2012/11/23/using-the-windows-8-sdk-with-visual-studio-2010-configuring-multiple-projects.aspx>
 
 These components are designed to work without requiring any content from the DirectX SDK. For details,
 see "Where is the DirectX SDK?" <http://msdn.microsoft.com/en-us/library/ee663275.aspx>.
@@ -75,6 +72,14 @@ Note: Xbox One exclusive apps developers using the Xbox One XDK need to generate
 ---------------
 RELEASE HISTORY
 ---------------
+
+July 29, 2015
+    - Added CreateBox method to GeometricPrimitive
+    - Added 'invertn' optional parameter to CreateSphere
+    - Updates for Keyboard, Mouse class
+    - Fixed bug when loading older SDKMESH models
+    - Updated for VS 2015 and Windows 10 SDK RTM
+    - Retired VS 2010 and Windows Store 8.0 projects
 
 July 1, 2015
     - Added Keyboard, Mouse class
