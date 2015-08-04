@@ -15,6 +15,7 @@
 *.lastbuildstate
 *.ilk
 Bin
+/Src/Shaders/Compiled/XboxOne*.inc
 /ipch
 /MakeSpriteFont/obj
 /Tests

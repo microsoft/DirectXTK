@@ -276,7 +276,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="Readme.txt">
-      <Filter>Source Files\Shaders</Filter>
+      <Filter>Source Files</Filter>
     </Text>
   </ItemGroup>
 </Project>
