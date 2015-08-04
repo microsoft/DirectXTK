@@ -58,7 +58,7 @@ namespace DirectX
     class GeometricPrimitive
     {
     public:
-        ~GeometricPrimitive();
+        virtual ~GeometricPrimitive();
         
         // Factory methods.
         static std::unique_ptr<GeometricPrimitive> __cdecl CreateCube         (_In_ ID3D11DeviceContext* deviceContext, float size = 1, bool rhcoords = true);
@@ -97,10 +97,4 @@ namespace DirectX
         GeometricPrimitive(GeometricPrimitive const&) DIRECTX_CTOR_DELETE
         GeometricPrimitive& operator= (GeometricPrimitive const&) DIRECTX_CTOR_DELETE
     };
-
-    _Use_decl_annotations_
-    inline std::unique_ptr<GeometricPrimitive> __cdecl GeometricPrimitive::CreateCube(ID3D11DeviceContext* deviceContext, float size, bool rhcoords)
-    {
-        return CreateBox(deviceContext, XMFLOAT3(size,size,size), rhcoords);
-    }
 }

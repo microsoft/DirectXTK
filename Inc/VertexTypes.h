@@ -19,6 +19,17 @@
 #include <d3d11_1.h>
 #endif
 
+// VS 2010/2012 do not support =default =delete
+#ifndef DIRECTX_CTOR_DEFAULT
+#if defined(_MSC_VER) && (_MSC_VER < 1800)
+#define DIRECTX_CTOR_DEFAULT {}
+#define DIRECTX_CTOR_DELETE ;
+#else
+#define DIRECTX_CTOR_DEFAULT =default;
+#define DIRECTX_CTOR_DELETE =delete;
+#endif
+#endif
+
 #include <DirectXMath.h>
 
 
@@ -33,8 +44,7 @@ namespace DirectX
     // Vertex struct holding position and color information.
     struct VertexPositionColor
     {
-        VertexPositionColor()
-        { }
+        VertexPositionColor() DIRECTX_CTOR_DEFAULT
 
         VertexPositionColor(XMFLOAT3 const& position, XMFLOAT4 const& color)
           : position(position),
@@ -58,8 +68,7 @@ namespace DirectX
     // Vertex struct holding position and texture mapping information.
     struct VertexPositionTexture
     {
-        VertexPositionTexture()
-        { }
+        VertexPositionTexture() DIRECTX_CTOR_DEFAULT
 
         VertexPositionTexture(XMFLOAT3 const& position, XMFLOAT2 const& textureCoordinate)
           : position(position),
@@ -83,8 +92,7 @@ namespace DirectX
     // Vertex struct holding position and normal vector.
     struct VertexPositionNormal
     {
-        VertexPositionNormal()
-        { }
+        VertexPositionNormal() DIRECTX_CTOR_DEFAULT
 
         VertexPositionNormal(XMFLOAT3 const& position, XMFLOAT3 const& normal)
           : position(position),
@@ -108,8 +116,7 @@ namespace DirectX
     // Vertex struct holding position, color, and texture mapping information.
     struct VertexPositionColorTexture
     {
-        VertexPositionColorTexture()
-        { }
+        VertexPositionColorTexture() DIRECTX_CTOR_DEFAULT
 
         VertexPositionColorTexture(XMFLOAT3 const& position, XMFLOAT4 const& color, XMFLOAT2 const& textureCoordinate)
           : position(position),
@@ -136,8 +143,7 @@ namespace DirectX
     // Vertex struct holding position, normal vector, and color information.
     struct VertexPositionNormalColor
     {
-        VertexPositionNormalColor()
-        { }
+        VertexPositionNormalColor() DIRECTX_CTOR_DEFAULT
 
         VertexPositionNormalColor(XMFLOAT3 const& position, XMFLOAT3 const& normal, XMFLOAT4 const& color)
           : position(position),
@@ -164,8 +170,7 @@ namespace DirectX
     // Vertex struct holding position, normal vector, and texture mapping information.
     struct VertexPositionNormalTexture
     {
-        VertexPositionNormalTexture()
-        { }
+        VertexPositionNormalTexture() DIRECTX_CTOR_DEFAULT
 
         VertexPositionNormalTexture(XMFLOAT3 const& position, XMFLOAT3 const& normal, XMFLOAT2 const& textureCoordinate)
           : position(position),
@@ -192,8 +197,7 @@ namespace DirectX
     // Vertex struct holding position, normal vector, color, and texture mapping information.
     struct VertexPositionNormalColorTexture
     {
-        VertexPositionNormalColorTexture()
-        { }
+        VertexPositionNormalColorTexture() DIRECTX_CTOR_DEFAULT
 
         VertexPositionNormalColorTexture(XMFLOAT3 const& position, XMFLOAT3 const& normal, XMFLOAT4 const& color, XMFLOAT2 const& textureCoordinate)
           : position(position),
@@ -224,8 +228,7 @@ namespace DirectX
     // tangent, color (RGBA), and texture mapping information
     struct VertexPositionNormalTangentColorTexture
     {
-        VertexPositionNormalTangentColorTexture()
-        { }
+        VertexPositionNormalTangentColorTexture() DIRECTX_CTOR_DEFAULT
 
         XMFLOAT3 position;
         XMFLOAT3 normal;
@@ -282,8 +285,7 @@ namespace DirectX
     // tangent, color (RGBA), texture mapping information, and skinning weights
     struct VertexPositionNormalTangentColorTextureSkinning : public VertexPositionNormalTangentColorTexture
     {
-        VertexPositionNormalTangentColorTextureSkinning()
-        { }
+        VertexPositionNormalTangentColorTextureSkinning() DIRECTX_CTOR_DEFAULT
 
         uint32_t indices;
         uint32_t weights;

@@ -64,6 +64,7 @@ namespace DirectX
     {
     public:
         ModelMeshPart();
+        virtual ~ModelMeshPart();
 
         uint32_t                                                indexCount;
         uint32_t                                                startIndex;
@@ -98,6 +99,7 @@ namespace DirectX
     {
     public:
         ModelMesh();
+        virtual ~ModelMesh();
 
         BoundingSphere              boundingSphere;
         BoundingBox                 boundingBox;
@@ -122,6 +124,8 @@ namespace DirectX
     class Model
     {
     public:
+        virtual ~Model();
+
         ModelMesh::Collection   meshes;
         std::wstring            name;
 

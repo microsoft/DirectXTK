@@ -41,6 +41,11 @@ ModelMeshPart::ModelMeshPart() :
 }
 
 
+ModelMeshPart::~ModelMeshPart()
+{
+}
+
+
 _Use_decl_annotations_
 void ModelMeshPart::Draw( ID3D11DeviceContext* deviceContext, IEffect* ieffect, ID3D11InputLayout* iinputLayout, std::function<void()> setCustomState ) const
 {
@@ -130,6 +135,11 @@ ModelMesh::ModelMesh() :
 }
 
 
+ModelMesh::~ModelMesh()
+{
+}
+
+
 _Use_decl_annotations_
 void ModelMesh::PrepareForRendering( ID3D11DeviceContext* deviceContext, CommonStates& states, bool alpha, bool wireframe ) const
 {
@@ -213,6 +223,11 @@ void XM_CALLCONV ModelMesh::Draw( ID3D11DeviceContext* deviceContext,
 //--------------------------------------------------------------------------------------
 // Model
 //--------------------------------------------------------------------------------------
+
+Model::~Model()
+{
+}
+
 
 _Use_decl_annotations_
 void XM_CALLCONV Model::Draw( ID3D11DeviceContext* deviceContext, CommonStates& states,

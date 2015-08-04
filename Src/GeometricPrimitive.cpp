@@ -402,6 +402,13 @@ void GeometricPrimitive::CreateInputLayout(IEffect* effect, ID3D11InputLayout** 
 // Cube (aka a Hexahedron) or Box
 //--------------------------------------------------------------------------------------
 
+// Creates a cube primitive.
+std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCube(_In_ ID3D11DeviceContext* deviceContext, float size, bool rhcoords)
+{
+    return CreateBox(deviceContext, XMFLOAT3(size,size,size), rhcoords);
+}
+
+
 // Creates a box primitive.
 std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateBox(_In_ ID3D11DeviceContext* deviceContext, const XMFLOAT3& size, bool rhcoords, bool invertn)
 {
