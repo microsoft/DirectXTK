@@ -339,12 +339,48 @@ private:
         if (!s_mouse)
             return S_OK;
 
+        ComPtr<IPointerPoint> currentPoint;
+        HRESULT hr = args->get_CurrentPoint(currentPoint.GetAddressOf());
+        ThrowIfFailed(hr);
+
+        ComPtr<IPointerDevice> pointerDevice;
+        hr = currentPoint->get_PointerDevice(pointerDevice.GetAddressOf());
+        ThrowIfFailed(hr);
+
+        PointerDeviceType devType;
+        hr = pointerDevice->get_PointerDeviceType(&devType);
+        ThrowIfFailed(hr);
+
+        if (devType == PointerDeviceType::PointerDeviceType_Mouse)
+        {
+            ComPtr<IPointerPointProperties> props;
+            hr = currentPoint->get_Properties(props.GetAddressOf());
+            ThrowIfFailed(hr);
+
+            boolean value;
+            hr = props->get_IsLeftButtonPressed(&value);
+            ThrowIfFailed(hr);
+            s_mouse->mState.leftButton = value != 0;
+
+            hr = props->get_IsRightButtonPressed(&value);
+            ThrowIfFailed(hr);
+            s_mouse->mState.rightButton = value != 0;
+
+            hr = props->get_IsMiddleButtonPressed(&value);
+            ThrowIfFailed(hr);
+            s_mouse->mState.middleButton = value != 0;
+
+            hr = props->get_IsXButton1Pressed(&value);
+            ThrowIfFailed(hr);
+            s_mouse->mState.xButton1 = value != 0;
+
+            hr = props->get_IsXButton2Pressed(&value);
+            ThrowIfFailed(hr);
+            s_mouse->mState.xButton2 = value != 0;
+        }
+
         if (s_mouse->mMode == MODE_ABSOLUTE)
         {
-            ComPtr<IPointerPoint> currentPoint;
-            HRESULT hr = args->get_CurrentPoint(currentPoint.GetAddressOf());
-            ThrowIfFailed(hr);
-       
             Point pos;
             hr = currentPoint->get_Position(&pos);
             ThrowIfFailed(hr);
