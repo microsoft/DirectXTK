@@ -687,8 +687,8 @@ private:
         lr.x = rect.right;
         lr.y = rect.bottom;
 
-        ClientToScreen(mWindow, &ul);
-        ClientToScreen(mWindow, &lr);
+        MapWindowPoints(mWindow, nullptr, &ul, 1);
+        MapWindowPoints(mWindow, nullptr, &lr, 1);
 
         rect.left = ul.x;
         rect.top = ul.y;
@@ -736,7 +736,7 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
             POINT point;
             point.x = pImpl->mLastX;
             point.y = pImpl->mLastY;
-            if (ClientToScreen(pImpl->mWindow, &point))
+            if (MapWindowPoints(pImpl->mWindow, nullptr, &point, 1))
             {
                 SetCursorPos(point.x, point.y);
             }
