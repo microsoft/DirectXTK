@@ -40,6 +40,7 @@ struct Vector2 : public XMFLOAT2
     Vector2(float _x, float _y) : XMFLOAT2(_x, _y) {}
     explicit Vector2(_In_reads_(2) const float *pArray) : XMFLOAT2(pArray) {}
     Vector2(FXMVECTOR V) { XMStoreFloat2( this, V ); }
+    Vector2(const XMFLOAT2& V) { this->x = V.x; this->y = V.y; }
 
     operator XMVECTOR() const { return XMLoadFloat2( this ); }
 
@@ -49,6 +50,7 @@ struct Vector2 : public XMFLOAT2
 
     // Assignment operators
     Vector2& operator= (const Vector2& V) { x = V.x; y = V.y; return *this; }
+    Vector2& operator= (const XMFLOAT2& V) { x = V.x; y = V.y; return *this; }
     Vector2& operator+= (const Vector2& V);
     Vector2& operator-= (const Vector2& V);
     Vector2& operator*= (const Vector2& V);
@@ -144,6 +146,7 @@ struct Vector3 : public XMFLOAT3
     Vector3(float _x, float _y, float _z) : XMFLOAT3(_x, _y, _z) {}
     explicit Vector3(_In_reads_(3) const float *pArray) : XMFLOAT3(pArray) {}
     Vector3(FXMVECTOR V) { XMStoreFloat3( this, V ); }
+    Vector3(const XMFLOAT3& V) { this->x = V.x; this->y = V.y; this->z = V.z; }
 
     operator XMVECTOR() const { return XMLoadFloat3( this ); }
 
@@ -153,6 +156,7 @@ struct Vector3 : public XMFLOAT3
 
     // Assignment operators
     Vector3& operator= (const Vector3& V) { x = V.x; y = V.y; z = V.z; return *this; }
+    Vector3& operator= (const XMFLOAT3& V) { x = V.x; y = V.y; z = V.z; return *this; }
     Vector3& operator+= (const Vector3& V);
     Vector3& operator-= (const Vector3& V);
     Vector3& operator*= (const Vector3& V);
@@ -255,6 +259,7 @@ struct Vector4 : public XMFLOAT4
     Vector4(float _x, float _y, float _z, float _w) : XMFLOAT4(_x, _y, _z, _w) {}
     explicit Vector4(_In_reads_(4) const float *pArray) : XMFLOAT4(pArray) {}
     Vector4(FXMVECTOR V) { XMStoreFloat4( this, V ); }
+    Vector4(const XMFLOAT4& V) { this->x = V.x; this->y = V.y; this->z = V.z; this->w = V.w; }
 
     operator XMVECTOR() const { return XMLoadFloat4( this ); }
 
@@ -264,6 +269,7 @@ struct Vector4 : public XMFLOAT4
 
     // Assignment operators
     Vector4& operator= (const Vector4& V) { x = V.x; y = V.y; z = V.z; w = V.w; return *this; }
+    Vector4& operator= (const XMFLOAT4& V) { x = V.x; y = V.y; z = V.z; w = V.w; return *this; }
     Vector4& operator+= (const Vector4& V);
     Vector4& operator-= (const Vector4& V);
     Vector4& operator*= (const Vector4& V);
@@ -374,6 +380,8 @@ struct Matrix : public XMFLOAT4X4
                                                                                                                 r1.x, r1.y, r1.z, r1.w,
                                                                                                                 r2.x, r2.y, r2.z, r2.w,
                                                                                                                 r3.x, r3.y, r3.z, r3.w ) {}
+    Matrix(const XMFLOAT4X4& M) { memcpy_s(this, sizeof(float)*16, &M, sizeof(XMFLOAT4X4)); }
+
     explicit Matrix(_In_reads_(16) const float *pArray) : XMFLOAT4X4(pArray) {}
     Matrix( CXMMATRIX M ) { XMStoreFloat4x4( this, M ); }
 
@@ -384,7 +392,8 @@ struct Matrix : public XMFLOAT4X4
     bool operator != ( const Matrix& M ) const;
 
     // Assignment operators
-    Matrix& operator= (const Matrix& M) { memcpy_s( this, sizeof(float)*16, &M, sizeof(float)*16); return *this; }
+    Matrix& operator= (const Matrix& M) { memcpy_s( this, sizeof(float)*16, &M, sizeof(float)*16 ); return *this; }
+    Matrix& operator= (const XMFLOAT4X4& M) { memcpy_s( this, sizeof(float)*16, &M, sizeof(XMFLOAT4X4) ); return *this; }
     Matrix& operator+= (const Matrix& M);
     Matrix& operator-= (const Matrix& M);
     Matrix& operator*= (const Matrix& M);
@@ -500,6 +509,7 @@ struct Plane : public XMFLOAT4
     explicit Plane(const Vector4& v) : XMFLOAT4(v.x, v.y, v.z, v.w) {}
     explicit Plane(_In_reads_(4) const float *pArray) : XMFLOAT4(pArray) {}
     Plane(FXMVECTOR V) { XMStoreFloat4( this, V ); }
+    Plane(const XMFLOAT4& p) { this->x = p.x; this->y = p.y; this->z = p.z; this->w = p.w; }
 
     operator XMVECTOR() const { return XMLoadFloat4( this ); }
 
@@ -509,6 +519,7 @@ struct Plane : public XMFLOAT4
 
     // Assignment operators
     Plane& operator= (const Plane& p) { x = p.x; y = p.y; z = p.z; w = p.w; return *this; }
+    Plane& operator= (const XMFLOAT4& p) { x = p.x; y = p.y; z = p.z; w = p.w; return *this; }
 
     // Properties
     Vector3 Normal() const { return Vector3( x, y, z ); }
@@ -544,6 +555,7 @@ struct Quaternion : public XMFLOAT4
     explicit Quaternion( const Vector4& v ) : XMFLOAT4( v.x, v.y, v.z, v.w ) {}
     explicit Quaternion(_In_reads_(4) const float *pArray) : XMFLOAT4(pArray) {}
     Quaternion(FXMVECTOR V) { XMStoreFloat4( this, V ); }
+    Quaternion(const XMFLOAT4& q) { this->x = q.x; this->y = q.y; this->z = q.z; this->w = q.w; }
 
     operator XMVECTOR() const { return XMLoadFloat4( this ); }
 
@@ -553,6 +565,7 @@ struct Quaternion : public XMFLOAT4
 
     // Assignment operators
     Quaternion& operator= (const Quaternion& q) { x = q.x; y = q.y; z = q.z; w = q.w; return *this; }
+    Quaternion& operator= (const XMFLOAT4& q) { x = q.x; y = q.y; z = q.z; w = q.w; return *this; }
     Quaternion& operator+= (const Quaternion& q);
     Quaternion& operator-= (const Quaternion& q);
     Quaternion& operator*= (const Quaternion& q);
@@ -614,6 +627,7 @@ struct Color : public XMFLOAT4
     explicit Color( const Vector4& clr ) : XMFLOAT4( clr.x, clr.y, clr.z, clr.w ) {}
     explicit Color(_In_reads_(4) const float *pArray) : XMFLOAT4(pArray) {}
     Color(FXMVECTOR V) { XMStoreFloat4( this, V ); }
+    Color(const XMFLOAT4& c) { this->x = c.x; this->y = c.y; this->z = c.z; this->w = c.w; }
 
     explicit Color( const DirectX::PackedVector::XMCOLOR& Packed );
         // BGRA Direct3D 9 D3DCOLOR packed color
@@ -630,6 +644,7 @@ struct Color : public XMFLOAT4
 
     // Assignment operators
     Color& operator= (const Color& c) { x = c.x; y = c.y; z = c.z; w = c.w; return *this; }
+    Color& operator= (const XMFLOAT4& c) { x = c.x; y = c.y; z = c.z; w = c.w; return *this; }
     Color& operator+= (const Color& c);
     Color& operator-= (const Color& c);
     Color& operator*= (const Color& c);
