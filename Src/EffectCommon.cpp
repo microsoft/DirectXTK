@@ -413,12 +413,12 @@ ID3D11ShaderResourceView* EffectDeviceResources::GetDefaultTexture()
         desc.Usage = D3D11_USAGE_IMMUTABLE;
         desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 
-        ID3D11Texture2D* tex = nullptr;
-        HRESULT hr = mDevice->CreateTexture2D( &desc, &initData, &tex );
+        ComPtr<ID3D11Texture2D> tex;
+        HRESULT hr = mDevice->CreateTexture2D( &desc, &initData, tex.GetAddressOf() );
 
         if (SUCCEEDED(hr))
         {
-            SetDebugObjectName(tex, "DirectXTK:Effect");
+            SetDebugObjectName(tex.Get(), "DirectXTK:Effect");
 
             D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
             memset( &SRVDesc, 0, sizeof( SRVDesc ) );
@@ -426,11 +426,9 @@ ID3D11ShaderResourceView* EffectDeviceResources::GetDefaultTexture()
             SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
             SRVDesc.Texture2D.MipLevels = 1;
 
-            hr = mDevice->CreateShaderResourceView( tex, &SRVDesc, pResult );
+            hr = mDevice->CreateShaderResourceView( tex.Get(), &SRVDesc, pResult );
             if (SUCCEEDED(hr))
                 SetDebugObjectName(*pResult, "DirectXTK:Effect");
-
-            tex->Release();
         }
 
         return hr;
