@@ -99,7 +99,7 @@ namespace
 
         D3D11_SUBRESOURCE_DATA dataDesc = { 0 };
 
-        dataDesc.pSysMem = &data.front();
+        dataDesc.pSysMem = data.data();
 
         ThrowIfFailed(
             device->CreateBuffer(&bufferDesc, &dataDesc, pBuffer)

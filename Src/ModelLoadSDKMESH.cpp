@@ -621,7 +621,7 @@ static void CreateInputLayout(_In_ ID3D11Device* device, _In_ IEffect* effect, s
     effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
 
     ThrowIfFailed(
-        device->CreateInputLayout(&inputDesc.front(),
+        device->CreateInputLayout(inputDesc.data(),
                                   static_cast<UINT>( inputDesc.size() ),
                                   shaderByteCode, byteCodeLength,
                                   pInputLayout)

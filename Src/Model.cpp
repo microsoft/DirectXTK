@@ -90,7 +90,7 @@ void ModelMeshPart::CreateInputLayout( ID3D11Device* d3dDevice, IEffect* ieffect
     assert( d3dDevice != 0 );
 
     ThrowIfFailed(
-        d3dDevice->CreateInputLayout(&(vbDecl->front()),
+        d3dDevice->CreateInputLayout(vbDecl->data(),
                                      static_cast<UINT>( vbDecl->size() ),
                                      shaderByteCode, byteCodeLength,
                                      iinputLayout )
@@ -116,10 +116,10 @@ void ModelMeshPart::ModifyEffect( ID3D11Device* d3dDevice, std::shared_ptr<IEffe
     assert( d3dDevice != 0 );
 
     ThrowIfFailed(
-        d3dDevice->CreateInputLayout(&(vbDecl->front()),
-                                        static_cast<UINT>( vbDecl->size() ),
-                                        shaderByteCode, byteCodeLength,
-                                        &inputLayout )
+        d3dDevice->CreateInputLayout(vbDecl->data(),
+                                     static_cast<UINT>( vbDecl->size() ),
+                                     shaderByteCode, byteCodeLength,
+                                     &inputLayout )
     );
 }
 
