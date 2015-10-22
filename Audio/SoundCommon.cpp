@@ -702,7 +702,7 @@ void SoundEffectInstanceBase::SetPan( float pan )
 }
 
 
-void SoundEffectInstanceBase::Apply3D( const AudioListener& listener, const AudioEmitter& emitter )
+void SoundEffectInstanceBase::Apply3D( const AudioListener& listener, const AudioEmitter& emitter, bool rhcoords )
 {
     if ( !voice )
         return;
@@ -733,7 +733,28 @@ void SoundEffectInstanceBase::Apply3D( const AudioListener& listener, const Audi
     mDSPSettings.pMatrixCoefficients = matrix;
 
     assert( engine != 0 );
-    X3DAudioCalculate( engine->Get3DHandle(), &listener, &emitter, dwCalcFlags, &mDSPSettings );
+    if (rhcoords)
+    {
+        X3DAUDIO_EMITTER lhEmitter;
+        memcpy(&lhEmitter, &emitter, sizeof(X3DAUDIO_EMITTER));
+        lhEmitter.OrientFront.z = -emitter.OrientFront.z;
+        lhEmitter.OrientTop.z = -emitter.OrientTop.z;
+        lhEmitter.Position.z = -emitter.Position.z;
+        lhEmitter.Velocity.z = -emitter.Velocity.z;
+
+        X3DAUDIO_LISTENER lhListener;
+        memcpy(&lhListener, &listener, sizeof(X3DAUDIO_LISTENER));
+        lhListener.OrientFront.z = -listener.OrientFront.z;
+        lhListener.OrientTop.z = -listener.OrientTop.z;
+        lhListener.Position.z = -listener.Position.z;
+        lhListener.Velocity.z = -listener.Velocity.z;
+
+        X3DAudioCalculate( engine->Get3DHandle(), &lhListener, &lhEmitter, dwCalcFlags, &mDSPSettings );
+    }
+    else
+    {
+        X3DAudioCalculate( engine->Get3DHandle(), &listener, &emitter, dwCalcFlags, &mDSPSettings );
+    }
 
     mDSPSettings.pMatrixCoefficients = nullptr;
 

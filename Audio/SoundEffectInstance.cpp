@@ -306,9 +306,9 @@ void SoundEffectInstance::SetPan( float pan )
 }
 
 
-void SoundEffectInstance::Apply3D( const AudioListener& listener, const AudioEmitter& emitter )
+void SoundEffectInstance::Apply3D( const AudioListener& listener, const AudioEmitter& emitter, bool rhcoords )
 {
-    pImpl->mBase.Apply3D( listener, emitter );
+    pImpl->mBase.Apply3D( listener, emitter, rhcoords );
 }
 
 

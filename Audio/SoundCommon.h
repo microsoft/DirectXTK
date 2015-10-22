@@ -249,7 +249,7 @@ namespace DirectX
 
         void SetPan( float pan );
 
-        void Apply3D( const AudioListener& listener, const AudioEmitter& emitter );
+        void Apply3D( const AudioListener& listener, const AudioEmitter& emitter, bool rhcoords );
 
         SoundState GetState( bool autostop )
         {

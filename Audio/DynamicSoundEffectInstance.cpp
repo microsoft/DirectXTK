@@ -312,9 +312,9 @@ void DynamicSoundEffectInstance::SetPan( float pan )
 }
 
 
-void DynamicSoundEffectInstance::Apply3D( const AudioListener& listener, const AudioEmitter& emitter )
+void DynamicSoundEffectInstance::Apply3D( const AudioListener& listener, const AudioEmitter& emitter, bool rhcoords )
 {
-    pImpl->mBase.Apply3D( listener, emitter );
+    pImpl->mBase.Apply3D( listener, emitter, rhcoords );
 }
 
 
