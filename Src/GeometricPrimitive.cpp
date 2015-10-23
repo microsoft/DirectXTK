@@ -19,7 +19,7 @@
 #include "VertexTypes.h"
 #include "SharedResourcePool.h"
 #include "Bezier.h"
-#include <vector>
+
 #include <map>
 
 using namespace DirectX;
@@ -41,20 +41,15 @@ namespace
     }
 
 
-    // Temporary collection types used when generating the geometry.
+    // Collection types used when generating the geometry.
     typedef std::vector<VertexPositionNormalTexture> VertexCollection;
-    
-    
-    class IndexCollection : public std::vector<uint16_t>
+    typedef std::vector<uint16_t> IndexCollection;
+
+    inline void index_push_back(IndexCollection& indices, size_t value)
     {
-    public:
-        // Sanity check the range of 16 bit index values.
-        void push_back(size_t value)
-        {
-            CheckIndexOverflow(value);
-            vector::push_back((uint16_t)value);
-        }
-    };
+        CheckIndexOverflow(value);
+        indices.push_back((uint16_t)value);
+    }
 
 
     // Helper for flipping winding of geometric primitives for LH vs. RH coords
@@ -135,7 +130,7 @@ namespace
 class GeometricPrimitive::Impl
 {
 public:
-    void Initialize(_In_ ID3D11DeviceContext* deviceContext, VertexCollection& vertices, IndexCollection& indices, bool rhcoords, bool invertn );
+    void Initialize(_In_ ID3D11DeviceContext* deviceContext, const VertexCollection& vertices, const IndexCollection& indices );
 
     void XM_CALLCONV Draw(FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection, FXMVECTOR color, _In_opt_ ID3D11ShaderResourceView* texture, bool wireframe, _In_opt_ std::function<void()> setCustomState);
 
@@ -231,7 +226,7 @@ void GeometricPrimitive::Impl::SharedResources::PrepareForRendering(bool alpha, 
     else
         deviceContext->RSSetState( stateObjects->CullCounterClockwise() );
 
-    ID3D11SamplerState* samplerState = stateObjects->LinearClamp();
+    ID3D11SamplerState* samplerState = stateObjects->LinearWrap();
          
     deviceContext->PSSetSamplers(0, 1, &samplerState);
 }
@@ -239,16 +234,10 @@ void GeometricPrimitive::Impl::SharedResources::PrepareForRendering(bool alpha, 
 
 // Initializes a geometric primitive instance that will draw the specified vertex and index data.
 _Use_decl_annotations_
-void GeometricPrimitive::Impl::Initialize(ID3D11DeviceContext* deviceContext, VertexCollection& vertices, IndexCollection& indices, bool rhcoords, bool invertn)
+void GeometricPrimitive::Impl::Initialize(ID3D11DeviceContext* deviceContext, const VertexCollection& vertices, const IndexCollection& indices)
 {
     if ( vertices.size() >= USHRT_MAX )
         throw std::exception("Too many vertices for 16-bit index buffer");
-
-    if ( !rhcoords )
-        ReverseWinding( indices, vertices );
-
-    if ( invertn )
-        InvertNormals( vertices );
 
     mResources = sharedResourcesPool.DemandCreate(deviceContext);
 
@@ -408,10 +397,32 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCube(_In_ ID3D11De
     return CreateBox(deviceContext, XMFLOAT3(size,size,size), rhcoords);
 }
 
+void GeometricPrimitive::CreateCube(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float size, bool rhcoords)
+{
+    return CreateBox(vertices, indices, XMFLOAT3(size,size,size), rhcoords);
+}
+
 
 // Creates a box primitive.
 std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateBox(_In_ ID3D11DeviceContext* deviceContext, const XMFLOAT3& size, bool rhcoords, bool invertn)
 {
+    VertexCollection vertices;
+    IndexCollection indices;  
+    CreateBox(vertices, indices, size, rhcoords, invertn);
+
+    // Create the primitive object.
+    std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
+    
+    primitive->pImpl->Initialize(deviceContext, vertices, indices);
+
+    return primitive;
+}
+
+void GeometricPrimitive::CreateBox(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, const XMFLOAT3& size, bool rhcoords, bool invertn)
+{
+    vertices.clear();
+    indices.clear();
+
     // A box has six faces, each one pointing in a different direction.
     const int FaceCount = 6;
 
@@ -433,9 +444,6 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateBox(_In_ ID3D11Dev
         { 0, 0 },
     };
 
-    VertexCollection vertices;
-    IndexCollection indices;
-
     XMVECTOR tsize = XMLoadFloat3(&size);
     tsize = XMVectorDivide(tsize, g_XMTwo);
 
@@ -452,13 +460,13 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateBox(_In_ ID3D11Dev
 
         // Six indices (two triangles) per face.
         size_t vbase = vertices.size();
-        indices.push_back(vbase + 0);
-        indices.push_back(vbase + 1);
-        indices.push_back(vbase + 2);
+        index_push_back(indices, vbase + 0);
+        index_push_back(indices, vbase + 1);
+        index_push_back(indices, vbase + 2);
 
-        indices.push_back(vbase + 0);
-        indices.push_back(vbase + 2);
-        indices.push_back(vbase + 3);
+        index_push_back(indices, vbase + 0);
+        index_push_back(indices, vbase + 2);
+        index_push_back(indices, vbase + 3);
 
         // Four vertices per face.
         vertices.push_back(VertexPositionNormalTexture((normal - side1 - side2) * tsize, normal, textureCoordinates[0]));
@@ -467,14 +475,13 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateBox(_In_ ID3D11Dev
         vertices.push_back(VertexPositionNormalTexture((normal + side1 - side2) * tsize, normal, textureCoordinates[3]));
     }
 
-    // Create the primitive object.
-    std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
-    
-    primitive->pImpl->Initialize(deviceContext, vertices, indices, rhcoords, invertn);
+    // Build RH above
+    if ( !rhcoords )
+        ReverseWinding( indices, vertices );
 
-    return primitive;
+    if ( invertn )
+        InvertNormals( vertices );
 }
-
 
 
 //--------------------------------------------------------------------------------------
@@ -486,6 +493,20 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateSphere(_In_ ID3D11
 {
     VertexCollection vertices;
     IndexCollection indices;
+    CreateSphere(vertices, indices, diameter, tessellation, rhcoords, invertn);
+
+    // Create the primitive object.
+    std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
+    
+    primitive->pImpl->Initialize(deviceContext, vertices, indices);
+
+    return primitive;
+}
+
+void GeometricPrimitive::CreateSphere(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float diameter, size_t tessellation, bool rhcoords, bool invertn)
+{
+    vertices.clear();
+    indices.clear();
 
     if (tessellation < 3)
         throw std::out_of_range("tesselation parameter out of range");
@@ -535,22 +556,22 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateSphere(_In_ ID3D11
             size_t nextI = i + 1;
             size_t nextJ = (j + 1) % stride;
 
-            indices.push_back(i * stride + j);
-            indices.push_back(nextI * stride + j);
-            indices.push_back(i * stride + nextJ);
+            index_push_back(indices, i * stride + j);
+            index_push_back(indices, nextI * stride + j);
+            index_push_back(indices, i * stride + nextJ);
 
-            indices.push_back(i * stride + nextJ);
-            indices.push_back(nextI * stride + j);
-            indices.push_back(nextI * stride + nextJ);
+            index_push_back(indices, i * stride + nextJ);
+            index_push_back(indices, nextI * stride + j);
+            index_push_back(indices, nextI * stride + nextJ);
         }
     }
 
-    // Create the primitive object.
-    std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
-    
-    primitive->pImpl->Initialize(deviceContext, vertices, indices, rhcoords, invertn);
+    // Build RH above
+    if ( !rhcoords )
+        ReverseWinding( indices, vertices );
 
-    return primitive;
+    if ( invertn )
+        InvertNormals( vertices );
 }
 
 
@@ -561,6 +582,23 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateSphere(_In_ ID3D11
 // Creates a geosphere primitive.
 std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateGeoSphere(_In_ ID3D11DeviceContext* deviceContext, float diameter, size_t tessellation, bool rhcoords)
 {
+    VertexCollection vertices;
+    IndexCollection indices;
+    CreateGeoSphere(vertices, indices, diameter, tessellation, rhcoords);
+
+    // Create the primitive object.
+    std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
+    
+    primitive->pImpl->Initialize(deviceContext, vertices, indices);
+
+    return primitive;
+}
+
+void GeometricPrimitive::CreateGeoSphere(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float diameter, size_t tessellation, bool rhcoords)
+{
+    vertices.clear();
+    indices.clear();
+
     // An undirected edge between two vertices, represented by a pair of indexes into a vertex array.
     // Becuse this edge is undirected, (a,b) is the same as (b,a).
     typedef std::pair<uint16_t, uint16_t> UndirectedEdge;
@@ -606,7 +644,6 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateGeoSphere(_In_ ID3
 
     std::vector<XMFLOAT3> vertexPositions(std::begin(OctahedronVertices), std::end(OctahedronVertices));
 
-    IndexCollection indices;
     indices.insert(indices.begin(), std::begin(OctahedronIndices), std::end(OctahedronIndices));
 
     // We know these values by looking at the above index list for the octahedron. Despite the subdivisions that are
@@ -706,7 +743,6 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateGeoSphere(_In_ ID3
     }
 
     // Now that we've completed subdivision, fill in the final vertex collection
-    VertexCollection vertices;
     vertices.reserve(vertexPositions.size());
     for (auto it = vertexPositions.begin(); it != vertexPositions.end(); ++it)
     {
@@ -870,12 +906,9 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateGeoSphere(_In_ ID3
     fixPole(northPoleIndex);
     fixPole(southPoleIndex);
 
-    // Create the primitive object.
-    std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
-    
-    primitive->pImpl->Initialize(deviceContext, vertices, indices, rhcoords, false);
-
-    return primitive;
+    // Build RH above
+    if ( !rhcoords )
+        ReverseWinding( indices, vertices );
 }
 
 
@@ -922,9 +955,9 @@ static void CreateCylinderCap(VertexCollection& vertices, IndexCollection& indic
         }
 
         size_t vbase = vertices.size();
-        indices.push_back(vbase);
-        indices.push_back(vbase + i1);
-        indices.push_back(vbase + i2);
+        index_push_back(indices, vbase);
+        index_push_back(indices, vbase + i1);
+        index_push_back(indices, vbase + i2);
     }
 
     // Which end of the cylinder is this?
@@ -956,6 +989,20 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCylinder(_In_ ID3D
 {
     VertexCollection vertices;
     IndexCollection indices;
+    CreateCylinder(vertices, indices, height, diameter, tessellation, rhcoords);
+
+    // Create the primitive object.
+    std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
+    
+    primitive->pImpl->Initialize(deviceContext, vertices, indices);
+
+    return primitive;
+}
+
+void GeometricPrimitive::CreateCylinder(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float height, float diameter, size_t tessellation, bool rhcoords)
+{
+    vertices.clear();
+    indices.clear();
 
     if (tessellation < 3)
         throw std::out_of_range("tesselation parameter out of range");
@@ -981,25 +1028,22 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCylinder(_In_ ID3D
         vertices.push_back(VertexPositionNormalTexture(sideOffset + topOffset, normal, textureCoordinate));
         vertices.push_back(VertexPositionNormalTexture(sideOffset - topOffset, normal, textureCoordinate + g_XMIdentityR1));
 
-        indices.push_back(i * 2);
-        indices.push_back((i * 2 + 2) % (stride * 2));
-        indices.push_back(i * 2 + 1);
+        index_push_back(indices, i * 2);
+        index_push_back(indices, (i * 2 + 2) % (stride * 2));
+        index_push_back(indices, i * 2 + 1);
 
-        indices.push_back(i * 2 + 1);
-        indices.push_back((i * 2 + 2) % (stride * 2));
-        indices.push_back((i * 2 + 3) % (stride * 2));
+        index_push_back(indices, i * 2 + 1);
+        index_push_back(indices, (i * 2 + 2) % (stride * 2));
+        index_push_back(indices, (i * 2 + 3) % (stride * 2));
     }
 
     // Create flat triangle fan caps to seal the top and bottom.
     CreateCylinderCap(vertices, indices, tessellation, height, radius, true);
     CreateCylinderCap(vertices, indices, tessellation, height, radius, false);
 
-    // Create the primitive object.
-    std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
-    
-    primitive->pImpl->Initialize(deviceContext, vertices, indices, rhcoords, false);
-
-    return primitive;
+    // Build RH above
+    if ( !rhcoords )
+        ReverseWinding( indices, vertices );
 }
 
 
@@ -1008,6 +1052,20 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCone(_In_ ID3D11De
 {
     VertexCollection vertices;
     IndexCollection indices;
+    CreateCone(vertices, indices, diameter, height, tessellation, rhcoords);
+
+    // Create the primitive object.
+    std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
+    
+    primitive->pImpl->Initialize(deviceContext, vertices, indices);
+
+    return primitive;
+}
+
+void GeometricPrimitive::CreateCone(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float diameter, float height, size_t tessellation, bool rhcoords)
+{
+    vertices.clear();
+    indices.clear();
 
     if (tessellation < 3)
         throw std::out_of_range("tesselation parameter out of range");
@@ -1039,20 +1097,17 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCone(_In_ ID3D11De
         vertices.push_back(VertexPositionNormalTexture(topOffset, normal, g_XMZero));
         vertices.push_back(VertexPositionNormalTexture(pt, normal, textureCoordinate + g_XMIdentityR1 ));
 
-        indices.push_back(i * 2);
-        indices.push_back((i * 2 + 3) % (stride * 2));
-        indices.push_back((i * 2 + 1) % (stride * 2));
+        index_push_back(indices, i * 2);
+        index_push_back(indices, (i * 2 + 3) % (stride * 2));
+        index_push_back(indices, (i * 2 + 1) % (stride * 2));
     }
 
     // Create flat triangle fan caps to seal the bottom.
     CreateCylinderCap(vertices, indices, tessellation, height, radius, false);
 
-    // Create the primitive object.
-    std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
-    
-    primitive->pImpl->Initialize(deviceContext, vertices, indices, rhcoords, false);
-
-    return primitive;
+    // Build RH above
+    if ( !rhcoords )
+        ReverseWinding( indices, vertices );
 }
 
 
@@ -1065,6 +1120,20 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateTorus(_In_ ID3D11D
 {
     VertexCollection vertices;
     IndexCollection indices;
+    CreateTorus( vertices, indices, diameter, thickness, tessellation, rhcoords );
+
+    // Create the primitive object.
+    std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
+    
+    primitive->pImpl->Initialize(deviceContext, vertices, indices);
+
+    return primitive;
+}
+
+void GeometricPrimitive::CreateTorus(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float diameter, float thickness, size_t tessellation, bool rhcoords)
+{
+    vertices.clear();
+    indices.clear();
 
     if (tessellation < 3)
         throw std::out_of_range("tesselation parameter out of range");
@@ -1106,22 +1175,19 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateTorus(_In_ ID3D11D
             size_t nextI = (i + 1) % stride;
             size_t nextJ = (j + 1) % stride;
 
-            indices.push_back(i * stride + j);
-            indices.push_back(i * stride + nextJ);
-            indices.push_back(nextI * stride + j);
+            index_push_back(indices, i * stride + j);
+            index_push_back(indices, i * stride + nextJ);
+            index_push_back(indices, nextI * stride + j);
 
-            indices.push_back(i * stride + nextJ);
-            indices.push_back(nextI * stride + nextJ);
-            indices.push_back(nextI * stride + j);
+            index_push_back(indices, i * stride + nextJ);
+            index_push_back(indices, nextI * stride + nextJ);
+            index_push_back(indices, nextI * stride + j);
         }
     }
 
-    // Create the primitive object.
-    std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
-    
-    primitive->pImpl->Initialize(deviceContext, vertices, indices, rhcoords, false);
-
-    return primitive;
+    // Build RH above
+    if ( !rhcoords )
+        ReverseWinding( indices, vertices );
 }
 
 
@@ -1133,6 +1199,20 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateTetrahedron(_In_ I
 {
     VertexCollection vertices;
     IndexCollection indices;
+    CreateTetrahedron(vertices, indices, size, rhcoords);
+
+    // Create the primitive object.
+    std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
+    
+    primitive->pImpl->Initialize(deviceContext, vertices, indices);
+
+    return primitive;
+}
+
+void GeometricPrimitive::CreateTetrahedron(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float size, bool rhcoords)
+{
+    vertices.clear();
+    indices.clear();
 
     static const XMVECTORF32 verts[4] =
     {
@@ -1161,9 +1241,9 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateTetrahedron(_In_ I
         normal = XMVector3Normalize( normal );
 
         size_t base = vertices.size();
-        indices.push_back( base );
-        indices.push_back( base + 1 );
-        indices.push_back( base + 2 );
+        index_push_back(indices, base );
+        index_push_back(indices, base + 1 );
+        index_push_back(indices, base + 2 );
  
         // Duplicate vertices to use face normals
         XMVECTOR position = XMVectorScale( verts[ v0 ], size );
@@ -1176,26 +1256,36 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateTetrahedron(_In_ I
         vertices.push_back( VertexPositionNormalTexture( position, normal, g_XMIdentityR1 /* 0, 1 */ ) ); 
     }
 
+    // Built LH above
+    if ( rhcoords )
+        ReverseWinding( indices, vertices );
+
     assert( vertices.size() == 4*3 );
     assert( indices.size() == 4*3 );
-
-    // Create the primitive object.
-    std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
-    
-    primitive->pImpl->Initialize(deviceContext, vertices, indices, !rhcoords, false);
-
-    return primitive;
 }
 
 
 //--------------------------------------------------------------------------------------
 // Octahedron
 //--------------------------------------------------------------------------------------
-
 std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateOctahedron(_In_ ID3D11DeviceContext* deviceContext, float size, bool rhcoords )
 {
     VertexCollection vertices;
     IndexCollection indices;
+    CreateOctahedron(vertices, indices, size, rhcoords );
+
+    // Create the primitive object.
+    std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
+    
+    primitive->pImpl->Initialize(deviceContext, vertices, indices);
+
+    return primitive;
+}
+
+void GeometricPrimitive::CreateOctahedron(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float size, bool rhcoords )
+{
+    vertices.clear();
+    indices.clear();
 
     static const XMVECTORF32 verts[6] =
     {
@@ -1230,9 +1320,9 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateOctahedron(_In_ ID
         normal = XMVector3Normalize( normal );
 
         size_t base = vertices.size();
-        indices.push_back( base );
-        indices.push_back( base + 1 );
-        indices.push_back( base + 2 );
+        index_push_back(indices, base );
+        index_push_back(indices, base + 1 );
+        index_push_back(indices, base + 2 );
  
         // Duplicate vertices to use face normals
         XMVECTOR position = XMVectorScale( verts[ v0 ], size );
@@ -1245,15 +1335,12 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateOctahedron(_In_ ID
         vertices.push_back( VertexPositionNormalTexture( position, normal, g_XMIdentityR1 /* 0, 1*/ ) ); 
     }
 
+    // Built LH above
+    if ( rhcoords )
+        ReverseWinding( indices, vertices );
+
     assert( vertices.size() == 8*3 );
     assert( indices.size() == 8*3 );
-
-    // Create the primitive object.
-    std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
-    
-    primitive->pImpl->Initialize(deviceContext, vertices, indices, !rhcoords, false);
-
-    return primitive;
 }
 
 
@@ -1265,6 +1352,20 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateDodecahedron(_In_ 
 {
     VertexCollection vertices;
     IndexCollection indices;
+    CreateDodecahedron( vertices, indices, size, rhcoords );
+
+    // Create the primitive object.
+    std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
+    
+    primitive->pImpl->Initialize(deviceContext, vertices, indices);
+
+    return primitive;
+}
+
+void GeometricPrimitive::CreateDodecahedron(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float size, bool rhcoords )
+{
+    vertices.clear();
+    indices.clear();
 
     static const float a = 1.f/SQRT3;
     static const float b = 0.356822089773089931942f; // sqrt( ( 3 - sqrt(5) ) / 6 )
@@ -1350,17 +1451,17 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateDodecahedron(_In_ 
 
         size_t base = vertices.size();
 
-        indices.push_back( base );
-        indices.push_back( base + 1 );
-        indices.push_back( base + 2 );
+        index_push_back(indices, base );
+        index_push_back(indices, base + 1 );
+        index_push_back(indices, base + 2 );
 
-        indices.push_back( base );
-        indices.push_back( base + 2 );
-        indices.push_back( base + 3 );
+        index_push_back(indices, base );
+        index_push_back(indices, base + 2 );
+        index_push_back(indices, base + 3 );
 
-        indices.push_back( base );
-        indices.push_back( base + 3 );
-        indices.push_back( base + 4 );
+        index_push_back(indices, base );
+        index_push_back(indices, base + 3 );
+        index_push_back(indices, base + 4 );
 
         // Duplicate vertices to use face normals
         XMVECTOR position = XMVectorScale( verts[ v0 ], size );
@@ -1379,15 +1480,12 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateDodecahedron(_In_ 
         vertices.push_back( VertexPositionNormalTexture( position, normal, textureCoordinates[ textureIndex[t][4] ] ) ); 
     }
 
+    // Built LH above
+    if ( rhcoords )
+        ReverseWinding( indices, vertices );
+
     assert( vertices.size() == 12*5 );
     assert( indices.size() == 12*3*3 );
-
-    // Create the primitive object.
-    std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
-    
-    primitive->pImpl->Initialize(deviceContext, vertices, indices, !rhcoords, false);
-
-    return primitive;
 }
 
 
@@ -1399,6 +1497,20 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateIcosahedron(_In_ I
 {
     VertexCollection vertices;
     IndexCollection indices;
+    CreateIcosahedron( vertices, indices, size, rhcoords );
+
+    // Create the primitive object.
+    std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
+    
+    primitive->pImpl->Initialize(deviceContext, vertices, indices);
+
+    return primitive;
+}
+
+void GeometricPrimitive::CreateIcosahedron(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float size, bool rhcoords )
+{
+    vertices.clear();
+    indices.clear();
 
     static const float  t = 1.618033988749894848205f; // (1 + sqrt(5)) / 2
     static const float t2 = 1.519544995837552493271f; // sqrt( 1 + sqr( (1 + sqrt(5)) / 2 ) )
@@ -1454,9 +1566,9 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateIcosahedron(_In_ I
         normal = XMVector3Normalize( normal );
 
         size_t base = vertices.size();
-        indices.push_back( base );
-        indices.push_back( base + 1 );
-        indices.push_back( base + 2 );
+        index_push_back(indices, base );
+        index_push_back(indices, base + 1 );
+        index_push_back(indices, base + 2 );
  
         // Duplicate vertices to use face normals
         XMVECTOR position = XMVectorScale( verts[ v0 ], size );
@@ -1469,15 +1581,12 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateIcosahedron(_In_ I
         vertices.push_back( VertexPositionNormalTexture( position, normal, g_XMIdentityR1 /* 0, 1 */ ) ); 
     }
 
+    // Built LH above
+    if ( rhcoords )
+        ReverseWinding( indices, vertices );
+
     assert( vertices.size() == 20*3 );
     assert( indices.size() == 20*3 );
-
-    // Create the primitive object.
-    std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
-    
-    primitive->pImpl->Initialize(deviceContext, vertices, indices, !rhcoords, false);
-
-    return primitive;
 }
 
 
@@ -1507,7 +1616,7 @@ static void XM_CALLCONV TessellatePatch(VertexCollection& vertices, IndexCollect
     size_t vbase = vertices.size();
     Bezier::CreatePatchIndices(tessellation, isMirrored, [&](size_t index)
     {
-        indices.push_back(vbase + index);
+        index_push_back(indices, vbase + index);
     });
 
     // Create the vertex data.
@@ -1523,6 +1632,20 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateTeapot(_In_ ID3D11
 {
     VertexCollection vertices;
     IndexCollection indices;
+    CreateTeapot(vertices, indices, size, tessellation, rhcoords);
+
+    // Create the primitive object.
+    std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
+    
+    primitive->pImpl->Initialize(deviceContext, vertices, indices);
+
+    return primitive;
+}
+
+void GeometricPrimitive::CreateTeapot(std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float size, size_t tessellation, bool rhcoords)
+{
+    vertices.clear();
+    indices.clear();
 
     if (tessellation < 1)
         throw std::out_of_range("tesselation parameter out of range");
@@ -1552,10 +1675,41 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateTeapot(_In_ ID3D11
         }
     }
 
+    // Built RH above
+    if ( !rhcoords )
+        ReverseWinding( indices, vertices );
+}
+
+
+//--------------------------------------------------------------------------------------
+// Custom
+//--------------------------------------------------------------------------------------
+
+std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCustom(_In_ ID3D11DeviceContext* deviceContext, const std::vector<VertexPositionNormalTexture>& vertices, const std::vector<uint16_t>& indices)
+{
+    // Extra validation
+    if ( vertices.empty() || indices.empty() )
+        throw std::exception("Requires both vertices and indices");
+
+    if ( indices.size() % 3 )
+        throw std::exception("Expected triangular faces");
+
+    size_t nVerts = vertices.size();
+    if ( nVerts >= USHRT_MAX )
+        throw std::exception("Too many vertices for 16-bit index buffer");
+
+    for( auto it = indices.cbegin(); it != indices.cend(); ++it )
+    {
+        if ( *it >= nVerts )
+        {
+            throw std::exception("Index not in vertices list");
+        }
+    }
+
     // Create the primitive object.
     std::unique_ptr<GeometricPrimitive> primitive(new GeometricPrimitive());
     
-    primitive->pImpl->Initialize(deviceContext, vertices, indices, rhcoords, false);
+    primitive->pImpl->Initialize(deviceContext, vertices, indices);
 
     return primitive;
 }
