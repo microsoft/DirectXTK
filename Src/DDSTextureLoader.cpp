@@ -577,6 +577,30 @@ static DXGI_FORMAT GetDXGIFormat( const DDS_PIXELFORMAT& ddpf )
             return DXGI_FORMAT_A8_UNORM;
         }
     }
+    else if (ddpf.flags & DDS_BUMPDUDV)
+    {
+        if (16 == ddpf.RGBBitCount)
+        {
+            if (ISBITMASK(0x00ff, 0xff00, 0x0000, 0x0000))
+            {
+                return DXGI_FORMAT_R8G8_SNORM; // D3DX10/11 writes this out as DX10 extension
+            }
+        }
+
+        if (32 == ddpf.RGBBitCount)
+        {
+            if (ISBITMASK(0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000))
+            {
+                return DXGI_FORMAT_R8G8B8A8_SNORM; // D3DX10/11 writes this out as DX10 extension
+            }
+            if (ISBITMASK(0x0000ffff, 0xffff0000, 0x00000000, 0x00000000))
+            {
+                return DXGI_FORMAT_R16G16_SNORM; // D3DX10/11 writes this out as DX10 extension
+            }
+
+            // No DXGI format maps to ISBITMASK(0x3ff00000, 0x000ffc00, 0x000003ff, 0xc0000000) aka D3DFMT_A2W10V10U10
+        }
+    }
     else if (ddpf.flags & DDS_FOURCC)
     {
         if (MAKEFOURCC( 'D', 'X', 'T', '1' ) == ddpf.fourCC)

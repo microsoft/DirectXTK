@@ -19,9 +19,7 @@
 // http://go.microsoft.com/fwlink/?LinkId=248929
 //--------------------------------------------------------------------------------------
 
-#if defined(_MSC_VER)
 #pragma once
-#endif
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
 #include <d3d11_x.h>
@@ -61,6 +59,7 @@ struct DDS_PIXELFORMAT
 #define DDS_LUMINANCEA  0x00020001  // DDPF_LUMINANCE | DDPF_ALPHAPIXELS
 #define DDS_ALPHA       0x00000002  // DDPF_ALPHA
 #define DDS_PAL8        0x00000020  // DDPF_PALETTEINDEXED8
+#define DDS_BUMPDUDV    0x00080000  // DDPF_BUMPDUDV
 
 #ifndef MAKEFOURCC
     #define MAKEFOURCC(ch0, ch1, ch2, ch3)                              \
@@ -142,6 +141,15 @@ extern __declspec(selectany) const DDS_PIXELFORMAT DDSPF_A8L8 =
 
 extern __declspec(selectany) const DDS_PIXELFORMAT DDSPF_A8 =
     { sizeof(DDS_PIXELFORMAT), DDS_ALPHA, 0, 8, 0x00, 0x00, 0x00, 0xff };
+
+extern __declspec(selectany) const DDS_PIXELFORMAT DDSPF_V8U8 = 
+    { sizeof(DDS_PIXELFORMAT), DDS_BUMPDUDV, 0, 16, 0x00ff, 0xff00, 0x0000, 0x0000 };
+
+extern __declspec(selectany) const DDS_PIXELFORMAT DDSPF_Q8W8V8U8 = 
+    { sizeof(DDS_PIXELFORMAT), DDS_BUMPDUDV, 0, 32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000 };
+
+extern __declspec(selectany) const DDS_PIXELFORMAT DDSPF_V16U16 = 
+    { sizeof(DDS_PIXELFORMAT), DDS_BUMPDUDV, 0, 32, 0x0000ffff, 0xffff0000, 0x00000000, 0x00000000 };
 
 // D3DFMT_A2R10G10B10/D3DFMT_A2B10G10R10 should be written using DX10 extension to avoid D3DX 10:10:10:2 reversal issue
 
