@@ -1792,6 +1792,40 @@ inline bool Matrix::operator != ( const Matrix& M ) const
 // Assignment operators
 //------------------------------------------------------------------------------
 
+inline Matrix::Matrix(const XMFLOAT3X3& M)
+{
+    _11 = M._11; _12 = M._12; _13 = M._13; _14 = 0.f;
+    _21 = M._21; _22 = M._22; _23 = M._23; _24 = 0.f;
+    _31 = M._31; _32 = M._32; _33 = M._33; _34 = 0.f;
+    _41 = 0.f;   _42 = 0.f;   _43 = 0.f;   _44 = 1.f;
+}
+
+inline Matrix::Matrix(const XMFLOAT4X3& M)
+{
+    _11 = M._11; _12 = M._12; _13 = M._13; _14 = 0.f;
+    _21 = M._21; _22 = M._22; _23 = M._23; _24 = 0.f;
+    _31 = M._31; _32 = M._32; _33 = M._33; _34 = 0.f;
+    _41 = M._41; _42 = M._42; _43 = M._43; _44 = 1.f;
+}
+
+inline Matrix& Matrix::operator= (const XMFLOAT3X3& M)
+{
+    _11 = M._11; _12 = M._12; _13 = M._13; _14 = 0.f;
+    _21 = M._21; _22 = M._22; _23 = M._23; _24 = 0.f;
+    _31 = M._31; _32 = M._32; _33 = M._33; _34 = 0.f;
+    _41 = 0.f;   _42 = 0.f;   _43 = 0.f;   _44 = 1.f;
+    return *this;
+}
+
+inline Matrix& Matrix::operator= (const XMFLOAT4X3& M)
+{
+    _11 = M._11; _12 = M._12; _13 = M._13; _14 = 0.f;
+    _21 = M._21; _22 = M._22; _23 = M._23; _24 = 0.f;
+    _31 = M._31; _32 = M._32; _33 = M._33; _34 = 0.f;
+    _41 = M._41; _42 = M._42; _43 = M._43; _44 = 1.f;
+    return *this;
+}
+
 inline Matrix& Matrix::operator+= (const Matrix& M)
 {
     using namespace DirectX;

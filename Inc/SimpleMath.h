@@ -381,6 +381,8 @@ struct Matrix : public XMFLOAT4X4
                                                                                                                 r2.x, r2.y, r2.z, r2.w,
                                                                                                                 r3.x, r3.y, r3.z, r3.w ) {}
     Matrix(const XMFLOAT4X4& M) { memcpy_s(this, sizeof(float)*16, &M, sizeof(XMFLOAT4X4)); }
+    Matrix(const XMFLOAT3X3& M);
+    Matrix(const XMFLOAT4X3& M);
 
     explicit Matrix(_In_reads_(16) const float *pArray) : XMFLOAT4X4(pArray) {}
     Matrix( CXMMATRIX M ) { XMStoreFloat4x4( this, M ); }
@@ -394,6 +396,8 @@ struct Matrix : public XMFLOAT4X4
     // Assignment operators
     Matrix& operator= (const Matrix& M) { memcpy_s( this, sizeof(float)*16, &M, sizeof(float)*16 ); return *this; }
     Matrix& operator= (const XMFLOAT4X4& M) { memcpy_s( this, sizeof(float)*16, &M, sizeof(XMFLOAT4X4) ); return *this; }
+    Matrix& operator= (const XMFLOAT3X3& M);
+    Matrix& operator= (const XMFLOAT4X3& M);
     Matrix& operator+= (const Matrix& M);
     Matrix& operator-= (const Matrix& M);
     Matrix& operator*= (const Matrix& M);
