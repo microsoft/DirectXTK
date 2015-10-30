@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-August 18, 2015
+October 30, 2015
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for universal Windows apps for Windows 10,
@@ -73,6 +73,17 @@ Note: Xbox One exclusive apps developers using the Xbox One XDK need to generate
 RELEASE HISTORY
 ---------------
 
+October 30, 2015
+    DirectXTK for Audio 3D updates
+    *breaking change* emitters/listeners now use RH coordinates by default
+    GeometricPrimitive support for custom geometry
+    SimpleMath Matrix class improvements
+    DDS support for legacy bumpmap formats (V8U8, Q8W8V8U8, V16U16)  
+    Mouse fix for WinRT implementation with multiple buttons pressed
+    Wireframe CommonStates no longer does backface culling
+    Xbox One platform updates
+    Minor code cleanup
+
 August 18, 2015
     Xbox One platform updates
 
@@ -126,7 +137,7 @@ October 28, 2014
 
 September 5, 2014
     GamePad class: gamepad controller helper using XInput on Windows, IGamepad for Xbox One
-    SimpleMath updates; Matrix billboard methods; breaking change: Matrix::Identity() -> Matrix::Identity
+    SimpleMath updates; Matrix billboard methods; *breaking change*: Matrix::Identity() -> Matrix::Identity
     SpriteBatch new optional SetViewport method
     SpriteFont fix for white-space character rendering optimization
     DDSTextureLoader fix for auto-gen mipmaps for volume textures
