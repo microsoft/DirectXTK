@@ -3091,6 +3091,20 @@ inline bool Color::operator != ( const Color& c ) const
 // Assignment operators
 //------------------------------------------------------------------------------
 
+inline Color& Color::operator= (const DirectX::PackedVector::XMCOLOR& Packed)
+{
+    using namespace DirectX;
+    XMStoreFloat4( this, PackedVector::XMLoadColor( &Packed ) );
+    return *this;
+}
+
+inline Color& Color::operator= (const DirectX::PackedVector::XMUBYTEN4& Packed)
+{
+    using namespace DirectX;
+    XMStoreFloat4( this, PackedVector::XMLoadUByteN4( &Packed ) );
+    return *this;
+}
+
 inline Color& Color::operator+= (const Color& c)
 {
     using namespace DirectX;

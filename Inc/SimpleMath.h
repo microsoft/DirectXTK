@@ -655,6 +655,8 @@ struct Color : public XMFLOAT4
     // Assignment operators
     Color& operator= (const Color& c) { x = c.x; y = c.y; z = c.z; w = c.w; return *this; }
     Color& operator= (const XMFLOAT4& c) { x = c.x; y = c.y; z = c.z; w = c.w; return *this; }
+    Color& operator= (const DirectX::PackedVector::XMCOLOR& Packed);
+    Color& operator= (const DirectX::PackedVector::XMUBYTEN4& Packed);
     Color& operator+= (const Color& c);
     Color& operator-= (const Color& c);
     Color& operator*= (const Color& c);
