@@ -50,7 +50,7 @@ struct Vector2 : public XMFLOAT2
 
     operator XMVECTOR() const { return XMLoadFloat2( this ); }
 
-    // Comparision operators
+    // Comparison operators
     bool operator == ( const Vector2& V ) const;
     bool operator != ( const Vector2& V ) const;
 
@@ -156,7 +156,7 @@ struct Vector3 : public XMFLOAT3
 
     operator XMVECTOR() const { return XMLoadFloat3( this ); }
 
-    // Comparision operators
+    // Comparison operators
     bool operator == ( const Vector3& V ) const;
     bool operator != ( const Vector3& V ) const;
 
@@ -269,7 +269,7 @@ struct Vector4 : public XMFLOAT4
 
     operator XMVECTOR() const { return XMLoadFloat4( this ); }
 
-    // Comparision operators
+    // Comparison operators
     bool operator == ( const Vector4& V ) const;
     bool operator != ( const Vector4& V ) const;
 
@@ -395,7 +395,7 @@ struct Matrix : public XMFLOAT4X4
 
     operator XMMATRIX() const { return XMLoadFloat4x4( this ); }
 
-    // Comparision operators
+    // Comparison operators
     bool operator == ( const Matrix& M ) const;
     bool operator != ( const Matrix& M ) const;
 
@@ -523,7 +523,7 @@ struct Plane : public XMFLOAT4
 
     operator XMVECTOR() const { return XMLoadFloat4( this ); }
 
-    // Comparision operators
+    // Comparison operators
     bool operator == ( const Plane& p ) const;
     bool operator != ( const Plane& p ) const;
 
@@ -569,7 +569,7 @@ struct Quaternion : public XMFLOAT4
 
     operator XMVECTOR() const { return XMLoadFloat4( this ); }
 
-    // Comparision operators
+    // Comparison operators
     bool operator == ( const Quaternion& q ) const;
     bool operator != ( const Quaternion& q ) const;
 
@@ -648,7 +648,7 @@ struct Color : public XMFLOAT4
     operator XMVECTOR() const { return XMLoadFloat4( this ); }
     operator const float*() const { return reinterpret_cast<const float*>(this); }
 
-    // Comparision operators
+    // Comparison operators
     bool operator == ( const Color& c ) const;
     bool operator != ( const Color& c ) const;
 
@@ -727,7 +727,7 @@ public:
     Ray() : position(0,0,0), direction(0,0,1) {}
     Ray( const Vector3& pos, const Vector3& dir ) : position(pos), direction(dir) {}
 
-    // Comparision operators
+    // Comparison operators
     bool operator == ( const Ray& r ) const;
     bool operator != ( const Ray& r ) const;
 
@@ -768,7 +768,7 @@ public:
     operator D3D11_VIEWPORT() { return *reinterpret_cast<D3D11_VIEWPORT*>(this); }
     const D3D11_VIEWPORT* Get11() const { return reinterpret_cast<const D3D11_VIEWPORT*>(this); }
 
-    // Comparision operators
+    // Comparison operators
     bool operator == ( const Viewport& vp ) const;
     bool operator != ( const Viewport& vp ) const;
 
