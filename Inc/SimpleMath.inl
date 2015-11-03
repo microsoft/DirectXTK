@@ -3441,3 +3441,109 @@ inline bool Ray::Intersects( const Plane& plane, _Out_ float& Dist ) const
         }
     }
 }
+
+
+/****************************************************************************
+ *
+ * Viewport
+ *
+ ****************************************************************************/
+
+//------------------------------------------------------------------------------
+// Comparision operators
+//------------------------------------------------------------------------------
+
+inline bool Viewport::operator == ( const Viewport& vp ) const
+{
+    return (x == vp.x && y == vp.y
+            && width == vp.width && height == vp.height
+            && minDepth == vp.minDepth && maxDepth == vp.maxDepth);
+}
+
+inline bool Viewport::operator != ( const Viewport& vp ) const
+{
+    return (x != vp.x || y != vp.y
+            || width != vp.width || height != vp.height
+            || minDepth != vp.minDepth || maxDepth != vp.maxDepth);
+}
+
+//------------------------------------------------------------------------------
+// Assignment operators
+//------------------------------------------------------------------------------
+
+inline Viewport& Viewport::operator= (const Viewport& vp)
+{
+    x = vp.x; y = vp.y;
+    width = vp.width; height = vp.height;
+    minDepth = vp.minDepth; maxDepth = vp.maxDepth;
+    return *this;
+}
+
+inline Viewport& Viewport::operator= (const RECT& rct)
+{
+    x = float(rct.left); y = float(rct.top);
+    width = float(rct.right - rct.left);
+    height = float(rct.bottom - rct.top);
+    minDepth = 0.f; maxDepth = 1.f;
+    return *this;
+}
+
+inline Viewport& Viewport::operator= (const D3D11_VIEWPORT& vp)
+{
+    x = vp.TopLeftX; y = vp.TopLeftY;
+    width = vp.Width; height = vp.Height;
+    minDepth = vp.MinDepth; maxDepth = vp.MaxDepth;
+    return *this;
+}
+
+//------------------------------------------------------------------------------
+// Viewport operations
+//------------------------------------------------------------------------------
+
+inline float Viewport::AspectRatio() const
+{
+    if (width == 0.f || height == 0.f)
+        return 0.f;
+
+    return (width / height);
+}
+
+inline Vector3 Viewport::Project(const Vector3& p, const Matrix& proj, const Matrix& view, const Matrix& world) const
+{
+    using namespace DirectX;
+    XMVECTOR v = XMLoadFloat3(&p);
+    XMMATRIX projection = XMLoadFloat4x4(&proj);
+    v = XMVector3Project(v, x, y, width, height, minDepth, maxDepth, projection, view, world);
+    Vector3 result;
+    XMStoreFloat3(&result, v);
+    return result;
+}
+
+inline void Viewport::Project(const Vector3& p, const Matrix& proj, const Matrix& view, const Matrix& world, Vector3& result) const
+{
+    using namespace DirectX;
+    XMVECTOR v = XMLoadFloat3(&p);
+    XMMATRIX projection = XMLoadFloat4x4(&proj);
+    v = XMVector3Project(v, x, y, width, height, minDepth, maxDepth, projection, view, world);
+    XMStoreFloat3(&result, v);
+}
+
+inline Vector3 Viewport::Unproject(const Vector3& p, const Matrix& proj, const Matrix& view, const Matrix& world) const
+{
+    using namespace DirectX;
+    XMVECTOR v = XMLoadFloat3(&p);
+    XMMATRIX projection = XMLoadFloat4x4(&proj);
+    v = XMVector3Unproject(v, x, y, width, height, minDepth, maxDepth, projection, view, world);
+    Vector3 result;
+    XMStoreFloat3(&result, v);
+    return result;
+}
+
+inline void Viewport::Unproject(const Vector3& p, const Matrix& proj, const Matrix& view, const Matrix& world, Vector3& result) const
+{
+    using namespace DirectX;
+    XMVECTOR v = XMLoadFloat3(&p);
+    XMMATRIX projection = XMLoadFloat4x4(&proj);
+    v = XMVector3Unproject(v, x, y, width, height, minDepth, maxDepth, projection, view, world);
+    XMStoreFloat3(&result, v);
+}
