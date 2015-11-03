@@ -63,7 +63,7 @@ struct Vector2 : public XMFLOAT2
     Vector2& operator*= (float S);
     Vector2& operator/= (float S);
 
-    // Urnary operators
+    // Unary operators
     Vector2 operator+ () const { return *this; }
     Vector2 operator- () const { return Vector2(-x, -y); }
 
@@ -169,7 +169,7 @@ struct Vector3 : public XMFLOAT3
     Vector3& operator*= (float S);
     Vector3& operator/= (float S);
 
-    // Urnary operators
+    // Unary operators
     Vector3 operator+ () const { return *this; }
     Vector3 operator- () const;
 
@@ -282,7 +282,7 @@ struct Vector4 : public XMFLOAT4
     Vector4& operator*= (float S);
     Vector4& operator/= (float S);
 
-    // Urnary operators
+    // Unary operators
     Vector4 operator+ () const { return *this; }
     Vector4 operator- () const;
 
@@ -413,7 +413,7 @@ struct Matrix : public XMFLOAT4X4
     Matrix& operator/= (const Matrix& M);
         // Element-wise divide
 
-    // Urnary operators
+    // Unary operators
     Matrix operator+ () const { return *this; }
     Matrix operator- () const;
 
@@ -582,7 +582,7 @@ struct Quaternion : public XMFLOAT4
     Quaternion& operator*= (float S);
     Quaternion& operator/= (const Quaternion& q);
 
-    // Urnary operators
+    // Unary operators
     Quaternion operator+ () const { return *this; }
     Quaternion operator- () const;
 
@@ -661,7 +661,7 @@ struct Color : public XMFLOAT4
     Color& operator*= (float S);
     Color& operator/= (const Color& c);
 
-    // Urnary operators
+    // Unary operators
     Color operator+ () const { return *this; }
     Color operator- () const;
 
