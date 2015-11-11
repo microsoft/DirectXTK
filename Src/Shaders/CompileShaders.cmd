@@ -15,7 +15,10 @@ echo usage: CompileShaders [xbox]
 exit /b
 
 :continuexbox
-if not exist "%DurangoXDK%xdk\FXC\amd64\FXC.exe" goto needxdk
+set XBOXFXC="%XboxOneXDKBuild%xdk\FXC\amd64\FXC.exe"
+if exist %XBOXFXC% goto continue
+set XBOXFXC="%DurangoXDK%xdk\FXC\amd64\FXC.exe"
+if not exist %XBOXFXC% goto needxdk
 
 :continue
 
@@ -153,14 +156,14 @@ echo %fxc%
 exit /b
 
 :CompileShaderxbox
-set fxc="%DurangoXDK%\xdk\FXC\amd64\FXC.exe" /nologo %1.fx /T%2_5_0 /Zpc /Qstrip_reflect /Qstrip_debug /D__XBOX_DISABLE_SHADER_NAME_EMPLACEMENT /E%3 /FhCompiled\XboxOne%1_%3.inc /Vn%1_%3
+set fxc=%XBOXFXC% /nologo %1.fx /T%2_5_0 /Zpc /Qstrip_reflect /Qstrip_debug /D__XBOX_DISABLE_SHADER_NAME_EMPLACEMENT /E%3 /FhCompiled\XboxOne%1_%3.inc /Vn%1_%3
 echo.
 echo %fxc%
 %fxc% || set error=1
 exit /b
 
 :CompileShaderHLSLxbox
-set fxc="%DurangoXDK%\xdk\FXC\amd64\FXC.exe" /nologo %1.hlsl /T%2_5_0 /Zpc /Qstrip_reflect /Qstrip_debug /D__XBOX_DISABLE_SHADER_NAME_EMPLACEMENT /E%3 /FhCompiled\XboxOne%1_%3.inc /Vn%1_%3
+set fxc=%XBOXFXC% /nologo %1.hlsl /T%2_5_0 /Zpc /Qstrip_reflect /Qstrip_debug /D__XBOX_DISABLE_SHADER_NAME_EMPLACEMENT /E%3 /FhCompiled\XboxOne%1_%3.inc /Vn%1_%3
 echo.
 echo %fxc%
 %fxc% || set error=1
@@ -168,3 +171,4 @@ exit /b
 
 :needxdk
 echo ERROR: CompileShaders xbox requires the Microsoft Xbox One XDK
+echo        (try re-running from the XDK Command Prompt)
