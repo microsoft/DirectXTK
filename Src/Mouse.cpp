@@ -753,7 +753,9 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
         }
         else
         {
+            int scrollWheel = pImpl->mState.scrollWheelValue;
             memset(&pImpl->mState, 0, sizeof(State));
+            pImpl->mState.scrollWheelValue = scrollWheel;
 
             pImpl->mInFocus = false;
         }
