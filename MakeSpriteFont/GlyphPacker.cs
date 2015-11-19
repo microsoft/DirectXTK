@@ -19,6 +19,60 @@ namespace MakeSpriteFont
     // Helper for arranging many small bitmaps onto a single larger surface.
     public static class GlyphPacker
     {
+        public static Bitmap ArrangeGlyphsFast(Glyph[] sourceGlyphs)
+        {
+            // Build up a list of all the glyphs needing to be arranged.
+            List<ArrangedGlyph> glyphs = new List<ArrangedGlyph>();
+
+            int largestWidth = 1;
+            int largestHeight = 1;
+
+            for (int i = 0; i < sourceGlyphs.Length; i++)
+            {
+                ArrangedGlyph glyph = new ArrangedGlyph();
+
+                glyph.Source = sourceGlyphs[i];
+
+                // Leave a one pixel border around every glyph in the output bitmap.
+                glyph.Width = sourceGlyphs[i].Subrect.Width + 2;
+                glyph.Height = sourceGlyphs[i].Subrect.Height + 2;
+
+                if (glyph.Width > largestWidth)
+                    largestWidth = glyph.Width;
+
+                if (glyph.Height > largestHeight)
+                    largestHeight = glyph.Height;
+
+                glyphs.Add(glyph);
+            }
+
+            // Work out how big the output bitmap should be.
+            int outputWidth = GuessOutputWidth(sourceGlyphs);
+
+            // Place each glyph in a grid based on the largest glyph size
+            int curx = 0;
+            int cury = 0;
+
+            for (int i = 0; i < glyphs.Count; i++)
+            {
+                glyphs[i].X = curx;
+                glyphs[i].Y = cury;
+
+                curx += largestWidth;
+
+                if (curx + largestWidth > outputWidth)
+                {
+                    curx = 0;
+                    cury += largestHeight;
+                }
+            }
+
+            // Create the merged output bitmap.
+            int outputHeight = MakeValidTextureSize(cury + largestHeight, false);
+
+            return CopyGlyphsToOutput(glyphs, outputWidth, outputHeight);
+        }
+
         public static Bitmap ArrangeGlyphs(Glyph[] sourceGlyphs)
         {
             // Build up a list of all the glyphs needing to be arranged.
@@ -74,6 +128,8 @@ namespace MakeSpriteFont
         {
             Bitmap output = new Bitmap(width, height, PixelFormat.Format32bppArgb);
 
+            int usedPixels = 0;
+
             foreach (ArrangedGlyph glyph in glyphs)
             {
                 Glyph sourceGlyph = glyph.Source;
@@ -86,7 +142,13 @@ namespace MakeSpriteFont
 
                 sourceGlyph.Bitmap = output;
                 sourceGlyph.Subrect = destinationRegion;
+
+                usedPixels += (glyph.Width * glyph.Height);
             }
+
+            float utilization = ( (float)usedPixels / (float)(width * height) ) * 100;
+
+            Console.WriteLine("Packing efficiency {0}%", utilization );
 
             return output;
         }

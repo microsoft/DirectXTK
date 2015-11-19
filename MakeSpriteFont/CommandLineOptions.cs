@@ -24,6 +24,21 @@ namespace MakeSpriteFont
     }
 
 
+    // Feature levels
+    public enum FeatureLevel
+    {
+        FL9_1,
+        FL9_2,
+        FL9_3,
+        FL10_0,
+        FL10_1,
+        FL11_0,
+        FL11_1,
+        FL12_0,
+        FL12_1,
+    }
+
+
     // Options telling the tool what to do.
     public class CommandLineOptions
     {
@@ -72,5 +87,13 @@ namespace MakeSpriteFont
 
         // Dumps the generated sprite texture to a bitmap file (useful for debugging).
         public string DebugOutputSpriteSheet = null;
+
+
+        // Controls texture-size based warnings
+        public FeatureLevel FeatureLevel = FeatureLevel.FL9_1;
+
+
+        // For large fonts, the default tightest pack is too slow
+        public bool FastPack = false;
     }
 }

@@ -54,6 +54,8 @@ namespace MakeSpriteFont
 
             Glyph[] glyphs = ImportFont(options, out lineSpacing);
 
+            Console.WriteLine("Captured {0} glyphs", glyphs.Length);
+
             // Optimize.
             Console.WriteLine("Cropping glyph borders");
 
@@ -64,24 +66,42 @@ namespace MakeSpriteFont
 
             Console.WriteLine("Packing glyphs into sprite sheet");
 
-            Bitmap bitmap = GlyphPacker.ArrangeGlyphs(glyphs);
+            Bitmap bitmap;
+
+            if (options.FastPack)
+            {
+                bitmap = GlyphPacker.ArrangeGlyphsFast(glyphs);
+            }
+            else
+            {
+                bitmap = GlyphPacker.ArrangeGlyphs(glyphs);
+            }
 
             // Emit texture size warning based on known Feature Level limits.
             if (bitmap.Width > 16384 || bitmap.Height > 16384)
             {
-                Console.WriteLine("WARNING: Resulting texture is too large for all known Feature Levels (9.1 - 11.1)\n");
+                Console.WriteLine("WARNING: Resulting texture is too large for all known Feature Levels (9.1 - 12.1)");
             }
             else if (bitmap.Width > 8192 || bitmap.Height > 8192)
             {
-                Console.WriteLine("WARNING: Resulting texture requires a Feature Level 11.0 or later device.\n");
+                if (options.FeatureLevel < FeatureLevel.FL11_0)
+                {
+                    Console.WriteLine("WARNING: Resulting texture requires a Feature Level 11.0 or later device.");
+                }
             }
             else if (bitmap.Width > 4096 || bitmap.Height > 4096)
             {
-                Console.WriteLine("WARNING: Resulting texture requires a Feature Level 10.0 or later device.\n");
+                if (options.FeatureLevel < FeatureLevel.FL10_0)
+                {
+                    Console.WriteLine("WARNING: Resulting texture requires a Feature Level 10.0 or later device.");
+                }
             }
             else if (bitmap.Width > 2048 || bitmap.Height > 2048)
             {
-                Console.WriteLine("WARNING: Resulting texture requires a Feature Level 9.3 or later device.\n");
+                if (options.FeatureLevel < FeatureLevel.FL9_3)
+                {
+                    Console.WriteLine("WARNING: Resulting texture requires a Feature Level 9.3 or later device.");
+                }
             }
 
             // Adjust line and character spacing.

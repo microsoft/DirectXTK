@@ -60,7 +60,10 @@ namespace MakeSpriteFont
 
                     if (count == 500)
                     {
-                        Console.WriteLine("WARNING: capturing a large font. This may take a long time to complete and could result in too large a texture. Consider using a smaller set of character regions.");
+                        if (!options.FastPack)
+                        {
+                            Console.WriteLine("WARNING: capturing a large font. This may take a long time to complete and could result in too large a texture. Consider using /FastPack.");
+                        }
                         Console.Write(".");
                     }
                     else if ((count % 500) == 0)
