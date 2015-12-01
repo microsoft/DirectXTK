@@ -9,6 +9,7 @@
 *.i
 *.vspscc
 *.opensdf
+*.opendb
 *.ipch
 *.cache
 *.tlog
