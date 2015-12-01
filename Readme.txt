@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-October 30, 2015
+November 30, 2015
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for universal Windows apps for Windows 10,
@@ -72,6 +72,13 @@ Note: Xbox One exclusive apps developers using the Xbox One XDK need to generate
 ---------------
 RELEASE HISTORY
 ---------------
+
+November 30, 2015
+    SimpleMath improvements including Viewport class
+    Fixed bug with Keyboard for OpenBracket and later VK codes
+    Fixed bug with Mouse that reset the scrollwheel on app activate
+    MakeSpriteFont updated with /FastPack and /FeatureLevel switches
+    Updated for VS 2015 Update 1 and Windows 10 SDK (10586)
 
 October 30, 2015
     DirectXTK for Audio 3D updates
