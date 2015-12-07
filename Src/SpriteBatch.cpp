@@ -13,7 +13,6 @@
 
 #include "pch.h"
 
-#define NOMINMAX
 #include <algorithm>
 #include <vector>
 
