@@ -249,32 +249,30 @@
     <None Include="Src\Shaders\SpriteEffect.fx">
       <Filter>Source Files\Shaders</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="Src\Shaders\AlphaTestEffect.fx">
+    <None Include="Src\Shaders\AlphaTestEffect.fx">
       <Filter>Source Files\Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Src\Shaders\BasicEffect.fx">
+    </None>
+    <None Include="Src\Shaders\BasicEffect.fx">
       <Filter>Source Files\Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Src\Shaders\DGSLEffect.fx">
+    </None>
+    <None Include="Src\Shaders\DGSLEffect.fx">
       <Filter>Source Files\Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Src\Shaders\DGSLLambert.hlsl">
+    </None>
+    <None Include="Src\Shaders\DGSLLambert.hlsl">
       <Filter>Source Files\Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Src\Shaders\DGSLPhong.hlsl">
+    </None>
+    <None Include="Src\Shaders\DGSLPhong.hlsl">
       <Filter>Source Files\Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Src\Shaders\DGSLUnlit.hlsl">
+    </None>
+    <None Include="Src\Shaders\DGSLUnlit.hlsl">
       <Filter>Source Files\Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Src\Shaders\EnvironmentMapEffect.fx">
+    </None>
+    <None Include="Src\Shaders\DualTextureEffect.fx">
       <Filter>Source Files\Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Src\Shaders\DualTextureEffect.fx">
+    </None>
+    <None Include="Src\Shaders\EnvironmentMapEffect.fx">
       <Filter>Source Files\Shaders</Filter>
-    </FxCompile>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Readme.txt" />
