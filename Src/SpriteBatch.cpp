@@ -143,7 +143,12 @@ private:
     {
         ContextResources(_In_ ID3D11DeviceContext* deviceContext);
 
+#if defined(_XBOX_ONE) && defined(_TITLE)
+        ComPtr<ID3D11DeviceContextX> deviceContext;
+#else
         ComPtr<ID3D11DeviceContext> deviceContext;
+#endif
+
         ComPtr<ID3D11Buffer> vertexBuffer;
 
         ConstantBuffer<XMMATRIX> constantBuffer;
@@ -302,12 +307,17 @@ std::vector<short> SpriteBatch::Impl::DeviceResources::CreateIndexValues()
 
 
 // Per-context constructor.
-SpriteBatch::Impl::ContextResources::ContextResources(_In_ ID3D11DeviceContext* deviceContext)
-  : deviceContext(deviceContext),
-    constantBuffer(GetDevice(deviceContext).Get()),
+SpriteBatch::Impl::ContextResources::ContextResources(_In_ ID3D11DeviceContext* context)
+  :constantBuffer(GetDevice(context).Get()),
     vertexBufferPosition(0),
     inImmediateMode(false)
 {
+#if defined(_XBOX_ONE) && defined(_TITLE)
+    ThrowIfFailed(context->QueryInterface(IID_GRAPHICS_PPV_ARGS(deviceContext.GetAddressOf())));
+#else
+    deviceContext = context;
+#endif
+
     CreateVertexBuffer();
 }
 
@@ -315,6 +325,25 @@ SpriteBatch::Impl::ContextResources::ContextResources(_In_ ID3D11DeviceContext* 
 // Creates the SpriteBatch vertex buffer.
 void SpriteBatch::Impl::ContextResources::CreateVertexBuffer()
 {
+#if defined(_XBOX_ONE) && defined(_TITLE)
+    D3D11_BUFFER_DESC vertexBufferDesc = { 0 };
+
+    vertexBufferDesc.ByteWidth = sizeof(VertexPositionColorTexture) * MaxBatchSize * VerticesPerSprite;
+    vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+    auto device = GetDevice(deviceContext.Get());
+
+    ComPtr<ID3D11DeviceX> deviceX;
+    ThrowIfFailed(device.As(&deviceX));
+
+    ThrowIfFailed(
+        deviceX->CreatePlacementBuffer(&vertexBufferDesc, nullptr, &vertexBuffer)
+        );
+
+    SetDebugObjectName(vertexBuffer.Get(), "DirectXTK:SpriteBatch");
+#else
     D3D11_BUFFER_DESC vertexBufferDesc = { 0 };
 
     vertexBufferDesc.ByteWidth = sizeof(VertexPositionColorTexture) * MaxBatchSize * VerticesPerSprite;
@@ -327,6 +356,7 @@ void SpriteBatch::Impl::ContextResources::CreateVertexBuffer()
     );
 
     SetDebugObjectName(vertexBuffer.Get(), "DirectXTK:SpriteBatch");
+#endif
 }
 
 
@@ -522,11 +552,13 @@ void SpriteBatch::Impl::PrepareForRendering()
     deviceContext->PSSetShader(mDeviceResources->pixelShader.Get(), nullptr, 0);
 
     // Set the vertex and index buffer.
+#if !defined(_XBOX_ONE) || !defined(_TITLE)
     auto vertexBuffer = mContextResources->vertexBuffer.Get();
     UINT vertexStride = sizeof(VertexPositionColorTexture);
     UINT vertexOffset = 0;
 
     deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexStride, &vertexOffset);
+#endif
 
     deviceContext->IASetIndexBuffer(mDeviceResources->indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
 
@@ -535,11 +567,18 @@ void SpriteBatch::Impl::PrepareForRendering()
                                ? mTransformMatrix
                                : ( mTransformMatrix * GetViewportTransform(deviceContext, mRotation) );
 
+#if defined(_XBOX_ONE) && defined(_TITLE)
+    void* grfxMemory;
+    mContextResources->constantBuffer.SetData(deviceContext, transformMatrix, &grfxMemory);
+
+    deviceContext->VSSetPlacementConstantBuffer( 0, mContextResources->constantBuffer.GetBuffer(), grfxMemory );
+#else
     mContextResources->constantBuffer.SetData(deviceContext, transformMatrix);
 
     ID3D11Buffer* constantBuffer = mContextResources->constantBuffer.GetBuffer();
 
     deviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
+#endif
 
     // If this is a deferred D3D context, reset position so the first Map call will use D3D11_MAP_WRITE_DISCARD.
     if (deviceContext->GetType() == D3D11_DEVICE_CONTEXT_DEFERRED)
@@ -690,6 +729,11 @@ void SpriteBatch::Impl::RenderBatch(_In_ ID3D11ShaderResourceView* texture, _In_
             }
         }
 
+#if defined(_XBOX_ONE) && defined(_TITLE)
+        void *grfxMemory = GraphicsMemory::Get().Allocate(deviceContext, sizeof(VertexPositionColorTexture) * batchSize * VerticesPerSprite, 64);
+
+        auto vertices = static_cast<VertexPositionColorTexture*>(grfxMemory);
+#else
         // Lock the vertex buffer.
         D3D11_MAP mapType = (mContextResources->vertexBufferPosition == 0) ? D3D11_MAP_WRITE_DISCARD : D3D11_MAP_WRITE_NO_OVERWRITE;
 
@@ -700,6 +744,7 @@ void SpriteBatch::Impl::RenderBatch(_In_ ID3D11ShaderResourceView* texture, _In_
         );
 
         auto vertices = static_cast<VertexPositionColorTexture*>(mappedBuffer.pData) + mContextResources->vertexBufferPosition * VerticesPerSprite;
+#endif
 
         // Generate sprite vertex data.
         for (size_t i = 0; i < batchSize; i++)
@@ -711,7 +756,11 @@ void SpriteBatch::Impl::RenderBatch(_In_ ID3D11ShaderResourceView* texture, _In_
             vertices += VerticesPerSprite;
         }
 
+#if defined(_XBOX_ONE) && defined(_TITLE)
+        deviceContext->IASetPlacementVertexBuffer(0, mContextResources->vertexBuffer.Get(), grfxMemory, sizeof(VertexPositionColorTexture));
+#else
         deviceContext->Unmap(mContextResources->vertexBuffer.Get(), 0);
+#endif
 
         // Ok lads, the time has come for us draw ourselves some sprites!
         UINT startIndex = (UINT)mContextResources->vertexBufferPosition * IndicesPerSprite;
@@ -720,7 +769,9 @@ void SpriteBatch::Impl::RenderBatch(_In_ ID3D11ShaderResourceView* texture, _In_
         deviceContext->DrawIndexed(indexCount, startIndex, 0);
 
         // Advance the buffer position.
+#if !defined(_XBOX_ONE) || !defined(_TITLE)
         mContextResources->vertexBufferPosition += batchSize;
+#endif
 
         sprites += batchSize;
         count -= batchSize;

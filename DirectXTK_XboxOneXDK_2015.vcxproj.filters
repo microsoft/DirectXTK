@@ -110,6 +110,9 @@
     <ClInclude Include="Src\SharedResourcePool.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\GraphicsMemory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Audio\AudioEngine.cpp">
@@ -221,6 +224,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Src\XboxDDSTextureLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\GraphicsMemory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

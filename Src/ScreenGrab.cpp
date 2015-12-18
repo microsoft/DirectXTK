@@ -436,7 +436,11 @@ static HRESULT CaptureTexture( _In_ ID3D11DeviceContext* pContext,
         return HRESULT_FROM_WIN32( ERROR_NOT_SUPPORTED );
 
     ComPtr<ID3D11Texture2D> pTexture;
-    HRESULT hr = pSource->QueryInterface( __uuidof(ID3D11Texture2D), reinterpret_cast<void**>( pTexture.GetAddressOf() ) );
+#if defined(_XBOX_ONE) && defined(_TITLE)
+    HRESULT hr = pSource->QueryInterface(IID_GRAPHICS_PPV_ARGS(pTexture.GetAddressOf()));
+#else
+    HRESULT hr = pSource->QueryInterface(IID_PPV_ARGS(pTexture.GetAddressOf()));
+#endif
     if ( FAILED(hr) )
         return hr;
 
@@ -524,7 +528,7 @@ static HRESULT CaptureTexture( _In_ ID3D11DeviceContext* pContext,
             return hr;
 
         ComPtr<ID3D11DeviceContextX> d3dContextX;
-        hr = pContext->QueryInterface( __uuidof(ID3D11DeviceContextX), reinterpret_cast<void**>( d3dContextX.GetAddressOf() ) );
+        hr = pContext->QueryInterface(IID_GRAPHICS_PPV_ARGS(d3dContextX.GetAddressOf()));
         if ( FAILED(hr) )
             return hr;
 

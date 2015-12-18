@@ -128,6 +128,9 @@
     <ClCompile Include="Src\Mouse.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Src\GraphicsMemory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\AlignedNew.h">
@@ -221,6 +224,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Mouse.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\GraphicsMemory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

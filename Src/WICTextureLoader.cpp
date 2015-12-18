@@ -186,8 +186,7 @@ IWICImagingFactory* _GetWIC()
             CLSID_WICImagingFactory1,
             nullptr,
             CLSCTX_INPROC_SERVER,
-            __uuidof(IWICImagingFactory),
-            (LPVOID*)&s_Factory
+            IID_PPV_ARGS(&s_Factory)
             );
 
         if ( FAILED(hr) )
@@ -201,8 +200,7 @@ IWICImagingFactory* _GetWIC()
         CLSID_WICImagingFactory,
         nullptr,
         CLSCTX_INPROC_SERVER,
-        __uuidof(IWICImagingFactory),
-        (LPVOID*)&s_Factory
+        IID_PPV_ARGS(&s_Factory)
         );
 
     if ( FAILED(hr) )

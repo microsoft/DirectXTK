@@ -397,6 +397,46 @@ void DGSLEffect::Impl::Apply( _In_ ID3D11DeviceContext* deviceContext )
         dirtyFlags |= EffectDirtyFlags::ConstantBufferObject;
     }
 
+#if defined(_XBOX_ONE) && defined(_TITLE)
+    void* grfxMemoryMaterial;
+    mCBMaterial.SetData(deviceContext, constants.material, &grfxMemoryMaterial);
+
+    void* grfxMemoryLight;
+    mCBLight.SetData(deviceContext, constants.light, &grfxMemoryLight);
+
+    void* grfxMemoryObject;
+    mCBObject.SetData(deviceContext, constants.object, &grfxMemoryObject);
+
+    void *grfxMemoryMisc;
+    mCBMisc.SetData(deviceContext, constants.misc, &grfxMemoryMisc);
+
+    ComPtr<ID3D11DeviceContextX> deviceContextX;
+    ThrowIfFailed(deviceContext->QueryInterface(IID_GRAPHICS_PPV_ARGS(deviceContextX.GetAddressOf())));
+
+    auto buffer = mCBMaterial.GetBuffer();
+    deviceContextX->VSSetPlacementConstantBuffer( 0, buffer, grfxMemoryMaterial );
+    deviceContextX->PSSetPlacementConstantBuffer( 0, buffer, grfxMemoryMaterial );
+
+    buffer = mCBLight.GetBuffer();
+    deviceContextX->VSSetPlacementConstantBuffer( 1, buffer, grfxMemoryMaterial );
+    deviceContextX->PSSetPlacementConstantBuffer( 1, buffer, grfxMemoryMaterial );
+
+    buffer = mCBObject.GetBuffer();
+    deviceContextX->VSSetPlacementConstantBuffer( 2, buffer, grfxMemoryObject );
+    deviceContextX->PSSetPlacementConstantBuffer( 2, buffer, grfxMemoryObject );
+
+    buffer = mCBMisc.GetBuffer();
+    deviceContextX->VSSetPlacementConstantBuffer( 3, buffer, grfxMemoryMisc );
+    deviceContextX->PSSetPlacementConstantBuffer( 3, buffer, grfxMemoryMisc );
+
+    if ( weightsPerVertex > 0 )
+    {
+        void* grfxMemoryBone;
+        mCBBone.SetData(deviceContext, constants.bones, &grfxMemoryBone);
+
+        deviceContextX->VSSetPlacementConstantBuffer( 4, mCBBone.GetBuffer(), grfxMemoryBone );
+    }
+#else
     // Make sure the constant buffers are up to date.
     if (dirtyFlags & EffectDirtyFlags::ConstantBufferMaterial)
     {
@@ -448,6 +488,7 @@ void DGSLEffect::Impl::Apply( _In_ ID3D11DeviceContext* deviceContext )
         deviceContext->VSSetConstantBuffers( 0, 4, buffers );
         deviceContext->PSSetConstantBuffers( 0, 4, buffers );
     }
+#endif
 
     // Set the textures
     if ( textureEnabled )

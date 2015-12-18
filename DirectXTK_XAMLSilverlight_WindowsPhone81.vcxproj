@@ -29,6 +29,7 @@
     <ClInclude Include="Inc\Effects.h" />
     <ClInclude Include="Inc\GamePad.h" />
     <ClInclude Include="Inc\GeometricPrimitive.h" />
+    <ClInclude Include="Inc\GraphicsMemory.h" />
     <ClInclude Include="Inc\Keyboard.h" />
     <ClInclude Include="Inc\Model.h" />
     <ClInclude Include="Inc\Mouse.h" />
@@ -76,6 +77,7 @@
     <ClCompile Include="Src\EnvironmentMapEffect.cpp" />
     <ClCompile Include="Src\GamePad.cpp" />
     <ClCompile Include="Src\GeometricPrimitive.cpp" />
+    <ClCompile Include="Src\GraphicsMemory.cpp" />
     <ClCompile Include="Src\Keyboard.cpp" />
     <ClCompile Include="Src\Model.cpp" />
     <ClCompile Include="Src\ModelLoadCMO.cpp" />

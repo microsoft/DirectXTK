@@ -54,6 +54,7 @@
 #include <algorithm>
 #include <array>
 #include <exception>
+#include <list>
 #include <malloc.h>
 #include <map>
 #include <memory>

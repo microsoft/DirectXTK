@@ -191,6 +191,18 @@ namespace DirectX
             deviceContext->VSSetShader(vertexShader, nullptr, 0);
             deviceContext->PSSetShader(pixelShader, nullptr, 0);
 
+#if defined(_XBOX_ONE) && defined(_TITLE)
+            void *grfxMemory;
+            mConstantBuffer.SetData(deviceContext, constants, &grfxMemory);
+
+            Microsoft::WRL::ComPtr<ID3D11DeviceContextX> deviceContextX;
+            ThrowIfFailed(deviceContext->QueryInterface(IID_GRAPHICS_PPV_ARGS(deviceContextX.GetAddressOf())));
+
+            auto buffer = mConstantBuffer.GetBuffer();
+
+            deviceContextX->VSSetPlacementConstantBuffer(0, buffer, grfxMemory);
+            deviceContextX->PSSetPlacementConstantBuffer(0, buffer, grfxMemory);
+#else
             // Make sure the constant buffer is up to date.
             if (dirtyFlags & EffectDirtyFlags::ConstantBuffer)
             {
@@ -204,6 +216,7 @@ namespace DirectX
 
             deviceContext->VSSetConstantBuffers(0, 1, &buffer);
             deviceContext->PSSetConstantBuffers(0, 1, &buffer);
+#endif
         }
 
 

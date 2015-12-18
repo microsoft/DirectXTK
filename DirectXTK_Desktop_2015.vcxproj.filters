@@ -93,6 +93,9 @@
     <ClInclude Include="Inc\Mouse.h">
       <Filter>Inc</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\GraphicsMemory.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\CommonStates.cpp">
@@ -177,6 +180,9 @@
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="Src\Mouse.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\GraphicsMemory.cpp">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>
