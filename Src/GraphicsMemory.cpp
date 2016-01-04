@@ -275,6 +275,9 @@ GraphicsMemory::Impl* GraphicsMemory::Impl::s_graphicsMemory = nullptr;
 
 
 //--------------------------------------------------------------------------------------
+
+#pragma warning( disable : 4355 )
+
 // Public constructor.
 #if defined(_XBOX_ONE) && defined(_TITLE)
 GraphicsMemory::GraphicsMemory(_In_ ID3D11DeviceX* device, UINT backBufferCount)
