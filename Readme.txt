@@ -76,6 +76,7 @@ RELEASE HISTORY
 
 January 5, 2016
     Xbox One platform updates
+    *breaking change* Need to add use of GraphicsMemory class to Xbox One titles
     Minor code cleanup
 
 November 30, 2015
