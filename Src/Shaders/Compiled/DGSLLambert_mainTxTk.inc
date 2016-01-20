@@ -73,8 +73,8 @@
 
 // approximately 24 instruction slots used (1 texture, 23 arithmetic)
 ps_4_0
-dcl_constantbuffer cb0[1], immediateIndexed
-dcl_constantbuffer cb1[13], immediateIndexed
+dcl_constantbuffer CB0[1], immediateIndexed
+dcl_constantbuffer CB1[13], immediateIndexed
 dcl_sampler s0, mode_default
 dcl_resource_texture2d (float,float,float,float) t0
 dcl_input_ps linear v1.xyzw

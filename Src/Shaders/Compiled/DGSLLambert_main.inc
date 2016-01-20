@@ -58,8 +58,8 @@
 
 // approximately 19 instruction slots used
 ps_4_0
-dcl_constantbuffer cb0[1], immediateIndexed
-dcl_constantbuffer cb1[13], immediateIndexed
+dcl_constantbuffer CB0[1], immediateIndexed
+dcl_constantbuffer CB1[13], immediateIndexed
 dcl_input_ps linear v1.xyzw
 dcl_input_ps linear v3.xyz
 dcl_output o0.xyzw
