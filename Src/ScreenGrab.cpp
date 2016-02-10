@@ -44,6 +44,55 @@
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 
+namespace
+{
+    class auto_delete_file
+    {
+    public:
+        auto_delete_file(HANDLE hFile) : m_handle(hFile) {}
+        ~auto_delete_file()
+        {
+            if (m_handle)
+            {
+                FILE_DISPOSITION_INFO info = {0};
+                info.DeleteFileW = TRUE;
+                (void)SetFileInformationByHandle(m_handle, FileDispositionInfo, &info, sizeof(info));
+            }
+        }
+
+        void clear() { m_handle = 0; }
+
+    private:
+        HANDLE m_handle;
+
+        auto_delete_file(const auto_delete_file&) DIRECTX_CTOR_DELETE;
+        auto_delete_file& operator=(const auto_delete_file&) DIRECTX_CTOR_DELETE;
+    };
+
+    class auto_delete_file_wic
+    {
+    public:
+        auto_delete_file_wic(ComPtr<IWICStream>& hFile, LPCWSTR szFile) : m_handle(hFile), m_filename(szFile) {}
+        ~auto_delete_file_wic()
+        {
+            if (m_filename)
+            {
+                m_handle.Reset();
+                DeleteFileW(m_filename);
+            }
+        }
+
+        void clear() { m_filename = 0; }
+
+    private:
+        LPCWSTR m_filename;
+        ComPtr<IWICStream>& m_handle;
+
+        auto_delete_file_wic(const auto_delete_file_wic&) DIRECTX_CTOR_DELETE;
+        auto_delete_file_wic& operator=(const auto_delete_file_wic&) DIRECTX_CTOR_DELETE;
+    };
+}
+
 //--------------------------------------------------------------------------------------
 // Return the BPP for a particular format
 //--------------------------------------------------------------------------------------
@@ -562,12 +611,14 @@ HRESULT DirectX::SaveDDSTextureToFile( _In_ ID3D11DeviceContext* pContext,
 
     // Create file
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
-    ScopedHandle hFile( safe_handle( CreateFile2( fileName, GENERIC_WRITE, 0, CREATE_ALWAYS, 0 ) ) );
+    ScopedHandle hFile( safe_handle( CreateFile2( fileName, GENERIC_WRITE | DELETE, 0, CREATE_ALWAYS, 0 ) ) );
 #else
-    ScopedHandle hFile( safe_handle( CreateFileW( fileName, GENERIC_WRITE, 0, 0, CREATE_ALWAYS, 0, 0 ) ) );
+    ScopedHandle hFile( safe_handle( CreateFileW( fileName, GENERIC_WRITE | DELETE, 0, 0, CREATE_ALWAYS, 0, 0 ) ) );
 #endif
     if ( !hFile )
         return HRESULT_FROM_WIN32( GetLastError() );
+
+    auto_delete_file delonfail(hFile.get());
 
     // Setup header
     const size_t MAX_HEADER_SIZE = sizeof(uint32_t) + sizeof(DDS_HEADER) + sizeof(DDS_HEADER_DXT10);
@@ -699,6 +750,8 @@ HRESULT DirectX::SaveDDSTextureToFile( _In_ ID3D11DeviceContext* pContext,
     if ( bytesWritten != slicePitch )
         return E_FAIL;
 
+    delonfail.clear();
+
     return S_OK;
 }
 
@@ -788,6 +841,8 @@ HRESULT DirectX::SaveWICTextureToFile( _In_ ID3D11DeviceContext* pContext,
     hr = stream->InitializeFromFilename( fileName, GENERIC_WRITE );
     if ( FAILED(hr) )
         return hr;
+
+    auto_delete_file_wic delonfail(stream, fileName);
 
     ComPtr<IWICBitmapEncoder> encoder;
     hr = pWIC->CreateEncoder( guidContainerFormat, 0, encoder.GetAddressOf() );
@@ -1018,6 +1073,8 @@ HRESULT DirectX::SaveWICTextureToFile( _In_ ID3D11DeviceContext* pContext,
     hr = encoder->Commit();
     if ( FAILED(hr) )
         return hr;
+
+    delonfail.clear();
 
     return S_OK;
 }
