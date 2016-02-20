@@ -158,6 +158,9 @@
     <None Include="Src\Shaders\BasicEffect.fx">
       <Filter>Src\Shaders</Filter>
     </None>
+    <None Include="Src\TeapotData.inc">
+      <Filter>Src</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\AlphaTestEffect.cpp">

@@ -55,7 +55,7 @@ namespace
             if (m_handle)
             {
                 FILE_DISPOSITION_INFO info = {0};
-                info.DeleteFileW = TRUE;
+                info.DeleteFile = TRUE;
                 (void)SetFileInformationByHandle(m_handle, FileDispositionInfo, &info, sizeof(info));
             }
         }

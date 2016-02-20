@@ -66,6 +66,7 @@
     <None Include="Src\Shaders\Lighting.fxh" />
     <None Include="Src\Shaders\Structures.fxh" />
     <None Include="Src\sources" />
+    <None Include="Src\TeapotData.inc" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Audio\AudioEngine.cpp" />
