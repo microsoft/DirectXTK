@@ -338,7 +338,7 @@ XMVECTOR XM_CALLCONV SpriteFont::MeasureString(_In_z_ wchar_t const* text) const
 
     pImpl->ForEachGlyph(text, [&](Glyph const* glyph, float x, float y)
     {
-        float w = (float)(glyph->Subrect.right - glyph->Subrect.left);
+        float w = (float)(glyph->Subrect.right - glyph->Subrect.left) + glyph->XAdvance;
         float h = (float)(glyph->Subrect.bottom - glyph->Subrect.top) + glyph->YOffset;
 
         h = std::max(h, pImpl->lineSpacing);
