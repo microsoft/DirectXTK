@@ -69,6 +69,8 @@ namespace
         auto_delete_file& operator=(const auto_delete_file&) DIRECTX_CTOR_DELETE;
     };
 
+#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP) || (_WIN32_WINNT > _WIN32_WINNT_WIN8)
+
     class auto_delete_file_wic
     {
     public:
@@ -91,6 +93,8 @@ namespace
         auto_delete_file_wic(const auto_delete_file_wic&) DIRECTX_CTOR_DELETE;
         auto_delete_file_wic& operator=(const auto_delete_file_wic&) DIRECTX_CTOR_DELETE;
     };
+
+#endif
 }
 
 //--------------------------------------------------------------------------------------
