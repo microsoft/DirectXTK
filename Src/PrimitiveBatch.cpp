@@ -100,6 +100,8 @@ static void CreateBuffer(_In_ ID3D11Device* device, size_t bufferSize, D3D11_BIN
         device->CreateBuffer(&desc, nullptr, pBuffer)
     );
 
+    _Analysis_assume_(*pBuffer != 0);
+
     SetDebugObjectName(*pBuffer, "DirectXTK:PrimitiveBatch");
 }
 #endif

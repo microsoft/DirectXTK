@@ -95,6 +95,8 @@ void ModelMeshPart::CreateInputLayout( ID3D11Device* d3dDevice, IEffect* ieffect
                                      shaderByteCode, byteCodeLength,
                                      iinputLayout )
     );
+
+    _Analysis_assume_(*iinputLayout != 0);
 }
 
 

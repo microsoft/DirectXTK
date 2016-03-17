@@ -15,6 +15,7 @@
 *.tlog
 *.lastbuildstate
 *.ilk
+*.VC.db
 Bin
 /Src/Shaders/Compiled/XboxOne*.inc
 /ipch

@@ -439,6 +439,8 @@ void DGSLEffectFactory::Impl::CreatePixelShader( const WCHAR* name, ID3D11PixelS
         ThrowIfFailed(
             device->CreatePixelShader( data.get(), dataSize, nullptr, pixelShader ) );
 
+        _Analysis_assume_(*pixelShader != 0);
+
         if ( mSharing && *name && it == mShaderCache.end() )
         {   
             std::lock_guard<std::mutex> lock(mutex);

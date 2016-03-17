@@ -207,6 +207,8 @@ static void CreateInputLayout(_In_ ID3D11Device* device, IEffect* effect, _Out_ 
         );
     }
 
+    _Analysis_assume_(*pInputLayout != 0);
+
     SetDebugObjectName(*pInputLayout, "ModelCMO");
 }
 

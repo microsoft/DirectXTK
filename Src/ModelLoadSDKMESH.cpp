@@ -627,6 +627,8 @@ static void CreateInputLayout(_In_ ID3D11Device* device, _In_ IEffect* effect, s
                                   pInputLayout)
     );
 
+    _Analysis_assume_(*pInputLayout != 0);
+
     SetDebugObjectName(*pInputLayout, "ModelSDKMESH");
 }
 

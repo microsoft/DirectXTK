@@ -100,6 +100,8 @@ namespace
             device->CreateBuffer(&bufferDesc, &dataDesc, pBuffer)
         );
 
+        _Analysis_assume_(*pBuffer != 0);
+
         SetDebugObjectName(*pBuffer, "DirectXTK:GeometricPrimitive");
     }
 
@@ -120,6 +122,8 @@ namespace
                                       shaderByteCode, byteCodeLength,
                                       pInputLayout)
         );
+
+        _Analysis_assume_(*pInputLayout != 0);
 
         SetDebugObjectName(*pInputLayout, "DirectXTK:GeometricPrimitive");
     }
