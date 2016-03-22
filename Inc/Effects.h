@@ -19,32 +19,12 @@
 #include <d3d11_1.h>
 #endif
 
-// VS 2010/2012 do not support =default =delete
-#ifndef DIRECTX_CTOR_DEFAULT
-#if defined(_MSC_VER) && (_MSC_VER < 1800)
-#define DIRECTX_CTOR_DEFAULT {}
-#define DIRECTX_CTOR_DELETE ;
-#else
-#define DIRECTX_CTOR_DEFAULT =default;
-#define DIRECTX_CTOR_DELETE =delete;
-#endif
-#endif
-
 #include <DirectXMath.h>
 #include <memory>
 
-#pragma warning(push)
-#pragma warning(disable : 4481)
-// VS 2010 considers 'override' to be a extension, but it's part of C++11 as of VS 2012
 
 namespace DirectX
 {
-    #if (DIRECTX_MATH_VERSION < 305) && !defined(XM_CALLCONV)
-    #define XM_CALLCONV __fastcall
-    typedef const XMVECTOR& HXMVECTOR;
-    typedef const XMMATRIX& FXMMATRIX;
-    #endif
-
     //----------------------------------------------------------------------------------
     // Abstract interface representing any effect which can be applied onto a D3D device context.
     class IEffect
@@ -126,6 +106,10 @@ namespace DirectX
         explicit BasicEffect(_In_ ID3D11Device* device);
         BasicEffect(BasicEffect&& moveFrom);
         BasicEffect& operator= (BasicEffect&& moveFrom);
+
+        BasicEffect(BasicEffect const&) = delete;
+        BasicEffect& operator= (BasicEffect const&) = delete;
+
         virtual ~BasicEffect();
 
         // IEffect methods.
@@ -176,10 +160,6 @@ namespace DirectX
         class Impl;
 
         std::unique_ptr<Impl> pImpl;
-
-        // Prevent copying.
-        BasicEffect(BasicEffect const&) DIRECTX_CTOR_DELETE
-        BasicEffect& operator= (BasicEffect const&) DIRECTX_CTOR_DELETE
     };
 
 
@@ -191,6 +171,10 @@ namespace DirectX
         explicit AlphaTestEffect(_In_ ID3D11Device* device);
         AlphaTestEffect(AlphaTestEffect&& moveFrom);
         AlphaTestEffect& operator= (AlphaTestEffect&& moveFrom);
+
+        AlphaTestEffect(AlphaTestEffect const&) = delete;
+        AlphaTestEffect& operator= (AlphaTestEffect const&) = delete;
+
         virtual ~AlphaTestEffect();
 
         // IEffect methods.
@@ -228,10 +212,6 @@ namespace DirectX
         class Impl;
 
         std::unique_ptr<Impl> pImpl;
-
-        // Prevent copying.
-        AlphaTestEffect(AlphaTestEffect const&) DIRECTX_CTOR_DELETE
-        AlphaTestEffect& operator= (AlphaTestEffect const&) DIRECTX_CTOR_DELETE
     };
 
 
@@ -243,6 +223,10 @@ namespace DirectX
         explicit DualTextureEffect(_In_ ID3D11Device* device);
         DualTextureEffect(DualTextureEffect&& moveFrom);
         DualTextureEffect& operator= (DualTextureEffect&& moveFrom);
+
+        DualTextureEffect(DualTextureEffect const&) = delete;
+        DualTextureEffect& operator= (DualTextureEffect const&) = delete;
+
         ~DualTextureEffect();
 
         // IEffect methods.
@@ -277,10 +261,6 @@ namespace DirectX
         class Impl;
 
         std::unique_ptr<Impl> pImpl;
-
-        // Prevent copying.
-        DualTextureEffect(DualTextureEffect const&) DIRECTX_CTOR_DELETE
-        DualTextureEffect& operator= (DualTextureEffect const&) DIRECTX_CTOR_DELETE
     };
 
 
@@ -292,6 +272,10 @@ namespace DirectX
         explicit EnvironmentMapEffect(_In_ ID3D11Device* device);
         EnvironmentMapEffect(EnvironmentMapEffect&& moveFrom);
         EnvironmentMapEffect& operator= (EnvironmentMapEffect&& moveFrom);
+
+        EnvironmentMapEffect(EnvironmentMapEffect const&) = delete;
+        EnvironmentMapEffect& operator= (EnvironmentMapEffect const&) = delete;
+
         virtual ~EnvironmentMapEffect();
 
         // IEffect methods.
@@ -343,10 +327,6 @@ namespace DirectX
         void __cdecl SetLightingEnabled(bool value) override;
         void __cdecl SetPerPixelLighting(bool value) override;
         void XM_CALLCONV SetLightSpecularColor(int whichLight, FXMVECTOR value) override;
-
-        // Prevent copying.
-        EnvironmentMapEffect(EnvironmentMapEffect const&) DIRECTX_CTOR_DELETE
-        EnvironmentMapEffect& operator= (EnvironmentMapEffect const&) DIRECTX_CTOR_DELETE
     };
 
 
@@ -358,6 +338,10 @@ namespace DirectX
         explicit SkinnedEffect(_In_ ID3D11Device* device);
         SkinnedEffect(SkinnedEffect&& moveFrom);
         SkinnedEffect& operator= (SkinnedEffect&& moveFrom);
+
+        SkinnedEffect(SkinnedEffect const&) = delete;
+        SkinnedEffect& operator= (SkinnedEffect const&) = delete;
+
         virtual ~SkinnedEffect();
 
         // IEffect methods.
@@ -411,10 +395,6 @@ namespace DirectX
 
         // Unsupported interface method.
         void __cdecl SetLightingEnabled(bool value) override;
-
-        // Prevent copying.
-        SkinnedEffect(SkinnedEffect const&) DIRECTX_CTOR_DELETE
-        SkinnedEffect& operator= (SkinnedEffect const&) DIRECTX_CTOR_DELETE
     };
 
     
@@ -428,6 +408,10 @@ namespace DirectX
                              _In_ bool enableSkinning = false );
         DGSLEffect(DGSLEffect&& moveFrom);
         DGSLEffect& operator= (DGSLEffect&& moveFrom);
+
+        DGSLEffect(DGSLEffect const&) = delete;
+        DGSLEffect& operator= (DGSLEffect const&) = delete;
+
         virtual ~DGSLEffect();
 
         // IEffect methods.
@@ -492,10 +476,6 @@ namespace DirectX
 
         // Unsupported interface methods.
         void __cdecl SetPerPixelLighting(bool value) override;
-
-        // Prevent copying.
-        DGSLEffect(DGSLEffect const&) DIRECTX_CTOR_DELETE
-        DGSLEffect& operator= (DGSLEffect const&) DIRECTX_CTOR_DELETE
     };
 
 
@@ -538,6 +518,10 @@ namespace DirectX
         explicit EffectFactory(_In_ ID3D11Device* device);
         EffectFactory(EffectFactory&& moveFrom);
         EffectFactory& operator= (EffectFactory&& moveFrom);
+
+        EffectFactory(EffectFactory const&) = delete;
+        EffectFactory& operator= (EffectFactory const&) = delete;
+
         virtual ~EffectFactory();
 
         // IEffectFactory methods.
@@ -556,10 +540,6 @@ namespace DirectX
         class Impl;
 
         std::shared_ptr<Impl> pImpl;
-
-        // Prevent copying.
-        EffectFactory(EffectFactory const&) DIRECTX_CTOR_DELETE
-        EffectFactory& operator= (EffectFactory const&) DIRECTX_CTOR_DELETE
     };
 
 
@@ -570,6 +550,10 @@ namespace DirectX
         explicit DGSLEffectFactory(_In_ ID3D11Device* device);
         DGSLEffectFactory(DGSLEffectFactory&& moveFrom);
         DGSLEffectFactory& operator= (DGSLEffectFactory&& moveFrom);
+
+        DGSLEffectFactory(DGSLEffectFactory const&) = delete;
+        DGSLEffectFactory& operator= (DGSLEffectFactory const&) = delete;
+
         virtual ~DGSLEffectFactory();
 
         // IEffectFactory methods.
@@ -601,12 +585,6 @@ namespace DirectX
         class Impl;
 
         std::shared_ptr<Impl> pImpl;
-
-        // Prevent copying.
-        DGSLEffectFactory(DGSLEffectFactory const&) DIRECTX_CTOR_DELETE
-        DGSLEffectFactory& operator= (DGSLEffectFactory const&) DIRECTX_CTOR_DELETE
     };
 
 }
-
-#pragma warning(pop)

@@ -33,6 +33,8 @@ namespace DirectX
           : mResourceMap(std::make_shared<ResourceMap>())
         { }
 
+        SharedResourcePool(SharedResourcePool const&) = delete;
+        SharedResourcePool& operator= (SharedResourcePool const&) = delete;
 
         // Allocates or looks up the shared TData instance for the specified key.
         std::shared_ptr<TData> DemandCreate(TKey key)
@@ -99,10 +101,5 @@ namespace DirectX
             TKey mKey;
             std::shared_ptr<ResourceMap> mResourceMap;
         };
-
-
-        // Prevent copying.
-        SharedResourcePool(SharedResourcePool const&) DIRECTX_CTOR_DELETE
-        SharedResourcePool& operator= (SharedResourcePool const&) DIRECTX_CTOR_DELETE
     };
 }

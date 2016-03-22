@@ -29,11 +29,7 @@
 
 #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP) || (_WIN32_WINNT > _WIN32_WINNT_WIN8)
 
-// VS 2010's stdint.h conflicts with intsafe.h
-#pragma warning(push)
-#pragma warning(disable : 4005)
 #include <wincodec.h>
-#pragma warning(pop)
 #endif
 
 #include "ScreenGrab.h"
@@ -50,6 +46,10 @@ namespace
     {
     public:
         auto_delete_file(HANDLE hFile) : m_handle(hFile) {}
+
+        auto_delete_file(const auto_delete_file&) = delete;
+        auto_delete_file& operator=(const auto_delete_file&) = delete;
+
         ~auto_delete_file()
         {
             if (m_handle)
@@ -64,9 +64,6 @@ namespace
 
     private:
         HANDLE m_handle;
-
-        auto_delete_file(const auto_delete_file&) DIRECTX_CTOR_DELETE;
-        auto_delete_file& operator=(const auto_delete_file&) DIRECTX_CTOR_DELETE;
     };
 
 #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP) || (_WIN32_WINNT > _WIN32_WINNT_WIN8)
@@ -75,6 +72,10 @@ namespace
     {
     public:
         auto_delete_file_wic(ComPtr<IWICStream>& hFile, LPCWSTR szFile) : m_handle(hFile), m_filename(szFile) {}
+
+        auto_delete_file_wic(const auto_delete_file_wic&) = delete;
+        auto_delete_file_wic& operator=(const auto_delete_file_wic&) = delete;
+
         ~auto_delete_file_wic()
         {
             if (m_filename)
@@ -89,9 +90,6 @@ namespace
     private:
         LPCWSTR m_filename;
         ComPtr<IWICStream>& m_handle;
-
-        auto_delete_file_wic(const auto_delete_file_wic&) DIRECTX_CTOR_DELETE;
-        auto_delete_file_wic& operator=(const auto_delete_file_wic&) DIRECTX_CTOR_DELETE;
     };
 
 #endif

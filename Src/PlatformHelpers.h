@@ -13,7 +13,7 @@
 
 #pragma once
 
-#pragma warning(disable : 4324 4481)
+#pragma warning(disable : 4324)
 
 #include <exception>
 #include <memory>

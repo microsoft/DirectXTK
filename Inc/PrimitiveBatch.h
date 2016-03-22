@@ -19,24 +19,9 @@
 #include <d3d11_1.h>
 #endif
 
-// VS 2010/2012 do not support =default =delete
-#ifndef DIRECTX_CTOR_DEFAULT
-#if defined(_MSC_VER) && (_MSC_VER < 1800)
-#define DIRECTX_CTOR_DEFAULT {}
-#define DIRECTX_CTOR_DELETE ;
-#else
-#define DIRECTX_CTOR_DEFAULT =default;
-#define DIRECTX_CTOR_DELETE =delete;
-#endif
-#endif
-
 #include <memory.h>
 #include <memory>
-
-#pragma warning(push)
-#pragma warning(disable: 4005)
 #include <stdint.h>
-#pragma warning(pop)
 
 
 namespace DirectX
@@ -50,6 +35,10 @@ namespace DirectX
             PrimitiveBatchBase(_In_ ID3D11DeviceContext* deviceContext, size_t maxIndices, size_t maxVertices, size_t vertexSize);
             PrimitiveBatchBase(PrimitiveBatchBase&& moveFrom);
             PrimitiveBatchBase& operator= (PrimitiveBatchBase&& moveFrom);
+
+            PrimitiveBatchBase(PrimitiveBatchBase const&) = delete;
+            PrimitiveBatchBase& operator= (PrimitiveBatchBase const&) = delete;
+
             virtual ~PrimitiveBatchBase();
 
         public:
@@ -66,10 +55,6 @@ namespace DirectX
             class Impl;
 
             std::unique_ptr<Impl> pImpl;
-
-            // Prevent copying.
-            PrimitiveBatchBase(PrimitiveBatchBase const&) DIRECTX_CTOR_DELETE
-            PrimitiveBatchBase& operator= (PrimitiveBatchBase const&) DIRECTX_CTOR_DELETE
         };
     }
 

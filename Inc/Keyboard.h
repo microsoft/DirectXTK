@@ -13,23 +13,8 @@
 
 #pragma once
 
-// VS 2010/2012 do not support =default =delete
-#ifndef DIRECTX_CTOR_DEFAULT
-#if defined(_MSC_VER) && (_MSC_VER < 1800)
-#define DIRECTX_CTOR_DEFAULT {}
-#define DIRECTX_CTOR_DELETE ;
-#else
-#define DIRECTX_CTOR_DEFAULT =default;
-#define DIRECTX_CTOR_DELETE =delete;
-#endif
-#endif
-
-#pragma warning(push)
-#pragma warning(disable : 4005)
-#include <stdint.h>
-#pragma warning(pop)
-
 #include <memory>
+#include <stdint.h>
 
 #if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
 namespace ABI { namespace Windows { namespace UI { namespace Core { struct ICoreWindow; } } } }
@@ -44,6 +29,10 @@ namespace DirectX
         Keyboard();
         Keyboard(Keyboard&& moveFrom);
         Keyboard& operator= (Keyboard&& moveFrom);
+
+        Keyboard(Keyboard const&) = delete;
+        Keyboard& operator=(Keyboard const&) = delete;
+
         virtual ~Keyboard();
 
         enum Keys
@@ -484,9 +473,5 @@ namespace DirectX
         class Impl;
 
         std::unique_ptr<Impl> pImpl;
-
-        // Prevent copying.
-        Keyboard(Keyboard const&) DIRECTX_CTOR_DELETE
-        Keyboard& operator=(Keyboard const&) DIRECTX_CTOR_DELETE
     };
 }

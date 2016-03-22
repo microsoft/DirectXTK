@@ -26,12 +26,14 @@ namespace DirectX
     {
     public:
         // Constructor.
-        ConstantBuffer() DIRECTX_CTOR_DEFAULT
+        ConstantBuffer() = default;
         explicit ConstantBuffer(_In_ ID3D11Device* device)
         {
             Create( device );
         }
 
+        ConstantBuffer(ConstantBuffer const&) = delete;
+        ConstantBuffer& operator= (ConstantBuffer const&) = delete;
 
         #if defined(_XBOX_ONE) && defined(_TITLE)
         void Create(_In_ ID3D11Device* device)
@@ -109,10 +111,5 @@ namespace DirectX
     private:
         // The underlying D3D object.
         Microsoft::WRL::ComPtr<ID3D11Buffer> mConstantBuffer;
-        
-        
-        // Prevent copying.
-        ConstantBuffer(ConstantBuffer const&) DIRECTX_CTOR_DELETE
-        ConstantBuffer& operator= (ConstantBuffer const&) DIRECTX_CTOR_DELETE
     };
 }

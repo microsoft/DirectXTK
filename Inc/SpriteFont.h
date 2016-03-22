@@ -15,17 +15,6 @@
 
 #include "SpriteBatch.h"
 
-// VS 2010/2012 do not support =default =delete
-#ifndef DIRECTX_CTOR_DEFAULT
-#if defined(_MSC_VER) && (_MSC_VER < 1800)
-#define DIRECTX_CTOR_DEFAULT {}
-#define DIRECTX_CTOR_DELETE ;
-#else
-#define DIRECTX_CTOR_DEFAULT =default;
-#define DIRECTX_CTOR_DELETE =delete;
-#endif
-#endif
-
 
 namespace DirectX
 {
@@ -40,6 +29,10 @@ namespace DirectX
 
         SpriteFont(SpriteFont&& moveFrom);
         SpriteFont& operator= (SpriteFont&& moveFrom);
+
+        SpriteFont(SpriteFont const&) = delete;
+        SpriteFont& operator= (SpriteFont const&) = delete;
+
         virtual ~SpriteFont();
 
         void XM_CALLCONV DrawString(_In_ SpriteBatch* spriteBatch, _In_z_ wchar_t const* text, XMFLOAT2 const& position, FXMVECTOR color = Colors::White, float rotation = 0, XMFLOAT2 const& origin = Float2Zero, float scale = 1, SpriteEffects effects = SpriteEffects_None, float layerDepth = 0) const;
@@ -81,9 +74,5 @@ namespace DirectX
         std::unique_ptr<Impl> pImpl;
 
         static const XMFLOAT2 Float2Zero;
-
-        // Prevent copying.
-        SpriteFont(SpriteFont const&) DIRECTX_CTOR_DELETE
-        SpriteFont& operator= (SpriteFont const&) DIRECTX_CTOR_DELETE
     };
 }

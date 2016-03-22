@@ -19,32 +19,15 @@
 #include <d3d11_1.h>
 #endif
 
-// VS 2010/2012 do not support =default =delete
-#ifndef DIRECTX_CTOR_DEFAULT
-#if defined(_MSC_VER) && (_MSC_VER < 1800)
-#define DIRECTX_CTOR_DEFAULT {}
-#define DIRECTX_CTOR_DELETE ;
-#else
-#define DIRECTX_CTOR_DEFAULT =default;
-#define DIRECTX_CTOR_DELETE =delete;
-#endif
-#endif
-
 #include <DirectXMath.h>
 
 
 namespace DirectX
 {
-    #if (DIRECTX_MATH_VERSION < 305) && !defined(XM_CALLCONV)
-    #define XM_CALLCONV __fastcall
-    typedef const XMVECTOR& HXMVECTOR;
-    typedef const XMMATRIX& FXMMATRIX;
-    #endif
-
     // Vertex struct holding position and color information.
     struct VertexPositionColor
     {
-        VertexPositionColor() DIRECTX_CTOR_DEFAULT
+        VertexPositionColor() = default;
 
         VertexPositionColor(XMFLOAT3 const& position, XMFLOAT4 const& color)
           : position(position),
@@ -68,7 +51,7 @@ namespace DirectX
     // Vertex struct holding position and texture mapping information.
     struct VertexPositionTexture
     {
-        VertexPositionTexture() DIRECTX_CTOR_DEFAULT
+        VertexPositionTexture() = default;
 
         VertexPositionTexture(XMFLOAT3 const& position, XMFLOAT2 const& textureCoordinate)
           : position(position),
@@ -92,7 +75,7 @@ namespace DirectX
     // Vertex struct holding position and normal vector.
     struct VertexPositionNormal
     {
-        VertexPositionNormal() DIRECTX_CTOR_DEFAULT
+        VertexPositionNormal() = default;
 
         VertexPositionNormal(XMFLOAT3 const& position, XMFLOAT3 const& normal)
           : position(position),
@@ -116,7 +99,7 @@ namespace DirectX
     // Vertex struct holding position, color, and texture mapping information.
     struct VertexPositionColorTexture
     {
-        VertexPositionColorTexture() DIRECTX_CTOR_DEFAULT
+        VertexPositionColorTexture() = default;
 
         VertexPositionColorTexture(XMFLOAT3 const& position, XMFLOAT4 const& color, XMFLOAT2 const& textureCoordinate)
           : position(position),
@@ -143,7 +126,7 @@ namespace DirectX
     // Vertex struct holding position, normal vector, and color information.
     struct VertexPositionNormalColor
     {
-        VertexPositionNormalColor() DIRECTX_CTOR_DEFAULT
+        VertexPositionNormalColor() = default;
 
         VertexPositionNormalColor(XMFLOAT3 const& position, XMFLOAT3 const& normal, XMFLOAT4 const& color)
           : position(position),
@@ -170,7 +153,7 @@ namespace DirectX
     // Vertex struct holding position, normal vector, and texture mapping information.
     struct VertexPositionNormalTexture
     {
-        VertexPositionNormalTexture() DIRECTX_CTOR_DEFAULT
+        VertexPositionNormalTexture() = default;
 
         VertexPositionNormalTexture(XMFLOAT3 const& position, XMFLOAT3 const& normal, XMFLOAT2 const& textureCoordinate)
           : position(position),
@@ -197,7 +180,7 @@ namespace DirectX
     // Vertex struct holding position, normal vector, color, and texture mapping information.
     struct VertexPositionNormalColorTexture
     {
-        VertexPositionNormalColorTexture() DIRECTX_CTOR_DEFAULT
+        VertexPositionNormalColorTexture() = default;
 
         VertexPositionNormalColorTexture(XMFLOAT3 const& position, XMFLOAT3 const& normal, XMFLOAT4 const& color, XMFLOAT2 const& textureCoordinate)
           : position(position),
@@ -228,7 +211,7 @@ namespace DirectX
     // tangent, color (RGBA), and texture mapping information
     struct VertexPositionNormalTangentColorTexture
     {
-        VertexPositionNormalTangentColorTexture() DIRECTX_CTOR_DEFAULT
+        VertexPositionNormalTangentColorTexture() = default;
 
         XMFLOAT3 position;
         XMFLOAT3 normal;
@@ -285,7 +268,7 @@ namespace DirectX
     // tangent, color (RGBA), texture mapping information, and skinning weights
     struct VertexPositionNormalTangentColorTextureSkinning : public VertexPositionNormalTangentColorTexture
     {
-        VertexPositionNormalTangentColorTextureSkinning() DIRECTX_CTOR_DEFAULT
+        VertexPositionNormalTangentColorTextureSkinning() = default;
 
         uint32_t indices;
         uint32_t weights;

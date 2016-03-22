@@ -25,24 +25,8 @@
 #endif
 #endif
 
-// VS 2010/2012 do not support =default =delete
-#ifndef DIRECTX_CTOR_DEFAULT
-#if defined(_MSC_VER) && (_MSC_VER < 1800)
-#define DIRECTX_CTOR_DEFAULT {}
-#define DIRECTX_CTOR_DELETE ;
-#else
-#define DIRECTX_CTOR_DEFAULT =default;
-#define DIRECTX_CTOR_DELETE =delete;
-#endif
-#endif
-
 #include <memory>
-
-#pragma warning(push)
-#pragma warning(disable : 4005)
 #include <stdint.h>
-#include <intsafe.h>
-#pragma warning(pop)
 
 
 namespace DirectX
@@ -53,6 +37,10 @@ namespace DirectX
         GamePad();
         GamePad(GamePad&& moveFrom);
         GamePad& operator= (GamePad&& moveFrom);
+
+        GamePad(GamePad const&) = delete;
+        GamePad& operator=(GamePad const&) = delete;
+
         virtual ~GamePad();
 
 #if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/ ) || defined(_XBOX_ONE)
@@ -236,9 +224,5 @@ namespace DirectX
         class Impl;
 
         std::unique_ptr<Impl> pImpl;
-
-        // Prevent copying.
-        GamePad(GamePad const&) DIRECTX_CTOR_DELETE
-        GamePad& operator=(GamePad const&) DIRECTX_CTOR_DELETE
     };
 }

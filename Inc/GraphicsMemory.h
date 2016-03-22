@@ -19,17 +19,6 @@
 #include <d3d11_1.h>
 #endif
 
-// VS 2010/2012 do not support =default =delete
-#ifndef DIRECTX_CTOR_DEFAULT
-#if defined(_MSC_VER) && (_MSC_VER < 1800)
-#define DIRECTX_CTOR_DEFAULT {}
-#define DIRECTX_CTOR_DELETE ;
-#else
-#define DIRECTX_CTOR_DEFAULT =default;
-#define DIRECTX_CTOR_DELETE =delete;
-#endif
-#endif
-
 #include <memory>
 
 
@@ -45,6 +34,10 @@ namespace DirectX
         #endif
         GraphicsMemory(GraphicsMemory&& moveFrom);
         GraphicsMemory& operator= (GraphicsMemory&& moveFrom);
+
+        GraphicsMemory(GraphicsMemory const&) = delete;
+        GraphicsMemory& operator=(GraphicsMemory const&) = delete;
+
         virtual ~GraphicsMemory();
 
         void* __cdecl Allocate(_In_opt_ ID3D11DeviceContext* context, size_t size, int alignment);
@@ -59,9 +52,5 @@ namespace DirectX
         class Impl;
 
         std::unique_ptr<Impl> pImpl;
-
-        // Prevent copying.
-        GraphicsMemory(GraphicsMemory const&) DIRECTX_CTOR_DELETE
-        GraphicsMemory& operator=(GraphicsMemory const&) DIRECTX_CTOR_DELETE
     };
 }

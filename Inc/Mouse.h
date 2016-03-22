@@ -13,17 +13,6 @@
 
 #pragma once
 
-// VS 2010/2012 do not support =default =delete
-#ifndef DIRECTX_CTOR_DEFAULT
-#if defined(_MSC_VER) && (_MSC_VER < 1800)
-#define DIRECTX_CTOR_DEFAULT {}
-#define DIRECTX_CTOR_DELETE ;
-#else
-#define DIRECTX_CTOR_DEFAULT =default;
-#define DIRECTX_CTOR_DELETE =delete;
-#endif
-#endif
-
 #include <memory>
 
 #if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
@@ -39,6 +28,10 @@ namespace DirectX
         Mouse();
         Mouse(Mouse&& moveFrom);
         Mouse& operator= (Mouse&& moveFrom);
+
+        Mouse(Mouse const&) = delete;
+        Mouse& operator=(Mouse const&) = delete;
+
         virtual ~Mouse();
 
         enum Mode
@@ -121,9 +114,5 @@ namespace DirectX
         class Impl;
 
         std::unique_ptr<Impl> pImpl;
-
-        // Prevent copying.
-        Mouse(Mouse const&) DIRECTX_CTOR_DELETE
-        Mouse& operator=(Mouse const&) DIRECTX_CTOR_DELETE
     };
 }

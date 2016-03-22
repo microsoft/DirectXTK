@@ -15,11 +15,7 @@
 
 #pragma once
 
-#pragma warning(push)
-#pragma warning(disable : 4005)
 #include <stdint.h>
-#pragma warning(pop)
-
 #include <objbase.h>
 #include <memory>
 #include <mmreg.h>
@@ -31,6 +27,10 @@ namespace DirectX
     {
     public:
         WaveBankReader();
+
+        WaveBankReader(WaveBankReader const&) = delete;
+        WaveBankReader& operator= (WaveBankReader const&) = delete;
+
         ~WaveBankReader();
 
         HRESULT Open( _In_z_ const wchar_t* szFileName );
@@ -76,9 +76,5 @@ namespace DirectX
         class Impl;
 
         std::unique_ptr<Impl> pImpl;
-
-        // Prevent copying.
-        WaveBankReader(WaveBankReader const&) DIRECTX_CTOR_DELETE
-        WaveBankReader& operator= (WaveBankReader const&) DIRECTX_CTOR_DELETE
     };
 }

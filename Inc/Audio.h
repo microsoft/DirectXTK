@@ -57,48 +57,14 @@
 
 #include <DirectXMath.h>
 
-#pragma warning(push)
-#pragma warning(disable : 4005)
 #include <stdint.h>
-#pragma warning(pop)
-
 #include <functional>
 #include <memory>
 #include <string>
 #include <vector>
 
-// VS 2010 doesn't support explicit calling convention for std::function
-#ifndef DIRECTX_STD_CALLCONV
-#if defined(_MSC_VER) && (_MSC_VER < 1700)
-#define DIRECTX_STD_CALLCONV
-#else
-#define DIRECTX_STD_CALLCONV __cdecl
-#endif
-#endif
-
-// VS 2010/2012 do not support =default =delete
-#ifndef DIRECTX_CTOR_DEFAULT
-#if defined(_MSC_VER) && (_MSC_VER < 1800)
-#define DIRECTX_CTOR_DEFAULT {}
-#define DIRECTX_CTOR_DELETE ;
-#else
-#define DIRECTX_CTOR_DEFAULT =default;
-#define DIRECTX_CTOR_DELETE =delete;
-#endif
-#endif
-
-#pragma warning(push)
-#pragma warning(disable : 4481)
-// VS 2010 considers 'override' to be a extension, but it's part of C++11 as of VS 2012
-
 namespace DirectX
 {
-    #if (DIRECTX_MATH_VERSION < 305) && !defined(XM_CALLCONV)
-    #define XM_CALLCONV __fastcall
-    typedef const XMVECTOR& HXMVECTOR;
-    typedef const XMMATRIX& FXMMATRIX;
-    #endif
-
     class SoundEffectInstance;
 
     //----------------------------------------------------------------------------------
@@ -227,6 +193,10 @@ namespace DirectX
 
         AudioEngine(AudioEngine&& moveFrom);
         AudioEngine& operator= (AudioEngine&& moveFrom);
+
+        AudioEngine(AudioEngine const&) = delete;
+        AudioEngine& operator= (AudioEngine const&) = delete;
+
         virtual ~AudioEngine();
 
         bool __cdecl Update();
@@ -310,10 +280,6 @@ namespace DirectX
         // Private implementation.
         class Impl;
         std::unique_ptr<Impl> pImpl;
-
-        // Prevent copying.
-        AudioEngine(AudioEngine const&) DIRECTX_CTOR_DELETE
-        AudioEngine& operator= (AudioEngine const&) DIRECTX_CTOR_DELETE
     };
 
 
@@ -325,6 +291,10 @@ namespace DirectX
 
         WaveBank(WaveBank&& moveFrom);
         WaveBank& operator= (WaveBank&& moveFrom);
+
+        WaveBank(WaveBank const&) = delete;
+        WaveBank& operator= (WaveBank const&) = delete;
+
         virtual ~WaveBank();
 
         void __cdecl Play( int index );
@@ -365,10 +335,6 @@ namespace DirectX
 
         std::unique_ptr<Impl> pImpl;
 
-        // Prevent copying.
-        WaveBank(WaveBank const&) DIRECTX_CTOR_DELETE
-        WaveBank& operator= (WaveBank const&) DIRECTX_CTOR_DELETE
-
         // Private interface
         void __cdecl UnregisterInstance( _In_ SoundEffectInstance* instance );
 
@@ -399,6 +365,10 @@ namespace DirectX
 
         SoundEffect(SoundEffect&& moveFrom);
         SoundEffect& operator= (SoundEffect&& moveFrom);
+
+        SoundEffect(SoundEffect const&) = delete;
+        SoundEffect& operator= (SoundEffect const&) = delete;
+
         virtual ~SoundEffect();
 
         void __cdecl Play();
@@ -430,10 +400,6 @@ namespace DirectX
         class Impl;
 
         std::unique_ptr<Impl> pImpl;
-
-        // Prevent copying.
-        SoundEffect(SoundEffect const&) DIRECTX_CTOR_DELETE
-        SoundEffect& operator= (SoundEffect const&) DIRECTX_CTOR_DELETE
 
         // Private interface
         void __cdecl UnregisterInstance( _In_ SoundEffectInstance* instance );
@@ -623,6 +589,10 @@ namespace DirectX
     public:
         SoundEffectInstance(SoundEffectInstance&& moveFrom);
         SoundEffectInstance& operator= (SoundEffectInstance&& moveFrom);
+
+        SoundEffectInstance(SoundEffectInstance const&) = delete;
+        SoundEffectInstance& operator= (SoundEffectInstance const&) = delete;
+
         virtual ~SoundEffectInstance();
 
         void __cdecl Play( bool loop = false );
@@ -655,10 +625,6 @@ namespace DirectX
 
         friend std::unique_ptr<SoundEffectInstance> __cdecl SoundEffect::CreateInstance( SOUND_EFFECT_INSTANCE_FLAGS );
         friend std::unique_ptr<SoundEffectInstance> __cdecl WaveBank::CreateInstance( int, SOUND_EFFECT_INSTANCE_FLAGS );
-
-        // Prevent copying.
-        SoundEffectInstance(SoundEffectInstance const&) DIRECTX_CTOR_DELETE
-        SoundEffectInstance& operator= (SoundEffectInstance const&) DIRECTX_CTOR_DELETE
     };
 
 
@@ -667,11 +633,15 @@ namespace DirectX
     {
     public:
         DynamicSoundEffectInstance( _In_ AudioEngine* engine,
-                                    _In_opt_ std::function<void DIRECTX_STD_CALLCONV(DynamicSoundEffectInstance*)> bufferNeeded,
+                                    _In_opt_ std::function<void __cdecl(DynamicSoundEffectInstance*)> bufferNeeded,
                                     int sampleRate, int channels, int sampleBits = 16,
                                     SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default );
         DynamicSoundEffectInstance(DynamicSoundEffectInstance&& moveFrom);
         DynamicSoundEffectInstance& operator= (DynamicSoundEffectInstance&& moveFrom);
+
+        DynamicSoundEffectInstance(DynamicSoundEffectInstance const&) = delete;
+        DynamicSoundEffectInstance& operator= (DynamicSoundEffectInstance const&) = delete;
+
         virtual ~DynamicSoundEffectInstance();
 
         void __cdecl Play();
@@ -708,11 +678,5 @@ namespace DirectX
         class Impl;
 
         std::unique_ptr<Impl> pImpl;
-
-        // Prevent copying.
-        DynamicSoundEffectInstance(DynamicSoundEffectInstance const&) DIRECTX_CTOR_DELETE
-        DynamicSoundEffectInstance& operator= (DynamicSoundEffectInstance const&) DIRECTX_CTOR_DELETE
     };
 }
-
-#pragma warning(pop)

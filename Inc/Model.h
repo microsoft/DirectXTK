@@ -28,31 +28,13 @@
 #include <string>
 #include <vector>
 
-#pragma warning(push)
-#pragma warning(disable : 4005)
 #include <stdint.h>
-#include <intsafe.h>
-#pragma warning(pop)
 
 #include <wrl\client.h>
 
-// VS 2010 doesn't support explicit calling convention for std::function
-#ifndef DIRECTX_STD_CALLCONV
-#if defined(_MSC_VER) && (_MSC_VER < 1700)
-#define DIRECTX_STD_CALLCONV
-#else
-#define DIRECTX_STD_CALLCONV __cdecl
-#endif
-#endif
 
 namespace DirectX
 {
-    #if (DIRECTX_MATH_VERSION < 305) && !defined(XM_CALLCONV)
-    #define XM_CALLCONV __fastcall
-    typedef const XMVECTOR& HXMVECTOR;
-    typedef const XMMATRIX& FXMMATRIX;
-    #endif
-
     class IEffect;
     class IEffectFactory;
     class CommonStates;
@@ -83,7 +65,7 @@ namespace DirectX
 
         // Draw mesh part with custom effect
         void __cdecl Draw( _In_ ID3D11DeviceContext* deviceContext, _In_ IEffect* ieffect, _In_ ID3D11InputLayout* iinputLayout,
-                           _In_opt_ std::function<void DIRECTX_STD_CALLCONV()> setCustomState = nullptr ) const;
+                           _In_opt_ std::function<void __cdecl()> setCustomState = nullptr ) const;
 
         // Create input layout for drawing with a custom effect.
         void __cdecl CreateInputLayout( _In_ ID3D11Device* d3dDevice, _In_ IEffect* ieffect, _Outptr_ ID3D11InputLayout** iinputLayout );
@@ -115,7 +97,7 @@ namespace DirectX
 
         // Draw the mesh
         void XM_CALLCONV Draw( _In_ ID3D11DeviceContext* deviceContext, FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection,
-                               bool alpha = false, _In_opt_ std::function<void DIRECTX_STD_CALLCONV()> setCustomState = nullptr ) const;
+                               bool alpha = false, _In_opt_ std::function<void __cdecl()> setCustomState = nullptr ) const;
     };
 
 
@@ -131,13 +113,13 @@ namespace DirectX
 
         // Draw all the meshes in the model
         void XM_CALLCONV Draw( _In_ ID3D11DeviceContext* deviceContext, CommonStates& states, FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection,
-                               bool wireframe = false, _In_opt_ std::function<void DIRECTX_STD_CALLCONV()> setCustomState = nullptr ) const;
+                               bool wireframe = false, _In_opt_ std::function<void __cdecl()> setCustomState = nullptr ) const;
 
         // Notify model that effects, parts list, or mesh list has changed
         void __cdecl Modified() { mEffectCache.clear(); }
 
         // Update all effects used by the model
-        void __cdecl UpdateEffects( _In_ std::function<void DIRECTX_STD_CALLCONV(IEffect*)> setEffect );
+        void __cdecl UpdateEffects( _In_ std::function<void __cdecl(IEffect*)> setEffect );
 
         // Loads a model from a Visual Studio Starter Kit .CMO file
         static std::unique_ptr<Model> __cdecl CreateFromCMO( _In_ ID3D11Device* d3dDevice, _In_reads_bytes_(dataSize) const uint8_t* meshData, size_t dataSize,

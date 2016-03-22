@@ -26,11 +26,7 @@
 #endif
 
 #include <exception>
-
-#pragma warning(push)
-#pragma warning(disable : 4005)
 #include <stdint.h>
-#pragma warning(pop)
 
 //
 // The core Direct3D headers provide the following helper C++ classes

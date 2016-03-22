@@ -29,21 +29,9 @@
 
 #include <ocidl.h>
 
-#pragma warning(push)
-#pragma warning(disable : 4005)
-#include <stdint.h>
-#pragma warning(pop)
-
 #include <functional>
+#include <stdint.h>
 
-// VS 2010 doesn't support explicit calling convention for std::function
-#ifndef DIRECTX_STD_CALLCONV
-#if defined(_MSC_VER) && (_MSC_VER < 1700)
-#define DIRECTX_STD_CALLCONV
-#else
-#define DIRECTX_STD_CALLCONV __cdecl
-#endif
-#endif
 
 namespace DirectX
 {
@@ -58,7 +46,7 @@ namespace DirectX
                                           _In_ REFGUID guidContainerFormat, 
                                           _In_z_ LPCWSTR fileName,
                                           _In_opt_ const GUID* targetFormat = nullptr,
-                                          _In_opt_ std::function<void DIRECTX_STD_CALLCONV(IPropertyBag2*)> setCustomProps = nullptr );
+                                          _In_opt_ std::function<void __cdecl(IPropertyBag2*)> setCustomProps = nullptr );
 
 #endif
 }

@@ -29,6 +29,8 @@ namespace DirectX
         explicit BinaryReader(_In_z_ wchar_t const* fileName);
         BinaryReader(_In_reads_bytes_(dataSize) uint8_t const* dataBlob, size_t dataSize);
 
+        BinaryReader(BinaryReader const&) = delete;
+        BinaryReader& operator= (BinaryReader const&) = delete;
         
         // Reads a single value.
         template<typename T> T const& Read()
@@ -65,10 +67,5 @@ namespace DirectX
         uint8_t const* mEnd;
 
         std::unique_ptr<uint8_t[]> mOwnedData;
-
-
-        // Prevent copying.
-        BinaryReader(BinaryReader const&) DIRECTX_CTOR_DELETE
-        BinaryReader& operator= (BinaryReader const&) DIRECTX_CTOR_DELETE
     };
 }

@@ -30,11 +30,7 @@
 
 #include "pch.h"
 
-// VS 2010's stdint.h conflicts with intsafe.h
-#pragma warning(push)
-#pragma warning(disable : 4005)
 #include <wincodec.h>
-#pragma warning(pop)
 
 #include "WICTextureLoader.h"
 

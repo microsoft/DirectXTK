@@ -27,11 +27,8 @@
 #include <dxgiformat.h>
 #endif
 
-// VS 2010's stdint.h conflicts with intsafe.h
-#pragma warning(push)
-#pragma warning(disable : 4005)
 #include <stdint.h>
-#pragma warning(pop)
+
 
 namespace DirectX
 {
