@@ -232,6 +232,9 @@
       <FileType>Document</FileType>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Readme.txt" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{f4776924-619c-42c7-88b2-82c947ccc9e7}</ProjectGuid>
     <Keyword>StaticLibrary</Keyword>

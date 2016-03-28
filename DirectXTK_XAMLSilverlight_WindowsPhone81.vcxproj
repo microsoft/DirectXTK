@@ -221,6 +221,9 @@
       <FileType>Document</FileType>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Readme.txt" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{e6360ff2-827f-44c1-87c6-3e1f98f5da2e}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
