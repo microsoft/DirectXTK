@@ -368,7 +368,7 @@ struct ENTRYCOMPACT
                 }
             }
             return 0;
-        
+
         case MINIWAVEFORMAT::TAG_XMA: 
             if ( seekTable )
             {
@@ -1098,8 +1098,6 @@ HRESULT WaveBankReader::Impl::GetWaveData( uint32_t index, const uint8_t** pData
 #else
     const uint8_t* waveData = m_waveData.get();
 #endif
-    {
-    }
 
     if ( !waveData )
         return E_FAIL;
