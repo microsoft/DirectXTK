@@ -185,8 +185,17 @@ namespace DirectX
             ButtonState leftShoulder;
             ButtonState rightShoulder;
 
-            ButtonState back;
-            ButtonState start;
+            union
+            {
+                ButtonState back;
+                ButtonState view;
+            };
+
+            union
+            {
+                ButtonState start;
+                ButtonState menu;
+            };
 
             ButtonState dpadUp;
             ButtonState dpadDown;
