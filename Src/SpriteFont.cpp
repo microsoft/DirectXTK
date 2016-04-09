@@ -221,7 +221,7 @@ SpriteFont::SpriteFont(_In_ ID3D11Device* device, _In_z_ wchar_t const* fileName
 {
     BinaryReader reader(fileName);
 
-    pImpl.reset(new Impl(device, &reader));
+    pImpl = std::make_unique<Impl>(device, &reader);
 }
 
 
@@ -230,7 +230,7 @@ SpriteFont::SpriteFont(_In_ ID3D11Device* device, _In_reads_bytes_(dataSize) uin
 {
     BinaryReader reader(dataBlob, dataSize);
 
-    pImpl.reset(new Impl(device, &reader));
+    pImpl = std::make_unique<Impl>(device, &reader);
 }
 
 
