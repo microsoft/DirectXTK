@@ -50,11 +50,11 @@ namespace
 #if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
 
 //======================================================================================
-// Windows Store or universal Windows app implementation
+// Windows Store or Universal Windows Platform (UWP) app implementation
 //======================================================================================
 
 //
-// For a Windows Store app or universal Windows app, add the following:
+// For a Windows Store app or Universal Windows Platform (UWP) app, add the following:
 //
 // void App::SetWindow(CoreWindow^ window )
 // {

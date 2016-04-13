@@ -7,7 +7,7 @@ Copyright (c) Microsoft Corporation. All rights reserved.
 February 23, 2016
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
-writing Direct3D 11 C++ code for universal Windows apps for Windows 10,
+writing Direct3D 11 C++ code for Universal Windows Platform (UWP) apps for Windows 10,
 Windows Store apps, Windows phone 8.x applications, Xbox One exclusive apps,
 Xbox One hub apps, Windows 8.x Win32 desktop applications, Windows 7 applications,
 and Windows Vista Direct3D 11.0 applications.
