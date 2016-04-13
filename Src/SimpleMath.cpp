@@ -167,8 +167,8 @@ RECT DirectX::SimpleMath::Viewport::ComputeDisplayArea(DXGI_SCALING scaling, UIN
 
 RECT DirectX::SimpleMath::Viewport::ComputeTitleSafeArea(UINT backBufferWidth, UINT backBufferHeight)
 {
-    float safew = (float(backBufferWidth) + 9.f) / 10.f;
-    float safeh = (float(backBufferHeight) + 9.f) / 10.f;
+    float safew = (float(backBufferWidth) + 19.f) / 20.f;
+    float safeh = (float(backBufferHeight) + 19.f) / 20.f;
 
     RECT rct;
     rct.left = static_cast<LONG>(safew);
