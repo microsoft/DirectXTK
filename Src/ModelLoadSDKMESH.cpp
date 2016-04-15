@@ -389,6 +389,12 @@ static void LoadMaterial( _In_ const DXUT::SDKMESH_MATERIAL& mh,
     WCHAR txtName2[ DXUT::MAX_TEXTURE_NAME ];
     MultiByteToWideChar( CP_ACP, MB_PRECOMPOSED, mh.SpecularTexture, -1, txtName2, DXUT::MAX_TEXTURE_NAME );
 
+    if ( !mh.SpecularTexture[0] && enableDualTexture )
+    {
+        DebugTrace("WARNING: Material '%s' has multiple texture coords but not multiple textures\n", mh.Name);
+        enableDualTexture = false;
+    }
+
     EffectFactory::EffectInfo info;
     info.name = matName;
     info.perVertexColor = perVertexColor;
