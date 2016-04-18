@@ -47,7 +47,7 @@ namespace DirectX
 
             uint8_t const* newPos = mPos + sizeof(T) * elementCount;
 
-            if  (newPos < mPos)
+            if (newPos < mPos)
                 throw std::overflow_error("ReadArray");
 
             if (newPos > mEnd)

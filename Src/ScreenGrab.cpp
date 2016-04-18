@@ -33,6 +33,7 @@
 #endif
 
 #include "ScreenGrab.h"
+#include "DirectXHelpers.h"
 
 #include "dds.h"
 #include "PlatformHelpers.h"
@@ -487,11 +488,7 @@ static HRESULT CaptureTexture( _In_ ID3D11DeviceContext* pContext,
         return HRESULT_FROM_WIN32( ERROR_NOT_SUPPORTED );
 
     ComPtr<ID3D11Texture2D> pTexture;
-#if defined(_XBOX_ONE) && defined(_TITLE)
     HRESULT hr = pSource->QueryInterface(IID_GRAPHICS_PPV_ARGS(pTexture.GetAddressOf()));
-#else
-    HRESULT hr = pSource->QueryInterface(IID_PPV_ARGS(pTexture.GetAddressOf()));
-#endif
     if ( FAILED(hr) )
         return hr;
 

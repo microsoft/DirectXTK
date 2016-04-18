@@ -25,6 +25,10 @@
 #endif
 #endif
 
+#ifndef IID_GRAPHICS_PPV_ARGS
+#define IID_GRAPHICS_PPV_ARGS(x) IID_PPV_ARGS(x)
+#endif
+
 #include <exception>
 #include <stdint.h>
 
