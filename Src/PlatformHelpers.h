@@ -80,9 +80,9 @@ namespace DirectX
 }
 
 
-#if (defined(_MSC_VER) && (_MSC_VER < 1610)) || defined(DIRECTX_EMULATE_MUTEX)
+#ifdef DIRECTX_EMULATE_MUTEX
 
-// Emulate the C++0x mutex and lock_guard types when building with Visual Studio versions < 2012.
+// Emulate the C++0x mutex and lock_guard types when building with Visual Studio CRT versions < 2012.
 namespace std
 {
     class mutex
@@ -128,8 +128,25 @@ namespace std
     };
 }
 
-#else   // _MSC_VER < 1610
+#else
 
 #include <mutex>
+
+#endif
+
+
+#ifdef DIRECTX_EMULATE_MAKE_UNIQUE
+
+// Emulate make_unique when building with Visual Studio CRT versions < 2012.
+namespace std
+{
+
+    template<typename T, typename... Args>
+    std::unique_ptr<T> make_unique(Args&&... args)
+    {
+        return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+    }
+
+}
 
 #endif
