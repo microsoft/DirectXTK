@@ -15,6 +15,7 @@
 
 #include <memory>
 #include <exception>
+#include <stdexcept>
 #include <type_traits>
 
 #include "PlatformHelpers.h"
@@ -45,6 +46,9 @@ namespace DirectX
             static_assert(std::is_pod<T>::value, "Can only read plain-old-data types");
 
             uint8_t const* newPos = mPos + sizeof(T) * elementCount;
+
+            if  (newPos < mPos)
+                throw std::overflow_error("ReadArray");
 
             if (newPos > mEnd)
                 throw std::exception("End of file");
