@@ -13,13 +13,44 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Drawing;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace MakeSpriteFont
 {
     public class Program
     {
-        public static int Main(string[] args)
-        {
+
+		/// <summary>
+		///     Application main entry
+		/// </summary>
+		/// <param name="args">The arguments.</param>
+		[STAThread]
+		public static void Main(string[] args)
+		{
+			if (args.Length > 0 && AllocConsole())
+			{
+
+				// run as console app
+				RunConsoleApplication(args);
+			}
+			else
+			{
+				// run as windows app
+				RunFormApplication();
+			}
+		}
+
+	    private static void RunFormApplication()
+	    {
+			Application.EnableVisualStyles();
+			Application.SetCompatibleTextRenderingDefault(false);
+			Application.Run(new FormMakeSpriteFontGUI());
+		}
+
+
+		private static int RunConsoleApplication(string[] args)
+		{
             // Parse the commandline options.
             var options = new CommandLineOptions();
             var parser = new CommandLineParser(options);
@@ -183,5 +214,12 @@ namespace MakeSpriteFont
 
             return glyphs;
         }
-    }
+
+		/// <summary>
+		/// Make use of WinAPI to create/allocate a new console
+		/// </summary>
+		/// <returns>True when console is created otherwise false</returns>
+		[DllImport("kernel32.dll")]
+		public static extern bool AllocConsole();
+	}
 }
