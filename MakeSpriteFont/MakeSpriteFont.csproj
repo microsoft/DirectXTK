@@ -6,7 +6,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{7329B02D-C504-482A-A156-181D48CE493C}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MakeSpriteFont</RootNamespace>
     <AssemblyName>MakeSpriteFont</AssemblyName>
@@ -30,12 +30,21 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="BitmapUtils.cs" />
     <Compile Include="CharacterRegion.cs" />
     <Compile Include="CommandLineParser.cs" />
     <Compile Include="GlyphCropper.cs" />
     <Compile Include="IFontImporter.cs" />
+    <Compile Include="MakeSpriteFontGUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MakeSpriteFontGUI.Designer.cs">
+      <DependentUpon>MakeSpriteFontGUI.cs</DependentUpon>
+    </Compile>
     <Compile Include="SpriteFontWriter.cs" />
     <Compile Include="TrueTypeImporter.cs" />
     <Compile Include="BitmapImporter.cs" />
@@ -47,7 +56,15 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MakeSpriteFontGUI.resx">
+      <DependentUpon>MakeSpriteFontGUI.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
