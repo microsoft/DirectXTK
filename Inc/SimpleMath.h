@@ -26,16 +26,80 @@
 #include <DirectXPackedVector.h>
 #include <DirectXCollision.h>
 
+#if (defined(_XBOX_ONE) && defined(_TITLE)) || (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP))
+#include <Windows.Foundation.h>
+#endif
+
 namespace DirectX
 {
 
 namespace SimpleMath
 {
-    
+
+struct Vector2;
 struct Vector4;
 struct Matrix;
 struct Quaternion;
 struct Plane;
+
+//------------------------------------------------------------------------------
+// 2D rectangle
+struct Rectangle
+{
+    long x;
+    long y;
+    long width;
+    long height;
+
+    // Creators
+    Rectangle() : x(0), y(0), width(0), height(0) {}
+    Rectangle(long ix, long iy, long iw, long ih) : x(ix), y(iy), width(iw), height(ih) {}
+    explicit Rectangle(const RECT& rct) : x(rct.left), y(rct.top), width(rct.right - rct.left), height(rct.bottom - rct.top) {}
+
+    operator RECT() { RECT rct; rct.left = x; rct.top = y; rct.right = (x + width); rct.bottom = (y + height); return rct; }
+#if (defined(_XBOX_ONE) && defined(_TITLE)) || (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP))
+    operator ABI::Windows::Foundation::Rect() { ABI::Windows::Foundation::Rect r; r.X = float(x); r.Y = float(y); r.Width = float(width); r.Height = float(height); return r; }
+#ifdef __cplusplus_winrt
+    operator Windows::Foundation::Rect() { return Windows::Foundation::Rect(float(x), float(y), float(width), float(height)); }
+#endif
+#endif
+
+    // Comparison operators
+    bool operator == (const Rectangle& r) const { return (x == r.x) && (y == r.y) && (width == r.width) && (height == r.height); }
+    bool operator == (const RECT& rct) const { return (x == rct.left) && (y == rct.top) && (width == (rct.right - rct.left)) && (height == (rct.bottom - rct.top)); }
+
+    bool operator != (const Rectangle& r) const { return (x != r.x) || (y != r.y) || (width != r.width) || (height != r.height); }
+    bool operator != (const RECT& rct) const { return (x != rct.left) || (y != rct.top) || (width != (rct.right - rct.left)) || (height != (rct.bottom - rct.top)); }
+
+    // Assignment operators
+    Rectangle& operator=(_In_ const Rectangle& r) { x = r.x; y = r.y; width = r.width; height = r.height; return *this; }
+    Rectangle& operator=(_In_ const RECT& rct) { x = rct.left; y = rct.top; width = (rct.right - rct.left); height = (rct.bottom - rct.top); return *this; }
+
+    // Rectangle operations
+    Vector2 Location() const;
+    Vector2 Center() const;
+
+    bool IsEmpty() const { return (width == 0 && height == 0 && x == 0 && y == 0); }
+
+    bool Contains(long ix, long iy) const { return (x <= ix) && (ix < (x + width)) && (y <= iy) && (iy < (y + height)); }
+    bool Contains(const Vector2& point) const;
+    bool Contains(const Rectangle& r) const { return (x <= r.x) && ((r.x + r.width) <= (x + width)) && (y <= r.y) && ((r.y + r.height) <= (y + height)); }
+    bool Contains(const RECT& rct) const { return (x <= rct.left) && (rct.right <= (x + width)) && (y <= rct.top) && (rct.bottom <= (y + height)); }
+
+    void Inflate(long horizAmount, long vertAmount);
+
+    bool Intersects(const Rectangle& r) const { return (r.x < (x + width)) && (x < (r.x + r.width)) && (r.y < (y + height)) && (y < (r.y + r.height)); }
+    bool Intersects(const RECT& rct) const { return (rct.left < (x + width)) && (x < rct.right) && (rct.top < (y + height)) && (y < rct.bottom); }
+
+    void Offset(long ox, long oy) { x += ox; y += oy; }
+    
+    // Static functions
+    static Rectangle Intersect(const Rectangle& ra, const Rectangle& rb);
+    static RECT Intersect(const RECT& rcta, const RECT& rctb);
+
+    static Rectangle Union(const Rectangle& ra, const Rectangle& rb);
+    static RECT Union(const RECT& rcta, const RECT& rctb);
+};
 
 //------------------------------------------------------------------------------
 // 2D vector
@@ -803,6 +867,17 @@ public:
 // Support for SimpleMath and Standard C++ Library containers
 namespace std
 {
+
+    template<> struct less<DirectX::SimpleMath::Rectangle>
+    {
+        bool operator()(const DirectX::SimpleMath::Rectangle& r1, const DirectX::SimpleMath::Rectangle& r2) const
+        {
+            return ((r1.x < r2.x)
+                || ((r1.x == r2.x) && (r1.y < r2.y))
+                || ((r1.x == r2.x) && (r1.y == r2.y) && (r1.width < r2.width))
+                || ((r1.x == r2.x) && (r1.y == r2.y) && (r1.width == r2.width) && (r1.height < r2.height)));
+        }
+    };
 
     template<> struct less<DirectX::SimpleMath::Vector2>
     {

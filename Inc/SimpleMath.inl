@@ -14,6 +14,137 @@
 #pragma once
 
 /****************************************************************************
+*
+* Rectangle
+*
+****************************************************************************/
+
+//------------------------------------------------------------------------------
+// Rectangle operations
+//------------------------------------------------------------------------------
+inline Vector2 Rectangle::Location() const
+{
+    return Vector2(float(x), float(y));
+}
+
+inline Vector2 Rectangle::Center() const
+{
+    return Vector2(float(x) + float(width / 2.f), float(y) + float(height / 2.f));
+}
+
+inline bool Rectangle::Contains(const Vector2& point) const
+{
+    return (float(x) <= point.x) && (point.x < float(x + width)) && (float(y) <= point.y) && (point.y < float(y + height));
+}
+
+inline void Rectangle::Inflate(long horizAmount, long vertAmount)
+{
+    x -= horizAmount;
+    y -= vertAmount;
+    width += horizAmount;
+    height += vertAmount;
+}
+
+//------------------------------------------------------------------------------
+// Static functions
+//------------------------------------------------------------------------------
+
+inline Rectangle Rectangle::Intersect(const Rectangle& ra, const Rectangle& rb)
+{
+    long righta = ra.x + ra.width;
+    long rightb = rb.x + rb.width;
+
+    long bottoma = ra.y + ra.height;
+    long bottomb = rb.y + rb.height;
+
+    long maxX = ra.x > rb.x ? ra.x : rb.x;
+    long maxY = ra.y > rb.y ? ra.y : rb.y;
+
+    long minRight = righta < rightb ? righta : rightb;
+    long minBottom = bottoma < bottomb ? bottoma : bottomb;
+
+    Rectangle result;
+
+    if ((minRight > maxX) && (minBottom > maxY))
+    {
+        result.x = maxX;
+        result.y = maxY;
+        result.width = minRight - maxX;
+        result.height = minBottom - maxY;
+    }
+    else
+    {
+        result.x = 0;
+        result.y = 0;
+        result.width = 0;
+        result.height = 0;
+    }
+
+    return result;
+}
+
+inline RECT Rectangle::Intersect(const RECT& rcta, const RECT& rctb)
+{
+    long maxX = rcta.left > rctb.left ? rcta.left : rctb.left;
+    long maxY = rcta.top > rctb.top ? rcta.top : rctb.top;
+
+    long minRight = rcta.right < rctb.right ? rcta.right : rctb.right;
+    long minBottom = rcta.bottom < rctb.bottom ? rcta.bottom : rctb.bottom;
+
+    RECT result;
+
+    if ((minRight > maxX) && (minBottom > maxY))
+    {
+        result.left = maxX;
+        result.top = maxY;
+        result.right = minRight;
+        result.bottom = minBottom;
+    }
+    else
+    {
+        result.left = 0;
+        result.top = 0;
+        result.right = 0;
+        result.bottom = 0;
+    }
+
+    return result;
+}
+
+inline Rectangle Rectangle::Union(const Rectangle& ra, const Rectangle& rb)
+{
+    long righta = ra.x + ra.width;
+    long rightb = rb.x + rb.width;
+
+    long bottoma = ra.y + ra.height;
+    long bottomb = rb.y + rb.height;
+
+    int minX = ra.x < rb.x ? ra.x : rb.x;
+    int minY = ra.y < rb.y ? ra.y : rb.y;
+
+    int maxRight = righta > rightb ? righta : rightb;
+    int maxBottom = bottoma > bottomb ? bottoma : bottomb;
+
+    Rectangle result;
+    result.x = minX;
+    result.y = minY;
+    result.width = maxRight - minX;
+    result.height = maxBottom - minY;
+    return result;
+}
+
+inline RECT Rectangle::Union(const RECT& rcta, const RECT& rctb)
+{
+    RECT result;
+    result.left = rcta.left < rctb.left ? rcta.left : rctb.left;
+    result.top = rcta.top < rctb.top ? rcta.top : rctb.top;
+    result.right = rcta.right > rctb.right ? rcta.right : rctb.right;
+    result.bottom = rcta.bottom > rctb.bottom ? rcta.bottom : rctb.bottom;
+    return result;
+}
+
+
+/****************************************************************************
  *
  * Vector2
  *
