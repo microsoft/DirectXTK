@@ -35,18 +35,18 @@
 			this.label1 = new System.Windows.Forms.Label();
 			this.ButtonSelectFont = new System.Windows.Forms.Button();
 			this.label2 = new System.Windows.Forms.Label();
-			this.textBox1 = new System.Windows.Forms.TextBox();
+			this.TextBoxOutputFilename = new System.Windows.Forms.TextBox();
 			this.label3 = new System.Windows.Forms.Label();
-			this.textBox2 = new System.Windows.Forms.TextBox();
+			this.TextBoxCharacterRegion = new System.Windows.Forms.TextBox();
 			this.label4 = new System.Windows.Forms.Label();
 			this.label5 = new System.Windows.Forms.Label();
-			this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-			this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
-			this.checkBox2 = new System.Windows.Forms.CheckBox();
-			this.checkBox1 = new System.Windows.Forms.CheckBox();
+			this.NumericLineSpacing = new System.Windows.Forms.NumericUpDown();
+			this.NumericCharacterSpacing = new System.Windows.Forms.NumericUpDown();
+			this.CheckBoxSharpFont = new System.Windows.Forms.CheckBox();
+			this.CheckBoxFastPack = new System.Windows.Forms.CheckBox();
 			this.groupBox1.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.NumericLineSpacing)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.NumericCharacterSpacing)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// ButtonCreateSpriteFont
@@ -61,16 +61,16 @@
 			// groupBox1
 			// 
 			this.groupBox1.BackColor = System.Drawing.Color.Transparent;
-			this.groupBox1.Controls.Add(this.checkBox2);
-			this.groupBox1.Controls.Add(this.checkBox1);
-			this.groupBox1.Controls.Add(this.numericUpDown2);
-			this.groupBox1.Controls.Add(this.numericUpDown1);
+			this.groupBox1.Controls.Add(this.CheckBoxFastPack);
+			this.groupBox1.Controls.Add(this.CheckBoxSharpFont);
+			this.groupBox1.Controls.Add(this.NumericCharacterSpacing);
+			this.groupBox1.Controls.Add(this.NumericLineSpacing);
 			this.groupBox1.Controls.Add(this.label5);
 			this.groupBox1.Controls.Add(this.label4);
 			this.groupBox1.Controls.Add(this.label3);
-			this.groupBox1.Controls.Add(this.textBox2);
+			this.groupBox1.Controls.Add(this.TextBoxCharacterRegion);
 			this.groupBox1.Controls.Add(this.label2);
-			this.groupBox1.Controls.Add(this.textBox1);
+			this.groupBox1.Controls.Add(this.TextBoxOutputFilename);
 			this.groupBox1.Controls.Add(this.ButtonSelectFont);
 			this.groupBox1.Controls.Add(this.label1);
 			this.groupBox1.Controls.Add(this.TextBoxFont);
@@ -127,13 +127,13 @@
 			this.label2.TabIndex = 7;
 			this.label2.Text = "Output filename:";
 			// 
-			// textBox1
+			// TextBoxOutputFilename
 			// 
-			this.textBox1.Location = new System.Drawing.Point(120, 56);
-			this.textBox1.Name = "textBox1";
-			this.textBox1.Size = new System.Drawing.Size(300, 20);
-			this.textBox1.TabIndex = 2;
-			this.textBox1.Text = "myfile.spritefont";
+			this.TextBoxOutputFilename.Location = new System.Drawing.Point(120, 56);
+			this.TextBoxOutputFilename.Name = "TextBoxOutputFilename";
+			this.TextBoxOutputFilename.Size = new System.Drawing.Size(300, 20);
+			this.TextBoxOutputFilename.TabIndex = 2;
+			this.TextBoxOutputFilename.Text = "myfile.spritefont";
 			// 
 			// label3
 			// 
@@ -144,12 +144,12 @@
 			this.label3.TabIndex = 9;
 			this.label3.Text = "Character region:";
 			// 
-			// textBox2
+			// TextBoxCharacterRegion
 			// 
-			this.textBox2.Location = new System.Drawing.Point(120, 83);
-			this.textBox2.Name = "textBox2";
-			this.textBox2.Size = new System.Drawing.Size(300, 20);
-			this.textBox2.TabIndex = 8;
+			this.TextBoxCharacterRegion.Location = new System.Drawing.Point(120, 83);
+			this.TextBoxCharacterRegion.Name = "TextBoxCharacterRegion";
+			this.TextBoxCharacterRegion.Size = new System.Drawing.Size(300, 20);
+			this.TextBoxCharacterRegion.TabIndex = 8;
 			// 
 			// label4
 			// 
@@ -169,55 +169,55 @@
 			this.label5.TabIndex = 13;
 			this.label5.Text = "Character spacing:";
 			// 
-			// numericUpDown1
+			// NumericLineSpacing
 			// 
-			this.numericUpDown1.Location = new System.Drawing.Point(120, 111);
-			this.numericUpDown1.Maximum = new decimal(new int[] {
+			this.NumericLineSpacing.Location = new System.Drawing.Point(120, 111);
+			this.NumericLineSpacing.Maximum = new decimal(new int[] {
             10,
             0,
             0,
             0});
-			this.numericUpDown1.Name = "numericUpDown1";
-			this.numericUpDown1.Size = new System.Drawing.Size(51, 20);
-			this.numericUpDown1.TabIndex = 14;
+			this.NumericLineSpacing.Name = "NumericLineSpacing";
+			this.NumericLineSpacing.Size = new System.Drawing.Size(51, 20);
+			this.NumericLineSpacing.TabIndex = 14;
 			// 
-			// numericUpDown2
+			// NumericCharacterSpacing
 			// 
-			this.numericUpDown2.Location = new System.Drawing.Point(120, 137);
-			this.numericUpDown2.Maximum = new decimal(new int[] {
+			this.NumericCharacterSpacing.Location = new System.Drawing.Point(120, 137);
+			this.NumericCharacterSpacing.Maximum = new decimal(new int[] {
             10,
             0,
             0,
             0});
-			this.numericUpDown2.Name = "numericUpDown2";
-			this.numericUpDown2.Size = new System.Drawing.Size(51, 20);
-			this.numericUpDown2.TabIndex = 15;
+			this.NumericCharacterSpacing.Name = "NumericCharacterSpacing";
+			this.NumericCharacterSpacing.Size = new System.Drawing.Size(51, 20);
+			this.NumericCharacterSpacing.TabIndex = 15;
 			// 
-			// checkBox2
+			// CheckBoxSharpFont
 			// 
-			this.checkBox2.AutoSize = true;
-			this.checkBox2.Location = new System.Drawing.Point(340, 136);
-			this.checkBox2.Name = "checkBox2";
-			this.checkBox2.Size = new System.Drawing.Size(150, 17);
-			this.checkBox2.TabIndex = 17;
-			this.checkBox2.Text = "Use fast pack (large fonts)";
-			this.checkBox2.UseVisualStyleBackColor = true;
+			this.CheckBoxSharpFont.AutoSize = true;
+			this.CheckBoxSharpFont.Location = new System.Drawing.Point(306, 114);
+			this.CheckBoxSharpFont.Name = "CheckBoxSharpFont";
+			this.CheckBoxSharpFont.Size = new System.Drawing.Size(75, 17);
+			this.CheckBoxSharpFont.TabIndex = 16;
+			this.CheckBoxSharpFont.Text = "Sharp font";
+			this.CheckBoxSharpFont.UseVisualStyleBackColor = true;
 			// 
-			// checkBox1
+			// CheckBoxFastPack
 			// 
-			this.checkBox1.AutoSize = true;
-			this.checkBox1.Location = new System.Drawing.Point(340, 114);
-			this.checkBox1.Name = "checkBox1";
-			this.checkBox1.Size = new System.Drawing.Size(138, 17);
-			this.checkBox1.TabIndex = 16;
-			this.checkBox1.Text = "Use sharp font or smoth";
-			this.checkBox1.UseVisualStyleBackColor = true;
+			this.CheckBoxFastPack.AutoSize = true;
+			this.CheckBoxFastPack.Location = new System.Drawing.Point(306, 139);
+			this.CheckBoxFastPack.Name = "CheckBoxFastPack";
+			this.CheckBoxFastPack.Size = new System.Drawing.Size(129, 17);
+			this.CheckBoxFastPack.TabIndex = 17;
+			this.CheckBoxFastPack.Text = "FastPack (large fonts)";
+			this.CheckBoxFastPack.UseVisualStyleBackColor = true;
 			// 
 			// FormMakeSpriteFontGUI
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(584, 361);
+			this.ClientSize = new System.Drawing.Size(584, 251);
 			this.Controls.Add(this.groupBox1);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.MaximizeBox = false;
@@ -225,8 +225,8 @@
 			this.Text = "MakeSpriteFontGUI";
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox1.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.NumericLineSpacing)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.NumericCharacterSpacing)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -240,14 +240,14 @@
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.TextBox TextBoxFont;
 		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.TextBox textBox1;
+		private System.Windows.Forms.TextBox TextBoxOutputFilename;
 		private System.Windows.Forms.Label label3;
-		private System.Windows.Forms.TextBox textBox2;
-		private System.Windows.Forms.NumericUpDown numericUpDown2;
-		private System.Windows.Forms.NumericUpDown numericUpDown1;
+		private System.Windows.Forms.TextBox TextBoxCharacterRegion;
+		private System.Windows.Forms.NumericUpDown NumericCharacterSpacing;
+		private System.Windows.Forms.NumericUpDown NumericLineSpacing;
 		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.Label label4;
-		private System.Windows.Forms.CheckBox checkBox2;
-		private System.Windows.Forms.CheckBox checkBox1;
+		public System.Windows.Forms.CheckBox CheckBoxFastPack;
+		public System.Windows.Forms.CheckBox CheckBoxSharpFont;
 	}
 }
