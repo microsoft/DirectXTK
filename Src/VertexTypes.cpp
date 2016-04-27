@@ -21,6 +21,16 @@ using namespace DirectX::PackedVector;
 
 
 //--------------------------------------------------------------------------------------
+// Vertex struct holding position .
+const D3D11_INPUT_ELEMENT_DESC VertexPosition::InputElements[] =
+{
+    { "SV_Position", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+};
+
+static_assert(sizeof(VertexPosition) == 12, "Vertex struct/layout mismatch");
+
+
+//--------------------------------------------------------------------------------------
 // Vertex struct holding position and color information.
 const D3D11_INPUT_ELEMENT_DESC VertexPositionColor::InputElements[] =
 {
@@ -40,6 +50,18 @@ const D3D11_INPUT_ELEMENT_DESC VertexPositionTexture::InputElements[] =
 };
 
 static_assert( sizeof(VertexPositionTexture) == 20, "Vertex struct/layout mismatch" );
+
+
+//--------------------------------------------------------------------------------------
+// Vertex struct holding position and dual texture mapping information.
+const D3D11_INPUT_ELEMENT_DESC VertexPositionDualTexture::InputElements[] =
+{
+    { "SV_Position", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { "TEXCOORD",    0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { "TEXCOORD",    1, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+};
+
+static_assert(sizeof(VertexPositionDualTexture) == 28, "Vertex struct/layout mismatch");
 
 
 //--------------------------------------------------------------------------------------
