@@ -45,7 +45,7 @@ namespace MakeSpriteFont
 	    {
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new FormMakeSpriteFontGUI());
+			Application.Run(new FormMakeSpriteFontGui());
 		}
 
 
@@ -76,7 +76,7 @@ namespace MakeSpriteFont
         }
 
 
-        static void MakeSpriteFont(CommandLineOptions options)
+        public static void MakeSpriteFont(CommandLineOptions options)
         {
             // Import.
             Console.WriteLine("Importing {0}", options.SourceFont);
