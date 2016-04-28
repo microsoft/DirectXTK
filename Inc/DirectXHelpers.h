@@ -56,7 +56,7 @@
 
 namespace DirectX
 {
-    // simliar to std::lock_guard for exception-safe Direct3D 11 resource locking
+    // simliar to std::lock_guard for exception-safe Direct3D resource locking
     class MapGuard : public D3D11_MAPPED_SUBRESOURCE
     {
     public:
