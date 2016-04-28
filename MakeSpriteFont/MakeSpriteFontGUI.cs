@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -32,6 +33,10 @@ namespace MakeSpriteFont
 			SpriteFontFromForm = new Font(InitialFontNameComicSansMs, commandLineOptions.FontSize, commandLineOptions.FontStyle);
 
 			TextBoxFont.Text = SpriteFontFromForm.Name;
+
+			TextBoxFontSize.Text = SpriteFontFromForm.Size.ToString("####");
+
+			TextBoxFontStyle.Text = SpriteFontFromForm.Style.ToString();
 
 			TextBoxOutputFilename.Text = SpriteFontOutputFilename;
 
@@ -126,9 +131,10 @@ namespace MakeSpriteFont
 			try
 			{
 				Program.MakeSpriteFont(GetCommandLineOptionsFromForm());
-				MessageBox.Show(
-					string.Format("sprite font object with the name [{0}] created successfully.: ", TextBoxOutputFilename.Text),
-					"Spritefont created", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				MessageBox.Show(string.Format("sprite font object with the name [{0}] created successfully", TextBoxOutputFilename.Text), 
+					"Spritefont created", 
+					MessageBoxButtons.OK, 
+					MessageBoxIcon.Information);
 			}
 			catch (Exception exception)
 			{
@@ -149,7 +155,22 @@ namespace MakeSpriteFont
 			{
 				SpriteFontFromForm = fontDialog.Font;
 				TextBoxFont.Text = fontDialog.Font.Name;
+				TextBoxFontSize.Text = fontDialog.Font.Size.ToString("####");
+				TextBoxFontStyle.Text = fontDialog.Font.Style.ToString();
 			}
+		}
+		/// <summary>
+		/// The form paint event
+		/// </summary>
+		/// <param name="sender">The sender from the event</param>
+		/// <param name="e">The event param</param>
+		private void FormMakeSpriteFont_Paint(object sender, PaintEventArgs e)
+		{
+			Graphics graphics = e.Graphics;
+
+			Brush brush = new LinearGradientBrush(e.ClipRectangle, Color.AntiqueWhite, Color.SkyBlue, LinearGradientMode.Vertical);
+
+			graphics.FillRectangle(brush, e.ClipRectangle);
 		}
 
 		#endregion
