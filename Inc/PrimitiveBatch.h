@@ -66,7 +66,7 @@ namespace DirectX
         static const size_t DefaultBatchSize = 2048;
 
     public:
-        PrimitiveBatch(_In_ ID3D11DeviceContext* deviceContext, size_t maxIndices = DefaultBatchSize * 3, size_t maxVertices = DefaultBatchSize)
+        explicit PrimitiveBatch(_In_ ID3D11DeviceContext* deviceContext, size_t maxIndices = DefaultBatchSize * 3, size_t maxVertices = DefaultBatchSize)
           : PrimitiveBatchBase(deviceContext, maxIndices, maxVertices, sizeof(TVertex))
         { }
 

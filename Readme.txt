@@ -4,16 +4,16 @@ DirectXTK - the DirectX Tool Kit
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-February 23, 2016
+April 26, 2016
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Universal Windows Platform (UWP) apps for Windows 10,
-Windows Store apps, Windows phone 8.x applications, Xbox One exclusive apps,
-Xbox One hub apps, Windows 8.x Win32 desktop applications, Windows 7 applications,
-and Windows Vista Direct3D 11.0 applications.
+Windows Store apps, Windows phone 8.1 applications, Xbox One exclusive apps,
+Windows 8.x Win32 desktop applications, Windows 7 applications, and
+Windows Vista Direct3D 11.0 applications.
 
 This code is designed to build with Visual Studio 2013 or 2015. It is recommended that you
-make use of VS 2013 Update 5, VS 2015 Update 1, and Windows 7 Service Pack 1 or later.
+make use of VS 2013 Update 5, VS 2015 Update 2, and Windows 7 Service Pack 1 or later.
 
 These components are designed to work without requiring any content from the DirectX SDK. For details,
 see "Where is the DirectX SDK?" <http://msdn.microsoft.com/en-us/library/ee663275.aspx>.
@@ -23,8 +23,8 @@ Inc\
 
     Audio.h - low-level audio API using XAudio2 (DirectXTK for Audio public header)
     CommonStates.h - factory providing commonly used D3D state objects
-    DirectXHelpers.h - misc C++ helpers for D3D programming
     DDSTextureLoader.h - light-weight DDS file texture loader
+    DirectXHelpers.h - misc C++ helpers for D3D programming
     Effects.h - set of built-in shaders for common rendering tasks
     GamePad.h - gamepad controller helper using XInput
     GeometricPrimitive.h - draws basic shapes such as cubes and spheres
@@ -73,6 +73,14 @@ Note: Xbox One exclusive apps developers using the Xbox One XDK need to generate
 ---------------
 RELEASE HISTORY
 ---------------
+
+April 26, 2016
+    Added Rectangle class to SimpleMath
+    Fix for SDKMESH loader when loading models with 'extra' texture coordinate sets
+    Made SimpleMath's Viewport ComputeTitleSafeArea less conservative
+    Added view/menu alises to GamePad::ButtonStateTracker for Xbox One Controller naming
+    Retired Windows phone 8.0 projects and obsolete adapter code
+    Minor code and project file cleanup
 
 February 23, 2016
     Fixed width computation bug in SpriteFont::MeasureString

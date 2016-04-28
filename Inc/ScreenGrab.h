@@ -2,7 +2,7 @@
 // File: ScreenGrab.h
 //
 // Function for capturing a 2D texture and saving it to a file (aka a 'screenshot'
-// when used on a Direct3D 11 Render Target).
+// when used on a Direct3D Render Target).
 //
 // Note these functions are useful as a light-weight runtime screen grabber. For
 // full-featured texture capture, DDS writer, and texture processing pipeline,
@@ -35,18 +35,16 @@
 
 namespace DirectX
 {
-    HRESULT __cdecl SaveDDSTextureToFile( _In_ ID3D11DeviceContext* pContext,
-                                          _In_ ID3D11Resource* pSource,
-                                          _In_z_ LPCWSTR fileName );
+    HRESULT __cdecl SaveDDSTextureToFile(
+        _In_ ID3D11DeviceContext* pContext,
+        _In_ ID3D11Resource* pSource,
+        _In_z_ LPCWSTR fileName);
 
-#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP) || (_WIN32_WINNT > _WIN32_WINNT_WIN8)
-
-    HRESULT __cdecl SaveWICTextureToFile( _In_ ID3D11DeviceContext* pContext,
-                                          _In_ ID3D11Resource* pSource,
-                                          _In_ REFGUID guidContainerFormat, 
-                                          _In_z_ LPCWSTR fileName,
-                                          _In_opt_ const GUID* targetFormat = nullptr,
-                                          _In_opt_ std::function<void __cdecl(IPropertyBag2*)> setCustomProps = nullptr );
-
-#endif
+    HRESULT __cdecl SaveWICTextureToFile(
+        _In_ ID3D11DeviceContext* pContext,
+        _In_ ID3D11Resource* pSource,
+        _In_ REFGUID guidContainerFormat,
+        _In_z_ LPCWSTR fileName,
+        _In_opt_ const GUID* targetFormat = nullptr,
+        _In_opt_ std::function<void __cdecl(IPropertyBag2*)> setCustomProps = nullptr);
 }

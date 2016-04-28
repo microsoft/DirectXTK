@@ -17,10 +17,7 @@
 #include "SharedResourcePool.h"
 
 #include "DDSTextureLoader.h"
-
-#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP) || (_WIN32_WINNT > _WIN32_WINNT_WIN8)
 #include "WICTextureLoader.h"
-#endif
 
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
@@ -268,7 +265,6 @@ void EffectFactory::Impl::CreateTexture( const WCHAR* name, ID3D11DeviceContext*
         wcscpy_s( fullName, mPath );
         wcscat_s( fullName, name );
 
-#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP) || (_WIN32_WINNT > _WIN32_WINNT_WIN8)
         WCHAR ext[_MAX_EXT];
         _wsplitpath_s( name, nullptr, 0, nullptr, 0, nullptr, 0, ext, _MAX_EXT );
 
@@ -302,15 +298,6 @@ void EffectFactory::Impl::CreateTexture( const WCHAR* name, ID3D11DeviceContext*
                 throw std::exception( "CreateWICTextureFromFile" );
             }
         }
-#else
-        UNREFERENCED_PARAMETER( deviceContext );
-        HRESULT hr = CreateDDSTextureFromFile( device.Get(), fullName, nullptr, textureView );
-        if ( FAILED(hr) )
-        {
-            DebugTrace( "CreateDDSTextureFromFile failed (%08X) for '%ls'\n", hr, fullName );
-            throw std::exception( "CreateDDSTextureFromFile" );
-        }
-#endif
 
         if ( mSharing && *name && it == mTextureCache.end() )
         {   

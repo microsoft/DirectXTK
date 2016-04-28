@@ -224,7 +224,7 @@ GraphicsMemory::Impl* GraphicsMemory::Impl::s_graphicsMemory = nullptr;
 #else
 
 //======================================================================================
-// Null allocator for standard Direct3D 11
+// Null allocator for standard Direct3D
 //======================================================================================
 
 class GraphicsMemory::Impl

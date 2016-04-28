@@ -24,6 +24,27 @@
 
 namespace DirectX
 {
+    // Vertex struct holding position information.
+    struct VertexPosition
+    {
+        VertexPosition() = default;
+
+        VertexPosition(XMFLOAT3 const& position)
+            : position(position)
+        { }
+
+        VertexPosition(FXMVECTOR position)
+        {
+            XMStoreFloat3(&this->position, position);
+        }
+
+        XMFLOAT3 position;
+
+        static const int InputElementCount = 1;
+        static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
+    };
+
+
     // Vertex struct holding position and color information.
     struct VertexPositionColor
     {
@@ -68,6 +89,35 @@ namespace DirectX
         XMFLOAT2 textureCoordinate;
 
         static const int InputElementCount = 2;
+        static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
+    };
+
+
+    // Vertex struct holding position and dual texture mapping information.
+    struct VertexPositionDualTexture
+    {
+        VertexPositionDualTexture() = default;
+
+        VertexPositionDualTexture(XMFLOAT3 const& position, XMFLOAT2 const& textureCoordinate0, XMFLOAT2 const& textureCoordinate1)
+            : position(position),
+            textureCoordinate0(textureCoordinate0),
+            textureCoordinate1(textureCoordinate1)
+        { }
+
+        VertexPositionDualTexture(FXMVECTOR position,
+            FXMVECTOR textureCoordinate0,
+            FXMVECTOR textureCoordinate1)
+        {
+            XMStoreFloat3(&this->position, position);
+            XMStoreFloat2(&this->textureCoordinate0, textureCoordinate0);
+            XMStoreFloat2(&this->textureCoordinate1, textureCoordinate1);
+        }
+
+        XMFLOAT3 position;
+        XMFLOAT2 textureCoordinate0;
+        XMFLOAT2 textureCoordinate1;
+
+        static const int InputElementCount = 3;
         static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
     };
 
