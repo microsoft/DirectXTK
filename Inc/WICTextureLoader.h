@@ -1,7 +1,7 @@
 //--------------------------------------------------------------------------------------
 // File: WICTextureLoader.h
 //
-// Function for loading a WIC image and creating a Direct3D 11 runtime texture for it
+// Function for loading a WIC image and creating a Direct3D runtime texture for it
 // (auto-generating mipmaps if possible)
 //
 // Note: Assumes application has already called CoInitializeEx
@@ -26,10 +26,6 @@
 //--------------------------------------------------------------------------------------
 
 #pragma once
-
-#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP) && (_WIN32_WINNT <= _WIN32_WINNT_WIN8)
-#error WIC is not supported on Windows Phone 8.0
-#endif
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
 #include <d3d11_x.h>

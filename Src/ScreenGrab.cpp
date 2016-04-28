@@ -27,10 +27,7 @@
 
 #include "pch.h"
 
-#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP) || (_WIN32_WINNT > _WIN32_WINNT_WIN8)
-
 #include <wincodec.h>
-#endif
 
 #include "ScreenGrab.h"
 #include "DirectXHelpers.h"
@@ -67,8 +64,6 @@ namespace
         HANDLE m_handle;
     };
 
-#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP) || (_WIN32_WINNT > _WIN32_WINNT_WIN8)
-
     class auto_delete_file_wic
     {
     public:
@@ -92,8 +87,6 @@ namespace
         LPCWSTR m_filename;
         ComPtr<IWICStream>& m_handle;
     };
-
-#endif
 }
 
 //--------------------------------------------------------------------------------------
@@ -755,8 +748,6 @@ HRESULT DirectX::SaveDDSTextureToFile( _In_ ID3D11DeviceContext* pContext,
 }
 
 //--------------------------------------------------------------------------------------
-#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP) || (_WIN32_WINNT > _WIN32_WINNT_WIN8)
-
 namespace DirectX
 {
 extern bool _IsWIC2();
@@ -1077,5 +1068,3 @@ HRESULT DirectX::SaveWICTextureToFile( _In_ ID3D11DeviceContext* pContext,
 
     return S_OK;
 }
-
-#endif // !WINAPI_FAMILY || (WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP) || (_WIN32_WINNT > _WIN32_WINNT_WIN8)
