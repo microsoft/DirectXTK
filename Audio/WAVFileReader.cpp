@@ -496,33 +496,26 @@ static HRESULT LoadAudioFromFile( _In_z_ const wchar_t* szFileName, _Inout_ std:
     }
 
     // Get the file size
-    LARGE_INTEGER FileSize = { 0 };
-
-#if (_WIN32_WINNT >= _WIN32_WINNT_VISTA)
     FILE_STANDARD_INFO fileInfo;
     if ( !GetFileInformationByHandleEx( hFile.get(), FileStandardInfo, &fileInfo, sizeof(fileInfo) ) )
     {
         return HRESULT_FROM_WIN32( GetLastError() );
     }
-    FileSize = fileInfo.EndOfFile;
-#else
-    GetFileSizeEx( hFile.get(), &FileSize );
-#endif
 
     // File is too big for 32-bit allocation, so reject read
-    if (FileSize.HighPart > 0)
+    if (fileInfo.EndOfFile.HighPart > 0)
     {
         return E_FAIL;
     }
 
     // Need at least enough data to have a valid minimal WAV file
-    if (FileSize.LowPart < ( sizeof(RIFFChunk)*2 + sizeof(DWORD) + sizeof(WAVEFORMAT) ) )
+    if (fileInfo.EndOfFile.LowPart < ( sizeof(RIFFChunk)*2 + sizeof(DWORD) + sizeof(WAVEFORMAT) ) )
     {
         return E_FAIL;
     }
 
     // create enough space for the file data
-    wavData.reset( new (std::nothrow) uint8_t[ FileSize.LowPart ] );
+    wavData.reset( new (std::nothrow) uint8_t[ fileInfo.EndOfFile.LowPart ] );
     if (!wavData)
     {
         return E_OUTOFMEMORY;
@@ -531,7 +524,7 @@ static HRESULT LoadAudioFromFile( _In_z_ const wchar_t* szFileName, _Inout_ std:
     // read the data in
     if (!ReadFile( hFile.get(),
                    wavData.get(),
-                   FileSize.LowPart,
+                   fileInfo.EndOfFile.LowPart,
                    bytesRead,
                    nullptr
                    ))
@@ -539,7 +532,7 @@ static HRESULT LoadAudioFromFile( _In_z_ const wchar_t* szFileName, _Inout_ std:
         return HRESULT_FROM_WIN32( GetLastError() );
     }
 
-    return (*bytesRead < FileSize.LowPart) ? E_FAIL : S_OK;
+    return (*bytesRead < fileInfo.EndOfFile.LowPart) ? E_FAIL : S_OK;
 }
 
 

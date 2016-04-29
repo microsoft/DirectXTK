@@ -30,11 +30,7 @@ namespace
     {
         EngineCallback()
         {
-#if (_WIN32_WINNT >= _WIN32_WINNT_VISTA)
             mCriticalError.reset( CreateEventEx( nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE ) );
-#else
-            mCriticalError.reset( CreateEvent( nullptr, FALSE, FALSE, nullptr ) );
-#endif
             if ( !mCriticalError )
             {
                 throw std::exception( "CreateEvent" );
@@ -64,11 +60,7 @@ namespace
     {
         VoiceCallback()
         {
-#if (_WIN32_WINNT >= _WIN32_WINNT_VISTA)
             mBufferEnd.reset( CreateEventEx( nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE ) );
-#else
-            mBufferEnd.reset( CreateEvent( nullptr, FALSE, FALSE, nullptr ) );
-#endif
             if ( !mBufferEnd )
             {
                 throw std::exception( "CreateEvent" );

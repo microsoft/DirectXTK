@@ -66,33 +66,26 @@ namespace
         }
 
         // Get the file size
-        LARGE_INTEGER FileSize = { 0 };
-
-#if (_WIN32_WINNT >= _WIN32_WINNT_VISTA)
         FILE_STANDARD_INFO fileInfo;
         if (!GetFileInformationByHandleEx(hFile.get(), FileStandardInfo, &fileInfo, sizeof(fileInfo)))
         {
             return HRESULT_FROM_WIN32(GetLastError());
         }
-        FileSize = fileInfo.EndOfFile;
-#else
-        GetFileSizeEx(hFile.get(), &FileSize);
-#endif
 
         // File is too big for 32-bit allocation, so reject read
-        if (FileSize.HighPart > 0)
+        if (fileInfo.EndOfFile.HighPart > 0)
         {
             return E_FAIL;
         }
 
         // Need at least enough data to fill the header and magic number to be a valid DDS
-        if (FileSize.LowPart < (sizeof(DDS_HEADER) + sizeof(uint32_t)))
+        if (fileInfo.EndOfFile.LowPart < (sizeof(DDS_HEADER) + sizeof(uint32_t)))
         {
             return E_FAIL;
         }
 
         // create enough space for the file data
-        ddsData.reset(new (std::nothrow) uint8_t[FileSize.LowPart]);
+        ddsData.reset(new (std::nothrow) uint8_t[ fileInfo.EndOfFile.LowPart ]);
         if (!ddsData)
         {
             return E_OUTOFMEMORY;
@@ -102,7 +95,7 @@ namespace
         DWORD BytesRead = 0;
         if (!ReadFile(hFile.get(),
             ddsData.get(),
-            FileSize.LowPart,
+            fileInfo.EndOfFile.LowPart,
             &BytesRead,
             nullptr
         ))
@@ -110,7 +103,7 @@ namespace
             return HRESULT_FROM_WIN32(GetLastError());
         }
 
-        if (BytesRead < FileSize.LowPart)
+        if (BytesRead < fileInfo.EndOfFile.LowPart)
         {
             return E_FAIL;
         }
@@ -137,7 +130,7 @@ namespace
             (MAKEFOURCC('D', 'X', '1', '0') == hdr->ddspf.fourCC))
         {
             // Must be long enough for both headers and magic value
-            if (FileSize.LowPart < (sizeof(DDS_HEADER) + sizeof(uint32_t) + sizeof(DDS_HEADER_DXT10)))
+            if (fileInfo.EndOfFile.LowPart < (sizeof(DDS_HEADER) + sizeof(uint32_t) + sizeof(DDS_HEADER_DXT10)))
             {
                 return E_FAIL;
             }
@@ -150,7 +143,7 @@ namespace
         ptrdiff_t offset = sizeof(uint32_t) + sizeof(DDS_HEADER)
             + (bDXT10Header ? sizeof(DDS_HEADER_DXT10) : 0);
         *bitData = ddsData.get() + offset;
-        *bitSize = FileSize.LowPart - offset;
+        *bitSize = fileInfo.EndOfFile.LowPart - offset;
 
         return S_OK;
     }
