@@ -221,8 +221,7 @@ static bool CanBatchPrimitives(D3D11_PRIMITIVE_TOPOLOGY topology)
 
 #if !defined(_XBOX_ONE) || !defined(_TITLE)
 // Helper for locking a vertex or index buffer.
-_Use_decl_annotations_
-static void LockBuffer(ID3D11DeviceContext* deviceContext, ID3D11Buffer* buffer, size_t currentPosition, size_t* basePosition, D3D11_MAPPED_SUBRESOURCE* mappedResource)
+static void LockBuffer(_In_ ID3D11DeviceContext* deviceContext, _In_ ID3D11Buffer* buffer, size_t currentPosition, _Out_ size_t* basePosition, _Out_ D3D11_MAPPED_SUBRESOURCE* mappedResource)
 {
     D3D11_MAP mapType = (currentPosition == 0) ? D3D11_MAP_WRITE_DISCARD : D3D11_MAP_WRITE_NO_OVERWRITE;
 
