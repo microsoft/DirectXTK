@@ -426,7 +426,7 @@ HRESULT AudioEngine::Impl::Reset( const WAVEFORMATEX* wfx, const wchar_t* device
 
     if ( mEngineFlags & AudioEngine_Debug )
     {
-        XAUDIO2_DEBUG_CONFIGURATION debug ={0};
+        XAUDIO2_DEBUG_CONFIGURATION debug = {};
         debug.TraceMask = XAUDIO2_LOG_ERRORS | XAUDIO2_LOG_WARNINGS;
         debug.BreakMask = XAUDIO2_LOG_ERRORS;
         xaudio2->SetDebugConfiguration( &debug, nullptr );
@@ -581,7 +581,7 @@ HRESULT AudioEngine::Impl::Reset( const WAVEFORMATEX* wfx, const wchar_t* device
     //
     if ( mEngineFlags & AudioEngine_UseMasteringLimiter )
     {
-        FXMASTERINGLIMITER_PARAMETERS params = {0};
+        FXMASTERINGLIMITER_PARAMETERS params = {};
         params.Release = FXMASTERINGLIMITER_DEFAULT_RELEASE;
         params.Loudness = FXMASTERINGLIMITER_DEFAULT_LOUDNESS;
 
@@ -597,7 +597,7 @@ HRESULT AudioEngine::Impl::Reset( const WAVEFORMATEX* wfx, const wchar_t* device
             return hr;
         }
 
-        XAUDIO2_EFFECT_DESCRIPTOR desc = {0};
+        XAUDIO2_EFFECT_DESCRIPTOR desc = {};
         desc.InitialState = TRUE;
         desc.OutputChannels = masterChannels;
         desc.pEffect = mVolumeLimiter.Get();
@@ -903,7 +903,7 @@ void AudioEngine::Impl::SetMasteringLimit( int release, int loudness )
     if ( ( loudness < FXMASTERINGLIMITER_MIN_LOUDNESS ) || ( loudness > FXMASTERINGLIMITER_MAX_LOUDNESS ) )
         throw std::out_of_range( "AudioEngine::SetMasteringLimit" );
 
-    FXMASTERINGLIMITER_PARAMETERS params = {0};
+    FXMASTERINGLIMITER_PARAMETERS params = {};
     params.Release = static_cast<UINT32>( release );
     params.Loudness = static_cast<UINT32>( loudness );
 
@@ -1035,7 +1035,7 @@ void AudioEngine::Impl::AllocateVoice( const WAVEFORMATEX* wfx, SOUND_EFFECT_INS
                 {
                     // makeVoiceKey already constrained the supported wfx formats to those supported for reuse
 
-                    char buff[64] = {0};
+                    char buff[64] = {};
                     auto wfmt = reinterpret_cast<WAVEFORMATEX*>( buff );
 
                     uint32_t tag = GetFormatTag( wfx );

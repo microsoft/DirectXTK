@@ -86,13 +86,13 @@ namespace
     {
         assert( pBuffer != 0 );
 
-        D3D11_BUFFER_DESC bufferDesc = { 0 };
+        D3D11_BUFFER_DESC bufferDesc = {};
 
         bufferDesc.ByteWidth = (UINT)data.size() * sizeof(T::value_type);
         bufferDesc.BindFlags = bindFlags;
         bufferDesc.Usage = D3D11_USAGE_DEFAULT;
 
-        D3D11_SUBRESOURCE_DATA dataDesc = { 0 };
+        D3D11_SUBRESOURCE_DATA dataDesc = {};
 
         dataDesc.pSysMem = data.data();
 

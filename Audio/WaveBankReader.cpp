@@ -696,7 +696,7 @@ HRESULT WaveBankReader::Impl::Open( const wchar_t* szFileName )
             {
                 DWORD n = m_data.dwEntryNameElementSize * j;
 
-                char name[ 64 ] = {0};
+                char name[ 64 ] = {};
                 strncpy_s( name, &temp[ n ], 64 );
 
                 m_names[ name ] = j;

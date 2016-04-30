@@ -71,8 +71,7 @@ SharedResourcePool<ID3D11Device*, CommonStates::Impl> CommonStates::Impl::instan
 // Helper for creating blend state objects.
 HRESULT CommonStates::Impl::CreateBlendState(D3D11_BLEND srcBlend, D3D11_BLEND destBlend, _Out_ ID3D11BlendState** pResult)
 {
-    D3D11_BLEND_DESC desc;
-    ZeroMemory(&desc, sizeof(desc));
+    D3D11_BLEND_DESC desc = {};
 
     desc.RenderTarget[0].BlendEnable = (srcBlend != D3D11_BLEND_ONE) ||
                                        (destBlend != D3D11_BLEND_ZERO);
@@ -95,8 +94,7 @@ HRESULT CommonStates::Impl::CreateBlendState(D3D11_BLEND srcBlend, D3D11_BLEND d
 // Helper for creating depth stencil state objects.
 HRESULT CommonStates::Impl::CreateDepthStencilState(bool enable, bool writeEnable, _Out_ ID3D11DepthStencilState** pResult)
 {
-    D3D11_DEPTH_STENCIL_DESC desc;
-    ZeroMemory(&desc, sizeof(desc));
+    D3D11_DEPTH_STENCIL_DESC desc = {};
 
     desc.DepthEnable = enable;
     desc.DepthWriteMask = writeEnable ? D3D11_DEPTH_WRITE_MASK_ALL : D3D11_DEPTH_WRITE_MASK_ZERO;
@@ -125,8 +123,7 @@ HRESULT CommonStates::Impl::CreateDepthStencilState(bool enable, bool writeEnabl
 // Helper for creating rasterizer state objects.
 HRESULT CommonStates::Impl::CreateRasterizerState(D3D11_CULL_MODE cullMode, D3D11_FILL_MODE fillMode, _Out_ ID3D11RasterizerState** pResult)
 {
-    D3D11_RASTERIZER_DESC desc;
-    ZeroMemory(&desc, sizeof(desc));
+    D3D11_RASTERIZER_DESC desc = {};
 
     desc.CullMode = cullMode;
     desc.FillMode = fillMode;
@@ -145,8 +142,7 @@ HRESULT CommonStates::Impl::CreateRasterizerState(D3D11_CULL_MODE cullMode, D3D1
 // Helper for creating sampler state objects.
 HRESULT CommonStates::Impl::CreateSamplerState(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE addressMode, _Out_ ID3D11SamplerState** pResult)
 {
-    D3D11_SAMPLER_DESC desc;
-    ZeroMemory(&desc, sizeof(desc));
+    D3D11_SAMPLER_DESC desc = {};
 
     desc.Filter = filter;
 

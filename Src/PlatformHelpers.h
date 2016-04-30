@@ -29,7 +29,7 @@ namespace DirectX
 
         virtual const char* what() const override
         {
-            static char s_str[64] = { 0 };
+            static char s_str[64] = {};
             sprintf_s(s_str, "Failure with HRESULT of %08X", result);
             return s_str;
         }
@@ -55,7 +55,7 @@ namespace DirectX
         va_list args;
         va_start( args, format );
 
-        char buff[1024]={0};
+        char buff[1024] = {};
         vsprintf_s( buff, format, args );
         OutputDebugStringA( buff );
         va_end( args );

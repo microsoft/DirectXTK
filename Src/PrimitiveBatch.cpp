@@ -73,7 +73,7 @@ private:
 #if defined(_XBOX_ONE) && defined(_TITLE)
 static void CreateBuffer(_In_ ID3D11DeviceX* device, size_t bufferSize, D3D11_BIND_FLAG bindFlag, _Out_ ID3D11Buffer** pBuffer)
 {
-    D3D11_BUFFER_DESC desc = { 0 };
+    D3D11_BUFFER_DESC desc = {};
 
     desc.ByteWidth = (UINT)bufferSize;
     desc.BindFlags = bindFlag;
@@ -89,7 +89,7 @@ static void CreateBuffer(_In_ ID3D11DeviceX* device, size_t bufferSize, D3D11_BI
 #else
 static void CreateBuffer(_In_ ID3D11Device* device, size_t bufferSize, D3D11_BIND_FLAG bindFlag, _Out_ ID3D11Buffer** pBuffer)
 {
-    D3D11_BUFFER_DESC desc = { 0 };
+    D3D11_BUFFER_DESC desc = {};
 
     desc.ByteWidth = (UINT)bufferSize;
     desc.BindFlags = bindFlag;

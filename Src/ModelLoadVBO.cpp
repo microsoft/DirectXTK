@@ -103,12 +103,12 @@ std::unique_ptr<Model> DirectX::Model::CreateFromVBO(ID3D11Device* d3dDevice, co
     // Create vertex buffer
     ComPtr<ID3D11Buffer> vb;
     {
-        D3D11_BUFFER_DESC desc = { 0 };
+        D3D11_BUFFER_DESC desc = {};
         desc.Usage = D3D11_USAGE_DEFAULT;
         desc.ByteWidth = static_cast<UINT>(vertSize);
         desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
-        D3D11_SUBRESOURCE_DATA initData = { 0 };
+        D3D11_SUBRESOURCE_DATA initData = {};
         initData.pSysMem = verts;
 
         ThrowIfFailed(
@@ -121,12 +121,12 @@ std::unique_ptr<Model> DirectX::Model::CreateFromVBO(ID3D11Device* d3dDevice, co
     // Create index buffer
     ComPtr<ID3D11Buffer> ib;
     {
-        D3D11_BUFFER_DESC desc = { 0 };
+        D3D11_BUFFER_DESC desc = {};
         desc.Usage = D3D11_USAGE_DEFAULT;
         desc.ByteWidth = static_cast<UINT>(indexSize);
         desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
-        D3D11_SUBRESOURCE_DATA initData = { 0 };
+        D3D11_SUBRESOURCE_DATA initData = {};
         initData.pSysMem = indices;
 
         ThrowIfFailed(

@@ -626,6 +626,10 @@ HRESULT Xbox::CreateDDSTextureFromMemory( ID3D11DeviceX* d3dDevice,
     {
         *textureView = nullptr;
     }
+    if ( grfxMemory )
+    {
+        *grfxMemory = nullptr;
+    }
     if ( alphaMode )
     {
         *alphaMode = DDS_ALPHA_MODE_UNKNOWN;
@@ -635,8 +639,6 @@ HRESULT Xbox::CreateDDSTextureFromMemory( ID3D11DeviceX* d3dDevice,
     {
         return E_INVALIDARG;
     }
-
-    *grfxMemory = nullptr;
 
     // Validate DDS file in memory
     if (ddsDataSize < (sizeof(uint32_t) + sizeof(DDS_HEADER)))
@@ -716,6 +718,10 @@ HRESULT Xbox::CreateDDSTextureFromFile( ID3D11DeviceX* d3dDevice,
     {
         *textureView = nullptr;
     }
+    if ( grfxMemory )
+    {
+        *grfxMemory = nullptr;
+    }
     if ( alphaMode )
     {
         *alphaMode = DDS_ALPHA_MODE_UNKNOWN;
@@ -725,8 +731,6 @@ HRESULT Xbox::CreateDDSTextureFromFile( ID3D11DeviceX* d3dDevice,
     {
         return E_INVALIDARG;
     }
-
-    *grfxMemory = nullptr;
 
     DDS_HEADER* header = nullptr;
     uint8_t* bitData = nullptr;

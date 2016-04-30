@@ -52,7 +52,7 @@ namespace
         {
             if (m_handle)
             {
-                FILE_DISPOSITION_INFO info = { 0 };
+                FILE_DISPOSITION_INFO info = {};
                 info.DeleteFile = TRUE;
                 (void)SetFileInformationByHandle(m_handle, FileDispositionInfo, &info, sizeof(info));
             }
@@ -591,7 +591,7 @@ HRESULT DirectX::SaveDDSTextureToFile( _In_ ID3D11DeviceContext* pContext,
     if ( !fileName )
         return E_INVALIDARG;
 
-    D3D11_TEXTURE2D_DESC desc = { 0 };
+    D3D11_TEXTURE2D_DESC desc = {};
     ComPtr<ID3D11Texture2D> pStaging;
     HRESULT hr = CaptureTexture( pContext, pSource, desc, pStaging );
     if ( FAILED(hr) )
@@ -760,7 +760,7 @@ HRESULT DirectX::SaveWICTextureToFile( _In_ ID3D11DeviceContext* pContext,
     if ( !fileName )
         return E_INVALIDARG;
 
-    D3D11_TEXTURE2D_DESC desc = { 0 };
+    D3D11_TEXTURE2D_DESC desc = {};
     ComPtr<ID3D11Texture2D> pStaging;
     HRESULT hr = CaptureTexture( pContext, pSource, desc, pStaging );
     if ( FAILED(hr) )
@@ -815,7 +815,7 @@ HRESULT DirectX::SaveWICTextureToFile( _In_ ID3D11DeviceContext* pContext,
         return HRESULT_FROM_WIN32( ERROR_NOT_SUPPORTED );
     }
 
-    IWICImagingFactory* pWIC = _GetWIC();
+    auto pWIC = _GetWIC();
     if ( !pWIC )
         return E_NOINTERFACE;
 
@@ -848,7 +848,7 @@ HRESULT DirectX::SaveWICTextureToFile( _In_ ID3D11DeviceContext* pContext,
     if ( targetFormat && memcmp( &guidContainerFormat, &GUID_ContainerFormatBmp, sizeof(WICPixelFormatGUID) ) == 0 && _IsWIC2() )
     {
         // Opt-in to the WIC2 support for writing 32-bit Windows BMP files with an alpha channel
-        PROPBAG2 option = { 0 };
+        PROPBAG2 option = {};
         option.pstrName = L"EnableV5Header32bppBGRA";
 
         VARIANT varValue;    

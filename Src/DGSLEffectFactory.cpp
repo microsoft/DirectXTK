@@ -190,7 +190,7 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateDGSLEffect( DGSLEffectFa
     }
     else
     {
-        wchar_t root[ MAX_PATH ] = {0};
+        wchar_t root[ MAX_PATH ] = {};
         auto last = wcsrchr( info.pixelShader, '_' );
         if ( last )
         {
@@ -347,7 +347,7 @@ void DGSLEffectFactory::Impl::CreateTexture( const WCHAR* name, ID3D11DeviceCont
     }
     else
     {
-        WCHAR fullName[MAX_PATH] = {0};
+        WCHAR fullName[MAX_PATH] = {};
         wcscpy_s( fullName, mPath );
         wcscat_s( fullName, name );
 
@@ -410,7 +410,7 @@ void DGSLEffectFactory::Impl::CreatePixelShader( const WCHAR* name, ID3D11PixelS
     }
     else
     {
-        WCHAR fullName[MAX_PATH]={0};
+        WCHAR fullName[MAX_PATH] = {};
         wcscpy_s( fullName, mPath );
         wcscat_s( fullName, name );
 

@@ -38,7 +38,7 @@ namespace DirectX
         #if defined(_XBOX_ONE) && defined(_TITLE)
         void Create(_In_ ID3D11Device* device)
         {
-            D3D11_BUFFER_DESC desc = { 0 };
+            D3D11_BUFFER_DESC desc = {};
 
             desc.ByteWidth = sizeof(T);
             desc.Usage = D3D11_USAGE_DEFAULT;
@@ -69,7 +69,7 @@ namespace DirectX
         #else
         void Create(_In_ ID3D11Device* device)
         {
-            D3D11_BUFFER_DESC desc = { 0 };
+            D3D11_BUFFER_DESC desc = {};
 
             desc.ByteWidth = sizeof(T);
             desc.Usage = D3D11_USAGE_DYNAMIC;

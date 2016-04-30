@@ -151,9 +151,9 @@ namespace DirectX
         EffectBase(_In_ ID3D11Device* device)
           : dirtyFlags(INT_MAX),
             mConstantBuffer(device),
-            mDeviceResources(deviceResourcesPool.DemandCreate(device))
+            mDeviceResources(deviceResourcesPool.DemandCreate(device)),
+            constants{}
         {
-            ZeroMemory(&constants, sizeof(constants));
         }
 
 

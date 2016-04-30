@@ -409,12 +409,12 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
             ib.ptr = indexes;
             ibData.emplace_back( ib );
 
-            D3D11_BUFFER_DESC desc = {0};
+            D3D11_BUFFER_DESC desc = {};
             desc.Usage = D3D11_USAGE_DEFAULT;
             desc.ByteWidth = static_cast<UINT>( ibBytes );
             desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
-            D3D11_SUBRESOURCE_DATA initData = {0};
+            D3D11_SUBRESOURCE_DATA initData = {};
             initData.pSysMem = indexes;
 
             ThrowIfFailed(
@@ -620,7 +620,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
 
             size_t bytes = stride * nVerts;
 
-            D3D11_BUFFER_DESC desc = {0};
+            D3D11_BUFFER_DESC desc = {};
             desc.Usage = D3D11_USAGE_DEFAULT;
             desc.ByteWidth = static_cast<UINT>( bytes );
             desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -628,7 +628,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
             if ( fxFactoryDGSL && !enableSkinning )
             {
                 // Can use CMO vertex data directly
-                D3D11_SUBRESOURCE_DATA initData = {0};
+                D3D11_SUBRESOURCE_DATA initData = {};
                 initData.pSysMem = vbData[j].ptr;
 
                 ThrowIfFailed(
@@ -730,7 +730,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
                 }
 
                 // Create vertex buffer from temporary buffer
-                D3D11_SUBRESOURCE_DATA initData = {0};
+                D3D11_SUBRESOURCE_DATA initData = {};
                 initData.pSysMem = temp.get();
 
                 ThrowIfFailed(

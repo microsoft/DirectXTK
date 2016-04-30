@@ -725,6 +725,7 @@ namespace
     }
 
     //--------------------------------------------------------------------------------------
+    template<class SubresourceStructType>
     HRESULT FillInitData(_In_ size_t width,
         _In_ size_t height,
         _In_ size_t depth,
@@ -738,7 +739,7 @@ namespace
         _Out_ size_t& theight,
         _Out_ size_t& tdepth,
         _Out_ size_t& skipMip,
-        _Out_writes_(mipCount*arraySize) D3D11_SUBRESOURCE_DATA* initData)
+        _Out_writes_(mipCount*arraySize) SubresourceStructType* initData)
     {
         if (!bitData || !initData)
         {
@@ -782,7 +783,7 @@ namespace
 
                     assert(index < mipCount * arraySize);
                     _Analysis_assume_(index < mipCount * arraySize);
-                    initData[index].pSysMem = (const void*)pSrcBits;
+                    initData[index].pSysMem = reinterpret_cast<const void*>(pSrcBits);
                     initData[index].SysMemPitch = static_cast<UINT>(RowBytes);
                     initData[index].SysMemSlicePitch = static_cast<UINT>(NumBytes);
                     ++index;
@@ -1845,18 +1846,27 @@ HRESULT DirectX::CreateDDSTextureFromFileEx( ID3D11Device* d3dDevice,
     if ( SUCCEEDED(hr) )
     {
 #if !defined(NO_D3D11_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
-        #if defined(_XBOX_ONE) && defined(_TITLE)
-        if (texture != 0 && *texture != 0)
-        {
-            (*texture)->SetName( fileName );
-        }
-        if (textureView != 0 && *textureView != 0 )
-        {
-            (*textureView)->SetName( fileName );
-        }
-        #else
         if (texture != 0 || textureView != 0)
         {
+        #if defined(_XBOX_ONE) && defined(_TITLE)
+            const wchar_t* pstrName = wcsrchr(fileName, '\\');
+            if (!pstrName)
+            {
+                pstrName = fileName;
+            }
+            else
+            {
+                pstrName++;
+            }
+            if (texture != 0 && *texture != 0)
+            {
+                (*texture)->SetName(pstrName);
+            }
+            if (textureView != 0 && *textureView != 0)
+            {
+                (*textureView)->SetName(pstrName);
+            }
+        #else
             CHAR strFileA[MAX_PATH];
             int result = WideCharToMultiByte( CP_ACP,
                                               WC_NO_BEST_FIT_CHARS,
@@ -1869,7 +1879,7 @@ HRESULT DirectX::CreateDDSTextureFromFileEx( ID3D11Device* d3dDevice,
                                );
             if ( result > 0 )
             {
-                const CHAR* pstrName = strrchr( strFileA, '\\' );
+                const char* pstrName = strrchr( strFileA, '\\' );
                 if (!pstrName)
                 {
                     pstrName = strFileA;
@@ -1895,8 +1905,8 @@ HRESULT DirectX::CreateDDSTextureFromFileEx( ID3D11Device* d3dDevice,
                                                   );
                 }
             }
-        }
         #endif
+        }
 #endif
 
         if ( alphaMode )
@@ -1970,18 +1980,27 @@ HRESULT DirectX::CreateDDSTextureFromFileEx( ID3D11Device* d3dDevice,
     if ( SUCCEEDED(hr) )
     {
 #if !defined(NO_D3D11_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
-        #if defined(_XBOX_ONE) && defined(_TITLE)
-        if (texture != 0 && *texture != 0)
-        {
-            (*texture)->SetName( fileName );
-        }
-        if (textureView != 0 && *textureView != 0 )
-        {
-            (*textureView)->SetName( fileName );
-        }
-        #else
         if (texture != 0 || textureView != 0)
         {
+        #if defined(_XBOX_ONE) && defined(_TITLE)
+            const wchar_t* pstrName = wcsrchr(fileName, '\\');
+            if (!pstrName)
+            {
+                pstrName = fileName;
+            }
+            else
+            {
+                pstrName++;
+            }
+            if (texture != 0 && *texture != 0)
+            {
+                (*texture)->SetName( pstrName );
+            }
+            if (textureView != 0 && *textureView != 0 )
+            {
+                (*textureView)->SetName( pstrName );
+            }
+        #else
             CHAR strFileA[MAX_PATH];
             int result = WideCharToMultiByte( CP_ACP,
                                               WC_NO_BEST_FIT_CHARS,
@@ -1994,7 +2013,7 @@ HRESULT DirectX::CreateDDSTextureFromFileEx( ID3D11Device* d3dDevice,
                                );
             if ( result > 0 )
             {
-                const CHAR* pstrName = strrchr( strFileA, '\\' );
+                const char* pstrName = strrchr( strFileA, '\\' );
                 if (!pstrName)
                 {
                     pstrName = strFileA;
@@ -2020,8 +2039,8 @@ HRESULT DirectX::CreateDDSTextureFromFileEx( ID3D11Device* d3dDevice,
                                                   );
                 }
             }
-        }
         #endif
+        }
 #endif
 
         if ( alphaMode )

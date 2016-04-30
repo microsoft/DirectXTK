@@ -261,7 +261,7 @@ void EffectFactory::Impl::CreateTexture( const WCHAR* name, ID3D11DeviceContext*
     }
     else
     {
-        WCHAR fullName[MAX_PATH]={0};
+        WCHAR fullName[MAX_PATH] = {};
         wcscpy_s( fullName, mPath );
         wcscat_s( fullName, name );
 

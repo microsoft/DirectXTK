@@ -125,7 +125,8 @@ SpriteFont::Impl::Impl(_In_ ID3D11Device* device, _In_ BinaryReader* reader)
 
 
 // Constructs a SpriteFont from arbitrary user specified glyph data.
-SpriteFont::Impl::Impl(_In_ ID3D11ShaderResourceView* texture, _In_reads_(glyphCount) Glyph const* glyphs, _In_ size_t glyphCount, _In_ float lineSpacing)
+_Use_decl_annotations_
+SpriteFont::Impl::Impl(ID3D11ShaderResourceView* texture, Glyph const* glyphs, size_t glyphCount, float lineSpacing)
   : texture(texture),
     glyphs(glyphs, glyphs + glyphCount),
     lineSpacing(lineSpacing),
@@ -226,7 +227,8 @@ SpriteFont::SpriteFont(_In_ ID3D11Device* device, _In_z_ wchar_t const* fileName
 
 
 // Construct from a binary blob created by the MakeSpriteFont utility and already loaded into memory.
-SpriteFont::SpriteFont(_In_ ID3D11Device* device, _In_reads_bytes_(dataSize) uint8_t const* dataBlob, _In_ size_t dataSize)
+_Use_decl_annotations_
+SpriteFont::SpriteFont(ID3D11Device* device, uint8_t const* dataBlob, size_t dataSize)
 {
     BinaryReader reader(dataBlob, dataSize);
 
@@ -235,7 +237,8 @@ SpriteFont::SpriteFont(_In_ ID3D11Device* device, _In_reads_bytes_(dataSize) uin
 
 
 // Construct from arbitrary user specified glyph data (for those not using the MakeSpriteFont utility).
-SpriteFont::SpriteFont(_In_ ID3D11ShaderResourceView* texture, _In_reads_(glyphCount) Glyph const* glyphs, _In_ size_t glyphCount, _In_ float lineSpacing)
+_Use_decl_annotations_
+SpriteFont::SpriteFont(ID3D11ShaderResourceView* texture, Glyph const* glyphs, size_t glyphCount, float lineSpacing)
   : pImpl(new Impl(texture, glyphs, glyphCount, lineSpacing))
 {
 }

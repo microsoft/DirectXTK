@@ -239,7 +239,7 @@ namespace
     //---------------------------------------------------------------------------------
     size_t _WICBitsPerPixel(REFGUID targetGuid)
     {
-        IWICImagingFactory* pWIC = _GetWIC();
+        auto pWIC = _GetWIC();
         if (!pWIC)
             return 0;
 
@@ -310,8 +310,8 @@ namespace
         _In_ unsigned int cpuAccessFlags,
         _In_ unsigned int miscFlags,
         _In_ bool forceSRGB,
-        _Out_opt_ ID3D11Resource** texture,
-        _Out_opt_ ID3D11ShaderResourceView** textureView)
+        _Outptr_opt_ ID3D11Resource** texture,
+        _Outptr_opt_ ID3D11ShaderResourceView** textureView)
     {
         UINT width, height;
         HRESULT hr = frame->GetSize(&width, &height);
@@ -534,7 +534,7 @@ namespace
         else if (twidth != width || theight != height)
         {
             // Resize
-            IWICImagingFactory* pWIC = _GetWIC();
+            auto pWIC = _GetWIC();
             if (!pWIC)
                 return E_NOINTERFACE;
 
@@ -585,7 +585,7 @@ namespace
         else
         {
             // Format conversion but no resize
-            IWICImagingFactory* pWIC = _GetWIC();
+            auto pWIC = _GetWIC();
             if (!pWIC)
                 return E_NOINTERFACE;
 
@@ -782,7 +782,7 @@ HRESULT DirectX::CreateWICTextureFromMemoryEx( ID3D11Device* d3dDevice,
         return HRESULT_FROM_WIN32( ERROR_FILE_TOO_LARGE );
 #endif
 
-    IWICImagingFactory* pWIC = _GetWIC();
+    auto pWIC = _GetWIC();
     if ( !pWIC )
         return E_NOINTERFACE;
 
@@ -869,7 +869,7 @@ HRESULT DirectX::CreateWICTextureFromMemoryEx( ID3D11Device* d3dDevice,
         return HRESULT_FROM_WIN32( ERROR_FILE_TOO_LARGE );
 #endif
 
-    IWICImagingFactory* pWIC = _GetWIC();
+    auto pWIC = _GetWIC();
     if ( !pWIC )
         return E_NOINTERFACE;
 
@@ -972,7 +972,7 @@ HRESULT DirectX::CreateWICTextureFromFileEx( ID3D11Device* d3dDevice,
     if (!d3dDevice || !fileName || (!texture && !textureView))
         return E_INVALIDARG;
 
-    IWICImagingFactory* pWIC = _GetWIC();
+    auto pWIC = _GetWIC();
     if ( !pWIC )
         return E_NOINTERFACE;
 
@@ -998,18 +998,27 @@ HRESULT DirectX::CreateWICTextureFromFileEx( ID3D11Device* d3dDevice,
 #if !defined(NO_D3D11_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
     if ( SUCCEEDED(hr) )
     {
-        #if defined(_XBOX_ONE) && defined(_TITLE)
-        if (texture != 0 && *texture != 0)
-        {
-            (*texture)->SetName( fileName );
-        }
-        if (textureView != 0 && *textureView != 0 )
-        {
-            (*textureView)->SetName( fileName );
-        }
-        #else
         if (texture != 0 || textureView != 0)
         {
+#if defined(_XBOX_ONE) && defined(_TITLE)
+            const wchar_t* pstrName = wcsrchr(fileName, '\\');
+            if (!pstrName)
+            {
+                pstrName = fileName;
+            }
+            else
+            {
+                pstrName++;
+            }
+            if (texture != 0 && *texture != 0)
+            {
+                (*texture)->SetName( pstrName );
+            }
+            if (textureView != 0 && *textureView != 0 )
+            {
+                (*textureView)->SetName( pstrName );
+            }
+        #else
             CHAR strFileA[MAX_PATH];
             int result = WideCharToMultiByte( CP_ACP,
                                               WC_NO_BEST_FIT_CHARS,
@@ -1022,7 +1031,7 @@ HRESULT DirectX::CreateWICTextureFromFileEx( ID3D11Device* d3dDevice,
                                );
             if ( result > 0 )
             {
-                const CHAR* pstrName = strrchr( strFileA, '\\' );
+                const char* pstrName = strrchr( strFileA, '\\' );
                 if (!pstrName)
                 {
                     pstrName = strFileA;
@@ -1048,8 +1057,8 @@ HRESULT DirectX::CreateWICTextureFromFileEx( ID3D11Device* d3dDevice,
                                                   );
                 }
             }
-        }
         #endif
+        }
     }
 #endif
 
@@ -1086,7 +1095,7 @@ HRESULT DirectX::CreateWICTextureFromFileEx( ID3D11Device* d3dDevice,
     if (!d3dDevice || !fileName || (!texture && !textureView))
         return E_INVALIDARG;
 
-    IWICImagingFactory* pWIC = _GetWIC();
+    auto pWIC = _GetWIC();
     if ( !pWIC )
         return E_NOINTERFACE;
 
@@ -1112,18 +1121,27 @@ HRESULT DirectX::CreateWICTextureFromFileEx( ID3D11Device* d3dDevice,
 #if !defined(NO_D3D11_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
     if ( SUCCEEDED(hr) )
     {
-        #if defined(_XBOX_ONE) && defined(_TITLE)
-        if (texture != 0 && *texture != 0)
-        {
-            (*texture)->SetName( fileName );
-        }
-        if (textureView != 0 && *textureView != 0 )
-        {
-            (*textureView)->SetName( fileName );
-        }
-        #else
         if (texture != 0 || textureView != 0)
         {
+        #if defined(_XBOX_ONE) && defined(_TITLE)
+            const wchar_t* pstrName = wcsrchr(fileName, '\\');
+            if (!pstrName)
+            {
+                pstrName = fileName;
+            }
+            else
+            {
+                pstrName++;
+            }
+            if (texture != 0 && *texture != 0)
+            {
+                (*texture)->SetName( pstrName );
+            }
+            if (textureView != 0 && *textureView != 0 )
+            {
+                (*textureView)->SetName( pstrName );
+            }
+        #else
             CHAR strFileA[MAX_PATH];
             int result = WideCharToMultiByte( CP_ACP,
                                               WC_NO_BEST_FIT_CHARS,
@@ -1136,7 +1154,7 @@ HRESULT DirectX::CreateWICTextureFromFileEx( ID3D11Device* d3dDevice,
                                );
             if ( result > 0 )
             {
-                const CHAR* pstrName = strrchr( strFileA, '\\' );
+                const char* pstrName = strrchr( strFileA, '\\' );
                 if (!pstrName)
                 {
                     pstrName = strFileA;
@@ -1162,8 +1180,8 @@ HRESULT DirectX::CreateWICTextureFromFileEx( ID3D11Device* d3dDevice,
                                                   );
                 }
             }
-        }
         #endif
+        }
     }
 #endif
 

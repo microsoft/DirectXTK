@@ -757,12 +757,12 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH( ID3D11Device* d3dDevic
 
         auto verts = reinterpret_cast<const uint8_t*>( bufferData + (vh.DataOffset - bufferDataOffset) );
 
-        D3D11_BUFFER_DESC desc = {0};
+        D3D11_BUFFER_DESC desc = {};
         desc.Usage = D3D11_USAGE_DEFAULT;
         desc.ByteWidth = static_cast<UINT>( vh.SizeBytes );
         desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
-        D3D11_SUBRESOURCE_DATA initData = {0};
+        D3D11_SUBRESOURCE_DATA initData = {};
         initData.pSysMem = verts;
 
         ThrowIfFailed(
@@ -789,12 +789,12 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH( ID3D11Device* d3dDevic
 
         auto indices = reinterpret_cast<const uint8_t*>( bufferData + (ih.DataOffset - bufferDataOffset) );
 
-        D3D11_BUFFER_DESC desc = {0};
+        D3D11_BUFFER_DESC desc = {};
         desc.Usage = D3D11_USAGE_DEFAULT;
         desc.ByteWidth = static_cast<UINT>( ih.SizeBytes );
         desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
-        D3D11_SUBRESOURCE_DATA initData = {0};
+        D3D11_SUBRESOURCE_DATA initData = {};
         initData.pSysMem = indices;
 
         ThrowIfFailed(
