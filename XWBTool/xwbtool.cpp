@@ -780,7 +780,7 @@ static_assert( OPT_MAX <= 32, "dwOptions is a DWORD bitfield" );
 
 struct SConversion
 {
-    WCHAR szSrc [MAX_PATH];
+    wchar_t szSrc [MAX_PATH];
 
     SConversion *pNext;
 };
@@ -801,12 +801,12 @@ struct WaveFile
     WaveFile() : waveData(nullptr), conv(nullptr) { memset( &data, 0, sizeof(data) ); }
 };
 
-void FileNameToIdentifier( _Inout_updates_all_(count) WCHAR* str, size_t count )
+void FileNameToIdentifier( _Inout_updates_all_(count) wchar_t* str, size_t count )
 {
     size_t j = 0;
-    for( WCHAR* c = str; j < count && *c != 0; ++c, ++j )
+    for( wchar_t* c = str; j < count && *c != 0; ++c, ++j )
     {
-        WCHAR t = towupper( *c );
+        wchar_t t = towupper( *c );
         if ( !iswdigit(t) && !iswalpha(t) )
             t = '_';
         *c = t;
@@ -836,7 +836,7 @@ SValue g_pOptions[] =
 
 #pragma prefast(disable : 26018, "Only used with static internal arrays")
 
-DWORD LookupByName(const WCHAR *pName, const SValue *pArray)
+DWORD LookupByName(const wchar_t *pName, const SValue *pArray)
 {
     while(pArray->pName)
     {
@@ -849,7 +849,7 @@ DWORD LookupByName(const WCHAR *pName, const SValue *pArray)
     return 0;
 }
 
-const WCHAR* LookupByValue(DWORD pValue, const SValue *pArray)
+const wchar_t* LookupByValue(DWORD pValue, const SValue *pArray)
 {
     while(pArray->pName)
     {
@@ -928,7 +928,7 @@ void PrintInfo( const WaveFile& wave )
     wprintf( L" (%hs %u channels, %u-bit, %u Hz)", GetFormatTagName( wave.data.wfx->wFormatTag ), wave.data.wfx->nChannels, wave.data.wfx->wBitsPerSample, wave.data.wfx->nSamplesPerSec );
 }
 
-bool FileExists( const WCHAR* pszFilename )
+bool FileExists( const wchar_t* pszFilename )
 {
     FILE *f = nullptr;
     if ( !_wfopen_s( &f, pszFilename, L"rb" ) )
@@ -956,8 +956,8 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     // Parameters and defaults
     INT nReturn = 0;
 
-    WCHAR szOutputFile[MAX_PATH] = { 0 };
-    WCHAR szHeaderFile[MAX_PATH] = { 0 };
+    wchar_t szOutputFile[MAX_PATH] = { 0 };
+    wchar_t szHeaderFile[MAX_PATH] = { 0 };
 
     ScopedHandle hFile;
 
@@ -1068,8 +1068,8 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
 
     for( SConversion *pConv = pConversion; pConv; pConv = pConv->pNext )
     {
-        WCHAR ext[_MAX_EXT];
-        WCHAR fname[_MAX_FNAME];
+        wchar_t ext[_MAX_EXT];
+        wchar_t fname[_MAX_FNAME];
         _wsplitpath_s( pConv->szSrc, nullptr, 0, nullptr, 0, fname, _MAX_FNAME, ext, _MAX_EXT );
 
         // Load source image
@@ -1273,7 +1273,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
 
         if ( dwOptions & (1 << OPT_FRIENDLY_NAMES ) )
         {
-            WCHAR wEntryName[_MAX_FNAME];
+            wchar_t wEntryName[_MAX_FNAME];
             _wsplitpath_s( it->conv->szSrc, nullptr, 0, nullptr, 0, wEntryName, _MAX_FNAME, nullptr, 0 );
 
             int result = WideCharToMultiByte( CP_ACP, WC_NO_BEST_FIT_CHARS, wEntryName, -1, &entryNames[ count * ENTRYNAME_LENGTH], ENTRYNAME_LENGTH, nullptr, FALSE );
@@ -1361,7 +1361,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     }
 
     {
-        WCHAR wBankName[ _MAX_FNAME ];
+        wchar_t wBankName[ _MAX_FNAME ];
         _wsplitpath_s( szOutputFile, nullptr, 0, nullptr, 0, wBankName, _MAX_FNAME, nullptr, 0 );
 
         int result = WideCharToMultiByte( CP_ACP, WC_NO_BEST_FIT_CHARS, wBankName, -1, data.szBankName, BANKDATA::BANKNAME_LENGTH, nullptr, FALSE );
@@ -1569,7 +1569,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         FILE* file = nullptr;
         if ( !_wfopen_s( &file, szHeaderFile, L"wt" ) )
         {
-            WCHAR wBankName[ _MAX_FNAME ];
+            wchar_t wBankName[ _MAX_FNAME ];
             _wsplitpath_s( szOutputFile, nullptr, 0, nullptr, 0, wBankName, _MAX_FNAME, nullptr, 0 );
 
             FileNameToIdentifier( wBankName, _MAX_FNAME );
@@ -1579,7 +1579,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
             size_t index = 0;
             for( auto it = waves.begin(); it != waves.end(); ++it, ++index )
             {
-                WCHAR wEntryName[_MAX_FNAME];
+                wchar_t wEntryName[_MAX_FNAME];
                 _wsplitpath_s( it->conv->szSrc, nullptr, 0, nullptr, 0, wEntryName, _MAX_FNAME, nullptr, 0 );
 
                 FileNameToIdentifier( wEntryName, _MAX_FNAME );

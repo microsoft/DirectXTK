@@ -489,7 +489,7 @@ namespace DirectX
 
         struct EffectInfo
         {
-            const WCHAR*        name;
+            const wchar_t*      name;
             bool                perVertexColor;
             bool                enableSkinning;
             bool                enableDualTexture;
@@ -499,15 +499,15 @@ namespace DirectX
             DirectX::XMFLOAT3   diffuseColor;
             DirectX::XMFLOAT3   specularColor;
             DirectX::XMFLOAT3   emissiveColor;
-            const WCHAR*        texture;
-            const WCHAR*        texture2;
+            const wchar_t*      texture;
+            const wchar_t*      texture2;
 
             EffectInfo() { memset( this, 0, sizeof(EffectInfo) ); };
         };
 
         virtual std::shared_ptr<IEffect> __cdecl CreateEffect( _In_ const EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext ) = 0;
 
-        virtual void __cdecl CreateTexture( _In_z_ const WCHAR* name, _In_opt_ ID3D11DeviceContext* deviceContext, _Outptr_ ID3D11ShaderResourceView** textureView ) = 0;
+        virtual void __cdecl CreateTexture( _In_z_ const wchar_t* name, _In_opt_ ID3D11DeviceContext* deviceContext, _Outptr_ ID3D11ShaderResourceView** textureView ) = 0;
     };
 
 
@@ -526,14 +526,14 @@ namespace DirectX
 
         // IEffectFactory methods.
         virtual std::shared_ptr<IEffect> __cdecl CreateEffect( _In_ const EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext ) override;
-        virtual void __cdecl CreateTexture( _In_z_ const WCHAR* name, _In_opt_ ID3D11DeviceContext* deviceContext, _Outptr_ ID3D11ShaderResourceView** textureView ) override;
+        virtual void __cdecl CreateTexture( _In_z_ const wchar_t* name, _In_opt_ ID3D11DeviceContext* deviceContext, _Outptr_ ID3D11ShaderResourceView** textureView ) override;
 
         // Settings.
         void __cdecl ReleaseCache();
 
         void __cdecl SetSharing( bool enabled );
 
-        void __cdecl SetDirectory( _In_opt_z_ const WCHAR* path );
+        void __cdecl SetDirectory( _In_opt_z_ const wchar_t* path );
 
     private:
         // Private implementation.
@@ -558,27 +558,27 @@ namespace DirectX
 
         // IEffectFactory methods.
         virtual std::shared_ptr<IEffect> __cdecl CreateEffect( _In_ const EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext ) override;
-        virtual void __cdecl CreateTexture( _In_z_ const WCHAR* name, _In_opt_ ID3D11DeviceContext* deviceContext, _Outptr_ ID3D11ShaderResourceView** textureView ) override;
+        virtual void __cdecl CreateTexture( _In_z_ const wchar_t* name, _In_opt_ ID3D11DeviceContext* deviceContext, _Outptr_ ID3D11ShaderResourceView** textureView ) override;
 
         // DGSL methods.
         struct DGSLEffectInfo : public EffectInfo
         {
-            const WCHAR*        textures[6];
-            const WCHAR*        pixelShader;
+            const wchar_t*  textures[6];
+            const wchar_t*  pixelShader;
 
             DGSLEffectInfo() { memset( this, 0, sizeof(DGSLEffectInfo) ); };
         };
 
         virtual std::shared_ptr<IEffect> __cdecl CreateDGSLEffect( _In_ const DGSLEffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext );
 
-        virtual void __cdecl CreatePixelShader( _In_z_ const WCHAR* shader, _Outptr_ ID3D11PixelShader** pixelShader );
+        virtual void __cdecl CreatePixelShader( _In_z_ const wchar_t* shader, _Outptr_ ID3D11PixelShader** pixelShader );
 
         // Settings.
         void __cdecl ReleaseCache();
 
         void __cdecl SetSharing( bool enabled );
 
-        void __cdecl SetDirectory( _In_opt_z_ const WCHAR* path );
+        void __cdecl SetDirectory( _In_opt_z_ const wchar_t* path );
 
     private:
         // Private implementation.

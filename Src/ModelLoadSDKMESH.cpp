@@ -380,13 +380,13 @@ static void LoadMaterial( _In_ const DXUT::SDKMESH_MATERIAL& mh,
                           _In_ bool perVertexColor, _In_ bool enableSkinning, _In_ bool enableDualTexture,
                           _Inout_ IEffectFactory& fxFactory, _Inout_ MaterialRecordSDKMESH& m )
 {
-    WCHAR matName[ DXUT::MAX_MATERIAL_NAME ];
+    wchar_t matName[ DXUT::MAX_MATERIAL_NAME ];
     MultiByteToWideChar( CP_ACP, MB_PRECOMPOSED, mh.Name, -1, matName, DXUT::MAX_MATERIAL_NAME );
 
-    WCHAR txtName[ DXUT::MAX_TEXTURE_NAME ];
+    wchar_t txtName[ DXUT::MAX_TEXTURE_NAME ];
     MultiByteToWideChar( CP_ACP, MB_PRECOMPOSED, mh.DiffuseTexture, -1, txtName, DXUT::MAX_TEXTURE_NAME );
 
-    WCHAR txtName2[ DXUT::MAX_TEXTURE_NAME ];
+    wchar_t txtName2[ DXUT::MAX_TEXTURE_NAME ];
     MultiByteToWideChar( CP_ACP, MB_PRECOMPOSED, mh.SpecularTexture, -1, txtName2, DXUT::MAX_TEXTURE_NAME );
 
     if ( !mh.SpecularTexture[0] && enableDualTexture )
@@ -839,7 +839,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH( ID3D11Device* d3dDevic
         }
 
         auto mesh = std::make_shared<ModelMesh>();
-        WCHAR meshName[ DXUT::MAX_MESH_NAME ];
+        wchar_t meshName[ DXUT::MAX_MESH_NAME ];
         MultiByteToWideChar( CP_ACP, MB_PRECOMPOSED, mh.Name, -1, meshName, DXUT::MAX_MESH_NAME );
         mesh->name = meshName;
         mesh->ccw = ccw;

@@ -33,14 +33,14 @@ public:
     { *mPath = 0; }
 
     std::shared_ptr<IEffect> CreateEffect( _In_ IEffectFactory* factory, _In_ const IEffectFactory::EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext );
-    void CreateTexture( _In_z_ const WCHAR* texture, _In_opt_ ID3D11DeviceContext* deviceContext, _Outptr_ ID3D11ShaderResourceView** textureView );
+    void CreateTexture( _In_z_ const wchar_t* texture, _In_opt_ ID3D11DeviceContext* deviceContext, _Outptr_ ID3D11ShaderResourceView** textureView );
 
     void ReleaseCache();
     void SetSharing( bool enabled ) { mSharing = enabled; }
 
     static SharedResourcePool<ID3D11Device*, Impl> instancePool;
 
-    WCHAR mPath[MAX_PATH];
+    wchar_t mPath[MAX_PATH];
 
 private:
     ComPtr<ID3D11Device> device;
@@ -242,7 +242,7 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect( IEffectFactory* fact
 }
 
 _Use_decl_annotations_
-void EffectFactory::Impl::CreateTexture( const WCHAR* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView )
+void EffectFactory::Impl::CreateTexture( const wchar_t* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView )
 {
     if ( !name || !textureView )
         throw std::exception("invalid arguments");
@@ -261,11 +261,11 @@ void EffectFactory::Impl::CreateTexture( const WCHAR* name, ID3D11DeviceContext*
     }
     else
     {
-        WCHAR fullName[MAX_PATH] = {};
+        wchar_t fullName[MAX_PATH] = {};
         wcscpy_s( fullName, mPath );
         wcscat_s( fullName, name );
 
-        WCHAR ext[_MAX_EXT];
+        wchar_t ext[_MAX_EXT];
         _wsplitpath_s( name, nullptr, 0, nullptr, 0, nullptr, 0, ext, _MAX_EXT );
 
         if ( _wcsicmp( ext, L".dds" ) == 0 )
@@ -350,7 +350,7 @@ std::shared_ptr<IEffect> EffectFactory::CreateEffect( const EffectInfo& info, ID
 }
 
 _Use_decl_annotations_
-void EffectFactory::CreateTexture( const WCHAR* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView )
+void EffectFactory::CreateTexture( const wchar_t* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView )
 {
     return pImpl->CreateTexture( name, deviceContext, textureView );
 }
@@ -365,7 +365,7 @@ void EffectFactory::SetSharing( bool enabled )
     pImpl->SetSharing( enabled );
 }
 
-void EffectFactory::SetDirectory( _In_opt_z_ const WCHAR* path )
+void EffectFactory::SetDirectory( _In_opt_z_ const wchar_t* path )
 {
     if ( path && *path != 0 )
     {

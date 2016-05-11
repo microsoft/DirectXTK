@@ -38,15 +38,15 @@ public:
 
     std::shared_ptr<IEffect> CreateEffect( _In_ DGSLEffectFactory* factory, _In_ const IEffectFactory::EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext );
     std::shared_ptr<IEffect> CreateDGSLEffect( _In_ DGSLEffectFactory* factory, _In_ const DGSLEffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext );
-    void CreateTexture( _In_z_ const WCHAR* texture, _In_opt_ ID3D11DeviceContext* deviceContext, _Outptr_ ID3D11ShaderResourceView** textureView );
-    void CreatePixelShader( _In_z_ const WCHAR* shader, _Outptr_ ID3D11PixelShader** pixelShader );
+    void CreateTexture( _In_z_ const wchar_t* texture, _In_opt_ ID3D11DeviceContext* deviceContext, _Outptr_ ID3D11ShaderResourceView** textureView );
+    void CreatePixelShader( _In_z_ const wchar_t* shader, _Outptr_ ID3D11PixelShader** pixelShader );
 
     void ReleaseCache();
     void SetSharing( bool enabled ) { mSharing = enabled; }
 
     static SharedResourcePool<ID3D11Device*, Impl> instancePool;
 
-    WCHAR mPath[MAX_PATH];
+    wchar_t mPath[MAX_PATH];
 
 private:
     ComPtr<ID3D11Device> device;
@@ -328,7 +328,7 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateDGSLEffect( DGSLEffectFa
 
 
 _Use_decl_annotations_
-void DGSLEffectFactory::Impl::CreateTexture( const WCHAR* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView )
+void DGSLEffectFactory::Impl::CreateTexture( const wchar_t* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView )
 {
     if ( !name || !textureView )
         throw std::exception("invalid arguments");
@@ -347,11 +347,11 @@ void DGSLEffectFactory::Impl::CreateTexture( const WCHAR* name, ID3D11DeviceCont
     }
     else
     {
-        WCHAR fullName[MAX_PATH] = {};
+        wchar_t fullName[MAX_PATH] = {};
         wcscpy_s( fullName, mPath );
         wcscat_s( fullName, name );
 
-        WCHAR ext[_MAX_EXT];
+        wchar_t ext[_MAX_EXT];
         _wsplitpath_s( name, nullptr, 0, nullptr, 0, nullptr, 0, ext, _MAX_EXT );
 
         if ( _wcsicmp( ext, L".dds" ) == 0 )
@@ -395,7 +395,7 @@ void DGSLEffectFactory::Impl::CreateTexture( const WCHAR* name, ID3D11DeviceCont
 
 
 _Use_decl_annotations_
-void DGSLEffectFactory::Impl::CreatePixelShader( const WCHAR* name, ID3D11PixelShader** pixelShader )
+void DGSLEffectFactory::Impl::CreatePixelShader( const wchar_t* name, ID3D11PixelShader** pixelShader )
 {
     if ( !name || !pixelShader )
         throw std::exception("invalid arguments");
@@ -410,7 +410,7 @@ void DGSLEffectFactory::Impl::CreatePixelShader( const WCHAR* name, ID3D11PixelS
     }
     else
     {
-        WCHAR fullName[MAX_PATH] = {};
+        wchar_t fullName[MAX_PATH] = {};
         wcscpy_s( fullName, mPath );
         wcscat_s( fullName, name );
 
@@ -482,7 +482,7 @@ std::shared_ptr<IEffect> DGSLEffectFactory::CreateEffect( const EffectInfo& info
 }
 
 _Use_decl_annotations_
-void DGSLEffectFactory::CreateTexture( const WCHAR* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView )
+void DGSLEffectFactory::CreateTexture( const wchar_t* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView )
 {
     return pImpl->CreateTexture( name, deviceContext, textureView );
 }
@@ -497,7 +497,7 @@ std::shared_ptr<IEffect> DGSLEffectFactory::CreateDGSLEffect( const DGSLEffectIn
 
 
 _Use_decl_annotations_
-void DGSLEffectFactory::CreatePixelShader( const WCHAR* shader, ID3D11PixelShader** pixelShader )
+void DGSLEffectFactory::CreatePixelShader( const wchar_t* shader, ID3D11PixelShader** pixelShader )
 {
     pImpl->CreatePixelShader( shader, pixelShader );
 }
@@ -514,7 +514,7 @@ void DGSLEffectFactory::SetSharing( bool enabled )
     pImpl->SetSharing( enabled );
 }
 
-void DGSLEffectFactory::SetDirectory( _In_opt_z_ const WCHAR* path )
+void DGSLEffectFactory::SetDirectory( _In_opt_z_ const wchar_t* path )
 {
     if ( path && *path != 0 )
     {
