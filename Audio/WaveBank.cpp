@@ -206,9 +206,7 @@ void WaveBank::Impl::Play( int index, float volume, float pitch, float pan )
     hr = voice->Start( 0 );
     ThrowIfFailed( hr );
 
-    XAUDIO2_BUFFER buffer;
-    memset( &buffer, 0, sizeof(buffer) );
-
+    XAUDIO2_BUFFER buffer = {};
     hr = mReader.GetWaveData( index, &buffer.pAudioData, buffer.AudioBytes );
     ThrowIfFailed( hr );
 
@@ -221,8 +219,7 @@ void WaveBank::Impl::Play( int index, float volume, float pitch, float pan )
 
 #if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
 
-    XAUDIO2_BUFFER_WMA wmaBuffer;
-    memset( &wmaBuffer, 0, sizeof(wmaBuffer) );
+    XAUDIO2_BUFFER_WMA wmaBuffer = {};
 
     uint32_t tag;
     hr = mReader.GetSeekTable( index, &wmaBuffer.pDecodedPacketCumulativeBytes, wmaBuffer.PacketCount, tag );

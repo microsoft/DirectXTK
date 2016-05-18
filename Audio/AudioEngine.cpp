@@ -914,8 +914,7 @@ void AudioEngine::Impl::SetMasteringLimit( int release, int loudness )
 
 AudioStatistics AudioEngine::Impl::GetStatistics() const
 {
-    AudioStatistics stats;
-    memset( &stats, 0, sizeof(stats) );
+    AudioStatistics stats = {};
 
     stats.allocatedVoices = stats.allocatedVoicesOneShot = mOneShots.size() + mVoicePool.size();
     stats.allocatedVoicesIdle = mVoicePool.size();
@@ -1017,8 +1016,7 @@ void AudioEngine::Impl::AllocateVoice( const WAVEFORMATEX* wfx, SOUND_EFFECT_INS
                     if (wfx->nChannels == 1 || wfx->nChannels == 2)
                     {
                         // Reset any panning
-                        float matrix[16];
-                        memset( matrix, 0, sizeof(float) * 16 );
+                        float matrix[16] = {};
                         ComputePan( 0.f, wfx->nChannels, matrix );
 
                         hr = (*voice)->SetOutputMatrix(nullptr, wfx->nChannels, masterChannels, matrix);
@@ -1421,8 +1419,7 @@ AudioStatistics AudioEngine::GetStatistics() const
 
 WAVEFORMATEXTENSIBLE AudioEngine::GetOutputFormat() const
 {
-    WAVEFORMATEXTENSIBLE wfx;
-    memset( &wfx, 0, sizeof(WAVEFORMATEXTENSIBLE) );
+    WAVEFORMATEXTENSIBLE wfx = {};
 
     if ( !pImpl->xaudio2 )
         return wfx;

@@ -175,9 +175,7 @@ void DynamicSoundEffectInstance::Impl::SubmitBuffer( const uint8_t* pAudioData, 
         throw std::out_of_range( "SubmitBuffer" );
 #endif
 
-    XAUDIO2_BUFFER buffer;
-    memset( &buffer, 0, sizeof(buffer) );
-
+    XAUDIO2_BUFFER buffer = {};
     buffer.AudioBytes = static_cast<UINT32>( audioBytes );
     buffer.pAudioData = pAudioData;
 

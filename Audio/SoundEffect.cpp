@@ -322,8 +322,7 @@ void SoundEffect::Impl::Play( float volume, float pitch, float pan )
     HRESULT hr = voice->Start( 0 );
     ThrowIfFailed( hr );
 
-    XAUDIO2_BUFFER buffer;
-    memset( &buffer, 0, sizeof(buffer) );
+    XAUDIO2_BUFFER buffer = {};
     buffer.AudioBytes = mAudioBytes;
     buffer.pAudioData = mStartAudio;
     buffer.Flags = XAUDIO2_END_OF_STREAM;
@@ -334,9 +333,7 @@ void SoundEffect::Impl::Play( float volume, float pitch, float pan )
     uint32_t tag = GetFormatTag( mWaveFormat );
     if ( tag == WAVE_FORMAT_WMAUDIO2 || tag == WAVE_FORMAT_WMAUDIO3 )
     {
-        XAUDIO2_BUFFER_WMA wmaBuffer;
-        memset( &wmaBuffer, 0, sizeof(wmaBuffer) );
-
+        XAUDIO2_BUFFER_WMA wmaBuffer = {};
         wmaBuffer.PacketCount = mSeekCount;
         wmaBuffer.pDecodedPacketCumulativeBytes = mSeekTable;
 

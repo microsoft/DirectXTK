@@ -563,8 +563,8 @@ namespace DirectX
         // DGSL methods.
         struct DGSLEffectInfo : public EffectInfo
         {
-            const wchar_t*  textures[6];
-            const wchar_t*  pixelShader;
+            const wchar_t* textures[6];
+            const wchar_t* pixelShader;
 
             DGSLEffectInfo() { memset( this, 0, sizeof(DGSLEffectInfo) ); };
         };

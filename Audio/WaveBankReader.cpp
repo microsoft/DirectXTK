@@ -535,8 +535,7 @@ HRESULT WaveBankReader::Impl::Open( const wchar_t* szFileName )
     }
 
     // Read and verify header
-    OVERLAPPED request;
-    memset( &request, 0, sizeof(request) );
+    OVERLAPPED request = {};
     request.hEvent = m_event.get();
 
     bool wait = false;
