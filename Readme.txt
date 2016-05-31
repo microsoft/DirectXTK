@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-April 26, 2016
+May 31, 2016
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Universal Windows Platform (UWP) apps for Windows 10,
@@ -73,6 +73,12 @@ Note: Xbox One exclusive apps developers using the Xbox One XDK need to generate
 ---------------
 RELEASE HISTORY
 ---------------
+
+May 31, 2016
+    Added VertexPosition and VertexPositionDualTexture to VertexTypes
+    Xbox One platform fix for PrimitiveBatch
+    CompileShader script updated to build external pdbs
+    Code cleanup
 
 April 26, 2016
     Added Rectangle class to SimpleMath
