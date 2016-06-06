@@ -203,14 +203,16 @@ void SpriteFont::Impl::ForEachGlyph(_In_z_ wchar_t const* text, TAction action) 
                 if (x < 0)
                     x = 0;
 
+                float advance = glyph->Subrect.right - glyph->Subrect.left + glyph->XAdvance;
+
                 if ( !iswspace(character)
                      || ( ( glyph->Subrect.right - glyph->Subrect.left ) > 1 )
                      || ( ( glyph->Subrect.bottom - glyph->Subrect.top ) > 1 ) )
                 {
-                    action(glyph, x, y);
+                    action(glyph, x, y, advance);
                 }
 
-                x += glyph->Subrect.right - glyph->Subrect.left + glyph->XAdvance;
+                x += advance;
                 break;
         }
     }
@@ -315,8 +317,10 @@ void XM_CALLCONV SpriteFont::DrawString(_In_ SpriteBatch* spriteBatch, _In_z_ wc
     }
 
     // Draw each character in turn.
-    pImpl->ForEachGlyph(text, [&](Glyph const* glyph, float x, float y)
+    pImpl->ForEachGlyph(text, [&](Glyph const* glyph, float x, float y, float advance)
     {
+        UNREFERENCED_PARAMETER(advance);
+
         XMVECTOR offset = XMVectorMultiplyAdd(XMVectorSet(x, y + glyph->YOffset, 0, 0), axisDirectionTable[effects & 3], baseOffset);
         
         if (effects)
@@ -339,9 +343,11 @@ XMVECTOR XM_CALLCONV SpriteFont::MeasureString(_In_z_ wchar_t const* text) const
 {
     XMVECTOR result = XMVectorZero();
 
-    pImpl->ForEachGlyph(text, [&](Glyph const* glyph, float x, float y)
+    pImpl->ForEachGlyph(text, [&](Glyph const* glyph, float x, float y, float advance)
     {
-        float w = (float)(glyph->Subrect.right - glyph->Subrect.left) + glyph->XAdvance;
+        UNREFERENCED_PARAMETER(advance);
+
+        float w = (float)(glyph->Subrect.right - glyph->Subrect.left);
         float h = (float)(glyph->Subrect.bottom - glyph->Subrect.top) + glyph->YOffset;
 
         h = std::max(h, pImpl->lineSpacing);
@@ -350,6 +356,55 @@ XMVECTOR XM_CALLCONV SpriteFont::MeasureString(_In_z_ wchar_t const* text) const
     });
 
     return result;
+}
+
+
+RECT SpriteFont::MeasureDrawBounds(_In_z_ wchar_t const* text, XMFLOAT2 const& position) const
+{
+    RECT result = { LONG_MAX, LONG_MAX, 0, 0 };
+
+    pImpl->ForEachGlyph(text, [&](Glyph const* glyph, float x, float y, float advance)
+    {
+        float w = (float)(glyph->Subrect.right - glyph->Subrect.left);
+        float h = (float)(glyph->Subrect.bottom - glyph->Subrect.top) + glyph->YOffset;
+
+        h = std::max(h, pImpl->lineSpacing);
+
+        float minX = (position.x + x);
+        float minY = (position.y + y);
+
+        float maxX = std::max(minX + advance, minX + w);
+        float maxY = minY + h;
+
+        if (minX < result.left)
+            result.left = long(minX);
+
+        if (minY < result.top)
+            result.top = long(minY);
+
+        if (result.right < maxX)
+            result.right = long(maxX);
+
+        if (result.bottom < maxY)
+            result.bottom = long(maxY);
+    });
+
+    if (result.left == LONG_MAX)
+    {
+        result.left = 0;
+        result.top = 0;
+    }
+
+    return result;
+}
+
+
+RECT XM_CALLCONV SpriteFont::MeasureDrawBounds(_In_z_ wchar_t const* text, FXMVECTOR position) const
+{
+    XMFLOAT2 pos;
+    XMStoreFloat2(&pos, position);
+
+    return MeasureDrawBounds(text, pos);
 }
 
 

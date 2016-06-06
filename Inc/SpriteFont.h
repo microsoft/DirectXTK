@@ -42,6 +42,9 @@ namespace DirectX
 
         XMVECTOR XM_CALLCONV MeasureString(_In_z_ wchar_t const* text) const;
 
+        RECT MeasureDrawBounds(_In_z_ wchar_t const* text, XMFLOAT2 const& position) const;
+        RECT XM_CALLCONV MeasureDrawBounds(_In_z_ wchar_t const* text, FXMVECTOR position) const;
+
         // Spacing properties
         float __cdecl GetLineSpacing() const;
         void __cdecl SetLineSpacing(float spacing);
