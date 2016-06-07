@@ -366,12 +366,10 @@ RECT SpriteFont::MeasureDrawBounds(_In_z_ wchar_t const* text, XMFLOAT2 const& p
     pImpl->ForEachGlyph(text, [&](Glyph const* glyph, float x, float y, float advance)
     {
         float w = (float)(glyph->Subrect.right - glyph->Subrect.left);
-        float h = (float)(glyph->Subrect.bottom - glyph->Subrect.top) + glyph->YOffset;
+        float h = (float)(glyph->Subrect.bottom - glyph->Subrect.top);
 
-        h = std::max(h, pImpl->lineSpacing);
-
-        float minX = (position.x + x);
-        float minY = (position.y + y);
+        float minX = position.x + x;
+        float minY = position.y + y + glyph->YOffset;
 
         float maxX = std::max(minX + advance, minX + w);
         float maxY = minY + h;
