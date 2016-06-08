@@ -66,8 +66,16 @@ namespace DirectX
             bool rightStick;
             bool leftShoulder;
             bool rightShoulder;
-            bool back;
-            bool start;
+            union
+            {
+                bool back;
+                bool view;
+            };
+            union
+            {
+                bool start;
+                bool menu;
+            };
         };
 
         struct DPad
