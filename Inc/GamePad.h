@@ -124,9 +124,9 @@ namespace DirectX
             bool __cdecl IsRightShoulderPressed() const { return buttons.rightShoulder; }
 
             bool __cdecl IsBackPressed() const { return buttons.back; }
-            bool __cdecl IsViewPressed() const { return buttons.back; }
+            bool __cdecl IsViewPressed() const { return buttons.view; }
             bool __cdecl IsStartPressed() const { return buttons.start; }
-            bool __cdecl IsMenuPressed() const { return buttons.start; }
+            bool __cdecl IsMenuPressed() const { return buttons.menu; }
 
             bool __cdecl IsDPadDownPressed() const { return dpad.down; };
             bool __cdecl IsDPadUpPressed() const { return dpad.up; };
@@ -209,6 +209,19 @@ namespace DirectX
             ButtonState dpadDown;
             ButtonState dpadLeft;
             ButtonState dpadRight;
+
+            ButtonState leftStickUp;
+            ButtonState leftStickDown;
+            ButtonState leftStickLeft;
+            ButtonState leftStickRight;
+
+            ButtonState rightStickUp;
+            ButtonState rightStickDown;
+            ButtonState rightStickLeft;
+            ButtonState rightStickRight;
+
+            ButtonState leftTrigger;
+            ButtonState rightTrigger;
 
             ButtonStateTracker() { Reset(); }
 

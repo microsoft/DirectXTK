@@ -1195,6 +1195,38 @@ void GamePad::ButtonStateTracker::Update( const GamePad::State& state )
     assert( ( !state.dpad.up && lastState.dpad.up ) == ( dpadUp == RELEASED ) );
     assert( ( state.dpad.up && !lastState.dpad.up ) == ( dpadUp == PRESSED ) );
 
+    // Handle 'threshold' tests which emulate buttons
+
+    bool threshold = state.IsLeftThumbStickUp();
+    leftStickUp = static_cast<ButtonState>( ( !!threshold) | ( ( !!threshold ^ !!lastState.IsLeftThumbStickUp() ) << 1 ) );
+
+    threshold = state.IsLeftThumbStickDown();
+    leftStickDown = static_cast<ButtonState>((!!threshold) | ((!!threshold ^ !!lastState.IsLeftThumbStickDown()) << 1));
+
+    threshold = state.IsLeftThumbStickLeft();
+    leftStickLeft = static_cast<ButtonState>((!!threshold) | ((!!threshold ^ !!lastState.IsLeftThumbStickLeft()) << 1));
+
+    threshold = state.IsLeftThumbStickRight();
+    leftStickRight = static_cast<ButtonState>((!!threshold) | ((!!threshold ^ !!lastState.IsLeftThumbStickRight()) << 1));
+
+    threshold = state.IsRightThumbStickUp();
+    rightStickUp = static_cast<ButtonState>((!!threshold) | ((!!threshold ^ !!lastState.IsRightThumbStickUp()) << 1));
+
+    threshold = state.IsRightThumbStickDown();
+    rightStickDown = static_cast<ButtonState>((!!threshold) | ((!!threshold ^ !!lastState.IsRightThumbStickDown()) << 1));
+
+    threshold = state.IsRightThumbStickLeft();
+    rightStickLeft = static_cast<ButtonState>((!!threshold) | ((!!threshold ^ !!lastState.IsRightThumbStickLeft()) << 1));
+
+    threshold = state.IsRightThumbStickRight();
+    rightStickRight = static_cast<ButtonState>((!!threshold) | ((!!threshold ^ !!lastState.IsRightThumbStickRight()) << 1));
+
+    threshold = state.IsLeftTriggerPressed();
+    leftTrigger = static_cast<ButtonState>((!!threshold) | ((!!threshold ^ !!lastState.IsLeftTriggerPressed()) << 1));
+
+    threshold = state.IsRightTriggerPressed();
+    rightTrigger = static_cast<ButtonState>((!!threshold) | ((!!threshold ^ !!lastState.IsRightTriggerPressed()) << 1));
+
     lastState = state;
 }
 
