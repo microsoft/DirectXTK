@@ -229,6 +229,8 @@ namespace DirectX
 
             void __cdecl Reset();
 
+            State __cdecl GetLastState() const { return lastState; }
+
         private:
             State lastState;
         };

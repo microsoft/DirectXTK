@@ -440,6 +440,8 @@ namespace DirectX
             bool __cdecl IsKeyPressed(Keys key) const { return pressed.IsKeyDown(key); }
             bool __cdecl IsKeyReleased(Keys key) const { return released.IsKeyDown(key); }
 
+            State __cdecl GetLastState() const { return lastState; }
+
         public:
             State lastState;
         };
