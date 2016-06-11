@@ -55,9 +55,13 @@
     <ClInclude Include="Src\dds.h" />
     <ClInclude Include="Src\DemandCreate.h" />
     <ClInclude Include="Src\EffectCommon.h" />
+    <ClInclude Include="Src\Geometry.h" />
+    <ClInclude Include="Src\LoaderHelpers.h" />
     <ClInclude Include="Src\pch.h" />
     <ClInclude Include="Src\PlatformHelpers.h" />
+    <ClInclude Include="Src\SDKMesh.h" />
     <ClInclude Include="Src\SharedResourcePool.h" />
+    <ClInclude Include="Src\vbo.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Inc\SimpleMath.inl" />
@@ -151,7 +155,6 @@
     <None Include="Src\Shaders\CompileShaders.cmd" />
     <None Include="Src\Shaders\Lighting.fxh" />
     <None Include="Src\Shaders\Structures.fxh" />
-    <None Include="Src\sources" />
     <None Include="Src\TeapotData.inc" />
   </ItemGroup>
   <ItemGroup>
@@ -176,6 +179,7 @@
     <ClCompile Include="Src\EnvironmentMapEffect.cpp" />
     <ClCompile Include="Src\GamePad.cpp" />
     <ClCompile Include="Src\GeometricPrimitive.cpp" />
+    <ClCompile Include="Src\Geometry.cpp" />
     <ClCompile Include="Src\GraphicsMemory.cpp" />
     <ClCompile Include="Src\Keyboard.cpp" />
     <ClCompile Include="Src\Model.cpp" />

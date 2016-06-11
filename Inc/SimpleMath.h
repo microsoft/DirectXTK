@@ -13,10 +13,12 @@
 
 #pragma once
 
-#if defined(_XBOX_ONE) && defined(_TITLE)
-#include <d3d11_x.h>
-#else
-#include <d3d11_1.h>
+#if !defined(__d3d11_h__) && !defined(__d3d11_x_h__) && !defined(__d3d12_h__) && !defined(__d3d12_x_h__)
+#error include d3d11.h or d3d12.h before including SimpleMath.h
+#endif
+
+#if !defined(_XBOX_ONE) || !defined(_TITLE)
+#include <dxgi1_2.h>
 #endif
 
 #include <functional>
@@ -825,14 +827,30 @@ public:
         width(float(rct.right - rct.left)),
         height(float(rct.bottom - rct.top)),
         minDepth(0.f), maxDepth(1.f) {}
+
+#if defined(__d3d11_h__) || defined(__d3d11_x_h__)
+    // Direct3D 11 interop
     explicit Viewport(const D3D11_VIEWPORT& vp) :
         x(vp.TopLeftX), y(vp.TopLeftY),
         width(vp.Width), height(vp.Height),
         minDepth(vp.MinDepth), maxDepth(vp.MaxDepth) {}
 
-    // Direct3D 11 interop
     operator D3D11_VIEWPORT() { return *reinterpret_cast<D3D11_VIEWPORT*>(this); }
     const D3D11_VIEWPORT* Get11() const { return reinterpret_cast<const D3D11_VIEWPORT*>(this); }
+    Viewport& operator= (const D3D11_VIEWPORT& vp);
+#endif
+
+#if defined(__d3d12_h__) || defined(__d3d12_x_h__)
+    // Direct3D 12 interop
+    explicit Viewport(const D3D12_VIEWPORT& vp) :
+        x(vp.TopLeftX), y(vp.TopLeftY),
+        width(vp.Width), height(vp.Height),
+        minDepth(vp.MinDepth), maxDepth(vp.MaxDepth) {}
+
+    operator D3D12_VIEWPORT() { return *reinterpret_cast<D3D12_VIEWPORT*>(this); }
+    const D3D12_VIEWPORT* Get12() const { return reinterpret_cast<const D3D12_VIEWPORT*>(this); }
+    Viewport& operator= (const D3D12_VIEWPORT& vp);
+#endif
 
     // Comparison operators
     bool operator == ( const Viewport& vp ) const;
@@ -841,7 +859,6 @@ public:
     // Assignment operators
     Viewport& operator= (const Viewport& vp);
     Viewport& operator= (const RECT& rct);
-    Viewport& operator= (const D3D11_VIEWPORT& vp);
 
     // Viewport operations
     float AspectRatio() const;

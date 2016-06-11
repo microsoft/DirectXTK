@@ -21,51 +21,31 @@
 #include "PlatformHelpers.h"
 #include "BinaryReader.h"
 
+#include "vbo.h"
+
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
-
-//--------------------------------------------------------------------------------------
-// The VBO file format was introduced in the Windows 8.0 ResourceLoading sample. It's
-// a simple binary file containing a 16-bit index buffer and a fixed-format vertex buffer.
-//
-// The meshconvert sample tool for DirectXMesh can produce this file type
-// http://go.microsoft.com/fwlink/?LinkID=324981
-//--------------------------------------------------------------------------------------
-
-namespace VBO
-{
-#pragma pack(push,1)
-
-    struct header_t
-    {
-        uint32_t numVertices;
-        uint32_t numIndices;
-    };
-
-#pragma pack(pop)
-
-}; // namespace
-
-static_assert(sizeof(VBO::header_t) == 8, "VBO header size mismatch");
 static_assert(sizeof(VertexPositionNormalTexture) == 32, "VBO vertex size mismatch");
 
-
-//--------------------------------------------------------------------------------------
-// Shared VB input element description
-static INIT_ONCE g_InitOnce = INIT_ONCE_STATIC_INIT;
-static std::shared_ptr<std::vector<D3D11_INPUT_ELEMENT_DESC>> g_vbdecl;
-
-static BOOL CALLBACK InitializeDecl(PINIT_ONCE initOnce, PVOID Parameter, PVOID *lpContext)
+namespace
 {
-    UNREFERENCED_PARAMETER(initOnce);
-    UNREFERENCED_PARAMETER(Parameter);
-    UNREFERENCED_PARAMETER(lpContext);
+    //--------------------------------------------------------------------------------------
+    // Shared VB input element description
+    INIT_ONCE g_InitOnce = INIT_ONCE_STATIC_INIT;
+    std::shared_ptr<std::vector<D3D11_INPUT_ELEMENT_DESC>> g_vbdecl;
 
-    g_vbdecl = std::make_shared<std::vector<D3D11_INPUT_ELEMENT_DESC>>(VertexPositionNormalTexture::InputElements,
-                   VertexPositionNormalTexture::InputElements + VertexPositionNormalTexture::InputElementCount);
+    BOOL CALLBACK InitializeDecl(PINIT_ONCE initOnce, PVOID Parameter, PVOID *lpContext)
+    {
+        UNREFERENCED_PARAMETER(initOnce);
+        UNREFERENCED_PARAMETER(Parameter);
+        UNREFERENCED_PARAMETER(lpContext);
 
-    return TRUE;
+        g_vbdecl = std::make_shared<std::vector<D3D11_INPUT_ELEMENT_DESC>>(VertexPositionNormalTexture::InputElements,
+            VertexPositionNormalTexture::InputElements + VertexPositionNormalTexture::InputElementCount);
+
+        return TRUE;
+    }
 }
 
 

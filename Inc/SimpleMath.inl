@@ -3633,6 +3633,7 @@ inline Viewport& Viewport::operator= (const RECT& rct)
     return *this;
 }
 
+#if defined(__d3d11_h__) || defined(__d3d11_x_h__)
 inline Viewport& Viewport::operator= (const D3D11_VIEWPORT& vp)
 {
     x = vp.TopLeftX; y = vp.TopLeftY;
@@ -3640,6 +3641,17 @@ inline Viewport& Viewport::operator= (const D3D11_VIEWPORT& vp)
     minDepth = vp.MinDepth; maxDepth = vp.MaxDepth;
     return *this;
 }
+#endif
+
+#if defined(__d3d12_h__) || defined(__d3d12_x_h__)
+inline Viewport& Viewport::operator= (const D3D12_VIEWPORT& vp)
+{
+    x = vp.TopLeftX; y = vp.TopLeftY;
+    width = vp.Width; height = vp.Height;
+    minDepth = vp.MinDepth; maxDepth = vp.MaxDepth;
+    return *this;
+}
+#endif
 
 //------------------------------------------------------------------------------
 // Viewport operations

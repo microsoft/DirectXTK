@@ -13,6 +13,9 @@
     <Filter Include="Src\Shaders\Compiled">
       <UniqueIdentifier>{2c7e186a-b9b6-4511-85f2-1bb46bd0f152}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Audio">
+      <UniqueIdentifier>{5d47b946-09b9-4477-934f-ca45fba9845d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inc\CommonStates.h">
@@ -90,18 +93,6 @@
     <ClInclude Include="Inc\GamePad.h">
       <Filter>Inc</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Audio.h">
-      <Filter>Inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Audio\WAVFileReader.h">
-      <Filter>Src</Filter>
-    </ClInclude>
-    <ClInclude Include="Audio\WaveBankReader.h">
-      <Filter>Src</Filter>
-    </ClInclude>
-    <ClInclude Include="Audio\SoundCommon.h">
-      <Filter>Src</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Keyboard.h">
       <Filter>Inc</Filter>
     </ClInclude>
@@ -110,6 +101,30 @@
     </ClInclude>
     <ClInclude Include="Inc\GraphicsMemory.h">
       <Filter>Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\SDKMesh.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\vbo.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Audio.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\SoundCommon.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\WAVFileReader.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\WaveBankReader.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Geometry.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\LoaderHelpers.h">
+      <Filter>Src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -191,30 +206,6 @@
     <ClCompile Include="Src\ModelLoadVBO.cpp">
       <Filter>Src</Filter>
     </ClCompile>
-    <ClCompile Include="Audio\WAVFileReader.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Audio\WaveBankReader.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Audio\WaveBank.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Audio\SoundEffectInstance.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Audio\SoundEffect.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Audio\SoundCommon.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Audio\DynamicSoundEffectInstance.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Audio\AudioEngine.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Keyboard.cpp">
       <Filter>Src</Filter>
     </ClCompile>
@@ -222,6 +213,33 @@
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="Src\GraphicsMemory.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio\AudioEngine.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio\DynamicSoundEffectInstance.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio\SoundCommon.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio\WAVFileReader.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio\WaveBankReader.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio\WaveBank.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio\SoundEffectInstance.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio\SoundEffect.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Geometry.cpp">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>

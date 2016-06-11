@@ -64,3 +64,5 @@
 #include <stdint.h>
 
 #include <wrl.h>
+
+#include <wincodec.h>

@@ -111,13 +111,22 @@
     <ClInclude Include="Inc\GraphicsMemory.h">
       <Filter>Inc</Filter>
     </ClInclude>
+    <ClInclude Include="Src\SDKMesh.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\vbo.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Geometry.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\LoaderHelpers.h">
+      <Filter>Src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Inc\SimpleMath.inl">
       <Filter>Inc</Filter>
-    </None>
-    <None Include="Src\sources">
-      <Filter>Src</Filter>
     </None>
     <None Include="Src\Shaders\Common.fxh">
       <Filter>Src\Shaders</Filter>
@@ -533,6 +542,9 @@
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="Src\GraphicsMemory.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Geometry.cpp">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>
