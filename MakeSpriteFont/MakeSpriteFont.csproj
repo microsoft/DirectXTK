@@ -45,11 +45,6 @@
     <Compile Include="MakeSpriteFontGUI.Designer.cs">
       <DependentUpon>MakeSpriteFontGUI.cs</DependentUpon>
     </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="SpriteFontWriter.cs" />
     <Compile Include="TrueTypeImporter.cs" />
     <Compile Include="BitmapImporter.cs" />
@@ -69,10 +64,6 @@
   <ItemGroup>
     <EmbeddedResource Include="MakeSpriteFontGUI.resx">
       <DependentUpon>MakeSpriteFontGUI.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
