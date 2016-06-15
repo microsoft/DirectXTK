@@ -61,6 +61,31 @@ void SpriteVertexShader(
 	rtvId = idx;
 }
 
+void NonVPRT_SpriteVertexShader(
+	inout float4 color    : COLOR0,							//The RGBA normalized color
+	inout float2 texCoord : TEXCOORD0,						//The U - V coordinates
+	inout float4 position : SV_Position,					//The normalized XYZW position
+	in uint  instId : SV_InstanceID,						//When calling DrawIndexedInstanced the single instance id passed in from DirectX	
+	out uint viewId :	TEXCOORD1
+)
+{
+	// Note which view this vertex has been sent to. Used for matrix lookup.
+	// Taking the modulo of the instance ID allows geometry instancing to be used
+	// along with stereo instanced drawing; in that case, two copies of each 
+	// instance would be drawn, one for left and one for right.
+	position = mul(position, MatrixTransform);
+
+	// get the instance ID get it's modulus (will either be 0 or 1)
+	// we can uses these index numbers for Left and Right matrix from Holographic cameras
+	uint idx = instId % 2;
+
+	// Transform the vertex position into world space from a specific view of the holographic camera.
+	// 0 - Left view, 1 - Right view (In the case of HoloLens)
+	position = mul(position, viewProjection[idx]);
+
+	viewId = idx;
+}
+
 
 float4 SpritePixelShader(float4 color    : COLOR0,
                          float2 texCoord : TEXCOORD0) : SV_Target0

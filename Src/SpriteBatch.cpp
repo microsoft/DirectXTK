@@ -38,7 +38,8 @@ namespace
 #else
 #include "Shaders/Compiled/SpriteEffect_SpriteVertexShader.inc"
 #include "Shaders/Compiled/SpriteEffect_SpritePixelShader.inc"
-
+#include "Shaders/Compiled/SpriteEffect_NonVPRT_SpriteVertexShader.inc"
+#include "Shaders/Compiled/PassThruGeometryShader_SpriteGeometryShader.inc"
 #endif
 
 
@@ -188,12 +189,13 @@ private:
 	struct DeviceResources
 	{
 		DeviceResources(_In_ ID3D11Device* device);
+		bool                    GetDeviceSupportsVprt() const { return m_supportsVprt; }
 
 		ComPtr<ID3D11VertexShader> vertexShader;
 		ComPtr<ID3D11PixelShader> pixelShader;
+		ComPtr<ID3D11GeometryShader> geometryShader;
 		ComPtr<ID3D11InputLayout> inputLayout;
 		ComPtr<ID3D11Buffer> indexBuffer;
-
 		CommonStates stateObjects;
 
 	private:
@@ -201,6 +203,8 @@ private:
 		void CreateIndexBuffer(_In_ ID3D11Device* device);
 
 		static std::vector<short> CreateIndexValues();
+		bool				m_supportsVprt;
+
 	};
 
 
@@ -252,23 +256,59 @@ const XMFLOAT2 SpriteBatch::Float2Zero(0, 0);
 
 // Per-device constructor.
 SpriteBatch::Impl::DeviceResources::DeviceResources(_In_ ID3D11Device* device)
-	: stateObjects(device)
+	: stateObjects(device), m_supportsVprt(false)
 {
 	CreateShaders(device);
 	CreateIndexBuffer(device);
+
+	// Check for device support for the optional feature that allows setting the render target array index from the vertex shader stage.
+	D3D11_FEATURE_DATA_D3D11_OPTIONS3 options;
+	device->CheckFeatureSupport(D3D11_FEATURE_D3D11_OPTIONS3, &options, sizeof(options));
+	if (options.VPAndRTArrayIndexFromAnyShaderFeedingRasterizer)
+	{
+		m_supportsVprt = true;
+	}
 }
 
 
 // Creates the SpriteBatch shaders and input layout.
 void SpriteBatch::Impl::DeviceResources::CreateShaders(_In_ ID3D11Device* device)
 {
+	auto usingVprtShaders = GetDeviceSupportsVprt();
+
+	// On devices that do support the D3D11_FEATURE_D3D11_OPTIONS3::
+	// VPAndRTArrayIndexFromAnyShaderFeedingRasterizer optional feature
+	// we can avoid using a pass-through geometry shader to set the render
+	// target array index, thus avoiding any overhead that would be 
+	// incurred by setting the geometry shader stage.
+	if (usingVprtShaders)
 	ThrowIfFailed(
 		device->CreateVertexShader(SpriteEffect_SpriteVertexShader,
 			sizeof(SpriteEffect_SpriteVertexShader),
 			nullptr,
 			&vertexShader)
 	);
+	else
+	{
+		// we need to set the index array in the shader and pass it to the geometry shader
+		ThrowIfFailed(
+			device->CreateVertexShader(SpriteEffect_NonVPRT_SpriteVertexShader,
+				sizeof(SpriteEffect_NonVPRT_SpriteVertexShader),
+				nullptr,
+				&vertexShader)
+		);
+	}
 
+		ThrowIfFailed(
+			device->CreateGeometryShader(
+				PassThruGeometryShader_SpriteGeometryShader,
+				sizeof(PassThruGeometryShader_SpriteGeometryShader),
+				nullptr,
+				&geometryShader
+			)
+		);
+
+	
 	ThrowIfFailed(
 		device->CreatePixelShader(SpriteEffect_SpritePixelShader,
 			sizeof(SpriteEffect_SpritePixelShader),
@@ -285,6 +325,7 @@ void SpriteBatch::Impl::DeviceResources::CreateShaders(_In_ ID3D11Device* device
 	);
 
 	SetDebugObjectName(vertexShader.Get(), "DirectXTK:SpriteBatch");
+	SetDebugObjectName(geometryShader.Get(), "DirectXTK:SpriteBatch");
 	SetDebugObjectName(pixelShader.Get(), "DirectXTK:SpriteBatch");
 	SetDebugObjectName(inputLayout.Get(), "DirectXTK:SpriteBatch");
 }
@@ -613,6 +654,10 @@ void SpriteBatch::Impl::PrepareForRendering()
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	deviceContext->IASetInputLayout(mDeviceResources->inputLayout.Get());
 	deviceContext->VSSetShader(mDeviceResources->vertexShader.Get(), nullptr, 0);
+	if (!mDeviceResources->GetDeviceSupportsVprt())
+	{
+		deviceContext->GSSetShader(mDeviceResources->geometryShader.Get(), nullptr, 0);
+	}
 	deviceContext->PSSetShader(mDeviceResources->pixelShader.Get(), nullptr, 0);
 
 	// Set the vertex and index buffer.
