@@ -185,13 +185,14 @@ private:
 	XMMATRIX mTransformMatrix;
 
 
-		// Only one of these helpers is allocated per D3D device, even if there are multiple SpriteBatch instances.
+	// Only one of these helpers is allocated per D3D device, even if there are multiple SpriteBatch instances.
 	struct DeviceResources
 	{
 		DeviceResources(_In_ ID3D11Device* device);
 		bool                    GetDeviceSupportsVprt() const { return m_supportsVprt; }
 
 		ComPtr<ID3D11VertexShader> vertexShader;
+		ComPtr<ID3D11VertexShader> vprt_vertexShader;
 		ComPtr<ID3D11PixelShader> pixelShader;
 		ComPtr<ID3D11GeometryShader> geometryShader;
 		ComPtr<ID3D11InputLayout> inputLayout;
@@ -274,48 +275,46 @@ SpriteBatch::Impl::DeviceResources::DeviceResources(_In_ ID3D11Device* device)
 // Creates the SpriteBatch shaders and input layout.
 void SpriteBatch::Impl::DeviceResources::CreateShaders(_In_ ID3D11Device* device)
 {
-	auto usingVprtShaders = GetDeviceSupportsVprt();
 
 	// On devices that do support the D3D11_FEATURE_D3D11_OPTIONS3::
 	// VPAndRTArrayIndexFromAnyShaderFeedingRasterizer optional feature
 	// we can avoid using a pass-through geometry shader to set the render
 	// target array index, thus avoiding any overhead that would be 
 	// incurred by setting the geometry shader stage.
-	if (usingVprtShaders)
+
 	ThrowIfFailed(
 		device->CreateVertexShader(SpriteEffect_SpriteVertexShader,
 			sizeof(SpriteEffect_SpriteVertexShader),
 			nullptr,
+			&vprt_vertexShader)
+	);
+
+	// we need to set the index array in the shader and pass it to a geometry shader
+	ThrowIfFailed(
+		device->CreateVertexShader(SpriteEffect_NonVPRT_SpriteVertexShader,
+			sizeof(SpriteEffect_NonVPRT_SpriteVertexShader),
+			nullptr,
 			&vertexShader)
 	);
-	else
-	{
-		// we need to set the index array in the shader and pass it to the geometry shader
-		ThrowIfFailed(
-			device->CreateVertexShader(SpriteEffect_NonVPRT_SpriteVertexShader,
-				sizeof(SpriteEffect_NonVPRT_SpriteVertexShader),
-				nullptr,
-				&vertexShader)
-		);
-	}
 
-		ThrowIfFailed(
-			device->CreateGeometryShader(
-				PassThruGeometryShader_SpriteGeometryShader,
-				sizeof(PassThruGeometryShader_SpriteGeometryShader),
-				nullptr,
-				&geometryShader
-			)
-		);
 
-	
+	ThrowIfFailed(
+		device->CreateGeometryShader(
+			PassThruGeometryShader_SpriteGeometryShader,
+			sizeof(PassThruGeometryShader_SpriteGeometryShader),
+			nullptr,
+			&geometryShader
+		)
+	);
+
+
 	ThrowIfFailed(
 		device->CreatePixelShader(SpriteEffect_SpritePixelShader,
 			sizeof(SpriteEffect_SpritePixelShader),
 			nullptr,
 			&pixelShader)
 	);
-		
+
 	ThrowIfFailed(
 		device->CreateInputLayout(VertexPositionColorTexture::InputElements,
 			VertexPositionColorTexture::InputElementCount,
@@ -325,6 +324,7 @@ void SpriteBatch::Impl::DeviceResources::CreateShaders(_In_ ID3D11Device* device
 	);
 
 	SetDebugObjectName(vertexShader.Get(), "DirectXTK:SpriteBatch");
+	SetDebugObjectName(vprt_vertexShader.Get(), "DirectXTK:SpriteBatch");
 	SetDebugObjectName(geometryShader.Get(), "DirectXTK:SpriteBatch");
 	SetDebugObjectName(pixelShader.Get(), "DirectXTK:SpriteBatch");
 	SetDebugObjectName(inputLayout.Get(), "DirectXTK:SpriteBatch");
@@ -653,10 +653,17 @@ void SpriteBatch::Impl::PrepareForRendering()
 	// Set shaders.
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	deviceContext->IASetInputLayout(mDeviceResources->inputLayout.Get());
-	deviceContext->VSSetShader(mDeviceResources->vertexShader.Get(), nullptr, 0);
+
 	if (!mDeviceResources->GetDeviceSupportsVprt())
 	{
+		deviceContext->VSSetShader(mDeviceResources->vertexShader.Get(), nullptr, 0);
+
 		deviceContext->GSSetShader(mDeviceResources->geometryShader.Get(), nullptr, 0);
+	}
+	else
+	{
+		deviceContext->VSSetShader(mDeviceResources->vprt_vertexShader.Get(), nullptr, 0);
+
 	}
 	deviceContext->PSSetShader(mDeviceResources->pixelShader.Get(), nullptr, 0);
 
@@ -686,7 +693,7 @@ void SpriteBatch::Impl::PrepareForRendering()
 
 	ID3D11Buffer* constantBuffer = mContextResources->constantBuffer.GetBuffer();
 	deviceContext->VSSetConstantBuffers(0, 1, &constantBuffer);
-	
+
 #endif
 
 	// If this is a deferred D3D context, reset position so the first Map call will use D3D11_MAP_WRITE_DISCARD.
@@ -925,7 +932,7 @@ _Use_decl_annotations_
 void SpriteBatch::Impl::RenderBatch(ID3D11ShaderResourceView* texture, SpriteInfo const* const* sprites, size_t count)
 {
 	auto deviceContext = mContextResources->deviceContext.Get();
-	
+
 	// Draw using the specified texture.
 	deviceContext->PSSetShaderResources(0, 1, &texture);
 
@@ -994,7 +1001,7 @@ void SpriteBatch::Impl::RenderBatch(ID3D11ShaderResourceView* texture, SpriteInf
 		UINT indexCount = (UINT)batchSize * IndicesPerSprite;
 
 		deviceContext->DrawIndexedInstanced(indexCount, 2, startIndex, 0, 0);
-	
+
 		// Advance the buffer position.
 #if !defined(_XBOX_ONE) || !defined(_TITLE)
 		mContextResources->vertexBufferPosition += batchSize;
