@@ -351,6 +351,18 @@ void DGSLEffectFactory::Impl::CreateTexture( const wchar_t* name, ID3D11DeviceCo
         wcscpy_s( fullName, mPath );
         wcscat_s( fullName, name );
 
+        WIN32_FILE_ATTRIBUTE_DATA fileAttr = {};
+        if ( !GetFileAttributesExW(fullName, GetFileExInfoStandard, &fileAttr) )
+        {
+            // Try Current Working Directory (CWD)
+            wcscpy_s( fullName, name );
+            if ( !GetFileAttributesExW(fullName, GetFileExInfoStandard, &fileAttr) )
+            {
+                DebugTrace( "DGSLEffectFactory could not find texture file '%ls'\n", name );
+                throw std::exception( "CreateTexture" );
+            }
+        }
+
         wchar_t ext[_MAX_EXT];
         _wsplitpath_s( name, nullptr, 0, nullptr, 0, nullptr, 0, ext, _MAX_EXT );
 
@@ -413,6 +425,18 @@ void DGSLEffectFactory::Impl::CreatePixelShader( const wchar_t* name, ID3D11Pixe
         wchar_t fullName[MAX_PATH] = {};
         wcscpy_s( fullName, mPath );
         wcscat_s( fullName, name );
+
+        WIN32_FILE_ATTRIBUTE_DATA fileAttr = {};
+        if ( !GetFileAttributesExW(fullName, GetFileExInfoStandard, &fileAttr) )
+        {
+            // Try Current Working Directory (CWD)
+            wcscpy_s( fullName, name );
+            if ( !GetFileAttributesExW(fullName, GetFileExInfoStandard, &fileAttr) )
+            {
+                DebugTrace( "DGSLEffectFactory could not find shader file '%ls'\n", name );
+                throw std::exception( "CreatePixelShader" );
+            }
+        }
 
         size_t dataSize = 0;
         std::unique_ptr<uint8_t[]> data;
