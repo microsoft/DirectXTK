@@ -5,6 +5,11 @@ rem THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 rem PARTICULAR PURPOSE.
 rem
 rem Copyright (c) Microsoft Corporation. All rights reserved.
+rem
+rem Modified by THOTH Speed Engineers (c)
+rem Author: Dwight Goins
+rem Purpose: Change the compiled SpriteEffect.fx to support DirectX 5_0 for Render Target Array support
+rem You can find fxc.exe in the C:\Program Files (x86)\Windows Kits\10\bin\x86 by default
 
 setlocal
 set error=0
@@ -105,8 +110,12 @@ call :CompileShader%1 SkinnedEffect ps PSSkinnedVertexLighting
 call :CompileShader%1 SkinnedEffect ps PSSkinnedVertexLightingNoFog
 call :CompileShader%1 SkinnedEffect ps PSSkinnedPixelLighting
 
-call :CompileShader%1 SpriteEffect vs SpriteVertexShader
-call :CompileShader%1 SpriteEffect ps SpritePixelShader
+rem Must use DirectX Level 5_0 and above shaders for Holographic Render Target Arrays Support
+call :CompileShader5_0%1 SpriteEffect vs SpriteVertexShader
+call :CompileShader5_0%1 SpriteEffect vs NonVPRT_SpriteVertexShader
+call :CompileShader5_0%1 SpriteEffect ps SpritePixelShader
+call :CompileShaderHLSL5_0%1 PassThruGeometryShader gs SpriteGeometryShader
+
 
 call :CompileShader%1 DGSLEffect vs main
 call :CompileShader%1 DGSLEffect vs mainVc
@@ -145,6 +154,21 @@ exit /b
 
 :CompileShader
 set fxc=fxc /nologo %1.fx /T%2_4_0_level_9_1 /Zi /Zpc /Qstrip_reflect /Qstrip_debug /E%3 /FhCompiled\%1_%3.inc /FdCompiled\%1_%3.pdb /Vn%1_%3
+echo.
+echo %fxc%
+%fxc% || set error=1
+exit /b
+
+rem added section for Invoking fxc.exe using the DirectX Level 5_0
+:CompileShader5_0
+set fxc=fxc /nologo %1.fx /T%2_5_0 /Zi /Zpc /Qstrip_reflect /Qstrip_debug /E%3 /FhCompiled\%1_%3.inc /FdCompiled\%1_%3.pdb /Vn%1_%3
+echo.
+echo %fxc%
+%fxc% || set error=1
+exit /b
+
+:CompileShaderHLSL5_0
+set fxc=fxc /nologo %1.hlsl /T%2_5_0 /Zi /Zpc /Qstrip_reflect /Qstrip_debug /E%3 /FhCompiled\%1_%3.inc /FdCompiled\%1_%3.pdb /Vn%1_%3
 echo.
 echo %fxc%
 %fxc% || set error=1
