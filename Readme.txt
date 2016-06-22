@@ -69,6 +69,11 @@ Note: Xbox One exclusive apps developers using the Xbox One XDK need to generate
       FXC compiler from the Xbox One XDK. While they will continue to work if outdated,
       a mismatch will cause runtime compilation overhead that would otherwise be avoided.
 
+This project has adopted the Microsoft Open Source Code of Conduct. For more information see the
+Code of Conduct FAQ or contact opencode@microsoft.com with any additional questions or comments.
+
+https://opensource.microsoft.com/codeofconduct/
+
 
 ---------------
 RELEASE HISTORY
