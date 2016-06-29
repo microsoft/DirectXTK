@@ -19,8 +19,8 @@
 #include <d3d11_1.h>
 #endif
 
-#include <memory.h>
 #include <memory>
+#include <utility>
 #include <stdint.h>
 
 

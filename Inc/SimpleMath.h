@@ -22,6 +22,7 @@
 #endif
 
 #include <functional>
+#include <assert.h>
 #include <memory.h>
 
 #include <DirectXMath.h>

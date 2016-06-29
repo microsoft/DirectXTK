@@ -163,9 +163,10 @@ namespace
 
 
 //--------------------------------------------------------------------------------------
-HRESULT DirectX::SaveDDSTextureToFile( _In_ ID3D11DeviceContext* pContext,
-                                       _In_ ID3D11Resource* pSource,
-                                       _In_z_ LPCWSTR fileName )
+_Use_decl_annotations_
+HRESULT DirectX::SaveDDSTextureToFile( ID3D11DeviceContext* pContext,
+                                       ID3D11Resource* pSource,
+                                       const wchar_t* fileName )
 {
     if ( !fileName )
         return E_INVALIDARG;
@@ -329,12 +330,13 @@ extern bool _IsWIC2();
 extern IWICImagingFactory* _GetWIC();
 }
 
-HRESULT DirectX::SaveWICTextureToFile( _In_ ID3D11DeviceContext* pContext,
-                                       _In_ ID3D11Resource* pSource,
-                                       _In_ REFGUID guidContainerFormat, 
-                                       _In_z_ LPCWSTR fileName,
-                                       _In_opt_ const GUID* targetFormat,
-                                       _In_opt_ std::function<void(IPropertyBag2*)> setCustomProps )
+_Use_decl_annotations_
+HRESULT DirectX::SaveWICTextureToFile( ID3D11DeviceContext* pContext,
+                                       ID3D11Resource* pSource,
+                                       REFGUID guidContainerFormat, 
+                                       const wchar_t* fileName,
+                                       const GUID* targetFormat,
+                                       std::function<void(IPropertyBag2*)> setCustomProps )
 {
     if ( !fileName )
         return E_INVALIDARG;
