@@ -29,7 +29,7 @@
 #include <DirectXPackedVector.h>
 #include <DirectXCollision.h>
 
-#if (defined(_XBOX_ONE) && defined(_TITLE)) || (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP))
+#if !defined(DIRECTX_NO_WFRECT) && ((defined(_XBOX_ONE) && defined(_TITLE)) || (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)))
 #include <Windows.Foundation.h>
 #endif
 
@@ -60,7 +60,7 @@ struct Rectangle
     explicit Rectangle(const RECT& rct) : x(rct.left), y(rct.top), width(rct.right - rct.left), height(rct.bottom - rct.top) {}
 
     operator RECT() { RECT rct; rct.left = x; rct.top = y; rct.right = (x + width); rct.bottom = (y + height); return rct; }
-#if (defined(_XBOX_ONE) && defined(_TITLE)) || (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP))
+#if !defined(DIRECTX_NO_WFRECT) && ((defined(_XBOX_ONE) && defined(_TITLE)) || (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)))
     operator ABI::Windows::Foundation::Rect() { ABI::Windows::Foundation::Rect r; r.X = float(x); r.Y = float(y); r.Width = float(width); r.Height = float(height); return r; }
 #ifdef __cplusplus_winrt
     operator Windows::Foundation::Rect() { return Windows::Foundation::Rect(float(x), float(y), float(width), float(height)); }

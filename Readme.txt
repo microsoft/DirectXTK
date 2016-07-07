@@ -80,7 +80,7 @@ RELEASE HISTORY
 ---------------
 
 June 30, 2016
-    MesaureDrawString added to SpriteFont; bad fix to MeasureString reverted
+    MeasureDrawString added to SpriteFont; bad fix to MeasureString reverted
     GamePad tracker updated to track emulated buttons (i.e. leftStickUp)
     EffectFactory SetDirectory now checks current working directory (CWD) as well
     *breaking change* must include <d3d11.h> before including <SimpleMath.h>
