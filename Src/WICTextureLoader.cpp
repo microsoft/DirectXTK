@@ -50,7 +50,7 @@ namespace
         DXGI_FORMAT         format;
     };
 
-    WICTranslate g_WICFormats[] =
+    const WICTranslate g_WICFormats[] =
     {
         { GUID_WICPixelFormat128bppRGBAFloat,       DXGI_FORMAT_R32G32B32A32_FLOAT },
 
@@ -84,7 +84,7 @@ namespace
         GUID        target;
     };
 
-    WICConvert g_WICConvert[] =
+    const WICConvert g_WICConvert [] =
     {
         // Note target GUID in this conversion table must be one of those directly supported formats (above).
 
