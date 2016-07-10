@@ -394,6 +394,7 @@ BasicEffect::~BasicEffect()
 }
 
 
+// IEffect methods.
 void BasicEffect::Apply(_In_ ID3D11DeviceContext* deviceContext)
 {
     pImpl->Apply(deviceContext);
@@ -406,6 +407,7 @@ void BasicEffect::GetVertexShaderBytecode(_Out_ void const** pShaderByteCode, _O
 }
 
 
+// Camera settings.
 void XM_CALLCONV BasicEffect::SetWorld(FXMMATRIX value)
 {
     pImpl->matrices.world = value;
@@ -430,6 +432,17 @@ void XM_CALLCONV BasicEffect::SetProjection(FXMMATRIX value)
 }
 
 
+void XM_CALLCONV BasicEffect::SetMatrices(FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection)
+{
+    pImpl->matrices.world = world;
+    pImpl->matrices.view = view;
+    pImpl->matrices.projection = projection;
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::WorldViewProj | EffectDirtyFlags::WorldInverseTranspose | EffectDirtyFlags::EyePosition | EffectDirtyFlags::FogVector;
+}
+
+
+// Material settings.
 void XM_CALLCONV BasicEffect::SetDiffuseColor(FXMVECTOR value)
 {
     pImpl->lights.diffuseColor = value;
@@ -463,6 +476,7 @@ void BasicEffect::SetSpecularPower(float value)
     pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
 }
 
+
 void BasicEffect::DisableSpecular()
 {
     // Set specular color to black, power to 1
@@ -473,6 +487,7 @@ void BasicEffect::DisableSpecular()
     pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
 }
 
+
 void BasicEffect::SetAlpha(float value)
 {
     pImpl->lights.alpha = value;
@@ -481,6 +496,16 @@ void BasicEffect::SetAlpha(float value)
 }
 
 
+void XM_CALLCONV BasicEffect::SetColorAndAlpha(FXMVECTOR value)
+{
+    pImpl->lights.diffuseColor = value;
+    pImpl->lights.alpha = XMVectorGetW(value);
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::MaterialColor;
+}
+
+
+// Light settings.
 void BasicEffect::SetLightingEnabled(bool value)
 {
     pImpl->lightingEnabled = value;
@@ -537,6 +562,7 @@ void BasicEffect::EnableDefaultLighting()
 }
 
 
+// Fog settings.
 void BasicEffect::SetFogEnabled(bool value)
 {
     pImpl->fog.enabled = value;
@@ -569,12 +595,14 @@ void XM_CALLCONV BasicEffect::SetFogColor(FXMVECTOR value)
 }
 
 
+// Vertex color setting.
 void BasicEffect::SetVertexColorEnabled(bool value)
 {
     pImpl->vertexColorEnabled = value;
 }
 
 
+// Texture settings.
 void BasicEffect::SetTextureEnabled(bool value)
 {
     pImpl->textureEnabled = value;

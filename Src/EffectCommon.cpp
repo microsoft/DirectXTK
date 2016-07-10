@@ -19,6 +19,15 @@ using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
 
+// IEffectMatrices default method
+void XM_CALLCONV IEffectMatrices::SetMatrices(FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection)
+{
+    SetWorld(world);
+    SetView(view);
+    SetProjection(projection);
+}
+
+
 // Constructor initializes default matrix values.
 EffectMatrices::EffectMatrices()
 {

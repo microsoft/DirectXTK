@@ -272,6 +272,7 @@ EnvironmentMapEffect::~EnvironmentMapEffect()
 }
 
 
+// IEffect methods.
 void EnvironmentMapEffect::Apply(_In_ ID3D11DeviceContext* deviceContext)
 {
     pImpl->Apply(deviceContext);
@@ -284,6 +285,7 @@ void EnvironmentMapEffect::GetVertexShaderBytecode(_Out_ void const** pShaderByt
 }
 
 
+// Camera settings.
 void XM_CALLCONV EnvironmentMapEffect::SetWorld(FXMMATRIX value)
 {
     pImpl->matrices.world = value;
@@ -308,6 +310,17 @@ void XM_CALLCONV EnvironmentMapEffect::SetProjection(FXMMATRIX value)
 }
 
 
+void XM_CALLCONV EnvironmentMapEffect::SetMatrices(FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection)
+{
+    pImpl->matrices.world = world;
+    pImpl->matrices.view = view;
+    pImpl->matrices.projection = projection;
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::WorldViewProj | EffectDirtyFlags::WorldInverseTranspose | EffectDirtyFlags::EyePosition | EffectDirtyFlags::FogVector;
+}
+
+
+// Material settings.
 void XM_CALLCONV EnvironmentMapEffect::SetDiffuseColor(FXMVECTOR value)
 {
     pImpl->lights.diffuseColor = value;
@@ -332,6 +345,16 @@ void EnvironmentMapEffect::SetAlpha(float value)
 }
 
 
+void XM_CALLCONV EnvironmentMapEffect::SetColorAndAlpha(FXMVECTOR value)
+{
+    pImpl->lights.diffuseColor = value;
+    pImpl->lights.alpha = XMVectorGetW(value);
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::MaterialColor;
+}
+
+
+// Light settings.
 void EnvironmentMapEffect::SetLightingEnabled(bool value)
 {
     if (!value)
@@ -391,6 +414,7 @@ void EnvironmentMapEffect::EnableDefaultLighting()
 }
 
 
+// Fog settings.
 void EnvironmentMapEffect::SetFogEnabled(bool value)
 {
     pImpl->fog.enabled = value;
@@ -423,6 +447,7 @@ void XM_CALLCONV EnvironmentMapEffect::SetFogColor(FXMVECTOR value)
 }
 
 
+// Texture settings.
 void EnvironmentMapEffect::SetTexture(_In_opt_ ID3D11ShaderResourceView* value)
 {
     pImpl->texture = value;
@@ -435,6 +460,7 @@ void EnvironmentMapEffect::SetEnvironmentMap(_In_opt_ ID3D11ShaderResourceView* 
 }
 
 
+// Additional settings.
 void EnvironmentMapEffect::SetEnvironmentMapAmount(float value)
 {
     pImpl->constants.environmentMapAmount = value;

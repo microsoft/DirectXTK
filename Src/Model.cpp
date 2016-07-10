@@ -212,9 +212,7 @@ void XM_CALLCONV ModelMesh::Draw( ID3D11DeviceContext* deviceContext,
         auto imatrices = dynamic_cast<IEffectMatrices*>( part->effect.get() );
         if ( imatrices )
         {
-            imatrices->SetWorld( world );
-            imatrices->SetView( view );
-            imatrices->SetProjection( projection );
+            imatrices->SetMatrices(world, view, projection);
         }
 
         part->Draw( deviceContext, part->effect.get(), part->inputLayout.Get(), setCustomState );

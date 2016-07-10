@@ -589,7 +589,7 @@ DGSLEffect::~DGSLEffect()
 }
 
 
-// IEffect methods
+// IEffect methods.
 void DGSLEffect::Apply(_In_ ID3D11DeviceContext* deviceContext)
 {
     pImpl->Apply(deviceContext);
@@ -602,7 +602,7 @@ void DGSLEffect::GetVertexShaderBytecode(_Out_ void const** pShaderByteCode, _Ou
 }
 
 
-// Camera settings
+// Camera settings.
 void XM_CALLCONV DGSLEffect::SetWorld(FXMMATRIX value)
 {
     pImpl->world = value;
@@ -627,7 +627,17 @@ void XM_CALLCONV DGSLEffect::SetProjection(FXMMATRIX value)
 }
 
 
-// Material settings
+void XM_CALLCONV DGSLEffect::SetMatrices(FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection)
+{
+    pImpl->world = world;
+    pImpl->view = view;
+    pImpl->projection = projection;
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::WorldViewProj | EffectDirtyFlags::WorldInverseTranspose | EffectDirtyFlags::EyePosition;
+}
+
+
+// Material settings.
 void XM_CALLCONV DGSLEffect::SetAmbientColor(FXMVECTOR value)
 {
     pImpl->constants.material.Ambient = value;
@@ -638,7 +648,7 @@ void XM_CALLCONV DGSLEffect::SetAmbientColor(FXMVECTOR value)
 
 void XM_CALLCONV DGSLEffect::SetDiffuseColor(FXMVECTOR value)
 {
-    pImpl->constants.material.Diffuse = value;
+    pImpl->constants.material.Diffuse = XMVectorSelect(pImpl->constants.material.Diffuse, value, g_XMSelect1110);
 
     pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBufferMaterial;
 }
@@ -689,6 +699,14 @@ void DGSLEffect::SetAlpha(float value)
 }
 
 
+void XM_CALLCONV DGSLEffect::SetColorAndAlpha(FXMVECTOR value)
+{
+    pImpl->constants.material.Diffuse = value;
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBufferMaterial;
+}
+
+
 // Additional settings.
 void XM_CALLCONV DGSLEffect::SetUVTransform(FXMMATRIX value)
 {
@@ -721,7 +739,7 @@ void DGSLEffect::SetAlphaDiscardEnable(bool value)
 }
 
 
-// Light settings
+// Light settings.
 void DGSLEffect::SetLightingEnabled(bool value)
 {
     if (value)
@@ -837,7 +855,7 @@ void DGSLEffect::SetVertexColorEnabled(bool value)
 }
 
 
-// Texture settings
+// Texture settings.
 void DGSLEffect::SetTextureEnabled(bool value)
 {
     pImpl->textureEnabled = value;
@@ -863,7 +881,7 @@ void DGSLEffect::SetTexture(int whichTexture, _In_opt_ ID3D11ShaderResourceView*
 }
 
 
-// Animation setting
+// Animation settings.
 void DGSLEffect::SetWeightsPerVertex(int value)
 {
     if ( !pImpl->weightsPerVertex )

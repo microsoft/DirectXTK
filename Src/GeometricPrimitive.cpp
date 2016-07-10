@@ -224,17 +224,13 @@ void XM_CALLCONV GeometricPrimitive::Impl::Draw(FXMMATRIX world, CXMMATRIX view,
         inputLayout = mResources->inputLayoutUntextured.Get();
     }
 
-    float alpha = XMVectorGetW(color);
-
     // Set effect parameters.
-    effect->SetWorld(world);
-    effect->SetView(view);
-    effect->SetProjection(projection);
+    effect->SetMatrices(world, view, projection);
 
-    effect->SetDiffuseColor(color);
-    effect->SetAlpha(alpha);
+    effect->SetColorAndAlpha(color);
 
-    Draw( effect, inputLayout, (alpha < 1.f), wireframe, setCustomState );
+    float alpha = XMVectorGetW(color);
+    Draw(effect, inputLayout, (alpha < 1.f), wireframe, setCustomState);
 }
 
 

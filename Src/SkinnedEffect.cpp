@@ -295,6 +295,7 @@ SkinnedEffect::~SkinnedEffect()
 }
 
 
+// IEffect methods.
 void SkinnedEffect::Apply(_In_ ID3D11DeviceContext* deviceContext)
 {
     pImpl->Apply(deviceContext);
@@ -307,6 +308,7 @@ void SkinnedEffect::GetVertexShaderBytecode(_Out_ void const** pShaderByteCode, 
 }
 
 
+// Camera settings.
 void XM_CALLCONV SkinnedEffect::SetWorld(FXMMATRIX value)
 {
     pImpl->matrices.world = value;
@@ -331,6 +333,17 @@ void XM_CALLCONV SkinnedEffect::SetProjection(FXMMATRIX value)
 }
 
 
+void XM_CALLCONV SkinnedEffect::SetMatrices(FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection)
+{
+    pImpl->matrices.world = world;
+    pImpl->matrices.view = view;
+    pImpl->matrices.projection = projection;
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::WorldViewProj | EffectDirtyFlags::WorldInverseTranspose | EffectDirtyFlags::EyePosition | EffectDirtyFlags::FogVector;
+}
+
+
+// Material settings.
 void XM_CALLCONV SkinnedEffect::SetDiffuseColor(FXMVECTOR value)
 {
     pImpl->lights.diffuseColor = value;
@@ -364,6 +377,7 @@ void SkinnedEffect::SetSpecularPower(float value)
     pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
 }
 
+
 void SkinnedEffect::DisableSpecular()
 {
     // Set specular color to black, power to 1
@@ -374,6 +388,7 @@ void SkinnedEffect::DisableSpecular()
     pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
 }
 
+
 void SkinnedEffect::SetAlpha(float value)
 {
     pImpl->lights.alpha = value;
@@ -382,6 +397,16 @@ void SkinnedEffect::SetAlpha(float value)
 }
 
 
+void XM_CALLCONV SkinnedEffect::SetColorAndAlpha(FXMVECTOR value)
+{
+    pImpl->lights.diffuseColor = value;
+    pImpl->lights.alpha = XMVectorGetW(value);
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::MaterialColor;
+}
+
+
+// Light settings.
 void SkinnedEffect::SetLightingEnabled(bool value)
 {
     if (!value)
@@ -439,6 +464,7 @@ void SkinnedEffect::EnableDefaultLighting()
 }
 
 
+// Fog settings.
 void SkinnedEffect::SetFogEnabled(bool value)
 {
     pImpl->fog.enabled = value;
@@ -471,12 +497,14 @@ void XM_CALLCONV SkinnedEffect::SetFogColor(FXMVECTOR value)
 }
 
 
+// Texture settings.
 void SkinnedEffect::SetTexture(_In_opt_ ID3D11ShaderResourceView* value)
 {
     pImpl->texture = value;
 }
 
 
+// Animation settings.
 void SkinnedEffect::SetWeightsPerVertex(int value)
 {
     if ((value != 1) &&
