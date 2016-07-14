@@ -471,7 +471,6 @@ namespace DirectX
         // Texture settings.
         void __cdecl SetTextureEnabled(bool value);
         void __cdecl SetTexture(_In_opt_ ID3D11ShaderResourceView* value);
-        void __cdecl SetTexture2(_In_opt_ ID3D11ShaderResourceView* value);
         void __cdecl SetTexture(int whichTexture, _In_opt_ ID3D11ShaderResourceView* value);
 
         static const int MaxTextures = 8;
@@ -491,7 +490,70 @@ namespace DirectX
         void __cdecl SetPerPixelLighting(bool value) override;
     };
 
+    //----------------------------------------------------------------------------------
+    // Built-in shader supports optional texture mapping, vertex coloring, directional lighting, and fog.
+    class NormalMapEffect : public IEffect, public IEffectMatrices, public IEffectLights, public IEffectFog
+    {
+    public:
+        explicit NormalMapEffect(_In_ ID3D11Device* device);
+        NormalMapEffect(NormalMapEffect&& moveFrom);
+        NormalMapEffect& operator= (NormalMapEffect&& moveFrom);
 
+        NormalMapEffect(NormalMapEffect const&) = delete;
+        NormalMapEffect& operator= (NormalMapEffect const&) = delete;
+
+        virtual ~NormalMapEffect();
+
+        // IEffect methods.
+        void __cdecl Apply(_In_ ID3D11DeviceContext* deviceContext) override;
+
+        void __cdecl GetVertexShaderBytecode(_Out_ void const** pShaderByteCode, _Out_ size_t* pByteCodeLength) override;
+
+        // Camera settings.
+        void XM_CALLCONV SetWorld(FXMMATRIX value) override;
+        void XM_CALLCONV SetView(FXMMATRIX value) override;
+        void XM_CALLCONV SetProjection(FXMMATRIX value) override;
+
+        // Material settings.
+        void XM_CALLCONV SetDiffuseColor(FXMVECTOR value);
+        void XM_CALLCONV SetEmissiveColor(FXMVECTOR value);
+        void XM_CALLCONV SetSpecularColor(FXMVECTOR value);
+        void __cdecl SetSpecularPower(float value);
+        void __cdecl DisableSpecular();
+        void __cdecl SetAlpha(float value);
+
+        // Light settings.
+        void __cdecl SetLightingEnabled(bool value) override;
+        void __cdecl SetPerPixelLighting(bool value) override;
+        void XM_CALLCONV SetAmbientLightColor(FXMVECTOR value) override;
+
+        void __cdecl SetLightEnabled(int whichLight, bool value) override;
+        void XM_CALLCONV SetLightDirection(int whichLight, FXMVECTOR value) override;
+        void XM_CALLCONV SetLightDiffuseColor(int whichLight, FXMVECTOR value) override;
+        void XM_CALLCONV SetLightSpecularColor(int whichLight, FXMVECTOR value) override;
+
+        void __cdecl EnableDefaultLighting() override;
+
+        // Fog settings.
+        void __cdecl SetFogEnabled(bool value) override;
+        void __cdecl SetFogStart(float value) override;
+        void __cdecl SetFogEnd(float value) override;
+        void XM_CALLCONV SetFogColor(FXMVECTOR value) override;
+
+        // Vertex color setting.
+        void __cdecl SetVertexColorEnabled(bool value);
+
+        // Texture setting - albedo, normal and specular intensity
+        void __cdecl SetTexture(_In_opt_ ID3D11ShaderResourceView* value);
+        void __cdecl SetNormalTexture(_In_opt_ ID3D11ShaderResourceView* value);
+        void __cdecl SetSpecularTexture(_In_opt_ ID3D11ShaderResourceView* value);
+    
+    private:
+        // Private implementation.
+        class Impl;
+
+        std::unique_ptr<Impl> pImpl;
+    };
 
     //----------------------------------------------------------------------------------
     // Abstract interface to factory for sharing effects and texture resources
@@ -506,14 +568,16 @@ namespace DirectX
             bool                perVertexColor;
             bool                enableSkinning;
             bool                enableDualTexture;
+            bool                enableNormalMaps;
             float               specularPower;
             float               alpha;
             DirectX::XMFLOAT3   ambientColor;
             DirectX::XMFLOAT3   diffuseColor;
             DirectX::XMFLOAT3   specularColor;
             DirectX::XMFLOAT3   emissiveColor;
-            const wchar_t*      texture;
-            const wchar_t*      texture2;
+            const wchar_t*      diffuseTexture;
+            const wchar_t*      specularTexture;
+            const wchar_t*      normalTexture;
 
             EffectInfo() { memset( this, 0, sizeof(EffectInfo) ); };
         };
@@ -546,6 +610,8 @@ namespace DirectX
 
         void __cdecl SetSharing( bool enabled );
 
+        void __cdecl SetUseNormalMapEffect( bool enabled );
+
         void __cdecl SetDirectory( _In_opt_z_ const wchar_t* path );
 
     private:
@@ -576,7 +642,9 @@ namespace DirectX
         // DGSL methods.
         struct DGSLEffectInfo : public EffectInfo
         {
-            const wchar_t* textures[6];
+            static const int BaseTextureOffset = 3;
+
+            const wchar_t* textures[DGSLEffect::MaxTextures - BaseTextureOffset];
             const wchar_t* pixelShader;
 
             DGSLEffectInfo() { memset( this, 0, sizeof(DGSLEffectInfo) ); };

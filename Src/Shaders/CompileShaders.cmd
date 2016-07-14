@@ -105,6 +105,12 @@ call :CompileShader%1 SkinnedEffect ps PSSkinnedVertexLighting
 call :CompileShader%1 SkinnedEffect ps PSSkinnedVertexLightingNoFog
 call :CompileShader%1 SkinnedEffect ps PSSkinnedPixelLighting
 
+call :CompileShader%1 NormalMapEffect vs VSNormalPixelLightingTx
+call :CompileShader%1 NormalMapEffect vs VSNormalPixelLightingTxVc
+
+call :CompileShader%1 NormalMapEffect ps PSNormalPixelLightingTx
+call :CompileShader%1 NormalMapEffect ps PSNormalPixelLightingTxNoFog
+
 call :CompileShader%1 SpriteEffect vs SpriteVertexShader
 call :CompileShader%1 SpriteEffect ps SpritePixelShader
 

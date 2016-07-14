@@ -867,11 +867,6 @@ void DGSLEffect::SetTexture(_In_opt_ ID3D11ShaderResourceView* value)
     pImpl->textures[0] = value;
 }
 
-void DGSLEffect::SetTexture2(_In_opt_ ID3D11ShaderResourceView* value)
-{
-    pImpl->textures[1] = value;
-}
-
 void DGSLEffect::SetTexture(int whichTexture, _In_opt_ ID3D11ShaderResourceView* value)
 {
     if ( whichTexture < 0 || whichTexture >= MaxTextures )

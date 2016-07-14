@@ -26,6 +26,9 @@
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
+#if defined(_MSC_VER) && (_MSC_VER >= 1900)
+static_assert(DGSLEffect::MaxTextures == DGSLEffectFactory::DGSLEffectInfo::BaseTextureOffset + _countof(DGSLEffectFactory::DGSLEffectInfo::textures), "DGSL supports 8 textures");
+#endif
 
 // Internal DGSLEffectFactory implementation class. Only one of these helpers is allocated
 // per D3D device, even if there are multiple public facing DGSLEffectFactory instances.
@@ -98,7 +101,7 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateEffect( DGSLEffectFactor
         }
     }
 
-    std::shared_ptr<DGSLEffect> effect = std::make_shared<DGSLEffect>( device.Get(), nullptr, info.enableSkinning );
+    auto effect = std::make_shared<DGSLEffect>( device.Get(), nullptr, info.enableSkinning );
 
     effect->EnableDefaultLighting();
     effect->SetLightingEnabled(true);
@@ -129,11 +132,11 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateEffect( DGSLEffectFactor
         effect->SetEmissiveColor( color );
     }
 
-    if ( info.texture && *info.texture )
+    if ( info.diffuseTexture && *info.diffuseTexture )
     {
         ComPtr<ID3D11ShaderResourceView> srv;
 
-        factory->CreateTexture( info.texture, deviceContext, srv.GetAddressOf() );
+        factory->CreateTexture( info.diffuseTexture, deviceContext, srv.GetAddressOf() );
 
         effect->SetTexture( srv.Get() );
         effect->SetTextureEnabled(true);
@@ -277,27 +280,37 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateDGSLEffect( DGSLEffectFa
         effect->SetEmissiveColor( color );
     }
 
-    if ( info.texture && *info.texture )
+    if ( info.diffuseTexture && *info.diffuseTexture )
     {
         ComPtr<ID3D11ShaderResourceView> srv;
 
-        factory->CreateTexture( info.texture, deviceContext, srv.GetAddressOf() );
+        factory->CreateTexture( info.diffuseTexture, deviceContext, srv.GetAddressOf() );
 
         effect->SetTexture( srv.Get() );
         effect->SetTextureEnabled(true);
     }
 
-    if ( info.texture2 && *info.texture2 )
+    if ( info.specularTexture && *info.specularTexture )
     {
         ComPtr<ID3D11ShaderResourceView> srv;
 
-        factory->CreateTexture( info.texture2, deviceContext, srv.GetAddressOf() );
+        factory->CreateTexture( info.specularTexture, deviceContext, srv.GetAddressOf() );
 
-        effect->SetTexture2( srv.Get() );
+        effect->SetTexture( 1, srv.Get() );
         effect->SetTextureEnabled(true);
     }
 
-    for( int j = 0; j < 6; ++j )
+    if ( info.normalTexture && *info.normalTexture )
+    {
+        ComPtr<ID3D11ShaderResourceView> srv;
+
+        factory->CreateTexture( info.normalTexture, deviceContext, srv.GetAddressOf() );
+
+        effect->SetTexture( 2, srv.Get() );
+        effect->SetTextureEnabled(true);
+    }
+
+    for( int j = 0; j < _countof(info.textures); ++j )
     {
         if ( info.textures[j] && *info.textures[j] )
         {
@@ -305,7 +318,7 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateDGSLEffect( DGSLEffectFa
 
             factory->CreateTexture( info.textures[j], deviceContext, srv.GetAddressOf() );
 
-            effect->SetTexture( j+2, srv.Get() );
+            effect->SetTexture( j + DGSLEffectInfo::BaseTextureOffset, srv.Get() );
             effect->SetTextureEnabled(true);
         }
     }
