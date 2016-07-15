@@ -370,6 +370,15 @@ void AlphaTestEffect::SetAlpha(float value)
 }
 
 
+void XM_CALLCONV AlphaTestEffect::SetColorAndAlpha(FXMVECTOR value)
+{
+    pImpl->color.diffuseColor = value;
+    pImpl->color.alpha = XMVectorGetW(value);
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::MaterialColor;
+}
+
+
 // Fog settings.
 void AlphaTestEffect::SetFogEnabled(bool value)
 {

@@ -245,6 +245,16 @@ void XM_CALLCONV NormalMapEffect::SetProjection(FXMMATRIX value)
 }
 
 
+void XM_CALLCONV NormalMapEffect::SetMatrices(FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection)
+{
+    pImpl->matrices.world = world;
+    pImpl->matrices.view = view;
+    pImpl->matrices.projection = projection;
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::WorldViewProj | EffectDirtyFlags::WorldInverseTranspose | EffectDirtyFlags::EyePosition | EffectDirtyFlags::FogVector;
+}
+
+
 void XM_CALLCONV NormalMapEffect::SetDiffuseColor(FXMVECTOR value)
 {
     pImpl->lights.diffuseColor = value;
@@ -278,6 +288,7 @@ void NormalMapEffect::SetSpecularPower(float value)
     pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
 }
 
+
 void NormalMapEffect::DisableSpecular()
 {
     // Set specular color to black, power to 1
@@ -288,9 +299,19 @@ void NormalMapEffect::DisableSpecular()
     pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
 }
 
+
 void NormalMapEffect::SetAlpha(float value)
 {
     pImpl->lights.alpha = value;
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::MaterialColor;
+}
+
+
+void XM_CALLCONV NormalMapEffect::SetColorAndAlpha(FXMVECTOR value)
+{
+    pImpl->lights.diffuseColor = value;
+    pImpl->lights.alpha = XMVectorGetW(value);
 
     pImpl->dirtyFlags |= EffectDirtyFlags::MaterialColor;
 }
@@ -391,15 +412,18 @@ void NormalMapEffect::SetVertexColorEnabled(bool value)
     pImpl->vertexColorEnabled = value;
 }
 
+
 void NormalMapEffect::SetTexture(_In_opt_ ID3D11ShaderResourceView* value)
 {
     pImpl->texture = value;
 }
 
+
 void NormalMapEffect::SetSpecularTexture(_In_opt_ ID3D11ShaderResourceView* value)
 {
     pImpl->specularTexture = value;
 }
+
 
 void NormalMapEffect::SetNormalTexture(_In_opt_ ID3D11ShaderResourceView* value)
 {

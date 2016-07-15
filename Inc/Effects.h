@@ -513,6 +513,7 @@ namespace DirectX
         void XM_CALLCONV SetWorld(FXMMATRIX value) override;
         void XM_CALLCONV SetView(FXMMATRIX value) override;
         void XM_CALLCONV SetProjection(FXMMATRIX value) override;
+        void XM_CALLCONV SetMatrices(FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection) override;
 
         // Material settings.
         void XM_CALLCONV SetDiffuseColor(FXMVECTOR value);
@@ -521,6 +522,7 @@ namespace DirectX
         void __cdecl SetSpecularPower(float value);
         void __cdecl DisableSpecular();
         void __cdecl SetAlpha(float value);
+        void XM_CALLCONV SetColorAndAlpha(FXMVECTOR value);
 
         // Light settings.
         void __cdecl SetLightingEnabled(bool value) override;
