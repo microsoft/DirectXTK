@@ -38,12 +38,12 @@
     dcl_2d s0
     dcl_cube s1
 
-#line 133 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\EnvironmentMapEffect.fx"
+#line 176 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\EnvironmentMapEffect.fx"
     texld r0, t3, s1
     texld r1, t2, s0
     mul r1, r1, t0  // ::color<0,1,2,3>
 
-#line 135
+#line 178
     mad r0.xyz, r0, r1.w, -r1
     mad r1.xyz, t1, r0, r1  // ::color<0,1,2>
     mov oC0, r1  // ::PSEnvMapNoFog<0,1,2,3>
@@ -72,10 +72,10 @@ ret
 
 const BYTE EnvironmentMapEffect_PSEnvMapNoFog[] =
 {
-     68,  88,  66,  67, 158, 218, 
-     55,  66, 238, 159, 164,  51, 
-    163,  67,  26,  94, 162, 244, 
-     57, 152,   1,   0,   0,   0, 
+     68,  88,  66,  67,  60, 159, 
+    188, 212, 179,  29, 236,  45, 
+    218, 104, 191, 228,  83, 147, 
+    190,  74,   1,   0,   0,   0, 
     132,   5,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
     124,   3,   0,   0, 208,   4, 
@@ -120,14 +120,14 @@ const BYTE EnvironmentMapEffect_PSEnvMapNoFog[] =
     255, 255, 140,   2,   0,   0, 
       0,   0, 255, 255, 152,   2, 
       0,   0,   0,   0, 255, 255, 
-    164,   2,   0,   0, 133,   0, 
+    164,   2,   0,   0, 176,   0, 
       0,   0, 176,   2,   0,   0, 
-    132,   0,   0,   0, 192,   2, 
-      0,   0, 132,   0,   0,   0, 
-    208,   2,   0,   0, 135,   0, 
+    175,   0,   0,   0, 192,   2, 
+      0,   0, 175,   0,   0,   0, 
+    208,   2,   0,   0, 178,   0, 
       0,   0, 224,   2,   0,   0, 
-    135,   0,   0,   0, 244,   2, 
-      0,   0, 135,   0,   0,   0, 
+    178,   0,   0,   0, 244,   2, 
+      0,   0, 178,   0,   0,   0, 
       8,   3,   0,   0,  80,  83, 
      69, 110, 118,  77,  97, 112, 
      78, 111,  70, 111, 103,   0, 

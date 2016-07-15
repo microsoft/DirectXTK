@@ -305,6 +305,7 @@ namespace DirectX
         // Light settings.
         void XM_CALLCONV SetAmbientLightColor(FXMVECTOR value) override;
 
+        void __cdecl SetPerPixelLighting(bool value) override;
         void __cdecl SetLightEnabled(int whichLight, bool value) override;
         void XM_CALLCONV SetLightDirection(int whichLight, FXMVECTOR value) override;
         void XM_CALLCONV SetLightDiffuseColor(int whichLight, FXMVECTOR value) override;
@@ -334,7 +335,6 @@ namespace DirectX
 
         // Unsupported interface methods.
         void __cdecl SetLightingEnabled(bool value) override;
-        void __cdecl SetPerPixelLighting(bool value) override;
         void XM_CALLCONV SetLightSpecularColor(int whichLight, FXMVECTOR value) override;
     };
 
@@ -525,8 +525,6 @@ namespace DirectX
         void XM_CALLCONV SetColorAndAlpha(FXMVECTOR value);
 
         // Light settings.
-        void __cdecl SetLightingEnabled(bool value) override;
-        void __cdecl SetPerPixelLighting(bool value) override;
         void XM_CALLCONV SetAmbientLightColor(FXMVECTOR value) override;
 
         void __cdecl SetLightEnabled(int whichLight, bool value) override;
@@ -555,6 +553,10 @@ namespace DirectX
         class Impl;
 
         std::unique_ptr<Impl> pImpl;
+
+        // Unsupported interface methods.
+        void __cdecl SetLightingEnabled(bool value) override;
+        void __cdecl SetPerPixelLighting(bool value) override;
     };
 
     //----------------------------------------------------------------------------------

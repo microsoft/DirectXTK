@@ -167,12 +167,17 @@
     <None Include="Src\Shaders\Compiled\XboxOneDualTextureEffect_VSDualTextureVcNoFog.inc" />
     <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_PSEnvMap.inc" />
     <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_PSEnvMapNoFog.inc" />
+    <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_PSEnvMapPixelLighting.inc" />
+    <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_PSEnvMapPixelLightingFresnel.inc" />
+    <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_PSEnvMapPixelLightingFresnelNoFog.inc" />
+    <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_PSEnvMapPixelLightingNoFog.inc" />
     <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_PSEnvMapSpecular.inc" />
     <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_PSEnvMapSpecularNoFog.inc" />
     <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_VSEnvMap.inc" />
     <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_VSEnvMapFresnel.inc" />
     <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_VSEnvMapOneLight.inc" />
     <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_VSEnvMapOneLightFresnel.inc" />
+    <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_VSEnvMapPixelLighting.inc" />
     <None Include="Src\Shaders\Compiled\XboxOneNormalMapEffect_PSNormalPixelLightingTx.inc" />
     <None Include="Src\Shaders\Compiled\XboxOneNormalMapEffect_PSNormalPixelLightingTxNoFog.inc" />
     <None Include="Src\Shaders\Compiled\XboxOneNormalMapEffect_VSNormalPixelLightingTx.inc" />

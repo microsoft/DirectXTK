@@ -181,12 +181,17 @@
     <None Include="Src\Shaders\Compiled\DualTextureEffect_VSDualTextureVcNoFog.inc" />
     <None Include="Src\Shaders\Compiled\EnvironmentMapEffect_PSEnvMap.inc" />
     <None Include="Src\Shaders\Compiled\EnvironmentMapEffect_PSEnvMapNoFog.inc" />
+    <None Include="Src\Shaders\Compiled\EnvironmentMapEffect_PSEnvMapPixelLighting.inc" />
+    <None Include="Src\Shaders\Compiled\EnvironmentMapEffect_PSEnvMapPixelLightingFresnel.inc" />
+    <None Include="Src\Shaders\Compiled\EnvironmentMapEffect_PSEnvMapPixelLightingFresnelNoFog.inc" />
+    <None Include="Src\Shaders\Compiled\EnvironmentMapEffect_PSEnvMapPixelLightingNoFog.inc" />
     <None Include="Src\Shaders\Compiled\EnvironmentMapEffect_PSEnvMapSpecular.inc" />
     <None Include="Src\Shaders\Compiled\EnvironmentMapEffect_PSEnvMapSpecularNoFog.inc" />
     <None Include="Src\Shaders\Compiled\EnvironmentMapEffect_VSEnvMap.inc" />
     <None Include="Src\Shaders\Compiled\EnvironmentMapEffect_VSEnvMapFresnel.inc" />
     <None Include="Src\Shaders\Compiled\EnvironmentMapEffect_VSEnvMapOneLight.inc" />
     <None Include="Src\Shaders\Compiled\EnvironmentMapEffect_VSEnvMapOneLightFresnel.inc" />
+    <None Include="Src\Shaders\Compiled\EnvironmentMapEffect_VSEnvMapPixelLighting.inc" />
     <None Include="Src\Shaders\Compiled\NormalMapEffect_PSNormalPixelLightingTx.inc" />
     <None Include="Src\Shaders\Compiled\NormalMapEffect_PSNormalPixelLightingTxNoFog.inc" />
     <None Include="Src\Shaders\Compiled\NormalMapEffect_VSNormalPixelLightingTx.inc" />

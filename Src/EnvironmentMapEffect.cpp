@@ -50,9 +50,9 @@ struct EnvironmentMapEffectTraits
 {
     typedef EnvironmentMapEffectConstants ConstantBufferType;
 
-    static const int VertexShaderCount = 4;
-    static const int PixelShaderCount = 4;
-    static const int ShaderPermutationCount = 16;
+    static const int VertexShaderCount = 5;
+    static const int PixelShaderCount = 8;
+    static const int ShaderPermutationCount = 20;
 };
 
 
@@ -62,6 +62,7 @@ class EnvironmentMapEffect::Impl : public EffectBase<EnvironmentMapEffectTraits>
 public:
     Impl(_In_ ID3D11Device* device);
 
+    bool preferPerPixelLighting;
     bool fresnelEnabled;
     bool specularEnabled;
 
@@ -83,21 +84,31 @@ namespace
     #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_VSEnvMapFresnel.inc"
     #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_VSEnvMapOneLight.inc"
     #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_VSEnvMapOneLightFresnel.inc"
+    #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_VSEnvMapPixelLighting.inc"
 
     #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_PSEnvMap.inc"
     #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_PSEnvMapNoFog.inc"
     #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_PSEnvMapSpecular.inc"
     #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_PSEnvMapSpecularNoFog.inc"
+    #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_PSEnvMapPixelLighting.inc"
+    #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_PSEnvMapPixelLightingNoFog.inc"
+    #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_PSEnvMapPixelLightingFresnel.inc"
+    #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_PSEnvMapPixelLightingFresnelNoFog.inc"
 #else
     #include "Shaders/Compiled/EnvironmentMapEffect_VSEnvMap.inc"
     #include "Shaders/Compiled/EnvironmentMapEffect_VSEnvMapFresnel.inc"
     #include "Shaders/Compiled/EnvironmentMapEffect_VSEnvMapOneLight.inc"
     #include "Shaders/Compiled/EnvironmentMapEffect_VSEnvMapOneLightFresnel.inc"
+    #include "Shaders/Compiled/EnvironmentMapEffect_VSEnvMapPixelLighting.inc"
 
     #include "Shaders/Compiled/EnvironmentMapEffect_PSEnvMap.inc"
     #include "Shaders/Compiled/EnvironmentMapEffect_PSEnvMapNoFog.inc"
     #include "Shaders/Compiled/EnvironmentMapEffect_PSEnvMapSpecular.inc"
     #include "Shaders/Compiled/EnvironmentMapEffect_PSEnvMapSpecularNoFog.inc"
+    #include "Shaders/Compiled/EnvironmentMapEffect_PSEnvMapPixelLighting.inc"
+    #include "Shaders/Compiled/EnvironmentMapEffect_PSEnvMapPixelLightingNoFog.inc"
+    #include "Shaders/Compiled/EnvironmentMapEffect_PSEnvMapPixelLightingFresnel.inc"
+    #include "Shaders/Compiled/EnvironmentMapEffect_PSEnvMapPixelLightingFresnelNoFog.inc"
 #endif
 }
 
@@ -108,6 +119,7 @@ const ShaderBytecode EffectBase<EnvironmentMapEffectTraits>::VertexShaderBytecod
     { EnvironmentMapEffect_VSEnvMapFresnel,         sizeof(EnvironmentMapEffect_VSEnvMapFresnel)         },
     { EnvironmentMapEffect_VSEnvMapOneLight,        sizeof(EnvironmentMapEffect_VSEnvMapOneLight)        },
     { EnvironmentMapEffect_VSEnvMapOneLightFresnel, sizeof(EnvironmentMapEffect_VSEnvMapOneLightFresnel) },
+    { EnvironmentMapEffect_VSEnvMapPixelLighting,   sizeof(EnvironmentMapEffect_VSEnvMapPixelLighting)   },
 };
 
 
@@ -131,15 +143,23 @@ const int EffectBase<EnvironmentMapEffectTraits>::VertexShaderIndices[] =
     3,      // one light, fresnel + specular
     3,      // one light, fresnel + specular, no fog
 
+    4,      // pixel lighting
+    4,      // pixel lighting, no fog
+    4,      // pixel lighting, fresnel
+    4,      // pixel lighting, fresnel, no fog
 };
 
 
 const ShaderBytecode EffectBase<EnvironmentMapEffectTraits>::PixelShaderBytecode[] =
 {
-    { EnvironmentMapEffect_PSEnvMap,              sizeof(EnvironmentMapEffect_PSEnvMap)              },
-    { EnvironmentMapEffect_PSEnvMapNoFog,         sizeof(EnvironmentMapEffect_PSEnvMapNoFog)         },
-    { EnvironmentMapEffect_PSEnvMapSpecular,      sizeof(EnvironmentMapEffect_PSEnvMapSpecular)      },
-    { EnvironmentMapEffect_PSEnvMapSpecularNoFog, sizeof(EnvironmentMapEffect_PSEnvMapSpecularNoFog) },
+    { EnvironmentMapEffect_PSEnvMap,                          sizeof(EnvironmentMapEffect_PSEnvMap)                          },
+    { EnvironmentMapEffect_PSEnvMapNoFog,                     sizeof(EnvironmentMapEffect_PSEnvMapNoFog)                     },
+    { EnvironmentMapEffect_PSEnvMapSpecular,                  sizeof(EnvironmentMapEffect_PSEnvMapSpecular)                  },
+    { EnvironmentMapEffect_PSEnvMapSpecularNoFog,             sizeof(EnvironmentMapEffect_PSEnvMapSpecularNoFog)             },
+    { EnvironmentMapEffect_PSEnvMapPixelLighting,             sizeof(EnvironmentMapEffect_PSEnvMapPixelLighting)             },
+    { EnvironmentMapEffect_PSEnvMapPixelLightingNoFog,        sizeof(EnvironmentMapEffect_PSEnvMapPixelLightingNoFog)        },
+    { EnvironmentMapEffect_PSEnvMapPixelLightingFresnel,      sizeof(EnvironmentMapEffect_PSEnvMapPixelLightingFresnel)      },
+    { EnvironmentMapEffect_PSEnvMapPixelLightingFresnelNoFog, sizeof(EnvironmentMapEffect_PSEnvMapPixelLightingFresnelNoFog) },
 };
 
 
@@ -162,6 +182,11 @@ const int EffectBase<EnvironmentMapEffectTraits>::PixelShaderIndices[] =
     3,      // one light, specular, no fog
     2,      // one light, fresnel + specular
     3,      // one light, fresnel + specular, no fog
+
+    4,      // per pixel lighting
+    5,      // per pixel lighting, no fog
+    6,      // per pixel lighting, fresnel
+    7,      // per pixel lighting, fresnel, no fog
 };
 
 
@@ -172,6 +197,7 @@ SharedResourcePool<ID3D11Device*, EffectBase<EnvironmentMapEffectTraits>::Device
 // Constructor.
 EnvironmentMapEffect::Impl::Impl(_In_ ID3D11Device* device)
   : EffectBase(device),
+    preferPerPixelLighting(false),
     fresnelEnabled(true),
     specularEnabled(false)
 {
@@ -199,21 +225,29 @@ int EnvironmentMapEffect::Impl::GetCurrentShaderPermutation() const
         permutation += 1;
     }
 
-    // Support fresnel or specular?
+    // Support fresnel?
     if (fresnelEnabled)
     {
         permutation += 2;
     }
 
-    if (specularEnabled)
+    if (preferPerPixelLighting)
     {
-        permutation += 4;
+        permutation += 16;
     }
-
-    // Use the only-bother-with-the-first-light shader optimization?
-    if (!lights.lightEnabled[1] && !lights.lightEnabled[2])
+    else
     {
-        permutation += 8;
+        // Support specular?
+        if (specularEnabled)
+        {
+            permutation += 4;
+        }
+
+        // Use the only-bother-with-the-first-light shader optimization?
+        if (!lights.lightEnabled[1] && !lights.lightEnabled[2])
+        {
+            permutation += 8;
+        }
     }
 
     return permutation;
@@ -364,9 +398,9 @@ void EnvironmentMapEffect::SetLightingEnabled(bool value)
 }
 
 
-void EnvironmentMapEffect::SetPerPixelLighting(bool)
+void EnvironmentMapEffect::SetPerPixelLighting(bool value)
 {
-    // Unsupported interface method.
+    pImpl->preferPerPixelLighting = value;
 }
 
 

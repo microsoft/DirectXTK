@@ -318,7 +318,7 @@ private:
         // Gets or lazily creates the vertex shader.
         ID3D11VertexShader* GetVertexShader( int permutation )
         {
-            assert( permutation < DGSLEffectTraits::VertexShaderCount );
+            assert(permutation >= 0 && permutation < DGSLEffectTraits::VertexShaderCount);
 
             return DemandCreateVertexShader(mVertexShaders[permutation], DGSLEffectTraits::VertexShaderBytecode[permutation]);
         }
@@ -326,7 +326,7 @@ private:
         // Gets or lazily creates the specified pixel shader permutation.
         ID3D11PixelShader* GetPixelShader( int permutation )
         {
-            assert( permutation < DGSLEffectTraits::PixelShaderCount );
+            assert(permutation >= 0 && permutation < DGSLEffectTraits::PixelShaderCount);
 
             return DemandCreatePixelShader(mPixelShaders[permutation], DGSLEffectTraits::PixelShaderBytecode[permutation]);
         }

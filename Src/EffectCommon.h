@@ -172,7 +172,9 @@ namespace DirectX
         // Client code needs this in order to create matching input layouts.
         void GetVertexShaderBytecode(int permutation, _Out_ void const** pShaderByteCode, _Out_ size_t* pByteCodeLength)
         {
+            assert(permutation >= 0 && permutation < Traits::ShaderPermutationCount);
             int shaderIndex = VertexShaderIndices[permutation];
+            assert(shaderIndex >= 0 && shaderIndex < Traits::VertexShaderCount);
 
             ShaderBytecode const& bytecode = VertexShaderBytecode[shaderIndex];
 
@@ -248,7 +250,9 @@ namespace DirectX
             // Gets or lazily creates the specified vertex shader permutation.
             ID3D11VertexShader* GetVertexShader(int permutation)
             {
+                assert(permutation >= 0 && permutation < Traits::ShaderPermutationCount);
                 int shaderIndex = VertexShaderIndices[permutation];
+                assert(shaderIndex >= 0 && shaderIndex < Traits::VertexShaderCount);
 
                 return DemandCreateVertexShader(mVertexShaders[shaderIndex], VertexShaderBytecode[shaderIndex]);
             }
@@ -257,7 +261,9 @@ namespace DirectX
             // Gets or lazily creates the specified pixel shader permutation.
             ID3D11PixelShader* GetPixelShader(int permutation)
             {
+                assert(permutation >= 0 && permutation < Traits::ShaderPermutationCount);
                 int shaderIndex = PixelShaderIndices[permutation];
+                assert(shaderIndex >= 0 && shaderIndex < Traits::PixelShaderCount);
 
                 return DemandCreatePixelShader(mPixelShaders[shaderIndex], PixelShaderBytecode[shaderIndex]);
             }

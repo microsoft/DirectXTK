@@ -84,6 +84,34 @@ VSOutputTxEnvMap ComputeEnvMapVSOutput(VSInputNmTx vin, uniform bool useFresnel,
 }
 
 
+float4 ComputeEnvMapPSOutput(PSInputPixelLightingTx pin, uniform bool useFresnel)
+{
+    float4 color = Texture.Sample(Sampler, pin.TexCoord) * pin.Diffuse;
+
+    float3 eyeVector = normalize(EyePosition - pin.PositionWS.xyz);
+    float3 worldNormal = normalize(pin.NormalWS);
+
+    ColorPair lightResult = ComputeLights(eyeVector, worldNormal, 3);
+
+    color.rgb *= lightResult.Diffuse;
+
+    float3 envcoord = reflect(-eyeVector, worldNormal);
+
+    float4 envmap = EnvironmentMap.Sample(EnvMapSampler, envcoord) * color.a;
+
+    float3 amount;
+    if (useFresnel)
+        amount = ComputeFresnelFactor(eyeVector, worldNormal);
+    else
+        amount = EnvironmentMapAmount;
+
+    color.rgb = lerp(color.rgb, envmap.rgb, amount.rgb);
+    color.rgb += EnvironmentMapSpecular * envmap.a;
+
+    return color;
+}
+
+
 // Vertex shader: basic.
 VSOutputTxEnvMap VSEnvMap(VSInputNmTx vin)
 {
@@ -109,6 +137,21 @@ VSOutputTxEnvMap VSEnvMapOneLight(VSInputNmTx vin)
 VSOutputTxEnvMap VSEnvMapOneLightFresnel(VSInputNmTx vin)
 {
     return ComputeEnvMapVSOutput(vin, true, 1);
+}
+
+
+// Vertex shader: pixel lighting.
+VSOutputPixelLightingTx VSEnvMapPixelLighting(VSInputNmTx vin)
+{
+    VSOutputPixelLightingTx vout;
+
+    CommonVSOutputPixelLighting cout = ComputeCommonVSOutputPixelLighting(vin.Position, vin.Normal);
+    SetCommonVSOutputParamsPixelLighting;
+
+    vout.Diffuse = float4(1, 1, 1, DiffuseColor.a);
+    vout.TexCoord = vin.TexCoord;
+
+    return vout;
 }
 
 
@@ -161,6 +204,46 @@ float4 PSEnvMapSpecularNoFog(PSInputTxEnvMap pin) : SV_Target0
 
     color.rgb = lerp(color.rgb, envmap.rgb, pin.Specular.rgb);
     color.rgb += EnvironmentMapSpecular * envmap.a;
+
+    return color;
+}
+
+
+// Pixel shader: pixel lighting.
+float4 PSEnvMapPixelLighting(PSInputPixelLightingTx pin) : SV_Target0
+{
+    float4 color = ComputeEnvMapPSOutput(pin, false);
+
+    ApplyFog(color, pin.PositionWS.w);
+
+    return color;
+}
+
+
+// Pixel shader: pixel lighting + no fog.
+float4 PSEnvMapPixelLightingNoFog(PSInputPixelLightingTx pin) : SV_Target0
+{
+    float4 color = ComputeEnvMapPSOutput(pin, false);
+
+    return color;
+}
+
+
+// Pixel shader: pixel lighting + fresnel
+float4 PSEnvMapPixelLightingFresnel(PSInputPixelLightingTx pin) : SV_Target0
+{
+    float4 color = ComputeEnvMapPSOutput(pin, true);
+
+    ApplyFog(color, pin.PositionWS.w);
+
+    return color;
+}
+
+
+// Pixel shader: pixel lighting + fresnel + no fog.
+float4 PSEnvMapPixelLightingFresnelNoFog(PSInputPixelLightingTx pin) : SV_Target0
+{
+    float4 color = ComputeEnvMapPSOutput(pin, true);
 
     return color;
 }

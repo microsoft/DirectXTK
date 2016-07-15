@@ -100,14 +100,14 @@
     dp4 r0.y, v0, c15  // ::vout<14>
     dp4 r0.z, v0, c17  // ::vout<16>
 
-#line 109
+#line 137
     mad oPos.xy, r0.z, c0, r0  // ::VSEnvMapOneLightFresnel<13,14>
     mov oPos.w, r0.z  // ::VSEnvMapOneLightFresnel<16>
 
 #line 46 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\Lighting.fxh"
     mov oT0.w, c2.w  // ::VSEnvMapOneLightFresnel<3>
 
-#line 111 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\EnvironmentMapEffect.fx"
+#line 139 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\EnvironmentMapEffect.fx"
     mov oT2.xy, v2  // ::VSEnvMapOneLightFresnel<8,9>
 
 // approximately 41 instruction slots used
@@ -164,10 +164,10 @@ ret
 
 const BYTE EnvironmentMapEffect_VSEnvMapOneLightFresnel[] =
 {
-     68,  88,  66,  67, 234, 248, 
-      0, 113, 191,  43, 170, 158, 
-    226,   0, 249,  30, 164,   6, 
-    136,  62,   1,   0,   0,   0, 
+     68,  88,  66,  67,  38, 250, 
+    244,  96, 186,  83, 110, 253, 
+    143,   3, 173, 189,  60, 154, 
+    121, 133,   1,   0,   0,   0, 
     248,  14,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
      28,   9,   0,   0, 224,  13, 
@@ -286,11 +286,11 @@ const BYTE EnvironmentMapEffect_VSEnvMapOneLightFresnel[] =
       0,   0,  71,   0,   0,   0, 
      36,   8,   0,   0,  71,   0, 
       0,   0,  52,   8,   0,   0, 
-    109,   0,   0,   0,  68,   8, 
-      0,   0, 109,   0,   0,   0, 
+    137,   0,   0,   0,  68,   8, 
+      0,   0, 137,   0,   0,   0, 
      88,   8,   0,   0,  46,   0, 
       1,   0, 100,   8,   0,   0, 
-    111,   0,   0,   0, 112,   8, 
+    139,   0,   0,   0, 112,   8, 
       0,   0,  80,  97, 114,  97, 
     109, 101, 116, 101, 114, 115, 
       0,  68, 105, 102, 102, 117, 
