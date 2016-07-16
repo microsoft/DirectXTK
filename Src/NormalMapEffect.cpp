@@ -80,22 +80,20 @@ namespace
 
     #include "Shaders/Compiled/XboxOneNormalMapEffect_PSNormalPixelLightingTx.inc"
     #include "Shaders/Compiled/XboxOneNormalMapEffect_PSNormalPixelLightingTxNoFog.inc"
-
 #else    
     #include "Shaders/Compiled/NormalMapEffect_VSNormalPixelLightingTx.inc"
     #include "Shaders/Compiled/NormalMapEffect_VSNormalPixelLightingTxVc.inc"
                                                  
     #include "Shaders/Compiled/NormalMapEffect_PSNormalPixelLightingTx.inc"
     #include "Shaders/Compiled/NormalMapEffect_PSNormalPixelLightingTxNoFog.inc"
-
 #endif
 }
 
 
 const ShaderBytecode EffectBase<NormalMapEffectTraits>::VertexShaderBytecode[] =
 {    
-    { NormalMapEffect_VSNormalPixelLightingTx,    sizeof(NormalMapEffect_VSNormalPixelLightingTx)    },
-    { NormalMapEffect_VSNormalPixelLightingTxVc,  sizeof(NormalMapEffect_VSNormalPixelLightingTxVc)  },
+    { NormalMapEffect_VSNormalPixelLightingTx,    sizeof(NormalMapEffect_VSNormalPixelLightingTx)   },
+    { NormalMapEffect_VSNormalPixelLightingTxVc,  sizeof(NormalMapEffect_VSNormalPixelLightingTxVc) },
 };
 
 
@@ -419,13 +417,13 @@ void NormalMapEffect::SetTexture(_In_opt_ ID3D11ShaderResourceView* value)
 }
 
 
-void NormalMapEffect::SetSpecularTexture(_In_opt_ ID3D11ShaderResourceView* value)
-{
-    pImpl->specularTexture = value;
-}
-
-
 void NormalMapEffect::SetNormalTexture(_In_opt_ ID3D11ShaderResourceView* value)
 {
     pImpl->normalTexture = value;
+}
+
+
+void NormalMapEffect::SetSpecularTexture(_In_opt_ ID3D11ShaderResourceView* value)
+{
+    pImpl->specularTexture = value;
 }

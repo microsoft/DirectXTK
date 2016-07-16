@@ -491,7 +491,7 @@ namespace DirectX
     };
 
     //----------------------------------------------------------------------------------
-    // Built-in shader supports optional texture mapping, vertex coloring, directional lighting, and fog.
+    // Built-in shader extends BasicEffect with normal maps and optional specular maps
     class NormalMapEffect : public IEffect, public IEffectMatrices, public IEffectLights, public IEffectFog
     {
     public:
