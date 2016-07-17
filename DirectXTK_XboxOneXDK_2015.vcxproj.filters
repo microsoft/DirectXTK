@@ -588,6 +588,12 @@
     <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_VSEnvMapPixelLighting.inc">
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
+    <None Include="Src\Shaders\Compiled\XboxOneNormalMapEffect_PSNormalPixelLightingTxNoFogSpec.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneNormalMapEffect_PSNormalPixelLightingTxNoSpec.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Readme.txt" />

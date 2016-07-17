@@ -180,6 +180,8 @@
     <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_VSEnvMapPixelLighting.inc" />
     <None Include="Src\Shaders\Compiled\XboxOneNormalMapEffect_PSNormalPixelLightingTx.inc" />
     <None Include="Src\Shaders\Compiled\XboxOneNormalMapEffect_PSNormalPixelLightingTxNoFog.inc" />
+    <None Include="Src\Shaders\Compiled\XboxOneNormalMapEffect_PSNormalPixelLightingTxNoFogSpec.inc" />
+    <None Include="Src\Shaders\Compiled\XboxOneNormalMapEffect_PSNormalPixelLightingTxNoSpec.inc" />
     <None Include="Src\Shaders\Compiled\XboxOneNormalMapEffect_VSNormalPixelLightingTx.inc" />
     <None Include="Src\Shaders\Compiled\XboxOneNormalMapEffect_VSNormalPixelLightingTxVc.inc" />
     <None Include="Src\Shaders\Compiled\XboxOneSkinnedEffect_PSSkinnedPixelLighting.inc" />
