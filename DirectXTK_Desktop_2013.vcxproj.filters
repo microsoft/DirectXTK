@@ -542,5 +542,11 @@
     <None Include="Src\Shaders\Compiled\EnvironmentMapEffect_VSEnvMapPixelLighting.inc">
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
+    <None Include="Src\Shaders\Compiled\NormalMapEffect_PSNormalPixelLightingTxNoFogSpec.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\NormalMapEffect_PSNormalPixelLightingTxNoSpec.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
   </ItemGroup>
 </Project>

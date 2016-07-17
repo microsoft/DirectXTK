@@ -443,7 +443,6 @@
     <None Include="Src\Shaders\Compiled\NormalMapEffect_VSNormalPixelLightingTxVc.inc">
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
-    <None Include="Src\Shaders\NormalMapEffect.fx" />
     <None Include="Src\Shaders\Compiled\EnvironmentMapEffect_PSEnvMapPixelLighting.inc">
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
@@ -457,6 +456,15 @@
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\EnvironmentMapEffect_VSEnvMapPixelLighting.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\NormalMapEffect.fx">
+      <Filter>Src\Shaders</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\NormalMapEffect_PSNormalPixelLightingTxNoFogSpec.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\NormalMapEffect_PSNormalPixelLightingTxNoSpec.inc">
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
   </ItemGroup>

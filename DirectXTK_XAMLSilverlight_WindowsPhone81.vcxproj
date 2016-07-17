@@ -137,6 +137,8 @@
     <None Include="Src\Shaders\Compiled\EnvironmentMapEffect_VSEnvMapPixelLighting.inc" />
     <None Include="Src\Shaders\Compiled\NormalMapEffect_PSNormalPixelLightingTx.inc" />
     <None Include="Src\Shaders\Compiled\NormalMapEffect_PSNormalPixelLightingTxNoFog.inc" />
+    <None Include="Src\Shaders\Compiled\NormalMapEffect_PSNormalPixelLightingTxNoFogSpec.inc" />
+    <None Include="Src\Shaders\Compiled\NormalMapEffect_PSNormalPixelLightingTxNoSpec.inc" />
     <None Include="Src\Shaders\Compiled\NormalMapEffect_VSNormalPixelLightingTx.inc" />
     <None Include="Src\Shaders\Compiled\NormalMapEffect_VSNormalPixelLightingTxVc.inc" />
     <None Include="Src\Shaders\Compiled\SkinnedEffect_PSSkinnedPixelLighting.inc" />

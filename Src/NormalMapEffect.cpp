@@ -47,8 +47,8 @@ struct NormalMapEffectTraits
     typedef NormalMapEffectConstants ConstantBufferType;
 
     static const int VertexShaderCount = 2;
-    static const int PixelShaderCount = 2;
-    static const int ShaderPermutationCount = 4;
+    static const int PixelShaderCount = 4;
+    static const int ShaderPermutationCount = 8;
 };
 
 
@@ -80,12 +80,16 @@ namespace
 
     #include "Shaders/Compiled/XboxOneNormalMapEffect_PSNormalPixelLightingTx.inc"
     #include "Shaders/Compiled/XboxOneNormalMapEffect_PSNormalPixelLightingTxNoFog.inc"
+    #include "Shaders/Compiled/XboxOneNormalMapEffect_PSNormalPixelLightingTxNoSpec.inc"
+    #include "Shaders/Compiled/XboxOneNormalMapEffect_PSNormalPixelLightingTxNoFogSpec.inc"
 #else    
     #include "Shaders/Compiled/NormalMapEffect_VSNormalPixelLightingTx.inc"
     #include "Shaders/Compiled/NormalMapEffect_VSNormalPixelLightingTxVc.inc"
                                                  
     #include "Shaders/Compiled/NormalMapEffect_PSNormalPixelLightingTx.inc"
     #include "Shaders/Compiled/NormalMapEffect_PSNormalPixelLightingTxNoFog.inc"
+    #include "Shaders/Compiled/NormalMapEffect_PSNormalPixelLightingTxNoSpec.inc"
+    #include "Shaders/Compiled/NormalMapEffect_PSNormalPixelLightingTxNoFogSpec.inc"
 #endif
 }
 
@@ -99,17 +103,24 @@ const ShaderBytecode EffectBase<NormalMapEffectTraits>::VertexShaderBytecode[] =
 
 const int EffectBase<NormalMapEffectTraits>::VertexShaderIndices[] =
 {    
-    0,     // pixel lighting + texture
-    0,     // pixel lighting + texture, no fog
-    1,     // pixel lighting + texture + vertex color
-    1,     // pixel lighting + texture + vertex color, no fog
+    0,      // pixel lighting + texture
+    0,      // pixel lighting + texture, no fog
+    1,      // pixel lighting + texture + vertex color
+    1,      // pixel lighting + texture + vertex color, no fog
+
+    0,      // pixel lighting + texture, no specular
+    0,      // pixel lighting + texture, no fog or specular
+    1,      // pixel lighting + texture + vertex color, no specular
+    1,      // pixel lighting + texture + vertex color, no fog or specular
 };
 
 
 const ShaderBytecode EffectBase<NormalMapEffectTraits>::PixelShaderBytecode[] =
 {
-    { NormalMapEffect_PSNormalPixelLightingTx,       sizeof(NormalMapEffect_PSNormalPixelLightingTx)      },
-    { NormalMapEffect_PSNormalPixelLightingTxNoFog,  sizeof(NormalMapEffect_PSNormalPixelLightingTxNoFog) },
+    { NormalMapEffect_PSNormalPixelLightingTx,          sizeof(NormalMapEffect_PSNormalPixelLightingTx)          },
+    { NormalMapEffect_PSNormalPixelLightingTxNoFog,     sizeof(NormalMapEffect_PSNormalPixelLightingTxNoFog)     },
+    { NormalMapEffect_PSNormalPixelLightingTxNoSpec,    sizeof(NormalMapEffect_PSNormalPixelLightingTxNoSpec)    },
+    { NormalMapEffect_PSNormalPixelLightingTxNoFogSpec, sizeof(NormalMapEffect_PSNormalPixelLightingTxNoFogSpec) },
 };
 
 
@@ -119,6 +130,11 @@ const int EffectBase<NormalMapEffectTraits>::PixelShaderIndices[] =
     1,      // pixel lighting + texture, no fog
     0,      // pixel lighting + texture + vertex color
     1,      // pixel lighting + texture + vertex color, no fog
+
+    2,      // pixel lighting + texture, no specular
+    3,      // pixel lighting + texture, no fog or specular
+    2,      // pixel lighting + texture + vertex color, no specular
+    3,      // pixel lighting + texture + vertex color, no fog or specular
 };
 
 
@@ -154,6 +170,12 @@ int NormalMapEffect::Impl::GetCurrentShaderPermutation() const
     if (vertexColorEnabled)
     {
         permutation += 2;
+    }
+
+    // Specular map?
+    if (specularTexture)
+    {
+        permutation += 4;
     }
 
     return permutation;

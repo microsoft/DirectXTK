@@ -115,6 +115,8 @@ call :CompileShader%1 NormalMapEffect vs VSNormalPixelLightingTxVc
 
 call :CompileShader%1 NormalMapEffect ps PSNormalPixelLightingTx
 call :CompileShader%1 NormalMapEffect ps PSNormalPixelLightingTxNoFog
+call :CompileShader%1 NormalMapEffect ps PSNormalPixelLightingTxNoSpec
+call :CompileShader%1 NormalMapEffect ps PSNormalPixelLightingTxNoFogSpec
 
 call :CompileShader%1 SpriteEffect vs SpriteVertexShader
 call :CompileShader%1 SpriteEffect ps SpritePixelShader
