@@ -614,7 +614,7 @@ namespace DirectX
 
         void __cdecl SetSharing( bool enabled );
 
-        void __cdecl SetUseNormalMapEffect( bool enabled );
+        void __cdecl EnableNormalMapEffect( bool enabled );
 
         void __cdecl SetDirectory( _In_opt_z_ const wchar_t* path );
 

@@ -39,7 +39,7 @@ public:
 
     void ReleaseCache();
     void SetSharing( bool enabled ) { mSharing = enabled; }
-    void SetUseNormalMapEffect( bool enabled ) { mUseNormalMapEffect = enabled; }
+    void EnableNormalMapEffect( bool enabled ) { mUseNormalMapEffect = enabled; }
 
     static SharedResourcePool<ID3D11Device*, Impl> instancePool;
 
@@ -463,9 +463,9 @@ void EffectFactory::SetSharing( bool enabled )
     pImpl->SetSharing( enabled );
 }
 
-void EffectFactory::SetUseNormalMapEffect(bool enabled)
+void EffectFactory::EnableNormalMapEffect(bool enabled)
 {
-    pImpl->SetUseNormalMapEffect( enabled );
+    pImpl->EnableNormalMapEffect( enabled );
 }
 
 void EffectFactory::SetDirectory( _In_opt_z_ const wchar_t* path )

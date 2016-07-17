@@ -67,6 +67,7 @@ namespace
         else if (mh.NormalTexture[0])
         {
             DebugTrace("WARNING: Material '%s' has a normal map, but vertex buffer is missing tangents\n", mh.Name);
+            *normalName = 0;
         }
 
         EffectFactory::EffectInfo info;
