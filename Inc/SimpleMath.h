@@ -114,6 +114,7 @@ struct Vector2 : public XMFLOAT2
     explicit Vector2(_In_reads_(2) const float *pArray) : XMFLOAT2(pArray) {}
     Vector2(FXMVECTOR V) { XMStoreFloat2( this, V ); }
     Vector2(const XMFLOAT2& V) { this->x = V.x; this->y = V.y; }
+    explicit Vector2(const XMVECTORF32& F) { this->x = F.f[0]; this->y = F.f[1]; }
 
     operator XMVECTOR() const { return XMLoadFloat2( this ); }
 
@@ -124,6 +125,7 @@ struct Vector2 : public XMFLOAT2
     // Assignment operators
     Vector2& operator= (const Vector2& V) { x = V.x; y = V.y; return *this; }
     Vector2& operator= (const XMFLOAT2& V) { x = V.x; y = V.y; return *this; }
+    Vector2& operator= (const XMVECTORF32& F) { x = F.f[0]; y = F.f[1]; return *this; }
     Vector2& operator+= (const Vector2& V);
     Vector2& operator-= (const Vector2& V);
     Vector2& operator*= (const Vector2& V);
@@ -220,6 +222,7 @@ struct Vector3 : public XMFLOAT3
     explicit Vector3(_In_reads_(3) const float *pArray) : XMFLOAT3(pArray) {}
     Vector3(FXMVECTOR V) { XMStoreFloat3( this, V ); }
     Vector3(const XMFLOAT3& V) { this->x = V.x; this->y = V.y; this->z = V.z; }
+    explicit Vector3(const XMVECTORF32& F) { this->x = F.f[0]; this->y = F.f[1]; this->z = F.f[2]; }
 
     operator XMVECTOR() const { return XMLoadFloat3( this ); }
 
@@ -230,6 +233,7 @@ struct Vector3 : public XMFLOAT3
     // Assignment operators
     Vector3& operator= (const Vector3& V) { x = V.x; y = V.y; z = V.z; return *this; }
     Vector3& operator= (const XMFLOAT3& V) { x = V.x; y = V.y; z = V.z; return *this; }
+    Vector3& operator= (const XMVECTORF32& F) { x = F.f[0]; y = F.f[1]; z = F.f[2]; return *this; }
     Vector3& operator+= (const Vector3& V);
     Vector3& operator-= (const Vector3& V);
     Vector3& operator*= (const Vector3& V);
@@ -333,6 +337,7 @@ struct Vector4 : public XMFLOAT4
     explicit Vector4(_In_reads_(4) const float *pArray) : XMFLOAT4(pArray) {}
     Vector4(FXMVECTOR V) { XMStoreFloat4( this, V ); }
     Vector4(const XMFLOAT4& V) { this->x = V.x; this->y = V.y; this->z = V.z; this->w = V.w; }
+    explicit Vector4(const XMVECTORF32& F) { this->x = F.f[0]; this->y = F.f[1]; this->z = F.f[2]; this->w = F.f[3]; }
 
     operator XMVECTOR() const { return XMLoadFloat4( this ); }
 
@@ -343,6 +348,7 @@ struct Vector4 : public XMFLOAT4
     // Assignment operators
     Vector4& operator= (const Vector4& V) { x = V.x; y = V.y; z = V.z; w = V.w; return *this; }
     Vector4& operator= (const XMFLOAT4& V) { x = V.x; y = V.y; z = V.z; w = V.w; return *this; }
+    Vector4& operator= (const XMVECTORF32& F) { x = F.f[0]; y = F.f[1]; z = F.f[2]; w = F.f[3]; return *this; }
     Vector4& operator+= (const Vector4& V);
     Vector4& operator-= (const Vector4& V);
     Vector4& operator*= (const Vector4& V);
@@ -587,6 +593,7 @@ struct Plane : public XMFLOAT4
     explicit Plane(_In_reads_(4) const float *pArray) : XMFLOAT4(pArray) {}
     Plane(FXMVECTOR V) { XMStoreFloat4( this, V ); }
     Plane(const XMFLOAT4& p) { this->x = p.x; this->y = p.y; this->z = p.z; this->w = p.w; }
+    explicit Plane(const XMVECTORF32& F) { this->x = F.f[0]; this->y = F.f[1]; this->z = F.f[2]; this->w = F.f[3]; }
 
     operator XMVECTOR() const { return XMLoadFloat4( this ); }
 
@@ -597,6 +604,7 @@ struct Plane : public XMFLOAT4
     // Assignment operators
     Plane& operator= (const Plane& p) { x = p.x; y = p.y; z = p.z; w = p.w; return *this; }
     Plane& operator= (const XMFLOAT4& p) { x = p.x; y = p.y; z = p.z; w = p.w; return *this; }
+    Plane& operator= (const XMVECTORF32& F) { x = F.f[0]; y = F.f[1]; z = F.f[2]; w = F.f[3]; return *this; }
 
     // Properties
     Vector3 Normal() const { return Vector3( x, y, z ); }
@@ -633,6 +641,7 @@ struct Quaternion : public XMFLOAT4
     explicit Quaternion(_In_reads_(4) const float *pArray) : XMFLOAT4(pArray) {}
     Quaternion(FXMVECTOR V) { XMStoreFloat4( this, V ); }
     Quaternion(const XMFLOAT4& q) { this->x = q.x; this->y = q.y; this->z = q.z; this->w = q.w; }
+    explicit Quaternion(const XMVECTORF32& F) { this->x = F.f[0]; this->y = F.f[1]; this->z = F.f[2]; this->w = F.f[3]; }
 
     operator XMVECTOR() const { return XMLoadFloat4( this ); }
 
@@ -643,6 +652,7 @@ struct Quaternion : public XMFLOAT4
     // Assignment operators
     Quaternion& operator= (const Quaternion& q) { x = q.x; y = q.y; z = q.z; w = q.w; return *this; }
     Quaternion& operator= (const XMFLOAT4& q) { x = q.x; y = q.y; z = q.z; w = q.w; return *this; }
+    Quaternion& operator= (const XMVECTORF32& F) { x = F.f[0]; y = F.f[1]; z = F.f[2]; w = F.f[3]; return *this; }
     Quaternion& operator+= (const Quaternion& q);
     Quaternion& operator-= (const Quaternion& q);
     Quaternion& operator*= (const Quaternion& q);
@@ -705,6 +715,7 @@ struct Color : public XMFLOAT4
     explicit Color(_In_reads_(4) const float *pArray) : XMFLOAT4(pArray) {}
     Color(FXMVECTOR V) { XMStoreFloat4( this, V ); }
     Color(const XMFLOAT4& c) { this->x = c.x; this->y = c.y; this->z = c.z; this->w = c.w; }
+    explicit Color(const XMVECTORF32& F) { this->x = F.f[0]; this->y = F.f[1]; this->z = F.f[2]; this->w = F.f[3]; }
 
     explicit Color( const DirectX::PackedVector::XMCOLOR& Packed );
         // BGRA Direct3D 9 D3DCOLOR packed color
@@ -722,6 +733,7 @@ struct Color : public XMFLOAT4
     // Assignment operators
     Color& operator= (const Color& c) { x = c.x; y = c.y; z = c.z; w = c.w; return *this; }
     Color& operator= (const XMFLOAT4& c) { x = c.x; y = c.y; z = c.z; w = c.w; return *this; }
+    Color& operator= (const XMVECTORF32& F) { x = F.f[0]; y = F.f[1]; z = F.f[2]; w = F.f[3]; return *this; }
     Color& operator= (const DirectX::PackedVector::XMCOLOR& Packed);
     Color& operator= (const DirectX::PackedVector::XMUBYTEN4& Packed);
     Color& operator+= (const Color& c);
