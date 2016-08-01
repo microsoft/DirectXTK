@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit for DirectX 11
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-July 18, 2016
+August 1, 2016
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Universal Windows Platform (UWP) apps for Windows 10,
@@ -78,6 +78,10 @@ https://opensource.microsoft.com/codeofconduct/
 ---------------
 RELEASE HISTORY
 ---------------
+
+August 1, 2016
+    GamePad capabilities information updated for Universal Windows and Xbox One platforms
+    Specular falloff lighting computation fix in shaders
 
 July 18, 2016
     NormalMapEffect for normal-map with optional specular map rendering
