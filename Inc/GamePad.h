@@ -28,6 +28,10 @@
 #include <memory>
 #include <stdint.h>
 
+#if (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
+#include <string>
+#endif
+
 
 namespace DirectX
 {
@@ -164,9 +168,13 @@ namespace DirectX
                 ARCADE_PAD = 19,
             };
 
-            bool        connected;
-            Type        gamepadType;
-            uint64_t    id;
+            bool            connected;
+            Type            gamepadType;
+#if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/)
+            std::wstring    id;
+#else
+            uint64_t        id;
+#endif
 
             bool __cdecl IsConnected() const { return connected; }
         };
@@ -247,6 +255,10 @@ namespace DirectX
         // Handle suspending/resuming
         void __cdecl Suspend();
         void __cdecl Resume();
+
+#if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/ ) || defined(_XBOX_ONE)
+        void __cdecl RegisterEvents(HANDLE ctrlChanged, HANDLE userChanged);
+#endif
 
         // Singleton
         static GamePad& __cdecl Get();
