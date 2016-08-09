@@ -257,7 +257,7 @@ namespace DirectX
         void __cdecl Resume();
 
 #if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/ ) || defined(_XBOX_ONE)
-        void __cdecl RegisterEvents(HANDLE ctrlChanged, HANDLE userChanged);
+        void __cdecl RegisterEvents(void* ctrlChanged, void* userChanged);
 #endif
 
         // Singleton

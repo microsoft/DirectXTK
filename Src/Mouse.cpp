@@ -518,6 +518,7 @@ class Mouse::Impl
 public:
     Impl(Mouse* owner) :
         mOwner(owner),
+        mWindow(nullptr),
         mMode(MODE_ABSOLUTE),
         mLastX(0),
         mLastY(0),
@@ -595,6 +596,8 @@ public:
 
         SetEvent((mode == MODE_ABSOLUTE) ? mAbsoluteMode.get() : mRelativeMode.get());
 
+        assert(mWindow != 0);
+
         TRACKMOUSEEVENT tme;
         tme.cbSize = sizeof(tme);
         tme.dwFlags = TME_HOVER;
@@ -610,6 +613,8 @@ public:
     {
         if (mWindow == window)
             return;
+
+        assert(window != 0);
 
         RAWINPUTDEVICE Rid;
         Rid.usUsagePage = 0x1 /* HID_USAGE_PAGE_GENERIC */;
@@ -648,6 +653,8 @@ private:
 
     void ClipToWindow()
     {
+        assert(mWindow != 0);
+
         RECT rect;
         GetClientRect(mWindow, &rect);
 
