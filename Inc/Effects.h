@@ -615,6 +615,7 @@ namespace DirectX
         void __cdecl SetSharing( bool enabled );
 
         void __cdecl EnableNormalMapEffect( bool enabled );
+        void __cdecl EnableForceSRGB( bool forceSRGB );
 
         void __cdecl SetDirectory( _In_opt_z_ const wchar_t* path );
 
@@ -662,6 +663,8 @@ namespace DirectX
         void __cdecl ReleaseCache();
 
         void __cdecl SetSharing( bool enabled );
+
+        void __cdecl EnableForceSRGB( bool forceSRGB );
 
         void __cdecl SetDirectory( _In_opt_z_ const wchar_t* path );
 

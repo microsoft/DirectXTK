@@ -31,7 +31,8 @@ public:
     Impl(_In_ ID3D11Device* device)
       : device(device),
         mSharing(true),
-        mUseNormalMapEffect(true)
+        mUseNormalMapEffect(true),
+        mForceSRGB(false)
     { *mPath = 0; }
 
     std::shared_ptr<IEffect> CreateEffect( _In_ IEffectFactory* factory, _In_ const IEffectFactory::EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext );
@@ -40,6 +41,7 @@ public:
     void ReleaseCache();
     void SetSharing( bool enabled ) { mSharing = enabled; }
     void EnableNormalMapEffect( bool enabled ) { mUseNormalMapEffect = enabled; }
+    void EnableForceSRGB(bool forceSRGB) { mForceSRGB = forceSRGB; }
 
     static SharedResourcePool<ID3D11Device*, Impl> instancePool;
 
@@ -59,6 +61,7 @@ private:
 
     bool mSharing;
     bool mUseNormalMapEffect;
+    bool mForceSRGB;
 
     std::mutex mutex;
 };
@@ -367,7 +370,10 @@ void EffectFactory::Impl::CreateTexture( const wchar_t* name, ID3D11DeviceContex
 
         if ( _wcsicmp( ext, L".dds" ) == 0 )
         {
-            HRESULT hr = CreateDDSTextureFromFile( device.Get(), fullName, nullptr, textureView );
+            HRESULT hr = CreateDDSTextureFromFileEx(
+                device.Get(), fullName, 0,
+                D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
+                mForceSRGB, nullptr, textureView );
             if ( FAILED(hr) )
             {
                 DebugTrace( "CreateDDSTextureFromFile failed (%08X) for '%ls'\n", hr, fullName );
@@ -378,7 +384,10 @@ void EffectFactory::Impl::CreateTexture( const wchar_t* name, ID3D11DeviceContex
         else if ( deviceContext )
         {
             std::lock_guard<std::mutex> lock(mutex);
-            HRESULT hr = CreateWICTextureFromFile( device.Get(), deviceContext, fullName, nullptr, textureView );
+            HRESULT hr = CreateWICTextureFromFileEx(
+                device.Get(), deviceContext, fullName, 0,
+                D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
+                mForceSRGB, nullptr, textureView );
             if ( FAILED(hr) )
             {
                 DebugTrace( "CreateWICTextureFromFile failed (%08X) for '%ls'\n", hr, fullName );
@@ -388,7 +397,10 @@ void EffectFactory::Impl::CreateTexture( const wchar_t* name, ID3D11DeviceContex
 #endif
         else
         {
-            HRESULT hr = CreateWICTextureFromFile( device.Get(), fullName, nullptr, textureView );
+            HRESULT hr = CreateWICTextureFromFileEx(
+                device.Get(), fullName, 0,
+                D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
+                mForceSRGB, nullptr, textureView );
             if ( FAILED(hr) )
             {
                 DebugTrace( "CreateWICTextureFromFile failed (%08X) for '%ls'\n", hr, fullName );
@@ -466,6 +478,11 @@ void EffectFactory::SetSharing( bool enabled )
 void EffectFactory::EnableNormalMapEffect(bool enabled)
 {
     pImpl->EnableNormalMapEffect( enabled );
+}
+
+void EffectFactory::EnableForceSRGB(bool forceSRGB)
+{
+    pImpl->EnableForceSRGB( forceSRGB );
 }
 
 void EffectFactory::SetDirectory( _In_opt_z_ const wchar_t* path )

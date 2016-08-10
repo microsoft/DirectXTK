@@ -36,7 +36,9 @@ class DGSLEffectFactory::Impl
 {
 public:
     Impl(_In_ ID3D11Device* device)
-      : device(device), mSharing(true)
+      : device(device),
+        mSharing(true),
+        mForceSRGB(false)
     { *mPath = 0; }
 
     std::shared_ptr<IEffect> CreateEffect( _In_ DGSLEffectFactory* factory, _In_ const IEffectFactory::EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext );
@@ -46,6 +48,7 @@ public:
 
     void ReleaseCache();
     void SetSharing( bool enabled ) { mSharing = enabled; }
+    void EnableForceSRGB(bool forceSRGB) { mForceSRGB = forceSRGB; }
 
     static SharedResourcePool<ID3D11Device*, Impl> instancePool;
 
@@ -64,6 +67,7 @@ private:
     ShaderCache  mShaderCache;
 
     bool mSharing;
+    bool mForceSRGB;
 
     std::mutex mutex;
 };
@@ -381,7 +385,10 @@ void DGSLEffectFactory::Impl::CreateTexture( const wchar_t* name, ID3D11DeviceCo
 
         if ( _wcsicmp( ext, L".dds" ) == 0 )
         {
-            HRESULT hr = CreateDDSTextureFromFile( device.Get(), fullName, nullptr, textureView );
+            HRESULT hr = CreateDDSTextureFromFileEx(
+                device.Get(), fullName, 0,
+                D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
+                mForceSRGB, nullptr, textureView);
             if ( FAILED(hr) )
             {
                 DebugTrace( "CreateDDSTextureFromFile failed (%08X) for '%ls'\n", hr, fullName );
@@ -392,7 +399,10 @@ void DGSLEffectFactory::Impl::CreateTexture( const wchar_t* name, ID3D11DeviceCo
         else if ( deviceContext )
         {
             std::lock_guard<std::mutex> lock(mutex);
-            HRESULT hr = CreateWICTextureFromFile( device.Get(), deviceContext, fullName, nullptr, textureView );
+            HRESULT hr = CreateWICTextureFromFileEx(
+                device.Get(), deviceContext, fullName, 0,
+                D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
+                mForceSRGB, nullptr, textureView );
             if ( FAILED(hr) )
             {
                 DebugTrace( "CreateWICTextureFromFile failed (%08X) for '%ls'\n", hr, fullName );
@@ -402,7 +412,10 @@ void DGSLEffectFactory::Impl::CreateTexture( const wchar_t* name, ID3D11DeviceCo
 #endif
         else
         {
-            HRESULT hr = CreateWICTextureFromFile( device.Get(), fullName, nullptr, textureView );
+            HRESULT hr = CreateWICTextureFromFileEx(
+                device.Get(), fullName, 0,
+                D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
+                mForceSRGB, nullptr, textureView );
             if ( FAILED(hr) )
             {
                 DebugTrace( "CreateWICTextureFromFile failed (%08X) for '%ls'\n", hr, fullName );
@@ -549,6 +562,11 @@ void DGSLEffectFactory::ReleaseCache()
 void DGSLEffectFactory::SetSharing( bool enabled )
 {
     pImpl->SetSharing( enabled );
+}
+
+void DGSLEffectFactory::EnableForceSRGB(bool forceSRGB)
+{
+    pImpl->EnableForceSRGB( forceSRGB );
 }
 
 void DGSLEffectFactory::SetDirectory( _In_opt_z_ const wchar_t* path )
