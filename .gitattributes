@@ -9,6 +9,7 @@
 *.fx eol=crlf
 *.fxh eol=crlf
 *.inc eol=crlf
+*.inl eol=crlf
 *.vcxproj eol=crlf
 *.filters eol=crlf
 *.sln eol=crlf
