@@ -19,6 +19,7 @@
 #include "SpriteFont.h"
 #include "DirectXHelpers.h"
 #include "BinaryReader.h"
+#include "LoaderHelpers.h"
 
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
@@ -28,7 +29,7 @@ using Microsoft::WRL::ComPtr;
 class SpriteFont::Impl
 {
 public:
-    Impl(_In_ ID3D11Device* device, _In_ BinaryReader* reader);
+    Impl(_In_ ID3D11Device* device, _In_ BinaryReader* reader, bool forceSRGB);
     Impl(_In_ ID3D11ShaderResourceView* texture, _In_reads_(glyphCount) Glyph const* glyphs, _In_ size_t glyphCount, _In_ float lineSpacing);
 
     Glyph const* FindGlyph(wchar_t character) const;
@@ -74,7 +75,7 @@ namespace DirectX
 
 
 // Reads a SpriteFont from the binary format created by the MakeSpriteFont utility.
-SpriteFont::Impl::Impl(_In_ ID3D11Device* device, _In_ BinaryReader* reader)
+SpriteFont::Impl::Impl(_In_ ID3D11Device* device, _In_ BinaryReader* reader, bool forceSRGB)
 {
     // Validate the header.
     for (char const* magic = spriteFontMagic; *magic; magic++)
@@ -104,6 +105,11 @@ SpriteFont::Impl::Impl(_In_ ID3D11Device* device, _In_ BinaryReader* reader)
     auto textureStride = reader->Read<uint32_t>();
     auto textureRows = reader->Read<uint32_t>();
     auto textureData = reader->ReadArray<uint8_t>(textureStride * textureRows);
+
+    if (forceSRGB)
+    {
+        textureFormat = MakeSRGB(textureFormat);
+    }
 
     // Create the D3D texture.
     CD3D11_TEXTURE2D_DESC textureDesc(textureFormat, textureWidth, textureHeight, 1, 1, D3D11_BIND_SHADER_RESOURCE, D3D11_USAGE_IMMUTABLE);
@@ -220,21 +226,21 @@ void SpriteFont::Impl::ForEachGlyph(_In_z_ wchar_t const* text, TAction action) 
 
 
 // Construct from a binary file created by the MakeSpriteFont utility.
-SpriteFont::SpriteFont(_In_ ID3D11Device* device, _In_z_ wchar_t const* fileName)
+SpriteFont::SpriteFont(_In_ ID3D11Device* device, _In_z_ wchar_t const* fileName, bool forceSRGB)
 {
     BinaryReader reader(fileName);
 
-    pImpl = std::make_unique<Impl>(device, &reader);
+    pImpl = std::make_unique<Impl>(device, &reader, forceSRGB);
 }
 
 
 // Construct from a binary blob created by the MakeSpriteFont utility and already loaded into memory.
 _Use_decl_annotations_
-SpriteFont::SpriteFont(ID3D11Device* device, uint8_t const* dataBlob, size_t dataSize)
+SpriteFont::SpriteFont(ID3D11Device* device, uint8_t const* dataBlob, size_t dataSize, bool forceSRGB)
 {
     BinaryReader reader(dataBlob, dataSize);
 
-    pImpl = std::make_unique<Impl>(device, &reader);
+    pImpl = std::make_unique<Impl>(device, &reader, forceSRGB);
 }
 
 
