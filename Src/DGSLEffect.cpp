@@ -244,6 +244,7 @@ public:
         world = id;
         view = id;
         projection = id;
+        constants.material.Diffuse = g_XMOne;
         constants.material.Specular = g_XMOne;
         constants.material.SpecularPower = 16;
         constants.object.UvTransform4x4 = id;
