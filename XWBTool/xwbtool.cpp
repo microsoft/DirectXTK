@@ -1152,7 +1152,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         waveOffset += alignedSize;
     }
 
-    if ( waveOffset > 0xFFFFFFFF )
+    if ( waveOffset > UINT32_MAX )
     {
         wprintf( L"ERROR: Audio wave data is too large to encode into wavebank (offset %I64u)", waveOffset );
         goto LError;
@@ -1524,7 +1524,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
 
         DWORD alignedSize = BLOCKALIGNPAD( it->data.audioBytes, dwAlignment );
 
-        if ( ( uint64_t(segmentOffset) + alignedSize ) > 0xFFFFFFFF )
+        if ( ( uint64_t(segmentOffset) + alignedSize ) > UINT32_MAX )
         {
             wprintf( L"ERROR: Data exceeds maximum size for wavebank\n" );
             goto LError;

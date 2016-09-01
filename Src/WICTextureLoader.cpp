@@ -160,52 +160,59 @@ namespace DirectX
     {
         static IWICImagingFactory* s_Factory = nullptr;
 
-        if (s_Factory)
+        if ( s_Factory )
             return s_Factory;
 
-#if(_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
-        HRESULT hr = CoCreateInstance(
-            CLSID_WICImagingFactory2,
-            nullptr,
-            CLSCTX_INPROC_SERVER,
-            __uuidof(IWICImagingFactory2),
-            (LPVOID*)&s_Factory
-        );
+        static INIT_ONCE s_initOnce = INIT_ONCE_STATIC_INIT;
 
-        if (SUCCEEDED(hr))
-        {
-            // WIC2 is available on Windows 8 and Windows 7 SP1 with KB 2670838 installed
-            g_WIC2 = true;
-        }
-        else
-        {
-            hr = CoCreateInstance(
-                CLSID_WICImagingFactory1,
-                nullptr,
-                CLSCTX_INPROC_SERVER,
-                IID_PPV_ARGS(&s_Factory)
-            );
-
-            if (FAILED(hr))
+        InitOnceExecuteOnce(&s_initOnce,
+            [](PINIT_ONCE, PVOID, PVOID *) -> BOOL
             {
-                s_Factory = nullptr;
-                return nullptr;
-            }
-        }
-#else
-        HRESULT hr = CoCreateInstance(
-            CLSID_WICImagingFactory,
-            nullptr,
-            CLSCTX_INPROC_SERVER,
-            IID_PPV_ARGS(&s_Factory)
-        );
+            #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
+                HRESULT hr = CoCreateInstance(
+                    CLSID_WICImagingFactory2,
+                    nullptr,
+                    CLSCTX_INPROC_SERVER,
+                    __uuidof(IWICImagingFactory2),
+                    (LPVOID*)&s_Factory
+                    );
 
-        if (FAILED(hr))
-        {
-            s_Factory = nullptr;
-            return nullptr;
-        }
-#endif
+                if ( SUCCEEDED(hr) )
+                {
+                    // WIC2 is available on Windows 10, Windows 8.x, and Windows 7 SP1 with KB 2670838 installed
+                    g_WIC2 = true;
+                }
+                else
+                {
+                    hr = CoCreateInstance(
+                        CLSID_WICImagingFactory1,
+                        nullptr,
+                        CLSCTX_INPROC_SERVER,
+                        IID_PPV_ARGS(&s_Factory)
+                        );
+
+                    if ( FAILED(hr) )
+                    {
+                        s_Factory = nullptr;
+                        return FALSE;
+                    }
+                }
+            #else
+                HRESULT hr = CoCreateInstance(
+                    CLSID_WICImagingFactory,
+                    nullptr,
+                    CLSCTX_INPROC_SERVER,
+                    IID_PPV_ARGS(&s_Factory)
+                    );
+
+                if ( FAILED(hr) )
+                {
+                    s_Factory = nullptr;
+                    return FALSE;
+                }
+            #endif
+                return TRUE;
+            }, nullptr, nullptr);
 
         return s_Factory;
     }
@@ -744,10 +751,8 @@ HRESULT DirectX::CreateWICTextureFromMemoryEx( ID3D11Device* d3dDevice,
     if ( !wicDataSize )
         return E_FAIL;
 
-#ifdef _M_AMD64
-    if ( wicDataSize > 0xFFFFFFFF )
+    if ( wicDataSize > UINT32_MAX )
         return HRESULT_FROM_WIN32( ERROR_FILE_TOO_LARGE );
-#endif
 
     auto pWIC = _GetWIC();
     if ( !pWIC )
@@ -831,10 +836,8 @@ HRESULT DirectX::CreateWICTextureFromMemoryEx( ID3D11Device* d3dDevice,
     if ( !wicDataSize )
         return E_FAIL;
 
-#ifdef _M_AMD64
-    if ( wicDataSize > 0xFFFFFFFF )
+    if ( wicDataSize > UINT32_MAX )
         return HRESULT_FROM_WIN32( ERROR_FILE_TOO_LARGE );
-#endif
 
     auto pWIC = _GetWIC();
     if ( !pWIC )
