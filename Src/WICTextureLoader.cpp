@@ -158,13 +158,9 @@ namespace DirectX
 
     IWICImagingFactory* _GetWIC()
     {
-        static ComPtr<IWICImagingFactory> s_Factory;
-
-        if ( s_Factory )
-            return s_Factory.Get();
-
         static INIT_ONCE s_initOnce = INIT_ONCE_STATIC_INIT;
 
+        IWICImagingFactory* factory = nullptr;
         InitOnceExecuteOnce(&s_initOnce,
             [](PINIT_ONCE, PVOID, PVOID *factory) -> BOOL
             {
@@ -202,9 +198,9 @@ namespace DirectX
                     __uuidof(IWICImagingFactory),
                     factory) ) ? TRUE : FALSE;
             #endif
-            }, nullptr, reinterpret_cast<LPVOID*>(s_Factory.GetAddressOf()));
+            }, nullptr, reinterpret_cast<LPVOID*>(&factory));
 
-        return s_Factory.Get();
+        return factory;
     }
 
 } // namespace DirectX
