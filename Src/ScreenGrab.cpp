@@ -179,9 +179,9 @@ HRESULT DirectX::SaveDDSTextureToFile( ID3D11DeviceContext* pContext,
 
     // Create file
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
-    ScopedHandle hFile( safe_handle( CreateFile2( fileName, GENERIC_WRITE | DELETE, 0, CREATE_ALWAYS, 0 ) ) );
+    ScopedHandle hFile( safe_handle( CreateFile2( fileName, GENERIC_WRITE | DELETE, 0, CREATE_ALWAYS, nullptr ) ) );
 #else
-    ScopedHandle hFile( safe_handle( CreateFileW( fileName, GENERIC_WRITE | DELETE, 0, 0, CREATE_ALWAYS, 0, 0 ) ) );
+    ScopedHandle hFile( safe_handle( CreateFileW( fileName, GENERIC_WRITE | DELETE, 0, nullptr, CREATE_ALWAYS, 0, nullptr ) ) );
 #endif
     if ( !hFile )
         return HRESULT_FROM_WIN32( GetLastError() );
@@ -306,13 +306,13 @@ HRESULT DirectX::SaveDDSTextureToFile( ID3D11DeviceContext* pContext,
 
     // Write header & pixels
     DWORD bytesWritten;
-    if ( !WriteFile( hFile.get(), fileHeader, static_cast<DWORD>( headerSize ), &bytesWritten, 0 ) )
+    if ( !WriteFile( hFile.get(), fileHeader, static_cast<DWORD>( headerSize ), &bytesWritten, nullptr ) )
         return HRESULT_FROM_WIN32( GetLastError() );
 
     if ( bytesWritten != headerSize )
         return E_FAIL;
 
-    if ( !WriteFile( hFile.get(), pixels.get(), static_cast<DWORD>( slicePitch ), &bytesWritten, 0 ) )
+    if ( !WriteFile( hFile.get(), pixels.get(), static_cast<DWORD>( slicePitch ), &bytesWritten, nullptr ) )
         return HRESULT_FROM_WIN32( GetLastError() );
 
     if ( bytesWritten != slicePitch )
