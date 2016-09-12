@@ -174,7 +174,7 @@ HRESULT SoundEffect::Impl::Initialize( AudioEngine* engine, std::unique_ptr<uint
     if ( !engine || !IsValid( wfx ) || !startAudio || !audioBytes || !wavData )
         return E_INVALIDARG;
 
-    if ( audioBytes > UINT32_MAX)
+    if ( audioBytes > UINT32_MAX )
         return E_INVALIDARG;
 
     switch( GetFormatTag( wfx ) )

@@ -108,7 +108,7 @@ SpriteFont::Impl::Impl(_In_ ID3D11Device* device, _In_ BinaryReader* reader, boo
 
     if (forceSRGB)
     {
-        textureFormat = MakeSRGB(textureFormat);
+        textureFormat = LoaderHelpers::MakeSRGB(textureFormat);
     }
 
     // Create the D3D texture.

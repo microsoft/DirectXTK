@@ -28,6 +28,7 @@
 #include "LoaderHelpers.h"
 
 using namespace DirectX;
+using namespace DirectX::LoaderHelpers;
 
 static_assert(DDS_DIMENSION_TEXTURE1D == D3D11_RESOURCE_DIMENSION_TEXTURE1D, "dds mismatch");
 static_assert(DDS_DIMENSION_TEXTURE2D == D3D11_RESOURCE_DIMENSION_TEXTURE2D, "dds mismatch");
