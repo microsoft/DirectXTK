@@ -43,8 +43,8 @@ namespace
     //--------------------------------------------------------------------------------------
     HRESULT CaptureTexture(_In_ ID3D11DeviceContext* pContext,
         _In_ ID3D11Resource* pSource,
-        _Inout_ D3D11_TEXTURE2D_DESC& desc,
-        _Inout_ ComPtr<ID3D11Texture2D>& pStaging)
+        D3D11_TEXTURE2D_DESC& desc,
+        ComPtr<ID3D11Texture2D>& pStaging)
     {
         if (!pContext || !pSource)
             return E_INVALIDARG;
@@ -104,7 +104,7 @@ namespace
             desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
             desc.Usage = D3D11_USAGE_STAGING;
 
-            hr = d3dDevice->CreateTexture2D(&desc, 0, pStaging.GetAddressOf());
+            hr = d3dDevice->CreateTexture2D(&desc, 0, pStaging.ReleaseAndGetAddressOf());
             if (FAILED(hr))
                 return hr;
 
@@ -125,7 +125,7 @@ namespace
             desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
             desc.Usage = D3D11_USAGE_STAGING;
 
-            hr = d3dDevice->CreateTexture2D(&desc, 0, pStaging.GetAddressOf());
+            hr = d3dDevice->CreateTexture2D(&desc, 0, pStaging.ReleaseAndGetAddressOf());
             if (FAILED(hr))
                 return hr;
 
