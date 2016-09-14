@@ -968,6 +968,9 @@ namespace
     {
         wprintf(L"Microsoft (R) XACT-style Wave Bank Tool \n");
         wprintf(L"Copyright (C) Microsoft Corp. All rights reserved.\n");
+#ifdef _DEBUG
+        wprintf(L"*** Debug build ***\n");
+#endif
         wprintf(L"\n");
     }
 
