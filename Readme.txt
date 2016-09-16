@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit for DirectX 11
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-September 1, 2016
+September 15, 2016
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Universal Windows Platform (UWP) apps for Windows 10,
@@ -78,6 +78,10 @@ https://opensource.microsoft.com/codeofconduct/
 ---------------
 RELEASE HISTORY
 ---------------
+
+September 15, 2016
+    Minor code cleanup
+    xwbtool: added wildcard support for input filename and optional -r switch for recursive search
 
 September 1, 2016
     Added forceSRGB optional parameter to SpriteFont ctor
