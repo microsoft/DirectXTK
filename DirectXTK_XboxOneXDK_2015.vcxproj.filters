@@ -18,6 +18,9 @@
     <Filter Include="Src\Shaders\Compiled">
       <UniqueIdentifier>{5bfd0d52-ee7d-4cf1-aab2-235c7a1f9d6e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Shaders\Symbols">
+      <UniqueIdentifier>{78fbbc63-3923-4adc-a469-79721986c80d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inc\Audio.h">
@@ -593,6 +596,297 @@
     </None>
     <None Include="Src\Shaders\Compiled\XboxOneNormalMapEffect_PSNormalPixelLightingTxNoSpec.inc">
       <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneAlphaTestEffect_PSAlphaTestEqNe.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneAlphaTestEffect_PSAlphaTestEqNeNoFog.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneAlphaTestEffect_PSAlphaTestLtGt.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneAlphaTestEffect_PSAlphaTestLtGtNoFog.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneAlphaTestEffect_VSAlphaTest.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneAlphaTestEffect_VSAlphaTestNoFog.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneAlphaTestEffect_VSAlphaTestVc.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneAlphaTestEffect_VSAlphaTestVcNoFog.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_PSBasic.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_PSBasicNoFog.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_PSBasicPixelLighting.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_PSBasicPixelLightingTx.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_PSBasicTx.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_PSBasicTxNoFog.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_PSBasicVertexLighting.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_PSBasicVertexLightingNoFog.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_PSBasicVertexLightingTx.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_PSBasicVertexLightingTxNoFog.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_VSBasic.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_VSBasicNoFog.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_VSBasicOneLight.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_VSBasicOneLightTx.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_VSBasicOneLightTxVc.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_VSBasicOneLightVc.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_VSBasicPixelLighting.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_VSBasicPixelLightingTx.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_VSBasicPixelLightingTxVc.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_VSBasicPixelLightingVc.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_VSBasicTx.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_VSBasicTxNoFog.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_VSBasicTxVc.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_VSBasicTxVcNoFog.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_VSBasicVc.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_VSBasicVcNoFog.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_VSBasicVertexLighting.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_VSBasicVertexLightingTx.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_VSBasicVertexLightingTxVc.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneBasicEffect_VSBasicVertexLightingVc.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDGSLEffect_main.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDGSLEffect_main1Bones.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDGSLEffect_main1BonesVc.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDGSLEffect_main2Bones.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDGSLEffect_main2BonesVc.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDGSLEffect_main4Bones.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDGSLEffect_main4BonesVc.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDGSLEffect_mainVc.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDGSLLambert_main.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDGSLLambert_mainTk.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDGSLLambert_mainTx.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDGSLLambert_mainTxTk.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDGSLPhong_main.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDGSLPhong_mainTk.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDGSLPhong_mainTx.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDGSLPhong_mainTxTk.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDGSLUnlit_main.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDGSLUnlit_mainTk.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDGSLUnlit_mainTx.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDGSLUnlit_mainTxTk.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDualTextureEffect_PSDualTexture.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDualTextureEffect_PSDualTextureNoFog.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDualTextureEffect_VSDualTexture.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDualTextureEffect_VSDualTextureNoFog.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDualTextureEffect_VSDualTextureVc.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDualTextureEffect_VSDualTextureVcNoFog.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_PSEnvMap.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_PSEnvMapNoFog.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_PSEnvMapPixelLighting.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_PSEnvMapPixelLightingFresnel.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_PSEnvMapPixelLightingFresnelNoFog.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_PSEnvMapPixelLightingNoFog.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_PSEnvMapSpecular.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_PSEnvMapSpecularNoFog.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_VSEnvMap.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_VSEnvMapFresnel.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_VSEnvMapOneLight.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_VSEnvMapOneLightFresnel.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_VSEnvMapPixelLighting.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneNormalMapEffect_PSNormalPixelLightingTx.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneNormalMapEffect_PSNormalPixelLightingTxNoFog.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneNormalMapEffect_PSNormalPixelLightingTxNoFogSpec.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneNormalMapEffect_PSNormalPixelLightingTxNoSpec.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneNormalMapEffect_VSNormalPixelLightingTx.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneNormalMapEffect_VSNormalPixelLightingTxVc.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneSkinnedEffect_PSSkinnedPixelLighting.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneSkinnedEffect_PSSkinnedVertexLighting.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneSkinnedEffect_PSSkinnedVertexLightingNoFog.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneSkinnedEffect_VSSkinnedOneLightFourBones.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneSkinnedEffect_VSSkinnedOneLightOneBone.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneSkinnedEffect_VSSkinnedOneLightTwoBones.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneSkinnedEffect_VSSkinnedPixelLightingFourBones.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneSkinnedEffect_VSSkinnedPixelLightingOneBone.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneSkinnedEffect_VSSkinnedPixelLightingTwoBones.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneSkinnedEffect_VSSkinnedVertexLightingFourBones.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneSkinnedEffect_VSSkinnedVertexLightingOneBone.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneSkinnedEffect_VSSkinnedVertexLightingTwoBones.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneSpriteEffect_SpritePixelShader.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneSpriteEffect_SpriteVertexShader.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
