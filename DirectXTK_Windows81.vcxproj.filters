@@ -19,6 +19,15 @@
     <Filter Include="Src\Shaders\Symbols">
       <UniqueIdentifier>{84501f91-1a5f-4c06-af33-e184e1ee76cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Inc\Shared">
+      <UniqueIdentifier>{dcc9ae4c-59ab-4f2c-9832-f6ad4adeab4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Shaders\Shared">
+      <UniqueIdentifier>{fea2afa9-b46f-4dbe-befa-7c4e4ca01518}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Shared">
+      <UniqueIdentifier>{dcf4938f-25ec-4f06-ac81-d54b234dae99}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inc\CommonStates.h">
@@ -39,29 +48,14 @@
     <ClInclude Include="Inc\VertexTypes.h">
       <Filter>Inc</Filter>
     </ClInclude>
-    <ClInclude Include="Src\AlignedNew.h">
-      <Filter>Src</Filter>
-    </ClInclude>
     <ClInclude Include="Src\ConstantBuffer.h">
       <Filter>Src</Filter>
     </ClInclude>
     <ClInclude Include="Src\pch.h">
       <Filter>Src</Filter>
     </ClInclude>
-    <ClInclude Include="Src\PlatformHelpers.h">
-      <Filter>Src</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\SharedResourcePool.h">
-      <Filter>Src</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\DDS.h">
-      <Filter>Src</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\GeometricPrimitive.h">
       <Filter>Inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Bezier.h">
-      <Filter>Src</Filter>
     </ClInclude>
     <ClInclude Include="Src\EffectCommon.h">
       <Filter>Src</Filter>
@@ -69,25 +63,13 @@
     <ClInclude Include="Inc\Effects.h">
       <Filter>Inc</Filter>
     </ClInclude>
-    <ClInclude Include="Src\DemandCreate.h">
-      <Filter>Src</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\DDSTextureLoader.h">
       <Filter>Inc</Filter>
     </ClInclude>
     <ClInclude Include="Inc\WICTextureLoader.h">
       <Filter>Inc</Filter>
     </ClInclude>
-    <ClInclude Include="Src\BinaryReader.h">
-      <Filter>Src</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Model.h">
-      <Filter>Inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\SimpleMath.h">
-      <Filter>Inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\SimpleMath.inl">
       <Filter>Inc</Filter>
     </ClInclude>
     <ClInclude Include="Audio\WaveBankReader.h">
@@ -105,29 +87,56 @@
     <ClInclude Include="Inc\DirectXHelpers.h">
       <Filter>Inc</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\GamePad.h">
-      <Filter>Inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\Keyboard.h">
-      <Filter>Inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\Mouse.h">
-      <Filter>Inc</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\GraphicsMemory.h">
       <Filter>Inc</Filter>
     </ClInclude>
-    <ClInclude Include="Src\SDKMesh.h">
-      <Filter>Src</Filter>
+    <ClInclude Include="Inc\GamePad.h">
+      <Filter>Inc\Shared</Filter>
     </ClInclude>
-    <ClInclude Include="Src\vbo.h">
-      <Filter>Src</Filter>
+    <ClInclude Include="Inc\Keyboard.h">
+      <Filter>Inc\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Mouse.h">
+      <Filter>Inc\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\SimpleMath.h">
+      <Filter>Inc\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\SimpleMath.inl">
+      <Filter>Inc\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\AlignedNew.h">
+      <Filter>Src\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Bezier.h">
+      <Filter>Src\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\BinaryReader.h">
+      <Filter>Src\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\DDS.h">
+      <Filter>Src\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\DemandCreate.h">
+      <Filter>Src\Shared</Filter>
     </ClInclude>
     <ClInclude Include="Src\Geometry.h">
-      <Filter>Src</Filter>
+      <Filter>Src\Shared</Filter>
     </ClInclude>
     <ClInclude Include="Src\LoaderHelpers.h">
-      <Filter>Src</Filter>
+      <Filter>Src\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\PlatformHelpers.h">
+      <Filter>Src\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\SDKMesh.h">
+      <Filter>Src\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\SharedResourcePool.h">
+      <Filter>Src\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\vbo.h">
+      <Filter>Src\Shared</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -153,9 +162,6 @@
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="Src\GeometricPrimitive.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\BinaryReader.cpp">
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="Src\EffectCommon.cpp">
@@ -224,29 +230,32 @@
     <ClCompile Include="Audio\SoundCommon.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
-    <ClCompile Include="Src\SimpleMath.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\GamePad.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
     <ClCompile Include="Src\ModelLoadVBO.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Keyboard.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Mouse.cpp">
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="Src\GraphicsMemory.cpp">
       <Filter>Src</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Geometry.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
     <ClCompile Include="Src\NormalMapEffect.cpp">
       <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\BinaryReader.cpp">
+      <Filter>Src\Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\GamePad.cpp">
+      <Filter>Src\Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Geometry.cpp">
+      <Filter>Src\Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Keyboard.cpp">
+      <Filter>Src\Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Mouse.cpp">
+      <Filter>Src\Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\SimpleMath.cpp">
+      <Filter>Src\Shared</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -255,18 +264,6 @@
     </None>
     <None Include="Src\Shaders\SpriteEffect.fx">
       <Filter>Src\Shaders</Filter>
-    </None>
-    <None Include="Src\Shaders\Common.fxh">
-      <Filter>Src\Shaders</Filter>
-    </None>
-    <None Include="Src\Shaders\Lighting.fxh">
-      <Filter>Src\Shaders</Filter>
-    </None>
-    <None Include="Src\Shaders\Structures.fxh">
-      <Filter>Src\Shaders</Filter>
-    </None>
-    <None Include="Src\TeapotData.inc">
-      <Filter>Src</Filter>
     </None>
     <None Include="Src\Shaders\BasicEffect.fx">
       <Filter>Src\Shaders</Filter>
@@ -880,6 +877,18 @@
     </None>
     <None Include="Src\Shaders\Compiled\SpriteEffect_SpriteVertexShader.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Common.fxh">
+      <Filter>Src\Shaders\Shared</Filter>
+    </None>
+    <None Include="Src\Shaders\Lighting.fxh">
+      <Filter>Src\Shaders\Shared</Filter>
+    </None>
+    <None Include="Src\Shaders\Structures.fxh">
+      <Filter>Src\Shaders\Shared</Filter>
+    </None>
+    <None Include="Src\TeapotData.inc">
+      <Filter>Src\Shared</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -18,6 +18,15 @@
     <Filter Include="Src\Shaders\Compiled">
       <UniqueIdentifier>{5bfd0d52-ee7d-4cf1-aab2-235c7a1f9d6e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Inc\Shared">
+      <UniqueIdentifier>{9fa25651-7bb5-42a1-b589-06be42c55e5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Shared">
+      <UniqueIdentifier>{bb66477f-d2e3-4eed-9c13-e86060685825}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Shaders\Shared">
+      <UniqueIdentifier>{a6ee428c-85f6-4fea-979a-8c22779cd9e7}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Src\Shaders\Symbols">
       <UniqueIdentifier>{78fbbc63-3923-4adc-a469-79721986c80d}</UniqueIdentifier>
     </Filter>
@@ -47,28 +56,16 @@
     <ClInclude Include="Inc\Effects.h">
       <Filter>Inc</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\GamePad.h">
-      <Filter>Inc</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\GeometricPrimitive.h">
       <Filter>Inc</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Keyboard.h">
-      <Filter>Inc</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Model.h">
-      <Filter>Inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\Mouse.h">
       <Filter>Inc</Filter>
     </ClInclude>
     <ClInclude Include="Inc\PrimitiveBatch.h">
       <Filter>Inc</Filter>
     </ClInclude>
     <ClInclude Include="Inc\ScreenGrab.h">
-      <Filter>Inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\SimpleMath.h">
       <Filter>Inc</Filter>
     </ClInclude>
     <ClInclude Include="Inc\SpriteBatch.h">
@@ -86,22 +83,7 @@
     <ClInclude Include="Inc\XboxDDSTextureLoader.h">
       <Filter>Inc</Filter>
     </ClInclude>
-    <ClInclude Include="Src\AlignedNew.h">
-      <Filter>Src</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Bezier.h">
-      <Filter>Src</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\BinaryReader.h">
-      <Filter>Src</Filter>
-    </ClInclude>
     <ClInclude Include="Src\ConstantBuffer.h">
-      <Filter>Src</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\dds.h">
-      <Filter>Src</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\DemandCreate.h">
       <Filter>Src</Filter>
     </ClInclude>
     <ClInclude Include="Src\EffectCommon.h">
@@ -110,26 +92,53 @@
     <ClInclude Include="Src\pch.h">
       <Filter>Src</Filter>
     </ClInclude>
-    <ClInclude Include="Src\PlatformHelpers.h">
-      <Filter>Src</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\SharedResourcePool.h">
-      <Filter>Src</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\GraphicsMemory.h">
       <Filter>Inc</Filter>
     </ClInclude>
+    <ClInclude Include="Src\AlignedNew.h">
+      <Filter>Src\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Bezier.h">
+      <Filter>Src\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\BinaryReader.h">
+      <Filter>Src\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\dds.h">
+      <Filter>Src\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\DemandCreate.h">
+      <Filter>Src\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\PlatformHelpers.h">
+      <Filter>Src\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\GamePad.h">
+      <Filter>Inc\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Mouse.h">
+      <Filter>Inc\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Keyboard.h">
+      <Filter>Inc\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\SimpleMath.h">
+      <Filter>Inc\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\SharedResourcePool.h">
+      <Filter>Src\Shared</Filter>
+    </ClInclude>
     <ClInclude Include="Src\SDKMesh.h">
-      <Filter>Src</Filter>
+      <Filter>Src\Shared</Filter>
     </ClInclude>
     <ClInclude Include="Src\vbo.h">
-      <Filter>Src</Filter>
+      <Filter>Src\Shared</Filter>
     </ClInclude>
     <ClInclude Include="Src\Geometry.h">
-      <Filter>Src</Filter>
+      <Filter>Src\Shared</Filter>
     </ClInclude>
     <ClInclude Include="Src\LoaderHelpers.h">
-      <Filter>Src</Filter>
+      <Filter>Src\Shared</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -163,9 +172,6 @@
     <ClCompile Include="Src\BasicEffect.cpp">
       <Filter>Src</Filter>
     </ClCompile>
-    <ClCompile Include="Src\BinaryReader.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
     <ClCompile Include="Src\CommonStates.cpp">
       <Filter>Src</Filter>
     </ClCompile>
@@ -190,13 +196,7 @@
     <ClCompile Include="Src\EnvironmentMapEffect.cpp">
       <Filter>Src</Filter>
     </ClCompile>
-    <ClCompile Include="Src\GamePad.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
     <ClCompile Include="Src\GeometricPrimitive.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Keyboard.cpp">
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="Src\Model.cpp">
@@ -211,9 +211,6 @@
     <ClCompile Include="Src\ModelLoadVBO.cpp">
       <Filter>Src</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Mouse.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
     <ClCompile Include="Src\pch.cpp">
       <Filter>Src</Filter>
     </ClCompile>
@@ -221,9 +218,6 @@
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="Src\ScreenGrab.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\SimpleMath.cpp">
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="Src\SkinnedEffect.cpp">
@@ -247,30 +241,30 @@
     <ClCompile Include="Src\GraphicsMemory.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="Src\BinaryReader.cpp">
+      <Filter>Src\Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\GamePad.cpp">
+      <Filter>Src\Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Keyboard.cpp">
+      <Filter>Src\Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Mouse.cpp">
+      <Filter>Src\Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\SimpleMath.cpp">
+      <Filter>Src\Shared</Filter>
+    </ClCompile>
     <ClCompile Include="Src\Geometry.cpp">
-      <Filter>Src</Filter>
+      <Filter>Src\Shared</Filter>
     </ClCompile>
     <ClCompile Include="Src\NormalMapEffect.cpp">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Inc\SimpleMath.inl">
-      <Filter>Inc</Filter>
-    </None>
-    <None Include="Src\TeapotData.inc">
-      <Filter>Src</Filter>
-    </None>
-    <None Include="Src\Shaders\Common.fxh">
-      <Filter>Src\Shaders</Filter>
-    </None>
     <None Include="Src\Shaders\CompileShaders.cmd">
-      <Filter>Src\Shaders</Filter>
-    </None>
-    <None Include="Src\Shaders\Lighting.fxh">
-      <Filter>Src\Shaders</Filter>
-    </None>
-    <None Include="Src\Shaders\Structures.fxh">
       <Filter>Src\Shaders</Filter>
     </None>
     <None Include="Src\Shaders\SkinnedEffect.fx">
@@ -304,9 +298,6 @@
       <Filter>Src\Shaders</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\XboxOneAlphaTestEffect_PSAlphaTestEqNe.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\XboxOneAlphaTestEffect_PSAlphaTestEqNeNoFog.inc">
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\XboxOneAlphaTestEffect_PSAlphaTestLtGt.inc">
@@ -561,6 +552,21 @@
     <None Include="Src\Shaders\Compiled\XboxOneSpriteEffect_SpriteVertexShader.inc">
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
+    <None Include="Src\TeapotData.inc">
+      <Filter>Src\Shared</Filter>
+    </None>
+    <None Include="Inc\SimpleMath.inl">
+      <Filter>Inc\Shared</Filter>
+    </None>
+    <None Include="Src\Shaders\Common.fxh">
+      <Filter>Src\Shaders\Shared</Filter>
+    </None>
+    <None Include="Src\Shaders\Lighting.fxh">
+      <Filter>Src\Shaders\Shared</Filter>
+    </None>
+    <None Include="Src\Shaders\Structures.fxh">
+      <Filter>Src\Shaders\Shared</Filter>
+    </None>
     <None Include="Src\Shaders\NormalMapEffect.fx">
       <Filter>Src\Shaders</Filter>
     </None>
@@ -589,6 +595,9 @@
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\XboxOneEnvironmentMapEffect_VSEnvMapPixelLighting.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneAlphaTestEffect_PSAlphaTestEqNeNoFog.inc">
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\XboxOneNormalMapEffect_PSNormalPixelLightingTxNoFogSpec.inc">
