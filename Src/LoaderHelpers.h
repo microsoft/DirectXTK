@@ -286,8 +286,8 @@ namespace DirectX
         //--------------------------------------------------------------------------------------
         inline HRESULT LoadTextureDataFromFile(_In_z_ const wchar_t* fileName,
             std::unique_ptr<uint8_t[]>& ddsData,
-            DDS_HEADER** header,
-            uint8_t** bitData,
+            const DDS_HEADER** header,
+            const uint8_t** bitData,
             size_t* bitSize
         )
         {
@@ -362,13 +362,13 @@ namespace DirectX
             }
 
             // DDS files always start with the same magic number ("DDS ")
-            uint32_t dwMagicNumber = *(const uint32_t*)(ddsData.get());
+            uint32_t dwMagicNumber = *reinterpret_cast<const uint32_t*>(ddsData.get());
             if (dwMagicNumber != DDS_MAGIC)
             {
                 return E_FAIL;
             }
 
-            auto hdr = reinterpret_cast<DDS_HEADER*>(ddsData.get() + sizeof(uint32_t));
+            auto hdr = reinterpret_cast<const DDS_HEADER*>(ddsData.get() + sizeof(uint32_t));
 
             // Verify header to validate DDS file
             if (hdr->size != sizeof(DDS_HEADER) ||

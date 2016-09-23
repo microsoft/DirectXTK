@@ -38,6 +38,13 @@
 
 namespace DirectX
 {
+    enum WIC_LOADER_FLAGS
+    {
+        WIC_LOADER_DEFAULT      = 0,
+        WIC_LOADER_FORCE_SRGB   = 0x1,
+        WIC_LOADER_IGNORE_SRGB  = 0x2,
+    };
+
     // Standard version
     HRESULT __cdecl CreateWICTextureFromMemory(
         _In_ ID3D11Device* d3dDevice,
@@ -92,7 +99,7 @@ namespace DirectX
         _In_ unsigned int bindFlags,
         _In_ unsigned int cpuAccessFlags,
         _In_ unsigned int miscFlags,
-        _In_ bool forceSRGB,
+        _In_ unsigned int loadFlags,
         _Outptr_opt_ ID3D11Resource** texture,
         _Outptr_opt_ ID3D11ShaderResourceView** textureView);
 
@@ -104,7 +111,7 @@ namespace DirectX
         _In_ unsigned int bindFlags,
         _In_ unsigned int cpuAccessFlags,
         _In_ unsigned int miscFlags,
-        _In_ bool forceSRGB,
+        _In_ unsigned int loadFlags,
         _Outptr_opt_ ID3D11Resource** texture,
         _Outptr_opt_ ID3D11ShaderResourceView** textureView);
 
@@ -124,7 +131,7 @@ namespace DirectX
         _In_ unsigned int bindFlags,
         _In_ unsigned int cpuAccessFlags,
         _In_ unsigned int miscFlags,
-        _In_ bool forceSRGB,
+        _In_ unsigned int loadFlags,
         _Outptr_opt_ ID3D11Resource** texture,
         _Outptr_opt_ ID3D11ShaderResourceView** textureView);
 
@@ -142,7 +149,7 @@ namespace DirectX
         _In_ unsigned int bindFlags,
         _In_ unsigned int cpuAccessFlags,
         _In_ unsigned int miscFlags,
-        _In_ bool forceSRGB,
+        _In_ unsigned int loadFlags,
         _Outptr_opt_ ID3D11Resource** texture,
         _Outptr_opt_ ID3D11ShaderResourceView** textureView);
 }

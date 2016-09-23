@@ -402,7 +402,7 @@ void DGSLEffectFactory::Impl::CreateTexture( const wchar_t* name, ID3D11DeviceCo
             HRESULT hr = CreateWICTextureFromFileEx(
                 device.Get(), deviceContext, fullName, 0,
                 D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
-                mForceSRGB, nullptr, textureView );
+                mForceSRGB ? WIC_LOADER_FORCE_SRGB : WIC_LOADER_DEFAULT, nullptr, textureView );
             if ( FAILED(hr) )
             {
                 DebugTrace( "CreateWICTextureFromFile failed (%08X) for '%ls'\n", hr, fullName );
@@ -415,7 +415,7 @@ void DGSLEffectFactory::Impl::CreateTexture( const wchar_t* name, ID3D11DeviceCo
             HRESULT hr = CreateWICTextureFromFileEx(
                 device.Get(), fullName, 0,
                 D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
-                mForceSRGB, nullptr, textureView );
+                mForceSRGB ? WIC_LOADER_FORCE_SRGB : WIC_LOADER_DEFAULT, nullptr, textureView );
             if ( FAILED(hr) )
             {
                 DebugTrace( "CreateWICTextureFromFile failed (%08X) for '%ls'\n", hr, fullName );
