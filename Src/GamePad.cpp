@@ -218,7 +218,7 @@ public:
         memset( &state, 0, sizeof(State) );
     }
 
-    void GetCapabilities( int player, _Out_ Capabilities& caps )
+    void GetCapabilities( int player, Capabilities& caps )
     {
         using namespace Microsoft::WRL;
         using namespace ABI::Windows::System;
