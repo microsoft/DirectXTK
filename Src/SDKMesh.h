@@ -83,6 +83,10 @@ namespace DXUT
         D3DDECLTYPE_FLOAT16_4 = 16,  // Four 16-bit floating point values
 
         D3DDECLTYPE_UNUSED    = 17,  // When the type field in a decl is unused.
+
+        // These are extensions for DXGI-based versions of Direct3D
+        D3DDECLTYPE_DXGI_R10G10B10A2_UNORM = 32 + DXGI_FORMAT_R10G10B10A2_UNORM,
+        D3DDECLTYPE_DXGI_R11G11B10_FLOAT   = 32 + DXGI_FORMAT_R11G11B10_FLOAT,
     };
 
     #pragma pack(push,4)

@@ -108,16 +108,16 @@ namespace
     void GetInputLayoutDesc(_In_reads_(32) const DXUT::D3DVERTEXELEMENT9 decl[], std::vector<D3D11_INPUT_ELEMENT_DESC>& inputDesc,
         bool &perVertexColor, bool& enableSkinning, bool& dualTexture, bool& normalMaps)
     {
-        static const D3D11_INPUT_ELEMENT_DESC elements[] =
+        static const D3D11_INPUT_ELEMENT_DESC s_elements[] =
         {
-            { "SV_Position", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-            { "NORMAL",      0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-            { "COLOR",       0, DXGI_FORMAT_B8G8R8A8_UNORM,     0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-            { "TANGENT",     0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-            { "BINORMAL",    0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-            { "TEXCOORD",    0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-            { "BLENDINDICES",0, DXGI_FORMAT_R8G8B8A8_UINT,      0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-            { "BLENDWEIGHT", 0, DXGI_FORMAT_R8G8B8A8_UNORM,     0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "SV_Position",  0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "NORMAL",       0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "COLOR",        0, DXGI_FORMAT_B8G8R8A8_UNORM,  0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "TANGENT",      0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "BINORMAL",     0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "TEXCOORD",     0, DXGI_FORMAT_R32G32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "BLENDINDICES", 0, DXGI_FORMAT_R8G8B8A8_UINT,   0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "BLENDWEIGHT",  0, DXGI_FORMAT_R8G8B8A8_UNORM,  0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         };
 
         using namespace DXUT;
@@ -138,125 +138,87 @@ namespace
             if (decl[index].Offset != offset)
                 break;
 
-            if (decl[index].Usage == D3DDECLUSAGE_POSITION && decl[index].Type == D3DDECLTYPE_FLOAT3)
-            {
-                inputDesc.push_back(elements[0]);
-                offset += 12;
-                posfound = true;
-            }
-            else if (decl[index].Usage == D3DDECLUSAGE_NORMAL)
+            if (decl[index].Usage == D3DDECLUSAGE_POSITION)
             {
                 if (decl[index].Type == D3DDECLTYPE_FLOAT3)
                 {
-                    inputDesc.push_back(elements[1]);
+                    inputDesc.push_back(s_elements[0]);
                     offset += 12;
-                }
-                else if (decl[index].Type == D3DDECLTYPE_FLOAT16_4)
-                {
-                    D3D11_INPUT_ELEMENT_DESC desc = elements[1];
-                    desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-                    inputDesc.push_back(desc);
-                    offset += 8;
-                }
-                else if (decl[index].Type == D3DDECLTYPE_SHORT4N)
-                {
-                    D3D11_INPUT_ELEMENT_DESC desc = elements[1];
-                    desc.Format = DXGI_FORMAT_R16G16B16A16_SNORM;
-                    inputDesc.push_back(desc);
-                    offset += 8;
-                }
-                else if (decl[index].Type == D3DDECLTYPE_UBYTE4N)
-                {
-                    D3D11_INPUT_ELEMENT_DESC desc = elements[1];
-                    desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-                    inputDesc.push_back(desc);
-                    offset += 4;
+                    posfound = true;
                 }
                 else
                     break;
             }
-            else if (decl[index].Usage == D3DDECLUSAGE_COLOR && decl[index].Type == D3DDECLTYPE_D3DCOLOR)
+            else if (decl[index].Usage == D3DDECLUSAGE_NORMAL
+                || decl[index].Usage == D3DDECLUSAGE_TANGENT
+                || decl[index].Usage == D3DDECLUSAGE_BINORMAL)
             {
-                inputDesc.push_back(elements[2]);
-                offset += 4;
+                size_t base = 1;
+                if (decl[index].Usage == D3DDECLUSAGE_TANGENT)
+                    base = 3;
+                else if (decl[index].Usage == D3DDECLUSAGE_BINORMAL)
+                    base = 4;
+
+                D3D11_INPUT_ELEMENT_DESC desc = s_elements[base];
+
+                bool unk = false;
+                switch (decl[index].Type)
+                {
+                case D3DDECLTYPE_FLOAT3:               assert(desc.Format == DXGI_FORMAT_R32G32B32_FLOAT); offset += 12; break;
+                case D3DDECLTYPE_UBYTE4N:              desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM /* Biased */; offset += 4; break;
+                case D3DDECLTYPE_SHORT4N:              desc.Format = DXGI_FORMAT_R16G16B16A16_SNORM; offset += 8; break;
+                case D3DDECLTYPE_FLOAT16_4:            desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT; offset += 8; break;
+                case D3DDECLTYPE_DXGI_R11G11B10_FLOAT: desc.Format = DXGI_FORMAT_R11G11B10_FLOAT /* Biased */; offset += 4; break;
+
+                default:
+                    unk = true;
+                    break;
+                }
+
+                if (unk)
+                    break;
+
+                if (decl[index].Usage == D3DDECLUSAGE_TANGENT)
+                    normalMaps = true;
+
+                inputDesc.push_back(desc);
+            }
+            else if (decl[index].Usage == D3DDECLUSAGE_COLOR)
+            {
+                D3D11_INPUT_ELEMENT_DESC desc = s_elements[2];
+
+                bool unk = false;
+                switch (decl[index].Type)
+                {
+                case D3DDECLTYPE_FLOAT4:                 desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT; offset += 16; break;
+                case D3DDECLTYPE_D3DCOLOR:               assert(desc.Format == DXGI_FORMAT_B8G8R8A8_UNORM); offset += 4; break;
+                case D3DDECLTYPE_UBYTE4N:                desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; offset += 4; break;
+                case D3DDECLTYPE_FLOAT16_4:              desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT; offset += 8; break;
+                case D3DDECLTYPE_DXGI_R10G10B10A2_UNORM: desc.Format = DXGI_FORMAT_R10G10B10A2_UNORM; offset += 4; break;
+                case D3DDECLTYPE_DXGI_R11G11B10_FLOAT:   desc.Format = DXGI_FORMAT_R11G11B10_FLOAT; offset += 4; break;
+
+                default:
+                    unk = true;
+                    break;
+                }
+
+                if (unk)
+                    break;
+
                 perVertexColor = true;
-            }
-            else if (decl[index].Usage == D3DDECLUSAGE_TANGENT)
-            {
-                if (decl[index].Type == D3DDECLTYPE_FLOAT3)
-                {
-                    normalMaps = true;
-                    inputDesc.push_back(elements[3]);
-                    offset += 12;
-                }
-                else if (decl[index].Type == D3DDECLTYPE_FLOAT16_4)
-                {
-                    normalMaps = true;
-                    D3D11_INPUT_ELEMENT_DESC desc = elements[3];
-                    desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-                    inputDesc.push_back(desc);
-                    offset += 8;
-                }
-                else if (decl[index].Type == D3DDECLTYPE_SHORT4N)
-                {
-                    normalMaps = true;
-                    D3D11_INPUT_ELEMENT_DESC desc = elements[3];
-                    desc.Format = DXGI_FORMAT_R16G16B16A16_SNORM;
-                    inputDesc.push_back(desc);
-                    offset += 8;
-                }
-                else if (decl[index].Type == D3DDECLTYPE_UBYTE4N)
-                {
-                    normalMaps = true;
-                    D3D11_INPUT_ELEMENT_DESC desc = elements[3];
-                    desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-                    inputDesc.push_back(desc);
-                    offset += 4;
-                }
-                else
-                    break;
-            }
-            else if (decl[index].Usage == D3DDECLUSAGE_BINORMAL)
-            {
-                if (decl[index].Type == D3DDECLTYPE_FLOAT3)
-                {
-                    inputDesc.push_back(elements[4]);
-                    offset += 12;
-                }
-                else if (decl[index].Type == D3DDECLTYPE_FLOAT16_4)
-                {
-                    D3D11_INPUT_ELEMENT_DESC desc = elements[4];
-                    desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-                    inputDesc.push_back(desc);
-                    offset += 8;
-                }
-                else if (decl[index].Type == D3DDECLTYPE_SHORT4N)
-                {
-                    D3D11_INPUT_ELEMENT_DESC desc = elements[4];
-                    desc.Format = DXGI_FORMAT_R16G16B16A16_SNORM;
-                    inputDesc.push_back(desc);
-                    offset += 8;
-                }
-                else if (decl[index].Type == D3DDECLTYPE_UBYTE4N)
-                {
-                    D3D11_INPUT_ELEMENT_DESC desc = elements[4];
-                    desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-                    inputDesc.push_back(desc);
-                    offset += 4;
-                }
-                else
-                    break;
+
+                inputDesc.push_back(desc);
             }
             else if (decl[index].Usage == D3DDECLUSAGE_TEXCOORD)
             {
-                D3D11_INPUT_ELEMENT_DESC desc = elements[5];
+                D3D11_INPUT_ELEMENT_DESC desc = s_elements[5];
                 desc.SemanticIndex = decl[index].UsageIndex;
 
                 bool unk = false;
                 switch (decl[index].Type)
                 {
-                case D3DDECLTYPE_FLOAT2:    offset += 8; break;
                 case D3DDECLTYPE_FLOAT1:    desc.Format = DXGI_FORMAT_R32_FLOAT; offset += 4; break;
+                case D3DDECLTYPE_FLOAT2:    assert(desc.Format == DXGI_FORMAT_R32G32_FLOAT); offset += 8; break;
                 case D3DDECLTYPE_FLOAT3:    desc.Format = DXGI_FORMAT_R32G32B32_FLOAT; offset += 12; break;
                 case D3DDECLTYPE_FLOAT4:    desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT; offset += 16; break;
                 case D3DDECLTYPE_FLOAT16_2: desc.Format = DXGI_FORMAT_R16G16_FLOAT; offset += 4; break;
@@ -274,17 +236,27 @@ namespace
 
                 inputDesc.push_back(desc);
             }
-            else if (decl[index].Usage == D3DDECLUSAGE_BLENDINDICES && decl[index].Type == D3DDECLTYPE_UBYTE4)
+            else if (decl[index].Usage == D3DDECLUSAGE_BLENDINDICES)
             {
-                enableSkinning = true;
-                inputDesc.push_back(elements[6]);
-                offset += 4;
+                if (decl[index].Type == D3DDECLTYPE_UBYTE4)
+                {
+                    enableSkinning = true;
+                    inputDesc.push_back(s_elements[6]);
+                    offset += 4;
+                }
+                else
+                    break;
             }
-            else if (decl[index].Usage == D3DDECLUSAGE_BLENDWEIGHT && decl[index].Type == D3DDECLTYPE_UBYTE4N)
+            else if (decl[index].Usage == D3DDECLUSAGE_BLENDWEIGHT)
             {
-                enableSkinning = true;
-                inputDesc.push_back(elements[7]);
-                offset += 4;
+                if (decl[index].Type == D3DDECLTYPE_UBYTE4N)
+                {
+                    enableSkinning = true;
+                    inputDesc.push_back(s_elements[7]);
+                    offset += 4;
+                }
+                else
+                    break;
             }
             else
                 break;
