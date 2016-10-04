@@ -41,11 +41,11 @@
     dcl t2.xy  // pin<8,9>
     dcl_2d s0
 
-#line 210 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\SkinnedEffect.fx"
+#line 356 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\SkinnedEffect.fx"
     texld r0, t2, s0
     mul r0, r0, t0  // ::color<0,1,2,3>
 
-#line 26 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\Common.fxh"
+#line 26 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Common.fxh"
     mad r1.xyz, t1, r0.w, r0  // AddSpecular::color<0,1,2>
 
 #line 20
@@ -75,10 +75,10 @@ ret
 
 const BYTE SkinnedEffect_PSSkinnedVertexLighting[] =
 {
-     68,  88,  66,  67, 138, 170, 
-    178, 142, 198, 171,  18, 113, 
-    151,  53,  94, 192,  77, 126, 
-    247, 165,   1,   0,   0,   0, 
+     68,  88,  66,  67,  63,  27, 
+    192,  55,  74, 245,  30, 108, 
+     91, 179, 159,  57,  24, 191, 
+     97, 174,   1,   0,   0,   0, 
     148,   5,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
     184,   3,   0,   0, 248,   4, 
@@ -108,8 +108,8 @@ const BYTE SkinnedEffect_PSSkinnedVertexLighting[] =
     116, 111, 112,  92,  68,  51, 
      68,  49,  49,  32,  80, 114, 
     111, 106, 101,  99, 116, 115, 
-     92, 100, 105, 114, 101,  99, 
-    116, 120, 116, 107,  92,  83, 
+     92,  68, 105, 114, 101,  99, 
+    116,  88,  84,  75,  92,  83, 
     114,  99,  92,  83, 104,  97, 
     100, 101, 114, 115,  92,  83, 
     107, 105, 110, 110, 101, 100, 
@@ -121,8 +121,8 @@ const BYTE SkinnedEffect_PSSkinnedVertexLighting[] =
     116, 111, 112,  92,  68,  51, 
      68,  49,  49,  32,  80, 114, 
     111, 106, 101,  99, 116, 115, 
-     92, 100, 105, 114, 101,  99, 
-    116, 120, 116, 107,  92,  83, 
+     92,  68, 105, 114, 101,  99, 
+    116,  88,  84,  75,  92,  83, 
     114,  99,  92,  83, 104,  97, 
     100, 101, 114, 115,  92,  67, 
     111, 109, 109, 111, 110,  46, 
@@ -133,9 +133,9 @@ const BYTE SkinnedEffect_PSSkinnedVertexLighting[] =
     255, 255, 188,   2,   0,   0, 
       0,   0, 255, 255, 200,   2, 
       0,   0,   0,   0, 255, 255, 
-    212,   2,   0,   0, 210,   0, 
+    212,   2,   0,   0, 100,   1, 
       0,   0, 224,   2,   0,   0, 
-    210,   0,   0,   0, 240,   2, 
+    100,   1,   0,   0, 240,   2, 
       0,   0,  26,   0,   1,   0, 
       0,   3,   0,   0,  20,   0, 
       1,   0,  20,   3,   0,   0, 

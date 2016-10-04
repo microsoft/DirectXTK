@@ -50,9 +50,9 @@ struct EnvironmentMapEffectTraits
 {
     typedef EnvironmentMapEffectConstants ConstantBufferType;
 
-    static const int VertexShaderCount = 5;
+    static const int VertexShaderCount = 10;
     static const int PixelShaderCount = 8;
-    static const int ShaderPermutationCount = 20;
+    static const int ShaderPermutationCount = 40;
 };
 
 
@@ -65,6 +65,7 @@ public:
     bool preferPerPixelLighting;
     bool fresnelEnabled;
     bool specularEnabled;
+    bool biasedVertexNormals;
 
     EffectLights lights;
 
@@ -86,6 +87,12 @@ namespace
     #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_VSEnvMapOneLightFresnel.inc"
     #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_VSEnvMapPixelLighting.inc"
 
+    #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_VSEnvMapBn.inc"
+    #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_VSEnvMapFresnelBn.inc"
+    #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_VSEnvMapOneLightBn.inc"
+    #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_VSEnvMapOneLightFresnelBn.inc"
+    #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_VSEnvMapPixelLightingBn.inc"
+
     #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_PSEnvMap.inc"
     #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_PSEnvMapNoFog.inc"
     #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_PSEnvMapSpecular.inc"
@@ -101,6 +108,12 @@ namespace
     #include "Shaders/Compiled/EnvironmentMapEffect_VSEnvMapOneLightFresnel.inc"
     #include "Shaders/Compiled/EnvironmentMapEffect_VSEnvMapPixelLighting.inc"
 
+    #include "Shaders/Compiled/EnvironmentMapEffect_VSEnvMapBn.inc"
+    #include "Shaders/Compiled/EnvironmentMapEffect_VSEnvMapFresnelBn.inc"
+    #include "Shaders/Compiled/EnvironmentMapEffect_VSEnvMapOneLightBn.inc"
+    #include "Shaders/Compiled/EnvironmentMapEffect_VSEnvMapOneLightFresnelBn.inc"
+    #include "Shaders/Compiled/EnvironmentMapEffect_VSEnvMapPixelLightingBn.inc"
+
     #include "Shaders/Compiled/EnvironmentMapEffect_PSEnvMap.inc"
     #include "Shaders/Compiled/EnvironmentMapEffect_PSEnvMapNoFog.inc"
     #include "Shaders/Compiled/EnvironmentMapEffect_PSEnvMapSpecular.inc"
@@ -115,11 +128,17 @@ namespace
 
 const ShaderBytecode EffectBase<EnvironmentMapEffectTraits>::VertexShaderBytecode[] =
 {
-    { EnvironmentMapEffect_VSEnvMap,                sizeof(EnvironmentMapEffect_VSEnvMap)                },
-    { EnvironmentMapEffect_VSEnvMapFresnel,         sizeof(EnvironmentMapEffect_VSEnvMapFresnel)         },
-    { EnvironmentMapEffect_VSEnvMapOneLight,        sizeof(EnvironmentMapEffect_VSEnvMapOneLight)        },
-    { EnvironmentMapEffect_VSEnvMapOneLightFresnel, sizeof(EnvironmentMapEffect_VSEnvMapOneLightFresnel) },
-    { EnvironmentMapEffect_VSEnvMapPixelLighting,   sizeof(EnvironmentMapEffect_VSEnvMapPixelLighting)   },
+    { EnvironmentMapEffect_VSEnvMap,                  sizeof(EnvironmentMapEffect_VSEnvMap)                  },
+    { EnvironmentMapEffect_VSEnvMapFresnel,           sizeof(EnvironmentMapEffect_VSEnvMapFresnel)           },
+    { EnvironmentMapEffect_VSEnvMapOneLight,          sizeof(EnvironmentMapEffect_VSEnvMapOneLight)          },
+    { EnvironmentMapEffect_VSEnvMapOneLightFresnel,   sizeof(EnvironmentMapEffect_VSEnvMapOneLightFresnel)   },
+    { EnvironmentMapEffect_VSEnvMapPixelLighting,     sizeof(EnvironmentMapEffect_VSEnvMapPixelLighting)     },
+
+    { EnvironmentMapEffect_VSEnvMapBn,                sizeof(EnvironmentMapEffect_VSEnvMapBn)                },
+    { EnvironmentMapEffect_VSEnvMapFresnelBn,         sizeof(EnvironmentMapEffect_VSEnvMapFresnelBn)         },
+    { EnvironmentMapEffect_VSEnvMapOneLightBn,        sizeof(EnvironmentMapEffect_VSEnvMapOneLightBn)        },
+    { EnvironmentMapEffect_VSEnvMapOneLightFresnelBn, sizeof(EnvironmentMapEffect_VSEnvMapOneLightFresnelBn) },
+    { EnvironmentMapEffect_VSEnvMapPixelLightingBn,   sizeof(EnvironmentMapEffect_VSEnvMapPixelLightingBn)   },
 };
 
 
@@ -147,6 +166,29 @@ const int EffectBase<EnvironmentMapEffectTraits>::VertexShaderIndices[] =
     4,      // pixel lighting, no fog
     4,      // pixel lighting, fresnel
     4,      // pixel lighting, fresnel, no fog
+
+    5,      // basic (biased vertex normals)
+    5,      // basic (biased vertex normals), no fog
+    6,      // fresnel (biased vertex normals)
+    6,      // fresnel (biased vertex normals), no fog
+    5,      // specular (biased vertex normals)
+    5,      // specular (biased vertex normals), no fog
+    6,      // fresnel + specular (biased vertex normals)
+    6,      // fresnel + specular (biased vertex normals), no fog
+
+    7,      // one light (biased vertex normals)
+    7,      // one light (biased vertex normals), no fog
+    8,      // one light (biased vertex normals), fresnel
+    8,      // one light (biased vertex normals), fresnel, no fog
+    7,      // one light (biased vertex normals), specular
+    7,      // one light (biased vertex normals), specular, no fog
+    8,      // one light (biased vertex normals), fresnel + specular
+    8,      // one light (biased vertex normals), fresnel + specular, no fog
+
+    9,      // pixel lighting (biased vertex normals)
+    9,      // pixel lighting (biased vertex normals), no fog
+    9,      // pixel lighting (biased vertex normals), fresnel
+    9,      // pixel lighting (biased vertex normals), fresnel, no fog
 };
 
 
@@ -187,6 +229,29 @@ const int EffectBase<EnvironmentMapEffectTraits>::PixelShaderIndices[] =
     5,      // per pixel lighting, no fog
     6,      // per pixel lighting, fresnel
     7,      // per pixel lighting, fresnel, no fog
+
+    0,      // basic (biased vertex normals)
+    1,      // basic (biased vertex normals), no fog
+    0,      // fresnel (biased vertex normals)
+    1,      // fresnel (biased vertex normals), no fog
+    2,      // specular (biased vertex normals)
+    3,      // specular (biased vertex normals), no fog
+    2,      // fresnel + specular (biased vertex normals)
+    3,      // fresnel + specular (biased vertex normals), no fog
+
+    0,      // one light (biased vertex normals)
+    1,      // one light (biased vertex normals), no fog
+    0,      // one light (biased vertex normals), fresnel
+    1,      // one light (biased vertex normals), fresnel, no fog
+    2,      // one light (biased vertex normals), specular
+    3,      // one light (biased vertex normals), specular, no fog
+    2,      // one light (biased vertex normals), fresnel + specular
+    3,      // one light (biased vertex normals), fresnel + specular, no fog
+
+    4,      // per pixel lighting (biased vertex normals)
+    5,      // per pixel lighting (biased vertex normals), no fog
+    6,      // per pixel lighting (biased vertex normals), fresnel
+    7,      // per pixel lighting (biased vertex normals), fresnel, no fog
 };
 
 
@@ -199,7 +264,8 @@ EnvironmentMapEffect::Impl::Impl(_In_ ID3D11Device* device)
   : EffectBase(device),
     preferPerPixelLighting(false),
     fresnelEnabled(true),
-    specularEnabled(false)
+    specularEnabled(false),
+    biasedVertexNormals(false)
 {
     static_assert( _countof(EffectBase<EnvironmentMapEffectTraits>::VertexShaderIndices) == EnvironmentMapEffectTraits::ShaderPermutationCount, "array/max mismatch" );
     static_assert( _countof(EffectBase<EnvironmentMapEffectTraits>::VertexShaderBytecode) == EnvironmentMapEffectTraits::VertexShaderCount, "array/max mismatch" );
@@ -248,6 +314,12 @@ int EnvironmentMapEffect::Impl::GetCurrentShaderPermutation() const
         {
             permutation += 8;
         }
+    }
+
+    if (biasedVertexNormals)
+    {
+        // Compressed normals need to be scaled and biased in the vertex shader.
+        permutation += 20;
     }
 
     return permutation;
@@ -520,4 +592,11 @@ void EnvironmentMapEffect::SetFresnelFactor(float value)
     pImpl->fresnelEnabled = (value != 0);
 
     pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
+}
+
+
+// Normal compression settings.
+void EnvironmentMapEffect::SetBiasedVertexNormals(bool value)
+{
+    pImpl->biasedVertexNormals = value;
 }

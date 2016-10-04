@@ -43,18 +43,18 @@
     dcl_texcoord1 v1  // vin<4,5>
     dcl_texcoord2 v2  // vin<6,7,8,9>
 
-#line 43 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\Common.fxh"
+#line 49 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Common.fxh"
     dp4 oPos.z, v0, c4  // ::VSBasicTxVcNoFog<8>
 
-#line 147 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\BasicEffect.fx"
+#line 147 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\BasicEffect.fx"
     mul oT0, v2, c1  // ::VSBasicTxVcNoFog<0,1,2,3>
 
-#line 43 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\Common.fxh"
+#line 49 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Common.fxh"
     dp4 r0.x, v0, c2  // ::vout<0>
     dp4 r0.y, v0, c3  // ::vout<1>
     dp4 r0.z, v0, c5  // ::vout<3>
 
-#line 139 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\BasicEffect.fx"
+#line 139 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\BasicEffect.fx"
     mad oPos.xy, r0.z, c0, r0  // ::VSBasicTxVcNoFog<6,7>
     mov oPos.w, r0.z  // ::VSBasicTxVcNoFog<9>
 
@@ -82,10 +82,10 @@ ret
 
 const BYTE BasicEffect_VSBasicTxVcNoFog[] =
 {
-     68,  88,  66,  67, 221, 185, 
-    114,  68, 133,  72, 155,   0, 
-    203,  59, 161, 152,  65, 185, 
-      2,  84,   1,   0,   0,   0, 
+     68,  88,  66,  67,  42,  91, 
+     90, 219,  83, 241, 224, 245, 
+    249,  57, 243, 195, 237, 152, 
+    218, 159,   1,   0,   0,   0, 
     100,   6,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
      88,   4,   0,   0, 124,   5, 
@@ -117,8 +117,8 @@ const BYTE BasicEffect_VSBasicTxVcNoFog[] =
     116, 111, 112,  92,  68,  51, 
      68,  49,  49,  32,  80, 114, 
     111, 106, 101,  99, 116, 115, 
-     92, 100, 105, 114, 101,  99, 
-    116, 120, 116, 107,  92,  83, 
+     92,  68, 105, 114, 101,  99, 
+    116,  88,  84,  75,  92,  83, 
     114,  99,  92,  83, 104,  97, 
     100, 101, 114, 115,  92,  67, 
     111, 109, 109, 111, 110,  46, 
@@ -129,8 +129,8 @@ const BYTE BasicEffect_VSBasicTxVcNoFog[] =
     116, 111, 112,  92,  68,  51, 
      68,  49,  49,  32,  80, 114, 
     111, 106, 101,  99, 116, 115, 
-     92, 100, 105, 114, 101,  99, 
-    116, 120, 116, 107,  92,  83, 
+     92,  68, 105, 114, 101,  99, 
+    116,  88,  84,  75,  92,  83, 
     114,  99,  92,  83, 104,  97, 
     100, 101, 114, 115,  92,  66, 
      97, 115, 105,  99,  69, 102, 
@@ -140,13 +140,13 @@ const BYTE BasicEffect_VSBasicTxVcNoFog[] =
     255, 255,  60,   3,   0,   0, 
       0,   0, 255, 255,  72,   3, 
       0,   0,   0,   0, 255, 255, 
-     84,   3,   0,   0,  43,   0, 
+     84,   3,   0,   0,  49,   0, 
       0,   0,  96,   3,   0,   0, 
     147,   0,   1,   0, 112,   3, 
-      0,   0,  43,   0,   0,   0, 
-    128,   3,   0,   0,  43,   0, 
+      0,   0,  49,   0,   0,   0, 
+    128,   3,   0,   0,  49,   0, 
       0,   0, 144,   3,   0,   0, 
-     43,   0,   0,   0, 160,   3, 
+     49,   0,   0,   0, 160,   3, 
       0,   0, 139,   0,   1,   0, 
     176,   3,   0,   0, 139,   0, 
       1,   0, 196,   3,   0,   0, 

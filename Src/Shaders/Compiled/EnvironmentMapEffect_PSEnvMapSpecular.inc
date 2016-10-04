@@ -46,18 +46,18 @@
     dcl_2d s0
     dcl_cube s1
 
-#line 188 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\EnvironmentMapEffect.fx"
+#line 231 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\EnvironmentMapEffect.fx"
     texld r0, t3, s1
     texld r1, t2, s0
     mul r1, r1, t0  // ::color<0,1,2,3>
 
-#line 190
+#line 233
     mad r0.xyz, r0, r1.w, -r1
     mul r0.w, r0.w, r1.w  // ::envmap<3>
     mad r0.xyz, t1, r0, r1  // ::color<0,1,2>
     mad r0.xyz, c0, r0.w, r0  // ::color<0,1,2>
 
-#line 20 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\Common.fxh"
+#line 20 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Common.fxh"
     mad r2.xyz, c1, r1.w, -r0
     mad r1.xyz, t1.w, r2, r0  // ApplyFog::color<0,1,2>
     mov oC0, r1  // ::PSEnvMapSpecular<0,1,2,3>
@@ -91,10 +91,10 @@ ret
 
 const BYTE EnvironmentMapEffect_PSEnvMapSpecular[] =
 {
-     68,  88,  66,  67,  27,  66, 
-    215, 192, 236,  98, 188, 217, 
-    207, 121, 199, 225,  84,  52, 
-     53,  47,   1,   0,   0,   0, 
+     68,  88,  66,  67,  41,  53, 
+     91, 165,  78,  55,  86,  67, 
+     16,  89,  99, 101, 255, 113, 
+    161, 171,   1,   0,   0,   0, 
      76,   7,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
     160,   4,   0,   0, 152,   6, 
@@ -126,9 +126,9 @@ const BYTE EnvironmentMapEffect_PSEnvMapSpecular[] =
      68, 101, 115, 107, 116, 111, 
     112,  92,  68,  51,  68,  49, 
      49,  32,  80, 114, 111, 106, 
-    101,  99, 116, 115,  92, 100, 
-    105, 114, 101,  99, 116, 120, 
-    116, 107,  92,  83, 114,  99, 
+    101,  99, 116, 115,  92,  68, 
+    105, 114, 101,  99, 116,  88, 
+     84,  75,  92,  83, 114,  99, 
      92,  83, 104,  97, 100, 101, 
     114, 115,  92,  69, 110, 118, 
     105, 114, 111, 110, 109, 101, 
@@ -141,8 +141,8 @@ const BYTE EnvironmentMapEffect_PSEnvMapSpecular[] =
     111, 112,  92,  68,  51,  68, 
      49,  49,  32,  80, 114, 111, 
     106, 101,  99, 116, 115,  92, 
-    100, 105, 114, 101,  99, 116, 
-    120, 116, 107,  92,  83, 114, 
+     68, 105, 114, 101,  99, 116, 
+     88,  84,  75,  92,  83, 114, 
      99,  92,  83, 104,  97, 100, 
     101, 114, 115,  92,  67, 111, 
     109, 109, 111, 110,  46, 102, 
@@ -156,15 +156,15 @@ const BYTE EnvironmentMapEffect_PSEnvMapSpecular[] =
      76,   3,   0,   0,   0,   0, 
     255, 255,  88,   3,   0,   0, 
       0,   0, 255, 255, 100,   3, 
-      0,   0, 188,   0,   0,   0, 
-    112,   3,   0,   0, 187,   0, 
+      0,   0, 231,   0,   0,   0, 
+    112,   3,   0,   0, 230,   0, 
       0,   0, 128,   3,   0,   0, 
-    187,   0,   0,   0, 144,   3, 
-      0,   0, 190,   0,   0,   0, 
-    160,   3,   0,   0, 188,   0, 
+    230,   0,   0,   0, 144,   3, 
+      0,   0, 233,   0,   0,   0, 
+    160,   3,   0,   0, 231,   0, 
       0,   0, 180,   3,   0,   0, 
-    190,   0,   0,   0, 196,   3, 
-      0,   0, 191,   0,   0,   0, 
+    233,   0,   0,   0, 196,   3, 
+      0,   0, 234,   0,   0,   0, 
     216,   3,   0,   0,  20,   0, 
       1,   0, 236,   3,   0,   0, 
      20,   0,   1,   0,   0,   4, 

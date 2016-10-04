@@ -87,6 +87,7 @@ namespace DXUT
         // These are extensions for DXGI-based versions of Direct3D
         D3DDECLTYPE_DXGI_R10G10B10A2_UNORM = 32 + DXGI_FORMAT_R10G10B10A2_UNORM,
         D3DDECLTYPE_DXGI_R11G11B10_FLOAT   = 32 + DXGI_FORMAT_R11G11B10_FLOAT,
+        D3DDECLTYPE_DXGI_R8G8B8A8_SNORM    = 32 + DXGI_FORMAT_R8G8B8A8_SNORM,
     };
 
     #pragma pack(push,4)

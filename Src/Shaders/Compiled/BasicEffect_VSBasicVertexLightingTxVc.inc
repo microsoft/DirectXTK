@@ -48,7 +48,7 @@
     dcl_texcoord2 v2  // vin<7,8>
     dcl_texcoord3 v3  // vin<9,10,11,12>
 
-#line 57 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\Lighting.fxh"
+#line 57 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Lighting.fxh"
     dp4 r0.x, v0, c15  // ::pos_ws<0>
     dp4 r0.y, v0, c16  // ::pos_ws<1>
     dp4 r0.z, v0, c17  // ::pos_ws<2>
@@ -114,32 +114,32 @@
 #line 63
     dp4 oPos.z, v0, c23  // ::VSBasicVertexLightingTxVc<12>
 
-#line 14 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\Common.fxh"
+#line 14 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Common.fxh"
     dp4 r0.x, v0, c14
     max r0.x, r0.x, c25.x
     min oT1.w, r0.x, c25.y  // ::VSBasicVertexLightingTxVc<7>
 
-#line 46 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\Lighting.fxh"
+#line 46 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Lighting.fxh"
     mul r0.xyz, r2.y, c8
     mad r0.xyz, r2.x, c7, r0
     mad r0.xyz, r2.z, c9, r0
     mov r1.xyz, c1  // Parameters::DiffuseColor<0,1,2>
     mad r0.xyz, r0, r1, c2  // ::result<0,1,2>
 
-#line 202 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\BasicEffect.fx"
+#line 242 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\BasicEffect.fx"
     mul oT0.xyz, r0, v3  // ::VSBasicVertexLightingTxVc<0,1,2>
     mul oT0.w, v3.w, c1.w  // ::VSBasicVertexLightingTxVc<3>
 
-#line 63 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\Lighting.fxh"
+#line 63 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Lighting.fxh"
     dp4 r0.x, v0, c21  // ::vout<0>
     dp4 r0.y, v0, c22  // ::vout<1>
     dp4 r0.z, v0, c24  // ::vout<3>
 
-#line 194 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\BasicEffect.fx"
+#line 234 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\BasicEffect.fx"
     mad oPos.xy, r0.z, c0, r0  // ::VSBasicVertexLightingTxVc<10,11>
     mov oPos.w, r0.z  // ::VSBasicVertexLightingTxVc<13>
 
-#line 201
+#line 241
     mov oT2.xy, v2  // ::VSBasicVertexLightingTxVc<8,9>
 
 // approximately 64 instruction slots used
@@ -215,10 +215,10 @@ ret
 
 const BYTE BasicEffect_VSBasicVertexLightingTxVc[] =
 {
-     68,  88,  66,  67, 114,  54, 
-     67,  28, 148, 252, 197,  88, 
-    200, 164, 225,  91, 239, 182, 
-    126, 199,   1,   0,   0,   0, 
+     68,  88,  66,  67, 179, 171, 
+    230, 242,  22,  98, 195,   8, 
+     90,  72,  30, 185, 112, 178, 
+     91, 108,   1,   0,   0,   0, 
      72,  20,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
     224,  11,   0,   0,  40,  19, 
@@ -252,8 +252,8 @@ const BYTE BasicEffect_VSBasicVertexLightingTxVc[] =
     116, 111, 112,  92,  68,  51, 
      68,  49,  49,  32,  80, 114, 
     111, 106, 101,  99, 116, 115, 
-     92, 100, 105, 114, 101,  99, 
-    116, 120, 116, 107,  92,  83, 
+     92,  68, 105, 114, 101,  99, 
+    116,  88,  84,  75,  92,  83, 
     114,  99,  92,  83, 104,  97, 
     100, 101, 114, 115,  92,  76, 
     105, 103, 104, 116, 105, 110, 
@@ -264,8 +264,8 @@ const BYTE BasicEffect_VSBasicVertexLightingTxVc[] =
     115, 107, 116, 111, 112,  92, 
      68,  51,  68,  49,  49,  32, 
      80, 114, 111, 106, 101,  99, 
-    116, 115,  92, 100, 105, 114, 
-    101,  99, 116, 120, 116, 107, 
+    116, 115,  92,  68, 105, 114, 
+    101,  99, 116,  88,  84,  75, 
      92,  83, 114,  99,  92,  83, 
     104,  97, 100, 101, 114, 115, 
      92,  67, 111, 109, 109, 111, 
@@ -276,8 +276,8 @@ const BYTE BasicEffect_VSBasicVertexLightingTxVc[] =
     115, 107, 116, 111, 112,  92, 
      68,  51,  68,  49,  49,  32, 
      80, 114, 111, 106, 101,  99, 
-    116, 115,  92, 100, 105, 114, 
-    101,  99, 116, 120, 116, 107, 
+    116, 115,  92,  68, 105, 114, 
+    101,  99, 116,  88,  84,  75, 
      92,  83, 114,  99,  92,  83, 
     104,  97, 100, 101, 114, 115, 
      92,  66,  97, 115, 105,  99, 
@@ -353,16 +353,16 @@ const BYTE BasicEffect_VSBasicVertexLightingTxVc[] =
       0,   0,  46,   0,   0,   0, 
     188,  10,   0,   0,  46,   0, 
       0,   0, 200,  10,   0,   0, 
-    202,   0,   2,   0, 220,  10, 
-      0,   0, 202,   0,   2,   0, 
+    242,   0,   2,   0, 220,  10, 
+      0,   0, 242,   0,   2,   0, 
     236,  10,   0,   0,  63,   0, 
       0,   0, 252,  10,   0,   0, 
      63,   0,   0,   0,  12,  11, 
       0,   0,  63,   0,   0,   0, 
-     28,  11,   0,   0, 194,   0, 
+     28,  11,   0,   0, 234,   0, 
       2,   0,  44,  11,   0,   0, 
-    194,   0,   2,   0,  64,  11, 
-      0,   0, 201,   0,   2,   0, 
+    234,   0,   2,   0,  64,  11, 
+      0,   0, 241,   0,   2,   0, 
      76,  11,   0,   0,  80,  97, 
     114,  97, 109, 101, 116, 101, 
     114, 115,   0,  68, 105, 102, 

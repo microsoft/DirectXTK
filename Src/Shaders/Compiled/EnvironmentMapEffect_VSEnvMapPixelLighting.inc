@@ -47,7 +47,7 @@
     dcl_texcoord1 v1  // vin<4,5,6>
     dcl_texcoord2 v2  // vin<7,8>
 
-#line 85 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\Lighting.fxh"
+#line 85 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Lighting.fxh"
     dp4 oPos.z, v0, c11  // ::VSEnvMapPixelLighting<15>
     dp4 oT1.x, v0, c3  // ::VSEnvMapPixelLighting<2>
     dp4 oT1.y, v0, c4  // ::VSEnvMapPixelLighting<3>
@@ -59,21 +59,21 @@
     rsq r0.w, r0.w
     mul oT2.xyz, r0.w, r0  // ::VSEnvMapPixelLighting<6,7,8>
 
-#line 14 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\Common.fxh"
+#line 14 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Common.fxh"
     dp4 r0.x, v0, c2
     max r0.x, r0.x, c13.x
     min oT1.w, r0.x, c13.y  // ::VSEnvMapPixelLighting<5>
 
-#line 85 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\Lighting.fxh"
+#line 85 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Lighting.fxh"
     dp4 r0.x, v0, c9  // ::vout<0>
     dp4 r0.y, v0, c10  // ::vout<1>
     dp4 r0.z, v0, c12  // ::vout<3>
 
-#line 144 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\EnvironmentMapEffect.fx"
+#line 172 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\EnvironmentMapEffect.fx"
     mad oPos.xy, r0.z, c0, r0  // ::VSEnvMapPixelLighting<13,14>
     mov oPos.w, r0.z  // ::VSEnvMapPixelLighting<16>
 
-#line 152
+#line 180
     mov oT0.xy, v2  // ::VSEnvMapPixelLighting<0,1>
     mov r0.xy, c13
     mad oT3, c1.w, r0.xxxy, r0.yyyx  // ::VSEnvMapPixelLighting<9,10,11,12>
@@ -113,10 +113,10 @@ ret
 
 const BYTE EnvironmentMapEffect_VSEnvMapPixelLighting[] =
 {
-     68,  88,  66,  67, 131, 148, 
-      9,  46, 200, 166,  42, 216, 
-     84,  26, 228, 146, 140,  41, 
-    221, 184,   1,   0,   0,   0, 
+     68,  88,  66,  67, 221,  50, 
+    179,  16, 206, 157, 233, 251, 
+    237, 128, 140, 197, 148,  44, 
+    231, 116,   1,   0,   0,   0, 
      24,  10,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
     120,   6,   0,   0,   0,   9, 
@@ -150,8 +150,8 @@ const BYTE EnvironmentMapEffect_VSEnvMapPixelLighting[] =
     116, 111, 112,  92,  68,  51, 
      68,  49,  49,  32,  80, 114, 
     111, 106, 101,  99, 116, 115, 
-     92, 100, 105, 114, 101,  99, 
-    116, 120, 116, 107,  92,  83, 
+     92,  68, 105, 114, 101,  99, 
+    116,  88,  84,  75,  92,  83, 
     114,  99,  92,  83, 104,  97, 
     100, 101, 114, 115,  92,  76, 
     105, 103, 104, 116, 105, 110, 
@@ -162,8 +162,8 @@ const BYTE EnvironmentMapEffect_VSEnvMapPixelLighting[] =
     115, 107, 116, 111, 112,  92, 
      68,  51,  68,  49,  49,  32, 
      80, 114, 111, 106, 101,  99, 
-    116, 115,  92, 100, 105, 114, 
-    101,  99, 116, 120, 116, 107, 
+    116, 115,  92,  68, 105, 114, 
+    101,  99, 116,  88,  84,  75, 
      92,  83, 114,  99,  92,  83, 
     104,  97, 100, 101, 114, 115, 
      92,  67, 111, 109, 109, 111, 
@@ -174,8 +174,8 @@ const BYTE EnvironmentMapEffect_VSEnvMapPixelLighting[] =
     115, 107, 116, 111, 112,  92, 
      68,  51,  68,  49,  49,  32, 
      80, 114, 111, 106, 101,  99, 
-    116, 115,  92, 100, 105, 114, 
-    101,  99, 116, 120, 116, 107, 
+    116, 115,  92,  68, 105, 114, 
+    101,  99, 116,  88,  84,  75, 
      92,  83, 114,  99,  92,  83, 
     104,  97, 100, 101, 114, 115, 
      92,  69, 110, 118, 105, 114, 
@@ -211,12 +211,12 @@ const BYTE EnvironmentMapEffect_VSEnvMapPixelLighting[] =
       0,   0,  85,   0,   0,   0, 
     132,   5,   0,   0,  85,   0, 
       0,   0, 148,   5,   0,   0, 
-    144,   0,   2,   0, 164,   5, 
-      0,   0, 144,   0,   2,   0, 
-    184,   5,   0,   0, 152,   0, 
+    172,   0,   2,   0, 164,   5, 
+      0,   0, 172,   0,   2,   0, 
+    184,   5,   0,   0, 180,   0, 
       2,   0, 196,   5,   0,   0, 
-    151,   0,   2,   0, 208,   5, 
-      0,   0, 151,   0,   2,   0, 
+    179,   0,   2,   0, 208,   5, 
+      0,   0, 179,   0,   2,   0, 
     220,   5,   0,   0,  86,  83, 
      69, 110, 118,  77,  97, 112, 
      80, 105, 120, 101, 108,  76, 

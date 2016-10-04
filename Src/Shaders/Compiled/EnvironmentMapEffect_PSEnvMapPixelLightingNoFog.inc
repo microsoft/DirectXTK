@@ -46,7 +46,7 @@
     dcl_2d s0
     dcl_cube s1
 
-#line 92 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\EnvironmentMapEffect.fx"
+#line 92 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\EnvironmentMapEffect.fx"
     nrm r0.xyz, t2  // ::worldNormal<0,1,2>
     add r1.xyz, -t1, c10
     nrm r2.xyz, r1  // ::eyeVector<0,1,2>
@@ -62,7 +62,7 @@
 #line 100
     texld r1, r1, s1
 
-#line 36 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\Lighting.fxh"
+#line 36 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Lighting.fxh"
     dp3 r3.x, -c4, r0  // ::dotL<0>
     dp3 r3.y, -c5, r0  // ::dotL<1>
     dp3 r3.z, -c6, r0  // ::dotL<2>
@@ -78,7 +78,7 @@
     mov r3.xyz, c2  // Parameters::DiffuseColor<0,1,2>
     mad r0.xyz, r0, r3, c3  // ::result<0,1,2>
 
-#line 89 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\EnvironmentMapEffect.fx"
+#line 89 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\EnvironmentMapEffect.fx"
     mul r2, r2, t3  // ::color<0,1,2,3>
 
 #line 96
@@ -143,10 +143,10 @@ ret
 
 const BYTE EnvironmentMapEffect_PSEnvMapPixelLightingNoFog[] =
 {
-     68,  88,  66,  67, 182,  26, 
-    130, 103, 179,  24,  96,  51, 
-    147,  89, 215, 112,  67, 129, 
-    202, 238,   1,   0,   0,   0, 
+     68,  88,  66,  67, 239, 183, 
+     72,  16, 189, 224, 121, 249, 
+    171,  27, 161,  25, 106,   3, 
+    226, 117,   1,   0,   0,   0, 
     200,  12,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
     180,   7,   0,   0,  20,  12, 
@@ -176,9 +176,9 @@ const BYTE EnvironmentMapEffect_PSEnvMapPixelLightingNoFog[] =
      68, 101, 115, 107, 116, 111, 
     112,  92,  68,  51,  68,  49, 
      49,  32,  80, 114, 111, 106, 
-    101,  99, 116, 115,  92, 100, 
-    105, 114, 101,  99, 116, 120, 
-    116, 107,  92,  83, 114,  99, 
+    101,  99, 116, 115,  92,  68, 
+    105, 114, 101,  99, 116,  88, 
+     84,  75,  92,  83, 114,  99, 
      92,  83, 104,  97, 100, 101, 
     114, 115,  92,  69, 110, 118, 
     105, 114, 111, 110, 109, 101, 
@@ -191,8 +191,8 @@ const BYTE EnvironmentMapEffect_PSEnvMapPixelLightingNoFog[] =
     111, 112,  92,  68,  51,  68, 
      49,  49,  32,  80, 114, 111, 
     106, 101,  99, 116, 115,  92, 
-    100, 105, 114, 101,  99, 116, 
-    120, 116, 107,  92,  83, 114, 
+     68, 105, 114, 101,  99, 116, 
+     88,  84,  75,  92,  83, 114, 
      99,  92,  83, 104,  97, 100, 
     101, 114, 115,  92,  76, 105, 
     103, 104, 116, 105, 110, 103, 

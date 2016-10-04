@@ -34,19 +34,19 @@
     dcl t1.xyz  // pin<4,5,6>
     dcl t2  // pin<7,8,9,10>
 
-#line 410 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\BasicEffect.fx"
+#line 580 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\BasicEffect.fx"
     add r0.xyz, -t0, c12
     dp3 r0.w, r0, r0
     rsq r0.w, r0.w
 
-#line 33 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\Lighting.fxh"
+#line 33 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Lighting.fxh"
     mad r1.xyz, r0, r0.w, -c3
     nrm r2.xyz, r1  // ::halfVectors<0,1,2>
 
-#line 411 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\BasicEffect.fx"
+#line 581 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\BasicEffect.fx"
     nrm r1.xyz, t1  // ::worldNormal<0,1,2>
 
-#line 37 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\Lighting.fxh"
+#line 37 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Lighting.fxh"
     dp3 r2.x, r2, r1  // ::dotH<0>
 
 #line 33
@@ -88,17 +88,17 @@
     mad r0.xyz, r0.z, c11, r2
     mul r0.xyz, r0, c2  // ::result<3,4,5>
 
-#line 26 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\Common.fxh"
+#line 26 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Common.fxh"
     mul r0.xyz, r0, t2.w
 
-#line 46 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\Lighting.fxh"
+#line 46 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Lighting.fxh"
     mul r2.xyz, r1.y, c7
     mad r2.xyz, r1.x, c6, r2
     mad r1.xyz, r1.z, c8, r2
     mov r2.xyz, c0  // Parameters::DiffuseColor<0,1,2>
     mad r1.xyz, r1, r2, c1  // ::result<0,1,2>
 
-#line 26 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\Common.fxh"
+#line 26 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Common.fxh"
     mad r0.xyz, t2, r1, r0  // AddSpecular::color<0,1,2>
 
 #line 20
@@ -167,10 +167,10 @@ ret
 
 const BYTE BasicEffect_PSBasicPixelLighting[] =
 {
-     68,  88,  66,  67, 158, 206, 
-    165,  63,  23, 101, 229, 129, 
-     88, 184, 253, 149, 110, 194, 
-    254, 143,   1,   0,   0,   0, 
+     68,  88,  66,  67, 246, 112, 
+    115, 104, 215,  10, 161, 255, 
+     46, 116, 127,  82, 111, 129, 
+    151, 195,   1,   0,   0,   0, 
      28,  16,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
     120,   9,   0,   0, 128,  15, 
@@ -199,8 +199,8 @@ const BYTE BasicEffect_PSBasicPixelLighting[] =
     115, 107, 116, 111, 112,  92, 
      68,  51,  68,  49,  49,  32, 
      80, 114, 111, 106, 101,  99, 
-    116, 115,  92, 100, 105, 114, 
-    101,  99, 116, 120, 116, 107, 
+    116, 115,  92,  68, 105, 114, 
+    101,  99, 116,  88,  84,  75, 
      92,  83, 114,  99,  92,  83, 
     104,  97, 100, 101, 114, 115, 
      92,  66,  97, 115, 105,  99, 
@@ -212,8 +212,8 @@ const BYTE BasicEffect_PSBasicPixelLighting[] =
     116, 111, 112,  92,  68,  51, 
      68,  49,  49,  32,  80, 114, 
     111, 106, 101,  99, 116, 115, 
-     92, 100, 105, 114, 101,  99, 
-    116, 120, 116, 107,  92,  83, 
+     92,  68, 105, 114, 101,  99, 
+    116,  88,  84,  75,  92,  83, 
     114,  99,  92,  83, 104,  97, 
     100, 101, 114, 115,  92,  76, 
     105, 103, 104, 116, 105, 110, 
@@ -224,8 +224,8 @@ const BYTE BasicEffect_PSBasicPixelLighting[] =
     115, 107, 116, 111, 112,  92, 
      68,  51,  68,  49,  49,  32, 
      80, 114, 111, 106, 101,  99, 
-    116, 115,  92, 100, 105, 114, 
-    101,  99, 116, 120, 116, 107, 
+    116, 115,  92,  68, 105, 114, 
+    101,  99, 116,  88,  84,  75, 
      92,  83, 114,  99,  92,  83, 
     104,  97, 100, 101, 114, 115, 
      92,  67, 111, 109, 109, 111, 
@@ -237,14 +237,14 @@ const BYTE BasicEffect_PSBasicPixelLighting[] =
     255, 255,  60,   6,   0,   0, 
       0,   0, 255, 255,  72,   6, 
       0,   0,   0,   0, 255, 255, 
-     84,   6,   0,   0, 154,   1, 
+     84,   6,   0,   0,  68,   2, 
       0,   0,  96,   6,   0,   0, 
-    154,   1,   0,   0, 112,   6, 
-      0,   0, 154,   1,   0,   0, 
+     68,   2,   0,   0, 112,   6, 
+      0,   0,  68,   2,   0,   0, 
     128,   6,   0,   0,  33,   0, 
       1,   0, 140,   6,   0,   0, 
      33,   0,   1,   0, 160,   6, 
-      0,   0, 155,   1,   0,   0, 
+      0,   0,  69,   2,   0,   0, 
     172,   6,   0,   0,  37,   0, 
       1,   0, 184,   6,   0,   0, 
      33,   0,   1,   0, 200,   6, 

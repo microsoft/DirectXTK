@@ -49,13 +49,13 @@
     dcl_texcoord1 v1  // vin<4,5,6>
     dcl_texcoord2 v2  // vin<7,8>
 
-#line 67 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\EnvironmentMapEffect.fx"
+#line 67 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\EnvironmentMapEffect.fx"
     dp3 r0.x, v1, c11
     dp3 r0.y, v1, c12
     dp3 r0.z, v1, c13
     nrm r1.xyz, r0  // ::worldNormal<0,1,2>
 
-#line 36 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\Lighting.fxh"
+#line 36 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Lighting.fxh"
     dp3 r0.x, -c4, r1  // ::dotL<0>
 
 #line 39
@@ -67,7 +67,7 @@
     mov r2.xyz, c2  // Parameters::DiffuseColor<0,1,2>
     mad oT0.xyz, r0, r2, c3  // ::VSEnvMapOneLightFresnel<0,1,2>
 
-#line 71 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\EnvironmentMapEffect.fx"
+#line 71 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\EnvironmentMapEffect.fx"
     dp4 oPos.z, v0, c16  // ::VSEnvMapOneLightFresnel<15>
 
 #line 65
@@ -85,12 +85,12 @@
     pow r1.w, r0.x, c1.y
     mul oT1.xyz, r1.w, c1.x  // ::VSEnvMapOneLightFresnel<4,5,6>
 
-#line 14 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\Common.fxh"
+#line 14 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Common.fxh"
     dp4 r0.x, v0, c7
     max r0.x, r0.x, c18.x
     min oT1.w, r0.x, c18.y  // ::VSEnvMapOneLightFresnel<7>
 
-#line 81 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\EnvironmentMapEffect.fx"
+#line 81 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\EnvironmentMapEffect.fx"
     dp3 r0.x, -r2, r1
     add r0.x, r0.x, r0.x
     mad oT3.xyz, r1, -r0.x, -r2  // ::VSEnvMapOneLightFresnel<10,11,12>
@@ -100,14 +100,14 @@
     dp4 r0.y, v0, c15  // ::vout<14>
     dp4 r0.z, v0, c17  // ::vout<16>
 
-#line 137
+#line 158
     mad oPos.xy, r0.z, c0, r0  // ::VSEnvMapOneLightFresnel<13,14>
     mov oPos.w, r0.z  // ::VSEnvMapOneLightFresnel<16>
 
-#line 46 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\Lighting.fxh"
+#line 46 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Lighting.fxh"
     mov oT0.w, c2.w  // ::VSEnvMapOneLightFresnel<3>
 
-#line 139 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\EnvironmentMapEffect.fx"
+#line 160 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\EnvironmentMapEffect.fx"
     mov oT2.xy, v2  // ::VSEnvMapOneLightFresnel<8,9>
 
 // approximately 41 instruction slots used
@@ -164,10 +164,10 @@ ret
 
 const BYTE EnvironmentMapEffect_VSEnvMapOneLightFresnel[] =
 {
-     68,  88,  66,  67,  62, 189, 
-     87, 254, 150, 251, 137, 156, 
-    126, 220, 204, 143, 112, 103, 
-    106,  72,   1,   0,   0,   0, 
+     68,  88,  66,  67, 217, 248, 
+    183, 237,  88, 106, 186,  55, 
+    165,   1, 226, 149, 241, 114, 
+    251, 190,   1,   0,   0,   0, 
     236,  14,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
      16,   9,   0,   0, 212,  13, 
@@ -205,8 +205,8 @@ const BYTE EnvironmentMapEffect_VSEnvMapOneLightFresnel[] =
     116, 111, 112,  92,  68,  51, 
      68,  49,  49,  32,  80, 114, 
     111, 106, 101,  99, 116, 115, 
-     92, 100, 105, 114, 101,  99, 
-    116, 120, 116, 107,  92,  83, 
+     92,  68, 105, 114, 101,  99, 
+    116,  88,  84,  75,  92,  83, 
     114,  99,  92,  83, 104,  97, 
     100, 101, 114, 115,  92,  69, 
     110, 118, 105, 114, 111, 110, 
@@ -219,8 +219,8 @@ const BYTE EnvironmentMapEffect_VSEnvMapOneLightFresnel[] =
     107, 116, 111, 112,  92,  68, 
      51,  68,  49,  49,  32,  80, 
     114, 111, 106, 101,  99, 116, 
-    115,  92, 100, 105, 114, 101, 
-     99, 116, 120, 116, 107,  92, 
+    115,  92,  68, 105, 114, 101, 
+     99, 116,  88,  84,  75,  92, 
      83, 114,  99,  92,  83, 104, 
      97, 100, 101, 114, 115,  92, 
      76, 105, 103, 104, 116, 105, 
@@ -231,9 +231,9 @@ const BYTE EnvironmentMapEffect_VSEnvMapOneLightFresnel[] =
     101, 115, 107, 116, 111, 112, 
      92,  68,  51,  68,  49,  49, 
      32,  80, 114, 111, 106, 101, 
-     99, 116, 115,  92, 100, 105, 
-    114, 101,  99, 116, 120, 116, 
-    107,  92,  83, 114,  99,  92, 
+     99, 116, 115,  92,  68, 105, 
+    114, 101,  99, 116,  88,  84, 
+     75,  92,  83, 114,  99,  92, 
      83, 104,  97, 100, 101, 114, 
     115,  92,  67, 111, 109, 109, 
     111, 110,  46, 102, 120, 104, 
@@ -286,11 +286,11 @@ const BYTE EnvironmentMapEffect_VSEnvMapOneLightFresnel[] =
       0,   0,  71,   0,   0,   0, 
      24,   8,   0,   0,  71,   0, 
       0,   0,  40,   8,   0,   0, 
-    137,   0,   0,   0,  56,   8, 
-      0,   0, 137,   0,   0,   0, 
+    158,   0,   0,   0,  56,   8, 
+      0,   0, 158,   0,   0,   0, 
      76,   8,   0,   0,  46,   0, 
       1,   0,  88,   8,   0,   0, 
-    139,   0,   0,   0, 100,   8, 
+    160,   0,   0,   0, 100,   8, 
       0,   0,  80,  97, 114,  97, 
     109, 101, 116, 101, 114, 115, 
       0,  68, 105, 102, 102, 117, 

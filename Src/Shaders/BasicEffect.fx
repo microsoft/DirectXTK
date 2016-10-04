@@ -161,6 +161,18 @@ VSOutput VSBasicVertexLighting(VSInputNm vin)
     return vout;
 }
 
+VSOutput VSBasicVertexLightingBn(VSInputNm vin)
+{
+    VSOutput vout;
+
+    float3 normal = BiasX2(vin.Normal);
+
+    CommonVSOutput cout = ComputeCommonVSOutputWithLighting(vin.Position, normal, 3);
+    SetCommonVSOutputParams;
+
+    return vout;
+}
+
 
 // Vertex shader: vertex lighting + vertex color.
 VSOutput VSBasicVertexLightingVc(VSInputNmVc vin)
@@ -175,6 +187,20 @@ VSOutput VSBasicVertexLightingVc(VSInputNmVc vin)
     return vout;
 }
 
+VSOutput VSBasicVertexLightingVcBn(VSInputNmVc vin)
+{
+    VSOutput vout;
+
+    float3 normal = BiasX2(vin.Normal);
+
+    CommonVSOutput cout = ComputeCommonVSOutputWithLighting(vin.Position, normal, 3);
+    SetCommonVSOutputParams;
+
+    vout.Diffuse *= vin.Color;
+
+    return vout;
+}
+
 
 // Vertex shader: vertex lighting + texture.
 VSOutputTx VSBasicVertexLightingTx(VSInputNmTx vin)
@@ -182,6 +208,20 @@ VSOutputTx VSBasicVertexLightingTx(VSInputNmTx vin)
     VSOutputTx vout;
 
     CommonVSOutput cout = ComputeCommonVSOutputWithLighting(vin.Position, vin.Normal, 3);
+    SetCommonVSOutputParams;
+
+    vout.TexCoord = vin.TexCoord;
+
+    return vout;
+}
+
+VSOutputTx VSBasicVertexLightingTxBn(VSInputNmTx vin)
+{
+    VSOutputTx vout;
+
+    float3 normal = BiasX2(vin.Normal);
+
+    CommonVSOutput cout = ComputeCommonVSOutputWithLighting(vin.Position, normal, 3);
     SetCommonVSOutputParams;
 
     vout.TexCoord = vin.TexCoord;
@@ -204,6 +244,21 @@ VSOutputTx VSBasicVertexLightingTxVc(VSInputNmTxVc vin)
     return vout;
 }
 
+VSOutputTx VSBasicVertexLightingTxVcBn(VSInputNmTxVc vin)
+{
+    VSOutputTx vout;
+
+    float3 normal = BiasX2(vin.Normal);
+
+    CommonVSOutput cout = ComputeCommonVSOutputWithLighting(vin.Position, normal, 3);
+    SetCommonVSOutputParams;
+
+    vout.TexCoord = vin.TexCoord;
+    vout.Diffuse *= vin.Color;
+
+    return vout;
+}
+
 
 // Vertex shader: one light.
 VSOutput VSBasicOneLight(VSInputNm vin)
@@ -211,6 +266,18 @@ VSOutput VSBasicOneLight(VSInputNm vin)
     VSOutput vout;
 
     CommonVSOutput cout = ComputeCommonVSOutputWithLighting(vin.Position, vin.Normal, 1);
+    SetCommonVSOutputParams;
+
+    return vout;
+}
+
+VSOutput VSBasicOneLightBn(VSInputNm vin)
+{
+    VSOutput vout;
+
+    float3 normal = BiasX2(vin.Normal);
+
+    CommonVSOutput cout = ComputeCommonVSOutputWithLighting(vin.Position, normal, 1);
     SetCommonVSOutputParams;
 
     return vout;
@@ -230,6 +297,20 @@ VSOutput VSBasicOneLightVc(VSInputNmVc vin)
     return vout;
 }
 
+VSOutput VSBasicOneLightVcBn(VSInputNmVc vin)
+{
+    VSOutput vout;
+
+    float3 normal = BiasX2(vin.Normal);
+
+    CommonVSOutput cout = ComputeCommonVSOutputWithLighting(vin.Position, normal, 1);
+    SetCommonVSOutputParams;
+
+    vout.Diffuse *= vin.Color;
+
+    return vout;
+}
+
 
 // Vertex shader: one light + texture.
 VSOutputTx VSBasicOneLightTx(VSInputNmTx vin)
@@ -237,6 +318,20 @@ VSOutputTx VSBasicOneLightTx(VSInputNmTx vin)
     VSOutputTx vout;
 
     CommonVSOutput cout = ComputeCommonVSOutputWithLighting(vin.Position, vin.Normal, 1);
+    SetCommonVSOutputParams;
+
+    vout.TexCoord = vin.TexCoord;
+
+    return vout;
+}
+
+VSOutputTx VSBasicOneLightTxBn(VSInputNmTx vin)
+{
+    VSOutputTx vout;
+
+    float3 normal = BiasX2(vin.Normal);
+
+    CommonVSOutput cout = ComputeCommonVSOutputWithLighting(vin.Position, normal, 1);
     SetCommonVSOutputParams;
 
     vout.TexCoord = vin.TexCoord;
@@ -259,6 +354,21 @@ VSOutputTx VSBasicOneLightTxVc(VSInputNmTxVc vin)
     return vout;
 }
 
+VSOutputTx VSBasicOneLightTxVcBn(VSInputNmTxVc vin)
+{
+    VSOutputTx vout;
+
+    float3 normal = BiasX2(vin.Normal);
+
+    CommonVSOutput cout = ComputeCommonVSOutputWithLighting(vin.Position, normal, 1);
+    SetCommonVSOutputParams;
+
+    vout.TexCoord = vin.TexCoord;
+    vout.Diffuse *= vin.Color;
+
+    return vout;
+}
+
 
 // Vertex shader: pixel lighting.
 VSOutputPixelLighting VSBasicPixelLighting(VSInputNm vin)
@@ -273,6 +383,20 @@ VSOutputPixelLighting VSBasicPixelLighting(VSInputNm vin)
     return vout;
 }
 
+VSOutputPixelLighting VSBasicPixelLightingBn(VSInputNm vin)
+{
+    VSOutputPixelLighting vout;
+
+    float3 normal = BiasX2(vin.Normal);
+
+    CommonVSOutputPixelLighting cout = ComputeCommonVSOutputPixelLighting(vin.Position, normal);
+    SetCommonVSOutputParamsPixelLighting;
+
+    vout.Diffuse = float4(1, 1, 1, DiffuseColor.a);
+
+    return vout;
+}
+
 
 // Vertex shader: pixel lighting + vertex color.
 VSOutputPixelLighting VSBasicPixelLightingVc(VSInputNmVc vin)
@@ -280,6 +404,21 @@ VSOutputPixelLighting VSBasicPixelLightingVc(VSInputNmVc vin)
     VSOutputPixelLighting vout;
 
     CommonVSOutputPixelLighting cout = ComputeCommonVSOutputPixelLighting(vin.Position, vin.Normal);
+    SetCommonVSOutputParamsPixelLighting;
+
+    vout.Diffuse.rgb = vin.Color.rgb;
+    vout.Diffuse.a = vin.Color.a * DiffuseColor.a;
+
+    return vout;
+}
+
+VSOutputPixelLighting VSBasicPixelLightingVcBn(VSInputNmVc vin)
+{
+    VSOutputPixelLighting vout;
+
+    float3 normal = BiasX2(vin.Normal);
+
+    CommonVSOutputPixelLighting cout = ComputeCommonVSOutputPixelLighting(vin.Position, normal);
     SetCommonVSOutputParamsPixelLighting;
 
     vout.Diffuse.rgb = vin.Color.rgb;
@@ -303,6 +442,21 @@ VSOutputPixelLightingTx VSBasicPixelLightingTx(VSInputNmTx vin)
     return vout;
 }
 
+VSOutputPixelLightingTx VSBasicPixelLightingTxBn(VSInputNmTx vin)
+{
+    VSOutputPixelLightingTx vout;
+
+    float3 normal = BiasX2(vin.Normal);
+
+    CommonVSOutputPixelLighting cout = ComputeCommonVSOutputPixelLighting(vin.Position, normal);
+    SetCommonVSOutputParamsPixelLighting;
+
+    vout.Diffuse = float4(1, 1, 1, DiffuseColor.a);
+    vout.TexCoord = vin.TexCoord;
+
+    return vout;
+}
+
 
 // Vertex shader: pixel lighting + texture + vertex color.
 VSOutputPixelLightingTx VSBasicPixelLightingTxVc(VSInputNmTxVc vin)
@@ -310,6 +464,22 @@ VSOutputPixelLightingTx VSBasicPixelLightingTxVc(VSInputNmTxVc vin)
     VSOutputPixelLightingTx vout;
 
     CommonVSOutputPixelLighting cout = ComputeCommonVSOutputPixelLighting(vin.Position, vin.Normal);
+    SetCommonVSOutputParamsPixelLighting;
+
+    vout.Diffuse.rgb = vin.Color.rgb;
+    vout.Diffuse.a = vin.Color.a * DiffuseColor.a;
+    vout.TexCoord = vin.TexCoord;
+
+    return vout;
+}
+
+VSOutputPixelLightingTx VSBasicPixelLightingTxVcBn(VSInputNmTxVc vin)
+{
+    VSOutputPixelLightingTx vout;
+
+    float3 normal = BiasX2(vin.Normal);
+
+    CommonVSOutputPixelLighting cout = ComputeCommonVSOutputPixelLighting(vin.Position, normal);
     SetCommonVSOutputParamsPixelLighting;
 
     vout.Diffuse.rgb = vin.Color.rgb;

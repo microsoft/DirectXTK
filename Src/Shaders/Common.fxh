@@ -27,6 +27,12 @@ void AddSpecular(inout float4 color, float3 specular)
 }
 
 
+float3 BiasX2(float3 x)
+{
+   return 2.0f * x - 1.0f;
+}
+
+
 struct CommonVSOutput
 {
     float4 Pos_ps;

@@ -52,7 +52,7 @@
     dcl_texcoord3 v3  // vin<11,12>
     dcl_texcoord4 v4  // vin<13,14,15,16>
 
-#line 85 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\Lighting.fxh"
+#line 85 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Lighting.fxh"
     dp4 oPos.z, v0, c11  // ::VSNormalPixelLightingTxVc<18>
     dp4 oT1.x, v0, c3  // ::VSNormalPixelLightingTxVc<2>
     dp4 oT1.y, v0, c4  // ::VSNormalPixelLightingTxVc<3>
@@ -64,15 +64,15 @@
     rsq r0.w, r0.w
     mul oT2.xyz, r0.w, r0  // ::VSNormalPixelLightingTxVc<6,7,8>
 
-#line 14 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\Common.fxh"
+#line 14 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Common.fxh"
     dp4 r0.x, v0, c2
     max r0.x, r0.x, c13.x
     min oT1.w, r0.x, c13.y  // ::VSNormalPixelLightingTxVc<5>
 
-#line 71 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\NormalMapEffect.fx"
+#line 91 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\NormalMapEffect.fx"
     mul oT4.w, v4.w, c1.w  // ::VSNormalPixelLightingTxVc<15>
 
-#line 75
+#line 95
     dp3 r0.x, v2, c6
     dp3 r0.y, v2, c7
     dp3 r0.z, v2, c8
@@ -80,16 +80,16 @@
     rsq r0.w, r0.w
     mul oT3.xyz, r0.w, r0  // ::VSNormalPixelLightingTxVc<9,10,11>
 
-#line 85 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\Lighting.fxh"
+#line 85 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Lighting.fxh"
     dp4 r0.x, v0, c9  // ::vout<0>
     dp4 r0.y, v0, c10  // ::vout<1>
     dp4 r0.z, v0, c12  // ::vout<3>
 
-#line 63 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\NormalMapEffect.fx"
+#line 83 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\NormalMapEffect.fx"
     mad oPos.xy, r0.z, c0, r0  // ::VSNormalPixelLightingTxVc<16,17>
     mov oPos.w, r0.z  // ::VSNormalPixelLightingTxVc<19>
 
-#line 72
+#line 92
     mov oT0.xy, v3  // ::VSNormalPixelLightingTxVc<0,1>
     mov oT4.xyz, v4  // ::VSNormalPixelLightingTxVc<12,13,14>
 
@@ -137,10 +137,10 @@ ret
 
 const BYTE NormalMapEffect_VSNormalPixelLightingTxVc[] =
 {
-     68,  88,  66,  67, 234,  18, 
-    211, 164, 199,  29,  94,  17, 
-    117, 252, 158, 219,  99, 231, 
-    122,  95,   1,   0,   0,   0, 
+     68,  88,  66,  67, 147,  95, 
+    130,  41, 108,  55, 202, 240, 
+     24,  20,  40, 240, 150,  54, 
+      1,  37,   1,   0,   0,   0, 
      80,  12,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
     140,   7,   0,   0, 224,  10, 
@@ -174,8 +174,8 @@ const BYTE NormalMapEffect_VSNormalPixelLightingTxVc[] =
     116, 111, 112,  92,  68,  51, 
      68,  49,  49,  32,  80, 114, 
     111, 106, 101,  99, 116, 115, 
-     92, 100, 105, 114, 101,  99, 
-    116, 120, 116, 107,  92,  83, 
+     92,  68, 105, 114, 101,  99, 
+    116,  88,  84,  75,  92,  83, 
     114,  99,  92,  83, 104,  97, 
     100, 101, 114, 115,  92,  76, 
     105, 103, 104, 116, 105, 110, 
@@ -186,8 +186,8 @@ const BYTE NormalMapEffect_VSNormalPixelLightingTxVc[] =
     115, 107, 116, 111, 112,  92, 
      68,  51,  68,  49,  49,  32, 
      80, 114, 111, 106, 101,  99, 
-    116, 115,  92, 100, 105, 114, 
-    101,  99, 116, 120, 116, 107, 
+    116, 115,  92,  68, 105, 114, 
+    101,  99, 116,  88,  84,  75, 
      92,  83, 114,  99,  92,  83, 
     104,  97, 100, 101, 114, 115, 
      92,  67, 111, 109, 109, 111, 
@@ -198,8 +198,8 @@ const BYTE NormalMapEffect_VSNormalPixelLightingTxVc[] =
     115, 107, 116, 111, 112,  92, 
      68,  51,  68,  49,  49,  32, 
      80, 114, 111, 106, 101,  99, 
-    116, 115,  92, 100, 105, 114, 
-    101,  99, 116, 120, 116, 107, 
+    116, 115,  92,  68, 105, 114, 
+    101,  99, 116,  88,  84,  75, 
      92,  83, 114,  99,  92,  83, 
     104,  97, 100, 101, 114, 115, 
      92,  78, 111, 114, 109,  97, 
@@ -233,24 +233,24 @@ const BYTE NormalMapEffect_VSNormalPixelLightingTxVc[] =
       0,   0,  14,   0,   1,   0, 
      16,   6,   0,   0,  14,   0, 
       1,   0,  32,   6,   0,   0, 
-     71,   0,   2,   0,  48,   6, 
-      0,   0,  75,   0,   2,   0, 
-     64,   6,   0,   0,  75,   0, 
+     91,   0,   2,   0,  48,   6, 
+      0,   0,  95,   0,   2,   0, 
+     64,   6,   0,   0,  95,   0, 
       2,   0,  80,   6,   0,   0, 
-     75,   0,   2,   0,  96,   6, 
-      0,   0,  75,   0,   2,   0, 
-    112,   6,   0,   0,  75,   0, 
+     95,   0,   2,   0,  96,   6, 
+      0,   0,  95,   0,   2,   0, 
+    112,   6,   0,   0,  95,   0, 
       2,   0, 128,   6,   0,   0, 
-     75,   0,   2,   0, 140,   6, 
+     95,   0,   2,   0, 140,   6, 
       0,   0,  85,   0,   0,   0, 
     156,   6,   0,   0,  85,   0, 
       0,   0, 172,   6,   0,   0, 
      85,   0,   0,   0, 188,   6, 
-      0,   0,  63,   0,   2,   0, 
-    204,   6,   0,   0,  63,   0, 
+      0,   0,  83,   0,   2,   0, 
+    204,   6,   0,   0,  83,   0, 
       2,   0, 224,   6,   0,   0, 
-     72,   0,   2,   0, 236,   6, 
-      0,   0,  70,   0,   2,   0, 
+     92,   0,   2,   0, 236,   6, 
+      0,   0,  90,   0,   2,   0, 
     248,   6,   0,   0,  86,  83, 
      78, 111, 114, 109,  97, 108, 
      80, 105, 120, 101, 108,  76, 
