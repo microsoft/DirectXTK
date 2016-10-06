@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit for DirectX 11
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-September 15, 2016
+October 6, 2016
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Universal Windows Platform (UWP) apps for Windows 10,
@@ -78,6 +78,11 @@ https://opensource.microsoft.com/codeofconduct/
 ---------------
 RELEASE HISTORY
 ---------------
+
+October 6, 2016
+    SDKMESH loader and BasicEffects support for compressed vertex normals with biasing
+    WICTextureLoader Ex bool forceSRGB parameter is now a WIC_LOADER flag
+    Minor code cleanup
 
 September 15, 2016
     Minor code cleanup
