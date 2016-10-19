@@ -1599,8 +1599,11 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
     using Windows::Devices::Enumeration::DeviceInformationCollection;
 
     auto operation = DeviceInformation::FindAllAsync(DeviceClass::AudioRender);
-    while (operation->Status != Windows::Foundation::AsyncStatus::Completed)
-        ;
+    while (operation->Status == Windows::Foundation::AsyncStatus::Started) { Sleep(100); }
+    if (operation->Status != Windows::Foundation::AsyncStatus::Completed)
+    {
+        throw std::exception("FindAllAsync");
+    }
 
     DeviceInformationCollection^ devices = operation->GetResults();
 
