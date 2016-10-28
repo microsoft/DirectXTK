@@ -373,6 +373,7 @@ void SpriteBatch::Impl::ContextResources::CreateVertexBuffer()
 SpriteBatch::Impl::Impl(_In_ ID3D11DeviceContext* deviceContext)
   : mRotation( DXGI_MODE_ROTATION_IDENTITY ),
     mSetViewport(false),
+    mViewPort{},
     mSpriteQueueCount(0),
     mSpriteQueueArraySize(0),
     mInBeginEndPair(false),

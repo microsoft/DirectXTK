@@ -75,7 +75,8 @@ namespace DirectX
 
 
 // Reads a SpriteFont from the binary format created by the MakeSpriteFont utility.
-SpriteFont::Impl::Impl(_In_ ID3D11Device* device, _In_ BinaryReader* reader, bool forceSRGB)
+SpriteFont::Impl::Impl(_In_ ID3D11Device* device, _In_ BinaryReader* reader, bool forceSRGB) :
+    defaultGlyph(nullptr)
 {
     // Validate the header.
     for (char const* magic = spriteFontMagic; *magic; magic++)
@@ -135,8 +136,8 @@ _Use_decl_annotations_
 SpriteFont::Impl::Impl(ID3D11ShaderResourceView* texture, Glyph const* glyphs, size_t glyphCount, float lineSpacing)
   : texture(texture),
     glyphs(glyphs, glyphs + glyphCount),
-    lineSpacing(lineSpacing),
-    defaultGlyph(nullptr)
+    defaultGlyph(nullptr),
+    lineSpacing(lineSpacing)
 {
     if (!std::is_sorted(glyphs, glyphs + glyphCount))
     {

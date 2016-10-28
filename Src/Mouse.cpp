@@ -221,8 +221,8 @@ public:
     }
 
     State           mState;
-    float           mDPI;
     Mouse*          mOwner;
+    float           mDPI;
 
     static Mouse::Impl* s_mouse;
 
@@ -246,22 +246,22 @@ private:
     {
         if (mWindow)
         {
-            mWindow->remove_PointerPressed(mPointerPressedToken);
+            (void)mWindow->remove_PointerPressed(mPointerPressedToken);
             mPointerPressedToken.value = 0;
 
-            mWindow->remove_PointerReleased(mPointerReleasedToken);
+            (void)mWindow->remove_PointerReleased(mPointerReleasedToken);
             mPointerReleasedToken.value = 0;
 
-            mWindow->remove_PointerMoved(mPointerMovedToken);
+            (void)mWindow->remove_PointerMoved(mPointerMovedToken);
             mPointerMovedToken.value = 0;
 
-            mWindow->remove_PointerWheelChanged(mPointerWheelToken);
+            (void)mWindow->remove_PointerWheelChanged(mPointerWheelToken);
             mPointerWheelToken.value = 0;
         }
 
         if (mMouse)
         {
-            mMouse->remove_MouseMoved(mPointerMouseMovedToken);
+            (void)mMouse->remove_MouseMoved(mPointerMouseMovedToken);
             mPointerMouseMovedToken.value = 0;
         }
     }

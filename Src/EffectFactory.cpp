@@ -22,6 +22,7 @@
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
+#pragma warning(disable : 4351)
 
 // Internal EffectFactory implementation class. Only one of these helpers is allocated
 // per D3D device, even if there are multiple public facing EffectFactory instances.
@@ -29,11 +30,12 @@ class EffectFactory::Impl
 {
 public:
     Impl(_In_ ID3D11Device* device)
-      : device(device),
+      : mPath{},
+        device(device),
         mSharing(true),
         mUseNormalMapEffect(true),
         mForceSRGB(false)
-    { *mPath = 0; }
+    {}
 
     std::shared_ptr<IEffect> CreateEffect( _In_ IEffectFactory* factory, _In_ const IEffectFactory::EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext );
     void CreateTexture( _In_z_ const wchar_t* texture, _In_opt_ ID3D11DeviceContext* deviceContext, _Outptr_ ID3D11ShaderResourceView** textureView );
@@ -118,7 +120,7 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
         {
             ComPtr<ID3D11ShaderResourceView> srv;
 
-            factory->CreateTexture(info.diffuseTexture, deviceContext, &srv);
+            factory->CreateTexture(info.diffuseTexture, deviceContext, srv.GetAddressOf());
 
             effect->SetTexture(srv.Get());
         }
@@ -166,7 +168,7 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
         {
             ComPtr<ID3D11ShaderResourceView> srv;
 
-            factory->CreateTexture(info.diffuseTexture, deviceContext, &srv);
+            factory->CreateTexture(info.diffuseTexture, deviceContext, srv.GetAddressOf());
 
             effect->SetTexture(srv.Get());
         }
@@ -175,7 +177,7 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
         {
             ComPtr<ID3D11ShaderResourceView> srv;
 
-            factory->CreateTexture(info.specularTexture, deviceContext, &srv);
+            factory->CreateTexture(info.specularTexture, deviceContext, srv.GetAddressOf());
 
             effect->SetTexture2(srv.Get());
         }
@@ -237,7 +239,7 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
         {
             ComPtr<ID3D11ShaderResourceView> srv;
 
-            factory->CreateTexture(info.diffuseTexture, deviceContext, &srv);
+            factory->CreateTexture(info.diffuseTexture, deviceContext, srv.GetAddressOf());
 
             effect->SetTexture(srv.Get());
         }
@@ -246,7 +248,7 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
         {
             ComPtr<ID3D11ShaderResourceView> srv;
 
-            factory->CreateTexture(info.specularTexture, deviceContext, &srv);
+            factory->CreateTexture(info.specularTexture, deviceContext, srv.GetAddressOf());
 
             effect->SetSpecularTexture(srv.Get());
         }
@@ -255,7 +257,7 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
         {
             ComPtr<ID3D11ShaderResourceView> srv;
 
-            factory->CreateTexture(info.normalTexture, deviceContext, &srv);
+            factory->CreateTexture(info.normalTexture, deviceContext, srv.GetAddressOf());
 
             effect->SetNormalTexture(srv.Get());
         }
@@ -323,7 +325,7 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
         {
             ComPtr<ID3D11ShaderResourceView> srv;
 
-            factory->CreateTexture(info.diffuseTexture, deviceContext, &srv);
+            factory->CreateTexture(info.diffuseTexture, deviceContext, srv.GetAddressOf());
 
             effect->SetTexture(srv.Get());
             effect->SetTextureEnabled(true);

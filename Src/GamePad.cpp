@@ -137,7 +137,7 @@ public:
                 HRESULT hr = mGamePad[j].As(&ctrl);
                 if (SUCCEEDED(hr) && ctrl)
                 {
-                    ctrl->remove_UserChanged( mUserChangeToken[j] );
+                    (void)ctrl->remove_UserChanged( mUserChangeToken[j] );
                     mUserChangeToken[j].value = 0;
                 }
 
@@ -147,10 +147,10 @@ public:
 
         if ( mStatics )
         {
-            mStatics->remove_GamepadAdded( mAddedToken );
+            (void)mStatics->remove_GamepadAdded( mAddedToken );
             mAddedToken.value = 0;
 
-            mStatics->remove_GamepadRemoved( mRemovedToken );
+            (void)mStatics->remove_GamepadRemoved( mRemovedToken );
             mRemovedToken.value = 0;
 
             mStatics.Reset();
@@ -340,7 +340,7 @@ private:
                     HRESULT hr = mGamePad[ j ].As(&ctrl);
                     if (SUCCEEDED(hr) && ctrl)
                     {
-                        ctrl->remove_UserChanged( mUserChangeToken[ j ] );
+                        (void)ctrl->remove_UserChanged( mUserChangeToken[ j ] );
                         mUserChangeToken[j].value = 0;
                     }
 
@@ -566,10 +566,10 @@ public:
     {
         if ( mStatics )
         {
-            mStatics->remove_GamepadAdded( mAddedToken );
+            (void)mStatics->remove_GamepadAdded( mAddedToken );
             mAddedToken.value = 0;
 
-            mStatics->remove_GamepadRemoved( mRemovedToken );
+            (void)mStatics->remove_GamepadRemoved( mRemovedToken );
             mRemovedToken.value = 0;
 
             mStatics.Reset();
@@ -577,7 +577,7 @@ public:
 
         if (mStaticsCtrl)
         {
-            mStaticsCtrl->remove_ControllerPairingChanged( mUserParingToken );
+            (void)mStaticsCtrl->remove_ControllerPairingChanged( mUserParingToken );
             mUserParingToken.value = 0;
 
             mStaticsCtrl.Reset();

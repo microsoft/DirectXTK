@@ -325,7 +325,7 @@ struct ENTRYCOMPACT
 
     void BigEndian()
     {
-        *reinterpret_cast<uint32_t*>( this ) = _byteswap_ulong( *reinterpret_cast<uint32_t*>( this ) );
+        *reinterpret_cast<uint32_t*>( this ) = _byteswap_ulong( *reinterpret_cast<const uint32_t*>( this ) );
     }
 
     void ComputeLocations( DWORD& offset, DWORD& length, uint32_t index, const HEADER& header, const BANKDATA& data, const ENTRYCOMPACT* entries ) const

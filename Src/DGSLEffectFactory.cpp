@@ -30,16 +30,19 @@ using Microsoft::WRL::ComPtr;
 static_assert(DGSLEffect::MaxTextures == DGSLEffectFactory::DGSLEffectInfo::BaseTextureOffset + _countof(DGSLEffectFactory::DGSLEffectInfo::textures), "DGSL supports 8 textures");
 #endif
 
+#pragma warning(disable : 4351)
+
 // Internal DGSLEffectFactory implementation class. Only one of these helpers is allocated
 // per D3D device, even if there are multiple public facing DGSLEffectFactory instances.
 class DGSLEffectFactory::Impl
 {
 public:
     Impl(_In_ ID3D11Device* device)
-      : device(device),
+      : mPath{},
+        device(device),
         mSharing(true),
         mForceSRGB(false)
-    { *mPath = 0; }
+    {}
 
     std::shared_ptr<IEffect> CreateEffect( _In_ DGSLEffectFactory* factory, _In_ const IEffectFactory::EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext );
     std::shared_ptr<IEffect> CreateDGSLEffect( _In_ DGSLEffectFactory* factory, _In_ const DGSLEffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext );

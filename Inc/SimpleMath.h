@@ -842,7 +842,7 @@ public:
         width(vp.Width), height(vp.Height),
         minDepth(vp.MinDepth), maxDepth(vp.MaxDepth) {}
 
-    operator D3D11_VIEWPORT() { return *reinterpret_cast<D3D11_VIEWPORT*>(this); }
+    operator D3D11_VIEWPORT() { return *reinterpret_cast<const D3D11_VIEWPORT*>(this); }
     const D3D11_VIEWPORT* Get11() const { return reinterpret_cast<const D3D11_VIEWPORT*>(this); }
     Viewport& operator= (const D3D11_VIEWPORT& vp);
 #endif
@@ -854,7 +854,7 @@ public:
         width(vp.Width), height(vp.Height),
         minDepth(vp.MinDepth), maxDepth(vp.MaxDepth) {}
 
-    operator D3D12_VIEWPORT() { return *reinterpret_cast<D3D12_VIEWPORT*>(this); }
+    operator D3D12_VIEWPORT() { return *reinterpret_cast<const D3D12_VIEWPORT*>(this); }
     const D3D12_VIEWPORT* Get12() const { return reinterpret_cast<const D3D12_VIEWPORT*>(this); }
     Viewport& operator= (const D3D12_VIEWPORT& vp);
 #endif
