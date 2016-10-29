@@ -760,13 +760,15 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
                 info.diffuseColor = XMFLOAT3( m.pMaterial->Diffuse.x, m.pMaterial->Diffuse.y, m.pMaterial->Diffuse.z );
                 info.specularColor = XMFLOAT3( m.pMaterial->Specular.x, m.pMaterial->Specular.y, m.pMaterial->Specular.z );
                 info.emissiveColor = XMFLOAT3( m.pMaterial->Emissive.x, m.pMaterial->Emissive.y, m.pMaterial->Emissive.z );
-                info.texture = m.texture[0].empty() ? nullptr : m.texture[0].c_str();
-                info.texture2 = m.texture[1].empty() ? nullptr : m.texture[1].c_str();
+                info.diffuseTexture = m.texture[0].empty() ? nullptr : m.texture[0].c_str();
+                info.specularTexture = m.texture[1].empty() ? nullptr : m.texture[1].c_str();
+                info.normalTexture = m.texture[2].empty() ? nullptr : m.texture[2].c_str();
                 info.pixelShader = m.pixelShader.c_str();
                 
-                for( int i = 0; i < 6; ++i )
+                const int offset = DGSLEffectFactory::DGSLEffectInfo::BaseTextureOffset;
+                for( int i = 0; i < (DGSLEffect::MaxTextures - offset); ++i )
                 {
-                    info.textures[i] = m.texture[ i+2 ].empty() ? nullptr : m.texture[ i+2 ].c_str();
+                    info.textures[i] = m.texture[ i + offset ].empty() ? nullptr : m.texture[ i + offset ].c_str();
                 }
 
                 m.effect = fxFactoryDGSL->CreateDGSLEffect( info, nullptr );
@@ -786,7 +788,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
                 info.diffuseColor = XMFLOAT3( m.pMaterial->Diffuse.x, m.pMaterial->Diffuse.y, m.pMaterial->Diffuse.z );
                 info.specularColor = XMFLOAT3( m.pMaterial->Specular.x, m.pMaterial->Specular.y, m.pMaterial->Specular.z );
                 info.emissiveColor = XMFLOAT3( m.pMaterial->Emissive.x, m.pMaterial->Emissive.y, m.pMaterial->Emissive.z );
-                info.texture = m.texture[0].c_str();
+                info.diffuseTexture = m.texture[0].c_str();
 
                 m.effect = fxFactory.CreateEffect( info, nullptr );
             }

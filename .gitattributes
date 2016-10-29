@@ -1,0 +1,19 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Explicitly declare code/VS files as CRLF
+*.cpp eol=crlf
+*.cmd eol=crlf
+*.h eol=crlf
+*.hlsl eol=crlf
+*.hlsli eol=crlf
+*.fx eol=crlf
+*.fxh eol=crlf
+*.inc eol=crlf
+*.inl eol=crlf
+*.vcxproj eol=crlf
+*.filters eol=crlf
+*.sln eol=crlf
+
+# Explicitly declare resource files as binary
+*.pdb binary

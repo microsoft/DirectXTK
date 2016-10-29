@@ -82,7 +82,8 @@ namespace DirectX
             mPan( 0.f ),
             mFlags( SoundEffectInstance_Default ),
             mDirectVoice( nullptr ),
-            mReverbVoice( nullptr )
+            mReverbVoice( nullptr ),
+            mDSPSettings{}
         {
         }
 
@@ -179,17 +180,17 @@ namespace DirectX
             if ( immediate )
             {
                 state = STOPPED;
-                voice->Stop( 0 );
-                voice->FlushSourceBuffers();
+                (void)voice->Stop( 0 );
+                (void)voice->FlushSourceBuffers();
             }
             else if ( looped )
             {
                 looped = false;
-                voice->ExitLoop();
+                (void)voice->ExitLoop();
             }
             else
             {
-                voice->Stop( XAUDIO2_PLAY_TAILS );
+                (void)voice->Stop( XAUDIO2_PLAY_TAILS );
             }
         }
 
@@ -199,7 +200,7 @@ namespace DirectX
             {
                 state = PAUSED;
 
-                voice->Stop( 0 );
+                (void)voice->Stop( 0 );
             }
         }
 
@@ -265,7 +266,7 @@ namespace DirectX
                 if ( !xstate.BuffersQueued )
                 {
                     // Automatic stop if the buffer has finished playing
-                    voice->Stop();
+                    (void)voice->Stop();
                     state = STOPPED;
                 }
             }
@@ -317,8 +318,8 @@ namespace DirectX
         {
             if ( voice )
             {
-                voice->Stop( 0 );
-                voice->FlushSourceBuffers();
+                (void)voice->Stop( 0 );
+                (void)voice->FlushSourceBuffers();
                 voice->DestroyVoice();
                 voice = nullptr;
             }

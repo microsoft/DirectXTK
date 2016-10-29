@@ -68,7 +68,7 @@ namespace DirectX
                            _In_opt_ std::function<void __cdecl()> setCustomState = nullptr ) const;
 
         // Create input layout for drawing with a custom effect.
-        void __cdecl CreateInputLayout( _In_ ID3D11Device* d3dDevice, _In_ IEffect* ieffect, _Outptr_ ID3D11InputLayout** iinputLayout );
+        void __cdecl CreateInputLayout( _In_ ID3D11Device* d3dDevice, _In_ IEffect* ieffect, _Outptr_ ID3D11InputLayout** iinputLayout ) const;
 
         // Change effect used by part and regenerate input layout (be sure to call Model::Modified as well)
         void __cdecl ModifyEffect( _In_ ID3D11Device* d3dDevice, _In_ std::shared_ptr<IEffect>& ieffect, bool isalpha = false );
@@ -93,7 +93,7 @@ namespace DirectX
         typedef std::vector<std::shared_ptr<ModelMesh>> Collection;
 
         // Setup states for drawing mesh
-        void __cdecl PrepareForRendering( _In_ ID3D11DeviceContext* deviceContext, CommonStates& states, bool alpha = false, bool wireframe = false ) const;
+        void __cdecl PrepareForRendering( _In_ ID3D11DeviceContext* deviceContext, const CommonStates& states, bool alpha = false, bool wireframe = false ) const;
 
         // Draw the mesh
         void XM_CALLCONV Draw( _In_ ID3D11DeviceContext* deviceContext, FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection,
@@ -112,7 +112,7 @@ namespace DirectX
         std::wstring            name;
 
         // Draw all the meshes in the model
-        void XM_CALLCONV Draw( _In_ ID3D11DeviceContext* deviceContext, CommonStates& states, FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection,
+        void XM_CALLCONV Draw( _In_ ID3D11DeviceContext* deviceContext, const CommonStates& states, FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection,
                                bool wireframe = false, _In_opt_ std::function<void __cdecl()> setCustomState = nullptr ) const;
 
         // Notify model that effects, parts list, or mesh list has changed

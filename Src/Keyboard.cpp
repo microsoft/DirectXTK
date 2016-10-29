@@ -152,14 +152,14 @@ private:
             HRESULT hr = mWindow->get_Dispatcher( dispatcher.GetAddressOf() );
             ThrowIfFailed(hr);
 
-            mWindow->remove_Activated(mActivatedToken);
+            (void)mWindow->remove_Activated(mActivatedToken);
             mActivatedToken.value = 0;
 
             ComPtr<ICoreAcceleratorKeys> keys;
             hr = dispatcher.As(&keys);
             ThrowIfFailed(hr);
 
-            keys->remove_AcceleratorKeyActivated(mAcceleratorKeyToken);
+            (void)keys->remove_AcceleratorKeyActivated(mAcceleratorKeyToken);
             mAcceleratorKeyToken.value = 0;
         }
     }

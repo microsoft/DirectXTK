@@ -23,6 +23,7 @@ using Microsoft::WRL::ComPtr;
 
 //#define VERBOSE_TRACE
 
+#pragma warning(disable : 4351)
 
 namespace
 {
@@ -258,6 +259,7 @@ public:
         maxVoiceOneshots( SIZE_MAX ),
         maxVoiceInstances( SIZE_MAX ),
         mMasterVolume( 1.f ),
+        mX3DAudio{},
         mCriticalError( false ),
         mReverbEnabled( false ),
         mEngineFlags( AudioEngine_Default ),
@@ -267,7 +269,6 @@ public:
         ,mDLL(nullptr)
 #endif
     {
-        memset( &mX3DAudio, 0, X3DAUDIO_HANDLE_BYTESIZE );
     };
 
 #if (_WIN32_WINNT < _WIN32_WINNT_WIN8)
@@ -826,7 +827,7 @@ bool AudioEngine::Impl::Update()
 
             if ( !xstate.BuffersQueued )
             {
-                it->second->Stop( 0 );
+                (void)it->second->Stop( 0 );
                 if ( it->first )
                 {
                     // Put voice back into voice pool for reuse since it has a non-zero voiceKey
@@ -879,15 +880,15 @@ void AudioEngine::Impl::SetReverb( const XAUDIO2FX_REVERB_PARAMETERS* native )
         if ( !mReverbEnabled )
         {
             mReverbEnabled = true;
-            mReverbVoice->EnableEffect( 0 );
+            (void)mReverbVoice->EnableEffect( 0 );
         }
 
-        mReverbVoice->SetEffectParameters( 0, native, sizeof( XAUDIO2FX_REVERB_PARAMETERS ) );
+        (void)mReverbVoice->SetEffectParameters( 0, native, sizeof( XAUDIO2FX_REVERB_PARAMETERS ) );
     }
     else if ( mReverbEnabled )
     {
         mReverbEnabled = false;
-        mReverbVoice->DisableEffect( 0 );
+        (void)mReverbVoice->DisableEffect( 0 );
     }
 }
 
@@ -1217,8 +1218,8 @@ void AudioEngine::Impl::UnregisterNotify( _In_ IVoiceNotify* notify, bool usesOn
 
             if ( state.pCurrentBufferContext == notify )
             {
-                it->second->Stop( 0 );
-                it->second->FlushSourceBuffers();
+                (void)it->second->Stop( 0 );
+                (void)it->second->FlushSourceBuffers();
                 setevent = true;
             }
         }
@@ -1599,8 +1600,11 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
     using Windows::Devices::Enumeration::DeviceInformationCollection;
 
     auto operation = DeviceInformation::FindAllAsync(DeviceClass::AudioRender);
-    while (operation->Status != Windows::Foundation::AsyncStatus::Completed)
-        ;
+    while (operation->Status == Windows::Foundation::AsyncStatus::Started) { Sleep(100); }
+    if (operation->Status != Windows::Foundation::AsyncStatus::Completed)
+    {
+        throw std::exception("FindAllAsync");
+    }
 
     DeviceInformationCollection^ devices = operation->GetResults();
 
@@ -1649,12 +1653,14 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
     hr = diFactory->FindAllAsyncDeviceClass( DeviceClass_AudioRender, operation.GetAddressOf() );
     ThrowIfFailed( hr );
 
-    operation->put_Completed( callback.Get() );
+    hr = operation->put_Completed( callback.Get() );
+    ThrowIfFailed(hr);
 
     (void)WaitForSingleObjectEx( findCompleted.Get(), INFINITE, FALSE );
 
     ComPtr<IVectorView<DeviceInformation*>> devices;
-    operation->GetResults( devices.GetAddressOf() );
+    hr = operation->GetResults( devices.GetAddressOf() );
+    ThrowIfFailed(hr);
 
     unsigned int count = 0;
     hr = devices->get_Size( &count );
@@ -1669,15 +1675,20 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
         hr = devices->GetAt( j, deviceInfo.GetAddressOf() );
         if ( SUCCEEDED(hr) )
         {
+            RendererDetail device;
+
             HString id;
-            deviceInfo->get_Id( id.GetAddressOf() );
+            if (SUCCEEDED(deviceInfo->get_Id(id.GetAddressOf())))
+            {
+                device.deviceId = id.GetRawBuffer(nullptr);
+            }
 
             HString name;
-            deviceInfo->get_Name( name.GetAddressOf() );
+            if (SUCCEEDED(deviceInfo->get_Name(name.GetAddressOf())))
+            {
+                device.description = name.GetRawBuffer(nullptr);
+            }
 
-            RendererDetail device;
-            device.deviceId = id.GetRawBuffer( nullptr );
-            device.description = name.GetRawBuffer( nullptr );
             list.emplace_back( device );
         }
     }

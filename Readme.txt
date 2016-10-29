@@ -1,10 +1,10 @@
---------------------------------
-DirectXTK - the DirectX Tool Kit
---------------------------------
+-----------------------------------------------
+DirectXTK - the DirectX Tool Kit for DirectX 11
+-----------------------------------------------
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-May 31, 2016
+October 6, 2016
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Universal Windows Platform (UWP) apps for Windows 10,
@@ -13,7 +13,7 @@ Windows 8.x Win32 desktop applications, Windows 7 applications, and
 Windows Vista Direct3D 11.0 applications.
 
 This code is designed to build with Visual Studio 2013 or 2015. It is recommended that you
-make use of VS 2013 Update 5, VS 2015 Update 2, and Windows 7 Service Pack 1 or later.
+make use of VS 2013 Update 5 or VS 2015 Update 3 and Windows 7 Service Pack 1 or later.
 
 These components are designed to work without requiring any content from the DirectX SDK. For details,
 see "Where is the DirectX SDK?" <http://msdn.microsoft.com/en-us/library/ee663275.aspx>.
@@ -69,10 +69,56 @@ Note: Xbox One exclusive apps developers using the Xbox One XDK need to generate
       FXC compiler from the Xbox One XDK. While they will continue to work if outdated,
       a mismatch will cause runtime compilation overhead that would otherwise be avoided.
 
+This project has adopted the Microsoft Open Source Code of Conduct. For more information see the
+Code of Conduct FAQ or contact opencode@microsoft.com with any additional questions or comments.
+
+https://opensource.microsoft.com/codeofconduct/
+
 
 ---------------
 RELEASE HISTORY
 ---------------
+
+October 6, 2016
+    SDKMESH loader and BasicEffects support for compressed vertex normals with biasing
+    WICTextureLoader Ex bool forceSRGB parameter is now a WIC_LOADER flag
+    Minor code cleanup
+
+September 15, 2016
+    Minor code cleanup
+    xwbtool: added wildcard support for input filename and optional -r switch for recursive search
+
+September 1, 2016
+    Added forceSRGB optional parameter to SpriteFont ctor
+    EffectFactory method EnableForceSRGB added
+    DGSLEffect now defaults to diffuse/alpha of 1
+    Removed problematic ABI::Windows::Foundation::Rect interop for SimpleMath
+    Minor code cleanup
+
+August 4, 2016
+    Regenerated shaders using Windows 10 Anniversary Update SDK (14393)
+
+August 2, 2016
+    Updated for VS 2015 Update 3 and Windows 10 SDK (14393)
+
+August 1, 2016
+    GamePad capabilities information updated for Universal Windows and Xbox One platforms
+    Specular falloff lighting computation fix in shaders
+
+July 18, 2016
+    NormalMapEffect for normal-map with optional specular map rendering
+    EnvironmentMapEffect now supports per-pixel lighting
+    Effects updated with SetMatrices and SetColorAndAlpha methods
+    SimpleMath: improved interop with DirectXMath constants
+    Minor code cleanup
+
+June 30, 2016
+    MeasureDrawString added to SpriteFont; bad fix to MeasureString reverted
+    GamePad tracker updated to track emulated buttons (i.e. leftStickUp)
+    EffectFactory SetDirectory now checks current working directory (CWD) as well
+    *breaking change* must include <d3d11.h> before including <SimpleMath.h>
+    Code refactor for sharing some files with DirectX 12 version
+    Minor code cleanup
 
 May 31, 2016
     Added VertexPosition and VertexPositionDualTexture to VertexTypes

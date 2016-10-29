@@ -26,6 +26,11 @@
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
+#if defined(_MSC_VER) && (_MSC_VER >= 1900)
+static_assert(DGSLEffect::MaxTextures == DGSLEffectFactory::DGSLEffectInfo::BaseTextureOffset + _countof(DGSLEffectFactory::DGSLEffectInfo::textures), "DGSL supports 8 textures");
+#endif
+
+#pragma warning(disable : 4351)
 
 // Internal DGSLEffectFactory implementation class. Only one of these helpers is allocated
 // per D3D device, even if there are multiple public facing DGSLEffectFactory instances.
@@ -33,8 +38,11 @@ class DGSLEffectFactory::Impl
 {
 public:
     Impl(_In_ ID3D11Device* device)
-      : device(device), mSharing(true)
-    { *mPath = 0; }
+      : mPath{},
+        device(device),
+        mSharing(true),
+        mForceSRGB(false)
+    {}
 
     std::shared_ptr<IEffect> CreateEffect( _In_ DGSLEffectFactory* factory, _In_ const IEffectFactory::EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext );
     std::shared_ptr<IEffect> CreateDGSLEffect( _In_ DGSLEffectFactory* factory, _In_ const DGSLEffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext );
@@ -43,6 +51,7 @@ public:
 
     void ReleaseCache();
     void SetSharing( bool enabled ) { mSharing = enabled; }
+    void EnableForceSRGB(bool forceSRGB) { mForceSRGB = forceSRGB; }
 
     static SharedResourcePool<ID3D11Device*, Impl> instancePool;
 
@@ -61,6 +70,7 @@ private:
     ShaderCache  mShaderCache;
 
     bool mSharing;
+    bool mForceSRGB;
 
     std::mutex mutex;
 };
@@ -98,7 +108,7 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateEffect( DGSLEffectFactor
         }
     }
 
-    std::shared_ptr<DGSLEffect> effect = std::make_shared<DGSLEffect>( device.Get(), nullptr, info.enableSkinning );
+    auto effect = std::make_shared<DGSLEffect>( device.Get(), nullptr, info.enableSkinning );
 
     effect->EnableDefaultLighting();
     effect->SetLightingEnabled(true);
@@ -129,11 +139,11 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateEffect( DGSLEffectFactor
         effect->SetEmissiveColor( color );
     }
 
-    if ( info.texture && *info.texture )
+    if ( info.diffuseTexture && *info.diffuseTexture )
     {
         ComPtr<ID3D11ShaderResourceView> srv;
 
-        factory->CreateTexture( info.texture, deviceContext, srv.GetAddressOf() );
+        factory->CreateTexture( info.diffuseTexture, deviceContext, srv.GetAddressOf() );
 
         effect->SetTexture( srv.Get() );
         effect->SetTextureEnabled(true);
@@ -277,27 +287,37 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateDGSLEffect( DGSLEffectFa
         effect->SetEmissiveColor( color );
     }
 
-    if ( info.texture && *info.texture )
+    if ( info.diffuseTexture && *info.diffuseTexture )
     {
         ComPtr<ID3D11ShaderResourceView> srv;
 
-        factory->CreateTexture( info.texture, deviceContext, srv.GetAddressOf() );
+        factory->CreateTexture( info.diffuseTexture, deviceContext, srv.GetAddressOf() );
 
         effect->SetTexture( srv.Get() );
         effect->SetTextureEnabled(true);
     }
 
-    if ( info.texture2 && *info.texture2 )
+    if ( info.specularTexture && *info.specularTexture )
     {
         ComPtr<ID3D11ShaderResourceView> srv;
 
-        factory->CreateTexture( info.texture2, deviceContext, srv.GetAddressOf() );
+        factory->CreateTexture( info.specularTexture, deviceContext, srv.GetAddressOf() );
 
-        effect->SetTexture2( srv.Get() );
+        effect->SetTexture( 1, srv.Get() );
         effect->SetTextureEnabled(true);
     }
 
-    for( int j = 0; j < 6; ++j )
+    if ( info.normalTexture && *info.normalTexture )
+    {
+        ComPtr<ID3D11ShaderResourceView> srv;
+
+        factory->CreateTexture( info.normalTexture, deviceContext, srv.GetAddressOf() );
+
+        effect->SetTexture( 2, srv.Get() );
+        effect->SetTextureEnabled(true);
+    }
+
+    for( int j = 0; j < _countof(info.textures); ++j )
     {
         if ( info.textures[j] && *info.textures[j] )
         {
@@ -305,7 +325,7 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateDGSLEffect( DGSLEffectFa
 
             factory->CreateTexture( info.textures[j], deviceContext, srv.GetAddressOf() );
 
-            effect->SetTexture( j+2, srv.Get() );
+            effect->SetTexture( j + DGSLEffectInfo::BaseTextureOffset, srv.Get() );
             effect->SetTextureEnabled(true);
         }
     }
@@ -351,12 +371,27 @@ void DGSLEffectFactory::Impl::CreateTexture( const wchar_t* name, ID3D11DeviceCo
         wcscpy_s( fullName, mPath );
         wcscat_s( fullName, name );
 
+        WIN32_FILE_ATTRIBUTE_DATA fileAttr = {};
+        if ( !GetFileAttributesExW(fullName, GetFileExInfoStandard, &fileAttr) )
+        {
+            // Try Current Working Directory (CWD)
+            wcscpy_s( fullName, name );
+            if ( !GetFileAttributesExW(fullName, GetFileExInfoStandard, &fileAttr) )
+            {
+                DebugTrace( "DGSLEffectFactory could not find texture file '%ls'\n", name );
+                throw std::exception( "CreateTexture" );
+            }
+        }
+
         wchar_t ext[_MAX_EXT];
         _wsplitpath_s( name, nullptr, 0, nullptr, 0, nullptr, 0, ext, _MAX_EXT );
 
         if ( _wcsicmp( ext, L".dds" ) == 0 )
         {
-            HRESULT hr = CreateDDSTextureFromFile( device.Get(), fullName, nullptr, textureView );
+            HRESULT hr = CreateDDSTextureFromFileEx(
+                device.Get(), fullName, 0,
+                D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
+                mForceSRGB, nullptr, textureView);
             if ( FAILED(hr) )
             {
                 DebugTrace( "CreateDDSTextureFromFile failed (%08X) for '%ls'\n", hr, fullName );
@@ -367,7 +402,10 @@ void DGSLEffectFactory::Impl::CreateTexture( const wchar_t* name, ID3D11DeviceCo
         else if ( deviceContext )
         {
             std::lock_guard<std::mutex> lock(mutex);
-            HRESULT hr = CreateWICTextureFromFile( device.Get(), deviceContext, fullName, nullptr, textureView );
+            HRESULT hr = CreateWICTextureFromFileEx(
+                device.Get(), deviceContext, fullName, 0,
+                D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
+                mForceSRGB ? WIC_LOADER_FORCE_SRGB : WIC_LOADER_DEFAULT, nullptr, textureView );
             if ( FAILED(hr) )
             {
                 DebugTrace( "CreateWICTextureFromFile failed (%08X) for '%ls'\n", hr, fullName );
@@ -377,7 +415,10 @@ void DGSLEffectFactory::Impl::CreateTexture( const wchar_t* name, ID3D11DeviceCo
 #endif
         else
         {
-            HRESULT hr = CreateWICTextureFromFile( device.Get(), fullName, nullptr, textureView );
+            HRESULT hr = CreateWICTextureFromFileEx(
+                device.Get(), fullName, 0,
+                D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
+                mForceSRGB ? WIC_LOADER_FORCE_SRGB : WIC_LOADER_DEFAULT, nullptr, textureView );
             if ( FAILED(hr) )
             {
                 DebugTrace( "CreateWICTextureFromFile failed (%08X) for '%ls'\n", hr, fullName );
@@ -413,6 +454,18 @@ void DGSLEffectFactory::Impl::CreatePixelShader( const wchar_t* name, ID3D11Pixe
         wchar_t fullName[MAX_PATH] = {};
         wcscpy_s( fullName, mPath );
         wcscat_s( fullName, name );
+
+        WIN32_FILE_ATTRIBUTE_DATA fileAttr = {};
+        if ( !GetFileAttributesExW(fullName, GetFileExInfoStandard, &fileAttr) )
+        {
+            // Try Current Working Directory (CWD)
+            wcscpy_s( fullName, name );
+            if ( !GetFileAttributesExW(fullName, GetFileExInfoStandard, &fileAttr) )
+            {
+                DebugTrace( "DGSLEffectFactory could not find shader file '%ls'\n", name );
+                throw std::exception( "CreatePixelShader" );
+            }
+        }
 
         size_t dataSize = 0;
         std::unique_ptr<uint8_t[]> data;
@@ -512,6 +565,11 @@ void DGSLEffectFactory::ReleaseCache()
 void DGSLEffectFactory::SetSharing( bool enabled )
 {
     pImpl->SetSharing( enabled );
+}
+
+void DGSLEffectFactory::EnableForceSRGB(bool forceSRGB)
+{
+    pImpl->EnableForceSRGB( forceSRGB );
 }
 
 void DGSLEffectFactory::SetDirectory( _In_opt_z_ const wchar_t* path )

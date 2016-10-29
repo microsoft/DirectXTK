@@ -23,8 +23,8 @@ namespace DirectX
     public:
         struct Glyph;
 
-        SpriteFont(_In_ ID3D11Device* device, _In_z_ wchar_t const* fileName);
-        SpriteFont(_In_ ID3D11Device* device, _In_reads_bytes_(dataSize) uint8_t const* dataBlob, _In_ size_t dataSize);
+        SpriteFont(_In_ ID3D11Device* device, _In_z_ wchar_t const* fileName, bool forceSRGB = false);
+        SpriteFont(_In_ ID3D11Device* device, _In_reads_bytes_(dataSize) uint8_t const* dataBlob, _In_ size_t dataSize, bool forceSRGB = false);
         SpriteFont(_In_ ID3D11ShaderResourceView* texture, _In_reads_(glyphCount) Glyph const* glyphs, _In_ size_t glyphCount, _In_ float lineSpacing);
 
         SpriteFont(SpriteFont&& moveFrom);
@@ -42,7 +42,7 @@ namespace DirectX
 
         XMVECTOR XM_CALLCONV MeasureString(_In_z_ wchar_t const* text) const;
 
-        RECT MeasureDrawBounds(_In_z_ wchar_t const* text, XMFLOAT2 const& position) const;
+        RECT __cdecl MeasureDrawBounds(_In_z_ wchar_t const* text, XMFLOAT2 const& position) const;
         RECT XM_CALLCONV MeasureDrawBounds(_In_z_ wchar_t const* text, FXMVECTOR position) const;
 
         // Spacing properties
@@ -57,7 +57,7 @@ namespace DirectX
 
         // Custom layout/rendering
         Glyph const* __cdecl FindGlyph(wchar_t character) const;
-        void GetSpriteSheet( ID3D11ShaderResourceView** texture ) const;
+        void __cdecl GetSpriteSheet( ID3D11ShaderResourceView** texture ) const;
 
         // Describes a single character glyph.
         struct Glyph

@@ -170,10 +170,8 @@ void DynamicSoundEffectInstance::Impl::SubmitBuffer( const uint8_t* pAudioData, 
     if ( !pAudioData || !audioBytes )
         throw std::exception( "Invalid audio data buffer" );
 
-#ifdef _M_X64
-    if ( audioBytes > 0xFFFFFFFF )
+    if ( audioBytes > UINT32_MAX )
         throw std::out_of_range( "SubmitBuffer" );
-#endif
 
     XAUDIO2_BUFFER buffer = {};
     buffer.AudioBytes = static_cast<UINT32>( audioBytes );

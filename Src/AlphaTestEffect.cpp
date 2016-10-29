@@ -305,6 +305,7 @@ AlphaTestEffect::~AlphaTestEffect()
 }
 
 
+// IEffect methods.
 void AlphaTestEffect::Apply(_In_ ID3D11DeviceContext* deviceContext)
 {
     pImpl->Apply(deviceContext);
@@ -317,6 +318,7 @@ void AlphaTestEffect::GetVertexShaderBytecode(_Out_ void const** pShaderByteCode
 }
 
 
+// Camera settings.
 void XM_CALLCONV AlphaTestEffect::SetWorld(FXMMATRIX value)
 {
     pImpl->matrices.world = value;
@@ -341,6 +343,17 @@ void XM_CALLCONV AlphaTestEffect::SetProjection(FXMMATRIX value)
 }
 
 
+void XM_CALLCONV AlphaTestEffect::SetMatrices(FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection)
+{
+    pImpl->matrices.world = world;
+    pImpl->matrices.view = view;
+    pImpl->matrices.projection = projection;
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::WorldViewProj | EffectDirtyFlags::WorldInverseTranspose | EffectDirtyFlags::EyePosition | EffectDirtyFlags::FogVector;
+}
+
+
+// Material settings
 void XM_CALLCONV AlphaTestEffect::SetDiffuseColor(FXMVECTOR value)
 {
     pImpl->color.diffuseColor = value;
@@ -357,6 +370,16 @@ void AlphaTestEffect::SetAlpha(float value)
 }
 
 
+void XM_CALLCONV AlphaTestEffect::SetColorAndAlpha(FXMVECTOR value)
+{
+    pImpl->color.diffuseColor = value;
+    pImpl->color.alpha = XMVectorGetW(value);
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::MaterialColor;
+}
+
+
+// Fog settings.
 void AlphaTestEffect::SetFogEnabled(bool value)
 {
     pImpl->fog.enabled = value;
@@ -389,12 +412,14 @@ void XM_CALLCONV AlphaTestEffect::SetFogColor(FXMVECTOR value)
 }
 
 
+// Vertex color setting.
 void AlphaTestEffect::SetVertexColorEnabled(bool value)
 {
     pImpl->vertexColorEnabled = value;
 }
 
 
+// Texture settings.
 void AlphaTestEffect::SetTexture(_In_opt_ ID3D11ShaderResourceView* value)
 {
     pImpl->texture = value;

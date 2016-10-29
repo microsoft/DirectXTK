@@ -19,6 +19,15 @@ using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
 
+// IEffectMatrices default method
+void XM_CALLCONV IEffectMatrices::SetMatrices(FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection)
+{
+    SetWorld(world);
+    SetView(view);
+    SetProjection(projection);
+}
+
+
 // Constructor initializes default matrix values.
 EffectMatrices::EffectMatrices()
 {
@@ -45,11 +54,11 @@ _Use_decl_annotations_ void EffectMatrices::SetConstants(int& dirtyFlags, XMMATR
 
 
 // Constructor initializes default fog settings.
-EffectFog::EffectFog()
+EffectFog::EffectFog() :
+    enabled(false),
+    start(0),
+    end(1.f)
 {
-    enabled = false;
-    start = 0;
-    end = 1;
 }
 
 
@@ -104,10 +113,10 @@ void XM_CALLCONV EffectFog::SetConstants(int& dirtyFlags, FXMMATRIX worldView, X
 
 
 // Constructor initializes default material color settings.
-EffectColor::EffectColor()
+EffectColor::EffectColor() :
+    alpha(1.f)
 {
     diffuseColor = g_XMOne;
-    alpha = 1;
 }
 
 
@@ -146,7 +155,7 @@ EffectLights::EffectLights()
 #pragma prefast(disable:22103, "PREFAST doesn't understand buffer is bounded by a static const value even with SAL" )
 
 // Initializes constant buffer fields to match the current lighting state.
-_Use_decl_annotations_ void EffectLights::InitializeConstants(XMVECTOR& specularColorAndPowerConstant, XMVECTOR* lightDirectionConstant, XMVECTOR* lightDiffuseConstant, XMVECTOR* lightSpecularConstant)
+_Use_decl_annotations_ void EffectLights::InitializeConstants(XMVECTOR& specularColorAndPowerConstant, XMVECTOR* lightDirectionConstant, XMVECTOR* lightDiffuseConstant, XMVECTOR* lightSpecularConstant) const
 {
     static const XMVECTORF32 defaultSpecular = { 1, 1, 1, 16 };
     static const XMVECTORF32 defaultLightDirection = { 0, -1, 0, 0 };

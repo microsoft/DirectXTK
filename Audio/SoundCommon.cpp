@@ -758,28 +758,28 @@ void SoundEffectInstanceBase::Apply3D( const AudioListener& listener, const Audi
 
     mDSPSettings.pMatrixCoefficients = nullptr;
 
-    voice->SetFrequencyRatio( mFreqRatio * mDSPSettings.DopplerFactor );
+    (void)voice->SetFrequencyRatio( mFreqRatio * mDSPSettings.DopplerFactor );
 
     auto direct = mDirectVoice;
     assert( direct != 0 );
-    voice->SetOutputMatrix( direct, mDSPSettings.SrcChannelCount, mDSPSettings.DstChannelCount, matrix );
+    (void)voice->SetOutputMatrix( direct, mDSPSettings.SrcChannelCount, mDSPSettings.DstChannelCount, matrix );
 
     if ( reverb )
     {
-        voice->SetOutputMatrix( reverb, 1, 1, &mDSPSettings.ReverbLevel );
+        (void)voice->SetOutputMatrix( reverb, 1, 1, &mDSPSettings.ReverbLevel );
     }
 
     if ( mFlags & SoundEffectInstance_ReverbUseFilters )
     {
         XAUDIO2_FILTER_PARAMETERS filterDirect = { LowPassFilter, 2.0f * sinf(X3DAUDIO_PI/6.0f * mDSPSettings.LPFDirectCoefficient), 1.0f };
         // see XAudio2CutoffFrequencyToRadians() in XAudio2.h for more information on the formula used here
-        voice->SetOutputFilterParameters( direct, &filterDirect );
+        (void)voice->SetOutputFilterParameters( direct, &filterDirect );
 
         if ( reverb )
         {
             XAUDIO2_FILTER_PARAMETERS filterReverb = { LowPassFilter, 2.0f * sinf(X3DAUDIO_PI/6.0f * mDSPSettings.LPFReverbCoefficient), 1.0f };
             // see XAudio2CutoffFrequencyToRadians() in XAudio2.h for more information on the formula used here
-            voice->SetOutputFilterParameters( reverb, &filterReverb );
+            (void)voice->SetOutputFilterParameters( reverb, &filterReverb );
         }
     }
 }

@@ -19,7 +19,9 @@ using namespace DirectX;
 
 
 // Constructor reads from the filesystem.
-BinaryReader::BinaryReader(_In_z_ wchar_t const* fileName)
+BinaryReader::BinaryReader(_In_z_ wchar_t const* fileName) :
+    mPos(nullptr),
+    mEnd(nullptr)
 {
     size_t dataSize;
 
@@ -36,10 +38,10 @@ BinaryReader::BinaryReader(_In_z_ wchar_t const* fileName)
 
 
 // Constructor reads from an existing memory buffer.
-BinaryReader::BinaryReader(_In_reads_bytes_(dataSize) uint8_t const* dataBlob, size_t dataSize)
+BinaryReader::BinaryReader(_In_reads_bytes_(dataSize) uint8_t const* dataBlob, size_t dataSize) :
+    mPos(dataBlob),
+    mEnd(dataBlob + dataSize)
 {
-    mPos = dataBlob;
-    mEnd = dataBlob + dataSize;
 }
 
 

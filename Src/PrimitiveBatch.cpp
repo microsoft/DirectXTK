@@ -48,9 +48,8 @@ private:
     size_t mMaxVertices;
     size_t mVertexSize;
 
-    bool mInBeginEndPair;
-    
     D3D11_PRIMITIVE_TOPOLOGY mCurrentTopology;
+    bool mInBeginEndPair;
     bool mCurrentlyIndexed;
 
     size_t mCurrentIndex;
@@ -112,8 +111,8 @@ PrimitiveBatchBase::Impl::Impl(_In_ ID3D11DeviceContext* deviceContext, size_t m
   : mMaxIndices(maxIndices),
     mMaxVertices(maxVertices),
     mVertexSize(vertexSize),
-    mInBeginEndPair(false),
     mCurrentTopology(D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED),
+    mInBeginEndPair(false),
     mCurrentlyIndexed(false),
     mCurrentIndex(0),
     mCurrentVertex(0),

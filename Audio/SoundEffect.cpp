@@ -174,10 +174,8 @@ HRESULT SoundEffect::Impl::Initialize( AudioEngine* engine, std::unique_ptr<uint
     if ( !engine || !IsValid( wfx ) || !startAudio || !audioBytes || !wavData )
         return E_INVALIDARG;
 
-#ifdef _M_X64
-    if ( audioBytes > 0xFFFFFFFF )
+    if ( audioBytes > UINT32_MAX )
         return E_INVALIDARG;
-#endif
 
     switch( GetFormatTag( wfx ) )
     {
@@ -202,10 +200,8 @@ HRESULT SoundEffect::Impl::Initialize( AudioEngine* engine, std::unique_ptr<uint
             return E_FAIL;
         }
 
-#ifdef _M_X64
-        if ( seekCount > 0xFFFFFFFF )
+        if ( seekCount > UINT32_MAX )
             return E_INVALIDARG;
-#endif
 
         // Take ownership of the buffer
         mWavData.reset( wavData.release() );
@@ -228,10 +224,8 @@ HRESULT SoundEffect::Impl::Initialize( AudioEngine* engine, std::unique_ptr<uint
             return E_FAIL;
         }
 
-#ifdef _M_X64
-        if ( seekCount > 0xFFFFFFFF )
+        if ( seekCount > UINT32_MAX )
             return E_INVALIDARG;
-#endif
 
         {
             HRESULT hr = ApuAlloc( &mXMAMemory, nullptr,

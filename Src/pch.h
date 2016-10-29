@@ -38,10 +38,6 @@
 #include <d3d11_1.h>
 #endif
 
-#if (defined(_XBOX_ONE) && defined(_TITLE)) || (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP))
-#include <Windows.Foundation.h>
-#endif
-
 #if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
 #include <Windows.UI.Core.h>
 #endif
@@ -59,6 +55,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <stdint.h>
