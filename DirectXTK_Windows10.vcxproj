@@ -270,6 +270,7 @@
     <None Include="Src\Shaders\Compiled\NormalMapEffect_VSNormalPixelLightingTxVc.pdb" />
     <None Include="Src\Shaders\Compiled\NormalMapEffect_VSNormalPixelLightingTxVcBn.inc" />
     <None Include="Src\Shaders\Compiled\NormalMapEffect_VSNormalPixelLightingTxVcBn.pdb" />
+    <None Include="Src\Shaders\Compiled\PassThruGeometryShader_SpriteGeometryShader.inc" />
     <None Include="Src\Shaders\Compiled\SkinnedEffect_PSSkinnedPixelLighting.inc" />
     <None Include="Src\Shaders\Compiled\SkinnedEffect_PSSkinnedPixelLighting.pdb" />
     <None Include="Src\Shaders\Compiled\SkinnedEffect_PSSkinnedVertexLighting.inc" />
@@ -312,6 +313,7 @@
     <None Include="Src\Shaders\Compiled\SkinnedEffect_VSSkinnedVertexLightingTwoBones.pdb" />
     <None Include="Src\Shaders\Compiled\SkinnedEffect_VSSkinnedVertexLightingTwoBonesBn.inc" />
     <None Include="Src\Shaders\Compiled\SkinnedEffect_VSSkinnedVertexLightingTwoBonesBn.pdb" />
+    <None Include="Src\Shaders\Compiled\SpriteEffect_NonVPRT_SpriteVertexShader.inc" />
     <None Include="Src\Shaders\Compiled\SpriteEffect_SpritePixelShader.inc" />
     <None Include="Src\Shaders\Compiled\SpriteEffect_SpritePixelShader.pdb" />
     <None Include="Src\Shaders\Compiled\SpriteEffect_SpriteVertexShader.inc" />
@@ -406,6 +408,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Src\Shaders\NormalMapEffect.fx">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Src\Shaders\PassThruGeometryShader.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

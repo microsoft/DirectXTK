@@ -938,6 +938,9 @@
     <None Include="Src\Shaders\Compiled\SkinnedEffect_VSSkinnedVertexLightingTwoBonesBn.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
+    <None Include="Src\Shaders\Compiled\PassThruGeometryShader_SpriteGeometryShader.inc" />
+    <None Include="Src\Shaders\Compiled\SpriteEffect_NonVPRT_SpriteVertexShader.inc" />
+    <None Include="Src\Shaders\PassThruGeometryShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\AlphaTestEffect.cpp">

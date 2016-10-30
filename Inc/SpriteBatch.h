@@ -23,6 +23,7 @@
 #include <DirectXColors.h>
 #include <functional>
 #include <memory>
+#include <WindowsNumerics.h>
 
 
 namespace DirectX
@@ -45,6 +46,10 @@ namespace DirectX
         SpriteEffects_FlipBoth = SpriteEffects_FlipHorizontally | SpriteEffects_FlipVertically,
     };
 
+	struct ViewProjectionConstantBuffer
+	{
+		DirectX::XMFLOAT4X4 viewProjection[2];
+	};
     
     class SpriteBatch
     {
@@ -83,6 +88,12 @@ namespace DirectX
 
         // Set viewport for sprite transformation
         void __cdecl SetViewport( const D3D11_VIEWPORT& viewPort );
+		
+		// Holographic operations
+		void UpdateViewProjectionBuffer(
+			Windows::Graphics::Holographic::HolographicCameraPose^ cameraPose,
+			Windows::Perception::Spatial::SpatialCoordinateSystem^ coordinateSystem);
+		bool AttachViewProjectionBuffer();
 
     private:
         // Private implementation.
