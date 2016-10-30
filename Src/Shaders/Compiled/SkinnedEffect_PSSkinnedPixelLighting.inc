@@ -44,20 +44,20 @@
     dcl t3  // pin<9,10,11,12>
     dcl_2d s0
 
-#line 379 "C:\Users\dngoins\Source\Repos\Dngoins\DirectXTK\Src\Shaders\SkinnedEffect.fx"
+#line 379 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\SkinnedEffect.fx"
     texld r0, t0, s0
     add r1.xyz, -t1, c12
     dp3 r1.w, r1, r1
     rsq r1.w, r1.w
 
-#line 33 "C:\Users\dngoins\Source\Repos\Dngoins\DirectXTK\Src\Shaders\Lighting.fxh"
+#line 33 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Lighting.fxh"
     mad r2.xyz, r1, r1.w, -c3
     nrm r3.xyz, r2  // ::halfVectors<0,1,2>
 
-#line 382 "C:\Users\dngoins\Source\Repos\Dngoins\DirectXTK\Src\Shaders\SkinnedEffect.fx"
+#line 382 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\SkinnedEffect.fx"
     nrm r2.xyz, t2  // ::worldNormal<0,1,2>
 
-#line 37 "C:\Users\dngoins\Source\Repos\Dngoins\DirectXTK\Src\Shaders\Lighting.fxh"
+#line 37 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Lighting.fxh"
     dp3 r3.x, r3, r2  // ::dotH<0>
 
 #line 33
@@ -99,20 +99,20 @@
     mad r1.xyz, r1.z, c11, r3
     mul r1.xyz, r1, c2  // ::result<3,4,5>
 
-#line 379 "C:\Users\dngoins\Source\Repos\Dngoins\DirectXTK\Src\Shaders\SkinnedEffect.fx"
+#line 379 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\SkinnedEffect.fx"
     mul r0, r0, t3  // ::color<0,1,2,3>
 
-#line 26 "C:\Users\dngoins\Source\Repos\Dngoins\DirectXTK\Src\Shaders\Common.fxh"
+#line 26 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Common.fxh"
     mul r1.xyz, r0.w, r1
 
-#line 46 "C:\Users\dngoins\Source\Repos\Dngoins\DirectXTK\Src\Shaders\Lighting.fxh"
+#line 46 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Lighting.fxh"
     mul r3.xyz, r2.y, c7
     mad r3.xyz, r2.x, c6, r3
     mad r2.xyz, r2.z, c8, r3
     mov r3.xyz, c0  // Parameters::DiffuseColor<0,1,2>
     mad r2.xyz, r2, r3, c1  // ::result<0,1,2>
 
-#line 26 "C:\Users\dngoins\Source\Repos\Dngoins\DirectXTK\Src\Shaders\Common.fxh"
+#line 26 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Common.fxh"
     mad r1.xyz, r0, r2, r1  // AddSpecular::color<0,1,2>
 
 #line 20
@@ -185,10 +185,10 @@ ret
 
 const BYTE SkinnedEffect_PSSkinnedPixelLighting[] =
 {
-     68,  88,  66,  67, 233, 174, 
-    139,  97, 104, 147, 111, 143, 
-    231, 165,  74, 242, 185, 119, 
-     31, 186,   1,   0,   0,   0, 
+     68,  88,  66,  67, 209,  43, 
+    216, 251,  64, 227,   3, 133, 
+     82,  11,  85,  54,  12, 228, 
+      1, 172,   1,   0,   0,   0, 
      52,  17,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
      16,  10,   0,   0, 128,  16, 
@@ -213,44 +213,44 @@ const BYTE SkinnedEffect_PSSkinnedPixelLighting[] =
       0,   0,  64,   5,   0,   0, 
     216,   2,   0,   0,  67,  58, 
      92,  85, 115, 101, 114, 115, 
-     92, 100, 110, 103, 111, 105, 
-    110, 115,  92,  83, 111, 117, 
-    114,  99, 101,  92,  82, 101, 
-    112, 111, 115,  92,  68, 110, 
-    103, 111, 105, 110, 115,  92, 
-     68, 105, 114, 101,  99, 116, 
-     88,  84,  75,  92,  83, 114, 
-     99,  92,  83, 104,  97, 100, 
-    101, 114, 115,  92,  83, 107, 
-    105, 110, 110, 101, 100,  69, 
-    102, 102, 101,  99, 116,  46, 
-    102, 120,   0,  67,  58,  92, 
-     85, 115, 101, 114, 115,  92, 
-    100, 110, 103, 111, 105, 110, 
-    115,  92,  83, 111, 117, 114, 
-     99, 101,  92,  82, 101, 112, 
-    111, 115,  92,  68, 110, 103, 
-    111, 105, 110, 115,  92,  68, 
-    105, 114, 101,  99, 116,  88, 
-     84,  75,  92,  83, 114,  99, 
-     92,  83, 104,  97, 100, 101, 
-    114, 115,  92,  76, 105, 103, 
-    104, 116, 105, 110, 103,  46, 
-    102, 120, 104,   0,  67,  58, 
+     92,  67, 104, 117,  99, 107, 
+     87,  92,  68, 101, 115, 107, 
+    116, 111, 112,  92,  68,  51, 
+     68,  49,  49,  32,  80, 114, 
+    111, 106, 101,  99, 116, 115, 
+     92,  68, 105, 114, 101,  99, 
+    116,  88,  84,  75,  92,  83, 
+    114,  99,  92,  83, 104,  97, 
+    100, 101, 114, 115,  92,  83, 
+    107, 105, 110, 110, 101, 100, 
+     69, 102, 102, 101,  99, 116, 
+     46, 102, 120,   0,  67,  58, 
      92,  85, 115, 101, 114, 115, 
-     92, 100, 110, 103, 111, 105, 
-    110, 115,  92,  83, 111, 117, 
-    114,  99, 101,  92,  82, 101, 
-    112, 111, 115,  92,  68, 110, 
-    103, 111, 105, 110, 115,  92, 
-     68, 105, 114, 101,  99, 116, 
-     88,  84,  75,  92,  83, 114, 
-     99,  92,  83, 104,  97, 100, 
-    101, 114, 115,  92,  67, 111, 
-    109, 109, 111, 110,  46, 102, 
-    120, 104,   0, 171, 171, 171, 
-     40,   0,   0,   0, 117,   0, 
-      0,   0, 190,   0,   0,   0, 
+     92,  67, 104, 117,  99, 107, 
+     87,  92,  68, 101, 115, 107, 
+    116, 111, 112,  92,  68,  51, 
+     68,  49,  49,  32,  80, 114, 
+    111, 106, 101,  99, 116, 115, 
+     92,  68, 105, 114, 101,  99, 
+    116,  88,  84,  75,  92,  83, 
+    114,  99,  92,  83, 104,  97, 
+    100, 101, 114, 115,  92,  76, 
+    105, 103, 104, 116, 105, 110, 
+    103,  46, 102, 120, 104,   0, 
+     67,  58,  92,  85, 115, 101, 
+    114, 115,  92,  67, 104, 117, 
+     99, 107,  87,  92,  68, 101, 
+    115, 107, 116, 111, 112,  92, 
+     68,  51,  68,  49,  49,  32, 
+     80, 114, 111, 106, 101,  99, 
+    116, 115,  92,  68, 105, 114, 
+    101,  99, 116,  88,  84,  75, 
+     92,  83, 114,  99,  92,  83, 
+    104,  97, 100, 101, 114, 115, 
+     92,  67, 111, 109, 109, 111, 
+    110,  46, 102, 120, 104,   0, 
+     40,   0,   0,   0, 118,   0, 
+      0,   0, 192,   0,   0,   0, 
       0,   0, 255, 255, 140,   6, 
       0,   0,   0,   0, 255, 255, 
     164,   6,   0,   0,   0,   0, 
