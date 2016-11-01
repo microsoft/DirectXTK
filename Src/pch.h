@@ -60,6 +60,9 @@
 
 #include <stdint.h>
 
+#pragma warning(push)
+#pragma warning(disable : 4467)
 #include <wrl.h>
+#pragma warning(pop)
 
 #include <wincodec.h>
