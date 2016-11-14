@@ -16,6 +16,7 @@
 *.lastbuildstate
 *.ilk
 *.VC.db
+.vs
 Bin
 /Src/Shaders/Compiled/XboxOne*.inc
 /Src/Shaders/Compiled/XboxOne*.pdb
