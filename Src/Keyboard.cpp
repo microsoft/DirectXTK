@@ -62,6 +62,8 @@ namespace
 // }
 //
 
+#include <Windows.Devices.Input.h>
+
 class Keyboard::Impl
 {
 public:
@@ -96,6 +98,26 @@ public:
     void Reset()
     {
         memset( &mState, 0, sizeof(State) );
+    }
+
+    bool IsConnected() const
+    {
+        using namespace Microsoft::WRL;
+        using namespace Microsoft::WRL::Wrappers;
+        using namespace ABI::Windows::Devices::Input;
+        using namespace ABI::Windows::Foundation;
+
+        ComPtr<IKeyboardCapabilities> caps;
+        HRESULT hr = RoActivateInstance(HStringReference(RuntimeClass_Windows_Devices_Input_KeyboardCapabilities).Get(), &caps);
+        ThrowIfFailed(hr);
+
+        INT32 value;
+        if (SUCCEEDED(caps->get_KeyboardPresent(&value)))
+        {
+            return value != 0;
+        }
+
+        return false;
     }
 
     void SetWindow(ABI::Windows::UI::Core::ICoreWindow* window)
@@ -294,6 +316,11 @@ public:
     {
     }
 
+    bool IsConnected() const
+    {
+        return false;
+    }
+
     Keyboard*   mOwner;
 
     static Keyboard::Impl* s_keyboard;
@@ -359,6 +386,11 @@ public:
     void Reset()
     {
         memset( &mState, 0, sizeof(State) );
+    }
+
+    bool IsConnected() const
+    {
+        return true;
     }
 
     State           mState;
@@ -478,6 +510,11 @@ void Keyboard::Reset()
     pImpl->Reset();
 }
 
+
+bool Keyboard::IsConnected() const
+{
+    return pImpl->IsConnected();
+}
 
 Keyboard& Keyboard::Get()
 {

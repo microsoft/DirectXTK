@@ -452,6 +452,9 @@ namespace DirectX
         // Reset the keyboard state
         void __cdecl Reset();
 
+        // Feature detection
+        bool __cdecl IsConnected() const;
+
 #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP) && defined(WM_USER)
         static void __cdecl ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam);
 #endif

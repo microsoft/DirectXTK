@@ -172,6 +172,26 @@ public:
         }
     }
 
+    bool IsConnected() const
+    {
+        using namespace Microsoft::WRL;
+        using namespace Microsoft::WRL::Wrappers;
+        using namespace ABI::Windows::Devices::Input;
+        using namespace ABI::Windows::Foundation;
+
+        ComPtr<IMouseCapabilities> caps;
+        HRESULT hr = RoActivateInstance(HStringReference(RuntimeClass_Windows_Devices_Input_MouseCapabilities).Get(), &caps);
+        ThrowIfFailed(hr);
+
+        INT32 value;
+        if (SUCCEEDED(caps->get_MousePresent(&value)))
+        {
+            return value != 0;
+        }
+
+        return false;
+    }
+
     void SetWindow(ABI::Windows::UI::Core::ICoreWindow* window)
     {
         using namespace Microsoft::WRL;
@@ -469,6 +489,11 @@ public:
         UNREFERENCED_PARAMETER(mode);
     }
 
+    bool IsConnected() const
+    {
+        return false;
+    }
+
     Mouse*  mOwner;
 
     static Mouse::Impl* s_mouse;
@@ -607,6 +632,11 @@ public:
         {
             throw std::exception("TrackMouseEvent");
         }
+    }
+
+    bool IsConnected() const
+    {
+        return GetSystemMetrics(SM_MOUSEPRESENT) != 0;
     }
 
     void SetWindow(HWND window)
@@ -923,6 +953,12 @@ void Mouse::ResetScrollWheelValue()
 void Mouse::SetMode(Mode mode)
 {
     pImpl->SetMode(mode);
+}
+
+
+bool Mouse::IsConnected() const
+{
+    return pImpl->IsConnected();
 }
 
 
