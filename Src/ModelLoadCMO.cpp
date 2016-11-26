@@ -637,7 +637,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
             }
             else
             {
-                std::unique_ptr<uint8_t> temp( new uint8_t[ bytes + ( sizeof(UINT) * nVerts ) ] );
+                std::unique_ptr<uint8_t[]> temp( new uint8_t[ bytes + ( sizeof(UINT) * nVerts ) ] );
 
                 auto visited = reinterpret_cast<UINT*>( temp.get() + bytes );
                 memset( visited, 0xff, sizeof(UINT) * nVerts );
