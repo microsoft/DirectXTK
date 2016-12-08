@@ -635,6 +635,11 @@ namespace DirectX
                     }
 
                     // No DXGI format maps to ISBITMASK(0x0f,0x00,0x00,0xf0) aka D3DFMT_A4L4
+
+                    if (ISBITMASK(0x000000ff, 0x00000000, 0x00000000, 0x0000ff00))
+                    {
+                        return DXGI_FORMAT_R8G8_UNORM; // Some DDS writers assume the bitcount should be 8 instead of 16
+                    }
                 }
 
                 if (16 == ddpf.RGBBitCount)
