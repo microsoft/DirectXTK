@@ -318,12 +318,12 @@ namespace
             if (width > height)
             {
                 twidth = static_cast<UINT>(maxsize);
-                theight = static_cast<UINT>(static_cast<float>(maxsize) * ar);
+                theight = std::max<UINT>(1, static_cast<UINT>(static_cast<float>(maxsize) * ar));
             }
             else
             {
                 theight = static_cast<UINT>(maxsize);
-                twidth = static_cast<UINT>(static_cast<float>(maxsize) / ar);
+                twidth = std::max<UINT>(1, static_cast<UINT>(static_cast<float>(maxsize) / ar));
             }
             assert(twidth <= maxsize && theight <= maxsize);
         }
@@ -354,12 +354,14 @@ namespace
                 {
                     memcpy(&convertGUID, &GUID_WICPixelFormat96bppRGBFloat, sizeof(WICPixelFormatGUID));
                     format = DXGI_FORMAT_R32G32B32_FLOAT;
+                    bpp = 96;
                 }
                 else
 #endif
                 {
                     memcpy(&convertGUID, &GUID_WICPixelFormat128bppRGBAFloat, sizeof(WICPixelFormatGUID));
                     format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+                    bpp = 128;
                 }
             }
             else
