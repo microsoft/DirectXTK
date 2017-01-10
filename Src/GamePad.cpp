@@ -201,11 +201,11 @@ public:
 
                     ApplyStickDeadZone( static_cast<float>(reading.LeftThumbstickX), static_cast<float>(reading.LeftThumbstickY),
                                         deadZoneMode, 1.f, .24f /* Recommended Xbox One deadzone */,
-                                        static_cast<float>(state.thumbSticks.leftX), static_cast<float>(state.thumbSticks.leftY) );
+                                        state.thumbSticks.leftX, state.thumbSticks.leftY );
 
                     ApplyStickDeadZone( static_cast<float>(reading.RightThumbstickX), static_cast<float>(reading.RightThumbstickY),
                                         deadZoneMode, 1.f, .24f /* Recommended Xbox One deadzone */,
-                                        static_cast<float>(state.thumbSticks.rightX), static_cast<float>(state.thumbSticks.rightY) );
+                                        state.thumbSticks.rightX, state.thumbSticks.rightY );
 
                     state.triggers.left = static_cast<float>(reading.LeftTrigger);
                     state.triggers.right = static_cast<float>(reading.RightTrigger);
