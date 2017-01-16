@@ -454,6 +454,7 @@
     <OutDir>Bin\XboxOneXDK_2015\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>Bin\XboxOneXDK_2015\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DirectXTK</TargetName>
+    <CustomBuildBeforeTargets>PreBuildEvent</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Durango'">
     <ReferencePath>$(Console_SdkLibPath);$(Console_SdkWindowsMetadataPath)</ReferencePath>
@@ -464,6 +465,7 @@
     <OutDir>Bin\XboxOneXDK_2015\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>Bin\XboxOneXDK_2015\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DirectXTK</TargetName>
+    <CustomBuildBeforeTargets>PreBuildEvent</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Durango'">
     <ReferencePath>$(Console_SdkLibPath);$(Console_SdkWindowsMetadataPath)</ReferencePath>
@@ -474,6 +476,7 @@
     <OutDir>Bin\XboxOneXDK_2015\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>Bin\XboxOneXDK_2015\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DirectXTK</TargetName>
+    <CustomBuildBeforeTargets>PreBuildEvent</CustomBuildBeforeTargets>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Durango'">
     <Link>
@@ -499,6 +502,11 @@
       <AdditionalIncludeDirectories>$(ProjectDir)Inc;$(ProjectDir)Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
     </ClCompile>
+    <CustomBuildStep>
+      <Command>$(MSBuildProjectDirectory)\Src\Shaders\CompileShaders.cmd vsxbox</Command>
+      <Message>Compile Xbox Shaders</Message>
+      <Outputs>$(MSBuildProjectDirectory)\Src\Shaders\Compiled\XboxOneAlphaTestEffect_VSAlphaTest.inc</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Durango'">
     <Link>
@@ -524,6 +532,11 @@
       <AdditionalIncludeDirectories>$(ProjectDir)Inc;$(ProjectDir)Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
     </ClCompile>
+    <CustomBuildStep>
+      <Command>$(MSBuildProjectDirectory)\Src\Shaders\CompileShaders.cmd vsxbox</Command>
+      <Message>Compile Xbox Shaders</Message>
+      <Outputs>$(MSBuildProjectDirectory)\Src\Shaders\Compiled\XboxOneAlphaTestEffect_VSAlphaTest.inc</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Durango'">
     <Link>
@@ -544,6 +557,11 @@
       <AdditionalIncludeDirectories>$(ProjectDir)Inc;$(ProjectDir)Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
     </ClCompile>
+    <CustomBuildStep>
+      <Command>$(MSBuildProjectDirectory)\Src\Shaders\CompileShaders.cmd vsxbox</Command>
+      <Message>Compile Xbox Shaders</Message>
+      <Outputs>$(MSBuildProjectDirectory)\Src\Shaders\Compiled\XboxOneAlphaTestEffect_VSAlphaTest.inc</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

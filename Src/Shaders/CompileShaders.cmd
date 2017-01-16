@@ -9,6 +9,7 @@ rem Copyright (c) Microsoft Corporation. All rights reserved.
 setlocal
 set error=0
 
+if %1.==vsxbox. goto continuexbox
 if %1.==xbox. goto continuexbox
 if %1.==. goto continue
 echo usage: CompileShaders [xbox]
@@ -207,6 +208,20 @@ exit /b
 
 :CompileShaderHLSLxbox
 set fxc=%XBOXFXC% /nologo %1.hlsl /T%2_5_0 /Zpc /Zi /Qstrip_reflect /Qstrip_debug /D__XBOX_DISABLE_SHADER_NAME_EMPLACEMENT /E%3 /FhCompiled\XboxOne%1_%3.inc /FdCompiled\XboxOne%1_%3.pdb /Vn%1_%3
+echo.
+echo %fxc%
+%fxc% || set error=1
+exit /b
+
+:CompileShadervsxbox
+set fxc=%XBOXFXC% /nologo Src\Shaders\%1.fx /T%2_5_0 /Zpc /Zi /Qstrip_reflect /Qstrip_debug /D__XBOX_DISABLE_SHADER_NAME_EMPLACEMENT /E%3 /FhSrc\Shaders\Compiled\XboxOne%1_%3.inc /FdSrc\Shaders\Compiled\XboxOne%1_%3.pdb /Vn%1_%3
+echo.
+echo %fxc%
+%fxc% || set error=1
+exit /b
+
+:CompileShaderHLSLvsxbox
+set fxc=%XBOXFXC% /nologo Src\Shaders\%1.hlsl /T%2_5_0 /Zpc /Zi /Qstrip_reflect /Qstrip_debug /D__XBOX_DISABLE_SHADER_NAME_EMPLACEMENT /E%3 /FhSrc\Shaders\Compiled\XboxOne%1_%3.inc /FdSrc\Shaders\Compiled\XboxOne%1_%3.pdb /Vn%1_%3
 echo.
 echo %fxc%
 %fxc% || set error=1
