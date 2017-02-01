@@ -639,4 +639,9 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <Target Name="ATGEnsureShaders" BeforeTargets="PrepareForBuild">
+    <Exec Condition="!Exists('src/Shaders/Compiled/SpriteEffect_SpriteVertexShader.inc')"
+        WorkingDirectory="$(ProjectDir)src/Shaders"
+        Command="CompileShaders" />
+  </Target>
 </Project>
