@@ -404,7 +404,7 @@ namespace DirectX
 
             bool __cdecl IsKeyDown(Keys key) const
             {
-                if (key >= 0 && key <= 0xff)
+                if (key >= 0 && key <= 0xfe)
                 {
                     auto ptr = reinterpret_cast<const uint32_t*>(this);
                     unsigned int bf = 1u << (key & 0x1f);
