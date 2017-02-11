@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit for DirectX 11
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-December 5, 2016
+February 10, 2017
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Universal Windows Platform (UWP) apps for Windows 10,
@@ -78,6 +78,12 @@ https://opensource.microsoft.com/codeofconduct/
 ---------------
 RELEASE HISTORY
 ---------------
+
+February 10, 2017
+    GamePad now supports special value of -1 for 'most recently connected controller'
+    WIC format 40bppCMYKAlpha should be converted to RGBA8 rather than RGBA16
+    DDS support for L8A8 with bitcount 8 rather than 16
+    Minor code cleanup
 
 December 5, 2016
     Mouse and Keyboard classes updated with IsConnected method
