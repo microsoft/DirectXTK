@@ -1258,7 +1258,7 @@ private:
             if (mConnected[j] && (mLastReadTime[j] > time))
             {
                 time = mLastReadTime[j];
-                player = j;
+                player = static_cast<int>(j);
             }
         }
 
