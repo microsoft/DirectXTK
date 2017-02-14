@@ -57,4 +57,6 @@ namespace Xbox
         _Outptr_ void** grfxMemory,
         _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr,
         _In_ bool forceSRGB = false);
+
+    void FreeDDSTextureMemory( _In_opt_ void* grfxMemory );
 }

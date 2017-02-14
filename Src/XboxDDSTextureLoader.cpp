@@ -575,7 +575,7 @@ namespace
             texture, textureView);
         if (FAILED(hr))
         {
-            D3DFreeGraphicsMemory(*grfxMemory);
+            (void)D3DFreeGraphicsMemory(*grfxMemory);
             *grfxMemory = nullptr;
         }
 
@@ -771,4 +771,14 @@ HRESULT Xbox::CreateDDSTextureFromFile( ID3D11DeviceX* d3dDevice,
     }
 
     return hr;
+}
+
+//--------------------------------------------------------------------------------------
+_Use_decl_annotations_
+void Xbox::FreeDDSTextureMemory(void* grfxMemory)
+{
+    if (grfxMemory)
+    {
+        (void)D3DFreeGraphicsMemory(grfxMemory);
+    }
 }
