@@ -82,7 +82,10 @@ namespace
 // Windows::Gaming::Input (Windows 10)
 //======================================================================================
 
+#pragma warning(push)
+#pragma warning(disable : 4471)
 #include <Windows.Gaming.Input.h>
+#pragma warning(pop)
 
 class GamePad::Impl
 {
