@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit for DirectX 11
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-February 10, 2017
+April 7, 2017
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Universal Windows Platform (UWP) apps for Windows 10,
@@ -78,6 +78,10 @@ https://opensource.microsoft.com/codeofconduct/
 ---------------
 RELEASE HISTORY
 ---------------
+
+April 7, 2017
+    VS 2017 updated for Windows Creators Update SDK (15063)
+    XboxDDSTextureLoader updates
 
 February 10, 2017
     GamePad now supports special value of -1 for 'most recently connected controller'
