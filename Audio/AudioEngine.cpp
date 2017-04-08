@@ -1550,7 +1550,10 @@ X3DAUDIO_HANDLE& AudioEngine::Get3DHandle() const
 #include <wrl.h>
 #elif (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
 #pragma comment(lib,"runtimeobject.lib")
+#pragma warning(push)
+#pragma warning(disable: 4471)
 #include <Windows.Devices.Enumeration.h>
+#pragma warning(pop)
 #include <wrl.h>
 #endif
 

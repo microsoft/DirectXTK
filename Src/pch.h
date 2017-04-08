@@ -39,7 +39,10 @@
 #endif
 
 #if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
+#pragma warning(push)
+#pragma warning(disable: 4471)
 #include <Windows.UI.Core.h>
+#pragma warning(pop)
 #endif
 
 #include <DirectXMath.h>
