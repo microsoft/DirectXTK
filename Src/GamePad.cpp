@@ -253,7 +253,7 @@ public:
                 {
                     ComPtr<IUser> user;
                     hr = ctrl->get_User(user.GetAddressOf());
-                    if (SUCCEEDED(hr))
+                    if (SUCCEEDED(hr) && user != nullptr)
                     {
                         Wrappers::HString str;
                         hr = user->get_NonRoamableId(str.GetAddressOf());
