@@ -45,7 +45,7 @@
     dcl_2d s0
     dcl_2d s1
 
-#line 98 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\DualTextureEffect.fx"
+#line 98 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\DualTextureEffect.fx"
     mov r0.xy, t2.wzyx
     texld r0, r0, s1  // ::overlay<0,1,2,3>
     texld r1, t2, s0  // ::color<0,1,2,3>
@@ -55,7 +55,7 @@
     mul r1, r1, c1
     mul r0, r0, r1  // ::color<0,1,2,3>
 
-#line 20 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\Common.fxh"
+#line 20 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Common.fxh"
     mad r1.xyz, c0, r0.w, -r0
     mad r0.xyz, t1.w, r1, r0  // ApplyFog::color<0,1,2>
     mov oC0, r0  // ::PSDualTexture<0,1,2,3>
@@ -87,10 +87,10 @@ ret
 
 const BYTE DualTextureEffect_PSDualTexture[] =
 {
-     68,  88,  66,  67, 113, 161, 
-    110, 126, 204,  75, 250, 134, 
-     26,  98, 121, 218, 148, 185, 
-     97, 198,   1,   0,   0,   0, 
+     68,  88,  66,  67,  21, 163, 
+      1, 133,  54,  37,  96, 255, 
+    226, 249, 246, 120, 245,  87, 
+     64, 183,   1,   0,   0,   0, 
     168,   6,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
      72,   4,   0,   0, 244,   5, 
@@ -120,9 +120,9 @@ const BYTE DualTextureEffect_PSDualTexture[] =
      68, 101, 115, 107, 116, 111, 
     112,  92,  68,  51,  68,  49, 
      49,  32,  80, 114, 111, 106, 
-    101,  99, 116, 115,  92, 100, 
-    105, 114, 101,  99, 116, 120, 
-    116, 107,  92,  83, 114,  99, 
+    101,  99, 116, 115,  92,  68, 
+    105, 114, 101,  99, 116,  88, 
+     84,  75,  92,  83, 114,  99, 
      92,  83, 104,  97, 100, 101, 
     114, 115,  92,  68, 117,  97, 
     108,  84, 101, 120, 116, 117, 
@@ -134,8 +134,8 @@ const BYTE DualTextureEffect_PSDualTexture[] =
     115, 107, 116, 111, 112,  92, 
      68,  51,  68,  49,  49,  32, 
      80, 114, 111, 106, 101,  99, 
-    116, 115,  92, 100, 105, 114, 
-    101,  99, 116, 120, 116, 107, 
+    116, 115,  92,  68, 105, 114, 
+    101,  99, 116,  88,  84,  75, 
      92,  83, 114,  99,  92,  83, 
     104,  97, 100, 101, 114, 115, 
      92,  67, 111, 109, 109, 111, 

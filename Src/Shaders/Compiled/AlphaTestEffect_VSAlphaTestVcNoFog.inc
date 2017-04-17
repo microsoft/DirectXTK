@@ -43,18 +43,18 @@
     dcl_texcoord1 v1  // vin<4,5>
     dcl_texcoord2 v2  // vin<6,7,8,9>
 
-#line 43 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\Common.fxh"
+#line 49 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Common.fxh"
     dp4 oPos.z, v0, c4  // ::VSAlphaTestVcNoFog<8>
 
-#line 82 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\AlphaTestEffect.fx"
+#line 82 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\AlphaTestEffect.fx"
     mul oT0, v2, c1  // ::VSAlphaTestVcNoFog<0,1,2,3>
 
-#line 43 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\Common.fxh"
+#line 49 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\Common.fxh"
     dp4 r0.x, v0, c2  // ::vout<0>
     dp4 r0.y, v0, c3  // ::vout<1>
     dp4 r0.z, v0, c5  // ::vout<3>
 
-#line 74 "C:\Users\ChuckW\Desktop\D3D11 Projects\directxtk\Src\Shaders\AlphaTestEffect.fx"
+#line 74 "C:\Users\ChuckW\Desktop\D3D11 Projects\DirectXTK\Src\Shaders\AlphaTestEffect.fx"
     mad oPos.xy, r0.z, c0, r0  // ::VSAlphaTestVcNoFog<6,7>
     mov oPos.w, r0.z  // ::VSAlphaTestVcNoFog<9>
 
@@ -82,10 +82,10 @@ ret
 
 const BYTE AlphaTestEffect_VSAlphaTestVcNoFog[] =
 {
-     68,  88,  66,  67,  94,  24, 
-    150,  63, 175, 120,  20, 171, 
-     41, 251,  49, 158,  33, 122, 
-    112, 142,   1,   0,   0,   0, 
+     68,  88,  66,  67,  99,  59, 
+     33,  25, 194, 141,  79,  92, 
+     27, 175,  10, 183,  59, 213, 
+    206,  32,   1,   0,   0,   0, 
     104,   6,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
      92,   4,   0,   0, 128,   5, 
@@ -117,8 +117,8 @@ const BYTE AlphaTestEffect_VSAlphaTestVcNoFog[] =
     116, 111, 112,  92,  68,  51, 
      68,  49,  49,  32,  80, 114, 
     111, 106, 101,  99, 116, 115, 
-     92, 100, 105, 114, 101,  99, 
-    116, 120, 116, 107,  92,  83, 
+     92,  68, 105, 114, 101,  99, 
+    116,  88,  84,  75,  92,  83, 
     114,  99,  92,  83, 104,  97, 
     100, 101, 114, 115,  92,  67, 
     111, 109, 109, 111, 110,  46, 
@@ -129,8 +129,8 @@ const BYTE AlphaTestEffect_VSAlphaTestVcNoFog[] =
     116, 111, 112,  92,  68,  51, 
      68,  49,  49,  32,  80, 114, 
     111, 106, 101,  99, 116, 115, 
-     92, 100, 105, 114, 101,  99, 
-    116, 120, 116, 107,  92,  83, 
+     92,  68, 105, 114, 101,  99, 
+    116,  88,  84,  75,  92,  83, 
     114,  99,  92,  83, 104,  97, 
     100, 101, 114, 115,  92,  65, 
     108, 112, 104,  97,  84, 101, 
@@ -141,12 +141,12 @@ const BYTE AlphaTestEffect_VSAlphaTestVcNoFog[] =
      64,   3,   0,   0,   0,   0, 
     255, 255,  76,   3,   0,   0, 
       0,   0, 255, 255,  88,   3, 
-      0,   0,  43,   0,   0,   0, 
+      0,   0,  49,   0,   0,   0, 
     100,   3,   0,   0,  82,   0, 
       1,   0, 116,   3,   0,   0, 
-     43,   0,   0,   0, 132,   3, 
-      0,   0,  43,   0,   0,   0, 
-    148,   3,   0,   0,  43,   0, 
+     49,   0,   0,   0, 132,   3, 
+      0,   0,  49,   0,   0,   0, 
+    148,   3,   0,   0,  49,   0, 
       0,   0, 164,   3,   0,   0, 
      74,   0,   1,   0, 180,   3, 
       0,   0,  74,   0,   1,   0, 
