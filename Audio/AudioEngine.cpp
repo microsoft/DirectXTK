@@ -1631,35 +1631,38 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
     using namespace ABI::Windows::Foundation::Collections;
     using namespace ABI::Windows::Devices::Enumeration;
 
+#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
     RoInitializeWrapper initialize(RO_INIT_MULTITHREADED);
-    HRESULT hr = initialize;
-    ThrowIfFailed( hr );
+    ThrowIfFailed(initialize);
+#endif
 
     ComPtr<IDeviceInformationStatics> diFactory;
-    hr = GetActivationFactory( HStringReference(RuntimeClass_Windows_Devices_Enumeration_DeviceInformation).Get(), &diFactory );
+    HRESULT hr = GetActivationFactory( HStringReference(RuntimeClass_Windows_Devices_Enumeration_DeviceInformation).Get(), &diFactory );
     ThrowIfFailed( hr );
-
-    Event findCompleted( CreateEventEx( nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, WRITE_OWNER | EVENT_ALL_ACCESS ) );
-    if ( !findCompleted.IsValid() )
-        throw std::exception( "CreateEventEx" );
-
-    auto callback = Callback<IAsyncOperationCompletedHandler<DeviceInformationCollection*>>(
-        [&findCompleted,list]( IAsyncOperation<DeviceInformationCollection*>* aDevices, AsyncStatus status ) -> HRESULT
-    {
-        UNREFERENCED_PARAMETER(aDevices);
-        UNREFERENCED_PARAMETER(status);
-        SetEvent( findCompleted.Get() );
-        return S_OK;
-    });
 
     ComPtr<IAsyncOperation<DeviceInformationCollection*>> operation;
     hr = diFactory->FindAllAsyncDeviceClass( DeviceClass_AudioRender, operation.GetAddressOf() );
     ThrowIfFailed( hr );
 
-    hr = operation->put_Completed( callback.Get() );
-    ThrowIfFailed(hr);
+    ComPtr<IAsyncInfo> asyncinfo;
+    hr = operation.As(&asyncinfo);
+    ThrowIfFailed( hr );
 
-    (void)WaitForSingleObjectEx( findCompleted.Get(), INFINITE, FALSE );
+    AsyncStatus status;
+    hr = asyncinfo->get_Status(&status);
+    ThrowIfFailed( hr );
+
+    while (status == ABI::Windows::Foundation::AsyncStatus::Started)
+    {
+        Sleep(100);
+        hr = asyncinfo->get_Status(&status);
+        ThrowIfFailed( hr );
+    }
+
+    if (status != ABI::Windows::Foundation::AsyncStatus::Completed)
+    {
+        throw std::exception("FindAllAsyncDeviceClass");
+    }
 
     ComPtr<IVectorView<DeviceInformation*>> devices;
     hr = operation->GetResults( devices.GetAddressOf() );
