@@ -82,6 +82,7 @@ RELEASE HISTORY
 April 24, 2017
     VS 2017 project updates
     Regenerated shaders using Windows 10 Creators Update SDK (15063)
+    Fixed NormalMapEffect shader selection for specular texture usage
     Fixed AudioEngine enumeration when using Single Threaded Apartment (STA)
     Fixed bug with GamePad (Windows.Gaming.Input) when no user bound 
 

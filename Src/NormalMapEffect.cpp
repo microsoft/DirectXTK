@@ -204,7 +204,7 @@ int NormalMapEffect::Impl::GetCurrentShaderPermutation() const
     }
 
     // Specular map?
-    if (specularTexture)
+    if (!specularTexture)
     {
         permutation += 4;
     }
