@@ -727,7 +727,7 @@ void SoundEffectInstanceBase::Apply3D( const AudioListener& listener, const Audi
         dwCalcFlags |= X3DAUDIO_CALCULATE_LPF_REVERB | X3DAUDIO_CALCULATE_REVERB;
     }
 
-    float matrix[ XAUDIO2_MAX_AUDIO_CHANNELS * 8 ];
+    float matrix[XAUDIO2_MAX_AUDIO_CHANNELS * 8] = {};
     assert( mDSPSettings.SrcChannelCount <= XAUDIO2_MAX_AUDIO_CHANNELS );
     assert( mDSPSettings.DstChannelCount <= 8 );
     mDSPSettings.pMatrixCoefficients = matrix;
