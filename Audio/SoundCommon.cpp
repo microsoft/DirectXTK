@@ -766,7 +766,11 @@ void SoundEffectInstanceBase::Apply3D( const AudioListener& listener, const Audi
 
     if ( reverb )
     {
-        (void)voice->SetOutputMatrix( reverb, 1, 1, &mDSPSettings.ReverbLevel );
+        for ( size_t j = 0; j < mDSPSettings.SrcChannelCount; ++j )
+        {
+            matrix[j] = mDSPSettings.ReverbLevel;
+        }
+        (void)voice->SetOutputMatrix( reverb, mDSPSettings.SrcChannelCount, 1, matrix );
     }
 
     if ( mFlags & SoundEffectInstance_ReverbUseFilters )
