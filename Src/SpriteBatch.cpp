@@ -72,7 +72,7 @@ public:
         _In_opt_ ID3D11SamplerState* samplerState,
         _In_opt_ ID3D11DepthStencilState* depthStencilState,
         _In_opt_ ID3D11RasterizerState* rasterizerState,
-        _In_opt_ std::function<void()> setCustomShaders,
+        std::function<void()>& setCustomShaders,
         FXMMATRIX transformMatrix);
     void End();
 
@@ -392,7 +392,7 @@ void XM_CALLCONV SpriteBatch::Impl::Begin(SpriteSortMode sortMode,
     ID3D11SamplerState* samplerState,
     ID3D11DepthStencilState* depthStencilState,
     ID3D11RasterizerState* rasterizerState,
-    std::function<void()> setCustomShaders,
+    std::function<void()>& setCustomShaders,
     FXMMATRIX transformMatrix)
 {
     if (mInBeginEndPair)

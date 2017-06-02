@@ -173,6 +173,9 @@ call :CompileShaderHLSL%1 DGSLPhong ps mainTx
 call :CompileShaderHLSL%1 DGSLUnlit ps mainTxTk
 call :CompileShaderHLSL%1 DGSLLambert ps mainTxTk
 call :CompileShaderHLSL%1 DGSLPhong ps mainTxTk
+
+call :CompileShaderSM4%1 PostProcess vs VSQuad
+call :CompileShaderSM4%1 PostProcess ps PSCopy
 echo.
 
 if %error% == 0 (
@@ -191,6 +194,13 @@ echo %fxc%
 %fxc% || set error=1
 exit /b
 
+:CompileShaderSM4
+set fxc=fxc /nologo %1.fx /T%2_4_0 /Zi /Zpc /Qstrip_reflect /Qstrip_debug /E%3 /FhCompiled\%1_%3.inc /FdCompiled\%1_%3.pdb /Vn%1_%3
+echo.
+echo %fxc%
+%fxc% || set error=1
+exit /b
+
 :CompileShaderHLSL
 set fxc=fxc /nologo %1.hlsl /T%2_4_0_level_9_1 /Zi /Zpc /Qstrip_reflect /Qstrip_debug /E%3 /FhCompiled\%1_%3.inc /FdCompiled\%1_%3.pdb /Vn%1_%3
 echo.
@@ -199,6 +209,7 @@ echo %fxc%
 exit /b
 
 :CompileShaderxbox
+:CompileShaderSM4xbox
 set fxc=%XBOXFXC% /nologo %1.fx /T%2_5_0 /Zpc /Zi /Qstrip_reflect /Qstrip_debug /D__XBOX_DISABLE_SHADER_NAME_EMPLACEMENT /E%3 /FhCompiled\XboxOne%1_%3.inc /FdCompiled\XboxOne%1_%3.pdb /Vn%1_%3
 echo.
 echo %fxc%
