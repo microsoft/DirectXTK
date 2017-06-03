@@ -140,6 +140,9 @@
     <ClInclude Include="Src\LoaderHelpers.h">
       <Filter>Src\Shared</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\PostProcess.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Audio\AudioEngine.cpp">
@@ -260,6 +263,9 @@
       <Filter>Src\Shared</Filter>
     </ClCompile>
     <ClCompile Include="Src\NormalMapEffect.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\BasicPostProcess.cpp">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1063,6 +1069,21 @@
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\XboxOneSkinnedEffect_VSSkinnedVertexLightingTwoBonesBn.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\PostProcess.fx">
+      <Filter>Src\Shaders</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSCopy.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_VSQuad.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSCopy.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_VSQuad.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
   </ItemGroup>
