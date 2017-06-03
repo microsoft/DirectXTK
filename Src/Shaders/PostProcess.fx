@@ -43,3 +43,43 @@ float4 PSCopy(VSInputTx pin) : SV_Target0
     float4 color = Texture.Sample(Sampler, pin.TexCoord);
     return color;
 }
+
+
+// Pixel shader: monochrome.
+float4 PSMonochrome(VSInputTx pin) : SV_Target0
+{
+    float4 result = Texture.Sample(Sampler, pin.TexCoord);
+    float3 grayscale = float3(0.2125f, 0.7154f, 0.0721f);
+    float3 output = dot(result.rgb, grayscale);
+    return float4(output, result.a);
+}
+
+
+// Pixel shader: down-sample 2x2.
+float4 PSDownScale2x2(VSInputTx pin) : SV_Target0
+{
+    const int NUM_SAMPLES = 4;
+    float4 vColor = 0.0f;
+
+    for( int i=0; i < NUM_SAMPLES; i++ )
+    {
+        vColor += Texture.Sample(Sampler, pin.TexCoord + sampleOffsets[i].xy);
+    }
+    
+    return vColor / NUM_SAMPLES;
+}
+
+
+// Pixel shader: down-sample 4x4.
+float4 PSDownScale4x4(VSInputTx pin) : SV_Target0
+{
+    const int NUM_SAMPLES = 16;
+    float4 vColor = 0.0f;
+
+    for (int i = 0; i < NUM_SAMPLES; i++)
+    {
+        vColor += Texture.Sample(Sampler, pin.TexCoord + sampleOffsets[i].xy);
+    }
+
+    return vColor / NUM_SAMPLES;
+}

@@ -1040,5 +1040,23 @@
     <None Include="Src\Shaders\PostProcess.fx">
       <Filter>Src\Shaders</Filter>
     </None>
+    <None Include="Src\Shaders\Compiled\PostProcess_PSMonochrome.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PostProcess_PSMonochrome.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PostProcess_PSDownScale2x2.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PostProcess_PSDownScale4x4.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PostProcess_PSDownScale2x2.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PostProcess_PSDownScale4x4.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
   </ItemGroup>
 </Project>

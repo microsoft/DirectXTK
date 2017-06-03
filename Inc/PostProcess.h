@@ -33,7 +33,7 @@ namespace DirectX
     public:
         virtual ~IPostProcess() { }
 
-        virtual void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext, _In_ ID3D11ShaderResourceView* src, _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) = 0;
+        virtual void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext, _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) = 0;
     };
 
 
@@ -42,15 +42,16 @@ namespace DirectX
     class BasicPostProcess : public IPostProcess
     {
     public:
-        enum Mode
+        enum Effect
         {
             Copy,
-            // TODO - DownScale_2x2,
-            // TODO - DownScale_4x4,
+            Monochrome,
+            DownScale_2x2,
+            DownScale_4x4,
             // TODO - GaussBlur_5x5,
             // TODO - Bloom,
             // TODO - SampleLuminance,
-            Mode_Max
+            Effect_Max
         };
 
         explicit BasicPostProcess(_In_ ID3D11Device* device);
@@ -63,12 +64,14 @@ namespace DirectX
         virtual ~BasicPostProcess();
 
         // IPostProcess methods.
-        void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext, _In_ ID3D11ShaderResourceView* src, _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) override;
+        void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext, _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) override;
 
         // Mode control
-        void _cdecl Set(Mode mode);
+        void __cdecl Set(Effect fx);
 
         // Properties
+        void __cdecl SetSourceTexture(_In_opt_ ID3D11ShaderResourceView* value);
+
         // TODO - void SetBloomParameters(bool horizontal, float size = 3.f, float brigthness = 2.f);
 
     private:
@@ -81,4 +84,6 @@ namespace DirectX
     // TODO - DualPostProcess (Merge, Add, BrightPassFilter, AdaptLuminance)
 
     // TODO - ToneMapPostProcess (Reinhard, Reinhard_Filmic, ST2084)
+
+    // TODO - ComputePostProcess (FXAA)
 }

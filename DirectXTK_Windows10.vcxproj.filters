@@ -135,6 +135,9 @@
     <ClInclude Include="Src\LoaderHelpers.h">
       <Filter>Src\Shared</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\PostProcess.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Src\Shaders\CompileShaders.cmd">
@@ -938,6 +941,37 @@
     <None Include="Src\Shaders\Compiled\SkinnedEffect_VSSkinnedVertexLightingTwoBonesBn.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
+    <None Include="Src\Shaders\Compiled\PostProcess_PSCopy.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PostProcess_PSMonochrome.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PostProcess_VSQuad.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PostProcess_PSCopy.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PostProcess_PSMonochrome.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PostProcess_VSQuad.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\PostProcess.fx" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSDownScale2x2.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PostProcess_PSDownScale4x4.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PostProcess_PSDownScale2x2.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PostProcess_PSDownScale4x4.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\AlphaTestEffect.cpp">
@@ -1055,6 +1089,9 @@
       <Filter>Src\Shared</Filter>
     </ClCompile>
     <ClCompile Include="Src\NormalMapEffect.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\BasicPostProcess.cpp">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>

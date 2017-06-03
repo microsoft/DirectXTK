@@ -21,6 +21,8 @@
 
 using namespace DirectX;
 
+using Microsoft::WRL::ComPtr;
+
 namespace
 {
     static const int c_MaxSamples = 16;
@@ -42,10 +44,16 @@ namespace
     #include "Shaders/Compiled/XboxOnePostProcess_VSQuad.inc"
 
     #include "Shaders/Compiled/XboxOnePostProcess_PSCopy.inc"
+    #include "Shaders/Compiled/XboxOnePostProcess_PSMonochrome.inc"
+    #include "Shaders/Compiled/XboxOnePostProcess_PSDownScale2x2.inc"
+    #include "Shaders/Compiled/XboxOnePostProcess_PSDownScale4x4.inc"
 #else
     #include "Shaders/Compiled/PostProcess_VSQuad.inc"
 
     #include "Shaders/Compiled/PostProcess_PSCopy.inc"
+    #include "Shaders/Compiled/PostProcess_PSMonochrome.inc"
+    #include "Shaders/Compiled/PostProcess_PSDownScale2x2.inc"
+    #include "Shaders/Compiled/PostProcess_PSDownScale4x4.inc"
 #endif
 }
 
@@ -59,10 +67,13 @@ namespace
 
     const ShaderBytecode pixelShaders[] =
     {
-        { PostProcess_PSCopy,   sizeof(PostProcess_PSCopy) },
+        { PostProcess_PSCopy,       sizeof(PostProcess_PSCopy) },
+        { PostProcess_PSMonochrome, sizeof(PostProcess_PSMonochrome) },
+        { PostProcess_PSDownScale2x2, sizeof(PostProcess_PSDownScale2x2) },
+        { PostProcess_PSDownScale4x4, sizeof(PostProcess_PSDownScale4x4) },
     };
 
-    static_assert(_countof(pixelShaders) == BasicPostProcess::Mode_Max, "array/max mismatch");
+    static_assert(_countof(pixelShaders) == BasicPostProcess::Effect_Max, "array/max mismatch");
 
     // Factory for lazily instantiating shaders.
     class DeviceResources
@@ -115,8 +126,8 @@ namespace
         // Gets or lazily creates the specified pixel shader.
         ID3D11PixelShader* GetPixelShader(int shaderIndex)
         {
-            assert(shaderIndex >= 0 && shaderIndex < BasicPostProcess::Mode_Max);
-            _Analysis_assume_(shaderIndex >= 0 && shaderIndex < BasicPostProcess::Mode_Max);
+            assert(shaderIndex >= 0 && shaderIndex < BasicPostProcess::Effect_Max);
+            _Analysis_assume_(shaderIndex >= 0 && shaderIndex < BasicPostProcess::Effect_Max);
 
             return DemandCreate(mPixelShaders[shaderIndex], mMutex, [&](ID3D11PixelShader** pResult) -> HRESULT
             {
@@ -130,11 +141,11 @@ namespace
         }
 
     protected:
-        Microsoft::WRL::ComPtr<ID3D11Device>        mDevice;
-        Microsoft::WRL::ComPtr<ID3D11SamplerState>  mSampler;
-        Microsoft::WRL::ComPtr<ID3D11VertexShader>  mVertexShader;
-        Microsoft::WRL::ComPtr<ID3D11PixelShader>   mPixelShaders[BasicPostProcess::Mode_Max];
-        std::mutex                                  mMutex;
+        ComPtr<ID3D11Device>        mDevice;
+        ComPtr<ID3D11SamplerState>  mSampler;
+        ComPtr<ID3D11VertexShader>  mVertexShader;
+        ComPtr<ID3D11PixelShader>   mPixelShaders[BasicPostProcess::Effect_Max];
+        std::mutex                  mMutex;
     };
 }
 
@@ -143,13 +154,23 @@ class BasicPostProcess::Impl : public AlignedNew<PostProcessConstants>
 public:
     Impl(_In_ ID3D11Device* device);
 
-    void Process(_In_ ID3D11DeviceContext* deviceContext, _In_ ID3D11ShaderResourceView* src, std::function<void __cdecl()>& setCustomState);
+    void Process(_In_ ID3D11DeviceContext* deviceContext, std::function<void __cdecl()>& setCustomState);
+
+    void NoConstants() { mUseConstants = false; }
+
+    void DownScale2x2();
+    void DownScale4x4();
 
     // Fields.
-    BasicPostProcess::Mode                  mode;
+    BasicPostProcess::Effect                fx;
     PostProcessConstants                    constants;
+    ComPtr<ID3D11ShaderResourceView>        texture;
+    unsigned                                texWidth;
+    unsigned                                texHeight;
 
 private:
+    bool                                    mUseConstants;
+
     ConstantBuffer<PostProcessConstants>    mConstantBuffer;
 
     // Per-device resources.
@@ -167,17 +188,24 @@ SharedResourcePool<ID3D11Device*, DeviceResources> BasicPostProcess::Impl::devic
 BasicPostProcess::Impl::Impl(_In_ ID3D11Device* device)
     : mConstantBuffer(device),
     mDeviceResources(deviceResourcesPool.DemandCreate(device)),
-    mode(BasicPostProcess::Copy),
+    fx(BasicPostProcess::Copy),
+    texWidth(0),
+    texHeight(0),
+    mUseConstants(false),
     constants{}
 {
+    if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
+    {
+        throw std::exception("BasicPostProcess requires Feature Level 10.0 or later");
+    }
 }
 
 
 // Sets our state onto the D3D device.
-void BasicPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, _In_ ID3D11ShaderResourceView* src, std::function<void __cdecl()>& setCustomState)
+void BasicPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, std::function<void __cdecl()>& setCustomState)
 {
     // Set the texture.
-    ID3D11ShaderResourceView* textures[1] = { src };
+    ID3D11ShaderResourceView* textures[1] = { texture.Get() };
     deviceContext->PSSetShaderResources(0, 1, textures);
 
     auto sampler = mDeviceResources->GetSampler();
@@ -185,13 +213,13 @@ void BasicPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, _I
 
     // Set shaders.
     auto vertexShader = mDeviceResources->GetVertexShader();
-    auto pixelShader = mDeviceResources->GetPixelShader(mode);
+    auto pixelShader = mDeviceResources->GetPixelShader(fx);
 
     deviceContext->VSSetShader(vertexShader, nullptr, 0);
     deviceContext->PSSetShader(pixelShader, nullptr, 0);
 
     // Set constants.
-    if (mode > BasicPostProcess::Copy)
+    if (mUseConstants)
     {
 #if defined(_XBOX_ONE) && defined(_TITLE)
         void *grfxMemory;
@@ -225,6 +253,62 @@ void BasicPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, _I
 }
 
 
+void BasicPostProcess::Impl::DownScale2x2()
+{
+    mUseConstants = true;
+
+    if ( !texWidth || !texHeight)
+    {
+        throw std::exception("Call SetSourceTexture before setting post-process effect");
+    }
+
+    float tu = 1.0f / float(texWidth);
+    float tv = 1.0f / float(texHeight);
+
+    // Sample from the 4 surrounding points. Since the center point will be in the exact
+    // center of 4 texels, a 0.5f offset is needed to specify a texel center.
+    auto ptr = reinterpret_cast<XMFLOAT4*>(constants.sampleOffsets);
+    for (int y = 0; y < 2; y++)
+    {
+        for (int x = 0; x < 2; x++)
+        {
+            ptr->x = (float(x) - 0.5f) * tu;
+            ptr->y = (float(y) - 0.5f) * tv;
+            ++ptr;
+        }
+    }
+
+}
+
+
+void BasicPostProcess::Impl::DownScale4x4()
+{
+    mUseConstants = true;
+
+    if (!texWidth || !texHeight)
+    {
+        throw std::exception("Call SetSourceTexture before setting post-process effect");
+    }
+
+    float tu = 1.0f / float(texWidth);
+    float tv = 1.0f / float(texHeight);
+
+    // Sample from the 16 surrounding points. Since the center point will be in the
+    // exact center of 16 texels, a 1.5f offset is needed to specify a texel center.
+    auto ptr = reinterpret_cast<XMFLOAT4*>(constants.sampleOffsets);
+    for (int y = 0; y < 4; y++)
+    {
+        for (int x = 0; x < 4; x++)
+        {
+            ptr->x = (float(x) - 1.5f) * tu;
+            ptr->y = (float(y) - 1.5f) * tv;
+            ++ptr;
+        }
+    }
+
+}
+
+
 // Public constructor.
 BasicPostProcess::BasicPostProcess(_In_ ID3D11Device* device)
   : pImpl(new Impl(device))
@@ -254,14 +338,80 @@ BasicPostProcess::~BasicPostProcess()
 
 
 // IEffect methods.
-void BasicPostProcess::Process(_In_ ID3D11DeviceContext* deviceContext, _In_ ID3D11ShaderResourceView* src, _In_opt_ std::function<void __cdecl()> setCustomState)
+void BasicPostProcess::Process(_In_ ID3D11DeviceContext* deviceContext, _In_opt_ std::function<void __cdecl()> setCustomState)
 {
-    pImpl->Process(deviceContext, src, setCustomState);
+    pImpl->Process(deviceContext, setCustomState);
 }
 
 
 // Properties
-void BasicPostProcess::Set(Mode mode)
+void BasicPostProcess::SetSourceTexture(_In_opt_ ID3D11ShaderResourceView* value)
 {
-    pImpl->mode = mode;
+    pImpl->texture = value;
+
+    if (value)
+    {
+        ComPtr<ID3D11Resource> res;
+        value->GetResource(res.GetAddressOf());
+
+        D3D11_RESOURCE_DIMENSION resType = D3D11_RESOURCE_DIMENSION_UNKNOWN;
+        res->GetType(&resType);
+
+        switch (resType)
+        {
+        case D3D11_RESOURCE_DIMENSION_TEXTURE1D:
+        {
+            ComPtr<ID3D11Texture1D> tex;
+            ThrowIfFailed(res.As(&tex));
+
+            D3D11_TEXTURE1D_DESC desc = {};
+            tex->GetDesc(&desc);
+            pImpl->texWidth = desc.Width;
+            pImpl->texHeight = 1;
+            break;
+        }
+
+        case D3D11_RESOURCE_DIMENSION_TEXTURE2D:
+        {
+            ComPtr<ID3D11Texture2D> tex;
+            ThrowIfFailed(res.As(&tex));
+
+            D3D11_TEXTURE2D_DESC desc = {};
+            tex->GetDesc(&desc);
+            pImpl->texWidth = desc.Width;
+            pImpl->texHeight = desc.Height;
+            break;
+        }
+
+        default:
+            throw std::exception("Unsupported texture type");
+        }
+    }
+    else
+    {
+        pImpl->texWidth = pImpl->texHeight = 0;
+    }
+}
+
+
+void BasicPostProcess::Set(Effect fx)
+{
+    pImpl->fx = fx;
+
+    switch (fx)
+    {
+    case DownScale_2x2:
+        pImpl->DownScale2x2();
+        break;
+
+    case DownScale_4x4:
+        pImpl->DownScale4x4();
+        break;
+
+    default:
+    case Copy:
+    case Monochrome:
+        pImpl->NoConstants();
+        break;
+    }
 }

@@ -176,6 +176,9 @@ call :CompileShaderHLSL%1 DGSLPhong ps mainTxTk
 
 call :CompileShaderSM4%1 PostProcess vs VSQuad
 call :CompileShaderSM4%1 PostProcess ps PSCopy
+call :CompileShaderSM4%1 PostProcess ps PSMonochrome
+call :CompileShaderSM4%1 PostProcess ps PSDownScale2x2
+call :CompileShaderSM4%1 PostProcess ps PSDownScale4x4
 echo.
 
 if %error% == 0 (
