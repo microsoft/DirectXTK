@@ -37,6 +37,7 @@ VSInputTx VSQuad(uint vI : SV_VertexId)
 }
 
 
+//--------------------------------------------------------------------------------------
 // Pixel shader: copy.
 float4 PSCopy(VSInputTx pin) : SV_Target0
 {
@@ -82,4 +83,96 @@ float4 PSDownScale4x4(VSInputTx pin) : SV_Target0
     }
 
     return vColor / NUM_SAMPLES;
+}
+
+
+// Pixel shader: gaussian blur 5x5.
+float4 PSGaussianBlur5x5(VSInputTx pin) : SV_Target0
+{
+    float4 vColor = 0.0f;
+
+    for (int i = 0; i < 13; i++)
+    {
+        vColor += sampleWeights[i] * Texture.Sample(Sampler, pin.TexCoord + sampleOffsets[i].xy);
+    }
+
+    return vColor;
+}
+
+
+// Pixel shader: bloom
+float4 PSBloomExtract(VSInputTx pin) : SV_Target0
+{
+    // Uses sampleWeights[0] as 'bloom threshold'
+    float4 c = Texture.Sample(Sampler, pin.TexCoord);
+    return saturate((c - sampleWeights[0]) / (1 - sampleWeights[0]));
+}
+
+float4 PSBloomBlur(VSInputTx pin) : SV_Target0
+{
+    float4 vColor = 0.0f;
+
+    // Perform a one-directional gaussian blur
+    for (int i = 0; i < 15; i++)
+    {
+        vColor += sampleWeights[i] * Texture.Sample(Sampler, pin.TexCoord + sampleOffsets[i].xy);
+    }
+
+    return vColor;
+}
+
+
+// Pixel shader: sample luminance (initial)
+float4 PSSampleLuminanceInitial(VSInputTx pin) : SV_Target0
+{
+    const int NUM_SAMPLES = 9;
+    float fSum = 0.0f;
+
+    for( int i = 0; i < NUM_SAMPLES; i++ )
+    {
+        // Compute the sum of log(luminance) throughout the sample points
+        float3 vColor = Texture.Sample(Sampler, pin.TexCoord + sampleOffsets[i].xy).rgb;
+        float3 grayscale = float3(0.2125f, 0.7154f, 0.0721f);
+        float  fLuminance = dot(vColor, grayscale);
+        fSum += log(fLuminance + 0.0001f);
+    }
+    
+    // Divide the sum to complete the average
+    fSum /= NUM_SAMPLES;
+
+    return float4(fSum, fSum, fSum, 1.0f);
+}
+
+
+// Pixel shader: sample luminance (final)
+float4 PSSampleLuminanceFinal(VSInputTx pin) : SV_Target0
+{
+    const int NUM_SAMPLES = 16;
+    float fSum = 0.0f;
+
+    for (int i = 0; i < NUM_SAMPLES; i++)
+    {
+        // Compute the sum of luminance throughout the sample points
+        fSum += Texture.Sample(Sampler, pin.TexCoord + sampleOffsets[i].xy).x;
+    }
+
+    // Divide the sum to complete the average
+    fSum /= NUM_SAMPLES;
+
+    // Perform an exp() to complete the average luminance calculation
+    fSum = exp(fSum);
+
+    return float4(fSum, fSum, fSum, 1.0f);
+}
+
+
+//--------------------------------------------------------------------------------------
+Texture2D<float4> Texture2 : register(t1);
+
+// Pixel shader: merge
+float4 PSMerge(VSInputTx pin) : SV_Target0
+{
+    float4 vColor = sampleWeights[0] * Texture.Sample(Sampler, pin.TexCoord);
+    vColor += sampleWeights[1] * Texture2.Sample(Sampler, pin.TexCoord);
+    return vColor;
 }

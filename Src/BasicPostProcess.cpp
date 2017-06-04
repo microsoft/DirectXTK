@@ -13,6 +13,7 @@
 
 #include "pch.h"
 #include "PostProcess.h"
+
 #include "AlignedNew.h"
 #include "ConstantBuffer.h"
 #include "DemandCreate.h"
@@ -35,6 +36,12 @@ namespace
     };
 
     static_assert((sizeof(PostProcessConstants) % 16) == 0, "CB size not padded correctly");
+
+    // 2-parameter Gaussian distribution given standard deviation (rho)
+    inline float GaussianDistribution(float x, float y, float rho)
+    {
+        return expf(-(x * x + y * y) / (2 * rho * rho)) / sqrtf(2 * XM_PI * rho * rho);
+    }
 }
 
 // Include the precompiled shader code.
@@ -47,6 +54,11 @@ namespace
     #include "Shaders/Compiled/XboxOnePostProcess_PSMonochrome.inc"
     #include "Shaders/Compiled/XboxOnePostProcess_PSDownScale2x2.inc"
     #include "Shaders/Compiled/XboxOnePostProcess_PSDownScale4x4.inc"
+    #include "Shaders/Compiled/XboxOnePostProcess_PSGaussianBlur5x5.inc"
+    #include "Shaders/Compiled/XboxOnePostProcess_PSBloomExtract.inc"
+    #include "Shaders/Compiled/XboxOnePostProcess_PSBloomBlur.inc"
+    #include "Shaders/Compiled/XboxOnePostProcess_PSSampleLuminanceInitial.inc"
+    #include "Shaders/Compiled/XboxOnePostProcess_PSSampleLuminanceFinal.inc"
 #else
     #include "Shaders/Compiled/PostProcess_VSQuad.inc"
 
@@ -54,6 +66,11 @@ namespace
     #include "Shaders/Compiled/PostProcess_PSMonochrome.inc"
     #include "Shaders/Compiled/PostProcess_PSDownScale2x2.inc"
     #include "Shaders/Compiled/PostProcess_PSDownScale4x4.inc"
+    #include "Shaders/Compiled/PostProcess_PSGaussianBlur5x5.inc"
+    #include "Shaders/Compiled/PostProcess_PSBloomExtract.inc"
+    #include "Shaders/Compiled/PostProcess_PSBloomBlur.inc"
+    #include "Shaders/Compiled/PostProcess_PSSampleLuminanceInitial.inc"
+    #include "Shaders/Compiled/PostProcess_PSSampleLuminanceFinal.inc"
 #endif
 }
 
@@ -67,10 +84,15 @@ namespace
 
     const ShaderBytecode pixelShaders[] =
     {
-        { PostProcess_PSCopy,       sizeof(PostProcess_PSCopy) },
-        { PostProcess_PSMonochrome, sizeof(PostProcess_PSMonochrome) },
-        { PostProcess_PSDownScale2x2, sizeof(PostProcess_PSDownScale2x2) },
-        { PostProcess_PSDownScale4x4, sizeof(PostProcess_PSDownScale4x4) },
+        { PostProcess_PSCopy,                   sizeof(PostProcess_PSCopy) },
+        { PostProcess_PSMonochrome,             sizeof(PostProcess_PSMonochrome) },
+        { PostProcess_PSDownScale2x2,           sizeof(PostProcess_PSDownScale2x2) },
+        { PostProcess_PSDownScale4x4,           sizeof(PostProcess_PSDownScale4x4) },
+        { PostProcess_PSGaussianBlur5x5,        sizeof(PostProcess_PSGaussianBlur5x5) },
+        { PostProcess_PSBloomExtract,           sizeof(PostProcess_PSBloomExtract) },
+        { PostProcess_PSBloomBlur,              sizeof(PostProcess_PSBloomBlur) },
+        { PostProcess_PSSampleLuminanceInitial, sizeof(PostProcess_PSSampleLuminanceInitial) },
+        { PostProcess_PSSampleLuminanceFinal,   sizeof(PostProcess_PSSampleLuminanceFinal) },
     };
 
     static_assert(_countof(pixelShaders) == BasicPostProcess::Effect_Max, "array/max mismatch");
@@ -156,10 +178,8 @@ public:
 
     void Process(_In_ ID3D11DeviceContext* deviceContext, std::function<void __cdecl()>& setCustomState);
 
-    void NoConstants() { mUseConstants = false; }
-
-    void DownScale2x2();
-    void DownScale4x4();
+    void SetConstants(bool value = true) { mUseConstants = value; mDirtyFlag = true; }
+    void SetDirtyFlag() { mDirtyFlag = true; }
 
     // Fields.
     BasicPostProcess::Effect                fx;
@@ -167,9 +187,21 @@ public:
     ComPtr<ID3D11ShaderResourceView>        texture;
     unsigned                                texWidth;
     unsigned                                texHeight;
+    float                                   guassianMultiplier;
+    float                                   bloomSize;
+    float                                   bloomBrightness;
+    float                                   bloomThreshold;
+    bool                                    bloomHorizontal;
 
 private:
     bool                                    mUseConstants;
+    bool                                    mDirtyFlag;
+
+    void                                    DownScale2x2();
+    void                                    DownScale3x3();
+    void                                    DownScale4x4();
+    void                                    GaussianBlur5x5(float multiplier);
+    void                                    Bloom(bool horizontal, float size, float brightness);
 
     ConstantBuffer<PostProcessConstants>    mConstantBuffer;
 
@@ -191,6 +223,11 @@ BasicPostProcess::Impl::Impl(_In_ ID3D11Device* device)
     fx(BasicPostProcess::Copy),
     texWidth(0),
     texHeight(0),
+    guassianMultiplier(1.f),
+    bloomSize(1.f),
+    bloomBrightness(1.f),
+    bloomThreshold(0.25f),
+    bloomHorizontal(true),
     mUseConstants(false),
     constants{}
 {
@@ -221,6 +258,42 @@ void BasicPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, st
     // Set constants.
     if (mUseConstants)
     {
+        if (mDirtyFlag)
+        {
+            mDirtyFlag = false;
+
+            switch (fx)
+            {
+            case DownScale_2x2:
+                DownScale2x2();
+                break;
+
+            case DownScale_4x4:
+                DownScale4x4();
+                break;
+
+            case GaussianBlur_5x5:
+                GaussianBlur5x5(guassianMultiplier);
+                break;
+
+            case BloomExtract:
+                constants.sampleWeights[0] = XMVectorReplicate(bloomThreshold);
+                break;
+
+            case BloomBlur:
+                Bloom(bloomHorizontal, bloomSize, bloomBrightness);
+                break;
+
+            case SampleLuminanceInitial:
+                DownScale3x3();
+                break;
+
+            case SampleLuminanceFinal:
+                DownScale4x4();
+                break;
+            }
+        }
+
 #if defined(_XBOX_ONE) && defined(_TITLE)
         void *grfxMemory;
         mConstantBuffer.SetData(deviceContext, constants, &grfxMemory);
@@ -268,12 +341,40 @@ void BasicPostProcess::Impl::DownScale2x2()
     // Sample from the 4 surrounding points. Since the center point will be in the exact
     // center of 4 texels, a 0.5f offset is needed to specify a texel center.
     auto ptr = reinterpret_cast<XMFLOAT4*>(constants.sampleOffsets);
-    for (int y = 0; y < 2; y++)
+    for (int y = 0; y < 2; ++y)
     {
-        for (int x = 0; x < 2; x++)
+        for (int x = 0; x < 2; ++x)
         {
             ptr->x = (float(x) - 0.5f) * tu;
             ptr->y = (float(y) - 0.5f) * tv;
+            ++ptr;
+        }
+    }
+
+}
+
+
+void BasicPostProcess::Impl::DownScale3x3()
+{
+    mUseConstants = true;
+
+    if (!texWidth || !texHeight)
+    {
+        throw std::exception("Call SetSourceTexture before setting post-process effect");
+    }
+
+    float tu = 1.0f / float(texWidth);
+    float tv = 1.0f / float(texHeight);
+
+    // Sample from the 9 surrounding points. Since the center point will be in the exact
+    // center of 4 texels, a 1.0f offset is needed to specify a texel center.
+    auto ptr = reinterpret_cast<XMFLOAT4*>(constants.sampleOffsets);
+    for (int x = 0; x < 3; ++x)
+    {
+        for (int y = 0; y < 3; ++y)
+        {
+            ptr->x = (float(x) - 1.0f) * tu;
+            ptr->y = (float(y)- 1.0f) * tv;
             ++ptr;
         }
     }
@@ -296,9 +397,9 @@ void BasicPostProcess::Impl::DownScale4x4()
     // Sample from the 16 surrounding points. Since the center point will be in the
     // exact center of 16 texels, a 1.5f offset is needed to specify a texel center.
     auto ptr = reinterpret_cast<XMFLOAT4*>(constants.sampleOffsets);
-    for (int y = 0; y < 4; y++)
+    for (int y = 0; y < 4; ++y)
     {
-        for (int x = 0; x < 4; x++)
+        for (int x = 0; x < 4; ++x)
         {
             ptr->x = (float(x) - 1.5f) * tu;
             ptr->y = (float(y) - 1.5f) * tv;
@@ -306,6 +407,106 @@ void BasicPostProcess::Impl::DownScale4x4()
         }
     }
 
+}
+
+
+void BasicPostProcess::Impl::GaussianBlur5x5(float multiplier)
+{
+    mUseConstants = true;
+
+    if (!texWidth || !texHeight)
+    {
+        throw std::exception("Call SetSourceTexture before setting post-process effect");
+    }
+
+    float tu = 1.0f / float(texWidth);
+    float tv = 1.0f / float(texHeight);
+
+    float totalWeight = 0.0f;
+    size_t index = 0;
+    auto offsets = reinterpret_cast<XMFLOAT4*>(constants.sampleOffsets);
+    auto weights = constants.sampleWeights;
+    for (int x = -2; x <= 2; ++x)
+    {
+        for (int y = -2; y <= 2; ++y)
+        {
+            // Exclude pixels with a block distance greater than 2. This will
+            // create a kernel which approximates a 5x5 kernel using only 13
+            // sample points instead of 25; this is necessary since 2.0 shaders
+            // only support 16 texture grabs.
+            if (fabs(float(x)) + fabs(float(y)) > 2.0f)
+                continue;
+
+            // Get the unscaled Gaussian intensity for this offset
+            offsets[index].x = float(x) * tu;
+            offsets[index].y = float(y) * tv;
+            offsets[index].z = 0.0f;
+            offsets[index].w = 0.0f;
+
+            float g = GaussianDistribution(float(x), float(y), 1.0f);
+            weights[index] = XMVectorReplicate(g);
+
+            totalWeight += XMVectorGetX(weights[index]);
+
+            ++index;
+        }
+    }
+
+    // Divide the current weight by the total weight of all the samples; Gaussian
+    // blur kernels add to 1.0f to ensure that the intensity of the image isn't
+    // changed when the blur occurs. An optional multiplier variable is used to
+    // add or remove image intensity during the blur.
+    for (size_t i = 0; i < index; ++i)
+    {
+        weights[i] /= totalWeight;
+        weights[i] *= multiplier;
+    }
+}
+
+
+void  BasicPostProcess::Impl::Bloom(bool horizontal, float size, float brightness)
+{
+    mUseConstants = true;
+
+    if (!texWidth || !texHeight)
+    {
+        throw std::exception("Call SetSourceTexture before setting post-process effect");
+    }
+
+    float tu = 0.f;
+    float tv = 0.f;
+    if (horizontal)
+    {
+        tu = 1.f / float(texWidth);
+    }
+    else
+    {
+        tv = 1.f / float(texHeight);
+    }
+
+    auto weights = reinterpret_cast<XMFLOAT4*>(constants.sampleWeights);
+    auto offsets = reinterpret_cast<XMFLOAT4*>(constants.sampleOffsets);
+
+    // Fill the center texel
+    float weight = brightness * GaussianDistribution(0, 0, size);
+    weights[0] = XMFLOAT4(weight, weight, weight, 1.0f);
+    offsets[0].x = offsets[0].y = offsets[0].z = offsets[0].w = 0.f;
+
+    // Fill the first half
+    for (int i = 1; i < 8; ++i)
+    {
+        // Get the Gaussian intensity for this offset
+        weight = brightness * GaussianDistribution(float(i), 0, size);
+        weights[i] = XMFLOAT4(weight, weight, weight, 1.0f);
+        offsets[i] = XMFLOAT4(float(i) * tu, float(i) * tv, 0.f, 0.f);
+    }
+
+    // Mirror to the second half
+    for (int i = 8; i < 15; i++)
+    {
+        weights[i] = weights[i - 7];
+        offsets[i] = XMFLOAT4(-offsets[i - 7].x, -offsets[i - 7].y, 0.f, 0.f);
+    }
 }
 
 
@@ -400,18 +601,36 @@ void BasicPostProcess::Set(Effect fx)
 
     switch (fx)
     {
-    case DownScale_2x2:
-        pImpl->DownScale2x2();
-        break;
-
-    case DownScale_4x4:
-        pImpl->DownScale4x4();
+    case Copy:
+    case Monochrome:
+        // These shaders don't use the constant buffer
+        pImpl->SetConstants(false);
         break;
 
     default:
-    case Copy:
-    case Monochrome:
-        pImpl->NoConstants();
+        pImpl->SetConstants(true);
         break;
     }
+}
+
+
+void BasicPostProcess::SetGaussianParameter(float multiplier)
+{
+    pImpl->guassianMultiplier = multiplier;
+    pImpl->SetDirtyFlag();
+}
+
+
+void BasicPostProcess::SetBloomExtractParameter(float threshold)
+{
+    pImpl->bloomThreshold = threshold;
+    pImpl->SetDirtyFlag();
+}
+
+void BasicPostProcess::SetBloomBlurParameters(bool horizontal, float size, float brightness)
+{
+    pImpl->bloomSize = size;
+    pImpl->bloomBrightness = brightness;
+    pImpl->bloomHorizontal = horizontal;
+    pImpl->SetDirtyFlag();
 }

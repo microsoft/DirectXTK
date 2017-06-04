@@ -48,9 +48,11 @@ namespace DirectX
             Monochrome,
             DownScale_2x2,
             DownScale_4x4,
-            // TODO - GaussBlur_5x5,
-            // TODO - Bloom,
-            // TODO - SampleLuminance,
+            GaussianBlur_5x5,
+            BloomExtract,
+            BloomBlur,
+            SampleLuminanceInitial,
+            SampleLuminanceFinal,
             Effect_Max
         };
 
@@ -72,7 +74,14 @@ namespace DirectX
         // Properties
         void __cdecl SetSourceTexture(_In_opt_ ID3D11ShaderResourceView* value);
 
-        // TODO - void SetBloomParameters(bool horizontal, float size = 3.f, float brigthness = 2.f);
+        // Sets multiplier for GaussianBlur_5x5
+        void __cdecl SetGaussianParameter(float multiplier);
+
+        // Sets parameters for BloomExtract
+        void __cdecl SetBloomExtractParameter(float threshold);
+
+        // Sets parameters for BloomBlur
+        void __cdecl SetBloomBlurParameters(bool horizontal, float size, float brightness);
 
     private:
         // Private implementation.
@@ -81,7 +90,7 @@ namespace DirectX
         std::unique_ptr<Impl> pImpl;
     };
 
-    // TODO - DualPostProcess (Merge, Add, BrightPassFilter, AdaptLuminance)
+    // TODO - DualPostProcess (Merge, BloomCombine, BrightPassFilter, AdaptLuminance)
 
     // TODO - ToneMapPostProcess (Reinhard, Reinhard_Filmic, ST2084)
 
