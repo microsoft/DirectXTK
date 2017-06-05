@@ -61,6 +61,7 @@
     <ClCompile Include="Src\DDSTextureLoader.cpp" />
     <ClCompile Include="Src\DGSLEffect.cpp" />
     <ClCompile Include="Src\DGSLEffectFactory.cpp" />
+    <ClCompile Include="Src\DualPostProcess.cpp" />
     <ClCompile Include="Src\DualTextureEffect.cpp" />
     <ClCompile Include="Src\BinaryReader.cpp" />
     <ClCompile Include="Src\EffectCommon.cpp" />
@@ -301,6 +302,8 @@
     <None Include="Src\Shaders\Compiled\NormalMapEffect_VSNormalPixelLightingTxVcBn.pdb" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSBloomBlur.inc" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSBloomBlur.pdb" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSBloomCombine.inc" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSBloomCombine.pdb" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSBloomExtract.inc" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSBloomExtract.pdb" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSCopy.inc" />
@@ -319,6 +322,8 @@
     <None Include="Src\Shaders\Compiled\PostProcess_PSSampleLuminanceFinal.pdb" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSSampleLuminanceInitial.inc" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSSampleLuminanceInitial.pdb" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSSepia.inc" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSSepia.pdb" />
     <None Include="Src\Shaders\Compiled\PostProcess_VSQuad.inc" />
     <None Include="Src\Shaders\Compiled\PostProcess_VSQuad.pdb" />
     <None Include="Src\Shaders\Compiled\SkinnedEffect_PSSkinnedPixelLighting.inc" />

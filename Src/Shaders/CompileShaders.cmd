@@ -177,6 +177,7 @@ call :CompileShaderHLSL%1 DGSLPhong ps mainTxTk
 call :CompileShaderSM4%1 PostProcess vs VSQuad
 call :CompileShaderSM4%1 PostProcess ps PSCopy
 call :CompileShaderSM4%1 PostProcess ps PSMonochrome
+call :CompileShaderSM4%1 PostProcess ps PSSepia
 call :CompileShaderSM4%1 PostProcess ps PSDownScale2x2
 call :CompileShaderSM4%1 PostProcess ps PSDownScale4x4
 call :CompileShaderSM4%1 PostProcess ps PSGaussianBlur5x5
@@ -185,6 +186,7 @@ call :CompileShaderSM4%1 PostProcess ps PSBloomBlur
 call :CompileShaderSM4%1 PostProcess ps PSSampleLuminanceInitial
 call :CompileShaderSM4%1 PostProcess ps PSSampleLuminanceFinal
 call :CompileShaderSM4%1 PostProcess ps PSMerge
+call :CompileShaderSM4%1 PostProcess ps PSBloomCombine
 
 echo.
 

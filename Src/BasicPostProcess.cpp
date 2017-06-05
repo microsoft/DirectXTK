@@ -52,6 +52,7 @@ namespace
 
     #include "Shaders/Compiled/XboxOnePostProcess_PSCopy.inc"
     #include "Shaders/Compiled/XboxOnePostProcess_PSMonochrome.inc"
+    #include "Shaders/Compiled/XboxOnePostProcess_PSSepia.inc"
     #include "Shaders/Compiled/XboxOnePostProcess_PSDownScale2x2.inc"
     #include "Shaders/Compiled/XboxOnePostProcess_PSDownScale4x4.inc"
     #include "Shaders/Compiled/XboxOnePostProcess_PSGaussianBlur5x5.inc"
@@ -64,6 +65,7 @@ namespace
 
     #include "Shaders/Compiled/PostProcess_PSCopy.inc"
     #include "Shaders/Compiled/PostProcess_PSMonochrome.inc"
+    #include "Shaders/Compiled/PostProcess_PSSepia.inc"
     #include "Shaders/Compiled/PostProcess_PSDownScale2x2.inc"
     #include "Shaders/Compiled/PostProcess_PSDownScale4x4.inc"
     #include "Shaders/Compiled/PostProcess_PSGaussianBlur5x5.inc"
@@ -86,6 +88,7 @@ namespace
     {
         { PostProcess_PSCopy,                   sizeof(PostProcess_PSCopy) },
         { PostProcess_PSMonochrome,             sizeof(PostProcess_PSMonochrome) },
+        { PostProcess_PSSepia,                  sizeof(PostProcess_PSSepia) },
         { PostProcess_PSDownScale2x2,           sizeof(PostProcess_PSDownScale2x2) },
         { PostProcess_PSDownScale4x4,           sizeof(PostProcess_PSDownScale4x4) },
         { PostProcess_PSGaussianBlur5x5,        sizeof(PostProcess_PSGaussianBlur5x5) },
@@ -603,6 +606,7 @@ void BasicPostProcess::Set(Effect fx)
     {
     case Copy:
     case Monochrome:
+    case Sepia:
         // These shaders don't use the constant buffer
         pImpl->SetConstants(false);
         break;
@@ -626,6 +630,7 @@ void BasicPostProcess::SetBloomExtractParameter(float threshold)
     pImpl->bloomThreshold = threshold;
     pImpl->SetDirtyFlag();
 }
+
 
 void BasicPostProcess::SetBloomBlurParameters(bool horizontal, float size, float brightness)
 {

@@ -224,6 +224,9 @@
     <ClCompile Include="Src\BasicPostProcess.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="Src\DualPostProcess.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Src\Shaders\CompileShaders.cmd">
@@ -1092,6 +1095,18 @@
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\PostProcess_PSBloomExtract.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PostProcess_PSSepia.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PostProcess_PSSepia.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PostProcess_PSBloomCombine.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PostProcess_PSBloomCombine.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
   </ItemGroup>
