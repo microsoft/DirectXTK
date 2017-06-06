@@ -81,9 +81,9 @@ class GeometricPrimitive::Impl
 public:
     void Initialize(_In_ ID3D11DeviceContext* deviceContext, const VertexCollection& vertices, const IndexCollection& indices);
 
-    void XM_CALLCONV Draw(FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection, FXMVECTOR color, _In_opt_ ID3D11ShaderResourceView* texture, bool wireframe, _In_opt_ std::function<void()> setCustomState) const;
+    void XM_CALLCONV Draw(FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection, FXMVECTOR color, _In_opt_ ID3D11ShaderResourceView* texture, bool wireframe, std::function<void()>& setCustomState) const;
 
-    void Draw(_In_ IEffect* effect, _In_ ID3D11InputLayout* inputLayout, bool alpha, bool wireframe, _In_opt_ std::function<void()> setCustomState) const;
+    void Draw(_In_ IEffect* effect, _In_ ID3D11InputLayout* inputLayout, bool alpha, bool wireframe, std::function<void()>& setCustomState) const;
 
     void CreateInputLayout(_In_ IEffect* effect, _Outptr_ ID3D11InputLayout** inputLayout) const;
 
@@ -209,7 +209,7 @@ void XM_CALLCONV GeometricPrimitive::Impl::Draw(
     FXMVECTOR color,
     ID3D11ShaderResourceView* texture,
     bool wireframe,
-    std::function<void()> setCustomState) const
+    std::function<void()>& setCustomState) const
 {
     assert(mResources != 0);
     auto effect = mResources->effect.get();
@@ -247,7 +247,7 @@ void GeometricPrimitive::Impl::Draw(
     ID3D11InputLayout* inputLayout,
     bool alpha,
     bool wireframe,
-    std::function<void()> setCustomState) const
+    std::function<void()>& setCustomState) const
 {
     assert(mResources != 0);
     auto deviceContext = mResources->deviceContext.Get();

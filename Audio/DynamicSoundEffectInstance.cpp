@@ -26,7 +26,7 @@ class DynamicSoundEffectInstance::Impl : public IVoiceNotify
 {
 public:
     Impl( _In_ AudioEngine* engine,
-          _In_ DynamicSoundEffectInstance* object, _In_opt_ std::function<void(DynamicSoundEffectInstance*)> bufferNeeded,
+          _In_ DynamicSoundEffectInstance* object, std::function<void(DynamicSoundEffectInstance*)>& bufferNeeded,
           int sampleRate, int channels, int sampleBits, SOUND_EFFECT_INSTANCE_FLAGS flags ) :
         mBase(),
         mBufferNeeded( nullptr ),
