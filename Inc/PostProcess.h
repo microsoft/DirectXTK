@@ -70,7 +70,7 @@ namespace DirectX
         void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext, _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) override;
 
         // Mode control
-        void __cdecl Set(Effect fx);
+        void __cdecl SetEffect(Effect fx);
 
         // Properties
         void __cdecl SetSourceTexture(_In_opt_ ID3D11ShaderResourceView* value);
@@ -101,8 +101,8 @@ namespace DirectX
         {
             Merge,
             BloomCombine,
-            // TODO - BrightPassFilter
-            // TODO - AdaptLuminance
+            BrightPassFilter,
+            AdaptLuminance,
             Effect_Max
         };
 
@@ -119,7 +119,7 @@ namespace DirectX
         void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext, _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) override;
 
         // Mode control
-        void __cdecl Set(Effect fx);
+        void __cdecl SetEffect(Effect fx);
 
         // Properties
         void __cdecl SetSourceTexture(_In_opt_ ID3D11ShaderResourceView* value);
@@ -131,6 +131,12 @@ namespace DirectX
         // Sets parameters for BloomCombine
         void __cdecl SetBloomCombineParameters(float bloom, float base, float bloomSaturation, float baseSaturation);
 
+        // Sets parameters for BrightPassFilter
+        void __cdecl SetBrightPassParameters(float threshold, float offset, float middleGray);
+
+        // Sets parameter for AdaptLuminance
+        void __cdecl SetElapsedTime(float frames);
+
     private:
         // Private implementation.
         class Impl;
@@ -138,7 +144,48 @@ namespace DirectX
         std::unique_ptr<Impl> pImpl;
     };
 
-    // TODO - ToneMapPostProcess (Reinhard, Reinhard_Filmic, ST2084)
 
-    // TODO - ComputePostProcess (FXAA)
+    //----------------------------------------------------------------------------------
+    // Tone-map post-process
+    class ToneMapPostProcess : public IPostProcess
+    {
+    public:
+        enum Effect
+        {
+            Saturate,
+            Reinhard,
+            Filmic,
+            HDR10,
+            HDR10_Saturate,
+            HDR10_Reinhard,
+            HDR10_Filmic,
+            Effect_Max
+        };
+
+        explicit ToneMapPostProcess(_In_ ID3D11Device* device);
+        ToneMapPostProcess(ToneMapPostProcess&& moveFrom);
+        ToneMapPostProcess& operator= (ToneMapPostProcess&& moveFrom);
+
+        ToneMapPostProcess(ToneMapPostProcess const&) = delete;
+        ToneMapPostProcess& operator= (ToneMapPostProcess const&) = delete;
+
+        virtual ~ToneMapPostProcess();
+
+        // IPostProcess methods.
+        void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext, _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) override;
+
+        // Mode control
+        void __cdecl SetEffect(Effect fx);
+
+        // Properties
+        void __cdecl SetHDRSourceTexture(_In_opt_ ID3D11ShaderResourceView* value);
+
+        void SetHDR10Parameters(float nitsForPaperWhite);
+
+    private:
+        // Private implementation.
+        class Impl;
+
+        std::unique_ptr<Impl> pImpl;
+    };
 }

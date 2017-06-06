@@ -223,3 +223,38 @@ float4 PSBloomCombine(VSInputTx pin) : SV_Target0
     // Combine the two images.
     return base + bloom;
 }
+
+
+// Pixel shader: bright-pass filter
+float4 PSBrightPassFilter(VSInputTx pin) : SV_Target0
+{
+    // Uses sampleWeights[0].x as middleGray, sampleWeights[0].y as threshold, sampleWeights[0].z as offset
+    float4 color = Texture.Sample(Sampler, pin.TexCoord);
+    float adapted = Texture2.Sample(Sampler, float2(0.5f, 0.5f)).r;
+
+    // Determine what the pixel's value will be after tone-mapping occurs
+    color.rgb *= sampleWeights[0].x / (adapted + 0.001f);
+
+    // Subtract out dark pixels
+    color.rgb -= sampleWeights[0].y;
+
+    // Clamp to 0
+    color = max(color, 0.0f);
+
+    // Map the resulting value into the 0 to 1 range. Higher values for offset will isolate lights from illuminated scene objects.
+    color.rgb /= (sampleWeights[0].z + color.rgb);
+
+    return color;
+}
+
+
+// Pixel shader: adapter luminance
+float4 PSAdaptLuminance(VSInputTx pin) : SV_Target0
+{
+    // Uses sampleWeights[0].x as elapsed frames
+    float adapted = Texture.Sample(Sampler, float2(0.5f, 0.5f)).r;
+    float current = Texture2.Sample(Sampler, float2(0.5f, 0.5f)).r;
+
+    float newAdapted = adapted + (current - adapted) * (1 - pow(0.98f, sampleWeights[0].x));
+    return float4(newAdapted, newAdapted, newAdapted, 1.0f);
+}

@@ -187,7 +187,17 @@ call :CompileShaderSM4%1 PostProcess ps PSSampleLuminanceInitial
 call :CompileShaderSM4%1 PostProcess ps PSSampleLuminanceFinal
 call :CompileShaderSM4%1 PostProcess ps PSMerge
 call :CompileShaderSM4%1 PostProcess ps PSBloomCombine
+call :CompileShaderSM4%1 PostProcess ps PSBrightPassFilter
+call :CompileShaderSM4%1 PostProcess ps PSAdaptLuminance
 
+call :CompileShaderSM4%1 ToneMap vs VSQuad
+call :CompileShaderSM4%1 ToneMap ps PSSaturate
+call :CompileShaderSM4%1 ToneMap ps PSReinhard
+call :CompileShaderSM4%1 ToneMap ps PSFilmic
+call :CompileShaderSM4%1 ToneMap ps PSHDR10
+call :CompileShaderSM4%1 ToneMap ps PSHDR10_Saturate
+call :CompileShaderSM4%1 ToneMap ps PSHDR10_Reinhard
+call :CompileShaderSM4%1 ToneMap ps PSHDR10_Filmic
 echo.
 
 if %error% == 0 (

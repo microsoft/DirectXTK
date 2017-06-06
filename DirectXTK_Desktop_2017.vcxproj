@@ -90,6 +90,7 @@
     <ClCompile Include="Src\SpriteBatch.cpp" />
     <ClCompile Include="Src\PrimitiveBatch.cpp" />
     <ClCompile Include="Src\SpriteFont.cpp" />
+    <ClCompile Include="Src\ToneMapPostProcess.cpp" />
     <ClCompile Include="Src\VertexTypes.cpp" />
     <ClCompile Include="Src\WICTextureLoader.cpp" />
   </ItemGroup>
@@ -300,12 +301,16 @@
     <None Include="Src\Shaders\Compiled\NormalMapEffect_VSNormalPixelLightingTxVc.pdb" />
     <None Include="Src\Shaders\Compiled\NormalMapEffect_VSNormalPixelLightingTxVcBn.inc" />
     <None Include="Src\Shaders\Compiled\NormalMapEffect_VSNormalPixelLightingTxVcBn.pdb" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSAdaptLuminance.inc" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSAdaptLuminance.pdb" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSBloomBlur.inc" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSBloomBlur.pdb" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSBloomCombine.inc" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSBloomCombine.pdb" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSBloomExtract.inc" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSBloomExtract.pdb" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSBrightPassFilter.inc" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSBrightPassFilter.pdb" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSCopy.inc" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSCopy.pdb" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSDownScale2x2.inc" />
@@ -372,6 +377,22 @@
     <None Include="Src\Shaders\Compiled\SpriteEffect_SpritePixelShader.pdb" />
     <None Include="Src\Shaders\Compiled\SpriteEffect_SpriteVertexShader.inc" />
     <None Include="Src\Shaders\Compiled\SpriteEffect_SpriteVertexShader.pdb" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSFilmic.inc" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSFilmic.pdb" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSHDR10.inc" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSHDR10.pdb" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSHDR10_Filmic.inc" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSHDR10_Filmic.pdb" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSHDR10_Reinhard.inc" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSHDR10_Reinhard.pdb" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSHDR10_Saturate.inc" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSHDR10_Saturate.pdb" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSReinhard.inc" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSReinhard.pdb" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSSaturate.inc" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSSaturate.pdb" />
+    <None Include="Src\Shaders\Compiled\ToneMap_VSQuad.inc" />
+    <None Include="Src\Shaders\Compiled\ToneMap_VSQuad.pdb" />
     <None Include="Src\Shaders\CompileShaders.cmd" />
     <None Include="Src\Shaders\Lighting.fxh" />
     <None Include="Src\Shaders\SpriteEffect.fx" />
@@ -416,6 +437,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Src\Shaders\PostProcess.fx">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Src\Shaders\ToneMap.fx">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

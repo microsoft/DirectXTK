@@ -26,7 +26,10 @@ using Microsoft::WRL::ComPtr;
 
 namespace
 {
-    static const int c_MaxSamples = 16;
+    const int c_MaxSamples = 16;
+
+    const int Dirty_ConstantBuffer  = 0x01;
+    const int Dirty_Parameters      = 0x02;
 
     // Constant buffer layout. Must match the shader!
     struct PostProcessConstants
@@ -46,11 +49,15 @@ namespace
 
     #include "Shaders/Compiled/XboxOnePostProcess_PSMerge.inc"
     #include "Shaders/Compiled/XboxOnePostProcess_PSBloomCombine.inc"
+    #include "Shaders/Compiled/XboxOnePostProcess_PSBrightPassFilter.inc"
+    #include "Shaders/Compiled/XboxOnePostProcess_PSAdaptLuminance.inc"
 #else
     #include "Shaders/Compiled/PostProcess_VSQuad.inc"
 
     #include "Shaders/Compiled/PostProcess_PSMerge.inc"
     #include "Shaders/Compiled/PostProcess_PSBloomCombine.inc"
+    #include "Shaders/Compiled/PostProcess_PSBrightPassFilter.inc"
+    #include "Shaders/Compiled/PostProcess_PSAdaptLuminance.inc"
 #endif
 }
 
@@ -64,8 +71,10 @@ namespace
 
     const ShaderBytecode pixelShaders[] =
     {
-        { PostProcess_PSMerge,          sizeof(PostProcess_PSMerge) },
-        { PostProcess_PSBloomCombine,   sizeof(PostProcess_PSBloomCombine) },
+        { PostProcess_PSMerge,              sizeof(PostProcess_PSMerge) },
+        { PostProcess_PSBloomCombine,       sizeof(PostProcess_PSBloomCombine) },
+        { PostProcess_PSBrightPassFilter,   sizeof(PostProcess_PSBrightPassFilter) },
+        { PostProcess_PSAdaptLuminance,     sizeof(PostProcess_PSAdaptLuminance) },
     };
 
     static_assert(_countof(pixelShaders) == DualPostProcess::Effect_Max, "array/max mismatch");
@@ -151,7 +160,7 @@ public:
 
     void Process(_In_ ID3D11DeviceContext* deviceContext, std::function<void __cdecl()>& setCustomState);
 
-    void SetDirtyFlag() { mDirtyFlag = true; }
+    void SetDirtyFlag() { mDirtyFlags = INT_MAX; }
 
     // Fields.
     DualPostProcess::Effect                 fx;
@@ -164,9 +173,13 @@ public:
     float                                   bloomBaseIntensity;
     float                                   bloomSaturation;
     float                                   bloomBaseSaturation;
+    float                                   brightThreshold;
+    float                                   brightOffset;
+    float                                   brightMiddleGray;
+    float                                   frameTime;
 
 private:
-    bool                                    mDirtyFlag;
+    int                                     mDirtyFlags;
 
     ConstantBuffer<PostProcessConstants>    mConstantBuffer;
 
@@ -192,6 +205,11 @@ DualPostProcess::Impl::Impl(_In_ ID3D11Device* device)
     bloomBaseIntensity(1.f),
     bloomSaturation(1.f),
     bloomBaseSaturation(1.f),
+    brightThreshold(5.f),
+    brightOffset(10.f),
+    brightMiddleGray(5.f),
+    frameTime(1/60.f),
+    mDirtyFlags(INT_MAX),
     constants{}
 {
     if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
@@ -219,9 +237,10 @@ void DualPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, std
     deviceContext->PSSetShader(pixelShader, nullptr, 0);
 
     // Set constants.
-    if (mDirtyFlag)
+    if (mDirtyFlags & Dirty_Parameters)
     {
-        mDirtyFlag = false;
+        mDirtyFlags &= ~Dirty_Parameters;
+        mDirtyFlags |= Dirty_ConstantBuffer;
 
         switch (fx)
         {
@@ -234,6 +253,14 @@ void DualPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, std
             constants.sampleWeights[0] = XMVectorSet(bloomBaseSaturation, bloomSaturation, 0.f, 0.f);
             constants.sampleWeights[1] = XMVectorReplicate(bloomBaseIntensity);
             constants.sampleWeights[2] = XMVectorReplicate(bloomIntensity);
+            break;
+
+        case BrightPassFilter:
+            constants.sampleWeights[0] = XMVectorSet(brightMiddleGray, brightThreshold, brightOffset, 0.f);
+            break;
+
+        case AdaptLuminance :
+            constants.sampleWeights[0] = XMVectorSet(frameTime, 0.f, 0.f, 0.f);
             break;
         }
     }
@@ -249,7 +276,11 @@ void DualPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, std
 
     deviceContextX->PSSetPlacementConstantBuffer(0, buffer, grfxMemory);
 #else
-    mConstantBuffer.SetData(deviceContext, constants);
+    if (mDirtyFlags & Dirty_ConstantBuffer)
+    {
+        mDirtyFlags &= ~Dirty_ConstantBuffer;
+        mConstantBuffer.SetData(deviceContext, constants);
+    }
 
     // Set the constant buffer.
     auto buffer = mConstantBuffer.GetBuffer();
@@ -317,7 +348,7 @@ void DualPostProcess::SetSourceTexture2(_In_opt_ ID3D11ShaderResourceView* value
 }
 
 
-void DualPostProcess::Set(Effect fx)
+void DualPostProcess::SetEffect(Effect fx)
 {
     pImpl->fx = fx;
     pImpl->SetDirtyFlag();
@@ -331,7 +362,7 @@ void DualPostProcess::SetMergeParameters(float weight1, float weight2)
     pImpl->SetDirtyFlag();
 }
 
-// Sets parameters for BloomCombine
+
 void DualPostProcess::SetBloomCombineParameters(float bloom, float base, float bloomSaturation, float baseSaturation)
 {
     pImpl->bloomIntensity = bloom;
@@ -341,3 +372,18 @@ void DualPostProcess::SetBloomCombineParameters(float bloom, float base, float b
     pImpl->SetDirtyFlag();
 }
 
+
+void DualPostProcess::SetBrightPassParameters(float threshold, float offset, float middleGray)
+{
+    pImpl->brightThreshold = threshold;
+    pImpl->brightOffset = offset;
+    pImpl->brightMiddleGray = middleGray;
+    pImpl->SetDirtyFlag();
+}
+
+
+void DualPostProcess::SetElapsedTime(float frames)
+{
+    pImpl->frameTime = frames;
+    pImpl->SetDirtyFlag();
+}

@@ -26,7 +26,10 @@ using Microsoft::WRL::ComPtr;
 
 namespace
 {
-    static const int c_MaxSamples = 16;
+    const int c_MaxSamples = 16;
+
+    const int Dirty_ConstantBuffer  = 0x01;
+    const int Dirty_Parameters      = 0x02;
 
     // Constant buffer layout. Must match the shader!
     struct PostProcessConstants
@@ -181,8 +184,8 @@ public:
 
     void Process(_In_ ID3D11DeviceContext* deviceContext, std::function<void __cdecl()>& setCustomState);
 
-    void SetConstants(bool value = true) { mUseConstants = value; mDirtyFlag = true; }
-    void SetDirtyFlag() { mDirtyFlag = true; }
+    void SetConstants(bool value = true) { mUseConstants = value; mDirtyFlags = INT_MAX; }
+    void SetDirtyFlag() { mDirtyFlags = INT_MAX; }
 
     // Fields.
     BasicPostProcess::Effect                fx;
@@ -198,7 +201,7 @@ public:
 
 private:
     bool                                    mUseConstants;
-    bool                                    mDirtyFlag;
+    int                                     mDirtyFlags;
 
     void                                    DownScale2x2();
     void                                    DownScale3x3();
@@ -232,6 +235,7 @@ BasicPostProcess::Impl::Impl(_In_ ID3D11Device* device)
     bloomThreshold(0.25f),
     bloomHorizontal(true),
     mUseConstants(false),
+    mDirtyFlags(INT_MAX),
     constants{}
 {
     if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
@@ -261,9 +265,10 @@ void BasicPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, st
     // Set constants.
     if (mUseConstants)
     {
-        if (mDirtyFlag)
+        if (mDirtyFlags & Dirty_Parameters)
         {
-            mDirtyFlag = false;
+            mDirtyFlags &= ~Dirty_Parameters;
+            mDirtyFlags |= Dirty_ConstantBuffer;
 
             switch (fx)
             {
@@ -308,7 +313,11 @@ void BasicPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, st
 
         deviceContextX->PSSetPlacementConstantBuffer(0, buffer, grfxMemory);
 #else
-        mConstantBuffer.SetData(deviceContext, constants);
+        if (mDirtyFlags & Dirty_ConstantBuffer)
+        {
+            mDirtyFlags &= ~Dirty_ConstantBuffer;
+            mConstantBuffer.SetData(deviceContext, constants);
+        }
 
         // Set the constant buffer.
         auto buffer = mConstantBuffer.GetBuffer();
@@ -598,7 +607,7 @@ void BasicPostProcess::SetSourceTexture(_In_opt_ ID3D11ShaderResourceView* value
 }
 
 
-void BasicPostProcess::Set(Effect fx)
+void BasicPostProcess::SetEffect(Effect fx)
 {
     pImpl->fx = fx;
 
