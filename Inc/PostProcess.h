@@ -174,7 +174,8 @@ namespace DirectX
         // Properties
         void __cdecl SetHDRSourceTexture(_In_opt_ ID3D11ShaderResourceView* value);
 
-        void SetHDR10Parameters(float nitsForPaperWhite);
+        // Sets HDR10 display mapping parameter
+        void SetHDR10Parameter(float paperWhiteNits);
 
     private:
         // Private implementation.
