@@ -49,15 +49,11 @@ namespace
 
     #include "Shaders/Compiled/XboxOnePostProcess_PSMerge.inc"
     #include "Shaders/Compiled/XboxOnePostProcess_PSBloomCombine.inc"
-    #include "Shaders/Compiled/XboxOnePostProcess_PSBrightPassFilter.inc"
-    #include "Shaders/Compiled/XboxOnePostProcess_PSAdaptLuminance.inc"
 #else
     #include "Shaders/Compiled/PostProcess_VSQuad.inc"
 
     #include "Shaders/Compiled/PostProcess_PSMerge.inc"
     #include "Shaders/Compiled/PostProcess_PSBloomCombine.inc"
-    #include "Shaders/Compiled/PostProcess_PSBrightPassFilter.inc"
-    #include "Shaders/Compiled/PostProcess_PSAdaptLuminance.inc"
 #endif
 }
 
@@ -73,8 +69,6 @@ namespace
     {
         { PostProcess_PSMerge,              sizeof(PostProcess_PSMerge) },
         { PostProcess_PSBloomCombine,       sizeof(PostProcess_PSBloomCombine) },
-        { PostProcess_PSBrightPassFilter,   sizeof(PostProcess_PSBrightPassFilter) },
-        { PostProcess_PSAdaptLuminance,     sizeof(PostProcess_PSAdaptLuminance) },
     };
 
     static_assert(_countof(pixelShaders) == DualPostProcess::Effect_Max, "array/max mismatch");
@@ -173,10 +167,6 @@ public:
     float                                   bloomBaseIntensity;
     float                                   bloomSaturation;
     float                                   bloomBaseSaturation;
-    float                                   brightThreshold;
-    float                                   brightOffset;
-    float                                   brightMiddleGray;
-    float                                   frameTime;
 
 private:
     int                                     mDirtyFlags;
@@ -205,10 +195,6 @@ DualPostProcess::Impl::Impl(_In_ ID3D11Device* device)
     bloomBaseIntensity(1.f),
     bloomSaturation(1.f),
     bloomBaseSaturation(1.f),
-    brightThreshold(5.f),
-    brightOffset(10.f),
-    brightMiddleGray(5.f),
-    frameTime(1/60.f),
     mDirtyFlags(INT_MAX),
     constants{}
 {
@@ -253,14 +239,6 @@ void DualPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, std
             constants.sampleWeights[0] = XMVectorSet(bloomBaseSaturation, bloomSaturation, 0.f, 0.f);
             constants.sampleWeights[1] = XMVectorReplicate(bloomBaseIntensity);
             constants.sampleWeights[2] = XMVectorReplicate(bloomIntensity);
-            break;
-
-        case BrightPassFilter:
-            constants.sampleWeights[0] = XMVectorSet(brightMiddleGray, brightThreshold, brightOffset, 0.f);
-            break;
-
-        case AdaptLuminance :
-            constants.sampleWeights[0] = XMVectorSet(frameTime, 0.f, 0.f, 0.f);
             break;
         }
     }
@@ -369,21 +347,5 @@ void DualPostProcess::SetBloomCombineParameters(float bloom, float base, float b
     pImpl->bloomBaseIntensity = base;
     pImpl->bloomSaturation = bloomSaturation;
     pImpl->bloomBaseSaturation = baseSaturation;
-    pImpl->SetDirtyFlag();
-}
-
-
-void DualPostProcess::SetBrightPassParameters(float threshold, float offset, float middleGray)
-{
-    pImpl->brightThreshold = threshold;
-    pImpl->brightOffset = offset;
-    pImpl->brightMiddleGray = middleGray;
-    pImpl->SetDirtyFlag();
-}
-
-
-void DualPostProcess::SetElapsedTime(float frames)
-{
-    pImpl->frameTime = frames;
     pImpl->SetDirtyFlag();
 }

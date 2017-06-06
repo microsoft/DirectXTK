@@ -1070,22 +1070,10 @@
     <None Include="Src\Shaders\Compiled\PostProcess_PSMerge.inc">
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
-    <None Include="Src\Shaders\Compiled\PostProcess_PSSampleLuminanceFinal.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\PostProcess_PSSampleLuminanceInitial.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
     <None Include="Src\Shaders\Compiled\PostProcess_PSGaussianBlur5x5.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\PostProcess_PSMerge.pdb">
-      <Filter>Src\Shaders\Symbols</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\PostProcess_PSSampleLuminanceFinal.pdb">
-      <Filter>Src\Shaders\Symbols</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\PostProcess_PSSampleLuminanceInitial.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\PostProcess_PSBloomBlur.inc">
@@ -1161,18 +1149,6 @@
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\ToneMap_VSQuad.pdb">
-      <Filter>Src\Shaders\Symbols</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\PostProcess_PSAdaptLuminance.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\PostProcess_PSBrightPassFilter.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\PostProcess_PSAdaptLuminance.pdb">
-      <Filter>Src\Shaders\Symbols</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\PostProcess_PSBrightPassFilter.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
   </ItemGroup>

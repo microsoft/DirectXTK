@@ -271,16 +271,12 @@
     <None Include="Src\Shaders\Compiled\NormalMapEffect_VSNormalPixelLightingTxVc.pdb" />
     <None Include="Src\Shaders\Compiled\NormalMapEffect_VSNormalPixelLightingTxVcBn.inc" />
     <None Include="Src\Shaders\Compiled\NormalMapEffect_VSNormalPixelLightingTxVcBn.pdb" />
-    <None Include="Src\Shaders\Compiled\PostProcess_PSAdaptLuminance.inc" />
-    <None Include="Src\Shaders\Compiled\PostProcess_PSAdaptLuminance.pdb" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSBloomBlur.inc" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSBloomBlur.pdb" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSBloomCombine.inc" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSBloomCombine.pdb" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSBloomExtract.inc" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSBloomExtract.pdb" />
-    <None Include="Src\Shaders\Compiled\PostProcess_PSBrightPassFilter.inc" />
-    <None Include="Src\Shaders\Compiled\PostProcess_PSBrightPassFilter.pdb" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSCopy.inc" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSCopy.pdb" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSDownScale2x2.inc" />
@@ -293,10 +289,6 @@
     <None Include="Src\Shaders\Compiled\PostProcess_PSMerge.pdb" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSMonochrome.inc" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSMonochrome.pdb" />
-    <None Include="Src\Shaders\Compiled\PostProcess_PSSampleLuminanceFinal.inc" />
-    <None Include="Src\Shaders\Compiled\PostProcess_PSSampleLuminanceFinal.pdb" />
-    <None Include="Src\Shaders\Compiled\PostProcess_PSSampleLuminanceInitial.inc" />
-    <None Include="Src\Shaders\Compiled\PostProcess_PSSampleLuminanceInitial.pdb" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSSepia.inc" />
     <None Include="Src\Shaders\Compiled\PostProcess_PSSepia.pdb" />
     <None Include="Src\Shaders\Compiled\PostProcess_VSQuad.inc" />

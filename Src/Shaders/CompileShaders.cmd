@@ -183,12 +183,8 @@ call :CompileShaderSM4%1 PostProcess ps PSDownScale4x4
 call :CompileShaderSM4%1 PostProcess ps PSGaussianBlur5x5
 call :CompileShaderSM4%1 PostProcess ps PSBloomExtract
 call :CompileShaderSM4%1 PostProcess ps PSBloomBlur
-call :CompileShaderSM4%1 PostProcess ps PSSampleLuminanceInitial
-call :CompileShaderSM4%1 PostProcess ps PSSampleLuminanceFinal
 call :CompileShaderSM4%1 PostProcess ps PSMerge
 call :CompileShaderSM4%1 PostProcess ps PSBloomCombine
-call :CompileShaderSM4%1 PostProcess ps PSBrightPassFilter
-call :CompileShaderSM4%1 PostProcess ps PSAdaptLuminance
 
 call :CompileShaderSM4%1 ToneMap vs VSQuad
 call :CompileShaderSM4%1 ToneMap ps PSSaturate

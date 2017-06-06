@@ -61,8 +61,6 @@ namespace
     #include "Shaders/Compiled/XboxOnePostProcess_PSGaussianBlur5x5.inc"
     #include "Shaders/Compiled/XboxOnePostProcess_PSBloomExtract.inc"
     #include "Shaders/Compiled/XboxOnePostProcess_PSBloomBlur.inc"
-    #include "Shaders/Compiled/XboxOnePostProcess_PSSampleLuminanceInitial.inc"
-    #include "Shaders/Compiled/XboxOnePostProcess_PSSampleLuminanceFinal.inc"
 #else
     #include "Shaders/Compiled/PostProcess_VSQuad.inc"
 
@@ -74,8 +72,6 @@ namespace
     #include "Shaders/Compiled/PostProcess_PSGaussianBlur5x5.inc"
     #include "Shaders/Compiled/PostProcess_PSBloomExtract.inc"
     #include "Shaders/Compiled/PostProcess_PSBloomBlur.inc"
-    #include "Shaders/Compiled/PostProcess_PSSampleLuminanceInitial.inc"
-    #include "Shaders/Compiled/PostProcess_PSSampleLuminanceFinal.inc"
 #endif
 }
 
@@ -97,8 +93,6 @@ namespace
         { PostProcess_PSGaussianBlur5x5,        sizeof(PostProcess_PSGaussianBlur5x5) },
         { PostProcess_PSBloomExtract,           sizeof(PostProcess_PSBloomExtract) },
         { PostProcess_PSBloomBlur,              sizeof(PostProcess_PSBloomBlur) },
-        { PostProcess_PSSampleLuminanceInitial, sizeof(PostProcess_PSSampleLuminanceInitial) },
-        { PostProcess_PSSampleLuminanceFinal,   sizeof(PostProcess_PSSampleLuminanceFinal) },
     };
 
     static_assert(_countof(pixelShaders) == BasicPostProcess::Effect_Max, "array/max mismatch");
@@ -204,7 +198,6 @@ private:
     int                                     mDirtyFlags;
 
     void                                    DownScale2x2();
-    void                                    DownScale3x3();
     void                                    DownScale4x4();
     void                                    GaussianBlur5x5(float multiplier);
     void                                    Bloom(bool horizontal, float size, float brightness);
@@ -291,14 +284,6 @@ void BasicPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, st
             case BloomBlur:
                 Bloom(bloomHorizontal, bloomSize, bloomBrightness);
                 break;
-
-            case SampleLuminanceInitial:
-                DownScale3x3();
-                break;
-
-            case SampleLuminanceFinal:
-                DownScale4x4();
-                break;
             }
         }
 
@@ -359,34 +344,6 @@ void BasicPostProcess::Impl::DownScale2x2()
         {
             ptr->x = (float(x) - 0.5f) * tu;
             ptr->y = (float(y) - 0.5f) * tv;
-            ++ptr;
-        }
-    }
-
-}
-
-
-void BasicPostProcess::Impl::DownScale3x3()
-{
-    mUseConstants = true;
-
-    if (!texWidth || !texHeight)
-    {
-        throw std::exception("Call SetSourceTexture before setting post-process effect");
-    }
-
-    float tu = 1.0f / float(texWidth);
-    float tv = 1.0f / float(texHeight);
-
-    // Sample from the 9 surrounding points. Since the center point will be in the exact
-    // center of 4 texels, a 1.0f offset is needed to specify a texel center.
-    auto ptr = reinterpret_cast<XMFLOAT4*>(constants.sampleOffsets);
-    for (int x = 0; x < 3; ++x)
-    {
-        for (int y = 0; y < 3; ++y)
-        {
-            ptr->x = (float(x) - 1.0f) * tu;
-            ptr->y = (float(y)- 1.0f) * tv;
             ++ptr;
         }
     }

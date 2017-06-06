@@ -309,16 +309,12 @@
     <None Include="Src\Shaders\Compiled\XboxOneNormalMapEffect_VSNormalPixelLightingTxVc.pdb" />
     <None Include="Src\Shaders\Compiled\XboxOneNormalMapEffect_VSNormalPixelLightingTxVcBn.inc" />
     <None Include="Src\Shaders\Compiled\XboxOneNormalMapEffect_VSNormalPixelLightingTxVcBn.pdb" />
-    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSAdaptLuminance.inc" />
-    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSAdaptLuminance.pdb" />
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSBloomBlur.inc" />
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSBloomBlur.pdb" />
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSBloomCombine.inc" />
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSBloomCombine.pdb" />
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSBloomExtract.inc" />
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSBloomExtract.pdb" />
-    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSBrightPassFilter.inc" />
-    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSBrightPassFilter.pdb" />
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSCopy.inc" />
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSCopy.pdb" />
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSDownScale2x2.inc" />
@@ -331,10 +327,6 @@
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSMerge.pdb" />
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSMonochrome.inc" />
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSMonochrome.pdb" />
-    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSSampleLuminanceFinal.inc" />
-    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSSampleLuminanceFinal.pdb" />
-    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSSampleLuminanceInitial.inc" />
-    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSSampleLuminanceInitial.pdb" />
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSSepia.inc" />
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSSepia.pdb" />
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_VSQuad.inc" />

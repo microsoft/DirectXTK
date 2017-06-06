@@ -1119,12 +1119,6 @@
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSMonochrome.inc">
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
-    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSSampleLuminanceFinal.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSSampleLuminanceInitial.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSSepia.inc">
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
@@ -1176,12 +1170,6 @@
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSMonochrome.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
-    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSSampleLuminanceFinal.pdb">
-      <Filter>Src\Shaders\Symbols</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSSampleLuminanceInitial.pdb">
-      <Filter>Src\Shaders\Symbols</Filter>
-    </None>
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSSepia.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
@@ -1207,18 +1195,6 @@
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_VSQuad.pdb">
-      <Filter>Src\Shaders\Symbols</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSAdaptLuminance.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSBrightPassFilter.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSAdaptLuminance.pdb">
-      <Filter>Src\Shaders\Symbols</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSBrightPassFilter.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
   </ItemGroup>

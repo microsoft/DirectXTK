@@ -52,8 +52,6 @@ namespace DirectX
             GaussianBlur_5x5,
             BloomExtract,
             BloomBlur,
-            SampleLuminanceInitial,
-            SampleLuminanceFinal,
             Effect_Max
         };
 
@@ -101,8 +99,6 @@ namespace DirectX
         {
             Merge,
             BloomCombine,
-            BrightPassFilter,
-            AdaptLuminance,
             Effect_Max
         };
 
@@ -130,12 +126,6 @@ namespace DirectX
 
         // Sets parameters for BloomCombine
         void __cdecl SetBloomCombineParameters(float bloom, float base, float bloomSaturation, float baseSaturation);
-
-        // Sets parameters for BrightPassFilter
-        void __cdecl SetBrightPassParameters(float threshold, float offset, float middleGray);
-
-        // Sets parameter for AdaptLuminance
-        void __cdecl SetElapsedTime(float frames);
 
     private:
         // Private implementation.

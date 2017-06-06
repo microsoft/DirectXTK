@@ -141,50 +141,6 @@ float4 PSBloomBlur(VSInputTx pin) : SV_Target0
 }
 
 
-// Pixel shader: sample luminance (initial)
-float4 PSSampleLuminanceInitial(VSInputTx pin) : SV_Target0
-{
-    const int NUM_SAMPLES = 9;
-    float fSum = 0.0f;
-
-    for( int i = 0; i < NUM_SAMPLES; i++ )
-    {
-        // Compute the sum of log(luminance) throughout the sample points
-        float3 vColor = Texture.Sample(Sampler, pin.TexCoord + sampleOffsets[i].xy).rgb;
-        float3 grayscale = float3(0.2125f, 0.7154f, 0.0721f);
-        float  fLuminance = dot(vColor, grayscale);
-        fSum += log(fLuminance + 0.0001f);
-    }
-    
-    // Divide the sum to complete the average
-    fSum /= NUM_SAMPLES;
-
-    return float4(fSum, fSum, fSum, 1.0f);
-}
-
-
-// Pixel shader: sample luminance (final)
-float4 PSSampleLuminanceFinal(VSInputTx pin) : SV_Target0
-{
-    const int NUM_SAMPLES = 16;
-    float fSum = 0.0f;
-
-    for (int i = 0; i < NUM_SAMPLES; i++)
-    {
-        // Compute the sum of luminance throughout the sample points
-        fSum += Texture.Sample(Sampler, pin.TexCoord + sampleOffsets[i].xy).x;
-    }
-
-    // Divide the sum to complete the average
-    fSum /= NUM_SAMPLES;
-
-    // Perform an exp() to complete the average luminance calculation
-    fSum = exp(fSum);
-
-    return float4(fSum, fSum, fSum, 1.0f);
-}
-
-
 //--------------------------------------------------------------------------------------
 Texture2D<float4> Texture2 : register(t1);
 
@@ -222,39 +178,4 @@ float4 PSBloomCombine(VSInputTx pin) : SV_Target0
 
     // Combine the two images.
     return base + bloom;
-}
-
-
-// Pixel shader: bright-pass filter
-float4 PSBrightPassFilter(VSInputTx pin) : SV_Target0
-{
-    // Uses sampleWeights[0].x as middleGray, sampleWeights[0].y as threshold, sampleWeights[0].z as offset
-    float4 color = Texture.Sample(Sampler, pin.TexCoord);
-    float adapted = Texture2.Sample(Sampler, float2(0.5f, 0.5f)).r;
-
-    // Determine what the pixel's value will be after tone-mapping occurs
-    color.rgb *= sampleWeights[0].x / (adapted + 0.001f);
-
-    // Subtract out dark pixels
-    color.rgb -= sampleWeights[0].y;
-
-    // Clamp to 0
-    color = max(color, 0.0f);
-
-    // Map the resulting value into the 0 to 1 range. Higher values for offset will isolate lights from illuminated scene objects.
-    color.rgb /= (sampleWeights[0].z + color.rgb);
-
-    return color;
-}
-
-
-// Pixel shader: adapter luminance
-float4 PSAdaptLuminance(VSInputTx pin) : SV_Target0
-{
-    // Uses sampleWeights[0].x as elapsed frames
-    float adapted = Texture.Sample(Sampler, float2(0.5f, 0.5f)).r;
-    float current = Texture2.Sample(Sampler, float2(0.5f, 0.5f)).r;
-
-    float newAdapted = adapted + (current - adapted) * (1 - pow(0.98f, sampleWeights[0].x));
-    return float4(newAdapted, newAdapted, newAdapted, 1.0f);
 }
