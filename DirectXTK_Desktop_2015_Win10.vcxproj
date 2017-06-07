@@ -401,6 +401,7 @@
     <None Include="Src\Shaders\Lighting.fxh" />
     <None Include="Src\Shaders\SpriteEffect.fx" />
     <None Include="Src\Shaders\Structures.fxh" />
+    <None Include="Src\Shaders\Utilities.fxh" />
     <None Include="Src\TeapotData.inc" />
   </ItemGroup>
   <ItemGroup>

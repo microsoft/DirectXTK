@@ -19,6 +19,7 @@ cbuffer Parameters : register(b0)
 
 
 #include "Structures.fxh"
+#include "Utilities.fxh"
 
 
 // Vertex shader: self-created quad.
@@ -45,30 +46,19 @@ float4 PSSaturate(VSInputTx pin) : SV_Target0
 
 
 // Pixel shader: reinhard operator
-float3 Reinhard(float3 color)
-{
-    return color / (1.0f + color);
-}
-
 float4 PSReinhard(VSInputTx pin) : SV_Target0
 {
     float4 hdr = HDRTexture.Sample(Sampler, pin.TexCoord);
-    float3 sdr = Reinhard(hdr.xyz);
+    float3 sdr = ToneMapReinhard(hdr.xyz);
     return float4(sdr, hdr.a);
 }
 
 
 // Pixel shader: filmic operator
-float3 Filmic(float3 color)
-{
-    float3 x = max(0.0f, color - 0.004f);
-    return pow((x * (6.2f * x + 0.5f)) / (x * (6.2f * x + 1.7f) + 0.06f), 2.2f);
-}
-
 float4 PSFilmic(VSInputTx pin) : SV_Target0
 {
     float4 hdr = HDRTexture.Sample(Sampler, pin.TexCoord);
-    float3 sdr = Filmic(hdr.xyz);
+    float3 sdr = ToneMapFilmic(hdr.xyz);
     return float4(sdr, hdr.a);
 }
 
@@ -76,13 +66,6 @@ float4 PSFilmic(VSInputTx pin) : SV_Target0
 // Pixel shader: HDR10, using Rec.2020 color primaries and ST.2084 curve
 float3 HDR10(float3 color)
 {
-    const float3x3 from709to2020 =
-    {
-        { 0.6274040f, 0.3292820f, 0.0433136f },
-        { 0.0690970f, 0.9195400f, 0.0113612f },
-        { 0.0163916f, 0.0880132f, 0.8955950f }
-    };
-
     // Rotate from Rec.709 to Rec.2020 primaries
     float3 rgb = mul(from709to2020, color);
 
@@ -90,7 +73,7 @@ float3 HDR10(float3 color)
     float3 normalized = rgb * paperWhiteNits.x / 10000.f;
 
     // Apply ST.2084 curve
-    return pow((0.8359375f + 18.8515625f * pow(abs(normalized), 0.1593017578f)) / (1.0f + 18.6875f * pow(abs(normalized), 0.1593017578f)), 78.84375f);
+    return LinearToST2084(normalized);
 }
 
 float4 PSHDR10(VSInputTx pin) : SV_Target0
@@ -130,7 +113,7 @@ MRTOut PSHDR10_Reinhard(VSInputTx pin)
     float3 rgb = HDR10(hdr.xyz);
     output.hdr = float4(rgb, hdr.a);
 
-    float3 sdr = Reinhard(hdr.xyz);
+    float3 sdr = ToneMapReinhard(hdr.xyz);
     output.sdr = float4(sdr, hdr.a);
 
     return output;
@@ -144,7 +127,7 @@ MRTOut PSHDR10_Filmic(VSInputTx pin)
     float3 rgb = HDR10(hdr.xyz);
     output.hdr = float4(rgb, hdr.a);
 
-    float3 sdr = Filmic(hdr.xyz);
+    float3 sdr = ToneMapFilmic(hdr.xyz);
     output.sdr = float4(sdr, hdr.a);
 
     return output;

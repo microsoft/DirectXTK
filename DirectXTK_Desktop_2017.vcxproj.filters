@@ -1151,5 +1151,8 @@
     <None Include="Src\Shaders\Compiled\ToneMap_VSQuad.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
+    <None Include="Src\Shaders\Utilities.fxh">
+      <Filter>Src\Shaders\Shared</Filter>
+    </None>
   </ItemGroup>
 </Project>

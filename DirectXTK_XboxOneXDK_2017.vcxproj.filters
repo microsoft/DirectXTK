@@ -1197,6 +1197,9 @@
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_VSQuad.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
+    <None Include="Src\Shaders\Utilities.fxh">
+      <Filter>Src\Shaders\Shared</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Readme.txt" />
