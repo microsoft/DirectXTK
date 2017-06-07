@@ -13,7 +13,7 @@ sampler Sampler : register(s0);
 
 cbuffer Parameters : register(b0)
 {
-    float4 nitsPaperWhite;
+    float4 paperWhiteNits;
 };
 
 
@@ -73,7 +73,7 @@ float4 PSFilmic(VSInputTx pin) : SV_Target0
 }
 
 
-// Pixel shader: HDR10 Rec.2020 primaries with ST.2084 color curve
+// Pixel shader: HDR10, using Rec.2020 color primaries and ST.2084 curve
 float3 HDR10(float3 color)
 {
     const float3x3 from709to2020 =
@@ -87,7 +87,7 @@ float3 HDR10(float3 color)
     float3 rgb = mul(from709to2020, color);
 
     // ST.2084 spec defines max nits as 10,000 nits
-    float3 normalized = rgb * nitsPaperWhite.x / 10000.f;
+    float3 normalized = rgb * paperWhiteNits.x / 10000.f;
 
     // Apply ST.2084 curve
     return pow((0.8359375f + 18.8515625f * pow(abs(normalized), 0.1593017578f)) / (1.0f + 18.6875f * pow(abs(normalized), 0.1593017578f)), 78.84375f);

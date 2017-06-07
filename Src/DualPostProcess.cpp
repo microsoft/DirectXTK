@@ -32,7 +32,7 @@ namespace
     const int Dirty_Parameters      = 0x02;
 
     // Constant buffer layout. Must match the shader!
-    struct PostProcessConstants
+    __declspec(align(16)) struct PostProcessConstants
     {
         XMVECTOR sampleOffsets[c_MaxSamples];
         XMVECTOR sampleWeights[c_MaxSamples];

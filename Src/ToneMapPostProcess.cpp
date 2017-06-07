@@ -30,9 +30,9 @@ namespace
     const int Dirty_Parameters      = 0x02;
 
     // Constant buffer layout. Must match the shader!
-    struct ToneMapConstants
+    __declspec(align(16)) struct ToneMapConstants
     {
-        XMVECTOR nitsPaperWhite;
+        XMVECTOR paperWhiteNits;
     };
 
     static_assert((sizeof(ToneMapConstants) % 16) == 0, "CB size not padded correctly");
@@ -173,7 +173,7 @@ public:
     ToneMapPostProcess::Effect              fx;
     ToneMapConstants                        constants;
     ComPtr<ID3D11ShaderResourceView>        hdrTexture;
-    float                                   nitsPaperWhite;
+    float                                   paperWhiteNits;
 
 private:
     bool                                    mUseConstants;
@@ -197,7 +197,7 @@ ToneMapPostProcess::Impl::Impl(_In_ ID3D11Device* device)
     : mConstantBuffer(device),
     mDeviceResources(deviceResourcesPool.DemandCreate(device)),
     fx(ToneMapPostProcess::Saturate),
-    nitsPaperWhite(80.f),
+    paperWhiteNits(200.f),
     mUseConstants(false),
     mDirtyFlags(INT_MAX),
     constants{}
@@ -240,7 +240,7 @@ void ToneMapPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, 
             case HDR10_Saturate:
             case HDR10_Reinhard:
             case HDR10_Filmic:
-                constants.nitsPaperWhite = XMVectorSet(nitsPaperWhite, 0.f, 0.f, 0.f);
+                constants.paperWhiteNits = XMVectorSet(paperWhiteNits, 0.f, 0.f, 0.f);
                 break;
             }
         }
@@ -343,8 +343,8 @@ void ToneMapPostProcess::SetEffect(Effect fx)
 }
 
 
-void ToneMapPostProcess::SetHDR10Parameters(float nitsForPaperWhite)
+void ToneMapPostProcess::SetHDR10Parameter(float paperWhiteNits)
 {
-    pImpl->nitsPaperWhite = nitsForPaperWhite;
+    pImpl->paperWhiteNits = paperWhiteNits;
     pImpl->SetDirtyFlag();
 }

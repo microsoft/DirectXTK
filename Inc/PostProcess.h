@@ -13,6 +13,10 @@
 
 #pragma once
 
+#if defined(WINAPI_FAMILY) && WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
+#error Post-processing not supported for Windows Phone 8.x; requires Direct3D hardware Feature Level 10.0 or better
+#endif
+
 #if defined(_XBOX_ONE) && defined(_TITLE)
 #include <d3d11_x.h>
 #else
@@ -170,7 +174,8 @@ namespace DirectX
         // Properties
         void __cdecl SetHDRSourceTexture(_In_opt_ ID3D11ShaderResourceView* value);
 
-        void SetHDR10Parameters(float nitsForPaperWhite);
+        // Sets HDR10 display mapping parameter
+        void SetHDR10Parameter(float paperWhiteNits);
 
     private:
         // Private implementation.
