@@ -1184,10 +1184,14 @@
     <None Include="Src\Shaders\Compiled\ToneMap_VSQuad.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
-    <None Include="Src\Shaders\PostProcess.fx" />
-    <None Include="Src\Shaders\ToneMap.fx" />
     <None Include="Src\Shaders\Utilities.fxh">
       <Filter>Src\Shaders\Shared</Filter>
+    </None>
+    <None Include="Src\Shaders\PostProcess.fx">
+      <Filter>Src\Shaders</Filter>
+    </None>
+    <None Include="Src\Shaders\ToneMap.fx">
+      <Filter>Src\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>
