@@ -1151,5 +1151,8 @@
     <None Include="Src\Shaders\PostProcess.fx">
       <Filter>Src\Shaders</Filter>
     </None>
+    <None Include="Src\Shaders\Utilities.fxh">
+      <Filter>Src\Shaders\Shared</Filter>
+    </None>
   </ItemGroup>
 </Project>

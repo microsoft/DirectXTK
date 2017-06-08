@@ -1061,6 +1061,9 @@
     <None Include="Src\Shaders\ToneMap.fx">
       <Filter>Src\Shaders</Filter>
     </None>
+    <None Include="Src\Shaders\Utilities.fxh">
+      <Filter>Src\Shaders\Shared</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\AlphaTestEffect.cpp">
