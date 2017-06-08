@@ -87,21 +87,32 @@ namespace
         info.enableDualTexture = (flags & DUAL_TEXTURE) != 0;
         info.enableNormalMaps = (flags & NORMAL_MAPS) != 0;
         info.biasedVertexNormals = (flags & BIASED_VERTEX_NORMALS) != 0;
-        info.ambientColor = XMFLOAT3(mh.Ambient.x, mh.Ambient.y, mh.Ambient.z);
-        info.diffuseColor = XMFLOAT3(mh.Diffuse.x, mh.Diffuse.y, mh.Diffuse.z);
-        info.emissiveColor = XMFLOAT3(mh.Emissive.x, mh.Emissive.y, mh.Emissive.z);
 
-        if (mh.Diffuse.w != 1.f && mh.Diffuse.w != 0.f)
+        if (mh.Ambient.x == 0 && mh.Ambient.y == 0 && mh.Ambient.z == 0 && mh.Ambient.w == 0
+            && mh.Diffuse.x == 0 && mh.Diffuse.y == 0 && mh.Diffuse.z == 0 && mh.Diffuse.w == 0)
         {
-            info.alpha = mh.Diffuse.w;
+            // SDKMESH material color block is uninitalized; assume defaults
+            info.diffuseColor = XMFLOAT3(1.f, 1.f, 1.f);
+            info.alpha = 1.f;
         }
         else
-            info.alpha = 1.f;
-
-        if (mh.Power)
         {
-            info.specularPower = mh.Power;
-            info.specularColor = XMFLOAT3(mh.Specular.x, mh.Specular.y, mh.Specular.z);
+            info.ambientColor = XMFLOAT3(mh.Ambient.x, mh.Ambient.y, mh.Ambient.z);
+            info.diffuseColor = XMFLOAT3(mh.Diffuse.x, mh.Diffuse.y, mh.Diffuse.z);
+            info.emissiveColor = XMFLOAT3(mh.Emissive.x, mh.Emissive.y, mh.Emissive.z);
+
+            if (mh.Diffuse.w != 1.f && mh.Diffuse.w != 0.f)
+            {
+                info.alpha = mh.Diffuse.w;
+            }
+            else
+                info.alpha = 1.f;
+
+            if (mh.Power)
+            {
+                info.specularPower = mh.Power;
+                info.specularColor = XMFLOAT3(mh.Specular.x, mh.Specular.y, mh.Specular.z);
+            }
         }
 
         info.diffuseTexture = diffuseName;
