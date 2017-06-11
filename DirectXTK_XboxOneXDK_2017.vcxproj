@@ -377,6 +377,8 @@
     <None Include="Src\Shaders\Compiled\XboxOneSpriteEffect_SpritePixelShader.pdb" />
     <None Include="Src\Shaders\Compiled\XboxOneSpriteEffect_SpriteVertexShader.inc" />
     <None Include="Src\Shaders\Compiled\XboxOneSpriteEffect_SpriteVertexShader.pdb" />
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSCopy.inc" />
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSCopy.pdb" />
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSFilmic.inc" />
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSFilmic.pdb" />
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10.inc" />
@@ -385,12 +387,22 @@
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_Filmic.pdb" />
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_Reinhard.inc" />
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_Reinhard.pdb" />
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_Reinhard_SRGB.inc" />
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_Reinhard_SRGB.pdb" />
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_Saturate.inc" />
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_Saturate.pdb" />
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_Saturate_SRGB.inc" />
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_Saturate_SRGB.pdb" />
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSReinhard.inc" />
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSReinhard.pdb" />
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSReinhard_SRGB.inc" />
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSReinhard_SRGB.pdb" />
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSSaturate.inc" />
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSSaturate.pdb" />
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSSaturate_SRGB.inc" />
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSSaturate_SRGB.pdb" />
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PS_SRGB.inc" />
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PS_SRGB.pdb" />
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_VSQuad.inc" />
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_VSQuad.pdb" />
     <None Include="Src\Shaders\CompileShaders.cmd" />
@@ -443,8 +455,6 @@
     <None Include="Src\Shaders\PostProcess.fx">
       <FileType>Document</FileType>
     </None>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Src\Shaders\ToneMap.fx">
       <FileType>Document</FileType>
     </None>

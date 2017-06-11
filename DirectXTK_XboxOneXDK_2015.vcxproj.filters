@@ -1080,6 +1080,18 @@
     <None Include="Src\Shaders\PostProcess.fx">
       <Filter>Src\Shaders</Filter>
     </None>
+    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSCopy.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_VSQuad.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSCopy.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_VSQuad.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
     <None Include="Src\Shaders\ToneMap.fx">
       <Filter>Src\Shaders</Filter>
     </None>
@@ -1090,9 +1102,6 @@
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSBloomExtract.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSCopy.inc">
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSDownScale2x2.inc">
@@ -1111,9 +1120,6 @@
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSSepia.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_VSQuad.inc">
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSFilmic.inc">
@@ -1149,9 +1155,6 @@
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSBloomExtract.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
-    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSCopy.pdb">
-      <Filter>Src\Shaders\Symbols</Filter>
-    </None>
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSDownScale2x2.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
@@ -1168,9 +1171,6 @@
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSSepia.pdb">
-      <Filter>Src\Shaders\Symbols</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\XboxOnePostProcess_VSQuad.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSFilmic.pdb">
@@ -1199,6 +1199,42 @@
     </None>
     <None Include="Src\Shaders\Utilities.fxh">
       <Filter>Src\Shaders\Shared</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PS_SRGB.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSCopy.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_Reinhard_SRGB.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_Saturate_SRGB.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSReinhard_SRGB.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSSaturate_SRGB.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PS_SRGB.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSCopy.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_Reinhard_SRGB.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_Saturate_SRGB.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSReinhard_SRGB.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSSaturate_SRGB.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

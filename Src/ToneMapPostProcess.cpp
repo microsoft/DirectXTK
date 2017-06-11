@@ -29,8 +29,13 @@ namespace
     const int Dirty_ConstantBuffer  = 0x01;
     const int Dirty_Parameters      = 0x02;
 
+#if defined(_XBOX_ONE) && defined(_TITLE)
     const int PixelShaderCount = 13;
     const int ShaderPermutationCount = 24;
+#else
+    const int PixelShaderCount = 8;
+    const int ShaderPermutationCount = 12;
+#endif
 
     // Constant buffer layout. Must match the shader!
     __declspec(align(16)) struct ToneMapConstants
@@ -71,11 +76,6 @@ namespace
     #include "Shaders/Compiled/ToneMap_PSSaturate_SRGB.inc"
     #include "Shaders/Compiled/ToneMap_PSReinhard_SRGB.inc"
     #include "Shaders/Compiled/ToneMap_PSHDR10.inc"
-    #include "Shaders/Compiled/ToneMap_PSHDR10_Saturate.inc"
-    #include "Shaders/Compiled/ToneMap_PSHDR10_Reinhard.inc"
-    #include "Shaders/Compiled/ToneMap_PSHDR10_Filmic.inc"
-    #include "Shaders/Compiled/ToneMap_PSHDR10_Saturate_SRGB.inc"
-    #include "Shaders/Compiled/ToneMap_PSHDR10_Reinhard_SRGB.inc"
 #endif
 }
 
@@ -97,11 +97,13 @@ namespace
         { ToneMap_PSSaturate_SRGB,          sizeof(ToneMap_PSSaturate_SRGB) },
         { ToneMap_PSReinhard_SRGB,          sizeof(ToneMap_PSReinhard_SRGB) },
         { ToneMap_PSHDR10,                  sizeof(ToneMap_PSHDR10) },
+#if defined(_XBOX_ONE) && defined(_TITLE)
         { ToneMap_PSHDR10_Saturate,         sizeof(ToneMap_PSHDR10_Saturate) },
         { ToneMap_PSHDR10_Reinhard,         sizeof(ToneMap_PSHDR10_Reinhard) },
         { ToneMap_PSHDR10_Filmic,           sizeof(ToneMap_PSHDR10_Filmic) },
         { ToneMap_PSHDR10_Saturate_SRGB,    sizeof(ToneMap_PSHDR10_Saturate_SRGB) },
         { ToneMap_PSHDR10_Reinhard_SRGB,    sizeof(ToneMap_PSHDR10_Reinhard_SRGB) },
+#endif
     };
 
     static_assert(_countof(pixelShaders) == PixelShaderCount, "array/max mismatch");
@@ -126,6 +128,7 @@ namespace
         7,  // HDR10
         7,  // HDR10
 
+#if defined(_XBOX_ONE) && defined(_TITLE)
         // MRT Linear EOTF
         8,  // HDR10+Saturate
         8,  // HDR10+Saturate
@@ -143,6 +146,7 @@ namespace
         8,  // HDR10+Saturate
         8,  // HDR10+Saturate
         8,  // HDR10+Saturate
+#endif
     };
 
     static_assert(_countof(pixelShaderIndices) == ShaderPermutationCount, "array/max mismatch");
@@ -299,7 +303,7 @@ void ToneMapPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, 
     deviceContext->PSSetShader(pixelShader, nullptr, 0);
 
     // Set constants.
-    if (func == ST2084)
+    if (func == ST2084 || mrt)
     {
         if (mDirtyFlags & Dirty_Parameters)
         {
@@ -347,8 +351,12 @@ void ToneMapPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, 
 
 int ToneMapPostProcess::Impl::GetCurrentShaderPermutation() const
 {
+#if defined(_XBOX_ONE) && defined(_TITLE)
     int permutation = (mrt) ? 12 : 0;
-    return permutation + (static_cast<int>(func) * 4) + static_cast<int>(op);
+    return permutation + (static_cast<int>(func) * static_cast<int>(Operator_Max)) + static_cast<int>(op);
+#else
+    return (static_cast<int>(func) * static_cast<int>(Operator_Max)) + static_cast<int>(op);
+#endif
 }
 
 

@@ -178,9 +178,9 @@ namespace DirectX
 
         void __cdecl SetTransferFunction(TransferFunction func);
 
-#if defined(_XBOX_ONE) && defined(_TITLE)
+        #if defined(_XBOX_ONE) && defined(_TITLE)
         void __cdecl SetMRTOutput(bool value = true);
-#endif
+        #endif
 
         // Properties
         void __cdecl SetHDRSourceTexture(_In_opt_ ID3D11ShaderResourceView* value);

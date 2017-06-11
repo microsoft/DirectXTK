@@ -195,11 +195,17 @@ call :CompileShaderSM4%1 ToneMap ps PS_SRGB
 call :CompileShaderSM4%1 ToneMap ps PSSaturate_SRGB
 call :CompileShaderSM4%1 ToneMap ps PSReinhard_SRGB
 call :CompileShaderSM4%1 ToneMap ps PSHDR10
-call :CompileShaderSM4%1 ToneMap ps PSHDR10_Saturate
-call :CompileShaderSM4%1 ToneMap ps PSHDR10_Reinhard
-call :CompileShaderSM4%1 ToneMap ps PSHDR10_Filmic
-call :CompileShaderSM4%1 ToneMap ps PSHDR10_Saturate_SRGB
-call :CompileShaderSM4%1 ToneMap ps PSHDR10_Reinhard_SRGB
+
+if NOT %1.==xbox. goto skipxboxonly
+
+call :CompileShaderSM4xbox ToneMap ps PSHDR10_Saturate
+call :CompileShaderSM4xbox ToneMap ps PSHDR10_Reinhard
+call :CompileShaderSM4xbox ToneMap ps PSHDR10_Filmic
+call :CompileShaderSM4xbox ToneMap ps PSHDR10_Saturate_SRGB
+call :CompileShaderSM4xbox ToneMap ps PSHDR10_Reinhard_SRGB
+
+:skipxboxonly
+
 echo.
 
 if %error% == 0 (

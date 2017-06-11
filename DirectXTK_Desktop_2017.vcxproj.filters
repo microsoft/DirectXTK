@@ -1109,15 +1109,6 @@
     <None Include="Src\Shaders\Compiled\ToneMap_PSHDR10.inc">
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
-    <None Include="Src\Shaders\Compiled\ToneMap_PSHDR10_Filmic.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\ToneMap_PSHDR10_Reinhard.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\ToneMap_PSHDR10_Saturate.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
     <None Include="Src\Shaders\Compiled\ToneMap_PSReinhard.inc">
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
@@ -1131,15 +1122,6 @@
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\ToneMap_PSHDR10.pdb">
-      <Filter>Src\Shaders\Symbols</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\ToneMap_PSHDR10_Filmic.pdb">
-      <Filter>Src\Shaders\Symbols</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\ToneMap_PSHDR10_Reinhard.pdb">
-      <Filter>Src\Shaders\Symbols</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\ToneMap_PSHDR10_Saturate.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\ToneMap_PSReinhard.pdb">
@@ -1160,12 +1142,6 @@
     <None Include="Src\Shaders\Compiled\ToneMap_PSCopy.inc">
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
-    <None Include="Src\Shaders\Compiled\ToneMap_PSHDR10_Reinhard_SRGB.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\ToneMap_PSHDR10_Saturate_SRGB.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
     <None Include="Src\Shaders\Compiled\ToneMap_PSReinhard_SRGB.inc">
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
@@ -1176,12 +1152,6 @@
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\ToneMap_PSCopy.pdb">
-      <Filter>Src\Shaders\Symbols</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\ToneMap_PSHDR10_Reinhard_SRGB.pdb">
-      <Filter>Src\Shaders\Symbols</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\ToneMap_PSHDR10_Saturate_SRGB.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\ToneMap_PSReinhard_SRGB.pdb">
