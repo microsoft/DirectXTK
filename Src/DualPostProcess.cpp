@@ -306,10 +306,21 @@ DualPostProcess::~DualPostProcess()
 }
 
 
-// IEffect methods.
+// IPostProcess methods.
 void DualPostProcess::Process(_In_ ID3D11DeviceContext* deviceContext, _In_opt_ std::function<void __cdecl()> setCustomState)
 {
     pImpl->Process(deviceContext, setCustomState);
+}
+
+
+// Shader control.
+void DualPostProcess::SetEffect(Effect fx)
+{
+    if (fx < 0 || fx >= Effect_Max)
+        throw std::out_of_range("Effect not defined");
+
+    pImpl->fx = fx;
+    pImpl->SetDirtyFlag();
 }
 
 
@@ -323,13 +334,6 @@ void DualPostProcess::SetSourceTexture(_In_opt_ ID3D11ShaderResourceView* value)
 void DualPostProcess::SetSourceTexture2(_In_opt_ ID3D11ShaderResourceView* value)
 {
     pImpl->texture2 = value;
-}
-
-
-void DualPostProcess::SetEffect(Effect fx)
-{
-    pImpl->fx = fx;
-    pImpl->SetDirtyFlag();
 }
 
 

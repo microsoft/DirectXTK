@@ -187,13 +187,19 @@ call :CompileShaderSM4%1 PostProcess ps PSMerge
 call :CompileShaderSM4%1 PostProcess ps PSBloomCombine
 
 call :CompileShaderSM4%1 ToneMap vs VSQuad
+call :CompileShaderSM4%1 ToneMap ps PSCopy
 call :CompileShaderSM4%1 ToneMap ps PSSaturate
 call :CompileShaderSM4%1 ToneMap ps PSReinhard
 call :CompileShaderSM4%1 ToneMap ps PSFilmic
+call :CompileShaderSM4%1 ToneMap ps PS_SRGB
+call :CompileShaderSM4%1 ToneMap ps PSSaturate_SRGB
+call :CompileShaderSM4%1 ToneMap ps PSReinhard_SRGB
 call :CompileShaderSM4%1 ToneMap ps PSHDR10
 call :CompileShaderSM4%1 ToneMap ps PSHDR10_Saturate
 call :CompileShaderSM4%1 ToneMap ps PSHDR10_Reinhard
 call :CompileShaderSM4%1 ToneMap ps PSHDR10_Filmic
+call :CompileShaderSM4%1 ToneMap ps PSHDR10_Saturate_SRGB
+call :CompileShaderSM4%1 ToneMap ps PSHDR10_Reinhard_SRGB
 echo.
 
 if %error% == 0 (

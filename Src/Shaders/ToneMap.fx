@@ -36,6 +36,13 @@ VSInputTx VSQuad(uint vI : SV_VertexId)
 
 
 //--------------------------------------------------------------------------------------
+// Pixel shader: pass-through
+float4 PSCopy(VSInputTx pin) : SV_Target0
+{
+    return HDRTexture.Sample(Sampler, pin.TexCoord);
+}
+
+
 // Pixel shader: saturate (clips above 1.0)
 float4 PSSaturate(VSInputTx pin) : SV_Target0
 {
@@ -63,7 +70,41 @@ float4 PSFilmic(VSInputTx pin) : SV_Target0
 }
 
 
-// Pixel shader: HDR10, using Rec.2020 color primaries and ST.2084 curve
+//--------------------------------------------------------------------------------------
+// SRGB, using Rec.709 color primaries and a gamma 2.2 curve
+
+// Pixel shader: sRGB
+float4 PS_SRGB(VSInputTx pin) : SV_Target0
+{
+    float4 hdr = HDRTexture.Sample(Sampler, pin.TexCoord);
+    float3 srgb = LinearToSRGB(hdr.xyz);
+    return float4(srgb, hdr.a);
+}
+
+
+// Pixel shader: saturate (clips above 1.0)
+float4 PSSaturate_SRGB(VSInputTx pin) : SV_Target0
+{
+    float4 hdr = HDRTexture.Sample(Sampler, pin.TexCoord);
+    float3 sdr = saturate(hdr.xyz);
+    float3 srgb = LinearToSRGB(sdr);
+    return float4(srgb, hdr.a);
+}
+
+
+// Pixel shader: reinhard operator
+float4 PSReinhard_SRGB(VSInputTx pin) : SV_Target0
+{
+    float4 hdr = HDRTexture.Sample(Sampler, pin.TexCoord);
+    float3 sdr = ToneMapReinhard(hdr.xyz);
+    float3 srgb = LinearToSRGB(sdr);
+    return float4(srgb, hdr.a);
+}
+
+
+//--------------------------------------------------------------------------------------
+// HDR10, using Rec.2020 color primaries and ST.2084 curve
+
 float3 HDR10(float3 color)
 {
     // Rotate from Rec.709 to Rec.2020 primaries
@@ -129,6 +170,36 @@ MRTOut PSHDR10_Filmic(VSInputTx pin)
 
     float3 sdr = ToneMapFilmic(hdr.xyz);
     output.sdr = float4(sdr, hdr.a);
+
+    return output;
+}
+
+MRTOut PSHDR10_Saturate_SRGB(VSInputTx pin)
+{
+    MRTOut output;
+
+    float4 hdr = HDRTexture.Sample(Sampler, pin.TexCoord);
+    float3 rgb = HDR10(hdr.xyz);
+    output.hdr = float4(rgb, hdr.a);
+
+    float3 sdr = saturate(hdr.xyz);
+    float3 srgb = LinearToSRGB(sdr);
+    output.sdr = float4(srgb, hdr.a);
+
+    return output;
+}
+
+MRTOut PSHDR10_Reinhard_SRGB(VSInputTx pin)
+{
+    MRTOut output;
+
+    float4 hdr = HDRTexture.Sample(Sampler, pin.TexCoord);
+    float3 rgb = HDR10(hdr.xyz);
+    output.hdr = float4(rgb, hdr.a);
+
+    float3 sdr = ToneMapReinhard(hdr.xyz);
+    float3 srgb = LinearToSRGB(sdr);
+    output.sdr = float4(srgb, hdr.a);
 
     return output;
 }

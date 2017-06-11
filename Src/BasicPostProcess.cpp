@@ -507,10 +507,34 @@ BasicPostProcess::~BasicPostProcess()
 }
 
 
-// IEffect methods.
+// IPostProcess methods.
 void BasicPostProcess::Process(_In_ ID3D11DeviceContext* deviceContext, _In_opt_ std::function<void __cdecl()> setCustomState)
 {
     pImpl->Process(deviceContext, setCustomState);
+}
+
+
+// Shader control.
+void BasicPostProcess::SetEffect(Effect fx)
+{
+    if (fx < 0 || fx >= Effect_Max)
+        throw std::out_of_range("Effect not defined");
+
+    pImpl->fx = fx;
+
+    switch (fx)
+    {
+    case Copy:
+    case Monochrome:
+    case Sepia:
+        // These shaders don't use the constant buffer
+        pImpl->SetConstants(false);
+        break;
+
+    default:
+        pImpl->SetConstants(true);
+        break;
+    }
 }
 
 
@@ -560,26 +584,6 @@ void BasicPostProcess::SetSourceTexture(_In_opt_ ID3D11ShaderResourceView* value
     else
     {
         pImpl->texWidth = pImpl->texHeight = 0;
-    }
-}
-
-
-void BasicPostProcess::SetEffect(Effect fx)
-{
-    pImpl->fx = fx;
-
-    switch (fx)
-    {
-    case Copy:
-    case Monochrome:
-    case Sepia:
-        // These shaders don't use the constant buffer
-        pImpl->SetConstants(false);
-        break;
-
-    default:
-        pImpl->SetConstants(true);
-        break;
     }
 }
 

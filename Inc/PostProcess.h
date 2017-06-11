@@ -71,7 +71,7 @@ namespace DirectX
         // IPostProcess methods.
         void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext, _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) override;
 
-        // Mode control
+        // Shader control
         void __cdecl SetEffect(Effect fx);
 
         // Properties
@@ -118,7 +118,7 @@ namespace DirectX
         // IPostProcess methods.
         void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext, _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) override;
 
-        // Mode control
+        // Shader control
         void __cdecl SetEffect(Effect fx);
 
         // Properties
@@ -144,16 +144,21 @@ namespace DirectX
     class ToneMapPostProcess : public IPostProcess
     {
     public:
-        enum Effect
+        enum Operator           // Tone-mapping operator
         {
-            Saturate,
-            Reinhard,
+            None,               // Pass-through
+            Saturate,           // Clamp [0,1]
+            Reinhard,           // x/(1+x)
             Filmic,
-            HDR10,
-            HDR10_Saturate,
-            HDR10_Reinhard,
-            HDR10_Filmic,
-            Effect_Max
+            Operator_Max
+        };
+
+        enum TransferFunction   // Electro-Optical Transfer Function (EOTF)
+        {
+            Linear,             // Pass-through
+            SRGB,               // sRGB (Rec.709 and approximate sRGB display curve)
+            ST2084,             // HDR10 (Rec.2020 color primaries and ST.2084 display curve)
+            TransferFunction_Max
         };
 
         explicit ToneMapPostProcess(_In_ ID3D11Device* device);
@@ -168,8 +173,14 @@ namespace DirectX
         // IPostProcess methods.
         void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext, _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) override;
 
-        // Mode control
-        void __cdecl SetEffect(Effect fx);
+        // Shader control
+        void __cdecl SetOperator(Operator op);
+
+        void __cdecl SetTransferFunction(TransferFunction func);
+
+#if defined(_XBOX_ONE) && defined(_TITLE)
+        void __cdecl SetMRTOutput(bool value = true);
+#endif
 
         // Properties
         void __cdecl SetHDRSourceTexture(_In_opt_ ID3D11ShaderResourceView* value);

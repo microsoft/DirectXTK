@@ -8,8 +8,26 @@
 // http://go.microsoft.com/fwlink/?LinkId=248929
 
 
+// sRGB 
+// https://en.wikipedia.org/wiki/SRGB
+
+// Apply the (approximate) sRGB curve to linear values
+float3 LinearToSRGB(float3 color)
+{
+    return pow(color, 1/2.2f);
+}
+
+
+// (Approximate) sRGB to linear
+float3 SRGBToLinear(float3 srgb)
+{
+    return pow(srgb, 2.2f);
+}
+
+
 // HDR10 Media Profile
 // https://en.wikipedia.org/wiki/High-dynamic-range_video#HDR10
+
 
 // Color rotation matrix to rotate Rec.709 color primaries into Rec.2020
 static const float3x3 from709to2020 =
@@ -48,6 +66,5 @@ float3 ToneMapReinhard(float3 color)
 float3 ToneMapFilmic(float3 color)
 {
     float3 x = max(0.0f, color - 0.004f);
-    return pow((x * (6.2f * x + 0.5f)) / (x * (6.2f * x + 1.7f) + 0.06f), 2.2f);
+    return (x * (6.2f * x + 0.5f)) / (x * (6.2f * x + 1.7f) + 0.06f);
 }
-
