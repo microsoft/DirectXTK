@@ -179,6 +179,7 @@ namespace DirectX
         void __cdecl SetTransferFunction(TransferFunction func);
 
         #if defined(_XBOX_ONE) && defined(_TITLE)
+        // Uses Multiple Render Targets to generate both HDR10 and GameDVR SDR signals
         void __cdecl SetMRTOutput(bool value = true);
         #endif
 
@@ -188,7 +189,7 @@ namespace DirectX
         // Sets exposure value for LDR tonemap operators
         void SetExposure(float exposureValue);
 
-        // Sets ST.2084 display mapping parameter
+        // Sets ST.2084 parameter for how bright white should be in nits
         void SetST2084Parameter(float paperWhiteNits);
 
     private:

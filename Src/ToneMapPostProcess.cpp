@@ -103,7 +103,9 @@ namespace
         { ToneMap_PSReinhard_SRGB,          sizeof(ToneMap_PSReinhard_SRGB) },
         { ToneMap_PSACESFilmic_SRGB,        sizeof(ToneMap_PSACESFilmic_SRGB) },
         { ToneMap_PSHDR10,                  sizeof(ToneMap_PSHDR10) },
+
 #if defined(_XBOX_ONE) && defined(_TITLE)
+        // Shaders that generate both HDR10 and GameDVR SDR signals via Multiple Render Targets.
         { ToneMap_PSHDR10_Saturate,         sizeof(ToneMap_PSHDR10_Saturate) },
         { ToneMap_PSHDR10_Reinhard,         sizeof(ToneMap_PSHDR10_Reinhard) },
         { ToneMap_PSHDR10_ACESFilmic,       sizeof(ToneMap_PSHDR10_ACESFilmic) },
