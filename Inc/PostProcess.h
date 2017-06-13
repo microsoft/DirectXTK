@@ -149,7 +149,7 @@ namespace DirectX
             None,               // Pass-through
             Saturate,           // Clamp [0,1]
             Reinhard,           // x/(1+x)
-            Filmic,
+            ACESFilmic,
             Operator_Max
         };
 
@@ -185,8 +185,11 @@ namespace DirectX
         // Properties
         void __cdecl SetHDRSourceTexture(_In_opt_ ID3D11ShaderResourceView* value);
 
-        // Sets HDR10 display mapping parameter
-        void SetHDR10Parameter(float paperWhiteNits);
+        // Sets exposure value for LDR tonemap operators
+        void SetExposure(float exposureValue);
+
+        // Sets ST.2084 display mapping parameter
+        void SetST2084Parameter(float paperWhiteNits);
 
     private:
         // Private implementation.

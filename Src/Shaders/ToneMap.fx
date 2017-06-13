@@ -13,7 +13,8 @@ sampler Sampler : register(s0);
 
 cbuffer Parameters : register(b0)
 {
-    float4 paperWhiteNits;
+    float linearExposure : packoffset(c0.x);
+    float paperWhiteNits : packoffset(c0.y);
 };
 
 
@@ -47,7 +48,7 @@ float4 PSCopy(VSInputTx pin) : SV_Target0
 float4 PSSaturate(VSInputTx pin) : SV_Target0
 {
     float4 hdr = HDRTexture.Sample(Sampler, pin.TexCoord);
-    float3 sdr = saturate(hdr.xyz);
+    float3 sdr = saturate(hdr.xyz * linearExposure);
     return float4(sdr, hdr.a);
 }
 
@@ -56,16 +57,16 @@ float4 PSSaturate(VSInputTx pin) : SV_Target0
 float4 PSReinhard(VSInputTx pin) : SV_Target0
 {
     float4 hdr = HDRTexture.Sample(Sampler, pin.TexCoord);
-    float3 sdr = ToneMapReinhard(hdr.xyz);
+    float3 sdr = ToneMapReinhard(hdr.xyz * linearExposure);
     return float4(sdr, hdr.a);
 }
 
 
-// Pixel shader: filmic operator
-float4 PSFilmic(VSInputTx pin) : SV_Target0
+// Pixel shader: ACES filmic operator
+float4 PSACESFilmic(VSInputTx pin) : SV_Target0
 {
     float4 hdr = HDRTexture.Sample(Sampler, pin.TexCoord);
-    float3 sdr = ToneMapFilmic(hdr.xyz);
+    float3 sdr = ToneMapACESFilmic(hdr.xyz * linearExposure);
     return float4(sdr, hdr.a);
 }
 
@@ -86,7 +87,7 @@ float4 PS_SRGB(VSInputTx pin) : SV_Target0
 float4 PSSaturate_SRGB(VSInputTx pin) : SV_Target0
 {
     float4 hdr = HDRTexture.Sample(Sampler, pin.TexCoord);
-    float3 sdr = saturate(hdr.xyz);
+    float3 sdr = saturate(hdr.xyz * linearExposure);
     float3 srgb = LinearToSRGB(sdr);
     return float4(srgb, hdr.a);
 }
@@ -96,7 +97,17 @@ float4 PSSaturate_SRGB(VSInputTx pin) : SV_Target0
 float4 PSReinhard_SRGB(VSInputTx pin) : SV_Target0
 {
     float4 hdr = HDRTexture.Sample(Sampler, pin.TexCoord);
-    float3 sdr = ToneMapReinhard(hdr.xyz);
+    float3 sdr = ToneMapReinhard(hdr.xyz * linearExposure);
+    float3 srgb = LinearToSRGB(sdr);
+    return float4(srgb, hdr.a);
+}
+
+
+// Pixel shader: ACES filmic operator
+float4 PSACESFilmic_SRGB(VSInputTx pin) : SV_Target0
+{
+    float4 hdr = HDRTexture.Sample(Sampler, pin.TexCoord);
+    float3 sdr = ToneMapACESFilmic(hdr.xyz * linearExposure);
     float3 srgb = LinearToSRGB(sdr);
     return float4(srgb, hdr.a);
 }
@@ -111,7 +122,7 @@ float3 HDR10(float3 color)
     float3 rgb = mul(from709to2020, color);
 
     // ST.2084 spec defines max nits as 10,000 nits
-    float3 normalized = rgb * paperWhiteNits.x / 10000.f;
+    float3 normalized = rgb * paperWhiteNits / 10000.f;
 
     // Apply ST.2084 curve
     return LinearToST2084(normalized);
@@ -140,7 +151,7 @@ MRTOut PSHDR10_Saturate(VSInputTx pin)
     float3 rgb = HDR10(hdr.xyz);
     output.hdr = float4(rgb, hdr.a);
 
-    float3 sdr = saturate(hdr.xyz);
+    float3 sdr = saturate(hdr.xyz * linearExposure);
     output.sdr = float4(sdr, hdr.a);
 
     return output;
@@ -154,13 +165,13 @@ MRTOut PSHDR10_Reinhard(VSInputTx pin)
     float3 rgb = HDR10(hdr.xyz);
     output.hdr = float4(rgb, hdr.a);
 
-    float3 sdr = ToneMapReinhard(hdr.xyz);
+    float3 sdr = ToneMapReinhard(hdr.xyz * linearExposure);
     output.sdr = float4(sdr, hdr.a);
 
     return output;
 }
 
-MRTOut PSHDR10_Filmic(VSInputTx pin)
+MRTOut PSHDR10_ACESFilmic(VSInputTx pin)
 {
     MRTOut output;
 
@@ -168,7 +179,7 @@ MRTOut PSHDR10_Filmic(VSInputTx pin)
     float3 rgb = HDR10(hdr.xyz);
     output.hdr = float4(rgb, hdr.a);
 
-    float3 sdr = ToneMapFilmic(hdr.xyz);
+    float3 sdr = ToneMapACESFilmic(hdr.xyz * linearExposure);
     output.sdr = float4(sdr, hdr.a);
 
     return output;
@@ -182,7 +193,7 @@ MRTOut PSHDR10_Saturate_SRGB(VSInputTx pin)
     float3 rgb = HDR10(hdr.xyz);
     output.hdr = float4(rgb, hdr.a);
 
-    float3 sdr = saturate(hdr.xyz);
+    float3 sdr = saturate(hdr.xyz * linearExposure);
     float3 srgb = LinearToSRGB(sdr);
     output.sdr = float4(srgb, hdr.a);
 
@@ -197,7 +208,22 @@ MRTOut PSHDR10_Reinhard_SRGB(VSInputTx pin)
     float3 rgb = HDR10(hdr.xyz);
     output.hdr = float4(rgb, hdr.a);
 
-    float3 sdr = ToneMapReinhard(hdr.xyz);
+    float3 sdr = ToneMapReinhard(hdr.xyz * linearExposure);
+    float3 srgb = LinearToSRGB(sdr);
+    output.sdr = float4(srgb, hdr.a);
+
+    return output;
+}
+
+MRTOut PSHDR10_ACESFilmic_SRGB(VSInputTx pin)
+{
+    MRTOut output;
+
+    float4 hdr = HDRTexture.Sample(Sampler, pin.TexCoord);
+    float3 rgb = HDR10(hdr.xyz);
+    output.hdr = float4(rgb, hdr.a);
+
+    float3 sdr = ToneMapACESFilmic(hdr.xyz * linearExposure);
     float3 srgb = LinearToSRGB(sdr);
     output.sdr = float4(srgb, hdr.a);
 

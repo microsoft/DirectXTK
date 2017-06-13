@@ -30,17 +30,19 @@ namespace
     const int Dirty_Parameters      = 0x02;
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    const int PixelShaderCount = 13;
+    const int PixelShaderCount = 15;
     const int ShaderPermutationCount = 24;
 #else
-    const int PixelShaderCount = 8;
+    const int PixelShaderCount = 9;
     const int ShaderPermutationCount = 12;
 #endif
 
     // Constant buffer layout. Must match the shader!
     __declspec(align(16)) struct ToneMapConstants
     {
-        XMVECTOR paperWhiteNits;
+        // linearExposure is .x
+        // paperWhiteNits is .y
+        XMVECTOR parameters;
     };
 
     static_assert((sizeof(ToneMapConstants) % 16) == 0, "CB size not padded correctly");
@@ -55,26 +57,29 @@ namespace
     #include "Shaders/Compiled/XboxOneToneMap_PSCopy.inc"
     #include "Shaders/Compiled/XboxOneToneMap_PSSaturate.inc"
     #include "Shaders/Compiled/XboxOneToneMap_PSReinhard.inc"
-    #include "Shaders/Compiled/XboxOneToneMap_PSFilmic.inc"
+    #include "Shaders/Compiled/XboxOneToneMap_PSACESFilmic.inc"
     #include "Shaders/Compiled/XboxOneToneMap_PS_SRGB.inc"
     #include "Shaders/Compiled/XboxOneToneMap_PSSaturate_SRGB.inc"
     #include "Shaders/Compiled/XboxOneToneMap_PSReinhard_SRGB.inc"
+    #include "Shaders/Compiled/XboxOneToneMap_PSACESFilmic_SRGB.inc"
     #include "Shaders/Compiled/XboxOneToneMap_PSHDR10.inc"
     #include "Shaders/Compiled/XboxOneToneMap_PSHDR10_Saturate.inc"
     #include "Shaders/Compiled/XboxOneToneMap_PSHDR10_Reinhard.inc"
-    #include "Shaders/Compiled/XboxOneToneMap_PSHDR10_Filmic.inc"
+    #include "Shaders/Compiled/XboxOneToneMap_PSHDR10_ACESFilmic.inc"
     #include "Shaders/Compiled/XboxOneToneMap_PSHDR10_Saturate_SRGB.inc"
     #include "Shaders/Compiled/XboxOneToneMap_PSHDR10_Reinhard_SRGB.inc"
+    #include "Shaders/Compiled/XboxOneToneMap_PSHDR10_ACESFilmic_SRGB.inc"
 #else
     #include "Shaders/Compiled/ToneMap_VSQuad.inc"
 
     #include "Shaders/Compiled/ToneMap_PSCopy.inc"
     #include "Shaders/Compiled/ToneMap_PSSaturate.inc"
     #include "Shaders/Compiled/ToneMap_PSReinhard.inc"
-    #include "Shaders/Compiled/ToneMap_PSFilmic.inc"
+    #include "Shaders/Compiled/ToneMap_PSACESFilmic.inc"
     #include "Shaders/Compiled/ToneMap_PS_SRGB.inc"
     #include "Shaders/Compiled/ToneMap_PSSaturate_SRGB.inc"
     #include "Shaders/Compiled/ToneMap_PSReinhard_SRGB.inc"
+    #include "Shaders/Compiled/ToneMap_PSACESFilmic_SRGB.inc"
     #include "Shaders/Compiled/ToneMap_PSHDR10.inc"
 #endif
 }
@@ -92,17 +97,19 @@ namespace
         { ToneMap_PSCopy,                   sizeof(ToneMap_PSCopy) },
         { ToneMap_PSSaturate,               sizeof(ToneMap_PSSaturate) },
         { ToneMap_PSReinhard,               sizeof(ToneMap_PSReinhard) },
-        { ToneMap_PSFilmic,                 sizeof(ToneMap_PSFilmic) },
+        { ToneMap_PSACESFilmic,             sizeof(ToneMap_PSACESFilmic) },
         { ToneMap_PS_SRGB,                  sizeof(ToneMap_PS_SRGB) },
         { ToneMap_PSSaturate_SRGB,          sizeof(ToneMap_PSSaturate_SRGB) },
         { ToneMap_PSReinhard_SRGB,          sizeof(ToneMap_PSReinhard_SRGB) },
+        { ToneMap_PSACESFilmic_SRGB,        sizeof(ToneMap_PSACESFilmic_SRGB) },
         { ToneMap_PSHDR10,                  sizeof(ToneMap_PSHDR10) },
 #if defined(_XBOX_ONE) && defined(_TITLE)
         { ToneMap_PSHDR10_Saturate,         sizeof(ToneMap_PSHDR10_Saturate) },
         { ToneMap_PSHDR10_Reinhard,         sizeof(ToneMap_PSHDR10_Reinhard) },
-        { ToneMap_PSHDR10_Filmic,           sizeof(ToneMap_PSHDR10_Filmic) },
+        { ToneMap_PSHDR10_ACESFilmic,       sizeof(ToneMap_PSHDR10_ACESFilmic) },
         { ToneMap_PSHDR10_Saturate_SRGB,    sizeof(ToneMap_PSHDR10_Saturate_SRGB) },
         { ToneMap_PSHDR10_Reinhard_SRGB,    sizeof(ToneMap_PSHDR10_Reinhard_SRGB) },
+        { ToneMap_PSHDR10_ACESFilmic_SRGB,  sizeof(ToneMap_PSHDR10_ACESFilmic_SRGB) },
 #endif
     };
 
@@ -114,38 +121,38 @@ namespace
         0,  // Copy
         1,  // Saturate
         2,  // Reinhard
-        3,  // Filmic
+        3,  // ACES Filmic
 
         // Gamam22 EOTF
         4,  // SRGB
         5,  // Saturate_SRGB
         6,  // Reinhard_SRGB
-        3,  // Filmic
+        7,  // ACES Filmic
 
-        // ST2084 EOTF
-        7,  // HDR10
-        7,  // HDR10
-        7,  // HDR10
-        7,  // HDR10
+        // ST.2084 EOTF
+        8,  // HDR10
+        8,  // HDR10
+        8,  // HDR10
+        8,  // HDR10
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
         // MRT Linear EOTF
-        8,  // HDR10+Saturate
-        8,  // HDR10+Saturate
-        9,  // HDR10+Reinhard
-        10, // HDR10+Filmic
+        9,  // HDR10+Saturate
+        9,  // HDR10+Saturate
+        10, // HDR10+Reinhard
+        11, // HDR10+ACESFilmic
 
         // MRT Gamma22 EOTF
-        11, // HDR10+Saturate_SRGB
-        11, // HDR10+Saturate_SRGB
-        12, // HDR10+Reinhard_SRGB
-        10, // HDR10+Filmic
+        12, // HDR10+Saturate_SRGB
+        12, // HDR10+Saturate_SRGB
+        13, // HDR10+Reinhard_SRGB
+        14,  // HDR10+ACESFilmic
 
-        // MRT ST 2084 EOTF
-        8,  // HDR10+Saturate
-        8,  // HDR10+Saturate
-        8,  // HDR10+Saturate
-        8,  // HDR10+Saturate
+        // MRT ST.2084 EOTF
+        9,  // HDR10+Saturate
+        9,  // HDR10+Saturate
+        10, // HDR10+Reinhard
+        11, // HDR10+ACESFilmic
 #endif
     };
 
@@ -235,7 +242,6 @@ public:
 
     void Process(_In_ ID3D11DeviceContext* deviceContext, std::function<void __cdecl()>& setCustomState);
 
-    void SetConstants(bool value = true) { mUseConstants = value; mDirtyFlags = INT_MAX; }
     void SetDirtyFlag() { mDirtyFlags = INT_MAX; }
 
     int GetCurrentShaderPermutation() const;
@@ -243,6 +249,7 @@ public:
     // Fields.
     ToneMapConstants                        constants;
     ComPtr<ID3D11ShaderResourceView>        hdrTexture;
+    float                                   linearExposure;
     float                                   paperWhiteNits;
 
     Operator                                op;
@@ -250,7 +257,6 @@ public:
     bool                                    mrt;
 
 private:
-    bool                                    mUseConstants;
     int                                     mDirtyFlags;
 
     ConstantBuffer<ToneMapConstants>        mConstantBuffer;
@@ -270,11 +276,11 @@ SharedResourcePool<ID3D11Device*, DeviceResources> ToneMapPostProcess::Impl::dev
 ToneMapPostProcess::Impl::Impl(_In_ ID3D11Device* device)
     : mConstantBuffer(device),
     mDeviceResources(deviceResourcesPool.DemandCreate(device)),
+    linearExposure(1.f),
     paperWhiteNits(200.f),
     op(None),
     func(Linear),
     mrt(false),
-    mUseConstants(false),
     mDirtyFlags(INT_MAX),
     constants{}
 {
@@ -303,39 +309,36 @@ void ToneMapPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, 
     deviceContext->PSSetShader(pixelShader, nullptr, 0);
 
     // Set constants.
-    if (func == ST2084 || mrt)
+    if (mDirtyFlags & Dirty_Parameters)
     {
-        if (mDirtyFlags & Dirty_Parameters)
-        {
-            mDirtyFlags &= ~Dirty_Parameters;
-            mDirtyFlags |= Dirty_ConstantBuffer;
+        mDirtyFlags &= ~Dirty_Parameters;
+        mDirtyFlags |= Dirty_ConstantBuffer;
 
-            constants.paperWhiteNits = XMVectorSet(paperWhiteNits, 0.f, 0.f, 0.f);
-        }
+        constants.parameters = XMVectorSet(linearExposure, paperWhiteNits, 0.f, 0.f);
+    }
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
-        void *grfxMemory;
-        mConstantBuffer.SetData(deviceContext, constants, &grfxMemory);
+    void *grfxMemory;
+    mConstantBuffer.SetData(deviceContext, constants, &grfxMemory);
 
-        Microsoft::WRL::ComPtr<ID3D11DeviceContextX> deviceContextX;
-        ThrowIfFailed(deviceContext->QueryInterface(IID_GRAPHICS_PPV_ARGS(deviceContextX.GetAddressOf())));
+    Microsoft::WRL::ComPtr<ID3D11DeviceContextX> deviceContextX;
+    ThrowIfFailed(deviceContext->QueryInterface(IID_GRAPHICS_PPV_ARGS(deviceContextX.GetAddressOf())));
 
-        auto buffer = mConstantBuffer.GetBuffer();
+    auto buffer = mConstantBuffer.GetBuffer();
 
-        deviceContextX->PSSetPlacementConstantBuffer(0, buffer, grfxMemory);
+    deviceContextX->PSSetPlacementConstantBuffer(0, buffer, grfxMemory);
 #else
-        if (mDirtyFlags & Dirty_ConstantBuffer)
-        {
-            mDirtyFlags &= ~Dirty_ConstantBuffer;
-            mConstantBuffer.SetData(deviceContext, constants);
-        }
-
-        // Set the constant buffer.
-        auto buffer = mConstantBuffer.GetBuffer();
-
-        deviceContext->PSSetConstantBuffers(0, 1, &buffer);
-#endif
+    if (mDirtyFlags & Dirty_ConstantBuffer)
+    {
+        mDirtyFlags &= ~Dirty_ConstantBuffer;
+        mConstantBuffer.SetData(deviceContext, constants);
     }
+
+    // Set the constant buffer.
+    auto buffer = mConstantBuffer.GetBuffer();
+
+    deviceContext->PSSetConstantBuffers(0, 1, &buffer);
+#endif
 
     if (setCustomState)
     {
@@ -411,7 +414,6 @@ void ToneMapPostProcess::SetTransferFunction(TransferFunction func)
         throw std::out_of_range("Electro-optical transfer function not defined");
 
     pImpl->func = func;
-    pImpl->SetConstants((func == ST2084) ? true : false);
 }
 
 
@@ -430,7 +432,14 @@ void ToneMapPostProcess::SetHDRSourceTexture(_In_opt_ ID3D11ShaderResourceView* 
 }
 
 
-void ToneMapPostProcess::SetHDR10Parameter(float paperWhiteNits)
+void ToneMapPostProcess::SetExposure(float exposureValue)
+{
+    pImpl->linearExposure = powf(2.f, exposureValue);
+    pImpl->SetDirtyFlag();
+}
+
+
+void ToneMapPostProcess::SetST2084Parameter(float paperWhiteNits)
 {
     pImpl->paperWhiteNits = paperWhiteNits;
     pImpl->SetDirtyFlag();

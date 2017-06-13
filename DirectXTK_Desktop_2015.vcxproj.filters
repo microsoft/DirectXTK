@@ -1070,21 +1070,6 @@
     <None Include="Src\Shaders\Compiled\PostProcess_VSQuad.inc">
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
-    <None Include="Src\Shaders\Compiled\ToneMap_PSFilmic.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\ToneMap_PSHDR10.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\ToneMap_PSReinhard.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\ToneMap_PSSaturate.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\ToneMap_VSQuad.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
     <None Include="Src\Shaders\Compiled\PostProcess_PSBloomBlur.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
@@ -1118,7 +1103,49 @@
     <None Include="Src\Shaders\Compiled\PostProcess_VSQuad.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
-    <None Include="Src\Shaders\Compiled\ToneMap_PSFilmic.pdb">
+    <None Include="Src\Shaders\Utilities.fxh">
+      <Filter>Src\Shaders\Shared</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\ToneMap_PS_SRGB.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\ToneMap_PSACESFilmic.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\ToneMap_PSACESFilmic_SRGB.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\ToneMap_PSCopy.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\ToneMap_PSHDR10.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\ToneMap_PSReinhard.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\ToneMap_PSReinhard_SRGB.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\ToneMap_PSSaturate.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\ToneMap_PSSaturate_SRGB.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\ToneMap_VSQuad.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\ToneMap_PS_SRGB.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\ToneMap_PSACESFilmic.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\ToneMap_PSACESFilmic_SRGB.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\ToneMap_PSCopy.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\ToneMap_PSHDR10.pdb">
@@ -1127,37 +1154,16 @@
     <None Include="Src\Shaders\Compiled\ToneMap_PSReinhard.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
-    <None Include="Src\Shaders\Compiled\ToneMap_PSSaturate.pdb">
-      <Filter>Src\Shaders\Symbols</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\ToneMap_VSQuad.pdb">
-      <Filter>Src\Shaders\Symbols</Filter>
-    </None>
-    <None Include="Src\Shaders\Utilities.fxh">
-      <Filter>Src\Shaders\Shared</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\ToneMap_PS_SRGB.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\ToneMap_PSCopy.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\ToneMap_PSReinhard_SRGB.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\ToneMap_PSSaturate_SRGB.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\ToneMap_PS_SRGB.pdb">
-      <Filter>Src\Shaders\Symbols</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\ToneMap_PSCopy.pdb">
-      <Filter>Src\Shaders\Symbols</Filter>
-    </None>
     <None Include="Src\Shaders\Compiled\ToneMap_PSReinhard_SRGB.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
+    <None Include="Src\Shaders\Compiled\ToneMap_PSSaturate.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
     <None Include="Src\Shaders\Compiled\ToneMap_PSSaturate_SRGB.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\ToneMap_VSQuad.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
   </ItemGroup>

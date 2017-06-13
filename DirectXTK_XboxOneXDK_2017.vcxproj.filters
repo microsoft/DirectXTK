@@ -1122,30 +1122,6 @@
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSSepia.inc">
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
-    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSFilmic.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_Filmic.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_Reinhard.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_Saturate.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSReinhard.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSSaturate.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\XboxOneToneMap_VSQuad.inc">
-      <Filter>Src\Shaders\Compiled</Filter>
-    </None>
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSBloomBlur.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
@@ -1173,67 +1149,103 @@
     <None Include="Src\Shaders\Compiled\XboxOnePostProcess_PSSepia.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
-    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSFilmic.pdb">
-      <Filter>Src\Shaders\Symbols</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10.pdb">
-      <Filter>Src\Shaders\Symbols</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_Filmic.pdb">
-      <Filter>Src\Shaders\Symbols</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_Reinhard.pdb">
-      <Filter>Src\Shaders\Symbols</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_Saturate.pdb">
-      <Filter>Src\Shaders\Symbols</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSReinhard.pdb">
-      <Filter>Src\Shaders\Symbols</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSSaturate.pdb">
-      <Filter>Src\Shaders\Symbols</Filter>
-    </None>
-    <None Include="Src\Shaders\Compiled\XboxOneToneMap_VSQuad.pdb">
-      <Filter>Src\Shaders\Symbols</Filter>
-    </None>
     <None Include="Src\Shaders\Utilities.fxh">
       <Filter>Src\Shaders\Shared</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_PS_SRGB.inc">
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSACESFilmic.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSACESFilmic_SRGB.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSCopy.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_ACESFilmic.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_ACESFilmic_SRGB.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_Reinhard.inc">
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_Reinhard_SRGB.inc">
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_Saturate.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_Saturate_SRGB.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSReinhard.inc">
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSReinhard_SRGB.inc">
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSSaturate.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSSaturate_SRGB.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_VSQuad.inc">
       <Filter>Src\Shaders\Compiled</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_PS_SRGB.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSACESFilmic.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSACESFilmic_SRGB.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSCopy.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_ACESFilmic.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_ACESFilmic_SRGB.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_Reinhard.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_Reinhard_SRGB.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_Saturate.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSHDR10_Saturate_SRGB.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSReinhard.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSReinhard_SRGB.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSSaturate.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
     <None Include="Src\Shaders\Compiled\XboxOneToneMap_PSSaturate_SRGB.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneToneMap_VSQuad.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
   </ItemGroup>

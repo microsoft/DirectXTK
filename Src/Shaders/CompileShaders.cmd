@@ -190,19 +190,21 @@ call :CompileShaderSM4%1 ToneMap vs VSQuad
 call :CompileShaderSM4%1 ToneMap ps PSCopy
 call :CompileShaderSM4%1 ToneMap ps PSSaturate
 call :CompileShaderSM4%1 ToneMap ps PSReinhard
-call :CompileShaderSM4%1 ToneMap ps PSFilmic
+call :CompileShaderSM4%1 ToneMap ps PSACESFilmic
 call :CompileShaderSM4%1 ToneMap ps PS_SRGB
 call :CompileShaderSM4%1 ToneMap ps PSSaturate_SRGB
 call :CompileShaderSM4%1 ToneMap ps PSReinhard_SRGB
+call :CompileShaderSM4%1 ToneMap ps PSACESFilmic_SRGB
 call :CompileShaderSM4%1 ToneMap ps PSHDR10
 
 if NOT %1.==xbox. goto skipxboxonly
 
 call :CompileShaderSM4xbox ToneMap ps PSHDR10_Saturate
 call :CompileShaderSM4xbox ToneMap ps PSHDR10_Reinhard
-call :CompileShaderSM4xbox ToneMap ps PSHDR10_Filmic
+call :CompileShaderSM4xbox ToneMap ps PSHDR10_ACESFilmic
 call :CompileShaderSM4xbox ToneMap ps PSHDR10_Saturate_SRGB
 call :CompileShaderSM4xbox ToneMap ps PSHDR10_Reinhard_SRGB
+call :CompileShaderSM4xbox ToneMap ps PSHDR10_ACESFilmic_SRGB
 
 :skipxboxonly
 
