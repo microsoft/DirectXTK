@@ -12,14 +12,14 @@
 // https://en.wikipedia.org/wiki/SRGB
 
 // Apply the (approximate) sRGB curve to linear values
-float3 LinearToSRGB(float3 color)
+float3 LinearToSRGBEst(float3 color)
 {
     return pow(abs(color), 1/2.2f);
 }
 
 
 // (Approximate) sRGB to linear
-float3 SRGBToLinear(float3 srgb)
+float3 SRGBToLinearEst(float3 srgb)
 {
     return pow(abs(srgb), 2.2f);
 }
