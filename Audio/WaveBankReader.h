@@ -28,6 +28,9 @@ namespace DirectX
     public:
         WaveBankReader();
 
+        WaveBankReader(WaveBankReader&&) = default;
+        WaveBankReader& operator= (WaveBankReader&&) = default;
+
         WaveBankReader(WaveBankReader const&) = delete;
         WaveBankReader& operator= (WaveBankReader const&) = delete;
 
