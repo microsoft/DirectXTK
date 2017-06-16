@@ -4,16 +4,18 @@ DirectXTK - the DirectX Tool Kit for DirectX 11
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-April 24, 2017
+June x, 2017
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Universal Windows Platform (UWP) apps for Windows 10,
 Windows Store apps, Windows phone 8.1 applications, Xbox One exclusive apps,
-Windows 8.x Win32 desktop applications, Windows 7 applications, and
-Windows Vista Direct3D 11.0 applications.
+Windows 8.x Win32 desktop applications, Windows 7 Service Pack 1 applications, and
+Windows Vista Service Pack 2 Direct3D 11.0 applications.
 
-This code is designed to build with Visual Studio 2013 or 2015. It is recommended that you
-make use of VS 2013 Update 5 or VS 2015 Update 3 and Windows 7 Service Pack 1 or later.
+This code is designed to build with Visual Studio 2013 Update 5, Visual Studio 2015 Update 3,
+or Visual Studio 2017. It is recommended that you make use of VS 2015 Update 3, Windows Tools
+1.4.1, and the Windows 10 Anniversary Update SDK (14393) or VS 2017 with the Windows 10
+Creators Update SDK (15063).
 
 These components are designed to work without requiring any content from the DirectX SDK. For details,
 see "Where is the DirectX SDK?" <http://msdn.microsoft.com/en-us/library/ee663275.aspx>.
@@ -32,6 +34,7 @@ Inc\
     Keyboard.h - keyboard state tracking helper
     Model.h - draws meshes loaded from .CMO, .SDKMESH, or .VBO files
     Mouse.h - mouse helper
+    PostProcess.h - set of built-in shaders for common post-processing operations
     PrimitiveBatch.h - simple and efficient way to draw user primitives
     ScreenGrab.h - light-weight screen shot saver
     SimpleMath.h - simplified C++ wrapper for DirectXMath
@@ -78,6 +81,12 @@ https://opensource.microsoft.com/codeofconduct/
 ---------------
 RELEASE HISTORY
 ---------------
+
+June x, 2017
+    Post-processing support
+    SDKMESH loader fix when loading legacy files with all zero materials
+    DirectXTK for Audio: Minor fixes for environmental audio
+    Minor code cleanup
 
 April 24, 2017
     VS 2017 project updates
