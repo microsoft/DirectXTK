@@ -15,6 +15,7 @@
 #include "PostProcess.h"
 
 #include "AlignedNew.h"
+#include "CommonStates.h"
 #include "ConstantBuffer.h"
 #include "DemandCreate.h"
 #include "DirectXHelpers.h"
@@ -78,34 +79,9 @@ namespace
     {
     public:
         DeviceResources(_In_ ID3D11Device* device)
-            : mDevice(device)
+            : mDevice(device),
+            stateObjects(device)
         { }
-
-        // Gets or lazily creates the sampler.
-        ID3D11SamplerState* GetSampler()
-        {
-            return DemandCreate(mSampler, mMutex, [&](ID3D11SamplerState** pResult) -> HRESULT
-            {
-                static const D3D11_SAMPLER_DESC s_sampler =
-                {
-                    D3D11_FILTER_MIN_MAG_MIP_LINEAR,
-                    D3D11_TEXTURE_ADDRESS_CLAMP, D3D11_TEXTURE_ADDRESS_CLAMP, D3D11_TEXTURE_ADDRESS_CLAMP,
-                    0.f,
-                    D3D11_MAX_MAXANISOTROPY,
-                    D3D11_COMPARISON_NEVER,
-                    { 0.f, 0.f, 0.f, 0.f },
-                    0.f,
-                    FLT_MAX
-                };
-
-                HRESULT hr = mDevice->CreateSamplerState(&s_sampler, pResult);
-
-                if (SUCCEEDED(hr))
-                    SetDebugObjectName(*pResult, "DualPostProcess");
-
-                return hr;
-            });
-        }
 
         // Gets or lazily creates the vertex shader.
         ID3D11VertexShader* GetVertexShader()
@@ -138,9 +114,10 @@ namespace
             });
         }
 
+        CommonStates                stateObjects;
+
     protected:
         ComPtr<ID3D11Device>        mDevice;
-        ComPtr<ID3D11SamplerState>  mSampler;
         ComPtr<ID3D11VertexShader>  mVertexShader;
         ComPtr<ID3D11PixelShader>   mPixelShaders[DualPostProcess::Effect_Max];
         std::mutex                  mMutex;
@@ -212,8 +189,13 @@ void DualPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, std
     ID3D11ShaderResourceView* textures[2] = { texture.Get(), texture2.Get() };
     deviceContext->PSSetShaderResources(0, 2, textures);
 
-    auto sampler = mDeviceResources->GetSampler();
+    auto sampler = mDeviceResources->stateObjects.LinearClamp();
     deviceContext->PSSetSamplers(0, 1, &sampler);
+
+    // Set state objects.
+    deviceContext->OMSetBlendState(mDeviceResources->stateObjects.Opaque(), nullptr, 0xffffffff);
+    deviceContext->OMSetDepthStencilState(mDeviceResources->stateObjects.DepthNone(), 0);
+    deviceContext->RSSetState(mDeviceResources->stateObjects.CullNone());
 
     // Set shaders.
     auto vertexShader = mDeviceResources->GetVertexShader();
