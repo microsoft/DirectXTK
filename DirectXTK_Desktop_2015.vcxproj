@@ -29,6 +29,7 @@
     <ClInclude Include="Inc\Keyboard.h" />
     <ClInclude Include="Inc\Model.h" />
     <ClInclude Include="Inc\Mouse.h" />
+    <ClInclude Include="Inc\PostProcess.h" />
     <ClInclude Include="Inc\SimpleMath.h" />
     <ClInclude Include="Inc\SimpleMath.inl" />
     <ClInclude Include="Inc\ScreenGrab.h" />
@@ -55,10 +56,12 @@
   <ItemGroup>
     <ClCompile Include="Src\AlphaTestEffect.cpp" />
     <ClCompile Include="Src\BasicEffect.cpp" />
+    <ClCompile Include="Src\BasicPostProcess.cpp" />
     <ClCompile Include="Src\CommonStates.cpp" />
     <ClCompile Include="Src\DDSTextureLoader.cpp" />
     <ClCompile Include="Src\DGSLEffect.cpp" />
     <ClCompile Include="Src\DGSLEffectFactory.cpp" />
+    <ClCompile Include="Src\DualPostProcess.cpp" />
     <ClCompile Include="Src\DualTextureEffect.cpp" />
     <ClCompile Include="Src\BinaryReader.cpp" />
     <ClCompile Include="Src\EffectCommon.cpp" />
@@ -87,6 +90,7 @@
     <ClCompile Include="Src\SpriteBatch.cpp" />
     <ClCompile Include="Src\PrimitiveBatch.cpp" />
     <ClCompile Include="Src\SpriteFont.cpp" />
+    <ClCompile Include="Src\ToneMapPostProcess.cpp" />
     <ClCompile Include="Src\VertexTypes.cpp" />
     <ClCompile Include="Src\WICTextureLoader.cpp" />
   </ItemGroup>
@@ -297,6 +301,28 @@
     <None Include="Src\Shaders\Compiled\NormalMapEffect_VSNormalPixelLightingTxVc.pdb" />
     <None Include="Src\Shaders\Compiled\NormalMapEffect_VSNormalPixelLightingTxVcBn.inc" />
     <None Include="Src\Shaders\Compiled\NormalMapEffect_VSNormalPixelLightingTxVcBn.pdb" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSBloomBlur.inc" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSBloomBlur.pdb" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSBloomCombine.inc" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSBloomCombine.pdb" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSBloomExtract.inc" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSBloomExtract.pdb" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSCopy.inc" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSCopy.pdb" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSDownScale2x2.inc" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSDownScale2x2.pdb" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSDownScale4x4.inc" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSDownScale4x4.pdb" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSGaussianBlur5x5.inc" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSGaussianBlur5x5.pdb" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSMerge.inc" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSMerge.pdb" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSMonochrome.inc" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSMonochrome.pdb" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSSepia.inc" />
+    <None Include="Src\Shaders\Compiled\PostProcess_PSSepia.pdb" />
+    <None Include="Src\Shaders\Compiled\PostProcess_VSQuad.inc" />
+    <None Include="Src\Shaders\Compiled\PostProcess_VSQuad.pdb" />
     <None Include="Src\Shaders\Compiled\SkinnedEffect_PSSkinnedPixelLighting.inc" />
     <None Include="Src\Shaders\Compiled\SkinnedEffect_PSSkinnedPixelLighting.pdb" />
     <None Include="Src\Shaders\Compiled\SkinnedEffect_PSSkinnedVertexLighting.inc" />
@@ -343,10 +369,31 @@
     <None Include="Src\Shaders\Compiled\SpriteEffect_SpritePixelShader.pdb" />
     <None Include="Src\Shaders\Compiled\SpriteEffect_SpriteVertexShader.inc" />
     <None Include="Src\Shaders\Compiled\SpriteEffect_SpriteVertexShader.pdb" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSACESFilmic.inc" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSACESFilmic.pdb" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSACESFilmic_SRGB.inc" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSACESFilmic_SRGB.pdb" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSCopy.inc" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSCopy.pdb" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSHDR10.inc" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSHDR10.pdb" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSReinhard.inc" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSReinhard.pdb" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSReinhard_SRGB.inc" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSReinhard_SRGB.pdb" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSSaturate.inc" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSSaturate.pdb" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSSaturate_SRGB.inc" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PSSaturate_SRGB.pdb" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PS_SRGB.inc" />
+    <None Include="Src\Shaders\Compiled\ToneMap_PS_SRGB.pdb" />
+    <None Include="Src\Shaders\Compiled\ToneMap_VSQuad.inc" />
+    <None Include="Src\Shaders\Compiled\ToneMap_VSQuad.pdb" />
     <None Include="Src\Shaders\CompileShaders.cmd" />
     <None Include="Src\Shaders\Lighting.fxh" />
     <None Include="Src\Shaders\SpriteEffect.fx" />
     <None Include="Src\Shaders\Structures.fxh" />
+    <None Include="Src\Shaders\Utilities.fxh" />
     <None Include="Src\TeapotData.inc" />
   </ItemGroup>
   <ItemGroup>
@@ -382,6 +429,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Src\Shaders\NormalMapEffect.fx">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Src\Shaders\PostProcess.fx">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Src\Shaders\ToneMap.fx">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>
@@ -530,8 +585,6 @@
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <Target Name="ATGEnsureShaders" BeforeTargets="PrepareForBuild">
-    <Exec Condition="!Exists('src/Shaders/Compiled/SpriteEffect_SpriteVertexShader.inc')"
-        WorkingDirectory="$(ProjectDir)src/Shaders"
-        Command="CompileShaders" />
+    <Exec Condition="!Exists('src/Shaders/Compiled/SpriteEffect_SpriteVertexShader.inc')" WorkingDirectory="$(ProjectDir)src/Shaders" Command="CompileShaders" />
   </Target>
 </Project>

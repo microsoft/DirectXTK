@@ -1,0 +1,355 @@
+//--------------------------------------------------------------------------------------
+// File: DualPostProcess.cpp
+//
+// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
+// ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+// PARTICULAR PURPOSE.
+//
+// Copyright (c) Microsoft Corporation. All rights reserved.
+//
+// http://go.microsoft.com/fwlink/?LinkId=248929
+//--------------------------------------------------------------------------------------
+
+#include "pch.h"
+#include "PostProcess.h"
+
+#include "AlignedNew.h"
+#include "ConstantBuffer.h"
+#include "DemandCreate.h"
+#include "DirectXHelpers.h"
+#include "SharedResourcePool.h"
+
+using namespace DirectX;
+
+using Microsoft::WRL::ComPtr;
+
+namespace
+{
+    const int c_MaxSamples = 16;
+
+    const int Dirty_ConstantBuffer  = 0x01;
+    const int Dirty_Parameters      = 0x02;
+
+    // Constant buffer layout. Must match the shader!
+    __declspec(align(16)) struct PostProcessConstants
+    {
+        XMVECTOR sampleOffsets[c_MaxSamples];
+        XMVECTOR sampleWeights[c_MaxSamples];
+    };
+
+    static_assert((sizeof(PostProcessConstants) % 16) == 0, "CB size not padded correctly");
+}
+
+// Include the precompiled shader code.
+namespace
+{
+#if defined(_XBOX_ONE) && defined(_TITLE)
+    #include "Shaders/Compiled/XboxOnePostProcess_VSQuad.inc"
+
+    #include "Shaders/Compiled/XboxOnePostProcess_PSMerge.inc"
+    #include "Shaders/Compiled/XboxOnePostProcess_PSBloomCombine.inc"
+#else
+    #include "Shaders/Compiled/PostProcess_VSQuad.inc"
+
+    #include "Shaders/Compiled/PostProcess_PSMerge.inc"
+    #include "Shaders/Compiled/PostProcess_PSBloomCombine.inc"
+#endif
+}
+
+namespace
+{
+    struct ShaderBytecode
+    {
+        void const* code;
+        size_t length;
+    };
+
+    const ShaderBytecode pixelShaders[] =
+    {
+        { PostProcess_PSMerge,              sizeof(PostProcess_PSMerge) },
+        { PostProcess_PSBloomCombine,       sizeof(PostProcess_PSBloomCombine) },
+    };
+
+    static_assert(_countof(pixelShaders) == DualPostProcess::Effect_Max, "array/max mismatch");
+
+    // Factory for lazily instantiating shaders.
+    class DeviceResources
+    {
+    public:
+        DeviceResources(_In_ ID3D11Device* device)
+            : mDevice(device)
+        { }
+
+        // Gets or lazily creates the sampler.
+        ID3D11SamplerState* GetSampler()
+        {
+            return DemandCreate(mSampler, mMutex, [&](ID3D11SamplerState** pResult) -> HRESULT
+            {
+                static const D3D11_SAMPLER_DESC s_sampler =
+                {
+                    D3D11_FILTER_MIN_MAG_MIP_LINEAR,
+                    D3D11_TEXTURE_ADDRESS_CLAMP, D3D11_TEXTURE_ADDRESS_CLAMP, D3D11_TEXTURE_ADDRESS_CLAMP,
+                    0.f,
+                    D3D11_MAX_MAXANISOTROPY,
+                    D3D11_COMPARISON_NEVER,
+                    { 0.f, 0.f, 0.f, 0.f },
+                    0.f,
+                    FLT_MAX
+                };
+
+                HRESULT hr = mDevice->CreateSamplerState(&s_sampler, pResult);
+
+                if (SUCCEEDED(hr))
+                    SetDebugObjectName(*pResult, "DualPostProcess");
+
+                return hr;
+            });
+        }
+
+        // Gets or lazily creates the vertex shader.
+        ID3D11VertexShader* GetVertexShader()
+        {
+            return DemandCreate(mVertexShader, mMutex, [&](ID3D11VertexShader** pResult) -> HRESULT
+            {
+                HRESULT hr = mDevice->CreateVertexShader(PostProcess_VSQuad, sizeof(PostProcess_VSQuad), nullptr, pResult);
+
+                if (SUCCEEDED(hr))
+                    SetDebugObjectName(*pResult, "DualPostProcess");
+
+                return hr;
+            });
+        }
+
+        // Gets or lazily creates the specified pixel shader.
+        ID3D11PixelShader* GetPixelShader(int shaderIndex)
+        {
+            assert(shaderIndex >= 0 && shaderIndex < DualPostProcess::Effect_Max);
+            _Analysis_assume_(shaderIndex >= 0 && shaderIndex < DualPostProcess::Effect_Max);
+
+            return DemandCreate(mPixelShaders[shaderIndex], mMutex, [&](ID3D11PixelShader** pResult) -> HRESULT
+            {
+                HRESULT hr = mDevice->CreatePixelShader(pixelShaders[shaderIndex].code, pixelShaders[shaderIndex].length, nullptr, pResult);
+
+                if (SUCCEEDED(hr))
+                    SetDebugObjectName(*pResult, "DualPostProcess");
+
+                return hr;
+            });
+        }
+
+    protected:
+        ComPtr<ID3D11Device>        mDevice;
+        ComPtr<ID3D11SamplerState>  mSampler;
+        ComPtr<ID3D11VertexShader>  mVertexShader;
+        ComPtr<ID3D11PixelShader>   mPixelShaders[DualPostProcess::Effect_Max];
+        std::mutex                  mMutex;
+    };
+}
+
+class DualPostProcess::Impl : public AlignedNew<PostProcessConstants>
+{
+public:
+    Impl(_In_ ID3D11Device* device);
+
+    void Process(_In_ ID3D11DeviceContext* deviceContext, std::function<void __cdecl()>& setCustomState);
+
+    void SetDirtyFlag() { mDirtyFlags = INT_MAX; }
+
+    // Fields.
+    DualPostProcess::Effect                 fx;
+    PostProcessConstants                    constants;
+    ComPtr<ID3D11ShaderResourceView>        texture;
+    ComPtr<ID3D11ShaderResourceView>        texture2;
+    float                                   mergeWeight1;
+    float                                   mergeWeight2;
+    float                                   bloomIntensity;
+    float                                   bloomBaseIntensity;
+    float                                   bloomSaturation;
+    float                                   bloomBaseSaturation;
+
+private:
+    int                                     mDirtyFlags;
+
+    ConstantBuffer<PostProcessConstants>    mConstantBuffer;
+
+    // Per-device resources.
+    std::shared_ptr<DeviceResources>        mDeviceResources;
+
+    static SharedResourcePool<ID3D11Device*, DeviceResources> deviceResourcesPool;
+};
+
+
+// Global pool of per-device DualPostProcess resources.
+SharedResourcePool<ID3D11Device*, DeviceResources> DualPostProcess::Impl::deviceResourcesPool;
+
+
+// Constructor.
+DualPostProcess::Impl::Impl(_In_ ID3D11Device* device)
+    : mConstantBuffer(device),
+    mDeviceResources(deviceResourcesPool.DemandCreate(device)),
+    fx(DualPostProcess::Merge),
+    mergeWeight1(0.5f),
+    mergeWeight2(0.5f),
+    bloomIntensity(1.25f),
+    bloomBaseIntensity(1.f),
+    bloomSaturation(1.f),
+    bloomBaseSaturation(1.f),
+    mDirtyFlags(INT_MAX),
+    constants{}
+{
+    if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
+    {
+        throw std::exception("DualPostProcess requires Feature Level 10.0 or later");
+    }
+}
+
+
+// Sets our state onto the D3D device.
+void DualPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, std::function<void __cdecl()>& setCustomState)
+{
+    // Set the texture.
+    ID3D11ShaderResourceView* textures[2] = { texture.Get(), texture2.Get() };
+    deviceContext->PSSetShaderResources(0, 2, textures);
+
+    auto sampler = mDeviceResources->GetSampler();
+    deviceContext->PSSetSamplers(0, 1, &sampler);
+
+    // Set shaders.
+    auto vertexShader = mDeviceResources->GetVertexShader();
+    auto pixelShader = mDeviceResources->GetPixelShader(fx);
+
+    deviceContext->VSSetShader(vertexShader, nullptr, 0);
+    deviceContext->PSSetShader(pixelShader, nullptr, 0);
+
+    // Set constants.
+    if (mDirtyFlags & Dirty_Parameters)
+    {
+        mDirtyFlags &= ~Dirty_Parameters;
+        mDirtyFlags |= Dirty_ConstantBuffer;
+
+        switch (fx)
+        {
+        case Merge:
+            constants.sampleWeights[0] = XMVectorReplicate(mergeWeight1);
+            constants.sampleWeights[1] = XMVectorReplicate(mergeWeight2);
+            break;
+
+        case BloomCombine:
+            constants.sampleWeights[0] = XMVectorSet(bloomBaseSaturation, bloomSaturation, 0.f, 0.f);
+            constants.sampleWeights[1] = XMVectorReplicate(bloomBaseIntensity);
+            constants.sampleWeights[2] = XMVectorReplicate(bloomIntensity);
+            break;
+        }
+    }
+
+#if defined(_XBOX_ONE) && defined(_TITLE)
+    void *grfxMemory;
+    mConstantBuffer.SetData(deviceContext, constants, &grfxMemory);
+
+    Microsoft::WRL::ComPtr<ID3D11DeviceContextX> deviceContextX;
+    ThrowIfFailed(deviceContext->QueryInterface(IID_GRAPHICS_PPV_ARGS(deviceContextX.GetAddressOf())));
+
+    auto buffer = mConstantBuffer.GetBuffer();
+
+    deviceContextX->PSSetPlacementConstantBuffer(0, buffer, grfxMemory);
+#else
+    if (mDirtyFlags & Dirty_ConstantBuffer)
+    {
+        mDirtyFlags &= ~Dirty_ConstantBuffer;
+        mConstantBuffer.SetData(deviceContext, constants);
+    }
+
+    // Set the constant buffer.
+    auto buffer = mConstantBuffer.GetBuffer();
+
+    deviceContext->PSSetConstantBuffers(0, 1, &buffer);
+#endif
+
+    if (setCustomState)
+    {
+        setCustomState();
+    }
+
+    // Draw quad.
+    deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+
+    deviceContext->Draw(4, 0);
+}
+
+
+// Public constructor.
+DualPostProcess::DualPostProcess(_In_ ID3D11Device* device)
+  : pImpl(new Impl(device))
+{
+}
+
+
+// Move constructor.
+DualPostProcess::DualPostProcess(DualPostProcess&& moveFrom)
+  : pImpl(std::move(moveFrom.pImpl))
+{
+}
+
+
+// Move assignment.
+DualPostProcess& DualPostProcess::operator= (DualPostProcess&& moveFrom)
+{
+    pImpl = std::move(moveFrom.pImpl);
+    return *this;
+}
+
+
+// Public destructor.
+DualPostProcess::~DualPostProcess()
+{
+}
+
+
+// IPostProcess methods.
+void DualPostProcess::Process(_In_ ID3D11DeviceContext* deviceContext, _In_opt_ std::function<void __cdecl()> setCustomState)
+{
+    pImpl->Process(deviceContext, setCustomState);
+}
+
+
+// Shader control.
+void DualPostProcess::SetEffect(Effect fx)
+{
+    if (fx < 0 || fx >= Effect_Max)
+        throw std::out_of_range("Effect not defined");
+
+    pImpl->fx = fx;
+    pImpl->SetDirtyFlag();
+}
+
+
+// Properties
+void DualPostProcess::SetSourceTexture(_In_opt_ ID3D11ShaderResourceView* value)
+{
+    pImpl->texture = value;
+}
+
+
+void DualPostProcess::SetSourceTexture2(_In_opt_ ID3D11ShaderResourceView* value)
+{
+    pImpl->texture2 = value;
+}
+
+
+void DualPostProcess::SetMergeParameters(float weight1, float weight2)
+{
+    pImpl->mergeWeight1 = weight1;
+    pImpl->mergeWeight2 = weight2;
+    pImpl->SetDirtyFlag();
+}
+
+
+void DualPostProcess::SetBloomCombineParameters(float bloom, float base, float bloomSaturation, float baseSaturation)
+{
+    pImpl->bloomIntensity = bloom;
+    pImpl->bloomBaseIntensity = base;
+    pImpl->bloomSaturation = bloomSaturation;
+    pImpl->bloomBaseSaturation = baseSaturation;
+    pImpl->SetDirtyFlag();
+}

@@ -173,6 +173,41 @@ call :CompileShaderHLSL%1 DGSLPhong ps mainTx
 call :CompileShaderHLSL%1 DGSLUnlit ps mainTxTk
 call :CompileShaderHLSL%1 DGSLLambert ps mainTxTk
 call :CompileShaderHLSL%1 DGSLPhong ps mainTxTk
+
+call :CompileShaderSM4%1 PostProcess vs VSQuad
+call :CompileShaderSM4%1 PostProcess ps PSCopy
+call :CompileShaderSM4%1 PostProcess ps PSMonochrome
+call :CompileShaderSM4%1 PostProcess ps PSSepia
+call :CompileShaderSM4%1 PostProcess ps PSDownScale2x2
+call :CompileShaderSM4%1 PostProcess ps PSDownScale4x4
+call :CompileShaderSM4%1 PostProcess ps PSGaussianBlur5x5
+call :CompileShaderSM4%1 PostProcess ps PSBloomExtract
+call :CompileShaderSM4%1 PostProcess ps PSBloomBlur
+call :CompileShaderSM4%1 PostProcess ps PSMerge
+call :CompileShaderSM4%1 PostProcess ps PSBloomCombine
+
+call :CompileShaderSM4%1 ToneMap vs VSQuad
+call :CompileShaderSM4%1 ToneMap ps PSCopy
+call :CompileShaderSM4%1 ToneMap ps PSSaturate
+call :CompileShaderSM4%1 ToneMap ps PSReinhard
+call :CompileShaderSM4%1 ToneMap ps PSACESFilmic
+call :CompileShaderSM4%1 ToneMap ps PS_SRGB
+call :CompileShaderSM4%1 ToneMap ps PSSaturate_SRGB
+call :CompileShaderSM4%1 ToneMap ps PSReinhard_SRGB
+call :CompileShaderSM4%1 ToneMap ps PSACESFilmic_SRGB
+call :CompileShaderSM4%1 ToneMap ps PSHDR10
+
+if NOT %1.==xbox. goto skipxboxonly
+
+call :CompileShaderSM4xbox ToneMap ps PSHDR10_Saturate
+call :CompileShaderSM4xbox ToneMap ps PSHDR10_Reinhard
+call :CompileShaderSM4xbox ToneMap ps PSHDR10_ACESFilmic
+call :CompileShaderSM4xbox ToneMap ps PSHDR10_Saturate_SRGB
+call :CompileShaderSM4xbox ToneMap ps PSHDR10_Reinhard_SRGB
+call :CompileShaderSM4xbox ToneMap ps PSHDR10_ACESFilmic_SRGB
+
+:skipxboxonly
+
 echo.
 
 if %error% == 0 (
@@ -191,6 +226,13 @@ echo %fxc%
 %fxc% || set error=1
 exit /b
 
+:CompileShaderSM4
+set fxc=fxc /nologo %1.fx /T%2_4_0 /Zi /Zpc /Qstrip_reflect /Qstrip_debug /E%3 /FhCompiled\%1_%3.inc /FdCompiled\%1_%3.pdb /Vn%1_%3
+echo.
+echo %fxc%
+%fxc% || set error=1
+exit /b
+
 :CompileShaderHLSL
 set fxc=fxc /nologo %1.hlsl /T%2_4_0_level_9_1 /Zi /Zpc /Qstrip_reflect /Qstrip_debug /E%3 /FhCompiled\%1_%3.inc /FdCompiled\%1_%3.pdb /Vn%1_%3
 echo.
@@ -199,6 +241,7 @@ echo %fxc%
 exit /b
 
 :CompileShaderxbox
+:CompileShaderSM4xbox
 set fxc=%XBOXFXC% /nologo %1.fx /T%2_5_0 /Zpc /Zi /Qstrip_reflect /Qstrip_debug /D__XBOX_DISABLE_SHADER_NAME_EMPLACEMENT /E%3 /FhCompiled\XboxOne%1_%3.inc /FdCompiled\XboxOne%1_%3.pdb /Vn%1_%3
 echo.
 echo %fxc%
