@@ -493,7 +493,7 @@ void XM_CALLCONV SpriteBatch::Impl::Draw(ID3D11ShaderResourceView* texture,
     else
     {
         // No explicit source region, so use the entire texture.
-        static const XMVECTORF32 wholeTexture = { 0, 0, 1, 1 };
+        static const XMVECTORF32 wholeTexture = { { { 0, 0, 1, 1 } } };
 
         XMStoreFloat4A(&sprite->source, wholeTexture);
     }
@@ -699,6 +699,9 @@ void SpriteBatch::Impl::SortSprites()
                 return x->originRotationDepth.w < y->originRotationDepth.w;
             });
             break;
+
+        default:
+            break;
     }
 }
 
@@ -871,10 +874,10 @@ void XM_CALLCONV SpriteBatch::Impl::RenderSprite(SpriteInfo const* sprite,
     // The four corner vertices are computed by transforming these unit-square positions.
     static XMVECTORF32 cornerOffsets[VerticesPerSprite] =
     {
-        { 0, 0 },
-        { 1, 0 },
-        { 0, 1 },
-        { 1, 1 },
+        { { { 0, 0, 0, 0 } } },
+        { { { 1, 0, 0, 0 } } },
+        { { { 0, 1, 0, 0 } } },
+        { { { 1, 1, 0, 0 } } },
     };
 
     // Tricksy alert! Texture coordinates are computed from the same cornerOffsets

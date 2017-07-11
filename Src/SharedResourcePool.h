@@ -78,9 +78,9 @@ namespace DirectX
         struct WrappedData : public TData
         {
             WrappedData(TKey key, std::shared_ptr<ResourceMap> const& resourceMap, TConstructorArgs... args)
-              : mKey(key),
-                mResourceMap(resourceMap),
-                TData(key, args...)
+              : TData(key, args...),
+                mKey(key),
+                mResourceMap(resourceMap)
             { }
 
             ~WrappedData()

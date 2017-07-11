@@ -228,11 +228,11 @@ public:
         specularEnabled(false),
         alphaDiscardEnabled(false),
         weightsPerVertex( enableSkinning ? 4 : 0 ),
-        mPixelShader( pixelShader ),
         mCBMaterial( device ),
         mCBLight( device ),
         mCBObject( device ),
         mCBMisc( device ),
+        mPixelShader( pixelShader ),
         mDeviceResources( deviceResourcesPool.DemandCreate(device) )
     {
         static_assert( _countof(DGSLEffectTraits::VertexShaderBytecode) == DGSLEffectTraits::VertexShaderCount, "array/max mismatch" );
@@ -929,8 +929,6 @@ void DGSLEffect::ResetBoneTransforms()
     }
 
     auto boneConstant = pImpl->constants.bones.Bones;
-
-    XMMATRIX id = XMMatrixIdentity();
 
     for(size_t i = 0; i < MaxBones; ++i)
     {

@@ -87,6 +87,7 @@ namespace
 }
 
 
+template<>
 const ShaderBytecode EffectBase<AlphaTestEffectTraits>::VertexShaderBytecode[] =
 {
     { AlphaTestEffect_VSAlphaTest,        sizeof(AlphaTestEffect_VSAlphaTest)        },
@@ -96,6 +97,7 @@ const ShaderBytecode EffectBase<AlphaTestEffectTraits>::VertexShaderBytecode[] =
 };
 
 
+template<>
 const int EffectBase<AlphaTestEffectTraits>::VertexShaderIndices[] =
 {
     0,      // lt/gt
@@ -110,6 +112,7 @@ const int EffectBase<AlphaTestEffectTraits>::VertexShaderIndices[] =
 };
 
 
+template<>
 const ShaderBytecode EffectBase<AlphaTestEffectTraits>::PixelShaderBytecode[] =
 {
     { AlphaTestEffect_PSAlphaTestLtGt,      sizeof(AlphaTestEffect_PSAlphaTestLtGt)      },
@@ -119,6 +122,7 @@ const ShaderBytecode EffectBase<AlphaTestEffectTraits>::PixelShaderBytecode[] =
 };
 
 
+template<>
 const int EffectBase<AlphaTestEffectTraits>::PixelShaderIndices[] =
 {
     0,      // lt/gt
@@ -134,6 +138,7 @@ const int EffectBase<AlphaTestEffectTraits>::PixelShaderIndices[] =
 
 
 // Global pool of per-device AlphaTestEffect resources.
+template<>
 SharedResourcePool<ID3D11Device*, EffectBase<AlphaTestEffectTraits>::DeviceResources> EffectBase<AlphaTestEffectTraits>::deviceResourcesPool;
 
 
@@ -198,10 +203,10 @@ void AlphaTestEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
         const float threshold = 0.5f / 255.0f;
 
         // What to do if the alpha comparison passes or fails. Positive accepts the pixel, negative clips it.
-        static const XMVECTORF32 selectIfTrue  = {  1, -1 };
-        static const XMVECTORF32 selectIfFalse = { -1,  1 };
-        static const XMVECTORF32 selectNever   = { -1, -1 };
-        static const XMVECTORF32 selectAlways  = {  1,  1 };
+        static const XMVECTORF32 selectIfTrue  = { { {  1, -1 } } };
+        static const XMVECTORF32 selectIfFalse = { { { -1,  1 } } };
+        static const XMVECTORF32 selectNever   = { { { -1, -1 } } };
+        static const XMVECTORF32 selectAlways  = { { {  1,  1 } } };
 
         float compareTo;
         XMVECTOR resultSelector;

@@ -166,8 +166,8 @@ namespace
     {
     public:
         DeviceResources(_In_ ID3D11Device* device)
-            : mDevice(device),
-            stateObjects(device)
+            : stateObjects(device),
+            mDevice(device)
         { }
 
         // Gets or lazily creates the vertex shader.
@@ -253,14 +253,14 @@ SharedResourcePool<ID3D11Device*, DeviceResources> ToneMapPostProcess::Impl::dev
 
 // Constructor.
 ToneMapPostProcess::Impl::Impl(_In_ ID3D11Device* device)
-    : mConstantBuffer(device),
-    mDeviceResources(deviceResourcesPool.DemandCreate(device)),
-    linearExposure(1.f),
+    : linearExposure(1.f),
     paperWhiteNits(200.f),
     op(None),
     func(Linear),
     mrt(false),
     mDirtyFlags(INT_MAX),
+    mConstantBuffer(device),
+    mDeviceResources(deviceResourcesPool.DemandCreate(device)),
     constants{}
 {
     if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)

@@ -30,10 +30,10 @@
 using namespace DirectX;
 using namespace DirectX::LoaderHelpers;
 
-static_assert(DDS_DIMENSION_TEXTURE1D == D3D11_RESOURCE_DIMENSION_TEXTURE1D, "dds mismatch");
-static_assert(DDS_DIMENSION_TEXTURE2D == D3D11_RESOURCE_DIMENSION_TEXTURE2D, "dds mismatch");
-static_assert(DDS_DIMENSION_TEXTURE3D == D3D11_RESOURCE_DIMENSION_TEXTURE3D, "dds mismatch");
-static_assert(DDS_RESOURCE_MISC_TEXTURECUBE == D3D11_RESOURCE_MISC_TEXTURECUBE, "dds mismatch");
+static_assert(static_cast<int>(DDS_DIMENSION_TEXTURE1D) == static_cast<int>(D3D11_RESOURCE_DIMENSION_TEXTURE1D), "dds mismatch");
+static_assert(static_cast<int>(DDS_DIMENSION_TEXTURE2D) == static_cast<int>(D3D11_RESOURCE_DIMENSION_TEXTURE2D), "dds mismatch");
+static_assert(static_cast<int>(DDS_DIMENSION_TEXTURE3D) == static_cast<int>(D3D11_RESOURCE_DIMENSION_TEXTURE3D), "dds mismatch");
+static_assert(static_cast<int>(DDS_RESOURCE_MISC_TEXTURECUBE) == static_cast<int>(D3D11_RESOURCE_MISC_TEXTURECUBE), "dds mismatch");
 
 namespace
 {

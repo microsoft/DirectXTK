@@ -79,8 +79,8 @@ namespace
     {
     public:
         DeviceResources(_In_ ID3D11Device* device)
-            : mDevice(device),
-            stateObjects(device)
+            : stateObjects(device),
+            mDevice(device)
         { }
 
         // Gets or lazily creates the vertex shader.
@@ -163,9 +163,7 @@ SharedResourcePool<ID3D11Device*, DeviceResources> DualPostProcess::Impl::device
 
 // Constructor.
 DualPostProcess::Impl::Impl(_In_ ID3D11Device* device)
-    : mConstantBuffer(device),
-    mDeviceResources(deviceResourcesPool.DemandCreate(device)),
-    fx(DualPostProcess::Merge),
+    : fx(DualPostProcess::Merge),
     mergeWeight1(0.5f),
     mergeWeight2(0.5f),
     bloomIntensity(1.25f),
@@ -173,6 +171,8 @@ DualPostProcess::Impl::Impl(_In_ ID3D11Device* device)
     bloomSaturation(1.f),
     bloomBaseSaturation(1.f),
     mDirtyFlags(INT_MAX),
+    mConstantBuffer(device),
+    mDeviceResources(deviceResourcesPool.DemandCreate(device)),
     constants{}
 {
     if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
@@ -221,6 +221,9 @@ void DualPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, std
             constants.sampleWeights[0] = XMVectorSet(bloomBaseSaturation, bloomSaturation, 0.f, 0.f);
             constants.sampleWeights[1] = XMVectorReplicate(bloomBaseIntensity);
             constants.sampleWeights[2] = XMVectorReplicate(bloomIntensity);
+            break;
+
+        default:
             break;
         }
     }

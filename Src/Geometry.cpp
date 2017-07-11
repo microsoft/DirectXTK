@@ -81,20 +81,20 @@ void DirectX::ComputeBox(VertexCollection& vertices, IndexCollection& indices, c
 
     static const XMVECTORF32 faceNormals[FaceCount] =
     {
-        {  0,  0,  1 },
-        {  0,  0, -1 },
-        {  1,  0,  0 },
-        { -1,  0,  0 },
-        {  0,  1,  0 },
-        {  0, -1,  0 },
+        { { {  0,  0,  1, 0 } } },
+        { { {  0,  0, -1, 0 } } },
+        { { {  1,  0,  0, 0 } } },
+        { { { -1,  0,  0, 0 } } },
+        { { {  0,  1,  0, 0 } } },
+        { { {  0, -1,  0, 0 } } },
     };
 
     static const XMVECTORF32 textureCoordinates[4] =
     {
-        { 1, 0 },
-        { 1, 1 },
-        { 0, 1 },
-        { 0, 0 },
+        { { { 1, 0, 0, 0 } } },
+        { { { 1, 1, 0, 0 } } },
+        { { { 0, 1, 0, 0 } } },
+        { { { 0, 0, 0, 0 } } },
     };
 
     XMVECTOR tsize = XMLoadFloat3(&size);
@@ -546,7 +546,7 @@ namespace
 
         XMScalarSinCos(&dx, &dz, angle);
 
-        XMVECTORF32 v = { dx, 0, dz, 0 };
+        XMVECTORF32 v = { { { dx, 0, dz, 0 } } };
         return v;
     }
 
@@ -557,7 +557,7 @@ namespace
 
         XMScalarSinCos(&dx, &dz, angle);
 
-        XMVECTORF32 v = { dx, 0, dz, 0 };
+        XMVECTORF32 v = { { { dx, 0, dz, 0 } } };
         return v;
     }
 
@@ -778,10 +778,10 @@ void DirectX::ComputeTetrahedron(VertexCollection& vertices, IndexCollection& in
 
     static const XMVECTORF32 verts[4] =
     {
-        {            0.f,        0.f,      1.f },
-        {  2.f*SQRT2 / 3.f,        0.f, -1.f / 3.f },
-        {     -SQRT2 / 3.f,  SQRT6 / 3.f, -1.f / 3.f },
-        {     -SQRT2 / 3.f, -SQRT6 / 3.f, -1.f / 3.f }
+        { { {              0.f,          0.f,        1.f, 0 } } },
+        { { {  2.f*SQRT2 / 3.f,          0.f, -1.f / 3.f, 0 } } },
+        { { {     -SQRT2 / 3.f,  SQRT6 / 3.f, -1.f / 3.f, 0 } } },
+        { { {     -SQRT2 / 3.f, -SQRT6 / 3.f, -1.f / 3.f, 0 } } }
     };
 
     static const uint32_t faces[4 * 3] =
@@ -837,12 +837,12 @@ void DirectX::ComputeOctahedron(VertexCollection& vertices, IndexCollection& ind
 
     static const XMVECTORF32 verts[6] =
     {
-        {  1,  0,  0 },
-        { -1,  0,  0 },
-        {  0,  1,  0 },
-        {  0, -1,  0 },
-        {  0,  0,  1 },
-        {  0,  0, -1 }
+        { { {  1,  0,  0, 0 } } },
+        { { { -1,  0,  0, 0 } } },
+        { { {  0,  1,  0, 0 } } },
+        { { {  0, -1,  0, 0 } } },
+        { { {  0,  0,  1, 0 } } },
+        { { {  0,  0, -1, 0 } } }
     };
 
     static const uint32_t faces[8 * 3] =
@@ -906,26 +906,26 @@ void DirectX::ComputeDodecahedron(VertexCollection& vertices, IndexCollection& i
 
     static const XMVECTORF32 verts[20] =
     {
-        {  a,  a,  a },
-        {  a,  a, -a },
-        {  a, -a,  a },
-        {  a, -a, -a },
-        { -a,  a,  a },
-        { -a,  a, -a },
-        { -a, -a,  a },
-        { -a, -a, -a },
-        {  b,  c,  0 },
-        { -b,  c,  0 },
-        {  b, -c,  0 },
-        { -b, -c,  0 },
-        {  c,  0,  b },
-        {  c,  0, -b },
-        { -c,  0,  b },
-        { -c,  0, -b },
-        {  0,  b,  c },
-        {  0, -b,  c },
-        {  0,  b, -c },
-        {  0, -b, -c }
+        { { {  a,  a,  a, 0 } } },
+        { { {  a,  a, -a, 0 } } },
+        { { {  a, -a,  a, 0 } } },
+        { { {  a, -a, -a, 0 } } },
+        { { { -a,  a,  a, 0 } } },
+        { { { -a,  a, -a, 0 } } },
+        { { { -a, -a,  a, 0 } } },
+        { { { -a, -a, -a, 0 } } },
+        { { {  b,  c,  0, 0 } } },
+        { { { -b,  c,  0, 0 } } },
+        { { {  b, -c,  0, 0 } } },
+        { { { -b, -c,  0, 0 } } },
+        { { {  c,  0,  b, 0 } } },
+        { { {  c,  0, -b, 0 } } },
+        { { { -c,  0,  b, 0 } } },
+        { { { -c,  0, -b, 0 } } },
+        { { {  0,  b,  c, 0 } } },
+        { { {  0, -b,  c, 0 } } },
+        { { {  0,  b, -c, 0 } } },
+        { { {  0, -b, -c, 0 } } }
     };
 
     static const uint32_t faces[12 * 5] =
@@ -946,11 +946,11 @@ void DirectX::ComputeDodecahedron(VertexCollection& vertices, IndexCollection& i
 
     static const XMVECTORF32 textureCoordinates[5] =
     {
-        {  0.654508f, 0.0244717f },
-        { 0.0954915f,  0.206107f },
-        { 0.0954915f,  0.793893f },
-        {  0.654508f,  0.975528f },
-        {        1.f,       0.5f }
+        { { {  0.654508f, 0.0244717f, 0, 0 } } },
+        { { { 0.0954915f,  0.206107f, 0, 0 } } },
+        { { { 0.0954915f,  0.793893f, 0, 0 } } },
+        { { {  0.654508f,  0.975528f, 0, 0 } } },
+        { { {        1.f,       0.5f, 0, 0 } } }
     };
 
     static const uint32_t textureIndex[12][5] =
@@ -1035,18 +1035,18 @@ void DirectX::ComputeIcosahedron(VertexCollection& vertices, IndexCollection& in
 
     static const XMVECTORF32 verts[12] =
     {
-        {    t / t2,  1.f / t2,       0 },
-        {   -t / t2,  1.f / t2,       0 },
-        {    t / t2, -1.f / t2,       0 },
-        {   -t / t2, -1.f / t2,       0 },
-        {  1.f / t2,       0,    t / t2 },
-        {  1.f / t2,       0,   -t / t2 },
-        { -1.f / t2,       0,    t / t2 },
-        { -1.f / t2,       0,   -t / t2 },
-        {       0,    t / t2,  1.f / t2 },
-        {       0,   -t / t2,  1.f / t2 },
-        {       0,    t / t2, -1.f / t2 },
-        {       0,   -t / t2, -1.f / t2 }
+        { { {    t / t2,  1.f / t2,       0, 0 } } },
+        { { {   -t / t2,  1.f / t2,       0, 0 } } },
+        { { {    t / t2, -1.f / t2,       0, 0 } } },
+        { { {   -t / t2, -1.f / t2,       0, 0 } } },
+        { { {  1.f / t2,       0,    t / t2, 0 } } },
+        { { {  1.f / t2,       0,   -t / t2, 0 } } },
+        { { { -1.f / t2,       0,    t / t2, 0 } } },
+        { { { -1.f / t2,       0,   -t / t2, 0 } } },
+        { { {       0,    t / t2,  1.f / t2, 0 }  } },
+        { { {       0,   -t / t2,  1.f / t2, 0 } } },
+        { { {       0,    t / t2, -1.f / t2, 0 } } },
+        { { {       0,   -t / t2, -1.f / t2, 0 } } }
     };
 
     static const uint32_t faces[20 * 3] =

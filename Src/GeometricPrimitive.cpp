@@ -33,7 +33,7 @@ namespace
 
         D3D11_BUFFER_DESC bufferDesc = {};
 
-        bufferDesc.ByteWidth = (UINT)data.size() * sizeof(T::value_type);
+        bufferDesc.ByteWidth = (UINT)data.size() * sizeof(typename T::value_type);
         bufferDesc.BindFlags = bindFlags;
         bufferDesc.Usage = D3D11_USAGE_DEFAULT;
 

@@ -103,8 +103,8 @@ namespace
     {
     public:
         DeviceResources(_In_ ID3D11Device* device)
-            : mDevice(device),
-            stateObjects(device)
+            : stateObjects(device),
+            mDevice(device)
         { }
 
         // Gets or lazily creates the vertex shader.
@@ -194,9 +194,7 @@ SharedResourcePool<ID3D11Device*, DeviceResources> BasicPostProcess::Impl::devic
 
 // Constructor.
 BasicPostProcess::Impl::Impl(_In_ ID3D11Device* device)
-    : mConstantBuffer(device),
-    mDeviceResources(deviceResourcesPool.DemandCreate(device)),
-    fx(BasicPostProcess::Copy),
+    : fx(BasicPostProcess::Copy),
     texWidth(0),
     texHeight(0),
     guassianMultiplier(1.f),
@@ -206,6 +204,8 @@ BasicPostProcess::Impl::Impl(_In_ ID3D11Device* device)
     bloomHorizontal(true),
     mUseConstants(false),
     mDirtyFlags(INT_MAX),
+    mConstantBuffer(device),
+    mDeviceResources(deviceResourcesPool.DemandCreate(device)),
     constants{}
 {
     if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
@@ -265,6 +265,9 @@ void BasicPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, st
 
             case BloomBlur:
                 Bloom(bloomHorizontal, bloomSize, bloomBrightness);
+                break;
+
+            default:
                 break;
             }
         }

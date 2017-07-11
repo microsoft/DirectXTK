@@ -2384,7 +2384,7 @@ inline Matrix Matrix::CreateConstrainedBillboard( const Vector3& object, const V
 {
     using namespace DirectX;
 
-    static const XMVECTORF32 s_minAngle = { 0.99825467075f, 0.99825467075f, 0.99825467075f, 0.99825467075f }; // 1.0 - XMConvertToRadians( 0.1f );
+    static const XMVECTORF32 s_minAngle = { { { 0.99825467075f, 0.99825467075f, 0.99825467075f, 0.99825467075f } } }; // 1.0 - XMConvertToRadians( 0.1f );
 
     XMVECTOR O = XMLoadFloat3( &object );
     XMVECTOR C = XMLoadFloat3( &cameraPosition );

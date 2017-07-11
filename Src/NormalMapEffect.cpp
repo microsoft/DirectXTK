@@ -101,6 +101,7 @@ namespace
 }
 
 
+template<>
 const ShaderBytecode EffectBase<NormalMapEffectTraits>::VertexShaderBytecode[] =
 {    
     { NormalMapEffect_VSNormalPixelLightingTx,     sizeof(NormalMapEffect_VSNormalPixelLightingTx)     },
@@ -111,6 +112,7 @@ const ShaderBytecode EffectBase<NormalMapEffectTraits>::VertexShaderBytecode[] =
 };
 
 
+template<>
 const int EffectBase<NormalMapEffectTraits>::VertexShaderIndices[] =
 {    
     0,      // pixel lighting + texture
@@ -135,6 +137,7 @@ const int EffectBase<NormalMapEffectTraits>::VertexShaderIndices[] =
 };
 
 
+template<>
 const ShaderBytecode EffectBase<NormalMapEffectTraits>::PixelShaderBytecode[] =
 {
     { NormalMapEffect_PSNormalPixelLightingTx,          sizeof(NormalMapEffect_PSNormalPixelLightingTx)          },
@@ -144,6 +147,7 @@ const ShaderBytecode EffectBase<NormalMapEffectTraits>::PixelShaderBytecode[] =
 };
 
 
+template<>
 const int EffectBase<NormalMapEffectTraits>::PixelShaderIndices[] =
 {    
     0,      // pixel lighting + texture
@@ -169,6 +173,7 @@ const int EffectBase<NormalMapEffectTraits>::PixelShaderIndices[] =
 
 
 // Global pool of per-device NormalMapEffect resources.
+template<>
 SharedResourcePool<ID3D11Device*, EffectBase<NormalMapEffectTraits>::DeviceResources> EffectBase<NormalMapEffectTraits>::deviceResourcesPool;
 
 
@@ -387,10 +392,9 @@ void NormalMapEffect::SetLightingEnabled(bool value)
 }
 
 
-void NormalMapEffect::SetPerPixelLighting(bool value)
+void NormalMapEffect::SetPerPixelLighting(bool)
 {
     // Unsupported interface method.
-    (value);
 }
 
 

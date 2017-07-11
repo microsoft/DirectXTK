@@ -300,19 +300,19 @@ void XM_CALLCONV SpriteFont::DrawString(_In_ SpriteBatch* spriteBatch, _In_z_ wc
     // Lookup table indicates which way to move along each axis per SpriteEffects enum value.
     static XMVECTORF32 axisDirectionTable[4] =
     {
-        { -1, -1 },
-        {  1, -1 },
-        { -1,  1 },
-        {  1,  1 },
+        { { { -1, -1, 0, 0 } } },
+        { { {  1, -1, 0, 0 } } },
+        { { { -1,  1, 0, 0 } } },
+        { { {  1,  1, 0, 0 } } },
     };
 
     // Lookup table indicates which axes are mirrored for each SpriteEffects enum value.
     static XMVECTORF32 axisIsMirroredTable[4] =
     {
-        { 0, 0 },
-        { 1, 0 },
-        { 0, 1 },
-        { 1, 1 },
+        { { { 0, 0, 0, 0 } } },
+        { { { 1, 0, 0, 0 } } },
+        { { { 0, 1, 0, 0 } } },
+        { { { 1, 1, 0, 0 } } },
     };
 
     XMVECTOR baseOffset = origin;

@@ -73,7 +73,7 @@ void XM_CALLCONV EffectFog::SetConstants(int& dirtyFlags, FXMMATRIX worldView, X
             if (start == end)
             {
                 // Degenerate case: force everything to 100% fogged if start and end are the same.
-                static const XMVECTORF32 fullyFogged = { 0, 0, 0, 1 };
+                static const XMVECTORF32 fullyFogged = { { { 0, 0, 0, 1 } } };
 
                 fogVectorConstant = fullyFogged;
             }
@@ -151,14 +151,16 @@ EffectLights::EffectLights()
 }
 
 
+#ifdef _PREFAST_
 #pragma prefast(push)
 #pragma prefast(disable:22103, "PREFAST doesn't understand buffer is bounded by a static const value even with SAL" )
+#endif
 
 // Initializes constant buffer fields to match the current lighting state.
 _Use_decl_annotations_ void EffectLights::InitializeConstants(XMVECTOR& specularColorAndPowerConstant, XMVECTOR* lightDirectionConstant, XMVECTOR* lightDiffuseConstant, XMVECTOR* lightSpecularConstant) const
 {
-    static const XMVECTORF32 defaultSpecular = { 1, 1, 1, 16 };
-    static const XMVECTORF32 defaultLightDirection = { 0, -1, 0, 0 };
+    static const XMVECTORF32 defaultSpecular = { { { 1, 1, 1, 16 } } };
+    static const XMVECTORF32 defaultLightDirection = { { { 0, -1, 0, 0 } } };
     
     specularColorAndPowerConstant = defaultSpecular;
 
@@ -171,7 +173,9 @@ _Use_decl_annotations_ void EffectLights::InitializeConstants(XMVECTOR& specular
     }
 }
 
+#ifdef _PREFAST_
 #pragma prefast(pop)
+#endif
 
 
 // Lazily recomputes derived parameter values used by shader lighting calculations.
@@ -252,8 +256,10 @@ _Use_decl_annotations_ void EffectLights::SetConstants(int& dirtyFlags, EffectMa
 }
 
 
+#ifdef _PREFAST_
 #pragma prefast(push)
 #pragma prefast(disable:26015, "PREFAST doesn't understand that ValidateLightIndex bounds whichLight" )
+#endif
 
 // Helper for turning one of the directional lights on or off.
 _Use_decl_annotations_ int EffectLights::SetLightEnabled(int whichLight, bool value, XMVECTOR* lightDiffuseConstant, XMVECTOR* lightSpecularConstant)
@@ -323,7 +329,9 @@ int XM_CALLCONV EffectLights::SetLightSpecularColor(int whichLight, FXMVECTOR va
     return 0;
 }
 
+#ifdef _PREFAST_
 #pragma prefast(pop)
+#endif
 
 
 // Parameter validation helper.
@@ -341,26 +349,26 @@ void EffectLights::EnableDefaultLighting(_In_ IEffectLights* effect)
 {
     static const XMVECTORF32 defaultDirections[MaxDirectionalLights] =
     {
-        { -0.5265408f, -0.5735765f, -0.6275069f },
-        {  0.7198464f,  0.3420201f,  0.6040227f },
-        {  0.4545195f, -0.7660444f,  0.4545195f },
+        { { { -0.5265408f, -0.5735765f, -0.6275069f, 0 } } },
+        { { {  0.7198464f,  0.3420201f,  0.6040227f, 0 } } },
+        { { {  0.4545195f, -0.7660444f,  0.4545195f, 0 } } },
     };
 
     static const XMVECTORF32 defaultDiffuse[MaxDirectionalLights] =
     {
-        { 1.0000000f, 0.9607844f, 0.8078432f },
-        { 0.9647059f, 0.7607844f, 0.4078432f },
-        { 0.3231373f, 0.3607844f, 0.3937255f },
+        { { { 1.0000000f, 0.9607844f, 0.8078432f, 0 } }  },
+        { { { 0.9647059f, 0.7607844f, 0.4078432f, 0 } }  },
+        { { { 0.3231373f, 0.3607844f, 0.3937255f, 0 } }  },
     };
 
     static const XMVECTORF32 defaultSpecular[MaxDirectionalLights] =
     {
-        { 1.0000000f, 0.9607844f, 0.8078432f },
-        { 0.0000000f, 0.0000000f, 0.0000000f },
-        { 0.3231373f, 0.3607844f, 0.3937255f },
+        { { { 1.0000000f, 0.9607844f, 0.8078432f, 0 } }  },
+        { { { 0.0000000f, 0.0000000f, 0.0000000f, 0 } }  },
+        { { { 0.3231373f, 0.3607844f, 0.3937255f, 0 } }  },
     };
 
-    static const XMVECTORF32 defaultAmbient = { 0.05333332f, 0.09882354f, 0.1819608f };
+    static const XMVECTORF32 defaultAmbient = { { { 0.05333332f, 0.09882354f, 0.1819608f, 0 } } };
 
     effect->SetLightingEnabled(true);
     effect->SetAmbientLightColor(defaultAmbient);

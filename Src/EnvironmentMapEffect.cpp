@@ -126,6 +126,7 @@ namespace
 }
 
 
+template<>
 const ShaderBytecode EffectBase<EnvironmentMapEffectTraits>::VertexShaderBytecode[] =
 {
     { EnvironmentMapEffect_VSEnvMap,                  sizeof(EnvironmentMapEffect_VSEnvMap)                  },
@@ -142,6 +143,7 @@ const ShaderBytecode EffectBase<EnvironmentMapEffectTraits>::VertexShaderBytecod
 };
 
 
+template<>
 const int EffectBase<EnvironmentMapEffectTraits>::VertexShaderIndices[] =
 {
     0,      // basic
@@ -192,6 +194,7 @@ const int EffectBase<EnvironmentMapEffectTraits>::VertexShaderIndices[] =
 };
 
 
+template<>
 const ShaderBytecode EffectBase<EnvironmentMapEffectTraits>::PixelShaderBytecode[] =
 {
     { EnvironmentMapEffect_PSEnvMap,                          sizeof(EnvironmentMapEffect_PSEnvMap)                          },
@@ -205,6 +208,7 @@ const ShaderBytecode EffectBase<EnvironmentMapEffectTraits>::PixelShaderBytecode
 };
 
 
+template<>
 const int EffectBase<EnvironmentMapEffectTraits>::PixelShaderIndices[] =
 {
     0,      // basic

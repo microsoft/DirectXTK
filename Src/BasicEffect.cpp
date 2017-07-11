@@ -183,6 +183,7 @@ namespace
 }
 
 
+template<>
 const ShaderBytecode EffectBase<BasicEffectTraits>::VertexShaderBytecode[] =
 {
     { BasicEffect_VSBasic,                     sizeof(BasicEffect_VSBasic)                     },
@@ -226,6 +227,7 @@ const ShaderBytecode EffectBase<BasicEffectTraits>::VertexShaderBytecode[] =
 };
 
 
+template<>
 const int EffectBase<BasicEffectTraits>::VertexShaderIndices[] =
 {
     0,      // basic
@@ -293,6 +295,7 @@ const int EffectBase<BasicEffectTraits>::VertexShaderIndices[] =
 };
 
 
+template<>
 const ShaderBytecode EffectBase<BasicEffectTraits>::PixelShaderBytecode[] =
 {
     { BasicEffect_PSBasic,                      sizeof(BasicEffect_PSBasic)                      },
@@ -310,6 +313,7 @@ const ShaderBytecode EffectBase<BasicEffectTraits>::PixelShaderBytecode[] =
 };
 
 
+template<>
 const int EffectBase<BasicEffectTraits>::PixelShaderIndices[] =
 {
     0,      // basic
