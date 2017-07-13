@@ -15,6 +15,8 @@ echo usage: CompileShaders [xbox]
 exit /b
 
 :continuexbox
+set XBOXFXC="%XboxOneXDKLatest%\xdk\FXC\amd64\FXC.exe"
+if exist %XBOXFXC% goto continue
 set XBOXFXC="%XboxOneXDKLatest%xdk\FXC\amd64\FXC.exe"
 if exist %XBOXFXC% goto continue
 set XBOXFXC="%XboxOneXDKBuild%xdk\FXC\amd64\FXC.exe"
