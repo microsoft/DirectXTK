@@ -11,8 +11,6 @@
 // http://go.microsoft.com/fwlink/?LinkId=248929
 //--------------------------------------------------------------------------------------
 
-#pragma once
-
 #include "pch.h"
 #include "SoundCommon.h"
 

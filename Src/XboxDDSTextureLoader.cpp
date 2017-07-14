@@ -598,6 +598,9 @@ namespace
                 case DDS_ALPHA_MODE_OPAQUE:
                 case DDS_ALPHA_MODE_CUSTOM:
                     return mode;
+
+                default:
+                    break;
                 }
             }
         }
