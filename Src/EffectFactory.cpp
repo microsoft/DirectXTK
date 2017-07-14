@@ -22,8 +22,6 @@
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
-#pragma warning(disable : 4351)
-
 // Internal EffectFactory implementation class. Only one of these helpers is allocated
 // per D3D device, even if there are multiple public facing EffectFactory instances.
 class EffectFactory::Impl

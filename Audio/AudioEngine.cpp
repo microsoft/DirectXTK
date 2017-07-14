@@ -23,8 +23,6 @@ using Microsoft::WRL::ComPtr;
 
 //#define VERBOSE_TRACE
 
-#pragma warning(disable : 4351)
-
 namespace
 {
     struct EngineCallback : public IXAudio2EngineCallback
