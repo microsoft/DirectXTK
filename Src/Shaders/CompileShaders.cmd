@@ -15,6 +15,11 @@ echo usage: CompileShaders [xbox]
 exit /b
 
 :continuexbox
+set XBOXOPTS=/D__XBOX_DISABLE_SHADER_NAME_EMPLACEMENT
+if NOT %2.==noprecompile. goto skipnoprecompile
+set XBOXOPTS=%XBOXOPTS% /D__XBOX_DISABLE_PRECOMPILE=1
+:skipnoprecompile
+
 set XBOXFXC="%XboxOneXDKLatest%\xdk\FXC\amd64\FXC.exe"
 if exist %XBOXFXC% goto continue
 set XBOXFXC="%XboxOneXDKLatest%xdk\FXC\amd64\FXC.exe"
@@ -244,14 +249,14 @@ exit /b
 
 :CompileShaderxbox
 :CompileShaderSM4xbox
-set fxc=%XBOXFXC% /nologo %1.fx /T%2_5_0 /Zpc /Zi /Qstrip_reflect /Qstrip_debug /D__XBOX_DISABLE_SHADER_NAME_EMPLACEMENT /E%3 /FhCompiled\XboxOne%1_%3.inc /FdCompiled\XboxOne%1_%3.pdb /Vn%1_%3
+set fxc=%XBOXFXC% /nologo %1.fx /T%2_5_0 /Zpc /Zi /Qstrip_reflect /Qstrip_debug %XBOXOPTS% /E%3 /FhCompiled\XboxOne%1_%3.inc /FdCompiled\XboxOne%1_%3.pdb /Vn%1_%3
 echo.
 echo %fxc%
 %fxc% || set error=1
 exit /b
 
 :CompileShaderHLSLxbox
-set fxc=%XBOXFXC% /nologo %1.hlsl /T%2_5_0 /Zpc /Zi /Qstrip_reflect /Qstrip_debug /D__XBOX_DISABLE_SHADER_NAME_EMPLACEMENT /E%3 /FhCompiled\XboxOne%1_%3.inc /FdCompiled\XboxOne%1_%3.pdb /Vn%1_%3
+set fxc=%XBOXFXC% /nologo %1.hlsl /T%2_5_0 /Zpc /Zi /Qstrip_reflect /Qstrip_debug %XBOXOPTS% /E%3 /FhCompiled\XboxOne%1_%3.inc /FdCompiled\XboxOne%1_%3.pdb /Vn%1_%3
 echo.
 echo %fxc%
 %fxc% || set error=1
