@@ -88,8 +88,8 @@
 #include <algorithm>
 #include <array>
 #include <exception>
+#include <functional>
 #include <list>
-#include <malloc.h>
 #include <map>
 #include <memory>
 #include <set>
@@ -97,6 +97,7 @@
 #include <utility>
 #include <vector>
 
+#include <malloc.h>
 #include <stdint.h>
 
 #pragma warning(push)
