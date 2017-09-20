@@ -159,6 +159,18 @@ namespace VSD3DStarter
 
     #pragma pack(pop)
 
+    const Material s_defMaterial =
+    {
+        { 0.2f, 0.2f, 0.2f, 1.f },
+        { 0.8f, 0.8f, 0.8f, 1.f },
+        { 0.0f, 0.0f, 0.0f, 1.f },
+        1.f,
+        { 0.0f, 0.0f, 0.0f, 1.0f },
+        { 1.f, 0.f, 0.f, 0.f,
+          0.f, 1.f, 0.f, 0.f,
+          0.f, 0.f, 1.f, 0.f,
+          0.f, 0.f, 0.f, 1.f },
+    };
 }; // namespace
 
 static_assert( sizeof(VSD3DStarter::Material) == 132, "CMO Mesh structure size incorrect" );
@@ -345,6 +357,15 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
         }
 
         assert( materials.size() == *nMats );
+
+        if (materials.empty())
+        {
+            // Add default material if none defined
+            MaterialRecordCMO m;
+            m.pMaterial = &VSD3DStarter::s_defMaterial;
+            m.name = L"Default";
+            materials.emplace_back(m);
+        }
 
         // Skeletal data?
         auto bSkeleton = reinterpret_cast<const BYTE*>( meshData + usedSize );
@@ -682,7 +703,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
                             continue;
 
                         if ( (sm.IndexBufferIndex >= *nIBs)
-                             || (sm.MaterialIndex >= *nMats) )
+                             || (sm.MaterialIndex >= materials.size()) )
                              throw std::exception("Invalid submesh found\n");
 
                         XMMATRIX uvTransform = XMLoadFloat4x4( &materials[ sm.MaterialIndex ].pMaterial->UVTransform );
@@ -744,7 +765,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
         assert( vbs.size() == *nVBs );
         
         // Create Effects
-        for( UINT j = 0; j < *nMats; ++j )
+        for( size_t j = 0; j < materials.size(); ++j )
         {
             auto& m = materials[ j ];
 
@@ -803,7 +824,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
 
             if ( (sm.IndexBufferIndex >= *nIBs)
                  || (sm.VertexBufferIndex >= *nVBs)
-                 || (sm.MaterialIndex >= *nMats) )
+                 || (sm.MaterialIndex >= materials.size()) )
                  throw std::exception("Invalid submesh found\n");
 
             auto& mat = materials[ sm.MaterialIndex ];
