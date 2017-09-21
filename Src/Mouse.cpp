@@ -547,6 +547,8 @@ public:
         mMode(MODE_ABSOLUTE),
         mLastX(0),
         mLastY(0),
+        mRelativeX(INT32_MAX),
+        mRelativeY(INT32_MAX),
         mInFocus(true)
     {
         if ( s_mouse )
@@ -676,6 +678,8 @@ private:
 
     int             mLastX;
     int             mLastY;
+    int             mRelativeX;
+    int             mRelativeY;
 
     bool            mInFocus;
 
@@ -761,6 +765,8 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 
             pImpl->mMode = MODE_RELATIVE;
             pImpl->mState.x = pImpl->mState.y = 0;
+            pImpl->mRelativeX = INT32_MAX;
+            pImpl->mRelativeY = INT32_MAX;
 
             ShowCursor(FALSE);
 
@@ -812,16 +818,37 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 
             if (raw.header.dwType == RIM_TYPEMOUSE)
             {
-                if ( !(raw.data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE) )
+                if (!(raw.data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE))
                 {
                     pImpl->mState.x = raw.data.mouse.lLastX;
                     pImpl->mState.y = raw.data.mouse.lLastY;
 
-                    ResetEvent( pImpl->mRelativeRead.get() );
+                    ResetEvent(pImpl->mRelativeRead.get());
                 }
+                else if (raw.data.mouse.usFlags & MOUSE_VIRTUAL_DESKTOP)
+                {
+                    // This is used to make Remote Desktop sessons work
+                    const int width = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+                    const int height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
 
-                // Note that with Remote Desktop input comes through as MOUSE_MOVE_ABSOLUTE | MOUSE_VIRTUAL_DESKTOP,
-                // so this imlementation doesn't suport relative mode via remote desktop.
+                    int x = static_cast<int>((float(raw.data.mouse.lLastX) / 65535.0f) * width);
+                    int y = static_cast<int>((float(raw.data.mouse.lLastY) / 65535.0f) * height);
+
+                    if (pImpl->mRelativeX == INT32_MAX)
+                    {
+                        pImpl->mState.x = pImpl->mState.y = 0;
+                    }
+                    else
+                    {
+                        pImpl->mState.x = x - pImpl->mRelativeX;
+                        pImpl->mState.y = y - pImpl->mRelativeY;
+                    }
+
+                    pImpl->mRelativeX = x;
+                    pImpl->mRelativeY = y;
+
+                    ResetEvent(pImpl->mRelativeRead.get());
+                }
             }
         }
         return;
