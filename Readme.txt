@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit for DirectX 11
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-July 28, 2017
+September 22, 2017
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Universal Windows Platform (UWP) apps for Windows 10,
@@ -81,6 +81,13 @@ https://opensource.microsoft.com/codeofconduct/
 ---------------
 RELEASE HISTORY
 ---------------
+
+September 22, 2017
+    Updated for VS 2017 15.3 update /permissive- changes
+    ScreenGrab updated to use non-sRGB metadata for PNG
+    Mouse use of WM_INPUT updated for Remote Desktop scenarios
+    Fix for CMO load issue when no materials are defined
+    xwbtool: added -flist option
 
 July 28, 2017
     Fix for WIC writer when codec target format requires a palette
