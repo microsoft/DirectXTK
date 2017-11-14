@@ -764,7 +764,7 @@ void SoundEffectInstanceBase::Apply3D( const AudioListener& listener, const Audi
 
     if ( reverb )
     {
-        for ( size_t j = 0; j < mDSPSettings.SrcChannelCount; ++j )
+        for ( size_t j = 0; (j < mDSPSettings.SrcChannelCount) && (j < XAUDIO2_MAX_AUDIO_CHANNELS); ++j )
         {
             matrix[j] = mDSPSettings.ReverbLevel;
         }
