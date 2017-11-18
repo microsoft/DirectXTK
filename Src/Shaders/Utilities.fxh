@@ -8,6 +8,24 @@
 // http://go.microsoft.com/fwlink/?LinkId=248929
 
 
+float3 BiasX2(float3 x)
+{
+   return 2.0f * x - 1.0f;
+}
+
+
+// Given a local normal, transform it into a tangent space given by surface normal and tangent
+float3 PeturbNormal(float3 localNormal, float3 surfaceNormalWS, float3 surfaceTangentWS)
+{
+    float3 normal = normalize(surfaceNormalWS);
+    float3 tangent = normalize(surfaceTangentWS);
+    float3 binormal = cross(normal, tangent);     // reconstructed from normal & tangent
+    float3x3 tbn = { tangent, binormal, normal }; // world "frame" for local normal
+
+    return mul(localNormal, tbn);                // transform to local to world (tangent space)
+}
+
+
 // sRGB 
 // https://en.wikipedia.org/wiki/SRGB
 

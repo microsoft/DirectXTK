@@ -6,7 +6,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 //
 // http://go.microsoft.com/fwlink/?LinkId=248929
-// http://create.msdn.com/en-US/education/catalog/sample/stock_effects
 
 
 Texture2D<float4> Texture : register(t0);
@@ -40,6 +39,8 @@ cbuffer Parameters : register(b0)
 #include "Structures.fxh"
 #include "Common.fxh"
 #include "Lighting.fxh"
+#include "Utilities.fxh"
+
 
 // Vertex shader: pixel lighting + texture.
 VSOutputPixelLightingTxTangent VSNormalPixelLightingTx(VSInputNmTxTangent vin)

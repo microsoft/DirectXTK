@@ -40,6 +40,7 @@ cbuffer Parameters : register(b0)
 #include "Structures.fxh"
 #include "Common.fxh"
 #include "Lighting.fxh"
+#include "Utilities.fxh"
 
 
 float3 Skin(inout VSInputNmTxWeights vin, float3 normal, uniform int boneCount)
