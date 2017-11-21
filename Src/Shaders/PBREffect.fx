@@ -115,8 +115,10 @@ float4 PSTextured(PSInputPixelLightingTxTangent pin) : SV_Target0
     // Get roughness, metalness, and ambient occlusion
     float3 RMA = RMATexture.Sample(SurfaceSampler, pin.TexCoord);
 
+    // glTF2 defines metalness as B channel, roughness as G channel, and occlusion as R channel
+
     // Shade surface
-    float3 output = LightSurface(V, N, 3, LightColor, LightDirection, albedo, RMA.x, RMA.y, RMA.z);
+    float3 output = LightSurface(V, N, 3, LightColor, LightDirection, albedo, RMA.g, RMA.b, RMA.r);
 
     return float4(output, 1);
 }
@@ -148,8 +150,10 @@ PSOut_Velocity PSTexturedVelocity(VSOut_Velocity pin)
     // Get roughness, metalness, and ambient occlusion
     float3 RMA = RMATexture.Sample(SurfaceSampler, pin.current.TexCoord);
 
+    // glTF2 defines metalness as B channel, roughness as G channel, and occlusion as R channel
+
     // Shade surface
-    output.color = LightSurface(V, N, 3, LightColor, LightDirection, albedo, RMA.x, RMA.y, RMA.z);
+    output.color = LightSurface(V, N, 3, LightColor, LightDirection, albedo, RMA.g, RMA.b, RMA.r);
 
     // Calculate velocity of this point
     float4 prevPos = pin.prevPosition;
