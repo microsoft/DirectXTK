@@ -23,8 +23,8 @@
 ps_4_0
 dcl_constantbuffer CB0[24], dynamicIndexed
 dcl_sampler s1, mode_default
-dcl_resource_texturecube (float,float,float,float) t3
 dcl_resource_texturecube (float,float,float,float) t4
+dcl_resource_texturecube (float,float,float,float) t5
 dcl_input_ps linear v1.xyz
 dcl_input_ps linear v2.xyz
 dcl_output o0.xyzw
@@ -92,14 +92,14 @@ loop
   mad r5.yzw, r8.xxyz, r6.yyzw, r5.yyzw
   iadd r6.x, r6.x, l(1)
 endloop 
-sample r4.xyzw, r1.xyzx, t4.xyzw, s1
+sample r4.xyzw, r1.xyzx, t5.xyzw, s1
 mad r2.xyz, r2.xyzx, r4.xyzx, r5.yzwy
 itof r0.w, cb0[23].z
 mul r0.w, r0.w, cb0[23].y
 dp3 r1.w, -r0.xyzx, r1.xyzx
 add r1.w, r1.w, r1.w
 mad r0.xyz, r1.xyzx, -r1.wwww, -r0.xyzx
-sample_l r0.xyzw, r0.xyzx, t3.xyzw, s1, r0.w
+sample_l r0.xyzw, r0.xyzx, t4.xyzw, s1, r0.w
 mad o0.xyz, r3.xyzx, r0.xyzx, r2.xyzx
 mov o0.w, l(1.000000)
 ret 
@@ -108,10 +108,10 @@ ret
 
 const BYTE PBREffect_PSConstant[] =
 {
-     68,  88,  66,  67,  45,  90, 
-     33, 151,  98, 156, 199, 133, 
-    125,  96,  52, 112, 171,  32, 
-    223,  29,   1,   0,   0,   0, 
+     68,  88,  66,  67, 222, 171, 
+    172, 203, 118, 159, 136, 196, 
+    172,  79, 116,  78, 129, 239, 
+     24, 125,   1,   0,   0,   0, 
     120,  10,   0,   0,   3,   0, 
       0,   0,  44,   0,   0,   0, 
     196,   0,   0,   0, 248,   0, 
@@ -158,9 +158,9 @@ const BYTE PBREffect_PSConstant[] =
       0,   3,   0,  96,  16,   0, 
       1,   0,   0,   0,  88,  48, 
       0,   4,   0, 112,  16,   0, 
-      3,   0,   0,   0,  85,  85, 
+      4,   0,   0,   0,  85,  85, 
       0,   0,  88,  48,   0,   4, 
-      0, 112,  16,   0,   4,   0, 
+      0, 112,  16,   0,   5,   0, 
       0,   0,  85,  85,   0,   0, 
      98,  16,   0,   3, 114,  16, 
      16,   0,   1,   0,   0,   0, 
@@ -502,7 +502,7 @@ const BYTE PBREffect_PSConstant[] =
       0,   9, 242,   0,  16,   0, 
       4,   0,   0,   0,  70,   2, 
      16,   0,   1,   0,   0,   0, 
-     70, 126,  16,   0,   4,   0, 
+     70, 126,  16,   0,   5,   0, 
       0,   0,   0,  96,  16,   0, 
       1,   0,   0,   0,  50,   0, 
       0,   9, 114,   0,  16,   0, 
@@ -541,7 +541,7 @@ const BYTE PBREffect_PSConstant[] =
     242,   0,  16,   0,   0,   0, 
       0,   0,  70,   2,  16,   0, 
       0,   0,   0,   0,  70, 126, 
-     16,   0,   3,   0,   0,   0, 
+     16,   0,   4,   0,   0,   0, 
       0,  96,  16,   0,   1,   0, 
       0,   0,  58,   0,  16,   0, 
       0,   0,   0,   0,  50,   0, 

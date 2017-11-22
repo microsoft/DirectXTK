@@ -12,8 +12,10 @@ Texture2D<float4> AlbedoTexture : register(t0);
 Texture2D<float3> NormalTexture : register(t1);
 Texture2D<float3> RMATexture    : register(t2);
 
-TextureCube<float3> RadianceTexture   : register(t3);
-TextureCube<float3> IrradianceTexture : register(t4);
+Texture2D<float3> EmissiveTexture : register(t3);
+
+TextureCube<float3> RadianceTexture   : register(t4);
+TextureCube<float3> IrradianceTexture : register(t5);
 
 sampler SurfaceSampler : register(s0);
 sampler IBLSampler     : register(s1);
@@ -83,6 +85,52 @@ VSOut_Velocity VSConstantVelocity(VSInputNmTxTangent vin)
 }
 
 
+// Vertex shader: pbr (biased normal)
+VSOutputPixelLightingTxTangent VSConstantBn(VSInputNmTxTangent vin)
+{
+    VSOutputPixelLightingTxTangent vout;
+
+    float3 normal = BiasX2(vin.Normal);
+
+    CommonVSOutputPixelLighting cout = ComputeCommonVSOutputPixelLighting(vin.Position, normal);
+
+    vout.PositionPS = cout.Pos_ps;
+    vout.PositionWS = float4(cout.Pos_ws, 1);
+    vout.NormalWS = cout.Normal_ws;
+    vout.Diffuse = float4(ConstantAlbedo, 1);
+    vout.TexCoord = vin.TexCoord;
+
+    float3 tangent = BiasX2(vin.Tangent.xyz);
+    vout.TangentWS = normalize(mul(tangent, WorldInverseTranspose));
+
+    return vout;
+}
+
+
+// Vertex shader: pbr + velocity (biased normal)
+VSOut_Velocity VSConstantVelocityBn(VSInputNmTxTangent vin)
+{
+    VSOut_Velocity vout;
+
+    float3 normal = BiasX2(vin.Normal);
+
+    CommonVSOutputPixelLighting cout = ComputeCommonVSOutputPixelLighting(vin.Position, normal);
+
+    vout.current.PositionPS = cout.Pos_ps;
+    vout.current.PositionWS = float4(cout.Pos_ws, 1);
+    vout.current.NormalWS = cout.Normal_ws;
+    vout.current.Diffuse = float4(ConstantAlbedo, 1);
+    vout.current.TexCoord = vin.TexCoord;
+
+    float3 tangent = BiasX2(vin.Tangent.xyz);
+    vout.current.TangentWS = normalize(mul(tangent, WorldInverseTranspose));
+
+    vout.prevPosition = mul(vin.Position, PrevWorldViewProj);
+
+    return vout;
+}
+
+
 // Pixel shader: pbr (constants) + image-based lighting
 float4 PSConstant(PSInputPixelLightingTxTangent pin) : SV_Target0
 {
@@ -124,6 +172,33 @@ float4 PSTextured(PSInputPixelLightingTxTangent pin) : SV_Target0
 }
 
 
+// Pixel shader: pbr (textures) + emissive + image-based lighting
+float4 PSTexturedEmissive(PSInputPixelLightingTxTangent pin) : SV_Target0
+{
+    const float3 V = normalize(EyePosition - pin.PositionWS.xyz); // view vector
+    const float3 L = normalize(-LightDirection[0]);               // light vector ("to light" opposite of light's direction)
+
+    // Before lighting, peturb the surface's normal by the one given in normal map.
+    float3 localNormal = BiasX2(NormalTexture.Sample(SurfaceSampler, pin.TexCoord).xyz);
+    float3 N = PeturbNormal(localNormal, pin.NormalWS, pin.TangentWS);
+
+    // Get albedo
+    float3 albedo = AlbedoTexture.Sample(SurfaceSampler, pin.TexCoord).rgb;
+
+    // Get roughness, metalness, and ambient occlusion
+    float3 RMA = RMATexture.Sample(SurfaceSampler, pin.TexCoord);
+
+    // glTF2 defines metalness as B channel, roughness as G channel, and occlusion as R channel
+
+    // Shade surface
+    float3 output = LightSurface(V, N, 3, LightColor, LightDirection, albedo, RMA.g, RMA.b, RMA.r);
+
+    output += EmissiveTexture.Sample(SurfaceSampler, pin.TexCoord).rgb;
+
+    return float4(output, 1);
+}
+
+
 // Pixel shader: pbr (textures) + image-based lighting + velocity
 #include "PixelPacking_Velocity.hlsli"
 
@@ -154,6 +229,42 @@ PSOut_Velocity PSTexturedVelocity(VSOut_Velocity pin)
 
     // Shade surface
     output.color = LightSurface(V, N, 3, LightColor, LightDirection, albedo, RMA.g, RMA.b, RMA.r);
+
+    // Calculate velocity of this point
+    float4 prevPos = pin.prevPosition;
+    prevPos.xyz /= prevPos.w;
+    prevPos.xy *= float2(0.5f, -0.5f);
+    prevPos.xy += 0.5f;
+    prevPos.xy *= float2(TargetWidth, TargetHeight);
+
+    output.velocity = PackVelocity(prevPos.xyz - pin.current.PositionPS.xyz);
+
+    return output;
+}
+
+PSOut_Velocity PSTexturedEmissiveVelocity(VSOut_Velocity pin)
+{
+    PSOut_Velocity output;
+
+    const float3 V = normalize(EyePosition - pin.current.PositionWS.xyz); // view vector
+    const float3 L = normalize(-LightDirection[0]);                       // light vector ("to light" opposite of light's direction)
+
+    // Before lighting, peturb the surface's normal by the one given in normal map.
+    float3 localNormal = BiasX2(NormalTexture.Sample(SurfaceSampler, pin.current.TexCoord).xyz);
+    float3 N = PeturbNormal(localNormal, pin.current.NormalWS, pin.current.TangentWS);
+
+    // Get albedo
+    float3 albedo = AlbedoTexture.Sample(SurfaceSampler, pin.current.TexCoord).rgb;
+
+    // Get roughness, metalness, and ambient occlusion
+    float3 RMA = RMATexture.Sample(SurfaceSampler, pin.current.TexCoord);
+
+    // glTF2 defines metalness as B channel, roughness as G channel, and occlusion as R channel
+
+    // Shade surface
+    output.color = LightSurface(V, N, 3, LightColor, LightDirection, albedo, RMA.g, RMA.b, RMA.r);
+
+    output.color += EmissiveTexture.Sample(SurfaceSampler, pin.current.TexCoord).rgb;
 
     // Calculate velocity of this point
     float4 prevPos = pin.prevPosition;

@@ -30,8 +30,8 @@ dcl_sampler s1, mode_default
 dcl_resource_texture2d (float,float,float,float) t0
 dcl_resource_texture2d (float,float,float,float) t1
 dcl_resource_texture2d (float,float,float,float) t2
-dcl_resource_texturecube (float,float,float,float) t3
 dcl_resource_texturecube (float,float,float,float) t4
+dcl_resource_texturecube (float,float,float,float) t5
 dcl_input_ps linear v0.xy
 dcl_input_ps linear v1.xyz
 dcl_input_ps linear v2.xyz
@@ -118,14 +118,14 @@ loop
   mad r6.xyz, r8.xyzx, r7.xyzx, r6.xyzx
   iadd r4.w, r4.w, l(1)
 endloop 
-sample r2.xyzw, r1.xyzx, t4.xyzw, s1
+sample r2.xyzw, r1.xyzx, t5.xyzw, s1
 mad r2.xyz, r4.xyzx, r2.xyzx, r6.xyzx
 itof r0.w, cb0[23].z
 mul r0.w, r0.w, r3.y
 dp3 r1.w, -r0.xyzx, r1.xyzx
 add r1.w, r1.w, r1.w
 mad r0.xyz, r1.xyzx, -r1.wwww, -r0.xyzx
-sample_l r0.xyzw, r0.xyzx, t3.xyzw, s1, r0.w
+sample_l r0.xyzw, r0.xyzx, t4.xyzw, s1, r0.w
 mad o0.xyz, r5.xyzx, r0.xyzx, r2.xyzx
 div r0.xyz, v6.xyzx, v6.wwww
 mad r1.xy, r0.xyxx, l(0.500000, -0.500000, 0.000000, 0.000000), l(0.500000, 0.500000, 0.000000, 0.000000)
@@ -232,10 +232,10 @@ ret
 
 const BYTE PBREffect_PSTexturedVelocity[] =
 {
-     68,  88,  66,  67, 155,  42, 
-     57, 165,  90, 195, 154,  53, 
-    138,  53,  30, 188, 234,  30, 
-    253,  69,   1,   0,   0,   0, 
+     68,  88,  66,  67, 252,  33, 
+    112, 135, 122,  87,  49,  31, 
+    123,  14, 201, 204,   3, 166, 
+     81,  74,   1,   0,   0,   0, 
     204,  24,   0,   0,   3,   0, 
       0,   0,  44,   0,   0,   0, 
       0,   1,   0,   0,  76,   1, 
@@ -306,9 +306,9 @@ const BYTE PBREffect_PSTexturedVelocity[] =
      16,   0,   2,   0,   0,   0, 
      85,  85,   0,   0,  88,  48, 
       0,   4,   0, 112,  16,   0, 
-      3,   0,   0,   0,  85,  85, 
+      4,   0,   0,   0,  85,  85, 
       0,   0,  88,  48,   0,   4, 
-      0, 112,  16,   0,   4,   0, 
+      0, 112,  16,   0,   5,   0, 
       0,   0,  85,  85,   0,   0, 
      98,  16,   0,   3,  50,  16, 
      16,   0,   0,   0,   0,   0, 
@@ -732,7 +732,7 @@ const BYTE PBREffect_PSTexturedVelocity[] =
      16,   0,   2,   0,   0,   0, 
      70,   2,  16,   0,   1,   0, 
       0,   0,  70, 126,  16,   0, 
-      4,   0,   0,   0,   0,  96, 
+      5,   0,   0,   0,   0,  96, 
      16,   0,   1,   0,   0,   0, 
      50,   0,   0,   9, 114,   0, 
      16,   0,   2,   0,   0,   0, 
@@ -770,7 +770,7 @@ const BYTE PBREffect_PSTexturedVelocity[] =
      16,   0,   0,   0,   0,   0, 
      70,   2,  16,   0,   0,   0, 
       0,   0,  70, 126,  16,   0, 
-      3,   0,   0,   0,   0,  96, 
+      4,   0,   0,   0,   0,  96, 
      16,   0,   1,   0,   0,   0, 
      58,   0,  16,   0,   0,   0, 
       0,   0,  50,   0,   0,   9, 
