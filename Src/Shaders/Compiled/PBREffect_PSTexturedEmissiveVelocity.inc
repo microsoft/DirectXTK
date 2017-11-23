@@ -20,7 +20,7 @@
 //
 // Name                 Index   Mask Register SysValue  Format   Used
 // -------------------- ----- ------ -------- -------- ------- ------
-// SV_Target                0   xyz         0   TARGET   float   xyz 
+// SV_Target                0   xyzw        0   TARGET   float   xyzw
 // SV_Target                1   x           1   TARGET    uint   x   
 //
 ps_4_0
@@ -39,7 +39,7 @@ dcl_input_ps linear v2.xyz
 dcl_input_ps linear v3.xyz
 dcl_input_ps_siv linear noperspective v5.xyz, position
 dcl_input_ps linear v6.xyzw
-dcl_output o0.xyz
+dcl_output o0.xyzw
 dcl_output o1.x
 dcl_temps 9
 add r0.xyz, -v1.xyzx, cb0[0].xyzx
@@ -229,17 +229,18 @@ ushr r0.y, r0.y, l(2)
 or r0.y, r0.w, r0.y
 ishl r0.y, r0.y, l(20)
 or o1.x, r0.y, r0.x
+mov o0.w, l(1.000000)
 ret 
 // Approximately 0 instruction slots used
 #endif
 
 const BYTE PBREffect_PSTexturedEmissiveVelocity[] =
 {
-     68,  88,  66,  67,  90, 212, 
-    165,  35,  16, 183, 162,  52, 
-    211, 115, 202, 152,   5,  44, 
-    181, 204,   1,   0,   0,   0, 
-     28,  25,   0,   0,   3,   0, 
+     68,  88,  66,  67, 199, 128, 
+    125, 160, 189,  23,  64, 203, 
+      4, 188, 154, 200,  39, 187, 
+     14,  37,   1,   0,   0,   0, 
+     48,  25,   0,   0,   3,   0, 
       0,   0,  44,   0,   0,   0, 
       0,   1,   0,   0,  76,   1, 
       0,   0,  73,  83,  71,  78, 
@@ -283,7 +284,7 @@ const BYTE PBREffect_PSTexturedEmissiveVelocity[] =
       0,   0,  56,   0,   0,   0, 
       0,   0,   0,   0,   0,   0, 
       0,   0,   3,   0,   0,   0, 
-      0,   0,   0,   0,   7,   8, 
+      0,   0,   0,   0,  15,   0, 
       0,   0,  56,   0,   0,   0, 
       1,   0,   0,   0,   0,   0, 
       0,   0,   1,   0,   0,   0, 
@@ -291,8 +292,8 @@ const BYTE PBREffect_PSTexturedEmissiveVelocity[] =
       0,   0,  83,  86,  95,  84, 
      97, 114, 103, 101, 116,   0, 
     171, 171,  83,  72,  68,  82, 
-    200,  23,   0,   0,  64,   0, 
-      0,   0, 242,   5,   0,   0, 
+    220,  23,   0,   0,  64,   0, 
+      0,   0, 247,   5,   0,   0, 
      89,   8,   0,   4,  70, 142, 
      32,   0,   0,   0,   0,   0, 
      25,   0,   0,   0,  90,   0, 
@@ -329,7 +330,7 @@ const BYTE PBREffect_PSTexturedEmissiveVelocity[] =
       0,   0,  98,  16,   0,   3, 
     242,  16,  16,   0,   6,   0, 
       0,   0, 101,   0,   0,   3, 
-    114,  32,  16,   0,   0,   0, 
+    242,  32,  16,   0,   0,   0, 
       0,   0, 101,   0,   0,   3, 
      18,  32,  16,   0,   1,   0, 
       0,   0, 104,   0,   0,   2, 
@@ -1305,6 +1306,9 @@ const BYTE PBREffect_PSTexturedEmissiveVelocity[] =
      16,   0,   1,   0,   0,   0, 
      26,   0,  16,   0,   0,   0, 
       0,   0,  10,   0,  16,   0, 
-      0,   0,   0,   0,  62,   0, 
-      0,   1
+      0,   0,   0,   0,  54,   0, 
+      0,   5, 130,  32,  16,   0, 
+      0,   0,   0,   0,   1,  64, 
+      0,   0,   0,   0, 128,  63, 
+     62,   0,   0,   1
 };
