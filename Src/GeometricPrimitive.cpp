@@ -62,11 +62,12 @@ namespace
         effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
 
         ThrowIfFailed(
-            device->CreateInputLayout(VertexPositionNormalTexture::InputElements,
-                VertexPositionNormalTexture::InputElementCount,
-                shaderByteCode, byteCodeLength,
-                pInputLayout)
-        );
+            device->CreateInputLayout(
+            GeometricPrimitive::VertexType::InputElements,
+            GeometricPrimitive::VertexType::InputElementCount,
+            shaderByteCode, byteCodeLength,
+            pInputLayout)
+            );
 
         _Analysis_assume_(*pInputLayout != 0);
 
@@ -266,7 +267,7 @@ void GeometricPrimitive::Impl::Draw(
 
     // Set the vertex and index buffer.
     auto vertexBuffer = mVertexBuffer.Get();
-    UINT vertexStride = sizeof(VertexPositionNormalTexture);
+    UINT vertexStride = sizeof(VertexType);
     UINT vertexOffset = 0;
 
     deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexStride, &vertexOffset);
@@ -378,7 +379,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCube(
 }
 
 void GeometricPrimitive::CreateCube(
-    std::vector<VertexPositionNormalTexture>& vertices,
+    std::vector<VertexType>& vertices,
     std::vector<uint16_t>& indices,
     float size,
     bool rhcoords)
@@ -408,7 +409,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateBox(
 }
 
 void GeometricPrimitive::CreateBox(
-    std::vector<VertexPositionNormalTexture>& vertices,
+    std::vector<VertexType>& vertices,
     std::vector<uint16_t>& indices,
     const XMFLOAT3& size,
     bool rhcoords,
@@ -443,7 +444,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateSphere(
 }
 
 void GeometricPrimitive::CreateSphere(
-    std::vector<VertexPositionNormalTexture>& vertices,
+    std::vector<VertexType>& vertices,
     std::vector<uint16_t>& indices,
     float diameter,
     size_t tessellation,
@@ -478,7 +479,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateGeoSphere(
 }
 
 void GeometricPrimitive::CreateGeoSphere(
-    std::vector<VertexPositionNormalTexture>& vertices,
+    std::vector<VertexType>& vertices,
     std::vector<uint16_t>& indices,
     float diameter,
     size_t tessellation, bool rhcoords)
@@ -513,7 +514,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCylinder(
 }
 
 void GeometricPrimitive::CreateCylinder(
-    std::vector<VertexPositionNormalTexture>& vertices,
+    std::vector<VertexType>& vertices,
     std::vector<uint16_t>& indices,
     float height,
     float diameter,
@@ -546,7 +547,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCone(
 }
 
 void GeometricPrimitive::CreateCone(
-    std::vector<VertexPositionNormalTexture>& vertices,
+    std::vector<VertexType>& vertices,
     std::vector<uint16_t>& indices,
     float diameter,
     float height,
@@ -582,7 +583,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateTorus(
 }
 
 void GeometricPrimitive::CreateTorus(
-    std::vector<VertexPositionNormalTexture>& vertices,
+    std::vector<VertexType>& vertices,
     std::vector<uint16_t>& indices,
     float diameter,
     float thickness,
@@ -616,7 +617,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateTetrahedron(
 }
 
 void GeometricPrimitive::CreateTetrahedron(
-    std::vector<VertexPositionNormalTexture>& vertices,
+    std::vector<VertexType>& vertices,
     std::vector<uint16_t>& indices,
     float size,
     bool rhcoords)
@@ -648,7 +649,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateOctahedron(
 }
 
 void GeometricPrimitive::CreateOctahedron(
-    std::vector<VertexPositionNormalTexture>& vertices,
+    std::vector<VertexType>& vertices,
     std::vector<uint16_t>& indices,
     float size,
     bool rhcoords)
@@ -680,7 +681,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateDodecahedron(
 }
 
 void GeometricPrimitive::CreateDodecahedron(
-    std::vector<VertexPositionNormalTexture>& vertices,
+    std::vector<VertexType>& vertices,
     std::vector<uint16_t>& indices,
     float size,
     bool rhcoords)
@@ -712,7 +713,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateIcosahedron(
 }
 
 void GeometricPrimitive::CreateIcosahedron(
-    std::vector<VertexPositionNormalTexture>& vertices,
+    std::vector<VertexType>& vertices,
     std::vector<uint16_t>& indices,
     float size,
     bool rhcoords)
@@ -745,7 +746,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateTeapot(
 }
 
 void GeometricPrimitive::CreateTeapot(
-    std::vector<VertexPositionNormalTexture>& vertices,
+    std::vector<VertexType>& vertices,
     std::vector<uint16_t>& indices,
     float size,
     size_t tessellation,
@@ -762,7 +763,7 @@ void GeometricPrimitive::CreateTeapot(
 _Use_decl_annotations_
 std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCustom(
     ID3D11DeviceContext* deviceContext,
-    const std::vector<VertexPositionNormalTexture>& vertices,
+    const std::vector<VertexType>& vertices,
     const std::vector<uint16_t>& indices)
 {
     // Extra validation

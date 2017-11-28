@@ -31,6 +31,8 @@ namespace DirectX
         GeometricPrimitive(GeometricPrimitive const&) = delete;
         GeometricPrimitive& operator= (GeometricPrimitive const&) = delete;
 
+        using VertexType = VertexPositionNormalTexture;
+
         virtual ~GeometricPrimitive();
         
         // Factory methods.
@@ -46,20 +48,20 @@ namespace DirectX
         static std::unique_ptr<GeometricPrimitive> __cdecl CreateDodecahedron (_In_ ID3D11DeviceContext* deviceContext, float size = 1, bool rhcoords = true);
         static std::unique_ptr<GeometricPrimitive> __cdecl CreateIcosahedron  (_In_ ID3D11DeviceContext* deviceContext, float size = 1, bool rhcoords = true);
         static std::unique_ptr<GeometricPrimitive> __cdecl CreateTeapot       (_In_ ID3D11DeviceContext* deviceContext, float size = 1, size_t tessellation = 8, bool rhcoords = true);
-        static std::unique_ptr<GeometricPrimitive> __cdecl CreateCustom       (_In_ ID3D11DeviceContext* deviceContext, const std::vector<VertexPositionNormalTexture>& vertices, const std::vector<uint16_t>& indices);
+        static std::unique_ptr<GeometricPrimitive> __cdecl CreateCustom       (_In_ ID3D11DeviceContext* deviceContext, const std::vector<VertexType>& vertices, const std::vector<uint16_t>& indices);
 
-        static void __cdecl CreateCube          (std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float size = 1, bool rhcoords = true);
-        static void __cdecl CreateBox           (std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, const XMFLOAT3& size, bool rhcoords = true, bool invertn = false);
-        static void __cdecl CreateSphere        (std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float diameter = 1, size_t tessellation = 16, bool rhcoords = true, bool invertn = false);
-        static void __cdecl CreateGeoSphere     (std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float diameter = 1, size_t tessellation = 3, bool rhcoords = true);
-        static void __cdecl CreateCylinder      (std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float height = 1, float diameter = 1, size_t tessellation = 32, bool rhcoords = true);
-        static void __cdecl CreateCone          (std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float diameter = 1, float height = 1, size_t tessellation = 32, bool rhcoords = true);
-        static void __cdecl CreateTorus         (std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float diameter = 1, float thickness = 0.333f, size_t tessellation = 32, bool rhcoords = true);
-        static void __cdecl CreateTetrahedron   (std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float size = 1, bool rhcoords = true);
-        static void __cdecl CreateOctahedron    (std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float size = 1, bool rhcoords = true);
-        static void __cdecl CreateDodecahedron  (std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float size = 1, bool rhcoords = true);
-        static void __cdecl CreateIcosahedron   (std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float size = 1, bool rhcoords = true);
-        static void __cdecl CreateTeapot        (std::vector<VertexPositionNormalTexture>& vertices, std::vector<uint16_t>& indices, float size = 1, size_t tessellation = 8, bool rhcoords = true);
+        static void __cdecl CreateCube          (std::vector<VertexType>& vertices, std::vector<uint16_t>& indices, float size = 1, bool rhcoords = true);
+        static void __cdecl CreateBox           (std::vector<VertexType>& vertices, std::vector<uint16_t>& indices, const XMFLOAT3& size, bool rhcoords = true, bool invertn = false);
+        static void __cdecl CreateSphere        (std::vector<VertexType>& vertices, std::vector<uint16_t>& indices, float diameter = 1, size_t tessellation = 16, bool rhcoords = true, bool invertn = false);
+        static void __cdecl CreateGeoSphere     (std::vector<VertexType>& vertices, std::vector<uint16_t>& indices, float diameter = 1, size_t tessellation = 3, bool rhcoords = true);
+        static void __cdecl CreateCylinder      (std::vector<VertexType>& vertices, std::vector<uint16_t>& indices, float height = 1, float diameter = 1, size_t tessellation = 32, bool rhcoords = true);
+        static void __cdecl CreateCone          (std::vector<VertexType>& vertices, std::vector<uint16_t>& indices, float diameter = 1, float height = 1, size_t tessellation = 32, bool rhcoords = true);
+        static void __cdecl CreateTorus         (std::vector<VertexType>& vertices, std::vector<uint16_t>& indices, float diameter = 1, float thickness = 0.333f, size_t tessellation = 32, bool rhcoords = true);
+        static void __cdecl CreateTetrahedron   (std::vector<VertexType>& vertices, std::vector<uint16_t>& indices, float size = 1, bool rhcoords = true);
+        static void __cdecl CreateOctahedron    (std::vector<VertexType>& vertices, std::vector<uint16_t>& indices, float size = 1, bool rhcoords = true);
+        static void __cdecl CreateDodecahedron  (std::vector<VertexType>& vertices, std::vector<uint16_t>& indices, float size = 1, bool rhcoords = true);
+        static void __cdecl CreateIcosahedron   (std::vector<VertexType>& vertices, std::vector<uint16_t>& indices, float size = 1, bool rhcoords = true);
+        static void __cdecl CreateTeapot        (std::vector<VertexType>& vertices, std::vector<uint16_t>& indices, float size = 1, size_t tessellation = 8, bool rhcoords = true);
 
         // Draw the primitive.
         void XM_CALLCONV Draw(FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection, FXMVECTOR color = Colors::White, _In_opt_ ID3D11ShaderResourceView* texture = nullptr, bool wireframe = false,
