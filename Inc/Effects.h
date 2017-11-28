@@ -610,8 +610,6 @@ namespace DirectX
 #endif
 
         // Texture settings.
-        void __cdecl SetTextureEnabled(bool value);
-
         void __cdecl SetSurfaceTextures(
             _In_opt_ ID3D11ShaderResourceView* albedo,
             _In_opt_ ID3D11ShaderResourceView* normal,
@@ -621,8 +619,6 @@ namespace DirectX
             _In_opt_ ID3D11ShaderResourceView* radiance,
             int numRadianceMips,
             _In_opt_ ID3D11ShaderResourceView* irradiance);
-
-        void __cdecl SetEmissiveTextureEnabled(bool value);
 
         void __cdecl SetEmissiveTexture(_In_opt_ ID3D11ShaderResourceView* emissive);
 
@@ -639,6 +635,8 @@ namespace DirectX
         std::unique_ptr<Impl> pImpl;
 
         // Unsupported interface methods.
+        void __cdecl SetLightingEnabled(bool value) override;
+        void __cdecl SetPerPixelLighting(bool value) override;
         void XM_CALLCONV SetAmbientLightColor(FXMVECTOR value) override;
         void XM_CALLCONV SetLightSpecularColor(int whichLight, FXMVECTOR value) override;
     };

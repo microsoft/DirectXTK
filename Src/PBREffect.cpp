@@ -69,9 +69,7 @@ public:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> radianceTexture;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> irradianceTexture;
 
-    bool textureEnabled;
     bool biasedVertexNormals;
-    bool emissiveMap;
     bool velocityEnabled;
 
     XMVECTOR lightColor[MaxDirectionalLights];
@@ -172,9 +170,7 @@ SharedResourcePool<ID3D11Device*, EffectBase<PBREffectTraits>::DeviceResources> 
 // Constructor.
 PBREffect::Impl::Impl(_In_ ID3D11Device* device)
     : EffectBase(device),
-    textureEnabled(false),
     biasedVertexNormals(false),
-    emissiveMap(false),
     velocityEnabled(false)
 {
     if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
@@ -212,12 +208,12 @@ int PBREffect::Impl::GetCurrentShaderPermutation() const
     {
         permutation = 3;
     }
-    else if (textureEnabled)
+    else if (albedoTexture)
     {
         permutation = 1;
     }
 
-    if (emissiveMap)
+    if (emissiveTexture)
     {
         permutation += 1;
     }
@@ -267,11 +263,11 @@ void PBREffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
     }
 
     // Set the textures
-    if (textureEnabled)
+    if (albedoTexture)
     {
         ID3D11ShaderResourceView* textures[] = {
             albedoTexture.Get(), normalTexture.Get(), rmaTexture.Get(),
-            emissiveMap ? emissiveTexture.Get() : nullptr,
+            emissiveTexture.Get(),
             radianceTexture.Get(), irradianceTexture.Get() };
         deviceContext->PSSetShaderResources(0, _countof(textures), textures);
     }
@@ -365,6 +361,21 @@ void XM_CALLCONV PBREffect::SetMatrices(FXMMATRIX world, CXMMATRIX view, CXMMATR
 
 
 // Light settings
+void PBREffect::SetLightingEnabled(bool value)
+{
+    if (!value)
+    {
+        throw std::exception("PBREffect does not support turning off lighting");
+    }
+}
+
+
+void PBREffect::SetPerPixelLighting(bool)
+{
+    // Unsupported interface method.
+}
+
+
 void XM_CALLCONV PBREffect::SetAmbientLightColor(FXMVECTOR)
 {
     // Unsupported interface.
@@ -463,12 +474,6 @@ void PBREffect::SetDebugFlags(bool diffuse, bool D, bool F, bool G)
 
 
 // Texture settings.
-void PBREffect::SetTextureEnabled(bool value)
-{
-    pImpl->textureEnabled = value;
-}
-
-
 void PBREffect::SetSurfaceTextures(
     _In_opt_ ID3D11ShaderResourceView* albedo,
     _In_opt_ ID3D11ShaderResourceView* normal,
@@ -490,12 +495,6 @@ void PBREffect::SetIBLTextures(
 
     pImpl->constants.numRadianceMipLevels = numRadianceMips;
     pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
-}
-
-
-void PBREffect::SetEmissiveTextureEnabled(bool value)
-{
-    pImpl->emissiveMap = value;
 }
 
 
