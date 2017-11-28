@@ -504,6 +504,13 @@ void PBREffect::SetEmissiveTexture(_In_opt_ ID3D11ShaderResourceView* emissive)
 }
 
 
+// Normal compression settings.
+void PBREffect::SetBiasedVertexNormalsAndTangents(bool value)
+{
+    pImpl->biasedVertexNormals = value;
+}
+
+
 // Additional settings.
 void PBREffect::SetVelocityGeneration(bool value)
 {

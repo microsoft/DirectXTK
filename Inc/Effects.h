@@ -622,6 +622,9 @@ namespace DirectX
 
         void __cdecl SetEmissiveTexture(_In_opt_ ID3D11ShaderResourceView* emissive);
 
+        // Normal compression settings.
+        void __cdecl SetBiasedVertexNormalsAndTangents(bool value);
+
         // Velocity buffer settings.
         void __cdecl SetVelocityGeneration(bool value);
 
