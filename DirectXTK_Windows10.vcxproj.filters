@@ -1076,6 +1076,63 @@
     <None Include="Src\Shaders\Compiled\ToneMap_VSQuad.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
+    <None Include="Src\Shaders\Compiled\PBREffect_PSConstant.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PBREffect_PSTextured.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PBREffect_PSTexturedEmissive.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PBREffect_PSTexturedEmissiveVelocity.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PBREffect_PSTexturedVelocity.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PBREffect_VSConstant.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PBREffect_VSConstantBn.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PBREffect_VSConstantVelocity.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PBREffect_VSConstantVelocityBn.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\PBRCommon.fxh">
+      <Filter>Src\Shaders\Shared</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PBREffect_PSConstant.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PBREffect_PSTextured.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PBREffect_PSTexturedEmissive.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PBREffect_PSTexturedEmissiveVelocity.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PBREffect_PSTexturedVelocity.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PBREffect_VSConstant.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PBREffect_VSConstantBn.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PBREffect_VSConstantVelocity.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\PBREffect_VSConstantVelocityBn.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\AlphaTestEffect.cpp">
@@ -1204,8 +1261,16 @@
     <ClCompile Include="Src\ToneMapPostProcess.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="Src\PBREffect.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Src\Shaders\PBREffect.fx">
+      <Filter>Src\Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
