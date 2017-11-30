@@ -67,7 +67,7 @@ float Specular_D_GGX(in float alpha, in float NdotH)
 float G_Shlick_Smith_Hable(float alpha, float LdotH)
 {
     const float k = alpha / 2.0;
-    const float k2 = k * 2;
+    const float k2 = k * k;
     const float invk2 = 1 - k2;
     return rcp(LdotH * LdotH * invk2 + k2);
 }
