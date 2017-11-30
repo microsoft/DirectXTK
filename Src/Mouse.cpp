@@ -20,488 +20,7 @@ using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
 
-#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
-
-//======================================================================================
-// Windows Store or Universal Windows Platform (UWP) app implementation
-//======================================================================================
-
-//
-// For a Windows Store app or Universal Windows Platform (UWP) app, add the following to your existing
-// application methods:
-//
-// void App::SetWindow(CoreWindow^ window )
-// {
-//     m_mouse->SetWindow(window);
-// }
-// 
-// void App::OnDpiChanged(DisplayInformation^ sender, Object^ args)
-// {
-//     m_mouse->SetDpi(sender->LogicalDpi);
-// }
-//
-
-#include <Windows.Devices.Input.h>
-
-class Mouse::Impl
-{
-public:
-    Impl(Mouse* owner) :
-        mOwner(owner),
-        mDPI(96.f),
-        mMode(MODE_ABSOLUTE)
-    {
-        mPointerPressedToken.value = 0;
-        mPointerReleasedToken.value = 0;
-        mPointerMovedToken.value = 0;
-        mPointerWheelToken.value = 0;
-        mPointerMouseMovedToken.value = 0;
-        
-        if ( s_mouse )
-        {
-            throw std::exception( "Mouse is a singleton" );
-        }
-
-        s_mouse = this;
-
-        memset( &mState, 0, sizeof(State) );
-
-        mScrollWheelValue.reset( CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE) );
-        mRelativeRead.reset( CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE) );
-        if ( !mScrollWheelValue 
-             || !mRelativeRead ) 
-        {
-            throw std::exception( "CreateEventEx" );
-        }
-    }
-
-    ~Impl()
-    {
-        s_mouse = nullptr;
-
-        RemoveHandlers();
-    }
-
-    void GetState(State& state) const
-    {
-        memcpy( &state, &mState, sizeof(State) );
-
-        DWORD result = WaitForSingleObjectEx( mScrollWheelValue.get(), 0, FALSE );
-        if ( result == WAIT_FAILED )
-            throw std::exception( "WaitForSingleObjectEx" );
-
-        if ( result == WAIT_OBJECT_0 )
-        {
-            state.scrollWheelValue = 0;
-        }
-
-        if (mMode == MODE_RELATIVE)
-        {
-            result = WaitForSingleObjectEx( mRelativeRead.get(), 0, FALSE );
-
-            if (result == WAIT_FAILED)
-                throw std::exception("WaitForSingleObjectEx");
-
-            if (result == WAIT_OBJECT_0)
-            {
-                state.x = 0;
-                state.y = 0;
-            }
-            else
-            {
-                SetEvent(mRelativeRead.get());
-            }
-        }
-
-        state.positionMode = mMode;
-    }
-
-    void ResetScrollWheelValue()
-    {
-        SetEvent(mScrollWheelValue.get());
-    }
-
-    void SetMode(Mode mode)
-    {
-        using namespace Microsoft::WRL;
-        using namespace Microsoft::WRL::Wrappers;
-        using namespace ABI::Windows::UI::Core;
-        using namespace ABI::Windows::Foundation;
-
-        if (mMode == mode)
-            return;
-
-        ComPtr<ICoreWindowStatic> statics;
-        HRESULT hr = GetActivationFactory( HStringReference(RuntimeClass_Windows_UI_Core_CoreWindow).Get(), statics.GetAddressOf() );
-        ThrowIfFailed( hr );
-
-        ComPtr<ICoreWindow> window;
-        hr = statics->GetForCurrentThread( window.GetAddressOf() );
-        ThrowIfFailed( hr );
-
-        if (mode == MODE_RELATIVE)
-        {
-            hr = window->get_PointerCursor( mCursor.ReleaseAndGetAddressOf() );
-            ThrowIfFailed(hr);
-
-            hr = window->put_PointerCursor(nullptr);
-            ThrowIfFailed(hr);
-
-            SetEvent(mRelativeRead.get());
-
-            mMode = MODE_RELATIVE;
-        }
-        else
-        {
-            if (!mCursor)
-            {
-                ComPtr<ICoreCursorFactory> factory;
-                hr = GetActivationFactory( HStringReference(RuntimeClass_Windows_UI_Core_CoreCursor).Get(), factory.GetAddressOf() );
-                ThrowIfFailed( hr );
-
-                hr = factory->CreateCursor( CoreCursorType_Arrow, 0, mCursor.GetAddressOf() );
-                ThrowIfFailed( hr );
-            }
-
-            hr = window->put_PointerCursor( mCursor.Get() );
-            ThrowIfFailed(hr);
-
-            mCursor.Reset();
-
-            mMode = MODE_ABSOLUTE;
-        }
-    }
-
-    bool IsConnected() const
-    {
-        using namespace Microsoft::WRL;
-        using namespace Microsoft::WRL::Wrappers;
-        using namespace ABI::Windows::Devices::Input;
-        using namespace ABI::Windows::Foundation;
-
-        ComPtr<IMouseCapabilities> caps;
-        HRESULT hr = RoActivateInstance(HStringReference(RuntimeClass_Windows_Devices_Input_MouseCapabilities).Get(), &caps);
-        ThrowIfFailed(hr);
-
-        INT32 value;
-        if (SUCCEEDED(caps->get_MousePresent(&value)))
-        {
-            return value != 0;
-        }
-
-        return false;
-    }
-
-    void SetWindow(ABI::Windows::UI::Core::ICoreWindow* window)
-    {
-        using namespace Microsoft::WRL;
-        using namespace Microsoft::WRL::Wrappers;
-        using namespace ABI::Windows::Foundation;
-        using namespace ABI::Windows::Devices::Input;
-
-        if (mWindow.Get() == window)
-            return;
-
-        RemoveHandlers();
-
-        mWindow = window;
-
-        if (!window)
-        {
-            mCursor.Reset();
-            mMouse.Reset();
-            return;
-        }
-
-        ComPtr<IMouseDeviceStatics> mouseStatics;
-        HRESULT hr = GetActivationFactory( HStringReference(RuntimeClass_Windows_Devices_Input_MouseDevice).Get(), mouseStatics.GetAddressOf() );
-        ThrowIfFailed( hr );
-
-        hr = mouseStatics->GetForCurrentView(mMouse.ReleaseAndGetAddressOf());
-        ThrowIfFailed(hr);
-
-        typedef __FITypedEventHandler_2_Windows__CDevices__CInput__CMouseDevice_Windows__CDevices__CInput__CMouseEventArgs MouseMovedHandler;
-        hr = mMouse->add_MouseMoved( Callback<MouseMovedHandler>(MouseMovedEvent).Get(), &mPointerMouseMovedToken );
-        ThrowIfFailed(hr);
-
-        typedef __FITypedEventHandler_2_Windows__CUI__CCore__CCoreWindow_Windows__CUI__CCore__CPointerEventArgs PointerHandler;
-        auto cb = Callback<PointerHandler>(PointerEvent);
-
-        hr = window->add_PointerPressed(cb.Get(), &mPointerPressedToken);
-        ThrowIfFailed(hr);
-
-        hr = window->add_PointerReleased(cb.Get(), &mPointerReleasedToken);
-        ThrowIfFailed(hr);
-
-        hr = window->add_PointerMoved(cb.Get(), &mPointerMovedToken);
-        ThrowIfFailed(hr);
-
-        hr = window->add_PointerWheelChanged(Callback<PointerHandler>(PointerWheel).Get(), &mPointerWheelToken);
-        ThrowIfFailed(hr);
-    }
-
-    State           mState;
-    Mouse*          mOwner;
-    float           mDPI;
-
-    static Mouse::Impl* s_mouse;
-
-private:
-    Mode            mMode;
-
-    ComPtr<ABI::Windows::UI::Core::ICoreWindow> mWindow;
-    ComPtr<ABI::Windows::Devices::Input::IMouseDevice> mMouse;
-    ComPtr<ABI::Windows::UI::Core::ICoreCursor> mCursor;
-
-    ScopedHandle    mScrollWheelValue;
-    ScopedHandle    mRelativeRead;
-
-    EventRegistrationToken mPointerPressedToken;
-    EventRegistrationToken mPointerReleasedToken;
-    EventRegistrationToken mPointerMovedToken;
-    EventRegistrationToken mPointerWheelToken;
-    EventRegistrationToken mPointerMouseMovedToken;
-
-    void RemoveHandlers()
-    {
-        if (mWindow)
-        {
-            (void)mWindow->remove_PointerPressed(mPointerPressedToken);
-            mPointerPressedToken.value = 0;
-
-            (void)mWindow->remove_PointerReleased(mPointerReleasedToken);
-            mPointerReleasedToken.value = 0;
-
-            (void)mWindow->remove_PointerMoved(mPointerMovedToken);
-            mPointerMovedToken.value = 0;
-
-            (void)mWindow->remove_PointerWheelChanged(mPointerWheelToken);
-            mPointerWheelToken.value = 0;
-        }
-
-        if (mMouse)
-        {
-            (void)mMouse->remove_MouseMoved(mPointerMouseMovedToken);
-            mPointerMouseMovedToken.value = 0;
-        }
-    }
-
-    static HRESULT PointerEvent( IInspectable *, ABI::Windows::UI::Core::IPointerEventArgs*args )
-    {
-        using namespace ABI::Windows::Foundation;
-        using namespace ABI::Windows::UI::Input;
-        using namespace ABI::Windows::Devices::Input;
-
-        if (!s_mouse)
-            return S_OK;
-
-        ComPtr<IPointerPoint> currentPoint;
-        HRESULT hr = args->get_CurrentPoint( currentPoint.GetAddressOf() );
-        ThrowIfFailed(hr);
-
-        ComPtr<IPointerDevice> pointerDevice;
-        hr = currentPoint->get_PointerDevice( pointerDevice.GetAddressOf() );
-        ThrowIfFailed(hr);
-
-        PointerDeviceType devType;
-        hr = pointerDevice->get_PointerDeviceType( &devType );
-        ThrowIfFailed(hr);
-
-        if (devType == PointerDeviceType::PointerDeviceType_Mouse)
-        {
-            ComPtr<IPointerPointProperties> props;
-            hr = currentPoint->get_Properties( props.GetAddressOf() );
-            ThrowIfFailed(hr);
-
-            boolean value;
-            hr = props->get_IsLeftButtonPressed(&value);
-            ThrowIfFailed(hr);
-            s_mouse->mState.leftButton = value != 0;
-
-            hr = props->get_IsRightButtonPressed(&value);
-            ThrowIfFailed(hr);
-            s_mouse->mState.rightButton = value != 0;
-
-            hr = props->get_IsMiddleButtonPressed(&value);
-            ThrowIfFailed(hr);
-            s_mouse->mState.middleButton = value != 0;
-
-            hr = props->get_IsXButton1Pressed(&value);
-            ThrowIfFailed(hr);
-            s_mouse->mState.xButton1 = value != 0;
-
-            hr = props->get_IsXButton2Pressed(&value);
-            ThrowIfFailed(hr);
-            s_mouse->mState.xButton2 = value != 0;
-        }
-
-        if (s_mouse->mMode == MODE_ABSOLUTE)
-        {
-            Point pos;
-            hr = currentPoint->get_Position( &pos );
-            ThrowIfFailed(hr);
-
-            float dpi = s_mouse->mDPI;
-
-            s_mouse->mState.x = static_cast<int>( pos.X * dpi / 96.f + 0.5f );
-            s_mouse->mState.y = static_cast<int>( pos.Y * dpi / 96.f + 0.5f );
-        }
-
-        return S_OK;
-    }
-
-    static HRESULT PointerWheel( IInspectable *, ABI::Windows::UI::Core::IPointerEventArgs*args )
-    {
-        using namespace ABI::Windows::Foundation;
-        using namespace ABI::Windows::UI::Input;
-        using namespace ABI::Windows::Devices::Input;
-
-        if (!s_mouse)
-            return S_OK;
-
-        ComPtr<IPointerPoint> currentPoint;
-        HRESULT hr = args->get_CurrentPoint( currentPoint.GetAddressOf() );
-        ThrowIfFailed(hr);
-
-        ComPtr<IPointerDevice> pointerDevice;
-        hr = currentPoint->get_PointerDevice( pointerDevice.GetAddressOf() );
-        ThrowIfFailed(hr);
-
-        PointerDeviceType devType;
-        hr = pointerDevice->get_PointerDeviceType( &devType );
-        ThrowIfFailed(hr);
-
-        if (devType == PointerDeviceType::PointerDeviceType_Mouse)
-        {
-            ComPtr<IPointerPointProperties> props;
-            hr = currentPoint->get_Properties( props.GetAddressOf() );
-            ThrowIfFailed(hr);
-
-            INT32 value;
-            hr = props->get_MouseWheelDelta(&value);
-            ThrowIfFailed(hr);
-
-            HANDLE evt = s_mouse->mScrollWheelValue.get();
-            if (WaitForSingleObjectEx(evt, 0, FALSE) == WAIT_OBJECT_0)
-            {
-                s_mouse->mState.scrollWheelValue = 0;
-                ResetEvent(evt);
-            }
-
-            s_mouse->mState.scrollWheelValue += value;
-
-            if (s_mouse->mMode == MODE_ABSOLUTE)
-            {
-                Point pos;
-                hr = currentPoint->get_Position( &pos );
-                ThrowIfFailed(hr);
-
-                float dpi = s_mouse->mDPI;
-
-                s_mouse->mState.x = static_cast<int>( pos.X * dpi / 96.f + 0.5f );
-                s_mouse->mState.y = static_cast<int>( pos.Y * dpi / 96.f + 0.5f );
-            }
-        }
-
-        return S_OK;
-    }
-
-    static HRESULT MouseMovedEvent( IInspectable *, ABI::Windows::Devices::Input::IMouseEventArgs* args )
-    {
-        using namespace ABI::Windows::Devices::Input;
-
-        if (!s_mouse)
-            return S_OK;
-
-        if (s_mouse->mMode == MODE_RELATIVE)
-        {
-            MouseDelta delta;
-            HRESULT hr = args->get_MouseDelta(&delta);
-            ThrowIfFailed(hr);
-
-            s_mouse->mState.x = delta.X;
-            s_mouse->mState.y = delta.Y;
-
-            ResetEvent( s_mouse->mRelativeRead.get() );
-        }
-
-        return S_OK;
-    }
-};
-
-
-Mouse::Impl* Mouse::Impl::s_mouse = nullptr;
-
-
-void Mouse::SetWindow(ABI::Windows::UI::Core::ICoreWindow* window)
-{
-    pImpl->SetWindow(window);
-}
-
-
-void Mouse::SetDpi(float dpi)
-{
-    auto pImpl = Impl::s_mouse;
-
-    if (!pImpl)
-        return;
-
-    pImpl->mDPI = dpi;
-}
-
-
-#elif defined(_XBOX_ONE) || ( defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP) )
-
-//======================================================================================
-// Null device for Windows Phone and Xbox One
-//======================================================================================
-
-class Mouse::Impl
-{
-public:
-    Impl(Mouse* owner) :
-        mOwner(owner)
-    {
-        if ( s_mouse )
-        {
-            throw std::exception( "Mouse is a singleton" );
-        }
-
-        s_mouse = this;
-    }
-
-    ~Impl()
-    {
-        s_mouse = nullptr;
-    }
-
-    void GetState(State& state) const
-    {
-        memset( &state, 0, sizeof(State) );
-    }
-
-    void ResetScrollWheelValue()
-    {
-    }
-
-    void SetMode(Mode mode)
-    {
-        UNREFERENCED_PARAMETER(mode);
-    }
-
-    bool IsConnected() const
-    {
-        return false;
-    }
-
-    Mouse*  mOwner;
-
-    static Mouse::Impl* s_mouse;
-};
-
-Mouse::Impl* Mouse::Impl::s_mouse = nullptr;
-
-#else
+#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
 
 //======================================================================================
 // Win32 desktop implementation
@@ -551,25 +70,25 @@ public:
         mRelativeY(INT32_MAX),
         mInFocus(true)
     {
-        if ( s_mouse )
+        if (s_mouse)
         {
-            throw std::exception( "Mouse is a singleton" );
+            throw std::exception("Mouse is a singleton");
         }
 
         s_mouse = this;
 
-        memset( &mState, 0, sizeof(State) );
+        memset(&mState, 0, sizeof(State));
 
-        mScrollWheelValue.reset( CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE) );
-        mRelativeRead.reset( CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE) );
-        mAbsoluteMode.reset( CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE) );
-        mRelativeMode.reset( CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE) );
-        if ( !mScrollWheelValue 
-             || !mRelativeRead
-             || !mAbsoluteMode 
-             || !mRelativeMode ) 
+        mScrollWheelValue.reset(CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE));
+        mRelativeRead.reset(CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE));
+        mAbsoluteMode.reset(CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE));
+        mRelativeMode.reset(CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE));
+        if (!mScrollWheelValue
+            || !mRelativeRead
+            || !mAbsoluteMode
+            || !mRelativeMode)
         {
-            throw std::exception( "CreateEventEx" );
+            throw std::exception("CreateEventEx");
         }
     }
 
@@ -580,21 +99,21 @@ public:
 
     void GetState(State& state) const
     {
-        memcpy( &state, &mState, sizeof(State) );
+        memcpy(&state, &mState, sizeof(State));
         state.positionMode = mMode;
 
-        DWORD result = WaitForSingleObjectEx( mScrollWheelValue.get(), 0, FALSE );
-        if ( result == WAIT_FAILED )
-            throw std::exception( "WaitForSingleObjectEx" );
+        DWORD result = WaitForSingleObjectEx(mScrollWheelValue.get(), 0, FALSE);
+        if (result == WAIT_FAILED)
+            throw std::exception("WaitForSingleObjectEx");
 
-        if ( result == WAIT_OBJECT_0 )
+        if (result == WAIT_OBJECT_0)
         {
             state.scrollWheelValue = 0;
         }
 
         if (state.positionMode == MODE_RELATIVE)
         {
-            result = WaitForSingleObjectEx( mRelativeRead.get(), 0, FALSE );
+            result = WaitForSingleObjectEx(mRelativeRead.get(), 0, FALSE);
 
             if (result == WAIT_FAILED)
                 throw std::exception("WaitForSingleObjectEx");
@@ -653,7 +172,7 @@ public:
         Rid.usUsage = 0x2 /* HID_USAGE_GENERIC_MOUSE */;
         Rid.dwFlags = RIDEV_INPUTSINK;
         Rid.hwndTarget = window;
-        if ( !RegisterRawInputDevices(&Rid, 1, sizeof(RAWINPUTDEVICE)) )
+        if (!RegisterRawInputDevices(&Rid, 1, sizeof(RAWINPUTDEVICE)))
         {
             throw std::exception("RegisterRawInputDevices");
         }
@@ -717,7 +236,7 @@ private:
 Mouse::Impl* Mouse::Impl::s_mouse = nullptr;
 
 
-void Mouse::SetWindow( HWND window )
+void Mouse::SetWindow(HWND window)
 {
     pImpl->SetWindow(window);
 }
@@ -741,38 +260,38 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
         ResetEvent(evts[0]);
         break;
 
-    case (WAIT_OBJECT_0 + 1) :
+    case (WAIT_OBJECT_0 + 1):
+    {
+        pImpl->mMode = MODE_ABSOLUTE;
+        ClipCursor(nullptr);
+
+        POINT point;
+        point.x = pImpl->mLastX;
+        point.y = pImpl->mLastY;
+        if (MapWindowPoints(pImpl->mWindow, nullptr, &point, 1))
         {
-            pImpl->mMode = MODE_ABSOLUTE;
-            ClipCursor(nullptr);
-
-            POINT point;
-            point.x = pImpl->mLastX;
-            point.y = pImpl->mLastY;
-            if (MapWindowPoints(pImpl->mWindow, nullptr, &point, 1))
-            {
-                SetCursorPos(point.x, point.y);
-            }
-            ShowCursor(TRUE);
-            pImpl->mState.x = pImpl->mLastX;
-            pImpl->mState.y = pImpl->mLastY;
+            SetCursorPos(point.x, point.y);
         }
-        break;
+        ShowCursor(TRUE);
+        pImpl->mState.x = pImpl->mLastX;
+        pImpl->mState.y = pImpl->mLastY;
+    }
+    break;
 
-    case (WAIT_OBJECT_0 + 2) :
-        {
-            ResetEvent( pImpl->mRelativeRead.get() );
+    case (WAIT_OBJECT_0 + 2):
+    {
+        ResetEvent(pImpl->mRelativeRead.get());
 
-            pImpl->mMode = MODE_RELATIVE;
-            pImpl->mState.x = pImpl->mState.y = 0;
-            pImpl->mRelativeX = INT32_MAX;
-            pImpl->mRelativeY = INT32_MAX;
+        pImpl->mMode = MODE_RELATIVE;
+        pImpl->mState.x = pImpl->mState.y = 0;
+        pImpl->mRelativeX = INT32_MAX;
+        pImpl->mRelativeY = INT32_MAX;
 
-            ShowCursor(FALSE);
+        ShowCursor(FALSE);
 
-            pImpl->ClipToWindow();
-        }
-        break;
+        pImpl->ClipToWindow();
+    }
+    break;
 
     case WAIT_FAILED:
         throw std::exception("WaitForMultipleObjectsEx");
@@ -929,20 +448,502 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
     }
 }
 
+
+#elif defined(_XBOX_ONE) || ( defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP) )
+
+//======================================================================================
+// Null device for Windows Phone
+//======================================================================================
+
+class Mouse::Impl
+{
+public:
+    Impl(Mouse* owner) :
+        mOwner(owner)
+    {
+        if (s_mouse)
+        {
+            throw std::exception("Mouse is a singleton");
+        }
+
+        s_mouse = this;
+    }
+
+    ~Impl()
+    {
+        s_mouse = nullptr;
+    }
+
+    void GetState(State& state) const
+    {
+        memset(&state, 0, sizeof(State));
+    }
+
+    void ResetScrollWheelValue()
+    {
+    }
+
+    void SetMode(Mode mode)
+    {
+        UNREFERENCED_PARAMETER(mode);
+    }
+
+    bool IsConnected() const
+    {
+        return false;
+    }
+
+    Mouse*  mOwner;
+
+    static Mouse::Impl* s_mouse;
+};
+
+Mouse::Impl* Mouse::Impl::s_mouse = nullptr;
+
+
+#else
+
+//======================================================================================
+// Windows Store or Universal Windows Platform (UWP) app implementation
+//======================================================================================
+
+//
+// For a Windows Store app or Universal Windows Platform (UWP) app, add the following to your existing
+// application methods:
+//
+// void App::SetWindow(CoreWindow^ window )
+// {
+//     m_mouse->SetWindow(window);
+// }
+// 
+// void App::OnDpiChanged(DisplayInformation^ sender, Object^ args)
+// {
+//     m_mouse->SetDpi(sender->LogicalDpi);
+// }
+//
+
+#include <Windows.Devices.Input.h>
+
+class Mouse::Impl
+{
+public:
+    Impl(Mouse* owner) :
+        mOwner(owner),
+        mDPI(96.f),
+        mMode(MODE_ABSOLUTE)
+    {
+        mPointerPressedToken.value = 0;
+        mPointerReleasedToken.value = 0;
+        mPointerMovedToken.value = 0;
+        mPointerWheelToken.value = 0;
+        mPointerMouseMovedToken.value = 0;
+
+        if (s_mouse)
+        {
+            throw std::exception("Mouse is a singleton");
+        }
+
+        s_mouse = this;
+
+        memset(&mState, 0, sizeof(State));
+
+        mScrollWheelValue.reset(CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE));
+        mRelativeRead.reset(CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE));
+        if (!mScrollWheelValue
+            || !mRelativeRead)
+        {
+            throw std::exception("CreateEventEx");
+        }
+    }
+
+    ~Impl()
+    {
+        s_mouse = nullptr;
+
+        RemoveHandlers();
+    }
+
+    void GetState(State& state) const
+    {
+        memcpy(&state, &mState, sizeof(State));
+
+        DWORD result = WaitForSingleObjectEx(mScrollWheelValue.get(), 0, FALSE);
+        if (result == WAIT_FAILED)
+            throw std::exception("WaitForSingleObjectEx");
+
+        if (result == WAIT_OBJECT_0)
+        {
+            state.scrollWheelValue = 0;
+        }
+
+        if (mMode == MODE_RELATIVE)
+        {
+            result = WaitForSingleObjectEx(mRelativeRead.get(), 0, FALSE);
+
+            if (result == WAIT_FAILED)
+                throw std::exception("WaitForSingleObjectEx");
+
+            if (result == WAIT_OBJECT_0)
+            {
+                state.x = 0;
+                state.y = 0;
+            }
+            else
+            {
+                SetEvent(mRelativeRead.get());
+            }
+        }
+
+        state.positionMode = mMode;
+    }
+
+    void ResetScrollWheelValue()
+    {
+        SetEvent(mScrollWheelValue.get());
+    }
+
+    void SetMode(Mode mode)
+    {
+        using namespace Microsoft::WRL;
+        using namespace Microsoft::WRL::Wrappers;
+        using namespace ABI::Windows::UI::Core;
+        using namespace ABI::Windows::Foundation;
+
+        if (mMode == mode)
+            return;
+
+        ComPtr<ICoreWindowStatic> statics;
+        HRESULT hr = GetActivationFactory(HStringReference(RuntimeClass_Windows_UI_Core_CoreWindow).Get(), statics.GetAddressOf());
+        ThrowIfFailed(hr);
+
+        ComPtr<ICoreWindow> window;
+        hr = statics->GetForCurrentThread(window.GetAddressOf());
+        ThrowIfFailed(hr);
+
+        if (mode == MODE_RELATIVE)
+        {
+            hr = window->get_PointerCursor(mCursor.ReleaseAndGetAddressOf());
+            ThrowIfFailed(hr);
+
+            hr = window->put_PointerCursor(nullptr);
+            ThrowIfFailed(hr);
+
+            SetEvent(mRelativeRead.get());
+
+            mMode = MODE_RELATIVE;
+        }
+        else
+        {
+            if (!mCursor)
+            {
+                ComPtr<ICoreCursorFactory> factory;
+                hr = GetActivationFactory(HStringReference(RuntimeClass_Windows_UI_Core_CoreCursor).Get(), factory.GetAddressOf());
+                ThrowIfFailed(hr);
+
+                hr = factory->CreateCursor(CoreCursorType_Arrow, 0, mCursor.GetAddressOf());
+                ThrowIfFailed(hr);
+            }
+
+            hr = window->put_PointerCursor(mCursor.Get());
+            ThrowIfFailed(hr);
+
+            mCursor.Reset();
+
+            mMode = MODE_ABSOLUTE;
+        }
+    }
+
+    bool IsConnected() const
+    {
+        using namespace Microsoft::WRL;
+        using namespace Microsoft::WRL::Wrappers;
+        using namespace ABI::Windows::Devices::Input;
+        using namespace ABI::Windows::Foundation;
+
+        ComPtr<IMouseCapabilities> caps;
+        HRESULT hr = RoActivateInstance(HStringReference(RuntimeClass_Windows_Devices_Input_MouseCapabilities).Get(), &caps);
+        ThrowIfFailed(hr);
+
+        INT32 value;
+        if (SUCCEEDED(caps->get_MousePresent(&value)))
+        {
+            return value != 0;
+        }
+
+        return false;
+    }
+
+    void SetWindow(ABI::Windows::UI::Core::ICoreWindow* window)
+    {
+        using namespace Microsoft::WRL;
+        using namespace Microsoft::WRL::Wrappers;
+        using namespace ABI::Windows::Foundation;
+        using namespace ABI::Windows::Devices::Input;
+
+        if (mWindow.Get() == window)
+            return;
+
+        RemoveHandlers();
+
+        mWindow = window;
+
+        if (!window)
+        {
+            mCursor.Reset();
+            mMouse.Reset();
+            return;
+        }
+
+        ComPtr<IMouseDeviceStatics> mouseStatics;
+        HRESULT hr = GetActivationFactory(HStringReference(RuntimeClass_Windows_Devices_Input_MouseDevice).Get(), mouseStatics.GetAddressOf());
+        ThrowIfFailed(hr);
+
+        hr = mouseStatics->GetForCurrentView(mMouse.ReleaseAndGetAddressOf());
+        ThrowIfFailed(hr);
+
+        typedef __FITypedEventHandler_2_Windows__CDevices__CInput__CMouseDevice_Windows__CDevices__CInput__CMouseEventArgs MouseMovedHandler;
+        hr = mMouse->add_MouseMoved(Callback<MouseMovedHandler>(MouseMovedEvent).Get(), &mPointerMouseMovedToken);
+        ThrowIfFailed(hr);
+
+        typedef __FITypedEventHandler_2_Windows__CUI__CCore__CCoreWindow_Windows__CUI__CCore__CPointerEventArgs PointerHandler;
+        auto cb = Callback<PointerHandler>(PointerEvent);
+
+        hr = window->add_PointerPressed(cb.Get(), &mPointerPressedToken);
+        ThrowIfFailed(hr);
+
+        hr = window->add_PointerReleased(cb.Get(), &mPointerReleasedToken);
+        ThrowIfFailed(hr);
+
+        hr = window->add_PointerMoved(cb.Get(), &mPointerMovedToken);
+        ThrowIfFailed(hr);
+
+        hr = window->add_PointerWheelChanged(Callback<PointerHandler>(PointerWheel).Get(), &mPointerWheelToken);
+        ThrowIfFailed(hr);
+    }
+
+    State           mState;
+    Mouse*          mOwner;
+    float           mDPI;
+
+    static Mouse::Impl* s_mouse;
+
+private:
+    Mode            mMode;
+
+    ComPtr<ABI::Windows::UI::Core::ICoreWindow> mWindow;
+    ComPtr<ABI::Windows::Devices::Input::IMouseDevice> mMouse;
+    ComPtr<ABI::Windows::UI::Core::ICoreCursor> mCursor;
+
+    ScopedHandle    mScrollWheelValue;
+    ScopedHandle    mRelativeRead;
+
+    EventRegistrationToken mPointerPressedToken;
+    EventRegistrationToken mPointerReleasedToken;
+    EventRegistrationToken mPointerMovedToken;
+    EventRegistrationToken mPointerWheelToken;
+    EventRegistrationToken mPointerMouseMovedToken;
+
+    void RemoveHandlers()
+    {
+        if (mWindow)
+        {
+            (void)mWindow->remove_PointerPressed(mPointerPressedToken);
+            mPointerPressedToken.value = 0;
+
+            (void)mWindow->remove_PointerReleased(mPointerReleasedToken);
+            mPointerReleasedToken.value = 0;
+
+            (void)mWindow->remove_PointerMoved(mPointerMovedToken);
+            mPointerMovedToken.value = 0;
+
+            (void)mWindow->remove_PointerWheelChanged(mPointerWheelToken);
+            mPointerWheelToken.value = 0;
+        }
+
+        if (mMouse)
+        {
+            (void)mMouse->remove_MouseMoved(mPointerMouseMovedToken);
+            mPointerMouseMovedToken.value = 0;
+        }
+    }
+
+    static HRESULT PointerEvent(IInspectable *, ABI::Windows::UI::Core::IPointerEventArgs*args)
+    {
+        using namespace ABI::Windows::Foundation;
+        using namespace ABI::Windows::UI::Input;
+        using namespace ABI::Windows::Devices::Input;
+
+        if (!s_mouse)
+            return S_OK;
+
+        ComPtr<IPointerPoint> currentPoint;
+        HRESULT hr = args->get_CurrentPoint(currentPoint.GetAddressOf());
+        ThrowIfFailed(hr);
+
+        ComPtr<IPointerDevice> pointerDevice;
+        hr = currentPoint->get_PointerDevice(pointerDevice.GetAddressOf());
+        ThrowIfFailed(hr);
+
+        PointerDeviceType devType;
+        hr = pointerDevice->get_PointerDeviceType(&devType);
+        ThrowIfFailed(hr);
+
+        if (devType == PointerDeviceType::PointerDeviceType_Mouse)
+        {
+            ComPtr<IPointerPointProperties> props;
+            hr = currentPoint->get_Properties(props.GetAddressOf());
+            ThrowIfFailed(hr);
+
+            boolean value;
+            hr = props->get_IsLeftButtonPressed(&value);
+            ThrowIfFailed(hr);
+            s_mouse->mState.leftButton = value != 0;
+
+            hr = props->get_IsRightButtonPressed(&value);
+            ThrowIfFailed(hr);
+            s_mouse->mState.rightButton = value != 0;
+
+            hr = props->get_IsMiddleButtonPressed(&value);
+            ThrowIfFailed(hr);
+            s_mouse->mState.middleButton = value != 0;
+
+            hr = props->get_IsXButton1Pressed(&value);
+            ThrowIfFailed(hr);
+            s_mouse->mState.xButton1 = value != 0;
+
+            hr = props->get_IsXButton2Pressed(&value);
+            ThrowIfFailed(hr);
+            s_mouse->mState.xButton2 = value != 0;
+        }
+
+        if (s_mouse->mMode == MODE_ABSOLUTE)
+        {
+            Point pos;
+            hr = currentPoint->get_Position(&pos);
+            ThrowIfFailed(hr);
+
+            float dpi = s_mouse->mDPI;
+
+            s_mouse->mState.x = static_cast<int>(pos.X * dpi / 96.f + 0.5f);
+            s_mouse->mState.y = static_cast<int>(pos.Y * dpi / 96.f + 0.5f);
+        }
+
+        return S_OK;
+    }
+
+    static HRESULT PointerWheel(IInspectable *, ABI::Windows::UI::Core::IPointerEventArgs*args)
+    {
+        using namespace ABI::Windows::Foundation;
+        using namespace ABI::Windows::UI::Input;
+        using namespace ABI::Windows::Devices::Input;
+
+        if (!s_mouse)
+            return S_OK;
+
+        ComPtr<IPointerPoint> currentPoint;
+        HRESULT hr = args->get_CurrentPoint(currentPoint.GetAddressOf());
+        ThrowIfFailed(hr);
+
+        ComPtr<IPointerDevice> pointerDevice;
+        hr = currentPoint->get_PointerDevice(pointerDevice.GetAddressOf());
+        ThrowIfFailed(hr);
+
+        PointerDeviceType devType;
+        hr = pointerDevice->get_PointerDeviceType(&devType);
+        ThrowIfFailed(hr);
+
+        if (devType == PointerDeviceType::PointerDeviceType_Mouse)
+        {
+            ComPtr<IPointerPointProperties> props;
+            hr = currentPoint->get_Properties(props.GetAddressOf());
+            ThrowIfFailed(hr);
+
+            INT32 value;
+            hr = props->get_MouseWheelDelta(&value);
+            ThrowIfFailed(hr);
+
+            HANDLE evt = s_mouse->mScrollWheelValue.get();
+            if (WaitForSingleObjectEx(evt, 0, FALSE) == WAIT_OBJECT_0)
+            {
+                s_mouse->mState.scrollWheelValue = 0;
+                ResetEvent(evt);
+            }
+
+            s_mouse->mState.scrollWheelValue += value;
+
+            if (s_mouse->mMode == MODE_ABSOLUTE)
+            {
+                Point pos;
+                hr = currentPoint->get_Position(&pos);
+                ThrowIfFailed(hr);
+
+                float dpi = s_mouse->mDPI;
+
+                s_mouse->mState.x = static_cast<int>(pos.X * dpi / 96.f + 0.5f);
+                s_mouse->mState.y = static_cast<int>(pos.Y * dpi / 96.f + 0.5f);
+            }
+        }
+
+        return S_OK;
+    }
+
+    static HRESULT MouseMovedEvent(IInspectable *, ABI::Windows::Devices::Input::IMouseEventArgs* args)
+    {
+        using namespace ABI::Windows::Devices::Input;
+
+        if (!s_mouse)
+            return S_OK;
+
+        if (s_mouse->mMode == MODE_RELATIVE)
+        {
+            MouseDelta delta;
+            HRESULT hr = args->get_MouseDelta(&delta);
+            ThrowIfFailed(hr);
+
+            s_mouse->mState.x = delta.X;
+            s_mouse->mState.y = delta.Y;
+
+            ResetEvent(s_mouse->mRelativeRead.get());
+        }
+
+        return S_OK;
+    }
+};
+
+
+Mouse::Impl* Mouse::Impl::s_mouse = nullptr;
+
+
+void Mouse::SetWindow(ABI::Windows::UI::Core::ICoreWindow* window)
+{
+    pImpl->SetWindow(window);
+}
+
+
+void Mouse::SetDpi(float dpi)
+{
+    auto pImpl = Impl::s_mouse;
+
+    if (!pImpl)
+        return;
+
+    pImpl->mDPI = dpi;
+}
+
 #endif
 
 #pragma warning( disable : 4355 )
 
 // Public constructor.
 Mouse::Mouse()
-    : pImpl( new Impl(this) )
+    : pImpl(new Impl(this))
 {
 }
 
 
 // Move constructor.
 Mouse::Mouse(Mouse&& moveFrom)
-  : pImpl(std::move(moveFrom.pImpl))
+    : pImpl(std::move(moveFrom.pImpl))
 {
     pImpl->mOwner = this;
 }
@@ -991,8 +992,8 @@ bool Mouse::IsConnected() const
 
 Mouse& Mouse::Get()
 {
-    if ( !Impl::s_mouse || !Impl::s_mouse->mOwner )
-        throw std::exception( "Mouse is a singleton" );
+    if (!Impl::s_mouse || !Impl::s_mouse->mOwner)
+        throw std::exception("Mouse is a singleton");
 
     return *Impl::s_mouse->mOwner;
 }
@@ -1005,14 +1006,14 @@ Mouse& Mouse::Get()
 
 #define UPDATE_BUTTON_STATE(field) field = static_cast<ButtonState>( ( !!state.field ) | ( ( !!state.field ^ !!lastState.field ) << 1 ) );
 
-void Mouse::ButtonStateTracker::Update( const Mouse::State& state )
+void Mouse::ButtonStateTracker::Update(const Mouse::State& state)
 {
     UPDATE_BUTTON_STATE(leftButton);
 
-    assert( ( !state.leftButton && !lastState.leftButton ) == ( leftButton == UP ) );
-    assert( ( state.leftButton && lastState.leftButton ) == ( leftButton == HELD ) );
-    assert( ( !state.leftButton && lastState.leftButton ) == ( leftButton == RELEASED ) );
-    assert( ( state.leftButton && !lastState.leftButton ) == ( leftButton == PRESSED ) );
+    assert((!state.leftButton && !lastState.leftButton) == (leftButton == UP));
+    assert((state.leftButton && lastState.leftButton) == (leftButton == HELD));
+    assert((!state.leftButton && lastState.leftButton) == (leftButton == RELEASED));
+    assert((state.leftButton && !lastState.leftButton) == (leftButton == PRESSED));
 
     UPDATE_BUTTON_STATE(middleButton);
     UPDATE_BUTTON_STATE(rightButton);
@@ -1027,5 +1028,5 @@ void Mouse::ButtonStateTracker::Update( const Mouse::State& state )
 
 void Mouse::ButtonStateTracker::Reset()
 {
-    memset( this, 0, sizeof(ButtonStateTracker) );
+    memset(this, 0, sizeof(ButtonStateTracker));
 }
