@@ -33,20 +33,17 @@ CommonVSOutputPixelLighting ComputeCommonVSOutputPixelLighting(float4 position, 
 }
 
 static const float PI = 3.14159265f;
+static const float EPSILON = 1e-6f;
 
 // Shlick's approximation of Fresnel
+// https://en.wikipedia.org/wiki/Schlick%27s_approximation
 float3 Fresnel_Shlick(in float3 f0, in float3 f90, in float x)
 {
     return f0 + (f90 - f0) * pow(1.f - x, 5.f);
 }
 
-// No frills Lambert shading.
-float Diffuse_Lambert(in float NdotL)
-{
-    return NdotL;
-}
-
-// Burley's diffuse BRDF
+// Burley B. "Physically Based Shading at Disney"
+// SIGGRAPH 2012 Course: Practical Physically Based Shading in Film and Game Production, 2012.
 float Diffuse_Burley(in float NdotL, in float NdotV, in float LdotH, in float roughness)
 {
     float fd90 = 0.5f + 2.f * roughness * LdotH * LdotH;
@@ -54,28 +51,22 @@ float Diffuse_Burley(in float NdotL, in float NdotV, in float LdotH, in float ro
 }
 
 // GGX specular D (normal distribution)
+// https://www.cs.cornell.edu/~srm/publications/EGSR07-btdf.pdf
 float Specular_D_GGX(in float alpha, in float NdotH)
 {
     const float alpha2 = alpha * alpha;
     const float lower = (NdotH * NdotH * (alpha2 - 1)) + 1;
-    const float result = alpha2 / (PI * lower * lower);
+    const float result = alpha2 / max(EPSILON, PI * lower * lower);
 
     return result;
 }
 
 // Schlick-Smith specular G (visibility) with Hable's LdotH optimization
+// http://www.cs.virginia.edu/~jdl/bib/appearance/analytic%20models/schlick94b.pdf
+// http://graphicrants.blogspot.se/2013/08/specular-brdf-reference.html
 float G_Shlick_Smith_Hable(float alpha, float LdotH)
 {
-    const float k = alpha / 2.0;
-    const float k2 = k * k;
-    const float invk2 = 1 - k2;
-    return rcp(LdotH * LdotH * invk2 + k2);
-}
-
-// Map a normal on unit sphere to UV coordinates
-float2 SphereMap(float3 N)
-{
-    return float2(atan2(N.x, N.z) / (PI * 2) + 0.5, 0.5 - (asin(N.y) / PI));
+    return 1.f / lerp(LdotH * LdotH, 1.f, alpha * alpha * 0.25f);
 }
 
 // A microfacet based BRDF.
