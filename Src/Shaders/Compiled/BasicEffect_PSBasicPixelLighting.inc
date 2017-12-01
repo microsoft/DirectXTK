@@ -34,7 +34,7 @@
     dcl t1.xyz  // pin<4,5,6>
     dcl t2  // pin<7,8,9,10>
 
-#line 580 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
+#line 581 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
     add r0.xyz, -t0, c12
     dp3 r0.w, r0, r0
     rsq r0.w, r0.w
@@ -43,7 +43,7 @@
     mad r1.xyz, r0, r0.w, -c3
     nrm r2.xyz, r1  // ::halfVectors<0,1,2>
 
-#line 581 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
+#line 582 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
     nrm r1.xyz, t1  // ::worldNormal<0,1,2>
 
 #line 37 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
@@ -167,10 +167,10 @@ ret
 
 const BYTE BasicEffect_PSBasicPixelLighting[] =
 {
-     68,  88,  66,  67,  88, 162, 
-     23, 149, 149, 211, 179,   5, 
-    210,  74,  99,  24, 195, 120, 
-     67,   3,   1,   0,   0,   0, 
+     68,  88,  66,  67, 145, 249, 
+    192,  85, 219,  74, 183,   6, 
+    191, 116, 138, 121, 152, 172, 
+    254, 158,   1,   0,   0,   0, 
     204,  15,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
      40,   9,   0,   0,  48,  15, 
@@ -224,14 +224,14 @@ const BYTE BasicEffect_PSBasicPixelLighting[] =
     236,   5,   0,   0,   0,   0, 
     255, 255, 248,   5,   0,   0, 
       0,   0, 255, 255,   4,   6, 
-      0,   0,  68,   2,   0,   0, 
-     16,   6,   0,   0,  68,   2, 
+      0,   0,  69,   2,   0,   0, 
+     16,   6,   0,   0,  69,   2, 
       0,   0,  32,   6,   0,   0, 
-     68,   2,   0,   0,  48,   6, 
+     69,   2,   0,   0,  48,   6, 
       0,   0,  33,   0,   1,   0, 
      60,   6,   0,   0,  33,   0, 
       1,   0,  80,   6,   0,   0, 
-     69,   2,   0,   0,  92,   6, 
+     70,   2,   0,   0,  92,   6, 
       0,   0,  37,   0,   1,   0, 
     104,   6,   0,   0,  33,   0, 
       1,   0, 120,   6,   0,   0, 

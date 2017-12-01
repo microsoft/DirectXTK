@@ -45,7 +45,7 @@
     dcl_texcoord1 v1  // vin<4,5>
     dcl_texcoord2 v2  // vin<6,7,8,9>
 
-#line 49 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
+#line 43 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
     dp4 oPos.z, v0, c5  // ::VSAlphaTestVc<12>
 
 #line 14
@@ -56,7 +56,7 @@
 #line 67 "D:\Microsoft\DirectXTK\Src\Shaders\AlphaTestEffect.fx"
     mul oT0, v2, c1  // ::VSAlphaTestVc<0,1,2,3>
 
-#line 49 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
+#line 43 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
     dp4 r0.x, v0, c3  // ::vout<0>
     dp4 r0.y, v0, c4  // ::vout<1>
     dp4 r0.z, v0, c6  // ::vout<3>
@@ -65,7 +65,7 @@
     mad oPos.xy, r0.z, c0, r0  // ::VSAlphaTestVc<10,11>
     mov oPos.w, r0.z  // ::VSAlphaTestVc<13>
 
-#line 51 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
+#line 45 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
     mov oT1.xyz, c7.x  // ::VSAlphaTestVc<4,5,6>
 
 #line 66 "D:\Microsoft\DirectXTK\Src\Shaders\AlphaTestEffect.fx"
@@ -95,10 +95,10 @@ ret
 
 const BYTE AlphaTestEffect_VSAlphaTestVc[] =
 {
-     68,  88,  66,  67,  27, 142, 
-     51,  74, 170,  22, 188, 144, 
-    186,  28, 185,  98, 240, 188, 
-    136,  31,   1,   0,   0,   0, 
+     68,  88,  66,  67, 201,  64, 
+     73,  18, 209, 185, 217,  56, 
+    137, 158,  75, 131, 134,  45, 
+     30, 253,   1,   0,   0,   0, 
      44,   7,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
     188,   4,   0,   0,  44,   6, 
@@ -147,20 +147,20 @@ const BYTE AlphaTestEffect_VSAlphaTestVc[] =
       0,   0,   0,   0, 255, 255, 
     112,   3,   0,   0,   0,   0, 
     255, 255, 124,   3,   0,   0, 
-     49,   0,   0,   0, 136,   3, 
+     43,   0,   0,   0, 136,   3, 
       0,   0,  14,   0,   0,   0, 
     152,   3,   0,   0,  14,   0, 
       0,   0, 168,   3,   0,   0, 
      14,   0,   0,   0, 184,   3, 
       0,   0,  67,   0,   1,   0, 
-    200,   3,   0,   0,  49,   0, 
+    200,   3,   0,   0,  43,   0, 
       0,   0, 216,   3,   0,   0, 
-     49,   0,   0,   0, 232,   3, 
-      0,   0,  49,   0,   0,   0, 
+     43,   0,   0,   0, 232,   3, 
+      0,   0,  43,   0,   0,   0, 
     248,   3,   0,   0,  59,   0, 
       1,   0,   8,   4,   0,   0, 
      59,   0,   1,   0,  28,   4, 
-      0,   0,  51,   0,   0,   0, 
+      0,   0,  45,   0,   0,   0, 
      40,   4,   0,   0,  66,   0, 
       1,   0,  52,   4,   0,   0, 
      86,  83,  65, 108, 112, 104, 

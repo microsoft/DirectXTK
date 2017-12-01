@@ -48,6 +48,7 @@ cbuffer Parameters : register(b0)
 #include "Structures.fxh"
 #include "Common.fxh"
 #include "Lighting.fxh"
+#include "Utilities.fxh"
 
 
 float ComputeFresnelFactor(float3 eyeVector, float3 worldNormal)

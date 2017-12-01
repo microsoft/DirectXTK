@@ -98,7 +98,6 @@ namespace DirectX
         static const int MaxBones = 72;
     };
 
-
     //----------------------------------------------------------------------------------
     // Built-in shader supports optional texture mapping, vertex coloring, directional lighting, and fog.
     class BasicEffect : public IEffect, public IEffectMatrices, public IEffectLights, public IEffectFog
@@ -415,9 +414,7 @@ namespace DirectX
 
         // Unsupported interface method.
         void __cdecl SetLightingEnabled(bool value) override;
-    };
-
-    
+    };  
 
     //----------------------------------------------------------------------------------
     // Built-in effect for Visual Studio Shader Designer (DGSL) shaders
@@ -572,6 +569,82 @@ namespace DirectX
     };
 
     //----------------------------------------------------------------------------------
+    // Built-in shader for Physically-Based Rendering (Roughness/Metalness) with Image-based lighting
+    class PBREffect : public IEffect, public IEffectMatrices, public IEffectLights
+    {
+    public:
+        explicit PBREffect(_In_ ID3D11Device* device);
+        PBREffect(PBREffect&& moveFrom);
+        PBREffect& operator= (PBREffect&& moveFrom);
+
+        PBREffect(PBREffect const&) = delete;
+        PBREffect& operator= (PBREffect const&) = delete;
+
+        virtual ~PBREffect();
+
+        // IEffect methods.
+        void __cdecl Apply(_In_ ID3D11DeviceContext* deviceContext) override;
+
+        void __cdecl GetVertexShaderBytecode(_Out_ void const** pShaderByteCode, _Out_ size_t* pByteCodeLength) override;
+
+        // Camera settings.
+        void XM_CALLCONV SetWorld(FXMMATRIX value) override;
+        void XM_CALLCONV SetView(FXMMATRIX value) override;
+        void XM_CALLCONV SetProjection(FXMMATRIX value) override;
+        void XM_CALLCONV SetMatrices(FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection) override;
+
+        // Light settings.
+        void __cdecl SetLightEnabled(int whichLight, bool value) override;
+        void XM_CALLCONV SetLightDirection(int whichLight, FXMVECTOR value) override;
+        void XM_CALLCONV SetLightDiffuseColor(int whichLight, FXMVECTOR value) override;
+
+        void __cdecl EnableDefaultLighting() override;
+
+        // PBR Settings.
+        void __cdecl SetAlpha(float value);
+        void XM_CALLCONV SetConstantAlbedo(FXMVECTOR value);
+        void __cdecl SetConstantMetallic(float value);
+        void __cdecl SetConstantRoughness(float value);
+#ifdef DEBUG
+        void __cdecl SetDebugFlags(bool diffuse, bool D, bool F, bool G);
+#endif
+
+        // Texture settings.
+        void __cdecl SetSurfaceTextures(
+            _In_opt_ ID3D11ShaderResourceView* albedo,
+            _In_opt_ ID3D11ShaderResourceView* normal,
+            _In_opt_ ID3D11ShaderResourceView* roughnessMetallicAmbientOcclusion);
+
+        void __cdecl SetIBLTextures(
+            _In_opt_ ID3D11ShaderResourceView* radiance,
+            int numRadianceMips,
+            _In_opt_ ID3D11ShaderResourceView* irradiance);
+
+        void __cdecl SetEmissiveTexture(_In_opt_ ID3D11ShaderResourceView* emissive);
+
+        // Normal compression settings.
+        void __cdecl SetBiasedVertexNormalsAndTangents(bool value);
+
+        // Velocity buffer settings.
+        void __cdecl SetVelocityGeneration(bool value);
+
+        // Render target size, required for velocity buffer output.
+        void __cdecl SetRenderTargetSizeInPixels(int width, int height);
+
+    private:
+        // Private implementation.
+        class Impl;
+
+        std::unique_ptr<Impl> pImpl;
+
+        // Unsupported interface methods.
+        void __cdecl SetLightingEnabled(bool value) override;
+        void __cdecl SetPerPixelLighting(bool value) override;
+        void XM_CALLCONV SetAmbientLightColor(FXMVECTOR value) override;
+        void XM_CALLCONV SetLightSpecularColor(int whichLight, FXMVECTOR value) override;
+    };
+
+    //----------------------------------------------------------------------------------
     // Abstract interface to factory for sharing effects and texture resources
     class IEffectFactory
     {
@@ -687,5 +760,4 @@ namespace DirectX
 
         std::shared_ptr<Impl> pImpl;
     };
-
 }
