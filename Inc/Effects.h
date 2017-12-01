@@ -661,10 +661,10 @@ namespace DirectX
             bool                biasedVertexNormals;
             float               specularPower;
             float               alpha;
-            DirectX::XMFLOAT3   ambientColor;
-            DirectX::XMFLOAT3   diffuseColor;
-            DirectX::XMFLOAT3   specularColor;
-            DirectX::XMFLOAT3   emissiveColor;
+            XMFLOAT3            ambientColor;
+            XMFLOAT3            diffuseColor;
+            XMFLOAT3            specularColor;
+            XMFLOAT3            emissiveColor;
             const wchar_t*      diffuseTexture;
             const wchar_t*      specularTexture;
             const wchar_t*      normalTexture;
