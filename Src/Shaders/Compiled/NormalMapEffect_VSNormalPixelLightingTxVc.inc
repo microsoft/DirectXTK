@@ -69,10 +69,10 @@
     max r0.x, r0.x, c13.x
     min oT1.w, r0.x, c13.y  // ::VSNormalPixelLightingTxVc<5>
 
-#line 91 "D:\Microsoft\DirectXTK\Src\Shaders\NormalMapEffect.fx"
+#line 92 "D:\Microsoft\DirectXTK\Src\Shaders\NormalMapEffect.fx"
     mul oT4.w, v4.w, c1.w  // ::VSNormalPixelLightingTxVc<15>
 
-#line 95
+#line 96
     dp3 r0.x, v2, c6
     dp3 r0.y, v2, c7
     dp3 r0.z, v2, c8
@@ -85,11 +85,11 @@
     dp4 r0.y, v0, c10  // ::vout<1>
     dp4 r0.z, v0, c12  // ::vout<3>
 
-#line 83 "D:\Microsoft\DirectXTK\Src\Shaders\NormalMapEffect.fx"
+#line 84 "D:\Microsoft\DirectXTK\Src\Shaders\NormalMapEffect.fx"
     mad oPos.xy, r0.z, c0, r0  // ::VSNormalPixelLightingTxVc<16,17>
     mov oPos.w, r0.z  // ::VSNormalPixelLightingTxVc<19>
 
-#line 92
+#line 93
     mov oT0.xy, v3  // ::VSNormalPixelLightingTxVc<0,1>
     mov oT4.xyz, v4  // ::VSNormalPixelLightingTxVc<12,13,14>
 
@@ -137,10 +137,10 @@ ret
 
 const BYTE NormalMapEffect_VSNormalPixelLightingTxVc[] =
 {
-     68,  88,  66,  67,  73,  43, 
-    159,  59,  10, 183, 183,  35, 
-     63, 113,   9, 148, 234,  24, 
-    254, 227,   1,   0,   0,   0, 
+     68,  88,  66,  67,  68, 129, 
+     40, 112,  16, 164, 208, 116, 
+     17, 106, 132, 189,   3, 131, 
+    101,  63,   1,   0,   0,   0, 
       0,  12,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
      60,   7,   0,   0, 144,  10, 
@@ -219,25 +219,25 @@ const BYTE NormalMapEffect_VSNormalPixelLightingTxVc[] =
       1,   0, 176,   5,   0,   0, 
      14,   0,   1,   0, 192,   5, 
       0,   0,  14,   0,   1,   0, 
-    208,   5,   0,   0,  91,   0, 
+    208,   5,   0,   0,  92,   0, 
       2,   0, 224,   5,   0,   0, 
-     95,   0,   2,   0, 240,   5, 
-      0,   0,  95,   0,   2,   0, 
-      0,   6,   0,   0,  95,   0, 
+     96,   0,   2,   0, 240,   5, 
+      0,   0,  96,   0,   2,   0, 
+      0,   6,   0,   0,  96,   0, 
       2,   0,  16,   6,   0,   0, 
-     95,   0,   2,   0,  32,   6, 
-      0,   0,  95,   0,   2,   0, 
-     48,   6,   0,   0,  95,   0, 
+     96,   0,   2,   0,  32,   6, 
+      0,   0,  96,   0,   2,   0, 
+     48,   6,   0,   0,  96,   0, 
       2,   0,  60,   6,   0,   0, 
      85,   0,   0,   0,  76,   6, 
       0,   0,  85,   0,   0,   0, 
      92,   6,   0,   0,  85,   0, 
       0,   0, 108,   6,   0,   0, 
-     83,   0,   2,   0, 124,   6, 
-      0,   0,  83,   0,   2,   0, 
-    144,   6,   0,   0,  92,   0, 
+     84,   0,   2,   0, 124,   6, 
+      0,   0,  84,   0,   2,   0, 
+    144,   6,   0,   0,  93,   0, 
       2,   0, 156,   6,   0,   0, 
-     90,   0,   2,   0, 168,   6, 
+     91,   0,   2,   0, 168,   6, 
       0,   0,  86,  83,  78, 111, 
     114, 109,  97, 108,  80, 105, 
     120, 101, 108,  76, 105, 103, 

@@ -56,9 +56,7 @@ float Specular_D_GGX(in float alpha, in float NdotH)
 {
     const float alpha2 = alpha * alpha;
     const float lower = (NdotH * NdotH * (alpha2 - 1)) + 1;
-    const float result = alpha2 / max(EPSILON, PI * lower * lower);
-
-    return result;
+    return alpha2 / max(EPSILON, PI * lower * lower);
 }
 
 // Schlick-Smith specular G (visibility) with Hable's LdotH optimization
@@ -66,7 +64,7 @@ float Specular_D_GGX(in float alpha, in float NdotH)
 // http://graphicrants.blogspot.se/2013/08/specular-brdf-reference.html
 float G_Shlick_Smith_Hable(float alpha, float LdotH)
 {
-    return 1.f / lerp(LdotH * LdotH, 1.f, alpha * alpha * 0.25f);
+    return rcp(lerp(LdotH * LdotH, 1, alpha * alpha * 0.25f));
 }
 
 // A microfacet based BRDF.
@@ -107,8 +105,7 @@ float3 Specular_IBL(in float3 N, in float3 V, in float lodBias)
 {
     float mip = lodBias * NumRadianceMipLevels;
     float3 dir = reflect(-V, N);
-    float3 envColor = RadianceTexture.SampleLevel(IBLSampler, dir, mip);
-    return envColor;
+    return RadianceTexture.SampleLevel(IBLSampler, dir, mip);
 }
 
 // Apply Disney-style physically based rendering to a surface with:

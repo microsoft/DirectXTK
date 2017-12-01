@@ -48,23 +48,23 @@
     dcl_texcoord3 v3  // vin<9,10,11,12>
     dcl_texcoord4 v4  // vin<13,14,15,16>
 
-#line 52 "D:\Microsoft\DirectXTK\Src\Shaders\SkinnedEffect.fx"
+#line 53 "D:\Microsoft\DirectXTK\Src\Shaders\SkinnedEffect.fx"
     mul r0.xy, v3, c243.x
     mova a0.xy, r0.yxzw
     mul r0, v4.y, c26[a0.x]
     mad r0, c26[a0.y], v4.x, r0  // ::skinning<0,3,6,9>
 
-#line 56
+#line 57
     dp3 r1.x, v1, r0  // ::Skin<0>
     dp4 r0.x, v0, r0  // Skin::vin<0>
 
-#line 52
+#line 53
     mul r2, v4.y, c27[a0.x]
     mul r3, v4.y, c28[a0.x]
     mad r3, c28[a0.y], v4.x, r3  // ::skinning<2,5,8,11>
     mad r2, c27[a0.y], v4.x, r2  // ::skinning<1,4,7,10>
 
-#line 56
+#line 57
     dp3 r1.y, v1, r2  // ::Skin<1>
     dp4 r0.y, v0, r2  // Skin::vin<1>
     dp3 r1.z, v1, r3  // ::Skin<2>
@@ -126,14 +126,14 @@
     dp4 r1.y, r0, c23  // ::vout<1>
     dp4 r0.x, r0, c25  // ::vout<3>
 
-#line 189 "D:\Microsoft\DirectXTK\Src\Shaders\SkinnedEffect.fx"
+#line 190 "D:\Microsoft\DirectXTK\Src\Shaders\SkinnedEffect.fx"
     mad oPos.xy, r0.x, c242, r1  // ::VSSkinnedOneLightTwoBones<10,11>
     mov oPos.w, r0.x  // ::VSSkinnedOneLightTwoBones<13>
 
 #line 46 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
     mov oT0.w, c0.w  // ::VSSkinnedOneLightTwoBones<3>
 
-#line 193 "D:\Microsoft\DirectXTK\Src\Shaders\SkinnedEffect.fx"
+#line 194 "D:\Microsoft\DirectXTK\Src\Shaders\SkinnedEffect.fx"
     mov oT2.xy, v2  // ::VSSkinnedOneLightTwoBones<8,9>
 
 // approximately 58 instruction slots used
@@ -207,10 +207,10 @@ ret
 
 const BYTE SkinnedEffect_VSSkinnedOneLightTwoBones[] =
 {
-     68,  88,  66,  67, 122, 150, 
-    168,  78,  67, 103,  77,  37, 
-    142,  10, 215, 190, 131, 215, 
-    230, 185,   1,   0,   0,   0, 
+     68,  88,  66,  67,  73, 123, 
+    176,  82, 186, 104, 126,  78, 
+     82, 199, 112, 104, 174, 255, 
+     10, 217,   1,   0,   0,   0, 
       8,  20,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
     208,  11,   0,   0, 188,  18, 
@@ -268,24 +268,24 @@ const BYTE SkinnedEffect_VSSkinnedOneLightTwoBones[] =
      20,   8,   0,   0,   0,   0, 
     255, 255,  32,   8,   0,   0, 
       0,   0, 255, 255,  44,   8, 
-      0,   0,  52,   0,   0,   0, 
-     56,   8,   0,   0,  52,   0, 
+      0,   0,  53,   0,   0,   0, 
+     56,   8,   0,   0,  53,   0, 
       0,   0,  72,   8,   0,   0, 
-     52,   0,   0,   0,  84,   8, 
-      0,   0,  52,   0,   0,   0, 
-    104,   8,   0,   0,  56,   0, 
+     53,   0,   0,   0,  84,   8, 
+      0,   0,  53,   0,   0,   0, 
+    104,   8,   0,   0,  57,   0, 
       0,   0, 128,   8,   0,   0, 
-     55,   0,   0,   0, 144,   8, 
-      0,   0,  52,   0,   0,   0, 
-    160,   8,   0,   0,  52,   0, 
+     56,   0,   0,   0, 144,   8, 
+      0,   0,  53,   0,   0,   0, 
+    160,   8,   0,   0,  53,   0, 
       0,   0, 180,   8,   0,   0, 
-     52,   0,   0,   0, 200,   8, 
-      0,   0,  52,   0,   0,   0, 
-    224,   8,   0,   0,  56,   0, 
+     53,   0,   0,   0, 200,   8, 
+      0,   0,  53,   0,   0,   0, 
+    224,   8,   0,   0,  57,   0, 
       0,   0, 248,   8,   0,   0, 
-     55,   0,   0,   0,   8,   9, 
-      0,   0,  56,   0,   0,   0, 
-     24,   9,   0,   0,  55,   0, 
+     56,   0,   0,   0,   8,   9, 
+      0,   0,  57,   0,   0,   0, 
+     24,   9,   0,   0,  56,   0, 
       0,   0,  40,   9,   0,   0, 
      59,   0,   1,   0,  56,   9, 
       0,   0,  59,   0,   1,   0, 
@@ -329,11 +329,11 @@ const BYTE SkinnedEffect_VSSkinnedOneLightTwoBones[] =
       1,   0, 248,  10,   0,   0, 
      63,   0,   1,   0,   8,  11, 
       0,   0,  63,   0,   1,   0, 
-     24,  11,   0,   0, 189,   0, 
+     24,  11,   0,   0, 190,   0, 
       0,   0,  40,  11,   0,   0, 
-    189,   0,   0,   0,  60,  11, 
+    190,   0,   0,   0,  60,  11, 
       0,   0,  46,   0,   1,   0, 
-     72,  11,   0,   0, 193,   0, 
+     72,  11,   0,   0, 194,   0, 
       0,   0,  84,  11,   0,   0, 
      80,  97, 114,  97, 109, 101, 
     116, 101, 114, 115,   0,  68, 

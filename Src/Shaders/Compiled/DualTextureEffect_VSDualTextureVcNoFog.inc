@@ -46,13 +46,13 @@
     dcl_texcoord2 v2  // vin<6,7>
     dcl_texcoord3 v3  // vin<8,9,10,11>
 
-#line 49 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
+#line 43 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
     dp4 oPos.z, v0, c4  // ::VSDualTextureVcNoFog<10>
 
 #line 88 "D:\Microsoft\DirectXTK\Src\Shaders\DualTextureEffect.fx"
     mul oT0, v3, c1  // ::VSDualTextureVcNoFog<0,1,2,3>
 
-#line 49 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
+#line 43 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
     dp4 r0.x, v0, c2  // ::vout<0>
     dp4 r0.y, v0, c3  // ::vout<1>
     dp4 r0.z, v0, c5  // ::vout<3>
@@ -89,10 +89,10 @@ ret
 
 const BYTE DualTextureEffect_VSDualTextureVcNoFog[] =
 {
-     68,  88,  66,  67,  84, 181, 
-    224, 112,  41, 121,  64, 151, 
-    101, 155, 148,  72,  84, 220, 
-     94,  77,   1,   0,   0,   0, 
+     68,  88,  66,  67, 124, 236, 
+    208, 107,  34,  25, 247, 163, 
+    120, 203, 106,  94, 166,   5, 
+      6, 134,   1,   0,   0,   0, 
     244,   6,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
     140,   4,   0,   0, 220,   5, 
@@ -141,13 +141,13 @@ const BYTE DualTextureEffect_VSDualTextureVcNoFog[] =
     255, 255, 100,   3,   0,   0, 
       0,   0, 255, 255, 112,   3, 
       0,   0,   0,   0, 255, 255, 
-    124,   3,   0,   0,  49,   0, 
+    124,   3,   0,   0,  43,   0, 
       0,   0, 136,   3,   0,   0, 
      88,   0,   1,   0, 152,   3, 
-      0,   0,  49,   0,   0,   0, 
-    168,   3,   0,   0,  49,   0, 
+      0,   0,  43,   0,   0,   0, 
+    168,   3,   0,   0,  43,   0, 
       0,   0, 184,   3,   0,   0, 
-     49,   0,   0,   0, 200,   3, 
+     43,   0,   0,   0, 200,   3, 
       0,   0,  79,   0,   1,   0, 
     216,   3,   0,   0,  79,   0, 
       1,   0, 236,   3,   0,   0, 

@@ -66,7 +66,7 @@
     max r0.x, r0.x, c13.x
     min oT1.w, r0.x, c13.y  // ::VSBasicPixelLightingTxVc<5>
 
-#line 470 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
+#line 471 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
     mul oT3.w, v3.w, c1.w  // ::VSBasicPixelLightingTxVc<12>
 
 #line 85 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
@@ -74,11 +74,11 @@
     dp4 r0.y, v0, c10  // ::vout<1>
     dp4 r0.z, v0, c12  // ::vout<3>
 
-#line 462 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
+#line 463 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
     mad oPos.xy, r0.z, c0, r0  // ::VSBasicPixelLightingTxVc<13,14>
     mov oPos.w, r0.z  // ::VSBasicPixelLightingTxVc<16>
 
-#line 471
+#line 472
     mov oT0.xy, v2  // ::VSBasicPixelLightingTxVc<0,1>
     mov oT3.xyz, v3  // ::VSBasicPixelLightingTxVc<9,10,11>
 
@@ -118,10 +118,10 @@ ret
 
 const BYTE BasicEffect_VSBasicPixelLightingTxVc[] =
 {
-     68,  88,  66,  67,  88, 143, 
-    207, 121, 126, 219, 156,  61, 
-     40, 246,  19, 239, 142, 208, 
-    171, 211,   1,   0,   0,   0, 
+     68,  88,  66,  67, 161, 146, 
+     95,  18, 245,   5,  88,  69, 
+    219,  21, 171,   4,  62,  17, 
+     84, 113,   1,   0,   0,   0, 
      36,  10,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
      92,   6,   0,   0, 236,   8, 
@@ -198,17 +198,17 @@ const BYTE BasicEffect_VSBasicPixelLightingTxVc[] =
       1,   0,  44,   5,   0,   0, 
      14,   0,   1,   0,  60,   5, 
       0,   0,  14,   0,   1,   0, 
-     76,   5,   0,   0, 214,   1, 
+     76,   5,   0,   0, 215,   1, 
       2,   0,  92,   5,   0,   0, 
      85,   0,   0,   0, 108,   5, 
       0,   0,  85,   0,   0,   0, 
     124,   5,   0,   0,  85,   0, 
       0,   0, 140,   5,   0,   0, 
-    206,   1,   2,   0, 156,   5, 
-      0,   0, 206,   1,   2,   0, 
-    176,   5,   0,   0, 215,   1, 
+    207,   1,   2,   0, 156,   5, 
+      0,   0, 207,   1,   2,   0, 
+    176,   5,   0,   0, 216,   1, 
       2,   0, 188,   5,   0,   0, 
-    213,   1,   2,   0, 200,   5, 
+    214,   1,   2,   0, 200,   5, 
       0,   0,  86,  83,  66,  97, 
     115, 105,  99,  80, 105, 120, 
     101, 108,  76, 105, 103, 104, 

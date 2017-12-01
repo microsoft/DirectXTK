@@ -87,7 +87,7 @@
     mov r2.xyz, c1  // Parameters::DiffuseColor<0,1,2>
     mad r1.xyz, r1, r2, c2  // ::result<0,1,2>
 
-#line 352 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
+#line 353 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
     mul oT0.xyz, r1, v3  // ::VSBasicOneLightTxVc<0,1,2>
 
 #line 42 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
@@ -106,7 +106,7 @@
     max r0.x, r0.x, c19.x
     min oT1.w, r0.x, c19.y  // ::VSBasicOneLightTxVc<7>
 
-#line 352 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
+#line 353 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
     mul oT0.w, v3.w, c1.w  // ::VSBasicOneLightTxVc<3>
 
 #line 63 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
@@ -114,11 +114,11 @@
     dp4 r0.y, v0, c16  // ::vout<1>
     dp4 r0.z, v0, c18  // ::vout<3>
 
-#line 344 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
+#line 345 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
     mad oPos.xy, r0.z, c0, r0  // ::VSBasicOneLightTxVc<10,11>
     mov oPos.w, r0.z  // ::VSBasicOneLightTxVc<13>
 
-#line 351
+#line 352
     mov oT2.xy, v2  // ::VSBasicOneLightTxVc<8,9>
 
 // approximately 44 instruction slots used
@@ -178,10 +178,10 @@ ret
 
 const BYTE BasicEffect_VSBasicOneLightTxVc[] =
 {
-     68,  88,  66,  67, 202, 222, 
-    159, 206, 235, 129, 212, 250, 
-    153,  47,  51, 111, 144,  39, 
-     14, 127,   1,   0,   0,   0, 
+     68,  88,  66,  67,  85, 119, 
+    254,  28, 125,   4, 255,  21, 
+    238,  37,  29, 117,  96, 224, 
+     68, 219,   1,   0,   0,   0, 
     248,  15,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
     196,   9,   0,   0, 216,  14, 
@@ -274,7 +274,7 @@ const BYTE BasicEffect_VSBasicOneLightTxVc[] =
       0,   0,  46,   0,   0,   0, 
     252,   7,   0,   0,  46,   0, 
       0,   0,   8,   8,   0,   0, 
-     96,   1,   1,   0,  28,   8, 
+     97,   1,   1,   0,  28,   8, 
       0,   0,  42,   0,   0,   0, 
      44,   8,   0,   0,  42,   0, 
       0,   0,  60,   8,   0,   0, 
@@ -286,15 +286,15 @@ const BYTE BasicEffect_VSBasicOneLightTxVc[] =
       0,   0,  14,   0,   2,   0, 
     140,   8,   0,   0,  14,   0, 
       2,   0, 156,   8,   0,   0, 
-     96,   1,   1,   0, 172,   8, 
+     97,   1,   1,   0, 172,   8, 
       0,   0,  63,   0,   0,   0, 
     188,   8,   0,   0,  63,   0, 
       0,   0, 204,   8,   0,   0, 
      63,   0,   0,   0, 220,   8, 
-      0,   0,  88,   1,   1,   0, 
-    236,   8,   0,   0,  88,   1, 
+      0,   0,  89,   1,   1,   0, 
+    236,   8,   0,   0,  89,   1, 
       1,   0,   0,   9,   0,   0, 
-     95,   1,   1,   0,  12,   9, 
+     96,   1,   1,   0,  12,   9, 
       0,   0,  80,  97, 114,  97, 
     109, 101, 116, 101, 114, 115, 
       0,  68, 105, 102, 102, 117, 

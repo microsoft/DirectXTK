@@ -124,7 +124,7 @@
     dp4 r0.y, v0, c22  // ::vout<1>
     dp4 r0.z, v0, c24  // ::vout<3>
 
-#line 154 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
+#line 155 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
     mad oPos.xy, r0.z, c0, r0  // ::VSBasicVertexLighting<8,9>
     mov oPos.w, r0.z  // ::VSBasicVertexLighting<11>
 
@@ -199,10 +199,10 @@ ret
 
 const BYTE BasicEffect_VSBasicVertexLighting[] =
 {
-     68,  88,  66,  67,  15,  89, 
-    128,   9,  87,  42, 234,  33, 
-     88, 232,  69, 135,  26,   7, 
-    179,  19,   1,   0,   0,   0, 
+     68,  88,  66,  67, 199, 206, 
+     32,  24, 238, 131, 183,   2, 
+    103, 136,  87, 147,  38, 106, 
+    191, 127,   1,   0,   0,   0, 
      56,  18,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
     140,  10,   0,   0, 120,  17, 
@@ -325,8 +325,8 @@ const BYTE BasicEffect_VSBasicVertexLighting[] =
       0,   0,  63,   0,   0,   0, 
     184,   9,   0,   0,  63,   0, 
       0,   0, 200,   9,   0,   0, 
-    154,   0,   2,   0, 216,   9, 
-      0,   0, 154,   0,   2,   0, 
+    155,   0,   2,   0, 216,   9, 
+      0,   0, 155,   0,   2,   0, 
     236,   9,   0,   0,  46,   0, 
       0,   0, 248,   9,   0,   0, 
      80,  97, 114,  97, 109, 101, 

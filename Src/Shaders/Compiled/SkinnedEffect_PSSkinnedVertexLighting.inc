@@ -41,7 +41,7 @@
     dcl t2.xy  // pin<8,9>
     dcl_2d s0
 
-#line 356 "D:\Microsoft\DirectXTK\Src\Shaders\SkinnedEffect.fx"
+#line 357 "D:\Microsoft\DirectXTK\Src\Shaders\SkinnedEffect.fx"
     texld r0, t2, s0
     mul r0, r0, t0  // ::color<0,1,2,3>
 
@@ -75,10 +75,10 @@ ret
 
 const BYTE SkinnedEffect_PSSkinnedVertexLighting[] =
 {
-     68,  88,  66,  67, 111,  16, 
-    162, 240, 105, 243, 137, 165, 
-    165,  61, 224, 162, 150, 114, 
-    123,  11,   1,   0,   0,   0, 
+     68,  88,  66,  67,  18, 183, 
+    155,  88, 164, 152, 242,  19, 
+    150,  89,  95, 164, 244,  49, 
+     52,  65,   1,   0,   0,   0, 
      96,   5,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
     132,   3,   0,   0, 196,   4, 
@@ -125,8 +125,8 @@ const BYTE SkinnedEffect_PSSkinnedVertexLighting[] =
       0,   0,   0,   0, 255, 255, 
     148,   2,   0,   0,   0,   0, 
     255, 255, 160,   2,   0,   0, 
-    100,   1,   0,   0, 172,   2, 
-      0,   0, 100,   1,   0,   0, 
+    101,   1,   0,   0, 172,   2, 
+      0,   0, 101,   1,   0,   0, 
     188,   2,   0,   0,  26,   0, 
       1,   0, 204,   2,   0,   0, 
      20,   0,   1,   0, 224,   2, 

@@ -41,7 +41,7 @@
     dcl t2.xy  // pin<8,9>
     dcl_2d s0
 
-#line 555 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
+#line 556 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
     texld r0, t2, s0
     mul r0, r0, t0  // ::color<0,1,2,3>
 
@@ -75,10 +75,10 @@ ret
 
 const BYTE BasicEffect_PSBasicVertexLightingTx[] =
 {
-     68,  88,  66,  67, 134, 115, 
-     31, 185, 218, 240,   0,  27, 
-    213, 230,   4, 161, 201, 162, 
-    228, 242,   1,   0,   0,   0, 
+     68,  88,  66,  67, 249,  94, 
+    206,  11,  38, 198, 186,  21, 
+    248, 243,   3, 223,  96, 233, 
+      7,  70,   1,   0,   0,   0, 
      92,   5,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
     128,   3,   0,   0, 192,   4, 
@@ -124,8 +124,8 @@ const BYTE BasicEffect_PSBasicVertexLightingTx[] =
     132,   2,   0,   0,   0,   0, 
     255, 255, 144,   2,   0,   0, 
       0,   0, 255, 255, 156,   2, 
-      0,   0,  43,   2,   0,   0, 
-    168,   2,   0,   0,  43,   2, 
+      0,   0,  44,   2,   0,   0, 
+    168,   2,   0,   0,  44,   2, 
       0,   0, 184,   2,   0,   0, 
      26,   0,   1,   0, 200,   2, 
       0,   0,  20,   0,   1,   0, 

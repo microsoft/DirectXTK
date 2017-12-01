@@ -46,7 +46,7 @@
     dcl_texcoord1 v1  // vin<4,5>
     dcl_texcoord2 v2  // vin<6,7>
 
-#line 49 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
+#line 43 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
     dp4 oPos.z, v0, c5  // ::VSDualTexture<14>
 
 #line 14
@@ -54,7 +54,7 @@
     max r0.x, r0.x, c7.x
     min oT1.w, r0.x, c7.y  // ::VSDualTexture<7>
 
-#line 49
+#line 43
     dp4 r0.x, v0, c3  // ::vout<0>
     dp4 r0.y, v0, c4  // ::vout<1>
     dp4 r0.z, v0, c6  // ::vout<3>
@@ -63,7 +63,7 @@
     mad oPos.xy, r0.z, c0, r0  // ::VSDualTexture<12,13>
     mov oPos.w, r0.z  // ::VSDualTexture<15>
 
-#line 50 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
+#line 44 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
     mov oT0, c1  // ::VSDualTexture<0,1,2,3>
     mov oT1.xyz, c7.x  // ::VSDualTexture<4,5,6>
 
@@ -97,10 +97,10 @@ ret
 
 const BYTE DualTextureEffect_VSDualTexture[] =
 {
-     68,  88,  66,  67, 254,  99, 
-     12, 212,  33,  88,  30,  70, 
-    182,  72, 159, 118, 245,  92, 
-    133,  40,   1,   0,   0,   0, 
+     68,  88,  66,  67, 243, 159, 
+     16, 128, 239, 104, 139, 149, 
+    168, 187,  31, 121, 214,  33, 
+    182,  48,   1,   0,   0,   0, 
     136,   7,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
     236,   4,   0,   0, 116,   6, 
@@ -149,21 +149,21 @@ const BYTE DualTextureEffect_VSDualTexture[] =
     255, 255, 140,   3,   0,   0, 
       0,   0, 255, 255, 152,   3, 
       0,   0,   0,   0, 255, 255, 
-    164,   3,   0,   0,  49,   0, 
+    164,   3,   0,   0,  43,   0, 
       0,   0, 176,   3,   0,   0, 
      14,   0,   0,   0, 192,   3, 
       0,   0,  14,   0,   0,   0, 
     208,   3,   0,   0,  14,   0, 
       0,   0, 224,   3,   0,   0, 
-     49,   0,   0,   0, 240,   3, 
-      0,   0,  49,   0,   0,   0, 
-      0,   4,   0,   0,  49,   0, 
+     43,   0,   0,   0, 240,   3, 
+      0,   0,  43,   0,   0,   0, 
+      0,   4,   0,   0,  43,   0, 
       0,   0,  16,   4,   0,   0, 
      33,   0,   1,   0,  32,   4, 
       0,   0,  33,   0,   1,   0, 
-     52,   4,   0,   0,  50,   0, 
+     52,   4,   0,   0,  44,   0, 
       0,   0,  64,   4,   0,   0, 
-     51,   0,   0,   0,  76,   4, 
+     45,   0,   0,   0,  76,   4, 
       0,   0,  40,   0,   1,   0, 
      88,   4,   0,   0,  40,   0, 
       1,   0, 100,   4,   0,   0, 
