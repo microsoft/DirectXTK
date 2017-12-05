@@ -68,42 +68,45 @@ private:
 };
 
 
-// Helper for creating a D3D vertex or index buffer.
+namespace
+{
+    // Helper for creating a D3D vertex or index buffer.
 #if defined(_XBOX_ONE) && defined(_TITLE)
-static void CreateBuffer(_In_ ID3D11DeviceX* device, size_t bufferSize, D3D11_BIND_FLAG bindFlag, _Out_ ID3D11Buffer** pBuffer)
-{
-    D3D11_BUFFER_DESC desc = {};
+    void CreateBuffer(_In_ ID3D11DeviceX* device, size_t bufferSize, D3D11_BIND_FLAG bindFlag, _Out_ ID3D11Buffer** pBuffer)
+    {
+        D3D11_BUFFER_DESC desc = {};
 
-    desc.ByteWidth = (UINT)bufferSize;
-    desc.BindFlags = bindFlag;
-    desc.Usage = D3D11_USAGE_DEFAULT;
-    desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        desc.ByteWidth = (UINT)bufferSize;
+        desc.BindFlags = bindFlag;
+        desc.Usage = D3D11_USAGE_DEFAULT;
+        desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-    ThrowIfFailed(
-        device->CreatePlacementBuffer(&desc, nullptr, pBuffer)
-    );
+        ThrowIfFailed(
+            device->CreatePlacementBuffer(&desc, nullptr, pBuffer)
+        );
 
-    SetDebugObjectName(*pBuffer, "DirectXTK:PrimitiveBatch");
-}
+        SetDebugObjectName(*pBuffer, "DirectXTK:PrimitiveBatch");
+    }
 #else
-static void CreateBuffer(_In_ ID3D11Device* device, size_t bufferSize, D3D11_BIND_FLAG bindFlag, _Out_ ID3D11Buffer** pBuffer)
-{
-    D3D11_BUFFER_DESC desc = {};
+    void CreateBuffer(_In_ ID3D11Device* device, size_t bufferSize, D3D11_BIND_FLAG bindFlag, _Out_ ID3D11Buffer** pBuffer)
+    {
+        D3D11_BUFFER_DESC desc = {};
 
-    desc.ByteWidth = (UINT)bufferSize;
-    desc.BindFlags = bindFlag;
-    desc.Usage = D3D11_USAGE_DYNAMIC;
-    desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        desc.ByteWidth = (UINT)bufferSize;
+        desc.BindFlags = bindFlag;
+        desc.Usage = D3D11_USAGE_DYNAMIC;
+        desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-    ThrowIfFailed(
-        device->CreateBuffer(&desc, nullptr, pBuffer)
-    );
+        ThrowIfFailed(
+            device->CreateBuffer(&desc, nullptr, pBuffer)
+        );
 
-    _Analysis_assume_(*pBuffer != 0);
+        _Analysis_assume_(*pBuffer != 0);
 
-    SetDebugObjectName(*pBuffer, "DirectXTK:PrimitiveBatch");
-}
+        SetDebugObjectName(*pBuffer, "DirectXTK:PrimitiveBatch");
+    }
 #endif
+}
 
 
 // Constructor.
@@ -199,11 +202,13 @@ void PrimitiveBatchBase::Impl::End()
 }
 
 
-// Can we combine adjacent primitives using this topology into a single draw call?
-static bool CanBatchPrimitives(D3D11_PRIMITIVE_TOPOLOGY topology)
+namespace
 {
-    switch (topology)
+    // Can we combine adjacent primitives using this topology into a single draw call?
+    bool CanBatchPrimitives(D3D11_PRIMITIVE_TOPOLOGY topology)
     {
+        switch (topology)
+        {
         case D3D11_PRIMITIVE_TOPOLOGY_POINTLIST:
         case D3D11_PRIMITIVE_TOPOLOGY_LINELIST:
         case D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST:
@@ -213,26 +218,27 @@ static bool CanBatchPrimitives(D3D11_PRIMITIVE_TOPOLOGY topology)
         default:
             // Strips cannot.
             return false;
-    }
+        }
 
-    // We could also merge indexed strips by inserting degenerates,
-    // but that's not always a perf win, so let's keep things simple.
-}
+        // We could also merge indexed strips by inserting degenerates,
+        // but that's not always a perf win, so let's keep things simple.
+    }
 
 
 #if !defined(_XBOX_ONE) || !defined(_TITLE)
-// Helper for locking a vertex or index buffer.
-static void LockBuffer(_In_ ID3D11DeviceContext* deviceContext, _In_ ID3D11Buffer* buffer, size_t currentPosition, _Out_ size_t* basePosition, _Out_ D3D11_MAPPED_SUBRESOURCE* mappedResource)
-{
-    D3D11_MAP mapType = (currentPosition == 0) ? D3D11_MAP_WRITE_DISCARD : D3D11_MAP_WRITE_NO_OVERWRITE;
+    // Helper for locking a vertex or index buffer.
+    void LockBuffer(_In_ ID3D11DeviceContext* deviceContext, _In_ ID3D11Buffer* buffer, size_t currentPosition, _Out_ size_t* basePosition, _Out_ D3D11_MAPPED_SUBRESOURCE* mappedResource)
+    {
+        D3D11_MAP mapType = (currentPosition == 0) ? D3D11_MAP_WRITE_DISCARD : D3D11_MAP_WRITE_NO_OVERWRITE;
 
-    ThrowIfFailed(
-        deviceContext->Map(buffer, 0, mapType, 0, mappedResource)
-    );
+        ThrowIfFailed(
+            deviceContext->Map(buffer, 0, mapType, 0, mappedResource)
+        );
 
-    *basePosition = currentPosition;
-}
+        *basePosition = currentPosition;
+    }
 #endif
+}
 
 
 // Adds new geometry to the batch.

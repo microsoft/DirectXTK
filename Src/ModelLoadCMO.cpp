@@ -181,66 +181,69 @@ static_assert( sizeof(VSD3DStarter::Bone) == 196, "CMO Mesh structure size incor
 static_assert( sizeof(VSD3DStarter::Clip) == 12, "CMO Mesh structure size incorrect" );
 static_assert( sizeof(VSD3DStarter::Keyframe)== 72, "CMO Mesh structure size incorrect" );
 
-//--------------------------------------------------------------------------------------
-struct MaterialRecordCMO
+namespace
 {
-    const VSD3DStarter::Material*   pMaterial;
-    std::wstring                    name;
-    std::wstring                    pixelShader;
-    std::wstring                    texture[VSD3DStarter::MAX_TEXTURE];
-    std::shared_ptr<IEffect>        effect;
-    ComPtr<ID3D11InputLayout>       il;
-};
-
-// Helper for creating a D3D input layout.
-static void CreateInputLayout(_In_ ID3D11Device* device, IEffect* effect, _Out_ ID3D11InputLayout** pInputLayout, bool skinning )
-{
-    void const* shaderByteCode;
-    size_t byteCodeLength;
-
-    effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
-
-    if ( skinning )
+    //----------------------------------------------------------------------------------
+    struct MaterialRecordCMO
     {
-        ThrowIfFailed(
-            device->CreateInputLayout( VertexPositionNormalTangentColorTextureSkinning::InputElements,
-                                       VertexPositionNormalTangentColorTextureSkinning::InputElementCount,
-                                       shaderByteCode, byteCodeLength,
-                                       pInputLayout)
-        );
-    }
-    else
+        const VSD3DStarter::Material*   pMaterial;
+        std::wstring                    name;
+        std::wstring                    pixelShader;
+        std::wstring                    texture[VSD3DStarter::MAX_TEXTURE];
+        std::shared_ptr<IEffect>        effect;
+        ComPtr<ID3D11InputLayout>       il;
+    };
+
+    // Helper for creating a D3D input layout.
+    void CreateInputLayout(_In_ ID3D11Device* device, IEffect* effect, _Out_ ID3D11InputLayout** pInputLayout, bool skinning)
     {
-        ThrowIfFailed(
-            device->CreateInputLayout( VertexPositionNormalTangentColorTexture::InputElements,
-                                       VertexPositionNormalTangentColorTexture::InputElementCount,
-                                       shaderByteCode, byteCodeLength,
-                                       pInputLayout)
-        );
+        void const* shaderByteCode;
+        size_t byteCodeLength;
+
+        effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
+
+        if (skinning)
+        {
+            ThrowIfFailed(
+                device->CreateInputLayout(VertexPositionNormalTangentColorTextureSkinning::InputElements,
+                    VertexPositionNormalTangentColorTextureSkinning::InputElementCount,
+                    shaderByteCode, byteCodeLength,
+                    pInputLayout)
+            );
+        }
+        else
+        {
+            ThrowIfFailed(
+                device->CreateInputLayout(VertexPositionNormalTangentColorTexture::InputElements,
+                    VertexPositionNormalTangentColorTexture::InputElementCount,
+                    shaderByteCode, byteCodeLength,
+                    pInputLayout)
+            );
+        }
+
+        _Analysis_assume_(*pInputLayout != 0);
+
+        SetDebugObjectName(*pInputLayout, "ModelCMO");
     }
 
-    _Analysis_assume_(*pInputLayout != 0);
+    // Shared VB input element description
+    INIT_ONCE g_InitOnce = INIT_ONCE_STATIC_INIT;
+    std::shared_ptr<std::vector<D3D11_INPUT_ELEMENT_DESC>> g_vbdecl;
+    std::shared_ptr<std::vector<D3D11_INPUT_ELEMENT_DESC>> g_vbdeclSkinning;
 
-    SetDebugObjectName(*pInputLayout, "ModelCMO");
-}
+    BOOL CALLBACK InitializeDecl(PINIT_ONCE initOnce, PVOID Parameter, PVOID *lpContext)
+    {
+        UNREFERENCED_PARAMETER(initOnce);
+        UNREFERENCED_PARAMETER(Parameter);
+        UNREFERENCED_PARAMETER(lpContext);
 
-// Shared VB input element description
-static INIT_ONCE g_InitOnce = INIT_ONCE_STATIC_INIT;
-static std::shared_ptr<std::vector<D3D11_INPUT_ELEMENT_DESC>> g_vbdecl;
-static std::shared_ptr<std::vector<D3D11_INPUT_ELEMENT_DESC>> g_vbdeclSkinning;
+        g_vbdecl = std::make_shared<std::vector<D3D11_INPUT_ELEMENT_DESC>>(VertexPositionNormalTangentColorTexture::InputElements,
+            VertexPositionNormalTangentColorTexture::InputElements + VertexPositionNormalTangentColorTexture::InputElementCount);
 
-static BOOL CALLBACK InitializeDecl( PINIT_ONCE initOnce, PVOID Parameter, PVOID *lpContext )
-{
-    UNREFERENCED_PARAMETER( initOnce );
-    UNREFERENCED_PARAMETER( Parameter );
-    UNREFERENCED_PARAMETER( lpContext );
-
-    g_vbdecl = std::make_shared<std::vector<D3D11_INPUT_ELEMENT_DESC>>( VertexPositionNormalTangentColorTexture::InputElements,
-           VertexPositionNormalTangentColorTexture::InputElements + VertexPositionNormalTangentColorTexture::InputElementCount );
-
-    g_vbdeclSkinning = std::make_shared<std::vector<D3D11_INPUT_ELEMENT_DESC>>( VertexPositionNormalTangentColorTextureSkinning::InputElements,
-           VertexPositionNormalTangentColorTextureSkinning::InputElements + VertexPositionNormalTangentColorTextureSkinning::InputElementCount );
-    return TRUE;
+        g_vbdeclSkinning = std::make_shared<std::vector<D3D11_INPUT_ELEMENT_DESC>>(VertexPositionNormalTangentColorTextureSkinning::InputElements,
+            VertexPositionNormalTangentColorTextureSkinning::InputElements + VertexPositionNormalTangentColorTextureSkinning::InputElementCount);
+        return TRUE;
+    }
 }
 
 

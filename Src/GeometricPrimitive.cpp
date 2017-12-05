@@ -27,7 +27,7 @@ namespace
 {
     // Helper for creating a D3D vertex or index buffer.
     template<typename T>
-    static void CreateBuffer(_In_ ID3D11Device* device, T const& data, D3D11_BIND_FLAG bindFlags, _Outptr_ ID3D11Buffer** pBuffer)
+    void CreateBuffer(_In_ ID3D11Device* device, T const& data, D3D11_BIND_FLAG bindFlags, _Outptr_ ID3D11Buffer** pBuffer)
     {
         assert(pBuffer != 0);
 
