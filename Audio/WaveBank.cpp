@@ -168,9 +168,9 @@ void WaveBank::Impl::Play( int index, float volume, float pitch, float pan )
         mPrepared = true;
     }
 
-    char wfxbuff[64];
+    char wfxbuff[64] = {};
     auto wfx = reinterpret_cast<WAVEFORMATEX*>( wfxbuff );
-    HRESULT hr = mReader.GetFormat( index, wfx, 64 );
+    HRESULT hr = mReader.GetFormat( index, wfx, sizeof(wfxbuff) );
     ThrowIfFailed( hr );
 
     IXAudio2SourceVoice* voice = nullptr;
@@ -434,9 +434,9 @@ size_t WaveBank::GetSampleDurationMS( int index ) const
     if ( index < 0 || uint32_t(index) >= pImpl->mReader.Count() )
         return 0;
 
-    char buff[64];
+    char buff[64] = {};
     auto wfx = reinterpret_cast<WAVEFORMATEX*>( buff );
-    HRESULT hr = pImpl->mReader.GetFormat( index, wfx, 64 );
+    HRESULT hr = pImpl->mReader.GetFormat( index, wfx, sizeof(buff) );
     ThrowIfFailed( hr );
 
     WaveBankReader::Metadata metadata;

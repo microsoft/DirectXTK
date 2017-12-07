@@ -414,7 +414,7 @@ namespace DirectX
 
         // Unsupported interface method.
         void __cdecl SetLightingEnabled(bool value) override;
-    };  
+    };
 
     //----------------------------------------------------------------------------------
     // Built-in effect for Visual Studio Shader Designer (DGSL) shaders

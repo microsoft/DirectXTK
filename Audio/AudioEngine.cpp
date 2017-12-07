@@ -1049,13 +1049,13 @@ void AudioEngine::Impl::AllocateVoice( const WAVEFORMATEX* wfx, SOUND_EFFECT_INS
                     case WAVE_FORMAT_ADPCM:
                         {
                             auto wfadpcm = reinterpret_cast<const ADPCMWAVEFORMAT*>( wfx );
-                            CreateADPCM( wfmt, 64, defaultRate, wfx->nChannels, wfadpcm->wSamplesPerBlock );
+                            CreateADPCM( wfmt, sizeof(buff), defaultRate, wfx->nChannels, wfadpcm->wSamplesPerBlock );
                         }
                         break;
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
                     case WAVE_FORMAT_XMA2:
-                        CreateXMA2( wfmt, 64, defaultRate, wfx->nChannels, 65536, 2, 0 );
+                        CreateXMA2( wfmt, sizeof(buff), defaultRate, wfx->nChannels, 65536, 2, 0 );
                         break;
 #endif
                     }

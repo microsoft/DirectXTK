@@ -49,10 +49,10 @@ public:
         assert( engine != 0 );
         engine->RegisterNotify( this, false );
 
-        char buff[64];
+        char buff[64] = {};
         auto wfx = reinterpret_cast<WAVEFORMATEX*>( buff );
         assert( mWaveBank != 0 );
-        mBase.Initialize( engine, mWaveBank->GetFormat( index, wfx, 64 ), flags );
+        mBase.Initialize( engine, mWaveBank->GetFormat( index, wfx, sizeof(buff) ), flags );
     }
 
     virtual ~Impl()
@@ -120,9 +120,9 @@ void SoundEffectInstance::Impl::Play( bool loop )
     {
         if ( mWaveBank )
         {
-            char buff[64];
+            char buff[64] = {};
             auto wfx = reinterpret_cast<WAVEFORMATEX*>( buff );
-            mBase.AllocateVoice( mWaveBank->GetFormat( mIndex, wfx, 64) );
+            mBase.AllocateVoice( mWaveBank->GetFormat( mIndex, wfx, sizeof(buff) ) );
         }
         else
         {
@@ -195,8 +195,8 @@ void SoundEffectInstance::Impl::Play( bool loop )
 #ifdef _DEBUG
         DebugTrace( "ERROR: SoundEffectInstance failed (%08X) when submitting buffer:\n", hr );
 
-        char buff[64];
-        auto wfx = ( mWaveBank ) ? mWaveBank->GetFormat( mIndex, reinterpret_cast<WAVEFORMATEX*>( buff ), 64 )
+        char buff[64] = {};
+        auto wfx = ( mWaveBank ) ? mWaveBank->GetFormat( mIndex, reinterpret_cast<WAVEFORMATEX*>( buff ), sizeof(buff) )
                                  : mEffect->GetFormat();
 
         size_t length = ( mWaveBank ) ? mWaveBank->GetSampleSizeInBytes( mIndex ) : mEffect->GetSampleSizeInBytes();
