@@ -460,19 +460,6 @@ void PBREffect::SetConstantRoughness(float value)
 }
 
 
-#ifdef DEBUG
-void PBREffect::SetDebugFlags(bool diffuse, bool D, bool F, bool G)
-{
-    pImpl->constants.enable_Diffuse = diffuse;
-    pImpl->constants.enable_Specular_D = D;
-    pImpl->constants.enable_Specular_F = F;
-    pImpl->constants.enable_Specular_G = G;
-
-    pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
-}
-#endif
-
-
 // Texture settings.
 void PBREffect::SetSurfaceTextures(
     _In_opt_ ID3D11ShaderResourceView* albedo,

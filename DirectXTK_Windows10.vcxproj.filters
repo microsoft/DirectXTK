@@ -1133,6 +1133,9 @@
     <None Include="Src\Shaders\Compiled\PBREffect_VSConstantVelocityBn.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
+    <None Include="Src\Shaders\PBREffect.fx">
+      <Filter>Src\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\AlphaTestEffect.cpp">
@@ -1267,10 +1270,5 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="Readme.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="Src\Shaders\PBREffect.fx">
-      <Filter>Src\Shaders</Filter>
-    </FxCompile>
   </ItemGroup>
 </Project>
