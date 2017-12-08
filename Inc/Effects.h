@@ -605,9 +605,6 @@ namespace DirectX
         void XM_CALLCONV SetConstantAlbedo(FXMVECTOR value);
         void __cdecl SetConstantMetallic(float value);
         void __cdecl SetConstantRoughness(float value);
-#ifdef DEBUG
-        void __cdecl SetDebugFlags(bool diffuse, bool D, bool F, bool G);
-#endif
 
         // Texture settings.
         void __cdecl SetSurfaceTextures(
