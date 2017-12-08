@@ -160,15 +160,15 @@ const int EffectBase<NormalMapEffectTraits>::PixelShaderIndices[] =
     2,      // pixel lighting + texture + vertex color, no specular
     3,      // pixel lighting + texture + vertex color, no fog or specular
 
-    0,      // pixel lighting (biased vertex normal/tangent) + texture
-    1,      // pixel lighting (biased vertex normal/tangent) + texture, no fog
-    0,      // pixel lighting (biased vertex normal/tangent) + texture + vertex color
-    1,      // pixel lighting (biased vertex normal/tangent) + texture + vertex color, no fog
+    0,      // pixel lighting (biased vertex normal) + texture
+    1,      // pixel lighting (biased vertex normal) + texture, no fog
+    0,      // pixel lighting (biased vertex normal) + texture + vertex color
+    1,      // pixel lighting (biased vertex normal) + texture + vertex color, no fog
 
-    2,      // pixel lighting (biased vertex normal/tangent) + texture, no specular
-    3,      // pixel lighting (biased vertex normal/tangent) + texture, no fog or specular
-    2,      // pixel lighting (biased vertex normal/tangent) + texture + vertex color, no specular
-    3,      // pixel lighting (biased vertex normal/tangent) + texture + vertex color, no fog or specular
+    2,      // pixel lighting (biased vertex normal) + texture, no specular
+    3,      // pixel lighting (biased vertex normal) + texture, no fog or specular
+    2,      // pixel lighting (biased vertex normal) + texture + vertex color, no specular
+    3,      // pixel lighting (biased vertex normal) + texture + vertex color, no fog or specular
 };
 
 
