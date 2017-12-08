@@ -43,9 +43,9 @@ cbuffer Parameters : register(b0)
 
 
 // Vertex shader: pixel lighting + texture.
-VSOutputPixelLightingTxTangent VSNormalPixelLightingTx(VSInputNmTxTangent vin)
+VSOutputPixelLightingTx VSNormalPixelLightingTx(VSInputNmTx vin)
 {
-    VSOutputPixelLightingTxTangent vout;
+    VSOutputPixelLightingTx vout;
 
     CommonVSOutputPixelLighting cout = ComputeCommonVSOutputPixelLighting(vin.Position, vin.Normal);
     SetCommonVSOutputParamsPixelLighting;
@@ -53,15 +53,12 @@ VSOutputPixelLightingTxTangent VSNormalPixelLightingTx(VSInputNmTxTangent vin)
     vout.Diffuse = float4(1, 1, 1, DiffuseColor.a);
     vout.TexCoord = vin.TexCoord;
 
-    // For normal mapping, we need tangent to form tangent space transform
-    vout.TangentWS = normalize(mul(vin.Tangent.xyz, WorldInverseTranspose));
-
     return vout;
 }
 
-VSOutputPixelLightingTxTangent VSNormalPixelLightingTxBn(VSInputNmTxTangent vin)
+VSOutputPixelLightingTx VSNormalPixelLightingTxBn(VSInputNmTx vin)
 {
-    VSOutputPixelLightingTxTangent vout;
+    VSOutputPixelLightingTx vout;
 
     float3 normal = BiasX2(vin.Normal);
 
@@ -70,20 +67,15 @@ VSOutputPixelLightingTxTangent VSNormalPixelLightingTxBn(VSInputNmTxTangent vin)
 
     vout.Diffuse = float4(1, 1, 1, DiffuseColor.a);
     vout.TexCoord = vin.TexCoord;
-
-    // For normal mapping, we need tangent to form tangent space transform
-    float3 tangent = BiasX2(vin.Tangent.xyz);
-
-    vout.TangentWS = normalize(mul(tangent, WorldInverseTranspose));
 
     return vout;
 }
 
 
 // Vertex shader: pixel lighting + texture + vertex color.
-VSOutputPixelLightingTxTangent VSNormalPixelLightingTxVc(VSInputNmTxVcTangent vin)
+VSOutputPixelLightingTx VSNormalPixelLightingTxVc(VSInputNmTxVc vin)
 {
-    VSOutputPixelLightingTxTangent vout;
+    VSOutputPixelLightingTx vout;
 
     CommonVSOutputPixelLighting cout = ComputeCommonVSOutputPixelLighting(vin.Position, vin.Normal);
     SetCommonVSOutputParamsPixelLighting;
@@ -92,15 +84,12 @@ VSOutputPixelLightingTxTangent VSNormalPixelLightingTxVc(VSInputNmTxVcTangent vi
     vout.Diffuse.a = vin.Color.a * DiffuseColor.a;
     vout.TexCoord = vin.TexCoord;
 
-    // For normal mapping, we need tangent to form tangent space transform
-    vout.TangentWS = normalize(mul(vin.Tangent.xyz, WorldInverseTranspose));
-
     return vout;
 }
 
-VSOutputPixelLightingTxTangent VSNormalPixelLightingTxVcBn(VSInputNmTxVcTangent vin)
+VSOutputPixelLightingTx VSNormalPixelLightingTxVcBn(VSInputNmTxVc vin)
 {
-    VSOutputPixelLightingTxTangent vout;
+    VSOutputPixelLightingTx vout;
 
     float3 normal = BiasX2(vin.Normal);
 
@@ -111,22 +100,17 @@ VSOutputPixelLightingTxTangent VSNormalPixelLightingTxVcBn(VSInputNmTxVcTangent 
     vout.Diffuse.a = vin.Color.a * DiffuseColor.a;
     vout.TexCoord = vin.TexCoord;
 
-    // For normal mapping, we need tangent to form tangent space transform
-    float3 tangent = BiasX2(vin.Tangent.xyz);
-
-    vout.TangentWS = normalize(mul(tangent, WorldInverseTranspose));
-
     return vout;
 }
 
 // Pixel shader: pixel lighting + texture + no fog
-float4 PSNormalPixelLightingTxNoFog(PSInputPixelLightingTxTangent pin) : SV_Target0
+float4 PSNormalPixelLightingTxNoFog(PSInputPixelLightingTx pin) : SV_Target0
 {
     float3 eyeVector = normalize(EyePosition - pin.PositionWS.xyz);
 
     // Before lighting, peturb the surface's normal by the one given in normal map.
     float3 localNormal = BiasX2(NormalTexture.Sample(Sampler, pin.TexCoord).xyz);
-    float3 normal = PeturbNormal(localNormal, pin.NormalWS, pin.TangentWS);
+    float3 normal = PeturbNormal(localNormal, pin.PositionWS.xyz, pin.NormalWS, pin.TexCoord);
 
     // Do lighting
     ColorPair lightResult = ComputeLights(eyeVector, normal, 3);
@@ -143,13 +127,13 @@ float4 PSNormalPixelLightingTxNoFog(PSInputPixelLightingTxTangent pin) : SV_Targ
 }
 
 // Pixel shader: pixel lighting + texture
-float4 PSNormalPixelLightingTx(PSInputPixelLightingTxTangent pin) : SV_Target0
+float4 PSNormalPixelLightingTx(PSInputPixelLightingTx pin) : SV_Target0
 {
     float3 eyeVector = normalize(EyePosition - pin.PositionWS.xyz);
  
     // Before lighting, peturb the surface's normal by the one given in normal map.
     float3 localNormal = BiasX2(NormalTexture.Sample(Sampler, pin.TexCoord).xyz);
-    float3 normal = PeturbNormal(localNormal, pin.NormalWS, pin.TangentWS);
+    float3 normal = PeturbNormal(localNormal, pin.PositionWS.xyz, pin.NormalWS, pin.TexCoord);
 
     // Do lighting
     ColorPair lightResult = ComputeLights(eyeVector, normal, 3);
@@ -168,13 +152,13 @@ float4 PSNormalPixelLightingTx(PSInputPixelLightingTxTangent pin) : SV_Target0
 
 
 // Pixel shader: pixel lighting + texture + no fog + no specular
-float4 PSNormalPixelLightingTxNoFogSpec(PSInputPixelLightingTxTangent pin) : SV_Target0
+float4 PSNormalPixelLightingTxNoFogSpec(PSInputPixelLightingTx pin) : SV_Target0
 {
     float3 eyeVector = normalize(EyePosition - pin.PositionWS.xyz);
 
     // Before lighting, peturb the surface's normal by the one given in normal map.
     float3 localNormal = BiasX2(NormalTexture.Sample(Sampler, pin.TexCoord).xyz);
-    float3 normal = PeturbNormal(localNormal, pin.NormalWS, pin.TangentWS);
+    float3 normal = PeturbNormal(localNormal, pin.PositionWS.xyz, pin.NormalWS, pin.TexCoord);
 
     // Do lighting
     ColorPair lightResult = ComputeLights(eyeVector, normal, 3);
@@ -190,13 +174,13 @@ float4 PSNormalPixelLightingTxNoFogSpec(PSInputPixelLightingTxTangent pin) : SV_
 }
 
 // Pixel shader: pixel lighting + texture + no specular
-float4 PSNormalPixelLightingTxNoSpec(PSInputPixelLightingTxTangent pin) : SV_Target0
+float4 PSNormalPixelLightingTxNoSpec(PSInputPixelLightingTx pin) : SV_Target0
 {
     float3 eyeVector = normalize(EyePosition - pin.PositionWS.xyz);
 
     // Before lighting, peturb the surface's normal by the one given in normal map.
     float3 localNormal = BiasX2(NormalTexture.Sample(Sampler, pin.TexCoord).xyz);
-    float3 normal = PeturbNormal(localNormal, pin.NormalWS, pin.TangentWS);
+    float3 normal = PeturbNormal(localNormal, pin.PositionWS.xyz, pin.NormalWS, pin.TexCoord);
 
     // Do lighting
     ColorPair lightResult = ComputeLights(eyeVector, normal, 3);

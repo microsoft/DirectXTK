@@ -14,15 +14,35 @@ float3 BiasX2(float3 x)
 }
 
 
-// Given a local normal, transform it into a tangent space given by surface normal and tangent
-float3 PeturbNormal(float3 localNormal, float3 surfaceNormalWS, float3 surfaceTangentWS)
+// Chris­t­ian Schüler, “Normal Mapping without Precomputed Tangents”, ShaderX 5, Chap­ter 2.6, pp. 131 – 140
+float3x3 CalculateTBN(float3 p, float3 n, float2 tex)
 {
-    float3 normal = normalize(surfaceNormalWS);
-    float3 tangent = normalize(surfaceTangentWS);
-    float3 binormal = cross(normal, tangent);     // reconstructed from normal & tangent
-    float3x3 tbn = { tangent, binormal, normal }; // world "frame" for local normal
+	// Calculates the edge differences.
+	const float3 dp_dj   = ddx(p);
+	const float3 dp_di   = ddy(p);
+	const float2 dtex_dj = ddx(tex);
+	const float2 dtex_di = ddy(tex);
 
-    return mul(localNormal, tbn);                // transform to local to world (tangent space)
+	// Solve the linear system of equations to obtain the co b144268tangents t and b.
+	const float3 dp_di_ortho = cross(dp_di, n);
+	const float3 dp_dj_ortho = cross(n, dp_dj);
+
+	// Calculate the gradient of texture coordinate u as a function of p.
+	const float3 t = dtex_dj.x * dp_di_ortho + dtex_di.x * dp_dj_ortho;
+
+	// Calculate the gradient of texture coordinate v as a function of p.
+	const float3 b = dtex_dj.y * dp_di_ortho + dtex_di.y * dp_dj_ortho;
+
+	// Construct a scale-invariant frame.
+	const float inv_det = rsqrt(max(dot(t, t), dot(b, b)));
+	const float3x3 TBN  = { t * inv_det, b * inv_det, n };
+	return TBN;
+}
+
+float3 PeturbNormal(float3 localNormal, float3 position, float3 normal, float2 texCoord)
+{
+	const float3x3 TBN = CalculateTBN(position, normal, texCoord);
+	return normalize(mul(localNormal, TBN));
 }
 
 
