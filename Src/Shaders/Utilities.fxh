@@ -14,6 +14,12 @@ float3 BiasX2(float3 x)
 }
 
 
+float3 BiasD2(float3 x)
+{
+   return 0.5f * x + 0.5f;
+}
+
+
 // Given a local normal, transform it into a tangent space given by surface normal and tangent
 float3 PeturbNormal(float3 localNormal, float3 surfaceNormalWS, float3 surfaceTangentWS)
 {
