@@ -208,6 +208,21 @@ void DebugEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
     // Compute derived parameter values.
     matrices.SetConstants(dirtyFlags, constants.worldViewProj);
 
+    // World inverse transpose matrix.
+    if (dirtyFlags & EffectDirtyFlags::WorldInverseTranspose)
+    {
+        constants.world = XMMatrixTranspose(matrices.world);
+
+        XMMATRIX worldInverse = XMMatrixInverse(nullptr, matrices.world);
+
+        constants.worldInverseTranspose[0] = worldInverse.r[0];
+        constants.worldInverseTranspose[1] = worldInverse.r[1];
+        constants.worldInverseTranspose[2] = worldInverse.r[2];
+
+        dirtyFlags &= ~EffectDirtyFlags::WorldInverseTranspose;
+        dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
+    }
+
     // Set shaders and constant buffers.
     ApplyShaders(deviceContext, GetCurrentShaderPermutation());
 }

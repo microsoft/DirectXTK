@@ -16,7 +16,7 @@ cbuffer Parameters : register(b0)
 
     float4x4 World                  : packoffset(c2);
     float3x3 WorldInverseTranspose  : packoffset(c6);
-    float4x4 WorldViewProj          : packoffset(c10);
+    float4x4 WorldViewProj          : packoffset(c9);
 };
 
 

@@ -277,6 +277,9 @@
     <ClCompile Include="Src\PBREffect.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="Src\DebugEffect.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Src\Shaders\CompileShaders.cmd">
@@ -1309,6 +1312,57 @@
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\XboxOnePBREffect_VSConstantVelocityBn.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\DebugEffect.fx">
+      <Filter>Src\Shaders</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDebugEffect_PSHemiAmbient.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDebugEffect_PSRGBBiTangents.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDebugEffect_PSRGBNormals.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDebugEffect_PSRGBTangents.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDebugEffect_VSDebug.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDebugEffect_VSDebugBn.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDebugEffect_VSDebugVc.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDebugEffect_VSDebugVcBn.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDebugEffect_PSHemiAmbient.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDebugEffect_PSRGBBiTangents.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDebugEffect_PSRGBNormals.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDebugEffect_PSRGBTangents.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDebugEffect_VSDebug.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDebugEffect_VSDebugBn.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDebugEffect_VSDebugVc.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\XboxOneDebugEffect_VSDebugVcBn.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
   </ItemGroup>
