@@ -274,7 +274,7 @@ void XM_CALLCONV DebugEffect::SetWorld(FXMMATRIX value)
 {
     pImpl->matrices.world = value;
 
-    pImpl->dirtyFlags |= EffectDirtyFlags::WorldViewProj | EffectDirtyFlags::WorldInverseTranspose | EffectDirtyFlags::FogVector;
+    pImpl->dirtyFlags |= EffectDirtyFlags::WorldViewProj | EffectDirtyFlags::WorldInverseTranspose;
 }
 
 
@@ -282,7 +282,7 @@ void XM_CALLCONV DebugEffect::SetView(FXMMATRIX value)
 {
     pImpl->matrices.view = value;
 
-    pImpl->dirtyFlags |= EffectDirtyFlags::WorldViewProj | EffectDirtyFlags::EyePosition | EffectDirtyFlags::FogVector;
+    pImpl->dirtyFlags |= EffectDirtyFlags::WorldViewProj;
 }
 
 
@@ -300,7 +300,7 @@ void XM_CALLCONV DebugEffect::SetMatrices(FXMMATRIX world, CXMMATRIX view, CXMMA
     pImpl->matrices.view = view;
     pImpl->matrices.projection = projection;
 
-    pImpl->dirtyFlags |= EffectDirtyFlags::WorldViewProj | EffectDirtyFlags::WorldInverseTranspose | EffectDirtyFlags::EyePosition | EffectDirtyFlags::FogVector;
+    pImpl->dirtyFlags |= EffectDirtyFlags::WorldViewProj | EffectDirtyFlags::WorldInverseTranspose;
 }
 
 
