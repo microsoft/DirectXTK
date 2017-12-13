@@ -23,26 +23,16 @@ float3 BiasD2(float3 x)
 // See also follow-up blog post: http://www.thetenthplanet.de/archives/1180
 float3x3 CalculateTBN(float3 p, float3 n, float2 tex)
 {
-    // Calculates the edge differences.
-    const float3 dp_dj   = ddx(p);
-    const float3 dp_di   = ddy(p);
-    const float2 dtex_dj = ddx(tex);
-    const float2 dtex_di = ddy(tex);
+    float3 dp1 = ddx(p);
+    float3 dp2 = ddy(p);
+    float2 duv1 = ddx(tex);
+    float2 duv2 = ddy(tex);
 
-    // Solve the linear system of equations to obtain the co-vectors t and b.
-    const float3 dp_di_ortho = cross(dp_di, n);
-    const float3 dp_dj_ortho = cross(n, dp_dj);
-
-    // Calculate the gradient of texture coordinate u as a function of p.
-    const float3 t = dtex_dj.x * dp_di_ortho + dtex_di.x * dp_dj_ortho;
-
-    // Calculate the gradient of texture coordinate v as a function of p.
-    const float3 b = dtex_dj.y * dp_di_ortho + dtex_di.y * dp_dj_ortho;
-
-    // Construct a scale-invariant frame.
-    const float inv_det = rsqrt(max(dot(t, t), dot(b, b)));
-    const float3x3 TBN  = { t * inv_det, b * inv_det, n };
-    return TBN;
+    float3x3 M = float3x3(dp1, dp2, cross(dp1, dp2));
+    float2x3 inverseM = float2x3(cross(M[1], M[2]), cross(M[2], M[0]));
+    float3 t = normalize(mul(float2(duv1.x, duv2.x), inverseM));
+    float3 b = normalize(mul(-float2(duv1.y, duv2.y), inverseM));
+    return float3x3(t, b, n);
 }
 
 float3 PeturbNormal(float3 localNormal, float3 position, float3 normal, float2 texCoord)
