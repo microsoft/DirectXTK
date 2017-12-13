@@ -25,23 +25,22 @@ cbuffer Parameters : register(b0)
 
 
 // Vertex shader: basic
-VSOutputPixelLightingTxTangent VSDebug(VSInputNmTxTangent vin)
+VSOutputPixelLightingTx VSDebug(VSInputNmTx vin)
 {
-    VSOutputPixelLightingTxTangent vout;
+    VSOutputPixelLightingTx vout;
 
     vout.PositionPS = mul(vin.Position, WorldViewProj);
     vout.PositionWS = float4(mul(vin.Position, World).xyz, 1);
     vout.NormalWS = normalize(mul(vin.Normal, WorldInverseTranspose));
     vout.Diffuse = float4(1, 1, 1, Alpha);
     vout.TexCoord = vin.TexCoord;
-    vout.TangentWS = normalize(mul(vin.Tangent.xyz, WorldInverseTranspose));
 
     return vout;
 }
 
-VSOutputPixelLightingTxTangent VSDebugBn(VSInputNmTxTangent vin)
+VSOutputPixelLightingTx VSDebugBn(VSInputNmTx vin)
 {
-    VSOutputPixelLightingTxTangent vout;
+    VSOutputPixelLightingTx vout;
 
     float3 normal = BiasX2(vin.Normal);
 
@@ -50,20 +49,15 @@ VSOutputPixelLightingTxTangent VSDebugBn(VSInputNmTxTangent vin)
     vout.NormalWS = normalize(mul(normal, WorldInverseTranspose));
     vout.Diffuse = float4(1, 1, 1, Alpha);
     vout.TexCoord = vin.TexCoord;
-
-    // For normal mapping, we need tangent to form tangent space transform
-    float3 tangent = BiasX2(vin.Tangent.xyz);
-
-    vout.TangentWS = normalize(mul(tangent, WorldInverseTranspose));
 
     return vout;
 }
 
 
 // Vertex shader: vertex color.
-VSOutputPixelLightingTxTangent VSDebugVc(VSInputNmTxVcTangent vin)
+VSOutputPixelLightingTx VSDebugVc(VSInputNmTxVc vin)
 {
-    VSOutputPixelLightingTxTangent vout;
+    VSOutputPixelLightingTx vout;
 
     vout.PositionPS = mul(vin.Position, WorldViewProj);
     vout.PositionWS = float4(mul(vin.Position, World).xyz, 1);
@@ -71,14 +65,13 @@ VSOutputPixelLightingTxTangent VSDebugVc(VSInputNmTxVcTangent vin)
     vout.Diffuse.rgb = vin.Color.rgb;
     vout.Diffuse.a = vin.Color.a * Alpha;
     vout.TexCoord = vin.TexCoord;
-    vout.TangentWS = normalize(mul(vin.Tangent.xyz, WorldInverseTranspose));
 
     return vout;
 }
 
-VSOutputPixelLightingTxTangent VSDebugVcBn(VSInputNmTxVcTangent vin)
+VSOutputPixelLightingTx VSDebugVcBn(VSInputNmTxVc vin)
 {
-    VSOutputPixelLightingTxTangent vout;
+    VSOutputPixelLightingTx vout;
 
     float3 normal = BiasX2(vin.Normal);
 
@@ -88,11 +81,6 @@ VSOutputPixelLightingTxTangent VSDebugVcBn(VSInputNmTxVcTangent vin)
     vout.Diffuse.rgb = vin.Color.rgb;
     vout.Diffuse.a = vin.Color.a * Alpha;
     vout.TexCoord = vin.TexCoord;
-
-    // For normal mapping, we need tangent to form tangent space transform
-    float3 tangent = BiasX2(vin.Tangent.xyz);
-
-    vout.TangentWS = normalize(mul(tangent, WorldInverseTranspose));
 
     return vout;
 }
@@ -106,7 +94,7 @@ float3 CalcHemiAmbient(float3 normal, float3 color)
     return ambient * color;
 }
 
-float4 PSHemiAmbient(PSInputPixelLightingTxTangent pin) : SV_Target0
+float4 PSHemiAmbient(PSInputPixelLightingTx pin) : SV_Target0
 {
     float3 normal = normalize(pin.NormalWS);
 
@@ -118,7 +106,7 @@ float4 PSHemiAmbient(PSInputPixelLightingTxTangent pin) : SV_Target0
 
 
 // Pixel shader: RGB normals
-float4 PSRGBNormals(PSInputPixelLightingTxTangent pin) : SV_Target0
+float4 PSRGBNormals(PSInputPixelLightingTx pin) : SV_Target0
 {
     float3 normal = normalize(pin.NormalWS);
 
@@ -128,9 +116,10 @@ float4 PSRGBNormals(PSInputPixelLightingTxTangent pin) : SV_Target0
 }
 
 // Pixel shader: RGB tangents
-float4 PSRGBTangents(PSInputPixelLightingTxTangent pin) : SV_Target0
+float4 PSRGBTangents(PSInputPixelLightingTx pin) : SV_Target0
 {
-    float3 tangent = normalize(pin.TangentWS);
+    const float3x3 TBN = CalculateTBN(pin.PositionWS.xyz, pin.NormalWS, pin.TexCoord);
+    float3 tangent = normalize(TBN[0]);
 
     float3 color = BiasD2(tangent);
 
@@ -138,11 +127,10 @@ float4 PSRGBTangents(PSInputPixelLightingTxTangent pin) : SV_Target0
 }
 
 // Pixel shader: RGB bi-tangents
-float4 PSRGBBiTangents(PSInputPixelLightingTxTangent pin) : SV_Target0
+float4 PSRGBBiTangents(PSInputPixelLightingTx pin) : SV_Target0
 {
-    float3 normal = normalize(pin.NormalWS);
-    float3 tangent = normalize(pin.TangentWS);
-    float3 bitangent = cross(normal, tangent);
+    const float3x3 TBN = CalculateTBN(pin.PositionWS.xyz, pin.NormalWS, pin.TexCoord);
+    float3 bitangent = normalize(TBN[1]);
 
     float3 color = BiasD2(bitangent);
 

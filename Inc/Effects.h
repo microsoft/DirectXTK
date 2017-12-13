@@ -683,7 +683,7 @@ namespace DirectX
         void __cdecl SetVertexColorEnabled(bool value);
 
         // Normal compression settings.
-        void __cdecl SetBiasedVertexNormalsAndTangents(bool value);
+        void __cdecl SetBiasedVertexNormals(bool value);
 
     private:
         // Private implementation.
