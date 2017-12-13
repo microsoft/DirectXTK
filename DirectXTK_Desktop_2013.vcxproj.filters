@@ -233,6 +233,9 @@
     <ClCompile Include="Src\PBREffect.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="Src\DebugEffect.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Src\Shaders\CompileShaders.cmd">
@@ -1227,6 +1230,57 @@
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
     <None Include="Src\Shaders\Compiled\PBREffect_VSConstantVelocityBn.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\DebugEffect.fx">
+      <Filter>Src\Shaders</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\DebugEffect_PSHemiAmbient.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\DebugEffect_PSRGBBiTangents.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\DebugEffect_PSRGBNormals.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\DebugEffect_PSRGBTangents.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\DebugEffect_VSDebug.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\DebugEffect_VSDebugBn.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\DebugEffect_VSDebugVc.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\DebugEffect_VSDebugVcBn.inc">
+      <Filter>Src\Shaders\Compiled</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\DebugEffect_PSHemiAmbient.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\DebugEffect_PSRGBBiTangents.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\DebugEffect_PSRGBNormals.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\DebugEffect_PSRGBTangents.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\DebugEffect_VSDebug.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\DebugEffect_VSDebugBn.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\DebugEffect_VSDebugVc.pdb">
+      <Filter>Src\Shaders\Symbols</Filter>
+    </None>
+    <None Include="Src\Shaders\Compiled\DebugEffect_VSDebugVcBn.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
   </ItemGroup>

@@ -43,6 +43,10 @@
 // C5031/5032 push/pop mismatches in windows headers
 // C5039 pointer or reference to potentially throwing function passed to extern C function under - EHc
 
+// XBox One XDK related Off by default warnings
+#pragma warning(disable : 5043)
+// C5043 exception specification does not match previous declaration
+
 // Windows 8.1 SDK related Off by default warnings
 #pragma warning(disable : 4471 4917 4986 5029)
 // C4471 forward declaration of an unscoped enumeration must have an underlying type

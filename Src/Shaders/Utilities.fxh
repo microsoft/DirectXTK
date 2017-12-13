@@ -13,36 +13,42 @@ float3 BiasX2(float3 x)
    return 2.0f * x - 1.0f;
 }
 
+float3 BiasD2(float3 x)
+{
+   return 0.5f * x + 0.5f;
+}
 
-// Chris­t­ian Schüler, “Normal Mapping without Precomputed Tangents”, ShaderX 5, Chap­ter 2.6, pp. 131 – 140
+
+// Christian Schüler, "Normal Mapping without Precomputed Tangents", ShaderX 5, Chapter 2.6, pp. 131 – 140
+// See also follow-up blog post: http://www.thetenthplanet.de/archives/1180
 float3x3 CalculateTBN(float3 p, float3 n, float2 tex)
 {
-	// Calculates the edge differences.
-	const float3 dp_dj   = ddx(p);
-	const float3 dp_di   = ddy(p);
-	const float2 dtex_dj = ddx(tex);
-	const float2 dtex_di = ddy(tex);
+    // Calculates the edge differences.
+    const float3 dp_dj   = ddx(p);
+    const float3 dp_di   = ddy(p);
+    const float2 dtex_dj = ddx(tex);
+    const float2 dtex_di = ddy(tex);
 
-	// Solve the linear system of equations to obtain the co b144268tangents t and b.
-	const float3 dp_di_ortho = cross(dp_di, n);
-	const float3 dp_dj_ortho = cross(n, dp_dj);
+    // Solve the linear system of equations to obtain the co-vectors t and b.
+    const float3 dp_di_ortho = cross(dp_di, n);
+    const float3 dp_dj_ortho = cross(n, dp_dj);
 
-	// Calculate the gradient of texture coordinate u as a function of p.
-	const float3 t = dtex_dj.x * dp_di_ortho + dtex_di.x * dp_dj_ortho;
+    // Calculate the gradient of texture coordinate u as a function of p.
+    const float3 t = dtex_dj.x * dp_di_ortho + dtex_di.x * dp_dj_ortho;
 
-	// Calculate the gradient of texture coordinate v as a function of p.
-	const float3 b = dtex_dj.y * dp_di_ortho + dtex_di.y * dp_dj_ortho;
+    // Calculate the gradient of texture coordinate v as a function of p.
+    const float3 b = dtex_dj.y * dp_di_ortho + dtex_di.y * dp_dj_ortho;
 
-	// Construct a scale-invariant frame.
-	const float inv_det = rsqrt(max(dot(t, t), dot(b, b)));
-	const float3x3 TBN  = { t * inv_det, b * inv_det, n };
-	return TBN;
+    // Construct a scale-invariant frame.
+    const float inv_det = rsqrt(max(dot(t, t), dot(b, b)));
+    const float3x3 TBN  = { t * inv_det, b * inv_det, n };
+    return TBN;
 }
 
 float3 PeturbNormal(float3 localNormal, float3 position, float3 normal, float2 texCoord)
 {
-	const float3x3 TBN = CalculateTBN(position, normal, texCoord);
-	return normalize(mul(localNormal, TBN));
+    const float3x3 TBN = CalculateTBN(position, normal, texCoord);
+    return normalize(mul(localNormal, TBN));
 }
 
 

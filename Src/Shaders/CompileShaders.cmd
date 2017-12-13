@@ -177,6 +177,16 @@ call :CompileShaderSM4%1 PBREffect ps PSTexturedEmissive
 call :CompileShaderSM4%1 PBREffect ps PSTexturedVelocity
 call :CompileShaderSM4%1 PBREffect ps PSTexturedEmissiveVelocity
 
+call :CompileShader%1 DebugEffect vs VSDebug
+call :CompileShader%1 DebugEffect vs VSDebugBn
+call :CompileShader%1 DebugEffect vs VSDebugVc
+call :CompileShader%1 DebugEffect vs VSDebugVcBn
+
+call :CompileShader%1 DebugEffect ps PSHemiAmbient
+call :CompileShader%1 DebugEffect ps PSRGBNormals
+call :CompileShader%1 DebugEffect ps PSRGBTangents
+call :CompileShader%1 DebugEffect ps PSRGBBiTangents
+
 call :CompileShader%1 SpriteEffect vs SpriteVertexShader
 call :CompileShader%1 SpriteEffect ps SpritePixelShader
 
