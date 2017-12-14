@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit for DirectX 11
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-November 1, 2017
+December 13, 2017
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Universal Windows Platform (UWP) apps for Windows 10,
@@ -91,6 +91,15 @@ RELEASE NOTES
 ---------------
 RELEASE HISTORY
 ---------------
+
+December 13, 2017
+    PBREffect and DebugEffect added
+    NormalMapEffect no longer requires or uses explicit vertex tangents
+    *breaking change* NormalMapEffect::SetBiasedVertexNormalsAndTangents renamed to SetBiasedVertexNormals
+    PBREffect, DebugEffect, & NormalMapEffect all require Direct3D hardware feature level 10.0 or better
+    VertexType typedef added to GeometricPrimitive as alias for VertexPositionNormalTexture
+    Updated for VS 2017 15.5 update warnings
+    Code cleanup
 
 November 1, 2017
     VS 2017 updated for Windows 10 Fall Creators Update SDK (16299)
