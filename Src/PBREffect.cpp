@@ -204,8 +204,10 @@ int PBREffect::Impl::GetCurrentShaderPermutation() const
 {
     int permutation = 0;
 
+    // Textured RMA vs. constant albedo/roughness/metalness?
     if (velocityEnabled)
     {
+        // Optional velocity buffer (implies textured RMA)?
         permutation = 3;
     }
     else if (albedoTexture)
@@ -213,6 +215,7 @@ int PBREffect::Impl::GetCurrentShaderPermutation() const
         permutation = 1;
     }
 
+    // Using an emissive texture?
     if (emissiveTexture)
     {
         permutation += 1;
@@ -220,6 +223,7 @@ int PBREffect::Impl::GetCurrentShaderPermutation() const
 
     if (biasedVertexNormals)
     {
+        // Compressed normals need to be scaled and biased in the vertex shader.
         permutation += 5;
     }
 
@@ -492,7 +496,7 @@ void PBREffect::SetEmissiveTexture(_In_opt_ ID3D11ShaderResourceView* emissive)
 
 
 // Normal compression settings.
-void PBREffect::SetBiasedVertexNormalsAndTangents(bool value)
+void PBREffect::SetBiasedVertexNormals(bool value)
 {
     pImpl->biasedVertexNormals = value;
 }

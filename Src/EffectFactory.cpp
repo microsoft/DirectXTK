@@ -262,7 +262,7 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
 
         if (info.biasedVertexNormals)
         {
-            effect->SetBiasedVertexNormalsAndTangents(true);
+            effect->SetBiasedVertexNormals(true);
         }
 
         if (mSharing && info.name && *info.name)

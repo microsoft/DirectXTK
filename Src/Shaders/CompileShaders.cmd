@@ -156,15 +156,15 @@ call :CompileShader%1 SkinnedEffect ps PSSkinnedVertexLighting
 call :CompileShader%1 SkinnedEffect ps PSSkinnedVertexLightingNoFog
 call :CompileShader%1 SkinnedEffect ps PSSkinnedPixelLighting
 
-call :CompileShader%1 NormalMapEffect vs VSNormalPixelLightingTx
-call :CompileShader%1 NormalMapEffect vs VSNormalPixelLightingTxBn
-call :CompileShader%1 NormalMapEffect vs VSNormalPixelLightingTxVc
-call :CompileShader%1 NormalMapEffect vs VSNormalPixelLightingTxVcBn
+call :CompileShaderSM4%1 NormalMapEffect vs VSNormalPixelLightingTx
+call :CompileShaderSM4%1 NormalMapEffect vs VSNormalPixelLightingTxBn
+call :CompileShaderSM4%1 NormalMapEffect vs VSNormalPixelLightingTxVc
+call :CompileShaderSM4%1 NormalMapEffect vs VSNormalPixelLightingTxVcBn
 
-call :CompileShader%1 NormalMapEffect ps PSNormalPixelLightingTx
-call :CompileShader%1 NormalMapEffect ps PSNormalPixelLightingTxNoFog
-call :CompileShader%1 NormalMapEffect ps PSNormalPixelLightingTxNoSpec
-call :CompileShader%1 NormalMapEffect ps PSNormalPixelLightingTxNoFogSpec
+call :CompileShaderSM4%1 NormalMapEffect ps PSNormalPixelLightingTx
+call :CompileShaderSM4%1 NormalMapEffect ps PSNormalPixelLightingTxNoFog
+call :CompileShaderSM4%1 NormalMapEffect ps PSNormalPixelLightingTxNoSpec
+call :CompileShaderSM4%1 NormalMapEffect ps PSNormalPixelLightingTxNoFogSpec
 
 call :CompileShaderSM4%1 PBREffect vs VSConstant
 call :CompileShaderSM4%1 PBREffect vs VSConstantVelocity
@@ -177,15 +177,15 @@ call :CompileShaderSM4%1 PBREffect ps PSTexturedEmissive
 call :CompileShaderSM4%1 PBREffect ps PSTexturedVelocity
 call :CompileShaderSM4%1 PBREffect ps PSTexturedEmissiveVelocity
 
-call :CompileShader%1 DebugEffect vs VSDebug
-call :CompileShader%1 DebugEffect vs VSDebugBn
-call :CompileShader%1 DebugEffect vs VSDebugVc
-call :CompileShader%1 DebugEffect vs VSDebugVcBn
+call :CompileShaderSM4%1 DebugEffect vs VSDebug
+call :CompileShaderSM4%1 DebugEffect vs VSDebugBn
+call :CompileShaderSM4%1 DebugEffect vs VSDebugVc
+call :CompileShaderSM4%1 DebugEffect vs VSDebugVcBn
 
-call :CompileShader%1 DebugEffect ps PSHemiAmbient
-call :CompileShader%1 DebugEffect ps PSRGBNormals
-call :CompileShader%1 DebugEffect ps PSRGBTangents
-call :CompileShader%1 DebugEffect ps PSRGBBiTangents
+call :CompileShaderSM4%1 DebugEffect ps PSHemiAmbient
+call :CompileShaderSM4%1 DebugEffect ps PSRGBNormals
+call :CompileShaderSM4%1 DebugEffect ps PSRGBTangents
+call :CompileShaderSM4%1 DebugEffect ps PSRGBBiTangents
 
 call :CompileShader%1 SpriteEffect vs SpriteVertexShader
 call :CompileShader%1 SpriteEffect ps SpritePixelShader

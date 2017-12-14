@@ -125,15 +125,15 @@ const int EffectBase<NormalMapEffectTraits>::VertexShaderIndices[] =
     1,      // pixel lighting + texture + vertex color, no specular
     1,      // pixel lighting + texture + vertex color, no fog or specular
 
-    2,      // pixel lighting (biased vertex normal/tangent) + texture
-    2,      // pixel lighting (biased vertex normal/tangent) + texture, no fog
-    3,      // pixel lighting (biased vertex normal/tangent) + texture + vertex color
-    3,      // pixel lighting (biased vertex normal/tangent) + texture + vertex color, no fog
+    2,      // pixel lighting (biased vertex normal) + texture
+    2,      // pixel lighting (biased vertex normal) + texture, no fog
+    3,      // pixel lighting (biased vertex normal) + texture + vertex color
+    3,      // pixel lighting (biased vertex normal) + texture + vertex color, no fog
 
-    2,      // pixel lighting (biased vertex normal/tangent) + texture, no specular
-    2,      // pixel lighting (biased vertex normal/tangent) + texture, no fog or specular
-    3,      // pixel lighting (biased vertex normal/tangent) + texture + vertex color, no specular
-    3,      // pixel lighting (biased vertex normal/tangent) + texture + vertex color, no fog or specular
+    2,      // pixel lighting (biased vertex normal) + texture, no specular
+    2,      // pixel lighting (biased vertex normal) + texture, no fog or specular
+    3,      // pixel lighting (biased vertex normal) + texture + vertex color, no specular
+    3,      // pixel lighting (biased vertex normal) + texture + vertex color, no fog or specular
 };
 
 
@@ -160,15 +160,15 @@ const int EffectBase<NormalMapEffectTraits>::PixelShaderIndices[] =
     2,      // pixel lighting + texture + vertex color, no specular
     3,      // pixel lighting + texture + vertex color, no fog or specular
 
-    0,      // pixel lighting (biased vertex normal/tangent) + texture
-    1,      // pixel lighting (biased vertex normal/tangent) + texture, no fog
-    0,      // pixel lighting (biased vertex normal/tangent) + texture + vertex color
-    1,      // pixel lighting (biased vertex normal/tangent) + texture + vertex color, no fog
+    0,      // pixel lighting (biased vertex normal) + texture
+    1,      // pixel lighting (biased vertex normal) + texture, no fog
+    0,      // pixel lighting (biased vertex normal) + texture + vertex color
+    1,      // pixel lighting (biased vertex normal) + texture + vertex color, no fog
 
-    2,      // pixel lighting (biased vertex normal/tangent) + texture, no specular
-    3,      // pixel lighting (biased vertex normal/tangent) + texture, no fog or specular
-    2,      // pixel lighting (biased vertex normal/tangent) + texture + vertex color, no specular
-    3,      // pixel lighting (biased vertex normal/tangent) + texture + vertex color, no fog or specular
+    2,      // pixel lighting (biased vertex normal) + texture, no specular
+    3,      // pixel lighting (biased vertex normal) + texture, no fog or specular
+    2,      // pixel lighting (biased vertex normal) + texture + vertex color, no specular
+    3,      // pixel lighting (biased vertex normal) + texture + vertex color, no fog or specular
 };
 
 
@@ -183,6 +183,11 @@ NormalMapEffect::Impl::Impl(_In_ ID3D11Device* device)
     vertexColorEnabled(false),
     biasedVertexNormals(false)
 {
+    if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
+    {
+        throw std::exception("NormalMapEffect requires Feature Level 10.0 or later");
+    }
+
     static_assert( _countof(EffectBase<NormalMapEffectTraits>::VertexShaderIndices) == NormalMapEffectTraits::ShaderPermutationCount, "array/max mismatch" );
     static_assert( _countof(EffectBase<NormalMapEffectTraits>::VertexShaderBytecode) == NormalMapEffectTraits::VertexShaderCount, "array/max mismatch" );
     static_assert( _countof(EffectBase<NormalMapEffectTraits>::PixelShaderBytecode) == NormalMapEffectTraits::PixelShaderCount, "array/max mismatch" );
@@ -216,7 +221,7 @@ int NormalMapEffect::Impl::GetCurrentShaderPermutation() const
 
     if (biasedVertexNormals)
     {
-        // Compressed normals & tangents need to be scaled and biased in the vertex shader.
+        // Compressed normals need to be scaled and biased in the vertex shader.
         permutation += 8;
     }
 
@@ -500,7 +505,7 @@ void NormalMapEffect::SetSpecularTexture(_In_opt_ ID3D11ShaderResourceView* valu
 
 
 // Normal compression settings.
-void NormalMapEffect::SetBiasedVertexNormalsAndTangents(bool value)
+void NormalMapEffect::SetBiasedVertexNormals(bool value)
 {
     pImpl->biasedVertexNormals = value;
 }

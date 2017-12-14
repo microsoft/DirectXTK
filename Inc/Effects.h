@@ -555,7 +555,7 @@ namespace DirectX
         void __cdecl SetSpecularTexture(_In_opt_ ID3D11ShaderResourceView* value);
 
         // Normal compression settings.
-        void __cdecl SetBiasedVertexNormalsAndTangents(bool value);
+        void __cdecl SetBiasedVertexNormals(bool value);
 
     private:
         // Private implementation.
@@ -620,7 +620,7 @@ namespace DirectX
         void __cdecl SetEmissiveTexture(_In_opt_ ID3D11ShaderResourceView* emissive);
 
         // Normal compression settings.
-        void __cdecl SetBiasedVertexNormalsAndTangents(bool value);
+        void __cdecl SetBiasedVertexNormals(bool value);
 
         // Velocity buffer settings.
         void __cdecl SetVelocityGeneration(bool value);
@@ -683,7 +683,7 @@ namespace DirectX
         void __cdecl SetVertexColorEnabled(bool value);
 
         // Normal compression settings.
-        void __cdecl SetBiasedVertexNormalsAndTangents(bool value);
+        void __cdecl SetBiasedVertexNormals(bool value);
 
     private:
         // Private implementation.
