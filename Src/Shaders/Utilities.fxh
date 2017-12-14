@@ -31,7 +31,7 @@ float3x3 CalculateTBN(float3 p, float3 n, float2 tex)
     float3x3 M = float3x3(dp1, dp2, cross(dp1, dp2));
     float2x3 inverseM = float2x3(cross(M[1], M[2]), cross(M[2], M[0]));
     float3 t = normalize(mul(float2(duv1.x, duv2.x), inverseM));
-    float3 b = normalize(mul(-float2(duv1.y, duv2.y), inverseM));
+    float3 b = normalize(mul(float2(duv1.y, duv2.y), inverseM));
     return float3x3(t, b, n);
 }
 
