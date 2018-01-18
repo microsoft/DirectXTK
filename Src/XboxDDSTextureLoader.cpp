@@ -85,7 +85,7 @@ namespace
         }
 
         // Get the file size
-        LARGE_INTEGER FileSize = { 0 };
+        LARGE_INTEGER FileSize = {};
 
         FILE_STANDARD_INFO fileInfo;
         if (!GetFileInformationByHandleEx(hFile.get(), FileStandardInfo, &fileInfo, sizeof(fileInfo)))

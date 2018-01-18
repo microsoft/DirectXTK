@@ -1065,8 +1065,8 @@ namespace
 int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
 {
     // Parameters and defaults
-    wchar_t szOutputFile[MAX_PATH] = { 0 };
-    wchar_t szHeaderFile[MAX_PATH] = { 0 };
+    wchar_t szOutputFile[MAX_PATH] = {};
+    wchar_t szHeaderFile[MAX_PATH] = {};
 
     ScopedHandle hFile;
 
@@ -1220,7 +1220,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     std::unique_ptr<uint8_t[]> entries;
     std::unique_ptr<char[]> entryNames;
     std::vector<WaveFile> waves;
-    MINIWAVEFORMAT compactFormat = { 0 };
+    MINIWAVEFORMAT compactFormat = {};
 
     bool xma = false;
 
