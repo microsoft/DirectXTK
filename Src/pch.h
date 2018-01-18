@@ -23,7 +23,7 @@
 // C5038 can't use strictly correct initialization order due to Dev12 initialization limitations
 
 // Off by default warnings
-#pragma warning(disable : 4061 4265 4365 4571 4623 4625 4626 4668 4710 4711 4746 4774 4820 4987 5026 5027 5031 5032 5039)
+#pragma warning(disable : 4061 4265 4365 4571 4623 4625 4626 4628 4668 4710 4711 4746 4774 4820 4987 5026 5027 5031 5032 5039)
 // C4061 enumerator 'X' in switch of enum 'X' is not explicitly handled by a case label
 // C4265 class has virtual functions, but destructor is not virtual
 // C4365 signed/unsigned mismatch
@@ -31,6 +31,7 @@
 // C4623 default constructor was implicitly defined as deleted
 // C4625 copy constructor was implicitly defined as deleted
 // C4626 assignment operator was implicitly defined as deleted
+// C4628 digraphs not supported
 // C4668 not defined as a preprocessor macro
 // C4710 function not inlined
 // C4711 selected for automatic inline expansion
