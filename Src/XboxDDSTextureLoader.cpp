@@ -35,6 +35,16 @@ using namespace Xbox;
 namespace
 {
     //--------------------------------------------------------------------------------------
+    // Default XMemAlloc attributes for texture loading
+    //--------------------------------------------------------------------------------------
+    const uint64_t c_XMemAllocAttributes = MAKE_XALLOC_ATTRIBUTES(
+        eXALLOCAllocatorId_MiddlewareReservedMin,
+        0,
+        XALLOC_MEMTYPE_GRAPHICS_WRITECOMBINE_GPU_READONLY,
+        XALLOC_PAGESIZE_64KB,
+        XALLOC_ALIGNMENT_64K);
+
+    //--------------------------------------------------------------------------------------
     // DDS file structure definitions
     //
     // See DDS.h in the 'Texconv' sample and the 'DirectXTex' library
@@ -555,15 +565,10 @@ namespace
             return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
         }
 
-        // Allocate graphics memory
-        size_t sizeBytes = (size_t(xboxext->dataSize) + 0xFFF) & ~0xFFF; // 4K boundary
-        size_t alignmentBytes = std::max<size_t>(xboxext->baseAlignment, 4096);
-
-        hr = D3DAllocateGraphicsMemory(sizeBytes, alignmentBytes, 0, D3D11_GRAPHICS_MEMORY_ACCESS_CPU_CACHE_COHERENT, grfxMemory);
-        if (FAILED(hr))
-            return hr;
-
-        assert(*grfxMemory != 0);
+        // Allocate graphics memory. Depending on the data size it uses 4MB or 64K pages.
+        *grfxMemory = XMemAlloc(xboxext->dataSize, c_XMemAllocAttributes);
+        if (!*grfxMemory)
+            return E_OUTOFMEMORY;
 
         // Copy tiled data into graphics memory
         memcpy(*grfxMemory, bitData, xboxext->dataSize);
@@ -575,7 +580,7 @@ namespace
             texture, textureView);
         if (FAILED(hr))
         {
-            (void)D3DFreeGraphicsMemory(*grfxMemory);
+            XMemFree(grfxMemory, c_XMemAllocAttributes);
             *grfxMemory = nullptr;
         }
 
@@ -782,6 +787,6 @@ void Xbox::FreeDDSTextureMemory(void* grfxMemory)
 {
     if (grfxMemory)
     {
-        (void)D3DFreeGraphicsMemory(grfxMemory);
+        XMemFree(grfxMemory, c_XMemAllocAttributes);
     }
 }
