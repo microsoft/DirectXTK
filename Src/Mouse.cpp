@@ -268,11 +268,14 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
         POINT point;
         point.x = pImpl->mLastX;
         point.y = pImpl->mLastY;
+
+        // We show the cursor before moving it to support Remote Desktop
+        ShowCursor(TRUE);
+
         if (MapWindowPoints(pImpl->mWindow, nullptr, &point, 1))
         {
             SetCursorPos(point.x, point.y);
         }
-        ShowCursor(TRUE);
         pImpl->mState.x = pImpl->mLastX;
         pImpl->mState.y = pImpl->mLastY;
     }
