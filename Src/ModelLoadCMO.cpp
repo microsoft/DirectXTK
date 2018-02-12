@@ -680,12 +680,11 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO( ID3D11Device* d3dDevice, c
 
                     for( size_t v = 0; v < nVerts; ++v )
                     {
-                        *reinterpret_cast<VertexPositionNormalTangentColorTexture*>( ptr ) = *sptr;
-                        ++sptr;
+                        *reinterpret_cast<VertexPositionNormalTangentColorTexture*>( ptr ) = sptr[v];
 
                         auto skinv = reinterpret_cast<VertexPositionNormalTangentColorTextureSkinning*>( ptr );
-                        skinv->SetBlendIndices( *reinterpret_cast<const XMUINT4*>( skinptr->boneIndex ) );
-                        skinv->SetBlendWeights( *reinterpret_cast<const XMFLOAT4*>( skinptr->boneWeight ) );
+                        skinv->SetBlendIndices( *reinterpret_cast<const XMUINT4*>( skinptr[v].boneIndex ) );
+                        skinv->SetBlendWeights( *reinterpret_cast<const XMFLOAT4*>( skinptr[v].boneWeight ) );
 
                         ptr += stride;
                     }
