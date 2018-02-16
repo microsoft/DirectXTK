@@ -147,4 +147,29 @@ namespace DirectX
             UNREFERENCED_PARAMETER(name);
         #endif
     }
+
+    // Helpers for aligning values by a power of 2
+    template<typename T>
+    inline T AlignDown(T size, size_t alignment)
+    {
+        if (alignment > 0)
+        {
+            assert(((alignment - 1) & alignment) == 0);
+            T mask = static_cast<T>(alignment - 1);
+            return size & ~mask;
+        }
+        return size;
+    }
+
+    template<typename T>
+    inline T AlignUp(T size, size_t alignment)
+    {
+        if (alignment > 0)
+        {
+            assert(((alignment - 1) & alignment) == 0);
+            T mask = static_cast<T>(alignment - 1);
+            return (size + mask) & ~mask;
+        }
+        return size;
+    }
 }

@@ -14,20 +14,11 @@
 #include "pch.h"
 
 #include "GraphicsMemory.h"
+#include "DirectXHelpers.h"
 #include "PlatformHelpers.h"
 
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
-
-
-namespace
-{
-    template <typename T> __forceinline T AlignUp(T value, size_t alignment)
-    {
-        assert(((alignment - 1) & alignment) == 0);
-        return static_cast<T>( (static_cast<size_t>(value) + alignment - 1) & ~(alignment - 1) );
-    }
-}
 
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
