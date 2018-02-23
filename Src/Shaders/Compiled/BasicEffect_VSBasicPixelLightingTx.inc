@@ -47,7 +47,7 @@
     dcl_texcoord1 v1  // vin<4,5,6>
     dcl_texcoord2 v2  // vin<7,8>
 
-#line 85 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
+#line 83 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
     dp4 oPos.z, v0, c11  // ::VSBasicPixelLightingTx<15>
     dp4 oT1.x, v0, c3  // ::VSBasicPixelLightingTx<2>
     dp4 oT1.y, v0, c4  // ::VSBasicPixelLightingTx<3>
@@ -59,21 +59,21 @@
     rsq r0.w, r0.w
     mul oT2.xyz, r0.w, r0  // ::VSBasicPixelLightingTx<6,7,8>
 
-#line 14 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
+#line 12 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
     dp4 r0.x, v0, c2
     max r0.x, r0.x, c13.x
     min oT1.w, r0.x, c13.y  // ::VSBasicPixelLightingTx<5>
 
-#line 85 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
+#line 83 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
     dp4 r0.x, v0, c9  // ::vout<0>
     dp4 r0.y, v0, c10  // ::vout<1>
     dp4 r0.z, v0, c12  // ::vout<3>
 
-#line 433 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
+#line 429 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
     mad oPos.xy, r0.z, c0, r0  // ::VSBasicPixelLightingTx<13,14>
     mov oPos.w, r0.z  // ::VSBasicPixelLightingTx<16>
 
-#line 441
+#line 437
     mov oT0.xy, v2  // ::VSBasicPixelLightingTx<0,1>
     mov r0.xy, c13
     mad oT3, c1.w, r0.xxxy, r0.yyyx  // ::VSBasicPixelLightingTx<9,10,11,12>
@@ -113,10 +113,10 @@ ret
 
 const BYTE BasicEffect_VSBasicPixelLightingTx[] =
 {
-     68,  88,  66,  67,   1, 157, 
-    234,  29, 169,  56,  83,   8, 
-    147,  83,  19, 149, 122, 142, 
-     94,  41,   1,   0,   0,   0, 
+     68,  88,  66,  67, 175, 244, 
+    115, 158,  27,  74, 234, 204, 
+    138, 245, 126, 180, 189,   4, 
+     27,  56,   1,   0,   0,   0, 
     192,   9,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
      32,   6,   0,   0, 168,   8, 
@@ -175,33 +175,33 @@ const BYTE BasicEffect_VSBasicPixelLightingTx[] =
       0,   0,   0,   0, 255, 255, 
      56,   4,   0,   0,   0,   0, 
     255, 255,  68,   4,   0,   0, 
-     85,   0,   0,   0,  80,   4, 
-      0,   0,  86,   0,   0,   0, 
-     96,   4,   0,   0,  86,   0, 
+     83,   0,   0,   0,  80,   4, 
+      0,   0,  84,   0,   0,   0, 
+     96,   4,   0,   0,  84,   0, 
       0,   0, 112,   4,   0,   0, 
-     86,   0,   0,   0, 128,   4, 
-      0,   0,  87,   0,   0,   0, 
-    144,   4,   0,   0,  87,   0, 
-      0,   0, 160,   4,   0,   0, 
-     87,   0,   0,   0, 176,   4, 
-      0,   0,  87,   0,   0,   0, 
-    192,   4,   0,   0,  87,   0, 
-      0,   0, 208,   4,   0,   0, 
-     87,   0,   0,   0, 220,   4, 
-      0,   0,  14,   0,   1,   0, 
-    236,   4,   0,   0,  14,   0, 
-      1,   0, 252,   4,   0,   0, 
-     14,   0,   1,   0,  12,   5, 
+     84,   0,   0,   0, 128,   4, 
       0,   0,  85,   0,   0,   0, 
-     28,   5,   0,   0,  85,   0, 
+    144,   4,   0,   0,  85,   0, 
+      0,   0, 160,   4,   0,   0, 
+     85,   0,   0,   0, 176,   4, 
+      0,   0,  85,   0,   0,   0, 
+    192,   4,   0,   0,  85,   0, 
+      0,   0, 208,   4,   0,   0, 
+     85,   0,   0,   0, 220,   4, 
+      0,   0,  12,   0,   1,   0, 
+    236,   4,   0,   0,  12,   0, 
+      1,   0, 252,   4,   0,   0, 
+     12,   0,   1,   0,  12,   5, 
+      0,   0,  83,   0,   0,   0, 
+     28,   5,   0,   0,  83,   0, 
       0,   0,  44,   5,   0,   0, 
-     85,   0,   0,   0,  60,   5, 
-      0,   0, 177,   1,   2,   0, 
-     76,   5,   0,   0, 177,   1, 
+     83,   0,   0,   0,  60,   5, 
+      0,   0, 173,   1,   2,   0, 
+     76,   5,   0,   0, 173,   1, 
       2,   0,  96,   5,   0,   0, 
-    185,   1,   2,   0, 108,   5, 
-      0,   0, 184,   1,   2,   0, 
-    120,   5,   0,   0, 184,   1, 
+    181,   1,   2,   0, 108,   5, 
+      0,   0, 180,   1,   2,   0, 
+    120,   5,   0,   0, 180,   1, 
       2,   0, 132,   5,   0,   0, 
      86,  83,  66,  97, 115, 105, 
      99,  80, 105, 120, 101, 108, 

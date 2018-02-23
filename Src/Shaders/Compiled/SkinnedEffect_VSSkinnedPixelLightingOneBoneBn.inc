@@ -50,38 +50,38 @@
     dcl_texcoord3 v3  // vin<9,10,11,12>
     dcl_texcoord4 v4  // vin<13,14,15,16>
 
-#line 53 "D:\Microsoft\DirectXTK\Src\Shaders\SkinnedEffect.fx"
+#line 49 "D:\Microsoft\DirectXTK\Src\Shaders\SkinnedEffect.fx"
     mul r0.x, v3.x, c243.z
     mova a0.x, r0.x
     mul r0, v4.x, c26[a0.x]  // ::skinning<0,3,6,9>
 
-#line 56
+#line 52
     dp4 r1.x, v0, r0  // Skin::vin<0>
 
-#line 53
+#line 49
     mul r2, v4.x, c27[a0.x]  // ::skinning<1,4,7,10>
     mul r3, v4.x, c28[a0.x]  // ::skinning<2,5,8,11>
 
-#line 56
+#line 52
     dp4 r1.y, v0, r2  // Skin::vin<1>
     dp4 r1.z, v0, r3  // Skin::vin<2>
 
-#line 85 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
+#line 83 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
     mov r1.w, v0.w
     dp4 oPos.z, r1, c24  // ::VSSkinnedPixelLightingOneBoneBn<15>
     dp4 oT1.x, r1, c15  // ::VSSkinnedPixelLightingOneBoneBn<2>
     dp4 oT1.y, r1, c16  // ::VSSkinnedPixelLightingOneBoneBn<3>
     dp4 oT1.z, r1, c17  // ::VSSkinnedPixelLightingOneBoneBn<4>
 
-#line 13 "D:\Microsoft\DirectXTK\Src\Shaders\Utilities.fxh"
+#line 11 "D:\Microsoft\DirectXTK\Src\Shaders\Utilities.fxh"
     mad r4.xyz, v1, c243.x, c243.y  // ::BiasX2<0,1,2>
 
-#line 57 "D:\Microsoft\DirectXTK\Src\Shaders\SkinnedEffect.fx"
+#line 53 "D:\Microsoft\DirectXTK\Src\Shaders\SkinnedEffect.fx"
     dp3 r0.x, r4, r0  // ::Skin<0>
     dp3 r0.y, r4, r2  // ::Skin<1>
     dp3 r0.z, r4, r3  // ::Skin<2>
 
-#line 87 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
+#line 85 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
     dp3 r2.x, r0, c19
     dp3 r2.y, r0, c20
     dp3 r2.z, r0, c21
@@ -89,24 +89,24 @@
     rsq r0.x, r0.x
     mul oT2.xyz, r0.x, r2  // ::VSSkinnedPixelLightingOneBoneBn<6,7,8>
 
-#line 14 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
+#line 12 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
     dp4 r0.x, r1, c14
     max r0.x, r0.x, c243.w
     min oT1.w, r0.x, -c243.y  // ::VSSkinnedPixelLightingOneBoneBn<5>
 
-#line 85 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
+#line 83 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
     dp4 r0.x, r1, c22  // ::vout<0>
     dp4 r0.y, r1, c23  // ::vout<1>
     dp4 r0.z, r1, c25  // ::vout<3>
 
-#line 268 "D:\Microsoft\DirectXTK\Src\Shaders\SkinnedEffect.fx"
+#line 264 "D:\Microsoft\DirectXTK\Src\Shaders\SkinnedEffect.fx"
     mad oPos.xy, r0.z, c242, r0  // ::VSSkinnedPixelLightingOneBoneBn<13,14>
     mov oPos.w, r0.z  // ::VSSkinnedPixelLightingOneBoneBn<16>
 
-#line 274
+#line 270
     mov oT0.xy, v2  // ::VSSkinnedPixelLightingOneBoneBn<0,1>
 
-#line 279
+#line 275
     mov r0.xy, c244
     mad oT3, c0.w, r0.xxxy, r0.yyyx  // ::VSSkinnedPixelLightingOneBoneBn<9,10,11,12>
 
@@ -159,10 +159,10 @@ ret
 
 const BYTE SkinnedEffect_VSSkinnedPixelLightingOneBoneBn[] =
 {
-     68,  88,  66,  67, 240,  55, 
-      6,  45,  13, 211, 121,  61, 
-    233, 132,  81, 121, 170, 222, 
-     53,  45,   1,   0,   0,   0, 
+     68,  88,  66,  67, 137,  36, 
+    249,  53, 221,  33, 239,  83, 
+    250, 247, 156,  68,  51,  39, 
+    253,  69,   1,   0,   0,   0, 
     180,  14,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
      32,   9,   0,   0,  80,  13, 
@@ -230,51 +230,51 @@ const BYTE SkinnedEffect_VSSkinnedPixelLightingOneBoneBn[] =
     108,   6,   0,   0,   0,   0, 
     255, 255, 120,   6,   0,   0, 
       0,   0, 255, 255, 132,   6, 
-      0,   0,  53,   0,   0,   0, 
-    144,   6,   0,   0,  53,   0, 
+      0,   0,  49,   0,   0,   0, 
+    144,   6,   0,   0,  49,   0, 
       0,   0, 160,   6,   0,   0, 
-     53,   0,   0,   0, 172,   6, 
-      0,   0,  56,   0,   0,   0, 
-    192,   6,   0,   0,  53,   0, 
+     49,   0,   0,   0, 172,   6, 
+      0,   0,  52,   0,   0,   0, 
+    192,   6,   0,   0,  49,   0, 
       0,   0, 208,   6,   0,   0, 
-     53,   0,   0,   0, 228,   6, 
-      0,   0,  56,   0,   0,   0, 
-    248,   6,   0,   0,  56,   0, 
+     49,   0,   0,   0, 228,   6, 
+      0,   0,  52,   0,   0,   0, 
+    248,   6,   0,   0,  52,   0, 
       0,   0,   8,   7,   0,   0, 
-     85,   0,   1,   0,  24,   7, 
-      0,   0,  85,   0,   1,   0, 
-     36,   7,   0,   0,  86,   0, 
+     83,   0,   1,   0,  24,   7, 
+      0,   0,  83,   0,   1,   0, 
+     36,   7,   0,   0,  84,   0, 
       1,   0,  52,   7,   0,   0, 
-     86,   0,   1,   0,  68,   7, 
-      0,   0,  86,   0,   1,   0, 
-     84,   7,   0,   0,  13,   0, 
+     84,   0,   1,   0,  68,   7, 
+      0,   0,  84,   0,   1,   0, 
+     84,   7,   0,   0,  11,   0, 
       2,   0, 100,   7,   0,   0, 
-     57,   0,   0,   0, 120,   7, 
-      0,   0,  57,   0,   0,   0, 
-    136,   7,   0,   0,  57,   0, 
+     53,   0,   0,   0, 120,   7, 
+      0,   0,  53,   0,   0,   0, 
+    136,   7,   0,   0,  53,   0, 
       0,   0, 152,   7,   0,   0, 
-     87,   0,   1,   0, 168,   7, 
-      0,   0,  87,   0,   1,   0, 
-    184,   7,   0,   0,  87,   0, 
-      1,   0, 200,   7,   0,   0, 
-     87,   0,   1,   0, 216,   7, 
-      0,   0,  87,   0,   1,   0, 
-    232,   7,   0,   0,  87,   0, 
-      1,   0, 244,   7,   0,   0, 
-     14,   0,   3,   0,   4,   8, 
-      0,   0,  14,   0,   3,   0, 
-     20,   8,   0,   0,  14,   0, 
-      3,   0,  36,   8,   0,   0, 
-     85,   0,   1,   0,  52,   8, 
+     85,   0,   1,   0, 168,   7, 
       0,   0,  85,   0,   1,   0, 
-     68,   8,   0,   0,  85,   0, 
+    184,   7,   0,   0,  85,   0, 
+      1,   0, 200,   7,   0,   0, 
+     85,   0,   1,   0, 216,   7, 
+      0,   0,  85,   0,   1,   0, 
+    232,   7,   0,   0,  85,   0, 
+      1,   0, 244,   7,   0,   0, 
+     12,   0,   3,   0,   4,   8, 
+      0,   0,  12,   0,   3,   0, 
+     20,   8,   0,   0,  12,   0, 
+      3,   0,  36,   8,   0,   0, 
+     83,   0,   1,   0,  52,   8, 
+      0,   0,  83,   0,   1,   0, 
+     68,   8,   0,   0,  83,   0, 
       1,   0,  84,   8,   0,   0, 
-     12,   1,   0,   0, 100,   8, 
-      0,   0,  12,   1,   0,   0, 
-    120,   8,   0,   0,  18,   1, 
+      8,   1,   0,   0, 100,   8, 
+      0,   0,   8,   1,   0,   0, 
+    120,   8,   0,   0,  14,   1, 
       0,   0, 132,   8,   0,   0, 
-     23,   1,   0,   0, 144,   8, 
-      0,   0,  23,   1,   0,   0, 
+     19,   1,   0,   0, 144,   8, 
+      0,   0,  19,   1,   0,   0, 
     156,   8,   0,   0,  66, 105, 
      97, 115,  88,  50,   0, 171, 
       1,   0,   3,   0,   1,   0, 

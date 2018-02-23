@@ -45,17 +45,17 @@
     dcl_2d s0
     dcl_2d s1
 
-#line 98 "D:\Microsoft\DirectXTK\Src\Shaders\DualTextureEffect.fx"
+#line 94 "D:\Microsoft\DirectXTK\Src\Shaders\DualTextureEffect.fx"
     mov r0.xy, t2.wzyx
     texld r0, r0, s1  // ::overlay<0,1,2,3>
     texld r1, t2, s0  // ::color<0,1,2,3>
 
-#line 101
+#line 97
     mul r0, r0, t0
     mul r1, r1, c1
     mul r0, r0, r1  // ::color<0,1,2,3>
 
-#line 20 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
+#line 18 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
     mad r1.xyz, c0, r0.w, -r0
     mad r0.xyz, t1.w, r1, r0  // ApplyFog::color<0,1,2>
     mov oC0, r0  // ::PSDualTexture<0,1,2,3>
@@ -87,10 +87,10 @@ ret
 
 const BYTE DualTextureEffect_PSDualTexture[] =
 {
-     68,  88,  66,  67,  64, 141, 
-     34,  15,  44, 217,  49,  21, 
-     52, 119, 233, 137,  88,  57, 
-    132,  83,   1,   0,   0,   0, 
+     68,  88,  66,  67, 128,  36, 
+    178, 162, 250, 127,  46, 205, 
+     33,  38,  93, 107, 151,  95, 
+     93, 205,   1,   0,   0,   0, 
     116,   6,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
      20,   4,   0,   0, 192,   5, 
@@ -141,17 +141,17 @@ const BYTE DualTextureEffect_PSDualTexture[] =
       0,   0,   0,   0, 255, 255, 
     248,   2,   0,   0,   0,   0, 
     255, 255,   4,   3,   0,   0, 
-     98,   0,   0,   0,  16,   3, 
-      0,   0,  98,   0,   0,   0, 
-     28,   3,   0,   0,  97,   0, 
+     94,   0,   0,   0,  16,   3, 
+      0,   0,  94,   0,   0,   0, 
+     28,   3,   0,   0,  93,   0, 
       0,   0,  44,   3,   0,   0, 
-    101,   0,   0,   0,  60,   3, 
-      0,   0, 101,   0,   0,   0, 
-     76,   3,   0,   0, 101,   0, 
+     97,   0,   0,   0,  60,   3, 
+      0,   0,  97,   0,   0,   0, 
+     76,   3,   0,   0,  97,   0, 
       0,   0,  92,   3,   0,   0, 
-     20,   0,   1,   0, 108,   3, 
-      0,   0,  20,   0,   1,   0, 
-    128,   3,   0,   0,  20,   0, 
+     18,   0,   1,   0, 108,   3, 
+      0,   0,  18,   0,   1,   0, 
+    128,   3,   0,   0,  18,   0, 
       1,   0, 148,   3,   0,   0, 
      80,  83,  68, 117,  97, 108, 
      84, 101, 120, 116, 117, 114, 

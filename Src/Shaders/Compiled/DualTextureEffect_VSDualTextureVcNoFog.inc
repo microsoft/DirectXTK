@@ -46,22 +46,22 @@
     dcl_texcoord2 v2  // vin<6,7>
     dcl_texcoord3 v3  // vin<8,9,10,11>
 
-#line 43 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
+#line 41 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
     dp4 oPos.z, v0, c4  // ::VSDualTextureVcNoFog<10>
 
-#line 88 "D:\Microsoft\DirectXTK\Src\Shaders\DualTextureEffect.fx"
+#line 84 "D:\Microsoft\DirectXTK\Src\Shaders\DualTextureEffect.fx"
     mul oT0, v3, c1  // ::VSDualTextureVcNoFog<0,1,2,3>
 
-#line 43 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
+#line 41 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
     dp4 r0.x, v0, c2  // ::vout<0>
     dp4 r0.y, v0, c3  // ::vout<1>
     dp4 r0.z, v0, c5  // ::vout<3>
 
-#line 79 "D:\Microsoft\DirectXTK\Src\Shaders\DualTextureEffect.fx"
+#line 75 "D:\Microsoft\DirectXTK\Src\Shaders\DualTextureEffect.fx"
     mad oPos.xy, r0.z, c0, r0  // ::VSDualTextureVcNoFog<8,9>
     mov oPos.w, r0.z  // ::VSDualTextureVcNoFog<11>
 
-#line 86
+#line 82
     mov oT1.xy, v1  // ::VSDualTextureVcNoFog<4,5>
     mov oT1.zw, v2.xyyx  // ::VSDualTextureVcNoFog<7,6>
 
@@ -89,10 +89,10 @@ ret
 
 const BYTE DualTextureEffect_VSDualTextureVcNoFog[] =
 {
-     68,  88,  66,  67, 124, 236, 
-    208, 107,  34,  25, 247, 163, 
-    120, 203, 106,  94, 166,   5, 
-      6, 134,   1,   0,   0,   0, 
+     68,  88,  66,  67, 122, 110, 
+     91, 169,  30, 192,  45,   6, 
+    136, 252, 118,  90, 221, 208, 
+     40,  24,   1,   0,   0,   0, 
     244,   6,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
     140,   4,   0,   0, 220,   5, 
@@ -141,18 +141,18 @@ const BYTE DualTextureEffect_VSDualTextureVcNoFog[] =
     255, 255, 100,   3,   0,   0, 
       0,   0, 255, 255, 112,   3, 
       0,   0,   0,   0, 255, 255, 
-    124,   3,   0,   0,  43,   0, 
+    124,   3,   0,   0,  41,   0, 
       0,   0, 136,   3,   0,   0, 
-     88,   0,   1,   0, 152,   3, 
-      0,   0,  43,   0,   0,   0, 
-    168,   3,   0,   0,  43,   0, 
+     84,   0,   1,   0, 152,   3, 
+      0,   0,  41,   0,   0,   0, 
+    168,   3,   0,   0,  41,   0, 
       0,   0, 184,   3,   0,   0, 
-     43,   0,   0,   0, 200,   3, 
-      0,   0,  79,   0,   1,   0, 
-    216,   3,   0,   0,  79,   0, 
+     41,   0,   0,   0, 200,   3, 
+      0,   0,  75,   0,   1,   0, 
+    216,   3,   0,   0,  75,   0, 
       1,   0, 236,   3,   0,   0, 
-     86,   0,   1,   0, 248,   3, 
-      0,   0,  86,   0,   1,   0, 
+     82,   0,   1,   0, 248,   3, 
+      0,   0,  82,   0,   1,   0, 
       4,   4,   0,   0,  86,  83, 
      68, 117,  97, 108,  84, 101, 
     120, 116, 117, 114, 101,  86, 

@@ -49,7 +49,7 @@
     dcl_texcoord2 v2  // vin<7,8>
     dcl_texcoord3 v3  // vin<9,10,11,12>
 
-#line 85 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
+#line 83 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
     dp4 oPos.z, v0, c11  // ::VSBasicPixelLightingTxVc<15>
     dp4 oT1.x, v0, c3  // ::VSBasicPixelLightingTxVc<2>
     dp4 oT1.y, v0, c4  // ::VSBasicPixelLightingTxVc<3>
@@ -61,24 +61,24 @@
     rsq r0.w, r0.w
     mul oT2.xyz, r0.w, r0  // ::VSBasicPixelLightingTxVc<6,7,8>
 
-#line 14 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
+#line 12 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
     dp4 r0.x, v0, c2
     max r0.x, r0.x, c13.x
     min oT1.w, r0.x, c13.y  // ::VSBasicPixelLightingTxVc<5>
 
-#line 471 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
+#line 467 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
     mul oT3.w, v3.w, c1.w  // ::VSBasicPixelLightingTxVc<12>
 
-#line 85 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
+#line 83 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
     dp4 r0.x, v0, c9  // ::vout<0>
     dp4 r0.y, v0, c10  // ::vout<1>
     dp4 r0.z, v0, c12  // ::vout<3>
 
-#line 463 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
+#line 459 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
     mad oPos.xy, r0.z, c0, r0  // ::VSBasicPixelLightingTxVc<13,14>
     mov oPos.w, r0.z  // ::VSBasicPixelLightingTxVc<16>
 
-#line 472
+#line 468
     mov oT0.xy, v2  // ::VSBasicPixelLightingTxVc<0,1>
     mov oT3.xyz, v3  // ::VSBasicPixelLightingTxVc<9,10,11>
 
@@ -118,10 +118,10 @@ ret
 
 const BYTE BasicEffect_VSBasicPixelLightingTxVc[] =
 {
-     68,  88,  66,  67, 161, 146, 
-     95,  18, 245,   5,  88,  69, 
-    219,  21, 171,   4,  62,  17, 
-     84, 113,   1,   0,   0,   0, 
+     68,  88,  66,  67,  32,   5, 
+     10, 191,  21,  43, 103, 147, 
+    205,  34, 105, 228,  41, 176, 
+    120, 209,   1,   0,   0,   0, 
      36,  10,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
      92,   6,   0,   0, 236,   8, 
@@ -181,34 +181,34 @@ const BYTE BasicEffect_VSBasicPixelLightingTxVc[] =
     108,   4,   0,   0,   0,   0, 
     255, 255, 120,   4,   0,   0, 
       0,   0, 255, 255, 132,   4, 
-      0,   0,  85,   0,   0,   0, 
-    144,   4,   0,   0,  86,   0, 
+      0,   0,  83,   0,   0,   0, 
+    144,   4,   0,   0,  84,   0, 
       0,   0, 160,   4,   0,   0, 
-     86,   0,   0,   0, 176,   4, 
-      0,   0,  86,   0,   0,   0, 
-    192,   4,   0,   0,  87,   0, 
+     84,   0,   0,   0, 176,   4, 
+      0,   0,  84,   0,   0,   0, 
+    192,   4,   0,   0,  85,   0, 
       0,   0, 208,   4,   0,   0, 
-     87,   0,   0,   0, 224,   4, 
-      0,   0,  87,   0,   0,   0, 
-    240,   4,   0,   0,  87,   0, 
-      0,   0,   0,   5,   0,   0, 
-     87,   0,   0,   0,  16,   5, 
-      0,   0,  87,   0,   0,   0, 
-     28,   5,   0,   0,  14,   0, 
-      1,   0,  44,   5,   0,   0, 
-     14,   0,   1,   0,  60,   5, 
-      0,   0,  14,   0,   1,   0, 
-     76,   5,   0,   0, 215,   1, 
-      2,   0,  92,   5,   0,   0, 
-     85,   0,   0,   0, 108,   5, 
+     85,   0,   0,   0, 224,   4, 
       0,   0,  85,   0,   0,   0, 
-    124,   5,   0,   0,  85,   0, 
+    240,   4,   0,   0,  85,   0, 
+      0,   0,   0,   5,   0,   0, 
+     85,   0,   0,   0,  16,   5, 
+      0,   0,  85,   0,   0,   0, 
+     28,   5,   0,   0,  12,   0, 
+      1,   0,  44,   5,   0,   0, 
+     12,   0,   1,   0,  60,   5, 
+      0,   0,  12,   0,   1,   0, 
+     76,   5,   0,   0, 211,   1, 
+      2,   0,  92,   5,   0,   0, 
+     83,   0,   0,   0, 108,   5, 
+      0,   0,  83,   0,   0,   0, 
+    124,   5,   0,   0,  83,   0, 
       0,   0, 140,   5,   0,   0, 
-    207,   1,   2,   0, 156,   5, 
-      0,   0, 207,   1,   2,   0, 
-    176,   5,   0,   0, 216,   1, 
+    203,   1,   2,   0, 156,   5, 
+      0,   0, 203,   1,   2,   0, 
+    176,   5,   0,   0, 212,   1, 
       2,   0, 188,   5,   0,   0, 
-    214,   1,   2,   0, 200,   5, 
+    210,   1,   2,   0, 200,   5, 
       0,   0,  86,  83,  66,  97, 
     115, 105,  99,  80, 105, 120, 
     101, 108,  76, 105, 103, 104, 

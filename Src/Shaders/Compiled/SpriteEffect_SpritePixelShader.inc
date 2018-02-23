@@ -32,7 +32,7 @@
     dcl t1.xy  // texCoord<0,1>
     dcl_2d s0
 
-#line 33 "D:\Microsoft\DirectXTK\Src\Shaders\SpriteEffect.fx"
+#line 29 "D:\Microsoft\DirectXTK\Src\Shaders\SpriteEffect.fx"
     texld r0, t1, s0
     mul r0, r0, t0  // ::SpritePixelShader<0,1,2,3>
     mov oC0, r0  // ::SpritePixelShader<0,1,2,3>
@@ -53,10 +53,10 @@ ret
 
 const BYTE SpriteEffect_SpritePixelShader[] =
 {
-     68,  88,  66,  67, 190, 208, 
-    245, 130, 183,  83,   9,   0, 
-     91, 197, 194, 120, 222,  32, 
-    244, 219,   1,   0,   0,   0, 
+     68,  88,  66,  67,  94, 148, 
+      3,  35, 194,  43, 182, 121, 
+     36, 202, 224,  24, 208,  91, 
+    180,  11,   1,   0,   0,   0, 
      92,   3,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
      60,   2,   0,   0, 216,   2, 
@@ -91,9 +91,9 @@ const BYTE SpriteEffect_SpritePixelShader[] =
       0,   0,   0,   0, 255, 255, 
     148,   1,   0,   0,   0,   0, 
     255, 255, 160,   1,   0,   0, 
-     33,   0,   0,   0, 172,   1, 
-      0,   0,  33,   0,   0,   0, 
-    188,   1,   0,   0,  33,   0, 
+     29,   0,   0,   0, 172,   1, 
+      0,   0,  29,   0,   0,   0, 
+    188,   1,   0,   0,  29,   0, 
       0,   0, 204,   1,   0,   0, 
      83, 112, 114, 105, 116, 101, 
      80, 105, 120, 101, 108,  83, 

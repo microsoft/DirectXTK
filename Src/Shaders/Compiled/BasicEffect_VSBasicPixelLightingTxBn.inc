@@ -47,16 +47,16 @@
     dcl_texcoord1 v1  // vin<4,5,6>
     dcl_texcoord2 v2  // vin<7,8>
 
-#line 85 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
+#line 83 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
     dp4 oPos.z, v0, c11  // ::VSBasicPixelLightingTxBn<15>
     dp4 oT1.x, v0, c3  // ::VSBasicPixelLightingTxBn<2>
     dp4 oT1.y, v0, c4  // ::VSBasicPixelLightingTxBn<3>
     dp4 oT1.z, v0, c5  // ::VSBasicPixelLightingTxBn<4>
 
-#line 13 "D:\Microsoft\DirectXTK\Src\Shaders\Utilities.fxh"
+#line 11 "D:\Microsoft\DirectXTK\Src\Shaders\Utilities.fxh"
     mad r0.xyz, v1, c13.x, c13.y  // ::BiasX2<0,1,2>
 
-#line 87 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
+#line 85 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
     dp3 r1.x, r0, c6
     dp3 r1.y, r0, c7
     dp3 r1.z, r0, c8
@@ -64,21 +64,21 @@
     rsq r0.x, r0.x
     mul oT2.xyz, r0.x, r1  // ::VSBasicPixelLightingTxBn<6,7,8>
 
-#line 14 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
+#line 12 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
     dp4 r0.x, v0, c2
     max r0.x, r0.x, c13.z
     min oT1.w, r0.x, c13.w  // ::VSBasicPixelLightingTxBn<5>
 
-#line 85 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
+#line 83 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
     dp4 r0.x, v0, c9  // ::vout<0>
     dp4 r0.y, v0, c10  // ::vout<1>
     dp4 r0.z, v0, c12  // ::vout<3>
 
-#line 446 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
+#line 442 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
     mad oPos.xy, r0.z, c0, r0  // ::VSBasicPixelLightingTxBn<13,14>
     mov oPos.w, r0.z  // ::VSBasicPixelLightingTxBn<16>
 
-#line 456
+#line 452
     mov oT0.xy, v2  // ::VSBasicPixelLightingTxBn<0,1>
     mov r0.zw, c13
     mad oT3, c1.w, r0.zzzw, r0.wwwz  // ::VSBasicPixelLightingTxBn<9,10,11,12>
@@ -119,10 +119,10 @@ ret
 
 const BYTE BasicEffect_VSBasicPixelLightingTxBn[] =
 {
-     68,  88,  66,  67, 131,  31, 
-    193, 131, 219, 233,  55, 241, 
-    234, 165,  18, 237,  47,  28, 
-     78, 246,   1,   0,   0,   0, 
+     68,  88,  66,  67, 179,  92, 
+    109, 224, 187, 125,  19, 133, 
+    110, 213, 168,  10,  67, 242, 
+     13,  12,   1,   0,   0,   0, 
     140,  10,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
     176,   6,   0,   0, 116,   9, 
@@ -190,35 +190,35 @@ const BYTE BasicEffect_VSBasicPixelLightingTxBn[] =
     168,   4,   0,   0,   0,   0, 
     255, 255, 180,   4,   0,   0, 
       0,   0, 255, 255, 192,   4, 
-      0,   0,  85,   0,   0,   0, 
-    204,   4,   0,   0,  86,   0, 
+      0,   0,  83,   0,   0,   0, 
+    204,   4,   0,   0,  84,   0, 
       0,   0, 220,   4,   0,   0, 
-     86,   0,   0,   0, 236,   4, 
-      0,   0,  86,   0,   0,   0, 
-    252,   4,   0,   0,  13,   0, 
+     84,   0,   0,   0, 236,   4, 
+      0,   0,  84,   0,   0,   0, 
+    252,   4,   0,   0,  11,   0, 
       1,   0,  12,   5,   0,   0, 
-     87,   0,   0,   0,  32,   5, 
-      0,   0,  87,   0,   0,   0, 
-     48,   5,   0,   0,  87,   0, 
-      0,   0,  64,   5,   0,   0, 
-     87,   0,   0,   0,  80,   5, 
-      0,   0,  87,   0,   0,   0, 
-     96,   5,   0,   0,  87,   0, 
-      0,   0, 108,   5,   0,   0, 
-     14,   0,   2,   0, 124,   5, 
-      0,   0,  14,   0,   2,   0, 
-    140,   5,   0,   0,  14,   0, 
-      2,   0, 156,   5,   0,   0, 
-     85,   0,   0,   0, 172,   5, 
+     85,   0,   0,   0,  32,   5, 
       0,   0,  85,   0,   0,   0, 
-    188,   5,   0,   0,  85,   0, 
+     48,   5,   0,   0,  85,   0, 
+      0,   0,  64,   5,   0,   0, 
+     85,   0,   0,   0,  80,   5, 
+      0,   0,  85,   0,   0,   0, 
+     96,   5,   0,   0,  85,   0, 
+      0,   0, 108,   5,   0,   0, 
+     12,   0,   2,   0, 124,   5, 
+      0,   0,  12,   0,   2,   0, 
+    140,   5,   0,   0,  12,   0, 
+      2,   0, 156,   5,   0,   0, 
+     83,   0,   0,   0, 172,   5, 
+      0,   0,  83,   0,   0,   0, 
+    188,   5,   0,   0,  83,   0, 
       0,   0, 204,   5,   0,   0, 
-    190,   1,   3,   0, 220,   5, 
-      0,   0, 190,   1,   3,   0, 
-    240,   5,   0,   0, 200,   1, 
+    186,   1,   3,   0, 220,   5, 
+      0,   0, 186,   1,   3,   0, 
+    240,   5,   0,   0, 196,   1, 
       3,   0, 252,   5,   0,   0, 
-    199,   1,   3,   0,   8,   6, 
-      0,   0, 199,   1,   3,   0, 
+    195,   1,   3,   0,   8,   6, 
+      0,   0, 195,   1,   3,   0, 
      20,   6,   0,   0,  66, 105, 
      97, 115,  88,  50,   0, 171, 
       1,   0,   3,   0,   1,   0, 

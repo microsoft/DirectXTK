@@ -46,7 +46,7 @@
     dcl_texcoord1 v1  // vin<4,5,6>
     dcl_texcoord2 v2  // vin<7,8,9,10>
 
-#line 85 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
+#line 83 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
     dp4 oPos.z, v0, c11  // ::VSBasicPixelLightingVc<13>
     dp4 oT0.x, v0, c3  // ::VSBasicPixelLightingVc<0>
     dp4 oT0.y, v0, c4  // ::VSBasicPixelLightingVc<1>
@@ -58,24 +58,24 @@
     rsq r0.w, r0.w
     mul oT1.xyz, r0.w, r0  // ::VSBasicPixelLightingVc<4,5,6>
 
-#line 14 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
+#line 12 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
     dp4 r0.x, v0, c2
     max r0.x, r0.x, c13.x
     min oT0.w, r0.x, c13.y  // ::VSBasicPixelLightingVc<3>
 
-#line 411 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
+#line 407 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
     mul oT2.w, v2.w, c1.w  // ::VSBasicPixelLightingVc<10>
 
-#line 85 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
+#line 83 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
     dp4 r0.x, v0, c9  // ::vout<0>
     dp4 r0.y, v0, c10  // ::vout<1>
     dp4 r0.z, v0, c12  // ::vout<3>
 
-#line 403 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
+#line 399 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
     mad oPos.xy, r0.z, c0, r0  // ::VSBasicPixelLightingVc<11,12>
     mov oPos.w, r0.z  // ::VSBasicPixelLightingVc<14>
 
-#line 410
+#line 406
     mov oT2.xyz, v2  // ::VSBasicPixelLightingVc<7,8,9>
 
 // approximately 20 instruction slots used
@@ -111,10 +111,10 @@ ret
 
 const BYTE BasicEffect_VSBasicPixelLightingVc[] =
 {
-     68,  88,  66,  67, 230,  12, 
-     50, 159, 220, 214, 212, 208, 
-     38,  35, 141,  64,  95, 153, 
-    249,   7,   1,   0,   0,   0, 
+     68,  88,  66,  67, 248, 249, 
+    217,  69,  23, 120, 213, 175, 
+    217, 140, 163,  55,  57, 138, 
+     69, 191,   1,   0,   0,   0, 
      84,   9,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
     240,   5,   0,   0,  84,   8, 
@@ -173,32 +173,32 @@ const BYTE BasicEffect_VSBasicPixelLightingVc[] =
       0,   0,   0,   0, 255, 255, 
      24,   4,   0,   0,   0,   0, 
     255, 255,  36,   4,   0,   0, 
-     85,   0,   0,   0,  48,   4, 
-      0,   0,  86,   0,   0,   0, 
-     64,   4,   0,   0,  86,   0, 
+     83,   0,   0,   0,  48,   4, 
+      0,   0,  84,   0,   0,   0, 
+     64,   4,   0,   0,  84,   0, 
       0,   0,  80,   4,   0,   0, 
-     86,   0,   0,   0,  96,   4, 
-      0,   0,  87,   0,   0,   0, 
-    112,   4,   0,   0,  87,   0, 
-      0,   0, 128,   4,   0,   0, 
-     87,   0,   0,   0, 144,   4, 
-      0,   0,  87,   0,   0,   0, 
-    160,   4,   0,   0,  87,   0, 
-      0,   0, 176,   4,   0,   0, 
-     87,   0,   0,   0, 188,   4, 
-      0,   0,  14,   0,   1,   0, 
-    204,   4,   0,   0,  14,   0, 
-      1,   0, 220,   4,   0,   0, 
-     14,   0,   1,   0, 236,   4, 
-      0,   0, 155,   1,   2,   0, 
-    252,   4,   0,   0,  85,   0, 
-      0,   0,  12,   5,   0,   0, 
-     85,   0,   0,   0,  28,   5, 
+     84,   0,   0,   0,  96,   4, 
       0,   0,  85,   0,   0,   0, 
-     44,   5,   0,   0, 147,   1, 
+    112,   4,   0,   0,  85,   0, 
+      0,   0, 128,   4,   0,   0, 
+     85,   0,   0,   0, 144,   4, 
+      0,   0,  85,   0,   0,   0, 
+    160,   4,   0,   0,  85,   0, 
+      0,   0, 176,   4,   0,   0, 
+     85,   0,   0,   0, 188,   4, 
+      0,   0,  12,   0,   1,   0, 
+    204,   4,   0,   0,  12,   0, 
+      1,   0, 220,   4,   0,   0, 
+     12,   0,   1,   0, 236,   4, 
+      0,   0, 151,   1,   2,   0, 
+    252,   4,   0,   0,  83,   0, 
+      0,   0,  12,   5,   0,   0, 
+     83,   0,   0,   0,  28,   5, 
+      0,   0,  83,   0,   0,   0, 
+     44,   5,   0,   0, 143,   1, 
       2,   0,  60,   5,   0,   0, 
-    147,   1,   2,   0,  80,   5, 
-      0,   0, 154,   1,   2,   0, 
+    143,   1,   2,   0,  80,   5, 
+      0,   0, 150,   1,   2,   0, 
      92,   5,   0,   0,  86,  83, 
      66,  97, 115, 105,  99,  80, 
     105, 120, 101, 108,  76, 105, 

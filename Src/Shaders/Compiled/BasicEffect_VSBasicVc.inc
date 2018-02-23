@@ -43,27 +43,27 @@
     dcl_texcoord v0  // vin<0,1,2,3>
     dcl_texcoord1 v1  // vin<4,5,6,7>
 
-#line 43 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
+#line 41 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
     dp4 oPos.z, v0, c5  // ::VSBasicVc<10>
 
-#line 14
+#line 12
     dp4 r0.x, v0, c2
     max r0.x, r0.x, c7.x
     min oT1.w, r0.x, c7.y  // ::VSBasicVc<7>
 
-#line 76 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
+#line 72 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
     mul oT0, v1, c1  // ::VSBasicVc<0,1,2,3>
 
-#line 43 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
+#line 41 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
     dp4 r0.x, v0, c3  // ::vout<0>
     dp4 r0.y, v0, c4  // ::vout<1>
     dp4 r0.z, v0, c6  // ::vout<3>
 
-#line 69 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
+#line 65 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
     mad oPos.xy, r0.z, c0, r0  // ::VSBasicVc<8,9>
     mov oPos.w, r0.z  // ::VSBasicVc<11>
 
-#line 45 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
+#line 43 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
     mov oT1.xyz, c7.x  // ::VSBasicVc<4,5,6>
 
 // approximately 11 instruction slots used
@@ -87,10 +87,10 @@ ret
 
 const BYTE BasicEffect_VSBasicVc[] =
 {
-     68,  88,  66,  67, 192,  56, 
-    204, 202,  67, 111, 169, 101, 
-     75,  29, 129,  45,  89,  54, 
-    254,  21,   1,   0,   0,   0, 
+     68,  88,  66,  67,  10,  65, 
+     11, 194,  28, 179, 174, 209, 
+    100, 168,  84, 181,  20, 253, 
+     93, 217,   1,   0,   0,   0, 
      88,   6,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
      84,   4,   0,   0, 152,   5, 
@@ -139,20 +139,20 @@ const BYTE BasicEffect_VSBasicVc[] =
       0,   0,   0,   0, 255, 255, 
       8,   3,   0,   0,   0,   0, 
     255, 255,  20,   3,   0,   0, 
-     43,   0,   0,   0,  32,   3, 
-      0,   0,  14,   0,   0,   0, 
-     48,   3,   0,   0,  14,   0, 
+     41,   0,   0,   0,  32,   3, 
+      0,   0,  12,   0,   0,   0, 
+     48,   3,   0,   0,  12,   0, 
       0,   0,  64,   3,   0,   0, 
-     14,   0,   0,   0,  80,   3, 
-      0,   0,  76,   0,   1,   0, 
-     96,   3,   0,   0,  43,   0, 
+     12,   0,   0,   0,  80,   3, 
+      0,   0,  72,   0,   1,   0, 
+     96,   3,   0,   0,  41,   0, 
       0,   0, 112,   3,   0,   0, 
-     43,   0,   0,   0, 128,   3, 
-      0,   0,  43,   0,   0,   0, 
-    144,   3,   0,   0,  69,   0, 
+     41,   0,   0,   0, 128,   3, 
+      0,   0,  41,   0,   0,   0, 
+    144,   3,   0,   0,  65,   0, 
       1,   0, 160,   3,   0,   0, 
-     69,   0,   1,   0, 180,   3, 
-      0,   0,  45,   0,   0,   0, 
+     65,   0,   1,   0, 180,   3, 
+      0,   0,  43,   0,   0,   0, 
     192,   3,   0,   0,  86,  83, 
      66,  97, 115, 105,  99,  86, 
      99,   0,  68, 105, 102, 102, 

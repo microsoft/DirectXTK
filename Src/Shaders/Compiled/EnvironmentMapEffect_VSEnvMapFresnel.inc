@@ -47,39 +47,39 @@
     dcl_texcoord1 v1  // vin<4,5,6>
     dcl_texcoord2 v2  // vin<7,8>
 
-#line 68 "D:\Microsoft\DirectXTK\Src\Shaders\EnvironmentMapEffect.fx"
+#line 64 "D:\Microsoft\DirectXTK\Src\Shaders\EnvironmentMapEffect.fx"
     dp3 r0.x, v1, c15
     dp3 r0.y, v1, c16
     dp3 r0.z, v1, c17
     nrm r1.xyz, r0  // ::worldNormal<0,1,2>
 
-#line 36 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
+#line 34 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
     dp3 r0.x, -c4, r1  // ::dotL<0>
     dp3 r0.y, -c5, r1  // ::dotL<1>
     dp3 r0.z, -c6, r1  // ::dotL<2>
 
-#line 39
+#line 37
     sge r2.xyz, r0, c22.x  // ::zeroL<0,1,2>
     mul r0.xyz, r0, r2  // ::diffuse<0,1,2>
 
-#line 46
+#line 44
     mul r2.xyz, r0.y, c8
     mad r0.xyw, r0.x, c7.xyzz, r2.xyzz
     mad r0.xyz, r0.z, c9, r0.xyww
     mov r2.xyz, c2  // Parameters::DiffuseColor<0,1,2>
     mad oT0.xyz, r0, r2, c3  // ::VSEnvMapFresnel<0,1,2>
 
-#line 72 "D:\Microsoft\DirectXTK\Src\Shaders\EnvironmentMapEffect.fx"
+#line 68 "D:\Microsoft\DirectXTK\Src\Shaders\EnvironmentMapEffect.fx"
     dp4 oPos.z, v0, c20  // ::VSEnvMapFresnel<15>
 
-#line 66
+#line 62
     dp4 r0.x, v0, c12  // ::pos_ws<0>
     dp4 r0.y, v0, c13  // ::pos_ws<1>
     dp4 r0.z, v0, c14  // ::pos_ws<2>
     add r0.xyz, -r0, c10
     nrm r2.xyz, r0  // ::eyeVector<0,1,2>
 
-#line 56
+#line 52
     dp3 r0.x, r2, r1  // ::viewAngle<0>
     abs r0.x, r0.x
     add r0.x, -r0.x, c22.y
@@ -87,29 +87,29 @@
     pow r1.w, r0.x, c1.y
     mul oT1.xyz, r1.w, c1.x  // ::VSEnvMapFresnel<4,5,6>
 
-#line 14 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
+#line 12 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
     dp4 r0.x, v0, c11
     max r0.x, r0.x, c22.x
     min oT1.w, r0.x, c22.y  // ::VSEnvMapFresnel<7>
 
-#line 82 "D:\Microsoft\DirectXTK\Src\Shaders\EnvironmentMapEffect.fx"
+#line 78 "D:\Microsoft\DirectXTK\Src\Shaders\EnvironmentMapEffect.fx"
     dp3 r0.x, -r2, r1
     add r0.x, r0.x, r0.x
     mad oT3.xyz, r1, -r0.x, -r2  // ::VSEnvMapFresnel<10,11,12>
 
-#line 72
+#line 68
     dp4 r0.x, v0, c18  // ::vout<13>
     dp4 r0.y, v0, c19  // ::vout<14>
     dp4 r0.z, v0, c21  // ::vout<16>
 
-#line 131
+#line 127
     mad oPos.xy, r0.z, c0, r0  // ::VSEnvMapFresnel<13,14>
     mov oPos.w, r0.z  // ::VSEnvMapFresnel<16>
 
-#line 46 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
+#line 44 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
     mov oT0.w, c2.w  // ::VSEnvMapFresnel<3>
 
-#line 133 "D:\Microsoft\DirectXTK\Src\Shaders\EnvironmentMapEffect.fx"
+#line 129 "D:\Microsoft\DirectXTK\Src\Shaders\EnvironmentMapEffect.fx"
     mov oT2.xy, v2  // ::VSEnvMapFresnel<8,9>
 
 // approximately 45 instruction slots used
@@ -170,10 +170,10 @@ ret
 
 const BYTE EnvironmentMapEffect_VSEnvMapFresnel[] =
 {
-     68,  88,  66,  67,  95, 200, 
-    202, 101, 178, 164, 179, 235, 
-     49, 140, 184, 212, 184, 151, 
-    100,  25,   1,   0,   0,   0, 
+     68,  88,  66,  67, 122,  95, 
+     68, 148, 253,  76, 125, 150, 
+     41, 219, 221,  37, 128, 101, 
+    107,  59,   1,   0,   0,   0, 
     176,  15,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
      36,   9,   0,   0, 152,  14, 
@@ -234,57 +234,57 @@ const BYTE EnvironmentMapEffect_VSEnvMapFresnel[] =
       0,   0,   0,   0, 255, 255, 
      28,   6,   0,   0,   0,   0, 
     255, 255,  40,   6,   0,   0, 
-     68,   0,   0,   0,  52,   6, 
-      0,   0,  68,   0,   0,   0, 
-     68,   6,   0,   0,  68,   0, 
+     64,   0,   0,   0,  52,   6, 
+      0,   0,  64,   0,   0,   0, 
+     68,   6,   0,   0,  64,   0, 
       0,   0,  84,   6,   0,   0, 
-     68,   0,   0,   0, 100,   6, 
-      0,   0,  36,   0,   1,   0, 
-    112,   6,   0,   0,  36,   0, 
+     64,   0,   0,   0, 100,   6, 
+      0,   0,  34,   0,   1,   0, 
+    112,   6,   0,   0,  34,   0, 
       1,   0, 128,   6,   0,   0, 
-     36,   0,   1,   0, 144,   6, 
-      0,   0,  39,   0,   1,   0, 
-    160,   6,   0,   0,  41,   0, 
+     34,   0,   1,   0, 144,   6, 
+      0,   0,  37,   0,   1,   0, 
+    160,   6,   0,   0,  39,   0, 
       1,   0, 176,   6,   0,   0, 
-     46,   0,   1,   0, 192,   6, 
-      0,   0,  46,   0,   1,   0, 
-    208,   6,   0,   0,  46,   0, 
+     44,   0,   1,   0, 192,   6, 
+      0,   0,  44,   0,   1,   0, 
+    208,   6,   0,   0,  44,   0, 
       1,   0, 228,   6,   0,   0, 
-     46,   0,   1,   0, 248,   6, 
-      0,   0,  46,   0,   1,   0, 
-      4,   7,   0,   0,  72,   0, 
+     44,   0,   1,   0, 248,   6, 
+      0,   0,  44,   0,   1,   0, 
+      4,   7,   0,   0,  68,   0, 
       0,   0,  24,   7,   0,   0, 
-     66,   0,   0,   0,  40,   7, 
-      0,   0,  66,   0,   0,   0, 
-     56,   7,   0,   0,  66,   0, 
+     62,   0,   0,   0,  40,   7, 
+      0,   0,  62,   0,   0,   0, 
+     56,   7,   0,   0,  62,   0, 
       0,   0,  72,   7,   0,   0, 
-     67,   0,   0,   0,  88,   7, 
-      0,   0,  67,   0,   0,   0, 
-    104,   7,   0,   0,  56,   0, 
+     63,   0,   0,   0,  88,   7, 
+      0,   0,  63,   0,   0,   0, 
+    104,   7,   0,   0,  52,   0, 
       0,   0, 116,   7,   0,   0, 
-     58,   0,   0,   0, 132,   7, 
-      0,   0,  58,   0,   0,   0, 
-    144,   7,   0,   0,  58,   0, 
+     54,   0,   0,   0, 132,   7, 
+      0,   0,  54,   0,   0,   0, 
+    144,   7,   0,   0,  54,   0, 
       0,   0, 160,   7,   0,   0, 
-     58,   0,   0,   0, 176,   7, 
-      0,   0,  58,   0,   0,   0, 
-    192,   7,   0,   0,  14,   0, 
+     54,   0,   0,   0, 176,   7, 
+      0,   0,  54,   0,   0,   0, 
+    192,   7,   0,   0,  12,   0, 
       2,   0, 208,   7,   0,   0, 
-     14,   0,   2,   0, 224,   7, 
-      0,   0,  14,   0,   2,   0, 
-    240,   7,   0,   0,  82,   0, 
+     12,   0,   2,   0, 224,   7, 
+      0,   0,  12,   0,   2,   0, 
+    240,   7,   0,   0,  78,   0, 
       0,   0,   0,   8,   0,   0, 
-     82,   0,   0,   0,  16,   8, 
-      0,   0,  82,   0,   0,   0, 
-     32,   8,   0,   0,  72,   0, 
+     78,   0,   0,   0,  16,   8, 
+      0,   0,  78,   0,   0,   0, 
+     32,   8,   0,   0,  68,   0, 
       0,   0,  52,   8,   0,   0, 
-     72,   0,   0,   0,  68,   8, 
-      0,   0,  72,   0,   0,   0, 
-     84,   8,   0,   0, 131,   0, 
+     68,   0,   0,   0,  68,   8, 
+      0,   0,  68,   0,   0,   0, 
+     84,   8,   0,   0, 127,   0, 
       0,   0, 100,   8,   0,   0, 
-    131,   0,   0,   0, 120,   8, 
-      0,   0,  46,   0,   1,   0, 
-    132,   8,   0,   0, 133,   0, 
+    127,   0,   0,   0, 120,   8, 
+      0,   0,  44,   0,   1,   0, 
+    132,   8,   0,   0, 129,   0, 
       0,   0, 144,   8,   0,   0, 
      80,  97, 114,  97, 109, 101, 
     116, 101, 114, 115,   0,  68, 

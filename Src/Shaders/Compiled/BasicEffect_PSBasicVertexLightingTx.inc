@@ -41,14 +41,14 @@
     dcl t2.xy  // pin<8,9>
     dcl_2d s0
 
-#line 556 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
+#line 552 "D:\Microsoft\DirectXTK\Src\Shaders\BasicEffect.fx"
     texld r0, t2, s0
     mul r0, r0, t0  // ::color<0,1,2,3>
 
-#line 26 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
+#line 24 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
     mad r1.xyz, t1, r0.w, r0  // AddSpecular::color<0,1,2>
 
-#line 20
+#line 18
     mad r2.xyz, c0, r0.w, -r1
     mad r0.xyz, t1.w, r2, r1  // ApplyFog::color<0,1,2>
     mov oC0, r0  // ::PSBasicVertexLightingTx<0,1,2,3>
@@ -75,10 +75,10 @@ ret
 
 const BYTE BasicEffect_PSBasicVertexLightingTx[] =
 {
-     68,  88,  66,  67, 249,  94, 
-    206,  11,  38, 198, 186,  21, 
-    248, 243,   3, 223,  96, 233, 
-      7,  70,   1,   0,   0,   0, 
+     68,  88,  66,  67,  44, 212, 
+     99,  17, 178, 164,  17, 175, 
+    144,  59,   7,  14, 111, 175, 
+      3, 115,   1,   0,   0,   0, 
      92,   5,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
     128,   3,   0,   0, 192,   4, 
@@ -124,14 +124,14 @@ const BYTE BasicEffect_PSBasicVertexLightingTx[] =
     132,   2,   0,   0,   0,   0, 
     255, 255, 144,   2,   0,   0, 
       0,   0, 255, 255, 156,   2, 
-      0,   0,  44,   2,   0,   0, 
-    168,   2,   0,   0,  44,   2, 
+      0,   0,  40,   2,   0,   0, 
+    168,   2,   0,   0,  40,   2, 
       0,   0, 184,   2,   0,   0, 
-     26,   0,   1,   0, 200,   2, 
-      0,   0,  20,   0,   1,   0, 
-    220,   2,   0,   0,  20,   0, 
+     24,   0,   1,   0, 200,   2, 
+      0,   0,  18,   0,   1,   0, 
+    220,   2,   0,   0,  18,   0, 
       1,   0, 240,   2,   0,   0, 
-     20,   0,   1,   0,   4,   3, 
+     18,   0,   1,   0,   4,   3, 
       0,   0,  80,  83,  66,  97, 
     115, 105,  99,  86, 101, 114, 
     116, 101, 120,  76, 105, 103, 

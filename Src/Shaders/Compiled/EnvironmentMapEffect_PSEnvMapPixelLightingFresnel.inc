@@ -46,45 +46,45 @@
     dcl_2d s0
     dcl_cube s1
 
-#line 93 "D:\Microsoft\DirectXTK\Src\Shaders\EnvironmentMapEffect.fx"
+#line 89 "D:\Microsoft\DirectXTK\Src\Shaders\EnvironmentMapEffect.fx"
     nrm r0.xyz, t2  // ::worldNormal<0,1,2>
     add r1.xyz, -t1, c10
     nrm r2.xyz, r1  // ::eyeVector<0,1,2>
 
-#line 99
+#line 95
     dp3 r0.w, -r2, r0
     add r0.w, r0.w, r0.w
     mad r1.xyz, r0, -r0.w, -r2  // ::envcoord<0,1,2>
 
-#line 90
+#line 86
     texld r3, t0, s0
 
-#line 101
+#line 97
     texld r1, r1, s1
 
-#line 36 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
+#line 34 "D:\Microsoft\DirectXTK\Src\Shaders\Lighting.fxh"
     dp3 r4.x, -c4, r0  // ::dotL<0>
     dp3 r4.y, -c5, r0  // ::dotL<1>
     dp3 r4.z, -c6, r0  // ::dotL<2>
 
-#line 39
+#line 37
     cmp r5.xyz, r4, c12.x, c12.y  // ::zeroL<0,1,2>
     mul r4.xyz, r4, r5  // ::diffuse<0,1,2>
 
-#line 46
+#line 44
     mul r5.xyz, r4.y, c8
     mad r5.xyz, r4.x, c7, r5
     mad r4.xyz, r4.z, c9, r5
     mov r5.xyz, c2  // Parameters::DiffuseColor<0,1,2>
     mad r4.xyz, r4, r5, c3  // ::result<0,1,2>
 
-#line 90 "D:\Microsoft\DirectXTK\Src\Shaders\EnvironmentMapEffect.fx"
+#line 86 "D:\Microsoft\DirectXTK\Src\Shaders\EnvironmentMapEffect.fx"
     mul r3, r3, t3  // ::color<0,1,2,3>
 
-#line 97
+#line 93
     mul r4.xyz, r4, r3  // ::color<0,1,2>
 
-#line 56
+#line 52
     dp3 r4.w, r2, r0  // ::viewAngle<0>
     abs r4.w, r4.w
     add r4.w, -r4.w, c12.x
@@ -92,17 +92,17 @@
     pow r4.w, r0.x, c1.y
     mul r4.w, r4.w, c1.x  // ::ComputeFresnelFactor<0>
 
-#line 109
+#line 105
     mad r0.xyz, r1, r3.w, -r4
     mad r0.xyz, r4.w, r0, r4  // ::color<0,1,2>
 
-#line 101
+#line 97
     mul r0.w, r1.w, r3.w  // ::envmap<3>
 
-#line 110
+#line 106
     mad r0.xyz, c0, r0.w, r0  // ::color<0,1,2>
 
-#line 20 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
+#line 18 "D:\Microsoft\DirectXTK\Src\Shaders\Common.fxh"
     mad r1.xyz, c11, r3.w, -r0
     mad r3.xyz, t1.w, r1, r0  // ApplyFog::color<0,1,2>
     mov oC0, r3  // ::PSEnvMapPixelLightingFresnel<0,1,2,3>
@@ -164,10 +164,10 @@ ret
 
 const BYTE EnvironmentMapEffect_PSEnvMapPixelLightingFresnel[] =
 {
-     68,  88,  66,  67,  31, 151, 
-    123, 174, 134,  69,  82, 122, 
-    137, 128,  13, 218, 127,  84, 
-    239, 230,   1,   0,   0,   0, 
+     68,  88,  66,  67, 138, 142, 
+    131, 121, 253, 210,   5,  13, 
+    109, 192,  90, 189, 250,  98, 
+     25, 202,   1,   0,   0,   0, 
      72,  15,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
      40,   9,   0,   0, 148,  14, 
@@ -228,50 +228,50 @@ const BYTE EnvironmentMapEffect_PSEnvMapPixelLightingFresnel[] =
     255, 255, 108,   6,   0,   0, 
       0,   0, 255, 255, 120,   6, 
       0,   0,   0,   0, 255, 255, 
-    132,   6,   0,   0,  93,   0, 
+    132,   6,   0,   0,  89,   0, 
       0,   0, 144,   6,   0,   0, 
-     92,   0,   0,   0, 156,   6, 
-      0,   0,  92,   0,   0,   0, 
-    172,   6,   0,   0,  99,   0, 
+     88,   0,   0,   0, 156,   6, 
+      0,   0,  88,   0,   0,   0, 
+    172,   6,   0,   0,  95,   0, 
       0,   0, 184,   6,   0,   0, 
-     99,   0,   0,   0, 200,   6, 
-      0,   0,  99,   0,   0,   0, 
-    216,   6,   0,   0,  90,   0, 
+     95,   0,   0,   0, 200,   6, 
+      0,   0,  95,   0,   0,   0, 
+    216,   6,   0,   0,  86,   0, 
       0,   0, 236,   6,   0,   0, 
-    101,   0,   0,   0, 252,   6, 
-      0,   0,  36,   0,   1,   0, 
-     12,   7,   0,   0,  36,   0, 
+     97,   0,   0,   0, 252,   6, 
+      0,   0,  34,   0,   1,   0, 
+     12,   7,   0,   0,  34,   0, 
       1,   0,  28,   7,   0,   0, 
-     36,   0,   1,   0,  44,   7, 
-      0,   0,  39,   0,   1,   0, 
-     60,   7,   0,   0,  41,   0, 
+     34,   0,   1,   0,  44,   7, 
+      0,   0,  37,   0,   1,   0, 
+     60,   7,   0,   0,  39,   0, 
       1,   0,  80,   7,   0,   0, 
-     46,   0,   1,   0,  96,   7, 
-      0,   0,  46,   0,   1,   0, 
-    112,   7,   0,   0,  46,   0, 
+     44,   0,   1,   0,  96,   7, 
+      0,   0,  44,   0,   1,   0, 
+    112,   7,   0,   0,  44,   0, 
       1,   0, 132,   7,   0,   0, 
-     46,   0,   1,   0, 152,   7, 
-      0,   0,  46,   0,   1,   0, 
-    164,   7,   0,   0,  90,   0, 
+     44,   0,   1,   0, 152,   7, 
+      0,   0,  44,   0,   1,   0, 
+    164,   7,   0,   0,  86,   0, 
       0,   0, 184,   7,   0,   0, 
-     97,   0,   0,   0, 200,   7, 
-      0,   0,  56,   0,   0,   0, 
-    216,   7,   0,   0,  58,   0, 
+     93,   0,   0,   0, 200,   7, 
+      0,   0,  52,   0,   0,   0, 
+    216,   7,   0,   0,  54,   0, 
       0,   0, 232,   7,   0,   0, 
-     58,   0,   0,   0, 244,   7, 
-      0,   0,  58,   0,   0,   0, 
-      4,   8,   0,   0,  58,   0, 
+     54,   0,   0,   0, 244,   7, 
+      0,   0,  54,   0,   0,   0, 
+      4,   8,   0,   0,  54,   0, 
       0,   0,  20,   8,   0,   0, 
-     58,   0,   0,   0,  36,   8, 
-      0,   0, 109,   0,   0,   0, 
-     52,   8,   0,   0, 109,   0, 
+     54,   0,   0,   0,  36,   8, 
+      0,   0, 105,   0,   0,   0, 
+     52,   8,   0,   0, 105,   0, 
       0,   0,  72,   8,   0,   0, 
-    101,   0,   0,   0,  92,   8, 
-      0,   0, 110,   0,   0,   0, 
-    108,   8,   0,   0,  20,   0, 
+     97,   0,   0,   0,  92,   8, 
+      0,   0, 106,   0,   0,   0, 
+    108,   8,   0,   0,  18,   0, 
       2,   0, 128,   8,   0,   0, 
-     20,   0,   2,   0, 148,   8, 
-      0,   0,  20,   0,   2,   0, 
+     18,   0,   2,   0, 148,   8, 
+      0,   0,  18,   0,   2,   0, 
     168,   8,   0,   0,  67, 111, 
     109, 112, 117, 116, 101,  70, 
     114, 101, 115, 110, 101, 108, 
