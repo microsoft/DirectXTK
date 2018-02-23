@@ -1,10 +1,6 @@
 @echo off
-rem THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
-rem ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-rem THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-rem PARTICULAR PURPOSE.
-rem
 rem Copyright (c) Microsoft Corporation. All rights reserved.
+rem Licensed under the MIT License.
 
 setlocal
 set error=0
