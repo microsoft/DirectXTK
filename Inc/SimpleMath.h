@@ -880,9 +880,9 @@ public:
 
 #include "SimpleMath.inl"
 
-}; // namespace SimpleMath
+} // namespace SimpleMath
 
-}; // namespace DirectX
+} // namespace DirectX
 
 //------------------------------------------------------------------------------
 // Support for SimpleMath and Standard C++ Library containers

@@ -167,7 +167,7 @@ namespace VSD3DStarter
           0.f, 0.f, 1.f, 0.f,
           0.f, 0.f, 0.f, 1.f },
     };
-}; // namespace
+} // namespace
 
 static_assert( sizeof(VSD3DStarter::Material) == 132, "CMO Mesh structure size incorrect" );
 static_assert( sizeof(VSD3DStarter::SubMesh) == 20, "CMO Mesh structure size incorrect" );
