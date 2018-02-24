@@ -1365,6 +1365,9 @@
     <None Include="Src\Shaders\Compiled\XboxOneDebugEffect_VSDebugVcBn.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
+    <None Include="Src\Shaders\PixelPacking_Velocity.hlsli">
+      <Filter>Src\Shaders\Shared</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Readme.txt" />

@@ -448,6 +448,7 @@
     <None Include="Src\Shaders\CompileShaders.cmd" />
     <None Include="Src\Shaders\Lighting.fxh" />
     <None Include="Src\Shaders\PBRCommon.fxh" />
+    <None Include="Src\Shaders\PixelPacking_Velocity.hlsli" />
     <None Include="Src\Shaders\Structures.fxh" />
     <None Include="Src\Shaders\Utilities.fxh" />
     <None Include="Src\TeapotData.inc" />

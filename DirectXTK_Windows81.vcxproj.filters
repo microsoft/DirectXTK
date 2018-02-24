@@ -1268,5 +1268,13 @@
     <None Include="Src\Shaders\Compiled\PBREffect_VSConstantVelocityBn.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
+    <None Include="Src\Shaders\PixelPacking_Velocity.hlsli">
+      <Filter>Src\Shaders\Shared</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Src\Shaders\DebugEffect.fx">
+      <Filter>Src\Shaders\Shared</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

@@ -433,6 +433,7 @@
     <None Include="Src\Shaders\CompileShaders.cmd" />
     <None Include="Src\Shaders\Lighting.fxh" />
     <None Include="Src\Shaders\PBRCommon.fxh" />
+    <None Include="Src\Shaders\PixelPacking_Velocity.hlsli" />
     <None Include="Src\Shaders\SpriteEffect.fx" />
     <None Include="Src\Shaders\Structures.fxh" />
     <None Include="Src\Shaders\Utilities.fxh" />
@@ -486,6 +487,9 @@
     <None Include="Src\Shaders\PBREffect.fx">
       <FileType>Document</FileType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Src\Shaders\DebugEffect.fx" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and '$(VisualStudioVersion)' == ''">$(VCTargetsPath11)</VCTargetsPath>

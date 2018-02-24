@@ -1283,5 +1283,8 @@
     <None Include="Src\Shaders\Compiled\DebugEffect_VSDebugVcBn.pdb">
       <Filter>Src\Shaders\Symbols</Filter>
     </None>
+    <None Include="Src\Shaders\PixelPacking_Velocity.hlsli">
+      <Filter>Src\Shaders\Shared</Filter>
+    </None>
   </ItemGroup>
 </Project>
