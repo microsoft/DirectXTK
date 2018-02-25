@@ -6,19 +6,25 @@
 // http://go.microsoft.com/fwlink/?LinkId=248929
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
+using System.Globalization;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MakeSpriteFont
 {
     // Uses System.Drawing (aka GDI+) to rasterize TrueType fonts into a series of glyph bitmaps.
     public class TrueTypeImporter : IFontImporter
     {
+        protected volatile int count;
+
         // Properties hold the imported font data.
         public IEnumerable<Glyph> Glyphs { get; private set; }
 
@@ -28,57 +34,95 @@ namespace MakeSpriteFont
         // Size of the temp surface used for GDI+ rasterization.
         const int MaxGlyphSize = 1024;
 
-
+        struct ImportGlyphArgs
+        {
+            public Bitmap Bitmap { get; set; }
+            public Brush Brush { get; set; }
+            public Font Font { get; set; }
+            public Graphics Graphics { get; set; }
+            public StringFormat StringFormat { get; set; }
+        }
         public void Import(CommandLineOptions options)
         {
-            // Create a bunch of GDI+ objects.
-            using (Font font = CreateFont(options))
-            using (Brush brush = new SolidBrush(Color.White))
-            using (StringFormat stringFormat = new StringFormat(StringFormatFlags.NoFontFallback))
-            using (Bitmap bitmap = new Bitmap(MaxGlyphSize, MaxGlyphSize, PixelFormat.Format32bppArgb))
-            using (Graphics graphics = Graphics.FromImage(bitmap))
+            // Which characters do we want to include?
+            var characters = CharacterRegion.Flatten(options.CharacterRegions).ToArray();
+
+            var glyphList = new Glyph[characters.Count()];
+
+            // Rasterize each character in turn.
+            count = 0;
+
+            if (glyphList.Length >= 500)
             {
-                graphics.PixelOffsetMode = options.Sharp ? PixelOffsetMode.None : PixelOffsetMode.HighQuality;
-                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
-
-                // Which characters do we want to include?
-                var characters = CharacterRegion.Flatten(options.CharacterRegions);
-
-                var glyphList = new List<Glyph>();
-
-                // Rasterize each character in turn.
-                int count = 0;
-
-                foreach (char character in characters)
+                if (!options.FastPack)
                 {
-                    ++count;
+                    Console.WriteLine("WARNING: capturing a large font. This may take a long time to complete and could result in too large a texture. Consider using /FastPack.");
+                }
+            }
 
-                    if (count == 500)
+            using (var cancellationTokenSource = new CancellationTokenSource())
+            {
+                Task.Run(() =>
+                {
+                    var periods = 1;
+                    while (true)
                     {
-                        if (!options.FastPack)
+                        Thread.Sleep(TimeSpan.FromMilliseconds(89));
+                        if (count >= periods * 500)
                         {
-                            Console.WriteLine("WARNING: capturing a large font. This may take a long time to complete and could result in too large a texture. Consider using /FastPack.");
+                            periods++;
+                            Console.Write(".");
                         }
-                        Console.Write(".");
+                        cancellationTokenSource.Token.ThrowIfCancellationRequested();
                     }
-                    else if ((count % 500) == 0)
+                }, cancellationTokenSource.Token);
+                var partitioner = Partitioner.Create(0, characters.Count(), Math.Min(1, characters.Count() / Environment.ProcessorCount));
+                Parallel.ForEach<Tuple<int, int>, ImportGlyphArgs>(
+                    partitioner, () =>
                     {
-                        Console.Write(".");
-                    }
+                        // Create a bunch of GDI+ objects.
+                        var local = new ImportGlyphArgs()
+                        {
+                            Bitmap = new Bitmap(MaxGlyphSize, MaxGlyphSize, PixelFormat.Format32bppArgb),
+                            Brush = new SolidBrush(Color.White),
+                            Font = CreateFont(options),
+                            //StringFormat = new StringFormat(StringFormatFlags.NoFontFallback),
+                            StringFormat = new StringFormat(),
+                        };
+                        var graphics = Graphics.FromImage(local.Bitmap);
+                        graphics.PixelOffsetMode = options.Sharp ? PixelOffsetMode.None : PixelOffsetMode.HighQuality;
+                        graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                        graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+                        local.Graphics = graphics;
+                        return local;
+                    }, (range, state, rangeIndex, local) =>
+                    {
+                        for (var i = range.Item1; i < range.Item2; i++)
+                        {
+                            count++;
+                            Glyph glyph = ImportGlyph(characters[i], local.Font, local.Brush, local.StringFormat, local.Bitmap, local.Graphics);
+                            glyphList[i] = glyph;
+                        }
+                        return local;
+                    }, local =>
+                    {
+                        local.Bitmap.Dispose();
+                        local.Brush.Dispose();
+                        local.Font.Dispose();
+                        local.Graphics.Dispose();
+                        local.StringFormat.Dispose();
+                    });
+                cancellationTokenSource.Cancel();
+            }
 
-                    Glyph glyph = ImportGlyph(character, font, brush, stringFormat, bitmap, graphics);
+            if (count > 500)
+            {
+                Console.WriteLine();
+            }
 
-                    glyphList.Add(glyph);
-                }
-
-                if (count > 500)
-                {
-                    Console.WriteLine();
-                }
-
-                Glyphs = glyphList;
-
+            Glyphs = glyphList;
+            using (Font font = CreateFont(options))
+            {
                 // Store the font height.
                 LineSpacing = font.GetHeight();
             }
