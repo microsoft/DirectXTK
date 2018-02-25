@@ -13,12 +13,66 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Linq;
 
 namespace MakeSpriteFont
 {
     // Helper for arranging many small bitmaps onto a single larger surface.
     public static class GlyphPacker
     {
+        static int currentBinHeight;
+        static SortedSet<Rectangle> currentBins;
+        static readonly SortedDictionary<int, SortedSet<Rectangle>> heightBinSetMap = new SortedDictionary<int, SortedSet<Rectangle>>();
+
+
+        static void AllocateBin(int h, int w)
+        {
+            // Select the first bin set that's tall enough and the first bin that's wide enough.
+            var q = (
+                from bins in (
+                    from x in heightBinSetMap
+                    where x.Key > h
+                    select x.Value)
+                from b in bins
+                where b.Width >= w
+                select new { BinToSplit = b, Bins = bins }).First();
+            q.Bins.Remove(q.BinToSplit);
+
+            // Remove the bin set if it's empty.
+            if (!q.Bins.Any())
+            {
+                heightBinSetMap.Remove(q.BinToSplit.Height);
+            }
+
+            // Allocate space by splitting the bin.
+            var remainderBin = q.BinToSplit;
+            remainderBin.Y += h;
+            remainderBin.Height -= h;
+            bool found;
+            if (remainderBin.Height > 2) // Glyphs are padded with a single pixel border so they must be at least 3 high. Shorter bins are discarded.
+            {
+                SortedSet<Rectangle> remainderBins;
+                found = heightBinSetMap.TryGetValue(remainderBin.Height, out remainderBins);
+                if (!found)
+                {
+                    remainderBins = CreateBinSet();
+                    heightBinSetMap.Add(remainderBin.Height, remainderBins); // Return free space.
+                }
+                remainderBins.Add(remainderBin);
+            }
+            var newBin = q.BinToSplit;
+            newBin.Height = h;
+            SortedSet<Rectangle> binSet;
+            found = heightBinSetMap.TryGetValue(h, out binSet);
+            if (!found)
+            {
+                binSet = CreateBinSet();
+                heightBinSetMap.Add(h, binSet);
+            }
+            binSet.Add(newBin);
+        }
+
+
         public static Bitmap ArrangeGlyphsFast(Glyph[] sourceGlyphs)
         {
             // Build up a list of all the glyphs needing to be arranged.
@@ -96,7 +150,13 @@ namespace MakeSpriteFont
 
             // Work out how big the output bitmap should be.
             int outputWidth = GuessOutputWidth(sourceGlyphs);
+            var maxOutputHeight = 16384; // D3D12_REQ_TEXTURE2D_U_OR_V_DIMENSION
+            var binSet = CreateBinSet();
+            binSet.Add(new Rectangle(0, 0, outputWidth, maxOutputHeight));
+            heightBinSetMap.Add(maxOutputHeight, binSet);
             int outputHeight = 0;
+
+            currentBinHeight = -1;
 
             // Choose positions for each glyph, one at a time.
             for (int i = 0; i < glyphs.Count; i++)
@@ -154,6 +214,13 @@ namespace MakeSpriteFont
         }
 
 
+        static SortedSet<Rectangle> CreateBinSet()
+        {
+            var binSet = new SortedSet<Rectangle>(new ByWidthXY());
+            return binSet;
+        }
+
+        
         // Internal helper class keeps track of a glyph while it is being arranged.
         class ArrangedGlyph
         {
@@ -170,59 +237,40 @@ namespace MakeSpriteFont
         // Works out where to position a single glyph.
         static void PositionGlyph(List<ArrangedGlyph> glyphs, int index, int outputWidth)
         {
-            int x = 0;
-            int y = 0;
-
-            while (true)
+            // Bins are grouped according to height. Glyphs are also sorted by height. Switch bin sets when glyph height changes.
+            if (currentBinHeight != glyphs[index].Height)
             {
-                // Is this position free for us to use?
-                int intersects = FindIntersectingGlyph(glyphs, index, x, y);
-
-                if (intersects < 0)
+                currentBinHeight = glyphs[index].Height;
+                var found = heightBinSetMap.TryGetValue(currentBinHeight, out currentBins);
+                if (!found)
                 {
-                    glyphs[index].X = x;
-                    glyphs[index].Y = y;
-
-                    return;
-                }
-
-                // Skip past the existing glyph that we collided with.
-                x = glyphs[intersects].X + glyphs[intersects].Width;
-
-                // If we ran out of room to move to the right, try the next line down instead.
-                if (x + glyphs[index].Width > outputWidth)
-                {
-                    x = 0;
-                    y++;
+                    AllocateBin(currentBinHeight, glyphs[index].Width);
+                    currentBins = heightBinSetMap[currentBinHeight];
                 }
             }
-        }
 
-
-        // Checks if a proposed glyph position collides with anything that we already arranged.
-        static int FindIntersectingGlyph(List<ArrangedGlyph> glyphs, int index, int x, int y)
-        {
-            int w = glyphs[index].Width;
-            int h = glyphs[index].Height;
-
-            for (int i = 0; i < index; i++)
+            // Select the first bin that will fit the glyph.
+            var q =
+                from b in currentBins
+                where b.Width >= glyphs[index].Width
+                select b;
+            if (!q.Any())
             {
-                if (glyphs[i].X >= x + w)
-                    continue;
-
-                if (glyphs[i].X + glyphs[i].Width <= x)
-                    continue;
-
-                if (glyphs[i].Y >= y + h)
-                    continue;
-
-                if (glyphs[i].Y + glyphs[i].Height <= y)
-                    continue;
-
-                return i;
+                AllocateBin(currentBinHeight, glyphs[index].Width);
             }
+            var binToSplit = q.First();
 
-            return -1;
+            // Allocate space for the glyph by splitting the bin.
+            currentBins.Remove(binToSplit);
+            var remainderBin = binToSplit;
+            remainderBin.X += glyphs[index].Width;
+            remainderBin.Width -= glyphs[index].Width;
+            if (remainderBin.Width > 2) // Glyphs are padded with a single pixel border so they must be at least 3 wide. Narrower bins are discarded.
+            {
+                currentBins.Add(remainderBin); // Return free space.
+            }
+            glyphs[index].X = binToSplit.X;
+            glyphs[index].Y = binToSplit.Y;
         }
 
 

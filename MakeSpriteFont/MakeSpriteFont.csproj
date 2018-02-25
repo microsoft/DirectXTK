@@ -32,6 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="BitmapUtils.cs" />
+    <Compile Include="ByWidthXY.cs" />
     <Compile Include="CharacterRegion.cs" />
     <Compile Include="CommandLineParser.cs" />
     <Compile Include="GlyphCropper.cs" />
