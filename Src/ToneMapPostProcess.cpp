@@ -326,9 +326,9 @@ void ToneMapPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, 
     }
 
     // Draw quad.
-    deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+    deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    deviceContext->Draw(4, 0);
+    deviceContext->Draw(3, 0);
 }
 
 
