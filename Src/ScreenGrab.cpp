@@ -463,7 +463,7 @@ HRESULT DirectX::SaveWICTextureToFile(
     }
     else
     {
-        // Screenshots don’t typically include the alpha channel of the render target
+        // Screenshots don't typically include the alpha channel of the render target
         switch (desc.Format)
         {
         #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
