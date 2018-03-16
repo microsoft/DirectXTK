@@ -34,7 +34,7 @@ struct BasicEffectConstants
     XMMATRIX worldViewProj;
 };
 
-static_assert( ( sizeof(BasicEffectConstants) % 16 ) == 0, "CB size not padded correctly" );
+static_assert((sizeof(BasicEffectConstants) % 16) == 0, "CB size not padded correctly");
 
 
 // Traits type describes our characteristics to the EffectBase template.

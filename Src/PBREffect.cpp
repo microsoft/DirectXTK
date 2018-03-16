@@ -36,7 +36,7 @@ struct PBREffectConstants
     float   targetHeight;
 };
 
-static_assert( ( sizeof(PBREffectConstants) % 16 ) == 0, "CB size not padded correctly" );
+static_assert((sizeof(PBREffectConstants) % 16) == 0, "CB size not padded correctly");
 
 
 // Traits type describes our characteristics to the EffectBase template.
@@ -174,10 +174,10 @@ PBREffect::Impl::Impl(_In_ ID3D11Device* device)
         throw std::exception("PBREffect requires Feature Level 10.0 or later");
     }
 
-    static_assert( _countof(EffectBase<PBREffectTraits>::VertexShaderIndices) == PBREffectTraits::ShaderPermutationCount, "array/max mismatch" );
-    static_assert( _countof(EffectBase<PBREffectTraits>::VertexShaderBytecode) == PBREffectTraits::VertexShaderCount, "array/max mismatch" );
-    static_assert( _countof(EffectBase<PBREffectTraits>::PixelShaderBytecode) == PBREffectTraits::PixelShaderCount, "array/max mismatch" );
-    static_assert( _countof(EffectBase<PBREffectTraits>::PixelShaderIndices) == PBREffectTraits::ShaderPermutationCount, "array/max mismatch" );
+    static_assert(_countof(EffectBase<PBREffectTraits>::VertexShaderIndices) == PBREffectTraits::ShaderPermutationCount, "array/max mismatch");
+    static_assert(_countof(EffectBase<PBREffectTraits>::VertexShaderBytecode) == PBREffectTraits::VertexShaderCount, "array/max mismatch");
+    static_assert(_countof(EffectBase<PBREffectTraits>::PixelShaderBytecode) == PBREffectTraits::PixelShaderCount, "array/max mismatch");
+    static_assert(_countof(EffectBase<PBREffectTraits>::PixelShaderIndices) == PBREffectTraits::ShaderPermutationCount, "array/max mismatch");
 
     // Lighting
     static const XMVECTORF32 defaultLightDirection = { 0, -1, 0, 0 };

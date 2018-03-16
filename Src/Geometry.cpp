@@ -320,9 +320,9 @@ void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indi
                     XMStoreFloat3(
                         &outVertex,
                         XMVectorScale(
-                            XMVectorAdd(XMLoadFloat3(&vertexPositions[i0]), XMLoadFloat3(&vertexPositions[i1])),
-                            0.5f
-                        )
+                        XMVectorAdd(XMLoadFloat3(&vertexPositions[i0]), XMLoadFloat3(&vertexPositions[i1])),
+                        0.5f
+                    )
                     );
 
                     outIndex = static_cast<uint16_t>(vertexPositions.size());
@@ -796,7 +796,7 @@ void DirectX::ComputeTetrahedron(VertexCollection& vertices, IndexCollection& in
         uint32_t v2 = faces[j + 2];
 
         XMVECTOR normal = XMVector3Cross(verts[v1].v - verts[v0].v,
-            verts[v2].v - verts[v0].v);
+                                         verts[v2].v - verts[v0].v);
         normal = XMVector3Normalize(normal);
 
         size_t base = vertices.size();
@@ -861,7 +861,7 @@ void DirectX::ComputeOctahedron(VertexCollection& vertices, IndexCollection& ind
         uint32_t v2 = faces[j + 2];
 
         XMVECTOR normal = XMVector3Cross(verts[v1].v - verts[v0].v,
-            verts[v2].v - verts[v0].v);
+                                         verts[v2].v - verts[v0].v);
         normal = XMVector3Normalize(normal);
 
         size_t base = vertices.size();
@@ -976,7 +976,7 @@ void DirectX::ComputeDodecahedron(VertexCollection& vertices, IndexCollection& i
         uint32_t v4 = faces[j + 4];
 
         XMVECTOR normal = XMVector3Cross(verts[v1].v - verts[v0].v,
-            verts[v2].v - verts[v0].v);
+                                         verts[v2].v - verts[v0].v);
         normal = XMVector3Normalize(normal);
 
         size_t base = vertices.size();
@@ -1077,7 +1077,7 @@ void DirectX::ComputeIcosahedron(VertexCollection& vertices, IndexCollection& in
         uint32_t v2 = faces[j + 2];
 
         XMVECTOR normal = XMVector3Cross(verts[v1].v - verts[v0].v,
-            verts[v2].v - verts[v0].v);
+                                         verts[v2].v - verts[v0].v);
         normal = XMVector3Normalize(normal);
 
         size_t base = vertices.size();
@@ -1128,19 +1128,19 @@ namespace
         // Create the index data.
         size_t vbase = vertices.size();
         Bezier::CreatePatchIndices(tessellation, isMirrored, [&](size_t index)
-        {
-            index_push_back(indices, vbase + index);
-        });
+                                   {
+                                       index_push_back(indices, vbase + index);
+                                   });
 
-        // Create the vertex data.
+                                   // Create the vertex data.
         Bezier::CreatePatchVertices(controlPoints, tessellation, isMirrored, [&](FXMVECTOR position, FXMVECTOR normal, FXMVECTOR textureCoordinate)
-        {
-            vertices.push_back(VertexPositionNormalTexture(position, normal, textureCoordinate));
-        });
+                                    {
+                                        vertices.push_back(VertexPositionNormalTexture(position, normal, textureCoordinate));
+                                    });
     }
 }
 
-        
+
 // Creates a teapot primitive.
 void DirectX::ComputeTeapot(VertexCollection& vertices, IndexCollection& indices, float size, size_t tessellation, bool rhcoords)
 {

@@ -53,7 +53,7 @@ namespace DirectX
 
         // Custom layout/rendering
         Glyph const* __cdecl FindGlyph(wchar_t character) const;
-        void __cdecl GetSpriteSheet( ID3D11ShaderResourceView** texture ) const;
+        void __cdecl GetSpriteSheet(ID3D11ShaderResourceView** texture) const;
 
         // Describes a single character glyph.
         struct Glyph

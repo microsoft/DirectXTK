@@ -58,12 +58,12 @@ public:
 
     void Initialize(_In_ ID3D11DeviceX* device, UINT backBufferCount)
     {
-        assert( device != 0 );
+        assert(device != 0);
         mDevice = device;
 
-        device->GetImmediateContextX( mDeviceContext.GetAddressOf() );
+        device->GetImmediateContextX(mDeviceContext.GetAddressOf());
 
-        mFrames.resize( backBufferCount );
+        mFrames.resize(backBufferCount);
     }
 
     void* Allocate(_In_opt_ ID3D11DeviceContext* deviceContext, size_t size, int alignment)
@@ -160,7 +160,7 @@ public:
 
             void* ptr = static_cast<uint8_t*>(mPages.front().mGrfxMemory) + mCurOffset;
 
-            mCurOffset += static_cast<UINT>( alignedSize );
+            mCurOffset += static_cast<UINT>(alignedSize);
 
             return ptr;
         }
@@ -202,7 +202,7 @@ public:
 
     ComPtr<ID3D11DeviceX> mDevice;
     ComPtr<ID3D11DeviceContextX> mDeviceContext;
-    
+
     static GraphicsMemory::Impl* s_graphicsMemory;
 };
 

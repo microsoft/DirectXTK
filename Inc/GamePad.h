@@ -44,11 +44,11 @@ namespace DirectX
 
         virtual ~GamePad();
 
-#if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/ ) || defined(_XBOX_ONE)
+    #if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/ ) || defined(_XBOX_ONE)
         static const int MAX_PLAYER_COUNT = 8;
-#else
+    #else
         static const int MAX_PLAYER_COUNT = 4;
-#endif
+    #endif
 
         enum DeadZone
         {
@@ -100,7 +100,7 @@ namespace DirectX
             float left;
             float right;
         };
-        
+
         struct State
         {
             bool        connected;
@@ -139,7 +139,7 @@ namespace DirectX
             bool __cdecl IsLeftThumbStickLeft() const { return (thumbSticks.leftX < -0.5f) != 0; }
             bool __cdecl IsLeftThumbStickRight() const { return (thumbSticks.leftX > 0.5f) != 0; }
 
-            bool __cdecl IsRightThumbStickUp() const { return (thumbSticks.rightY > 0.5f ) != 0; }
+            bool __cdecl IsRightThumbStickUp() const { return (thumbSticks.rightY > 0.5f) != 0; }
             bool __cdecl IsRightThumbStickDown() const { return (thumbSticks.rightY < -0.5f) != 0; }
             bool __cdecl IsRightThumbStickLeft() const { return (thumbSticks.rightX < -0.5f) != 0; }
             bool __cdecl IsRightThumbStickRight() const { return (thumbSticks.rightX > 0.5f) != 0; }
@@ -167,11 +167,11 @@ namespace DirectX
 
             bool            connected;
             Type            gamepadType;
-#if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/)
+        #if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/)
             std::wstring    id;
-#else
+        #else
             uint64_t        id;
-#endif
+        #endif
 
             bool __cdecl IsConnected() const { return connected; }
         };
@@ -230,7 +230,7 @@ namespace DirectX
 
             ButtonStateTracker() { Reset(); }
 
-            void __cdecl Update( const State& state );
+            void __cdecl Update(const State& state);
 
             void __cdecl Reset();
 
@@ -247,15 +247,15 @@ namespace DirectX
         Capabilities __cdecl GetCapabilities(int player);
 
         // Set the vibration motor speeds of the gamepad
-        bool __cdecl SetVibration( int player, float leftMotor, float rightMotor, float leftTrigger = 0.f, float rightTrigger = 0.f );
+        bool __cdecl SetVibration(int player, float leftMotor, float rightMotor, float leftTrigger = 0.f, float rightTrigger = 0.f);
 
         // Handle suspending/resuming
         void __cdecl Suspend();
         void __cdecl Resume();
 
-#if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/ ) || defined(_XBOX_ONE)
+    #if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/ ) || defined(_XBOX_ONE)
         void __cdecl RegisterEvents(void* ctrlChanged, void* userChanged);
-#endif
+    #endif
 
         // Singleton
         static GamePad& __cdecl Get();

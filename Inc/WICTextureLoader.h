@@ -113,7 +113,7 @@ namespace DirectX
 
     // Extended version with optional auto-gen mipmap support
     HRESULT __cdecl CreateWICTextureFromMemoryEx(
-#if defined(_XBOX_ONE) && defined(_TITLE)
+    #if defined(_XBOX_ONE) && defined(_TITLE)
         _In_ ID3D11DeviceX* d3dDevice,
         _In_opt_ ID3D11DeviceContextX* d3dContext,
     #else

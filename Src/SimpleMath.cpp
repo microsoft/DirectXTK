@@ -120,17 +120,17 @@ RECT DirectX::SimpleMath::Viewport::ComputeDisplayArea(DXGI_SCALING scaling, UIN
 
     switch (int(scaling))
     {
-    case DXGI_SCALING_STRETCH:
-        // Output fills the entire window area
-        rct.top = 0;
-        rct.left = 0;
-        rct.right = outputWidth;
-        rct.bottom = outputHeight;
-        break;
+        case DXGI_SCALING_STRETCH:
+            // Output fills the entire window area
+            rct.top = 0;
+            rct.left = 0;
+            rct.right = outputWidth;
+            rct.bottom = outputHeight;
+            break;
 
-    case 2 /*DXGI_SCALING_ASPECT_RATIO_STRETCH*/:
-        // Output fills the window area but respects the original aspect ratio, using pillar boxing or letter boxing as required
-        // Note: This scaling option is not supported for legacy Win32 windows swap chains
+        case 2 /*DXGI_SCALING_ASPECT_RATIO_STRETCH*/:
+            // Output fills the window area but respects the original aspect ratio, using pillar boxing or letter boxing as required
+            // Note: This scaling option is not supported for legacy Win32 windows swap chains
         {
             assert(backBufferHeight > 0);
             float aspectRatio = float(backBufferWidth) / float(backBufferHeight);
@@ -148,27 +148,27 @@ RECT DirectX::SimpleMath::Viewport::ComputeDisplayArea(DXGI_SCALING scaling, UIN
             float offsetX = (float(outputWidth) - scaledWidth) * 0.5f;
             float offsetY = (float(outputHeight) - scaledHeight) * 0.5f;
 
-            rct.left = static_cast<LONG>( offsetX );
-            rct.top = static_cast<LONG>( offsetY );
-            rct.right = static_cast<LONG>( offsetX + scaledWidth );
-            rct.bottom = static_cast<LONG>( offsetY + scaledHeight );
+            rct.left = static_cast<LONG>(offsetX);
+            rct.top = static_cast<LONG>(offsetY);
+            rct.right = static_cast<LONG>(offsetX + scaledWidth);
+            rct.bottom = static_cast<LONG>(offsetY + scaledHeight);
 
             // Clip to display window
-            rct.left = std::max<LONG>( 0, rct.left );
-            rct.top = std::max<LONG>( 0, rct.top );
-            rct.right = std::min<LONG>( outputWidth, rct.right );
-            rct.bottom = std::min<LONG>( outputHeight, rct.bottom );
+            rct.left = std::max<LONG>(0, rct.left);
+            rct.top = std::max<LONG>(0, rct.top);
+            rct.right = std::min<LONG>(outputWidth, rct.right);
+            rct.bottom = std::min<LONG>(outputHeight, rct.bottom);
         }
         break;
 
-    case DXGI_SCALING_NONE:
-    default:
-        // Output is displayed in the upper left corner of the window area
-        rct.top = 0;
-        rct.left = 0;
-        rct.right = std::min<UINT>( backBufferWidth, UINT(outputWidth) );
-        rct.bottom = std::min<UINT>( backBufferHeight, UINT(outputHeight) );
-        break;
+        case DXGI_SCALING_NONE:
+        default:
+            // Output is displayed in the upper left corner of the window area
+            rct.top = 0;
+            rct.left = 0;
+            rct.right = std::min<UINT>(backBufferWidth, UINT(outputWidth));
+            rct.bottom = std::min<UINT>(backBufferHeight, UINT(outputHeight));
+            break;
     }
 
     return rct;

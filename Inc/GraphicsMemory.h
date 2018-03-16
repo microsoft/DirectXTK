@@ -23,11 +23,11 @@ namespace DirectX
     class GraphicsMemory
     {
     public:
-        #if defined(_XBOX_ONE) && defined(_TITLE)
+    #if defined(_XBOX_ONE) && defined(_TITLE)
         GraphicsMemory(_In_ ID3D11DeviceX* device, UINT backBufferCount = 2);
-        #else
+    #else
         GraphicsMemory(_In_ ID3D11Device* device, UINT backBufferCount = 2);
-        #endif
+    #endif
         GraphicsMemory(GraphicsMemory&& moveFrom);
         GraphicsMemory& operator= (GraphicsMemory&& moveFrom);
 

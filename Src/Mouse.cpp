@@ -252,189 +252,189 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
     evts[2] = pImpl->mRelativeMode.get();
     switch (WaitForMultipleObjectsEx(_countof(evts), evts, FALSE, 0, FALSE))
     {
-    case WAIT_OBJECT_0:
-        pImpl->mState.scrollWheelValue = 0;
-        ResetEvent(evts[0]);
+        case WAIT_OBJECT_0:
+            pImpl->mState.scrollWheelValue = 0;
+            ResetEvent(evts[0]);
+            break;
+
+        case (WAIT_OBJECT_0 + 1):
+        {
+            pImpl->mMode = MODE_ABSOLUTE;
+            ClipCursor(nullptr);
+
+            POINT point;
+            point.x = pImpl->mLastX;
+            point.y = pImpl->mLastY;
+
+            // We show the cursor before moving it to support Remote Desktop
+            ShowCursor(TRUE);
+
+            if (MapWindowPoints(pImpl->mWindow, nullptr, &point, 1))
+            {
+                SetCursorPos(point.x, point.y);
+            }
+            pImpl->mState.x = pImpl->mLastX;
+            pImpl->mState.y = pImpl->mLastY;
+        }
         break;
 
-    case (WAIT_OBJECT_0 + 1):
-    {
-        pImpl->mMode = MODE_ABSOLUTE;
-        ClipCursor(nullptr);
-
-        POINT point;
-        point.x = pImpl->mLastX;
-        point.y = pImpl->mLastY;
-
-        // We show the cursor before moving it to support Remote Desktop
-        ShowCursor(TRUE);
-
-        if (MapWindowPoints(pImpl->mWindow, nullptr, &point, 1))
+        case (WAIT_OBJECT_0 + 2):
         {
-            SetCursorPos(point.x, point.y);
+            ResetEvent(pImpl->mRelativeRead.get());
+
+            pImpl->mMode = MODE_RELATIVE;
+            pImpl->mState.x = pImpl->mState.y = 0;
+            pImpl->mRelativeX = INT32_MAX;
+            pImpl->mRelativeY = INT32_MAX;
+
+            ShowCursor(FALSE);
+
+            pImpl->ClipToWindow();
         }
-        pImpl->mState.x = pImpl->mLastX;
-        pImpl->mState.y = pImpl->mLastY;
-    }
-    break;
+        break;
 
-    case (WAIT_OBJECT_0 + 2):
-    {
-        ResetEvent(pImpl->mRelativeRead.get());
-
-        pImpl->mMode = MODE_RELATIVE;
-        pImpl->mState.x = pImpl->mState.y = 0;
-        pImpl->mRelativeX = INT32_MAX;
-        pImpl->mRelativeY = INT32_MAX;
-
-        ShowCursor(FALSE);
-
-        pImpl->ClipToWindow();
-    }
-    break;
-
-    case WAIT_FAILED:
-        throw std::exception("WaitForMultipleObjectsEx");
+        case WAIT_FAILED:
+            throw std::exception("WaitForMultipleObjectsEx");
     }
 
     switch (message)
     {
-    case WM_ACTIVATEAPP:
-        if (wParam)
-        {
-            pImpl->mInFocus = true;
-
-            if (pImpl->mMode == MODE_RELATIVE)
+        case WM_ACTIVATEAPP:
+            if (wParam)
             {
-                pImpl->mState.x = pImpl->mState.y = 0;
+                pImpl->mInFocus = true;
 
-                ShowCursor(FALSE);
-
-                pImpl->ClipToWindow();
-            }
-        }
-        else
-        {
-            int scrollWheel = pImpl->mState.scrollWheelValue;
-            memset(&pImpl->mState, 0, sizeof(State));
-            pImpl->mState.scrollWheelValue = scrollWheel;
-
-            pImpl->mInFocus = false;
-        }
-        return;
-
-    case WM_INPUT:
-        if (pImpl->mInFocus && pImpl->mMode == MODE_RELATIVE)
-        {
-            RAWINPUT raw;
-            UINT rawSize = sizeof(raw);
-
-            UINT resultData = GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, &raw, &rawSize, sizeof(RAWINPUTHEADER));
-            if (resultData == UINT(-1))
-            {
-                throw std::exception("GetRawInputData");
-            }
-
-            if (raw.header.dwType == RIM_TYPEMOUSE)
-            {
-                if (!(raw.data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE))
+                if (pImpl->mMode == MODE_RELATIVE)
                 {
-                    pImpl->mState.x = raw.data.mouse.lLastX;
-                    pImpl->mState.y = raw.data.mouse.lLastY;
+                    pImpl->mState.x = pImpl->mState.y = 0;
 
-                    ResetEvent(pImpl->mRelativeRead.get());
-                }
-                else if (raw.data.mouse.usFlags & MOUSE_VIRTUAL_DESKTOP)
-                {
-                    // This is used to make Remote Desktop sessons work
-                    const int width = GetSystemMetrics(SM_CXVIRTUALSCREEN);
-                    const int height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+                    ShowCursor(FALSE);
 
-                    int x = static_cast<int>((float(raw.data.mouse.lLastX) / 65535.0f) * width);
-                    int y = static_cast<int>((float(raw.data.mouse.lLastY) / 65535.0f) * height);
-
-                    if (pImpl->mRelativeX == INT32_MAX)
-                    {
-                        pImpl->mState.x = pImpl->mState.y = 0;
-                    }
-                    else
-                    {
-                        pImpl->mState.x = x - pImpl->mRelativeX;
-                        pImpl->mState.y = y - pImpl->mRelativeY;
-                    }
-
-                    pImpl->mRelativeX = x;
-                    pImpl->mRelativeY = y;
-
-                    ResetEvent(pImpl->mRelativeRead.get());
+                    pImpl->ClipToWindow();
                 }
             }
-        }
-        return;
+            else
+            {
+                int scrollWheel = pImpl->mState.scrollWheelValue;
+                memset(&pImpl->mState, 0, sizeof(State));
+                pImpl->mState.scrollWheelValue = scrollWheel;
 
-    case WM_MOUSEMOVE:
-        break;
+                pImpl->mInFocus = false;
+            }
+            return;
 
-    case WM_LBUTTONDOWN:
-        pImpl->mState.leftButton = true;
-        break;
+        case WM_INPUT:
+            if (pImpl->mInFocus && pImpl->mMode == MODE_RELATIVE)
+            {
+                RAWINPUT raw;
+                UINT rawSize = sizeof(raw);
 
-    case WM_LBUTTONUP:
-        pImpl->mState.leftButton = false;
-        break;
+                UINT resultData = GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, &raw, &rawSize, sizeof(RAWINPUTHEADER));
+                if (resultData == UINT(-1))
+                {
+                    throw std::exception("GetRawInputData");
+                }
 
-    case WM_RBUTTONDOWN:
-        pImpl->mState.rightButton = true;
-        break;
+                if (raw.header.dwType == RIM_TYPEMOUSE)
+                {
+                    if (!(raw.data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE))
+                    {
+                        pImpl->mState.x = raw.data.mouse.lLastX;
+                        pImpl->mState.y = raw.data.mouse.lLastY;
 
-    case WM_RBUTTONUP:
-        pImpl->mState.rightButton = false;
-        break;
+                        ResetEvent(pImpl->mRelativeRead.get());
+                    }
+                    else if (raw.data.mouse.usFlags & MOUSE_VIRTUAL_DESKTOP)
+                    {
+                        // This is used to make Remote Desktop sessons work
+                        const int width = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+                        const int height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
 
-    case WM_MBUTTONDOWN:
-        pImpl->mState.middleButton = true;
-        break;
+                        int x = static_cast<int>((float(raw.data.mouse.lLastX) / 65535.0f) * width);
+                        int y = static_cast<int>((float(raw.data.mouse.lLastY) / 65535.0f) * height);
 
-    case WM_MBUTTONUP:
-        pImpl->mState.middleButton = false;
-        break;
+                        if (pImpl->mRelativeX == INT32_MAX)
+                        {
+                            pImpl->mState.x = pImpl->mState.y = 0;
+                        }
+                        else
+                        {
+                            pImpl->mState.x = x - pImpl->mRelativeX;
+                            pImpl->mState.y = y - pImpl->mRelativeY;
+                        }
 
-    case WM_MOUSEWHEEL:
-        pImpl->mState.scrollWheelValue += GET_WHEEL_DELTA_WPARAM(wParam);
-        return;
+                        pImpl->mRelativeX = x;
+                        pImpl->mRelativeY = y;
 
-    case WM_XBUTTONDOWN:
-        switch (GET_XBUTTON_WPARAM(wParam))
-        {
-        case XBUTTON1:
-            pImpl->mState.xButton1 = true;
+                        ResetEvent(pImpl->mRelativeRead.get());
+                    }
+                }
+            }
+            return;
+
+        case WM_MOUSEMOVE:
             break;
 
-        case XBUTTON2:
-            pImpl->mState.xButton2 = true;
-            break;
-        }
-        break;
-
-    case WM_XBUTTONUP:
-        switch (GET_XBUTTON_WPARAM(wParam))
-        {
-        case XBUTTON1:
-            pImpl->mState.xButton1 = false;
+        case WM_LBUTTONDOWN:
+            pImpl->mState.leftButton = true;
             break;
 
-        case XBUTTON2:
-            pImpl->mState.xButton2 = false;
+        case WM_LBUTTONUP:
+            pImpl->mState.leftButton = false;
             break;
-        }
-        break;
 
-    case WM_MOUSEHOVER:
-        break;
+        case WM_RBUTTONDOWN:
+            pImpl->mState.rightButton = true;
+            break;
 
-    default:
-        // Not a mouse message, so exit
-        return;
+        case WM_RBUTTONUP:
+            pImpl->mState.rightButton = false;
+            break;
+
+        case WM_MBUTTONDOWN:
+            pImpl->mState.middleButton = true;
+            break;
+
+        case WM_MBUTTONUP:
+            pImpl->mState.middleButton = false;
+            break;
+
+        case WM_MOUSEWHEEL:
+            pImpl->mState.scrollWheelValue += GET_WHEEL_DELTA_WPARAM(wParam);
+            return;
+
+        case WM_XBUTTONDOWN:
+            switch (GET_XBUTTON_WPARAM(wParam))
+            {
+                case XBUTTON1:
+                    pImpl->mState.xButton1 = true;
+                    break;
+
+                case XBUTTON2:
+                    pImpl->mState.xButton2 = true;
+                    break;
+            }
+            break;
+
+        case WM_XBUTTONUP:
+            switch (GET_XBUTTON_WPARAM(wParam))
+            {
+                case XBUTTON1:
+                    pImpl->mState.xButton1 = false;
+                    break;
+
+                case XBUTTON2:
+                    pImpl->mState.xButton2 = false;
+                    break;
+            }
+            break;
+
+        case WM_MOUSEHOVER:
+            break;
+
+        default:
+            // Not a mouse message, so exit
+            return;
     }
 
     if (pImpl->mMode == MODE_ABSOLUTE)

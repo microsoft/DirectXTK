@@ -50,13 +50,13 @@ namespace DirectX
 
 
         // Array overloads.
-        static void* operator new[] (size_t size)
+        static void* operator new[](size_t size)
         {
             return operator new(size);
         }
 
 
-        static void operator delete[] (void* ptr)
+        static void operator delete[](void* ptr)
         {
             operator delete(ptr);
         }

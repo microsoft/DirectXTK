@@ -23,7 +23,7 @@ struct DualTextureEffectConstants
     XMMATRIX worldViewProj;
 };
 
-static_assert( ( sizeof(DualTextureEffectConstants) % 16 ) == 0, "CB size not padded correctly" );
+static_assert((sizeof(DualTextureEffectConstants) % 16) == 0, "CB size not padded correctly");
 
 
 // Traits type describes our characteristics to the EffectBase template.
@@ -128,10 +128,10 @@ DualTextureEffect::Impl::Impl(_In_ ID3D11Device* device)
   : EffectBase(device),
     vertexColorEnabled(false)
 {
-    static_assert( _countof(EffectBase<DualTextureEffectTraits>::VertexShaderIndices) == DualTextureEffectTraits::ShaderPermutationCount, "array/max mismatch" );
-    static_assert( _countof(EffectBase<DualTextureEffectTraits>::VertexShaderBytecode) == DualTextureEffectTraits::VertexShaderCount, "array/max mismatch" );
-    static_assert( _countof(EffectBase<DualTextureEffectTraits>::PixelShaderBytecode) == DualTextureEffectTraits::PixelShaderCount, "array/max mismatch" );
-    static_assert( _countof(EffectBase<DualTextureEffectTraits>::PixelShaderIndices) == DualTextureEffectTraits::ShaderPermutationCount, "array/max mismatch" );
+    static_assert(_countof(EffectBase<DualTextureEffectTraits>::VertexShaderIndices) == DualTextureEffectTraits::ShaderPermutationCount, "array/max mismatch");
+    static_assert(_countof(EffectBase<DualTextureEffectTraits>::VertexShaderBytecode) == DualTextureEffectTraits::VertexShaderCount, "array/max mismatch");
+    static_assert(_countof(EffectBase<DualTextureEffectTraits>::PixelShaderBytecode) == DualTextureEffectTraits::PixelShaderCount, "array/max mismatch");
+    static_assert(_countof(EffectBase<DualTextureEffectTraits>::PixelShaderIndices) == DualTextureEffectTraits::ShaderPermutationCount, "array/max mismatch");
 }
 
 

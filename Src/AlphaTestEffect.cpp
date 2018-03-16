@@ -23,7 +23,7 @@ struct AlphaTestEffectConstants
     XMMATRIX worldViewProj;
 };
 
-static_assert( ( sizeof(AlphaTestEffectConstants) % 16 ) == 0, "CB size not padded correctly" );
+static_assert((sizeof(AlphaTestEffectConstants) % 16) == 0, "CB size not padded correctly");
 
 
 // Traits type describes our characteristics to the EffectBase template.
@@ -145,10 +145,10 @@ AlphaTestEffect::Impl::Impl(_In_ ID3D11Device* device)
     referenceAlpha(0),
     vertexColorEnabled(false)
 {
-    static_assert( _countof(EffectBase<AlphaTestEffectTraits>::VertexShaderIndices) == AlphaTestEffectTraits::ShaderPermutationCount, "array/max mismatch" );
-    static_assert( _countof(EffectBase<AlphaTestEffectTraits>::VertexShaderBytecode) == AlphaTestEffectTraits::VertexShaderCount, "array/max mismatch" );
-    static_assert( _countof(EffectBase<AlphaTestEffectTraits>::PixelShaderBytecode) == AlphaTestEffectTraits::PixelShaderCount, "array/max mismatch" );
-    static_assert( _countof(EffectBase<AlphaTestEffectTraits>::PixelShaderIndices) == AlphaTestEffectTraits::ShaderPermutationCount, "array/max mismatch" );
+    static_assert(_countof(EffectBase<AlphaTestEffectTraits>::VertexShaderIndices) == AlphaTestEffectTraits::ShaderPermutationCount, "array/max mismatch");
+    static_assert(_countof(EffectBase<AlphaTestEffectTraits>::VertexShaderBytecode) == AlphaTestEffectTraits::VertexShaderCount, "array/max mismatch");
+    static_assert(_countof(EffectBase<AlphaTestEffectTraits>::PixelShaderBytecode) == AlphaTestEffectTraits::PixelShaderCount, "array/max mismatch");
+    static_assert(_countof(EffectBase<AlphaTestEffectTraits>::PixelShaderIndices) == AlphaTestEffectTraits::ShaderPermutationCount, "array/max mismatch");
 }
 
 

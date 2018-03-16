@@ -63,7 +63,7 @@ namespace
             GeometricPrimitive::VertexType::InputElementCount,
             shaderByteCode, byteCodeLength,
             pInputLayout)
-            );
+        );
 
         _Analysis_assume_(*pInputLayout != 0);
 

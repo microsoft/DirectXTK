@@ -37,7 +37,8 @@ namespace
         UNREFERENCED_PARAMETER(Parameter);
         UNREFERENCED_PARAMETER(lpContext);
 
-        g_vbdecl = std::make_shared<std::vector<D3D11_INPUT_ELEMENT_DESC>>(VertexPositionNormalTexture::InputElements,
+        g_vbdecl = std::make_shared<std::vector<D3D11_INPUT_ELEMENT_DESC>>(
+            VertexPositionNormalTexture::InputElements,
             VertexPositionNormalTexture::InputElements + VertexPositionNormalTexture::InputElementCount);
 
         return TRUE;
@@ -53,28 +54,28 @@ std::unique_ptr<Model> DirectX::Model::CreateFromVBO(ID3D11Device* d3dDevice, co
     if (!InitOnceExecuteOnce(&g_InitOnce, InitializeDecl, nullptr, nullptr))
         throw std::exception("One-time initialization failed");
 
-    if ( !d3dDevice || !meshData )
+    if (!d3dDevice || !meshData)
         throw std::exception("Device and meshData cannot be null");
 
     // File Header
-    if ( dataSize < sizeof(VBO::header_t) )
+    if (dataSize < sizeof(VBO::header_t))
         throw std::exception("End of file");
-    auto header = reinterpret_cast<const VBO::header_t*>( meshData );
+    auto header = reinterpret_cast<const VBO::header_t*>(meshData);
 
-    if ( !header->numVertices || !header->numIndices )
+    if (!header->numVertices || !header->numIndices)
         throw std::exception("No vertices or indices found");
 
     size_t vertSize = sizeof(VertexPositionNormalTexture) * header->numVertices;
 
     if (dataSize < (vertSize + sizeof(VBO::header_t)))
         throw std::exception("End of file");
-    auto verts = reinterpret_cast<const VertexPositionNormalTexture*>( meshData + sizeof(VBO::header_t) );
+    auto verts = reinterpret_cast<const VertexPositionNormalTexture*>(meshData + sizeof(VBO::header_t));
 
     size_t indexSize = sizeof(uint16_t) * header->numIndices;
 
     if (dataSize < (sizeof(VBO::header_t) + vertSize + indexSize))
         throw std::exception("End of file");
-    auto indices = reinterpret_cast<const uint16_t*>( meshData + sizeof(VBO::header_t) + vertSize );
+    auto indices = reinterpret_cast<const uint16_t*>(meshData + sizeof(VBO::header_t) + vertSize);
 
     // Create vertex buffer
     ComPtr<ID3D11Buffer> vb;
@@ -89,7 +90,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromVBO(ID3D11Device* d3dDevice, co
 
         ThrowIfFailed(
             d3dDevice->CreateBuffer(&desc, &initData, vb.GetAddressOf())
-            );
+        );
 
         SetDebugObjectName(vb.Get(), "ModelVBO");
     }
@@ -107,7 +108,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromVBO(ID3D11Device* d3dDevice, co
 
         ThrowIfFailed(
             d3dDevice->CreateBuffer(&desc, &initData, ib.GetAddressOf())
-            );
+        );
 
         SetDebugObjectName(ib.Get(), "ModelVBO");
     }
@@ -141,7 +142,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromVBO(ID3D11Device* d3dDevice, co
     auto part = new ModelMeshPart();
     part->indexCount = header->numIndices;
     part->startIndex = 0;
-    part->vertexStride = static_cast<UINT>( sizeof(VertexPositionNormalTexture) );
+    part->vertexStride = static_cast<UINT>(sizeof(VertexPositionNormalTexture));
     part->inputLayout = il;
     part->indexBuffer = ib;
     part->vertexBuffer = vb;
@@ -157,7 +158,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromVBO(ID3D11Device* d3dDevice, co
 
     std::unique_ptr<Model> model(new Model());
     model->meshes.emplace_back(mesh);
- 
+
     return model;
 }
 
@@ -169,14 +170,14 @@ std::unique_ptr<Model> DirectX::Model::CreateFromVBO(ID3D11Device* d3dDevice, co
 {
     size_t dataSize = 0;
     std::unique_ptr<uint8_t[]> data;
-    HRESULT hr = BinaryReader::ReadEntireFile( szFileName, data, &dataSize );
-    if ( FAILED(hr) )
+    HRESULT hr = BinaryReader::ReadEntireFile(szFileName, data, &dataSize);
+    if (FAILED(hr))
     {
-        DebugTrace( "CreateFromVBO failed (%08X) loading '%ls'\n", hr, szFileName );
-        throw std::exception( "CreateFromVBO" );
+        DebugTrace("CreateFromVBO failed (%08X) loading '%ls'\n", hr, szFileName);
+        throw std::exception("CreateFromVBO");
     }
 
-    auto model = CreateFromVBO( d3dDevice, data.get(), dataSize, ieffect, ccw, pmalpha );
+    auto model = CreateFromVBO(d3dDevice, data.get(), dataSize, ieffect, ccw, pmalpha);
 
     model->name = szFileName;
 

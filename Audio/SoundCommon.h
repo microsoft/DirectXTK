@@ -17,19 +17,19 @@
 namespace DirectX
 {
     // Helper for getting a format tag from a WAVEFORMATEX
-    inline uint32_t GetFormatTag( const WAVEFORMATEX* wfx )
+    inline uint32_t GetFormatTag(const WAVEFORMATEX* wfx)
     {
-        if ( wfx->wFormatTag == WAVE_FORMAT_EXTENSIBLE )
+        if (wfx->wFormatTag == WAVE_FORMAT_EXTENSIBLE)
         {
-            if ( wfx->cbSize < ( sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX) ) )
+            if (wfx->cbSize < (sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX)))
                 return 0;
 
-            static const GUID s_wfexBase = {0x00000000, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71};
+            static const GUID s_wfexBase = { 0x00000000, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71 };
 
-            auto wfex = reinterpret_cast<const WAVEFORMATEXTENSIBLE*>( wfx );
+            auto wfex = reinterpret_cast<const WAVEFORMATEXTENSIBLE*>(wfx);
 
-            if ( memcmp( reinterpret_cast<const BYTE*>(&wfex->SubFormat) + sizeof(DWORD),
-                         reinterpret_cast<const BYTE*>(&s_wfexBase) + sizeof(DWORD), sizeof(GUID) - sizeof(DWORD) ) != 0 )
+            if (memcmp(reinterpret_cast<const BYTE*>(&wfex->SubFormat) + sizeof(DWORD),
+                reinterpret_cast<const BYTE*>(&s_wfexBase) + sizeof(DWORD), sizeof(GUID) - sizeof(DWORD)) != 0)
             {
                 return 0;
             }
@@ -44,121 +44,121 @@ namespace DirectX
 
 
     // Helper for validating wave format structure
-    bool IsValid( _In_ const WAVEFORMATEX* wfx );
+    bool IsValid(_In_ const WAVEFORMATEX* wfx);
 
 
     // Helper for getting a default channel mask from channels
-    uint32_t GetDefaultChannelMask( int channels );
+    uint32_t GetDefaultChannelMask(int channels);
 
 
     // Helpers for creating various wave format structures
-    void CreateIntegerPCM( _Out_ WAVEFORMATEX* wfx, int sampleRate, int channels, int sampleBits );
-    void CreateFloatPCM( _Out_ WAVEFORMATEX* wfx, int sampleRate, int channels );
-    void CreateADPCM( _Out_writes_bytes_(wfxSize) WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int samplesPerBlock );
+    void CreateIntegerPCM(_Out_ WAVEFORMATEX* wfx, int sampleRate, int channels, int sampleBits);
+    void CreateFloatPCM(_Out_ WAVEFORMATEX* wfx, int sampleRate, int channels);
+    void CreateADPCM(_Out_writes_bytes_(wfxSize) WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int samplesPerBlock);
 #if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
-    void CreateXWMA( _Out_ WAVEFORMATEX* wfx, int sampleRate, int channels, int blockAlign, int avgBytes, bool wma3 );
+    void CreateXWMA(_Out_ WAVEFORMATEX* wfx, int sampleRate, int channels, int blockAlign, int avgBytes, bool wma3);
 #endif
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    void CreateXMA2( _Out_writes_bytes_(wfxSize) WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int bytesPerBlock, int blockCount, int samplesEncoded );
+    void CreateXMA2(_Out_writes_bytes_(wfxSize) WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int bytesPerBlock, int blockCount, int samplesEncoded);
 #endif
 
     // Helper for computing pan volume matrix
-    bool ComputePan( float pan, int channels, _Out_writes_(16) float* matrix );
+    bool ComputePan(float pan, int channels, _Out_writes_(16) float* matrix);
 
     // Helper class for implementing SoundEffectInstance
     class SoundEffectInstanceBase
     {
     public:
         SoundEffectInstanceBase() :
-            voice( nullptr ),
-            state( STOPPED ),
-            engine( nullptr ),
-            mVolume( 1.f ),
-            mPitch( 0.f ),
-            mFreqRatio( 1.f ),
-            mPan( 0.f ),
-            mFlags( SoundEffectInstance_Default ),
-            mDirectVoice( nullptr ),
-            mReverbVoice( nullptr ),
+            voice(nullptr),
+            state(STOPPED),
+            engine(nullptr),
+            mVolume(1.f),
+            mPitch(0.f),
+            mFreqRatio(1.f),
+            mPan(0.f),
+            mFlags(SoundEffectInstance_Default),
+            mDirectVoice(nullptr),
+            mReverbVoice(nullptr),
             mDSPSettings{}
         {
         }
 
         ~SoundEffectInstanceBase()
         {
-            assert( !voice );
+            assert(!voice);
         }
 
-        void Initialize( _In_ AudioEngine* eng, _In_ const WAVEFORMATEX* wfx, SOUND_EFFECT_INSTANCE_FLAGS flags )
+        void Initialize(_In_ AudioEngine* eng, _In_ const WAVEFORMATEX* wfx, SOUND_EFFECT_INSTANCE_FLAGS flags)
         {
-            assert( eng != 0 );
+            assert(eng != 0);
             engine = eng;
             mDirectVoice = eng->GetMasterVoice();
             mReverbVoice = eng->GetReverbVoice();
 
-            if ( eng->GetChannelMask() & SPEAKER_LOW_FREQUENCY )
+            if (eng->GetChannelMask() & SPEAKER_LOW_FREQUENCY)
                 mFlags = flags | SoundEffectInstance_UseRedirectLFE;
             else
-                mFlags = static_cast<SOUND_EFFECT_INSTANCE_FLAGS>( static_cast<int>(flags) & ~SoundEffectInstance_UseRedirectLFE );
+                mFlags = static_cast<SOUND_EFFECT_INSTANCE_FLAGS>(static_cast<int>(flags) & ~SoundEffectInstance_UseRedirectLFE);
 
-            memset( &mDSPSettings, 0, sizeof(X3DAUDIO_DSP_SETTINGS) );
-            assert( wfx != 0 );
+            memset(&mDSPSettings, 0, sizeof(X3DAUDIO_DSP_SETTINGS));
+            assert(wfx != 0);
             mDSPSettings.SrcChannelCount = wfx->nChannels;
             mDSPSettings.DstChannelCount = eng->GetOutputChannels();
         }
 
-        void AllocateVoice( _In_ const WAVEFORMATEX* wfx )
+        void AllocateVoice(_In_ const WAVEFORMATEX* wfx)
         {
-            if ( voice )
+            if (voice)
                 return;
 
-            assert( engine != 0 );
-            engine->AllocateVoice( wfx, mFlags, false, &voice );
+            assert(engine != 0);
+            engine->AllocateVoice(wfx, mFlags, false, &voice);
         }
 
         void DestroyVoice()
         {
-            if ( voice )
+            if (voice)
             {
-                assert( engine != 0 );
-                engine->DestroyVoice( voice );
+                assert(engine != 0);
+                engine->DestroyVoice(voice);
                 voice = nullptr;
             }
         }
 
         bool Play() // Returns true if STOPPED -> PLAYING
         {
-            if ( voice )
+            if (voice)
             {
-                if ( state == PAUSED )
+                if (state == PAUSED)
                 {
-                    HRESULT hr = voice->Start( 0 );
-                    ThrowIfFailed( hr );
+                    HRESULT hr = voice->Start(0);
+                    ThrowIfFailed(hr);
                     state = PLAYING;
                 }
-                else if ( state != PLAYING )
+                else if (state != PLAYING)
                 {
-                    if ( mVolume != 1.f )
+                    if (mVolume != 1.f)
                     {
-                        HRESULT hr = voice->SetVolume( mVolume );
-                        ThrowIfFailed( hr );
+                        HRESULT hr = voice->SetVolume(mVolume);
+                        ThrowIfFailed(hr);
                     }
 
-                    if ( mPitch != 0.f )
+                    if (mPitch != 0.f)
                     {
-                        mFreqRatio = XAudio2SemitonesToFrequencyRatio( mPitch * 12.f );
+                        mFreqRatio = XAudio2SemitonesToFrequencyRatio(mPitch * 12.f);
 
-                        HRESULT hr = voice->SetFrequencyRatio( mFreqRatio );
-                        ThrowIfFailed( hr );
+                        HRESULT hr = voice->SetFrequencyRatio(mFreqRatio);
+                        ThrowIfFailed(hr);
                     }
 
-                    if ( mPan != 0.f )
+                    if (mPan != 0.f)
                     {
-                        SetPan( mPan );
+                        SetPan(mPan);
                     }
 
-                    HRESULT hr = voice->Start( 0 );
-                    ThrowIfFailed( hr );
+                    HRESULT hr = voice->Start(0);
+                    ThrowIfFailed(hr);
                     state = PLAYING;
                     return true;
                 }
@@ -166,101 +166,101 @@ namespace DirectX
             return false;
         }
 
-        void Stop( bool immediate, bool& looped )
+        void Stop(bool immediate, bool& looped)
         {
-            if ( !voice )
+            if (!voice)
             {
                 state = STOPPED;
                 return;
             }
 
-            if ( immediate )
+            if (immediate)
             {
                 state = STOPPED;
-                (void)voice->Stop( 0 );
+                (void)voice->Stop(0);
                 (void)voice->FlushSourceBuffers();
             }
-            else if ( looped )
+            else if (looped)
             {
                 looped = false;
                 (void)voice->ExitLoop();
             }
             else
             {
-                (void)voice->Stop( XAUDIO2_PLAY_TAILS );
+                (void)voice->Stop(XAUDIO2_PLAY_TAILS);
             }
         }
 
         void Pause()
         {
-            if ( voice && state == PLAYING )
+            if (voice && state == PLAYING)
             {
                 state = PAUSED;
 
-                (void)voice->Stop( 0 );
+                (void)voice->Stop(0);
             }
         }
 
         void Resume()
         {
-            if ( voice && state == PAUSED )
+            if (voice && state == PAUSED)
             {
-                HRESULT hr = voice->Start( 0 );
-                ThrowIfFailed( hr );
+                HRESULT hr = voice->Start(0);
+                ThrowIfFailed(hr);
                 state = PLAYING;
             }
         }
 
-        void SetVolume( float volume )
+        void SetVolume(float volume)
         {
-            assert( volume >= -XAUDIO2_MAX_VOLUME_LEVEL && volume <= XAUDIO2_MAX_VOLUME_LEVEL );
+            assert(volume >= -XAUDIO2_MAX_VOLUME_LEVEL && volume <= XAUDIO2_MAX_VOLUME_LEVEL);
 
             mVolume = volume;
 
-            if ( voice )
+            if (voice)
             {
-                HRESULT hr = voice->SetVolume( volume );
-                ThrowIfFailed( hr );
+                HRESULT hr = voice->SetVolume(volume);
+                ThrowIfFailed(hr);
             }
         }
 
-        void SetPitch( float pitch )
+        void SetPitch(float pitch)
         {
-            assert( pitch >= -1.f && pitch <= 1.f );
+            assert(pitch >= -1.f && pitch <= 1.f);
 
-            if ( ( mFlags & SoundEffectInstance_NoSetPitch ) && pitch != 0.f )
+            if ((mFlags & SoundEffectInstance_NoSetPitch) && pitch != 0.f)
             {
-                DebugTrace( "ERROR: Sound effect instance was created with the NoSetPitch flag\n" );
-                throw std::exception( "SetPitch" );
+                DebugTrace("ERROR: Sound effect instance was created with the NoSetPitch flag\n");
+                throw std::exception("SetPitch");
             }
 
             mPitch = pitch;
 
-            if ( voice )
+            if (voice)
             {
-                mFreqRatio = XAudio2SemitonesToFrequencyRatio( mPitch * 12.f );
+                mFreqRatio = XAudio2SemitonesToFrequencyRatio(mPitch * 12.f);
 
-                HRESULT hr = voice->SetFrequencyRatio( mFreqRatio );
-                ThrowIfFailed( hr );
+                HRESULT hr = voice->SetFrequencyRatio(mFreqRatio);
+                ThrowIfFailed(hr);
             }
         }
 
-        void SetPan( float pan );
+        void SetPan(float pan);
 
-        void Apply3D( const AudioListener& listener, const AudioEmitter& emitter, bool rhcoords );
+        void Apply3D(const AudioListener& listener, const AudioEmitter& emitter, bool rhcoords);
 
-        SoundState GetState( bool autostop )
+        SoundState GetState(bool autostop)
         {
-            if ( autostop && voice && ( state == PLAYING ) )
+            if (autostop && voice && (state == PLAYING))
             {
                 XAUDIO2_VOICE_STATE xstate;
-#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
-                voice->GetState( &xstate, XAUDIO2_VOICE_NOSAMPLESPLAYED );
-#else
-                voice->GetState( &xstate );
-#endif
+            #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
+                voice->GetState(&xstate, XAUDIO2_VOICE_NOSAMPLESPLAYED);
+            #else
+                voice->GetState(&xstate);
+            #endif
 
-                if ( !xstate.BuffersQueued )
+                if (!xstate.BuffersQueued)
                 {
                     // Automatic stop if the buffer has finished playing
                     (void)voice->Stop();
@@ -273,21 +273,21 @@ namespace DirectX
 
         int GetPendingBufferCount() const
         {
-            if ( !voice )
+            if (!voice)
                 return 0;
 
             XAUDIO2_VOICE_STATE xstate;
-#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
-            voice->GetState( &xstate, XAUDIO2_VOICE_NOSAMPLESPLAYED );
-#else
-            voice->GetState( &xstate );
-#endif
-            return static_cast<int>( xstate.BuffersQueued );
+        #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
+            voice->GetState(&xstate, XAUDIO2_VOICE_NOSAMPLESPLAYED);
+        #else
+            voice->GetState(&xstate);
+        #endif
+            return static_cast<int>(xstate.BuffersQueued);
         }
 
         void OnCriticalError()
         {
-            if ( voice )
+            if (voice)
             {
                 voice->DestroyVoice();
                 voice = nullptr;
@@ -299,23 +299,23 @@ namespace DirectX
 
         void OnReset()
         {
-            assert( engine != 0 );
+            assert(engine != 0);
             mDirectVoice = engine->GetMasterVoice();
             mReverbVoice = engine->GetReverbVoice();
 
-            if ( engine->GetChannelMask() & SPEAKER_LOW_FREQUENCY )
+            if (engine->GetChannelMask() & SPEAKER_LOW_FREQUENCY)
                 mFlags = mFlags | SoundEffectInstance_UseRedirectLFE;
             else
-                mFlags = static_cast<SOUND_EFFECT_INSTANCE_FLAGS>( static_cast<int>(mFlags) & ~SoundEffectInstance_UseRedirectLFE );
+                mFlags = static_cast<SOUND_EFFECT_INSTANCE_FLAGS>(static_cast<int>(mFlags) & ~SoundEffectInstance_UseRedirectLFE);
 
             mDSPSettings.DstChannelCount = engine->GetOutputChannels();
         }
 
         void OnDestroy()
         {
-            if ( voice )
+            if (voice)
             {
-                (void)voice->Stop( 0 );
+                (void)voice->Stop(0);
                 (void)voice->FlushSourceBuffers();
                 voice->DestroyVoice();
                 voice = nullptr;
@@ -328,24 +328,24 @@ namespace DirectX
 
         void OnTrim()
         {
-            if ( voice && ( state == STOPPED ) )
+            if (voice && (state == STOPPED))
             {
-                engine->DestroyVoice( voice );
+                engine->DestroyVoice(voice);
                 voice = nullptr;
             }
         }
 
-        void GatherStatistics( AudioStatistics& stats ) const
+        void GatherStatistics(AudioStatistics& stats) const
         {
             ++stats.allocatedInstances;
-            if ( voice )
+            if (voice)
             {
                 ++stats.allocatedVoices;
 
-                if ( mFlags & SoundEffectInstance_Use3D )
+                if (mFlags & SoundEffectInstance_Use3D)
                     ++stats.allocatedVoices3d;
 
-                if ( state == PLAYING )
+                if (state == PLAYING)
                     ++stats.playingInstances;
             }
         }
@@ -363,5 +363,5 @@ namespace DirectX
         IXAudio2Voice*              mDirectVoice;
         IXAudio2Voice*              mReverbVoice;
         X3DAUDIO_DSP_SETTINGS       mDSPSettings;
-   };
+    };
 }

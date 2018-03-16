@@ -34,7 +34,7 @@ const D3D11_INPUT_ELEMENT_DESC VertexPositionColor::InputElements[] =
     { "COLOR",       0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 };
 
-static_assert( sizeof(VertexPositionColor) == 28, "Vertex struct/layout mismatch" );
+static_assert(sizeof(VertexPositionColor) == 28, "Vertex struct/layout mismatch");
 
 
 //--------------------------------------------------------------------------------------
@@ -45,7 +45,7 @@ const D3D11_INPUT_ELEMENT_DESC VertexPositionTexture::InputElements[] =
     { "TEXCOORD",    0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 };
 
-static_assert( sizeof(VertexPositionTexture) == 20, "Vertex struct/layout mismatch" );
+static_assert(sizeof(VertexPositionTexture) == 20, "Vertex struct/layout mismatch");
 
 
 //--------------------------------------------------------------------------------------
@@ -68,9 +68,9 @@ const D3D11_INPUT_ELEMENT_DESC VertexPositionNormal::InputElements[] =
     { "NORMAL",      0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 };
 
-static_assert( sizeof(VertexPositionNormal) == 24, "Vertex struct/layout mismatch" );
+static_assert(sizeof(VertexPositionNormal) == 24, "Vertex struct/layout mismatch");
 
-        
+
 //--------------------------------------------------------------------------------------
 // Vertex struct holding position, color, and texture mapping information.
 const D3D11_INPUT_ELEMENT_DESC VertexPositionColorTexture::InputElements[] =
@@ -80,7 +80,7 @@ const D3D11_INPUT_ELEMENT_DESC VertexPositionColorTexture::InputElements[] =
     { "TEXCOORD",    0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 };
 
-static_assert( sizeof(VertexPositionColorTexture) == 36, "Vertex struct/layout mismatch" );
+static_assert(sizeof(VertexPositionColorTexture) == 36, "Vertex struct/layout mismatch");
 
 
 //--------------------------------------------------------------------------------------
@@ -92,7 +92,7 @@ const D3D11_INPUT_ELEMENT_DESC VertexPositionNormalColor::InputElements[] =
     { "COLOR",       0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 };
 
-static_assert( sizeof(VertexPositionNormalColor) == 40, "Vertex struct/layout mismatch" );
+static_assert(sizeof(VertexPositionNormalColor) == 40, "Vertex struct/layout mismatch");
 
 
 //--------------------------------------------------------------------------------------
@@ -104,7 +104,7 @@ const D3D11_INPUT_ELEMENT_DESC VertexPositionNormalTexture::InputElements[] =
     { "TEXCOORD",    0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 };
 
-static_assert( sizeof(VertexPositionNormalTexture) == 32, "Vertex struct/layout mismatch" );
+static_assert(sizeof(VertexPositionNormalTexture) == 32, "Vertex struct/layout mismatch");
 
 
 //--------------------------------------------------------------------------------------
@@ -117,7 +117,7 @@ const D3D11_INPUT_ELEMENT_DESC VertexPositionNormalColorTexture::InputElements[]
     { "TEXCOORD",    0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 };
 
-static_assert( sizeof(VertexPositionNormalColorTexture) == 48, "Vertex struct/layout mismatch" );
+static_assert(sizeof(VertexPositionNormalColorTexture) == 48, "Vertex struct/layout mismatch");
 
 
 //--------------------------------------------------------------------------------------
@@ -132,12 +132,12 @@ const D3D11_INPUT_ELEMENT_DESC VertexPositionNormalTangentColorTexture::InputEle
     { "TEXCOORD",    0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 };
 
-static_assert( sizeof(VertexPositionNormalTangentColorTexture) == 52, "Vertex struct/layout mismatch" );
+static_assert(sizeof(VertexPositionNormalTangentColorTexture) == 52, "Vertex struct/layout mismatch");
 
-void XM_CALLCONV VertexPositionNormalTangentColorTexture::SetColor( FXMVECTOR icolor )
+void XM_CALLCONV VertexPositionNormalTangentColorTexture::SetColor(FXMVECTOR icolor)
 {
     XMUBYTEN4 rgba;
-    XMStoreUByteN4( &rgba, icolor );
+    XMStoreUByteN4(&rgba, icolor);
     this->color = rgba.v;
 }
 
@@ -156,18 +156,18 @@ const D3D11_INPUT_ELEMENT_DESC VertexPositionNormalTangentColorTextureSkinning::
     { "BLENDWEIGHT", 0, DXGI_FORMAT_R8G8B8A8_UNORM,     0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 };
 
-static_assert( VertexPositionNormalTangentColorTextureSkinning::InputElementCount == VertexPositionNormalTangentColorTexture::InputElementCount + 2, "layout mismatch");
+static_assert(VertexPositionNormalTangentColorTextureSkinning::InputElementCount == VertexPositionNormalTangentColorTexture::InputElementCount + 2, "layout mismatch");
 
-static_assert( sizeof(VertexPositionNormalTangentColorTextureSkinning) == 60, "Vertex struct/layout mismatch" );
+static_assert(sizeof(VertexPositionNormalTangentColorTextureSkinning) == 60, "Vertex struct/layout mismatch");
 
-void VertexPositionNormalTangentColorTextureSkinning::SetBlendIndices( XMUINT4 const& iindices )
+void VertexPositionNormalTangentColorTextureSkinning::SetBlendIndices(XMUINT4 const& iindices)
 {
-    this->indices = ( (iindices.w & 0xff) << 24 ) | ( (iindices.z & 0xff) << 16 ) | ( (iindices.y & 0xff) << 8 ) | ( iindices.x & 0xff );
+    this->indices = ((iindices.w & 0xff) << 24) | ((iindices.z & 0xff) << 16) | ((iindices.y & 0xff) << 8) | (iindices.x & 0xff);
 }
 
-void XM_CALLCONV VertexPositionNormalTangentColorTextureSkinning::SetBlendWeights( FXMVECTOR iweights )
+void XM_CALLCONV VertexPositionNormalTangentColorTextureSkinning::SetBlendWeights(FXMVECTOR iweights)
 {
     XMUBYTEN4 packed;
-    XMStoreUByteN4( &packed, iweights );
+    XMStoreUByteN4(&packed, iweights);
     this->weights = packed.v;
 }

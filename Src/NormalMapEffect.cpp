@@ -34,7 +34,7 @@ struct NormalMapEffectConstants
     XMMATRIX worldViewProj;
 };
 
-static_assert( ( sizeof(NormalMapEffectConstants) % 16 ) == 0, "CB size not padded correctly" );
+static_assert((sizeof(NormalMapEffectConstants) % 16) == 0, "CB size not padded correctly");
 
 
 // Traits type describes our characteristics to the EffectBase template.
@@ -175,7 +175,7 @@ SharedResourcePool<ID3D11Device*, EffectBase<NormalMapEffectTraits>::DeviceResou
 
 // Constructor.
 NormalMapEffect::Impl::Impl(_In_ ID3D11Device* device)
-  : EffectBase(device),
+    : EffectBase(device),
     vertexColorEnabled(false),
     biasedVertexNormals(false)
 {
@@ -184,10 +184,10 @@ NormalMapEffect::Impl::Impl(_In_ ID3D11Device* device)
         throw std::exception("NormalMapEffect requires Feature Level 10.0 or later");
     }
 
-    static_assert( _countof(EffectBase<NormalMapEffectTraits>::VertexShaderIndices) == NormalMapEffectTraits::ShaderPermutationCount, "array/max mismatch" );
-    static_assert( _countof(EffectBase<NormalMapEffectTraits>::VertexShaderBytecode) == NormalMapEffectTraits::VertexShaderCount, "array/max mismatch" );
-    static_assert( _countof(EffectBase<NormalMapEffectTraits>::PixelShaderBytecode) == NormalMapEffectTraits::PixelShaderCount, "array/max mismatch" );
-    static_assert( _countof(EffectBase<NormalMapEffectTraits>::PixelShaderIndices) == NormalMapEffectTraits::ShaderPermutationCount, "array/max mismatch" );
+    static_assert(_countof(EffectBase<NormalMapEffectTraits>::VertexShaderIndices) == NormalMapEffectTraits::ShaderPermutationCount, "array/max mismatch");
+    static_assert(_countof(EffectBase<NormalMapEffectTraits>::VertexShaderBytecode) == NormalMapEffectTraits::VertexShaderCount, "array/max mismatch");
+    static_assert(_countof(EffectBase<NormalMapEffectTraits>::PixelShaderBytecode) == NormalMapEffectTraits::PixelShaderCount, "array/max mismatch");
+    static_assert(_countof(EffectBase<NormalMapEffectTraits>::PixelShaderIndices) == NormalMapEffectTraits::ShaderPermutationCount, "array/max mismatch");
 
     lights.InitializeConstants(constants.specularColorAndPower, constants.lightDirection, constants.lightDiffuseColor, constants.lightSpecularColor);
 }

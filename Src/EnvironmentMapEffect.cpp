@@ -38,7 +38,7 @@ struct EnvironmentMapEffectConstants
     XMMATRIX worldViewProj;
 };
 
-static_assert( ( sizeof(EnvironmentMapEffectConstants) % 16 ) == 0, "CB size not padded correctly" );
+static_assert((sizeof(EnvironmentMapEffectConstants) % 16) == 0, "CB size not padded correctly");
 
 
 // Traits type describes our characteristics to the EffectBase template.
@@ -261,16 +261,16 @@ SharedResourcePool<ID3D11Device*, EffectBase<EnvironmentMapEffectTraits>::Device
 
 // Constructor.
 EnvironmentMapEffect::Impl::Impl(_In_ ID3D11Device* device)
-  : EffectBase(device),
+    : EffectBase(device),
     preferPerPixelLighting(false),
     fresnelEnabled(true),
     specularEnabled(false),
     biasedVertexNormals(false)
 {
-    static_assert( _countof(EffectBase<EnvironmentMapEffectTraits>::VertexShaderIndices) == EnvironmentMapEffectTraits::ShaderPermutationCount, "array/max mismatch" );
-    static_assert( _countof(EffectBase<EnvironmentMapEffectTraits>::VertexShaderBytecode) == EnvironmentMapEffectTraits::VertexShaderCount, "array/max mismatch" );
-    static_assert( _countof(EffectBase<EnvironmentMapEffectTraits>::PixelShaderBytecode) == EnvironmentMapEffectTraits::PixelShaderCount, "array/max mismatch" );
-    static_assert( _countof(EffectBase<EnvironmentMapEffectTraits>::PixelShaderIndices) == EnvironmentMapEffectTraits::ShaderPermutationCount, "array/max mismatch" );
+    static_assert(_countof(EffectBase<EnvironmentMapEffectTraits>::VertexShaderIndices) == EnvironmentMapEffectTraits::ShaderPermutationCount, "array/max mismatch");
+    static_assert(_countof(EffectBase<EnvironmentMapEffectTraits>::VertexShaderBytecode) == EnvironmentMapEffectTraits::VertexShaderCount, "array/max mismatch");
+    static_assert(_countof(EffectBase<EnvironmentMapEffectTraits>::PixelShaderBytecode) == EnvironmentMapEffectTraits::PixelShaderCount, "array/max mismatch");
+    static_assert(_countof(EffectBase<EnvironmentMapEffectTraits>::PixelShaderIndices) == EnvironmentMapEffectTraits::ShaderPermutationCount, "array/max mismatch");
 
     constants.environmentMapAmount = 1;
     constants.fresnelFactor = 1;

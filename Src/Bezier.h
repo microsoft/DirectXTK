@@ -28,9 +28,9 @@ namespace Bezier
         using DirectX::operator+;
 
         return p1 * (1 - t) * (1 - t) * (1 - t) +
-               p2 * 3 * t * (1 - t) * (1 - t) +
-               p3 * 3 * t * t * (1 - t) +
-               p4 * t * t * t;
+            p2 * 3 * t * (1 - t) * (1 - t) +
+            p3 * 3 * t * t * (1 - t) +
+            p4 * t * t * t;
     }
 
 
@@ -43,9 +43,9 @@ namespace Bezier
         using DirectX::operator+;
 
         return p1 * (-1 + 2 * t - t * t) +
-               p2 * (1 - 4 * t + 3 * t * t) +
-               p3 * (2 * t - 3 * t * t) +
-               p4 * (t * t);
+            p2 * (1 - 4 * t + 3 * t * t) +
+            p3 * (2 * t - 3 * t * t) +
+            p4 * (t * t);
     }
 
 
@@ -67,9 +67,9 @@ namespace Bezier
 
                 // Perform four horizontal bezier interpolations
                 // between the control points of this patch.
-                XMVECTOR p1 = CubicInterpolate(patch[0],  patch[1],  patch[2],  patch[3],  u);
-                XMVECTOR p2 = CubicInterpolate(patch[4],  patch[5],  patch[6],  patch[7],  u);
-                XMVECTOR p3 = CubicInterpolate(patch[8],  patch[9],  patch[10], patch[11], u);
+                XMVECTOR p1 = CubicInterpolate(patch[0], patch[1], patch[2], patch[3], u);
+                XMVECTOR p2 = CubicInterpolate(patch[4], patch[5], patch[6], patch[7], u);
+                XMVECTOR p3 = CubicInterpolate(patch[8], patch[9], patch[10], patch[11], u);
                 XMVECTOR p4 = CubicInterpolate(patch[12], patch[13], patch[14], patch[15], u);
 
                 // Perform a vertical interpolation between the results of the
@@ -78,8 +78,8 @@ namespace Bezier
 
                 // Perform another four bezier interpolations between the control
                 // points, but this time vertically rather than horizontally.
-                XMVECTOR q1 = CubicInterpolate(patch[0], patch[4], patch[8],  patch[12], v);
-                XMVECTOR q2 = CubicInterpolate(patch[1], patch[5], patch[9],  patch[13], v);
+                XMVECTOR q1 = CubicInterpolate(patch[0], patch[4], patch[8], patch[12], v);
+                XMVECTOR q2 = CubicInterpolate(patch[1], patch[5], patch[9], patch[13], v);
                 XMVECTOR q3 = CubicInterpolate(patch[2], patch[6], patch[10], patch[14], v);
                 XMVECTOR q4 = CubicInterpolate(patch[3], patch[7], patch[11], patch[15], v);
 
@@ -128,7 +128,7 @@ namespace Bezier
         }
     }
 
-    
+
     // Creates indices for a patch that is tessellated at the specified level.
     // Calls the specified outputIndex function for each generated index value.
     template<typename TOutputFunc>

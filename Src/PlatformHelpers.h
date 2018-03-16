@@ -46,19 +46,19 @@ namespace DirectX
 
 
     // Helper for output debug tracing
-    inline void DebugTrace( _In_z_ _Printf_format_string_ const char* format, ... )
+    inline void DebugTrace(_In_z_ _Printf_format_string_ const char* format, ...)
     {
-#ifdef _DEBUG
+    #ifdef _DEBUG
         va_list args;
-        va_start( args, format );
+        va_start(args, format);
 
         char buff[1024] = {};
-        vsprintf_s( buff, format, args );
-        OutputDebugStringA( buff );
-        va_end( args );
-#else
-        UNREFERENCED_PARAMETER( format );
-#endif
+        vsprintf_s(buff, format, args);
+        OutputDebugStringA(buff);
+        va_end(args);
+    #else
+        UNREFERENCED_PARAMETER(format);
+    #endif
     }
 
 
@@ -73,7 +73,7 @@ namespace DirectX
 
     typedef std::unique_ptr<void, handle_closer> ScopedHandle;
 
-    inline HANDLE safe_handle( HANDLE h ) { return (h == INVALID_HANDLE_VALUE) ? 0 : h; }
+    inline HANDLE safe_handle(HANDLE h) { return (h == INVALID_HANDLE_VALUE) ? 0 : h; }
 }
 
 

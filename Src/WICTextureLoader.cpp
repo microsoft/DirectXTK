@@ -158,43 +158,43 @@ namespace DirectX
 
         IWICImagingFactory* factory = nullptr;
         InitOnceExecuteOnce(&s_initOnce,
-            [](PINIT_ONCE, PVOID, PVOID *factory) -> BOOL
-            {
-            #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
-                HRESULT hr = CoCreateInstance(
-                    CLSID_WICImagingFactory2,
-                    nullptr,
-                    CLSCTX_INPROC_SERVER,
-                    __uuidof(IWICImagingFactory2),
-                    factory
-                    );
+                            [](PINIT_ONCE, PVOID, PVOID *factory) -> BOOL
+        {
+        #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
+            HRESULT hr = CoCreateInstance(
+                CLSID_WICImagingFactory2,
+                nullptr,
+                CLSCTX_INPROC_SERVER,
+                __uuidof(IWICImagingFactory2),
+                factory
+            );
 
-                if ( SUCCEEDED(hr) )
-                {
-                    // WIC2 is available on Windows 10, Windows 8.x, and Windows 7 SP1 with KB 2670838 installed
-                    g_WIC2 = true;
-                    return TRUE;
-                }
-                else
-                {
-                    hr = CoCreateInstance(
-                        CLSID_WICImagingFactory1,
-                        nullptr,
-                        CLSCTX_INPROC_SERVER,
-                        __uuidof(IWICImagingFactory),
-                        factory
-                        );
-                    return SUCCEEDED(hr) ? TRUE : FALSE;
-                }
-            #else
-                return SUCCEEDED( CoCreateInstance(
-                    CLSID_WICImagingFactory,
+            if (SUCCEEDED(hr))
+            {
+                // WIC2 is available on Windows 10, Windows 8.x, and Windows 7 SP1 with KB 2670838 installed
+                g_WIC2 = true;
+                return TRUE;
+            }
+            else
+            {
+                hr = CoCreateInstance(
+                    CLSID_WICImagingFactory1,
                     nullptr,
                     CLSCTX_INPROC_SERVER,
                     __uuidof(IWICImagingFactory),
-                    factory) ) ? TRUE : FALSE;
-            #endif
-            }, nullptr, reinterpret_cast<LPVOID*>(&factory));
+                    factory
+                );
+                return SUCCEEDED(hr) ? TRUE : FALSE;
+            }
+        #else
+            return SUCCEEDED(CoCreateInstance(
+                CLSID_WICImagingFactory,
+                nullptr,
+                CLSCTX_INPROC_SERVER,
+                __uuidof(IWICImagingFactory),
+                factory)) ? TRUE : FALSE;
+        #endif
+        }, nullptr, reinterpret_cast<LPVOID*>(&factory));
 
         return factory;
     }
@@ -690,7 +690,7 @@ HRESULT DirectX::CreateWICTextureFromMemory(ID3D11Device* d3dDevice,
 
 _Use_decl_annotations_
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    HRESULT DirectX::CreateWICTextureFromMemory( ID3D11DeviceX* d3dDevice,
+    HRESULT DirectX::CreateWICTextureFromMemory(ID3D11DeviceX* d3dDevice,
         ID3D11DeviceContextX* d3dContext,
 #else
     HRESULT DirectX::CreateWICTextureFromMemory(ID3D11Device* d3dDevice,
@@ -788,7 +788,7 @@ HRESULT DirectX::CreateWICTextureFromMemoryEx(ID3D11Device* d3dDevice,
 
 _Use_decl_annotations_
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    HRESULT DirectX::CreateWICTextureFromMemoryEx( ID3D11DeviceX* d3dDevice,
+    HRESULT DirectX::CreateWICTextureFromMemoryEx(ID3D11DeviceX* d3dDevice,
             ID3D11DeviceContextX* d3dContext,
 #else
     HRESULT DirectX::CreateWICTextureFromMemoryEx(ID3D11Device* d3dDevice,
@@ -873,20 +873,20 @@ _Use_decl_annotations_
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_
-HRESULT DirectX::CreateWICTextureFromFile( ID3D11Device* d3dDevice,
-                                           const wchar_t* fileName,
-                                           ID3D11Resource** texture,
-                                           ID3D11ShaderResourceView** textureView,
-                                           size_t maxsize )
+HRESULT DirectX::CreateWICTextureFromFile(ID3D11Device* d3dDevice,
+                                          const wchar_t* fileName,
+                                          ID3D11Resource** texture,
+                                          ID3D11ShaderResourceView** textureView,
+                                          size_t maxsize)
 {
-    return CreateWICTextureFromFileEx( d3dDevice, fileName, maxsize,
-                                       D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0, WIC_LOADER_DEFAULT,
-                                       texture, textureView );
+    return CreateWICTextureFromFileEx(d3dDevice, fileName, maxsize,
+                                      D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0, WIC_LOADER_DEFAULT,
+                                      texture, textureView);
 }
 
 _Use_decl_annotations_
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    HRESULT DirectX::CreateWICTextureFromFile( ID3D11DeviceX* d3dDevice,
+    HRESULT DirectX::CreateWICTextureFromFile(ID3D11DeviceX* d3dDevice,
         ID3D11DeviceContextX* d3dContext,
 #else
     HRESULT DirectX::CreateWICTextureFromFile(ID3D11Device* d3dDevice,
@@ -949,7 +949,7 @@ HRESULT DirectX::CreateWICTextureFromFileEx(ID3D11Device* d3dDevice,
         usage, bindFlags, cpuAccessFlags, miscFlags, loadFlags,
         texture, textureView);
 
-#if !defined(NO_D3D11_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
+#if !defined(NO_D3D11_DEBUG_NAME) && (defined(_DEBUG) || defined(PROFILE))
     if (SUCCEEDED(hr))
     {
         if (texture != 0 || textureView != 0)
@@ -1021,7 +1021,7 @@ HRESULT DirectX::CreateWICTextureFromFileEx(ID3D11Device* d3dDevice,
 
 _Use_decl_annotations_
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    HRESULT DirectX::CreateWICTextureFromFileEx( ID3D11DeviceX* d3dDevice,
+    HRESULT DirectX::CreateWICTextureFromFileEx(ID3D11DeviceX* d3dDevice,
         ID3D11DeviceContextX* d3dContext,
 #else
     HRESULT DirectX::CreateWICTextureFromFileEx(ID3D11Device* d3dDevice,
@@ -1072,7 +1072,7 @@ _Use_decl_annotations_
         usage, bindFlags, cpuAccessFlags, miscFlags, loadFlags,
         texture, textureView);
 
-#if !defined(NO_D3D11_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
+#if !defined(NO_D3D11_DEBUG_NAME) && (defined(_DEBUG) || defined(PROFILE))
     if (SUCCEEDED(hr))
     {
         if (texture != 0 || textureView != 0)

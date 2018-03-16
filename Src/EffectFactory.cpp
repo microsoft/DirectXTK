@@ -24,19 +24,19 @@ class EffectFactory::Impl
 {
 public:
     Impl(_In_ ID3D11Device* device)
-      : mPath{},
+        : mPath{},
         mDevice(device),
         mSharing(true),
         mUseNormalMapEffect(true),
         mForceSRGB(false)
     {}
 
-    std::shared_ptr<IEffect> CreateEffect( _In_ IEffectFactory* factory, _In_ const IEffectFactory::EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext );
-    void CreateTexture( _In_z_ const wchar_t* texture, _In_opt_ ID3D11DeviceContext* deviceContext, _Outptr_ ID3D11ShaderResourceView** textureView );
+    std::shared_ptr<IEffect> CreateEffect(_In_ IEffectFactory* factory, _In_ const IEffectFactory::EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext);
+    void CreateTexture(_In_z_ const wchar_t* texture, _In_opt_ ID3D11DeviceContext* deviceContext, _Outptr_ ID3D11ShaderResourceView** textureView);
 
     void ReleaseCache();
-    void SetSharing( bool enabled ) { mSharing = enabled; }
-    void EnableNormalMapEffect( bool enabled ) { mUseNormalMapEffect = enabled; }
+    void SetSharing(bool enabled) { mSharing = enabled; }
+    void EnableNormalMapEffect(bool enabled) { mUseNormalMapEffect = enabled; }
     void EnableForceSRGB(bool forceSRGB) { mForceSRGB = forceSRGB; }
 
     static SharedResourcePool<ID3D11Device*, Impl> instancePool;
@@ -391,7 +391,7 @@ void EffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext
                 throw std::exception("CreateDDSTextureFromFile");
             }
         }
-#if !defined(_XBOX_ONE) || !defined(_TITLE)
+    #if !defined(_XBOX_ONE) || !defined(_TITLE)
         else if (deviceContext)
         {
             std::lock_guard<std::mutex> lock(mutex);
@@ -405,7 +405,7 @@ void EffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext
                 throw std::exception("CreateWICTextureFromFile");
             }
         }
-#endif
+    #endif
         else
         {
             HRESULT hr = CreateWICTextureFromFileEx(
@@ -488,12 +488,12 @@ void EffectFactory::SetSharing(bool enabled)
 
 void EffectFactory::EnableNormalMapEffect(bool enabled)
 {
-    pImpl->EnableNormalMapEffect( enabled );
+    pImpl->EnableNormalMapEffect(enabled);
 }
 
 void EffectFactory::EnableForceSRGB(bool forceSRGB)
 {
-    pImpl->EnableForceSRGB( forceSRGB );
+    pImpl->EnableForceSRGB(forceSRGB);
 }
 
 void EffectFactory::SetDirectory(_In_opt_z_ const wchar_t* path)
