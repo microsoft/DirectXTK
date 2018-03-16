@@ -25,7 +25,7 @@ class EffectFactory::Impl
 public:
     Impl(_In_ ID3D11Device* device)
       : mPath{},
-        device(device),
+        mDevice(device),
         mSharing(true),
         mUseNormalMapEffect(true),
         mForceSRGB(false)
@@ -43,9 +43,9 @@ public:
 
     wchar_t mPath[MAX_PATH];
 
-private:
-    ComPtr<ID3D11Device> device;
+    ComPtr<ID3D11Device> mDevice;
 
+private:
     typedef std::map< std::wstring, std::shared_ptr<IEffect> > EffectCache;
     typedef std::map< std::wstring, ComPtr<ID3D11ShaderResourceView> > TextureCache;
 
@@ -82,7 +82,7 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
             }
         }
 
-        auto effect = std::make_shared<SkinnedEffect>(device.Get());
+        auto effect = std::make_shared<SkinnedEffect>(mDevice.Get());
 
         effect->EnableDefaultLighting();
 
@@ -144,7 +144,7 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
             }
         }
 
-        auto effect = std::make_shared<DualTextureEffect>(device.Get());
+        auto effect = std::make_shared<DualTextureEffect>(mDevice.Get());
 
         // Dual texture effect doesn't support lighting (usually it's lightmaps)
 
@@ -196,7 +196,7 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
             }
         }
 
-        auto effect = std::make_shared<NormalMapEffect>(device.Get());
+        auto effect = std::make_shared<NormalMapEffect>(mDevice.Get());
 
         effect->EnableDefaultLighting();
 
@@ -281,7 +281,7 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
             }
         }
 
-        auto effect = std::make_shared<BasicEffect>(device.Get());
+        auto effect = std::make_shared<BasicEffect>(mDevice.Get());
 
         effect->EnableDefaultLighting();
         effect->SetLightingEnabled(true);
@@ -382,7 +382,7 @@ void EffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext
         if (_wcsicmp(ext, L".dds") == 0)
         {
             HRESULT hr = CreateDDSTextureFromFileEx(
-                device.Get(), fullName, 0,
+                mDevice.Get(), fullName, 0,
                 D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
                 mForceSRGB, nullptr, textureView);
             if (FAILED(hr))
@@ -396,7 +396,7 @@ void EffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext
         {
             std::lock_guard<std::mutex> lock(mutex);
             HRESULT hr = CreateWICTextureFromFileEx(
-                device.Get(), deviceContext, fullName, 0,
+                mDevice.Get(), deviceContext, fullName, 0,
                 D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
                 mForceSRGB ? WIC_LOADER_FORCE_SRGB : WIC_LOADER_DEFAULT, nullptr, textureView);
             if (FAILED(hr))
@@ -409,7 +409,7 @@ void EffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext
         else
         {
             HRESULT hr = CreateWICTextureFromFileEx(
-                device.Get(), fullName, 0,
+                mDevice.Get(), fullName, 0,
                 D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
                 mForceSRGB ? WIC_LOADER_FORCE_SRGB : WIC_LOADER_DEFAULT, nullptr, textureView);
             if (FAILED(hr))
@@ -514,4 +514,9 @@ void EffectFactory::SetDirectory(_In_opt_z_ const wchar_t* path)
     }
     else
         *pImpl->mPath = 0;
+}
+
+ID3D11Device* EffectFactory::GetDevice() const
+{
+    return pImpl->mDevice.Get();
 }

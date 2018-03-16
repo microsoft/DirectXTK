@@ -33,7 +33,7 @@ class DGSLEffectFactory::Impl
 public:
     Impl(_In_ ID3D11Device* device)
       : mPath{},
-        device(device),
+        mDevice(device),
         mSharing(true),
         mForceSRGB(false)
     {}
@@ -51,9 +51,9 @@ public:
 
     wchar_t mPath[MAX_PATH];
 
-private:
-    ComPtr<ID3D11Device> device;
+    ComPtr<ID3D11Device> mDevice;
 
+private:
     typedef std::map< std::wstring, std::shared_ptr<IEffect> > EffectCache;
     typedef std::map< std::wstring, ComPtr<ID3D11ShaderResourceView> > TextureCache;
     typedef std::map< std::wstring, ComPtr<ID3D11PixelShader> > ShaderCache;
@@ -102,7 +102,7 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateEffect( DGSLEffectFactor
         }
     }
 
-    auto effect = std::make_shared<DGSLEffect>( device.Get(), nullptr, info.enableSkinning );
+    auto effect = std::make_shared<DGSLEffect>(mDevice.Get(), nullptr, info.enableSkinning);
 
     effect->EnableDefaultLighting();
     effect->SetLightingEnabled(true);
@@ -190,7 +190,7 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateDGSLEffect( DGSLEffectFa
 
     if ( !info.pixelShader || !*info.pixelShader )
     {
-        effect = std::make_shared<DGSLEffect>( device.Get(), nullptr, info.enableSkinning );
+        effect = std::make_shared<DGSLEffect>(mDevice.Get(), nullptr, info.enableSkinning);
     }
     else
     {
@@ -212,18 +212,18 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateDGSLEffect( DGSLEffectFa
         if ( !_wcsicmp( root, L"lambert" ) )
         {
             allowSpecular = false;
-            effect = std::make_shared<DGSLEffect>( device.Get(), nullptr, info.enableSkinning );
+            effect = std::make_shared<DGSLEffect>(mDevice.Get(), nullptr, info.enableSkinning);
         }
         else if ( !_wcsicmp( root, L"phong" ) )
         {
-            effect = std::make_shared<DGSLEffect>( device.Get(), nullptr, info.enableSkinning );
+            effect = std::make_shared<DGSLEffect>(mDevice.Get(), nullptr, info.enableSkinning);
         }
         else if ( !_wcsicmp( root, L"unlit" ) )
         {
             lighting = false;
-            effect = std::make_shared<DGSLEffect>( device.Get(), nullptr, info.enableSkinning );
+            effect = std::make_shared<DGSLEffect>(mDevice.Get(), nullptr, info.enableSkinning);
         }
-        else if ( device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0 )
+        else if (mDevice->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
         {
             // DGSL shaders are not compatible with Feature Level 9.x, use fallback shader
             wcscat_s( root, L".cso" );
@@ -231,7 +231,7 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateDGSLEffect( DGSLEffectFa
             ComPtr<ID3D11PixelShader> ps;
             factory->CreatePixelShader( root, ps.GetAddressOf() );
 
-            effect = std::make_shared<DGSLEffect>( device.Get(), ps.Get(), info.enableSkinning );
+            effect = std::make_shared<DGSLEffect>(mDevice.Get(), ps.Get(), info.enableSkinning);
         }
         else
         {
@@ -239,7 +239,7 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateDGSLEffect( DGSLEffectFa
             ComPtr<ID3D11PixelShader> ps;
             factory->CreatePixelShader( info.pixelShader, ps.GetAddressOf() );
 
-            effect = std::make_shared<DGSLEffect>( device.Get(), ps.Get(), info.enableSkinning );
+            effect = std::make_shared<DGSLEffect>(mDevice.Get(), ps.Get(), info.enableSkinning);
         }
     }
 
@@ -383,7 +383,7 @@ void DGSLEffectFactory::Impl::CreateTexture( const wchar_t* name, ID3D11DeviceCo
         if ( _wcsicmp( ext, L".dds" ) == 0 )
         {
             HRESULT hr = CreateDDSTextureFromFileEx(
-                device.Get(), fullName, 0,
+                mDevice.Get(), fullName, 0,
                 D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
                 mForceSRGB, nullptr, textureView);
             if ( FAILED(hr) )
@@ -397,7 +397,7 @@ void DGSLEffectFactory::Impl::CreateTexture( const wchar_t* name, ID3D11DeviceCo
         {
             std::lock_guard<std::mutex> lock(mutex);
             HRESULT hr = CreateWICTextureFromFileEx(
-                device.Get(), deviceContext, fullName, 0,
+                mDevice.Get(), deviceContext, fullName, 0,
                 D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
                 mForceSRGB ? WIC_LOADER_FORCE_SRGB : WIC_LOADER_DEFAULT, nullptr, textureView );
             if ( FAILED(hr) )
@@ -410,7 +410,7 @@ void DGSLEffectFactory::Impl::CreateTexture( const wchar_t* name, ID3D11DeviceCo
         else
         {
             HRESULT hr = CreateWICTextureFromFileEx(
-                device.Get(), fullName, 0,
+                mDevice.Get(), fullName, 0,
                 D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
                 mForceSRGB ? WIC_LOADER_FORCE_SRGB : WIC_LOADER_DEFAULT, nullptr, textureView );
             if ( FAILED(hr) )
@@ -471,7 +471,7 @@ void DGSLEffectFactory::Impl::CreatePixelShader( const wchar_t* name, ID3D11Pixe
         }
        
         ThrowIfFailed(
-            device->CreatePixelShader( data.get(), dataSize, nullptr, pixelShader ) );
+            mDevice->CreatePixelShader(data.get(), dataSize, nullptr, pixelShader));
 
         _Analysis_assume_(*pixelShader != 0);
 
@@ -584,4 +584,9 @@ void DGSLEffectFactory::SetDirectory( _In_opt_z_ const wchar_t* path )
     }
     else
         *pImpl->mPath = 0;
+}
+
+ID3D11Device* DGSLEffectFactory::GetDevice() const
+{
+    return pImpl->mDevice.Get();
 }

@@ -749,6 +749,9 @@ namespace DirectX
 
         void __cdecl SetDirectory( _In_opt_z_ const wchar_t* path );
 
+        // Properties.
+        ID3D11Device* GetDevice() const;
+
     private:
         // Private implementation.
         class Impl;
@@ -797,6 +800,9 @@ namespace DirectX
         void __cdecl EnableForceSRGB( bool forceSRGB );
 
         void __cdecl SetDirectory( _In_opt_z_ const wchar_t* path );
+
+        // Properties.
+        ID3D11Device* GetDevice() const;
 
     private:
         // Private implementation.
