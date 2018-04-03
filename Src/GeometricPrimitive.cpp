@@ -76,6 +76,8 @@ namespace
 class GeometricPrimitive::Impl
 {
 public:
+    Impl() DIRECTX_NOEXCEPT : mIndexCount(0) {}
+
     void Initialize(_In_ ID3D11DeviceContext* deviceContext, const VertexCollection& vertices, const IndexCollection& indices);
 
     void XM_CALLCONV Draw(FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection, FXMVECTOR color, _In_opt_ ID3D11ShaderResourceView* texture, bool wireframe, std::function<void()>& setCustomState) const;

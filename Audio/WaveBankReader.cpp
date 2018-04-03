@@ -379,7 +379,7 @@ namespace
 
                 default:
                     return uint32_t((uint64_t(length) * 8)
-                                    / uint64_t(data.CompactFormat.BitsPerSample() * data.CompactFormat.nChannels));
+                                    / (uint64_t(data.CompactFormat.BitsPerSample()) * uint64_t(data.CompactFormat.nChannels)));
             }
         }
     };
@@ -426,7 +426,7 @@ using namespace DirectX;
 class WaveBankReader::Impl
 {
 public:
-    Impl() :
+    Impl() DIRECTX_NOEXCEPT :
         m_async(INVALID_HANDLE_VALUE),
         m_prepared(false)
     #if defined(_XBOX_ONE) && defined(_TITLE)

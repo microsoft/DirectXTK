@@ -16,6 +16,14 @@
 namespace ABI { namespace Windows { namespace UI { namespace Core { struct ICoreWindow; } } } }
 #endif
 
+#ifndef DIRECTX_NOEXCEPT
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+#define DIRECTX_NOEXCEPT
+#else
+#define DIRECTX_NOEXCEPT noexcept
+#endif
+#endif
+
 
 namespace DirectX
 {
@@ -23,8 +31,8 @@ namespace DirectX
     {
     public:
         Mouse();
-        Mouse(Mouse&& moveFrom);
-        Mouse& operator= (Mouse&& moveFrom);
+        Mouse(Mouse&& moveFrom) DIRECTX_NOEXCEPT;
+        Mouse& operator= (Mouse&& moveFrom) DIRECTX_NOEXCEPT;
 
         Mouse(Mouse const&) = delete;
         Mouse& operator=(Mouse const&) = delete;
@@ -67,7 +75,7 @@ namespace DirectX
             ButtonState xButton1;
             ButtonState xButton2;
 
-            ButtonStateTracker() { Reset(); }
+            ButtonStateTracker() DIRECTX_NOEXCEPT { Reset(); }
 
             void __cdecl Update(const State& state);
 

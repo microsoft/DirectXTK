@@ -265,14 +265,14 @@ WaveBank::WaveBank(AudioEngine* engine, const wchar_t* wbFileName)
 
 
 // Move constructor.
-WaveBank::WaveBank(WaveBank&& moveFrom)
+WaveBank::WaveBank(WaveBank&& moveFrom) DIRECTX_NOEXCEPT
     : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-WaveBank& WaveBank::operator= (WaveBank&& moveFrom)
+WaveBank& WaveBank::operator= (WaveBank&& moveFrom) DIRECTX_NOEXCEPT
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

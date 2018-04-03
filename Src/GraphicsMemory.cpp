@@ -278,7 +278,7 @@ GraphicsMemory::GraphicsMemory(_In_ ID3D11Device* device, UINT backBufferCount)
 
 
 // Move constructor.
-GraphicsMemory::GraphicsMemory(GraphicsMemory&& moveFrom)
+GraphicsMemory::GraphicsMemory(GraphicsMemory&& moveFrom) DIRECTX_NOEXCEPT
     : pImpl(std::move(moveFrom.pImpl))
 {
     pImpl->mOwner = this;
@@ -286,7 +286,7 @@ GraphicsMemory::GraphicsMemory(GraphicsMemory&& moveFrom)
 
 
 // Move assignment.
-GraphicsMemory& GraphicsMemory::operator= (GraphicsMemory&& moveFrom)
+GraphicsMemory& GraphicsMemory::operator= (GraphicsMemory&& moveFrom) DIRECTX_NOEXCEPT
 {
     pImpl = std::move(moveFrom.pImpl);
     pImpl->mOwner = this;

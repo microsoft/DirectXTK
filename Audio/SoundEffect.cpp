@@ -438,14 +438,14 @@ SoundEffect::SoundEffect(AudioEngine* engine, std::unique_ptr<uint8_t[]>& wavDat
 
 
 // Move constructor.
-SoundEffect::SoundEffect(SoundEffect&& moveFrom)
+SoundEffect::SoundEffect(SoundEffect&& moveFrom) DIRECTX_NOEXCEPT
     : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-SoundEffect& SoundEffect::operator= (SoundEffect&& moveFrom)
+SoundEffect& SoundEffect::operator= (SoundEffect&& moveFrom) DIRECTX_NOEXCEPT
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;
@@ -519,7 +519,7 @@ size_t SoundEffect::GetSampleDuration() const
             if (partial)
             {
                 if (partial >= (7 * adpcmFmt->wfx.nChannels))
-                    duration += (partial * 2 / adpcmFmt->wfx.nChannels - 12);
+                    duration += (uint64_t(partial) * 2 / uint64_t(adpcmFmt->wfx.nChannels - 12));
             }
             return static_cast<size_t>(duration);
         }
@@ -547,7 +547,7 @@ size_t SoundEffect::GetSampleDuration() const
             if (pImpl->mWaveFormat->wBitsPerSample > 0)
             {
                 return static_cast<size_t>((uint64_t(pImpl->mAudioBytes) * 8)
-                                           / uint64_t(pImpl->mWaveFormat->wBitsPerSample * pImpl->mWaveFormat->nChannels));
+                                           / (uint64_t(pImpl->mWaveFormat->wBitsPerSample) * uint64_t(pImpl->mWaveFormat->nChannels)));
             }
     }
 

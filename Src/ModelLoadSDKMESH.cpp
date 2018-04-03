@@ -37,6 +37,8 @@ namespace
     {
         std::shared_ptr<IEffect> effect;
         bool alpha;
+
+        MaterialRecordSDKMESH() DIRECTX_NOEXCEPT : alpha(false) {}
     };
 
     void LoadMaterial(const DXUT::SDKMESH_MATERIAL& mh,
@@ -370,32 +372,32 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(ID3D11Device* d3dDevice
 
     // Sub-headers
     if (dataSize < header->VertexStreamHeadersOffset
-        || (dataSize < (header->VertexStreamHeadersOffset + header->NumVertexBuffers * sizeof(DXUT::SDKMESH_VERTEX_BUFFER_HEADER))))
+        || (dataSize < (header->VertexStreamHeadersOffset + uint64_t(header->NumVertexBuffers) * sizeof(DXUT::SDKMESH_VERTEX_BUFFER_HEADER))))
         throw std::exception("End of file");
     auto vbArray = reinterpret_cast<const DXUT::SDKMESH_VERTEX_BUFFER_HEADER*>(meshData + header->VertexStreamHeadersOffset);
 
     if (dataSize < header->IndexStreamHeadersOffset
-        || (dataSize < (header->IndexStreamHeadersOffset + header->NumIndexBuffers * sizeof(DXUT::SDKMESH_INDEX_BUFFER_HEADER))))
+        || (dataSize < (header->IndexStreamHeadersOffset + uint64_t(header->NumIndexBuffers) * sizeof(DXUT::SDKMESH_INDEX_BUFFER_HEADER))))
         throw std::exception("End of file");
     auto ibArray = reinterpret_cast<const DXUT::SDKMESH_INDEX_BUFFER_HEADER*>(meshData + header->IndexStreamHeadersOffset);
 
     if (dataSize < header->MeshDataOffset
-        || (dataSize < (header->MeshDataOffset + header->NumMeshes * sizeof(DXUT::SDKMESH_MESH))))
+        || (dataSize < (header->MeshDataOffset + uint64_t(header->NumMeshes) * sizeof(DXUT::SDKMESH_MESH))))
         throw std::exception("End of file");
     auto meshArray = reinterpret_cast<const DXUT::SDKMESH_MESH*>(meshData + header->MeshDataOffset);
 
     if (dataSize < header->SubsetDataOffset
-        || (dataSize < (header->SubsetDataOffset + header->NumTotalSubsets * sizeof(DXUT::SDKMESH_SUBSET))))
+        || (dataSize < (header->SubsetDataOffset + uint64_t(header->NumTotalSubsets) * sizeof(DXUT::SDKMESH_SUBSET))))
         throw std::exception("End of file");
     auto subsetArray = reinterpret_cast<const DXUT::SDKMESH_SUBSET*>(meshData + header->SubsetDataOffset);
 
     if (dataSize < header->FrameDataOffset
-        || (dataSize < (header->FrameDataOffset + header->NumFrames * sizeof(DXUT::SDKMESH_FRAME))))
+        || (dataSize < (header->FrameDataOffset + uint64_t(header->NumFrames) * sizeof(DXUT::SDKMESH_FRAME))))
         throw std::exception("End of file");
     // TODO - auto frameArray = reinterpret_cast<const DXUT::SDKMESH_FRAME*>( meshData + header->FrameDataOffset );
 
     if (dataSize < header->MaterialDataOffset
-        || (dataSize < (header->MaterialDataOffset + header->NumMaterials * sizeof(DXUT::SDKMESH_MATERIAL))))
+        || (dataSize < (header->MaterialDataOffset + uint64_t(header->NumMaterials) * sizeof(DXUT::SDKMESH_MATERIAL))))
         throw std::exception("End of file");
     auto materialArray = reinterpret_cast<const DXUT::SDKMESH_MATERIAL*>(meshData + header->MaterialDataOffset);
 
@@ -507,7 +509,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(ID3D11Device* d3dDevice
         // mh.NumVertexBuffers is sometimes not what you'd expect, so we skip validating it
 
         if (dataSize < mh.SubsetOffset
-            || (dataSize < mh.SubsetOffset + mh.NumSubsets * sizeof(UINT)))
+            || (dataSize < mh.SubsetOffset + uint64_t(mh.NumSubsets) * sizeof(UINT)))
             throw std::exception("End of file");
 
         auto subsets = reinterpret_cast<const UINT*>(meshData + mh.SubsetOffset);
@@ -515,7 +517,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(ID3D11Device* d3dDevice
         if (mh.NumFrameInfluences > 0)
         {
             if (dataSize < mh.FrameInfluenceOffset
-                || (dataSize < mh.FrameInfluenceOffset + mh.NumFrameInfluences * sizeof(UINT)))
+                || (dataSize < mh.FrameInfluenceOffset + uint64_t(mh.NumFrameInfluences) * sizeof(UINT)))
                 throw std::exception("End of file");
 
             // TODO - auto influences = reinterpret_cast<const UINT*>( meshData + mh.FrameInfluenceOffset );

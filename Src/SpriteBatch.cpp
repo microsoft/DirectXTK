@@ -1013,14 +1013,14 @@ SpriteBatch::SpriteBatch(_In_ ID3D11DeviceContext* deviceContext)
 
 
 // Move constructor.
-SpriteBatch::SpriteBatch(SpriteBatch&& moveFrom)
+SpriteBatch::SpriteBatch(SpriteBatch&& moveFrom) DIRECTX_NOEXCEPT
   : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-SpriteBatch& SpriteBatch::operator= (SpriteBatch&& moveFrom)
+SpriteBatch& SpriteBatch::operator= (SpriteBatch&& moveFrom) DIRECTX_NOEXCEPT
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

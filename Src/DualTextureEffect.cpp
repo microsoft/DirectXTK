@@ -187,14 +187,14 @@ DualTextureEffect::DualTextureEffect(_In_ ID3D11Device* device)
 
 
 // Move constructor.
-DualTextureEffect::DualTextureEffect(DualTextureEffect&& moveFrom)
+DualTextureEffect::DualTextureEffect(DualTextureEffect&& moveFrom) DIRECTX_NOEXCEPT
   : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-DualTextureEffect& DualTextureEffect::operator= (DualTextureEffect&& moveFrom)
+DualTextureEffect& DualTextureEffect::operator= (DualTextureEffect&& moveFrom) DIRECTX_NOEXCEPT
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

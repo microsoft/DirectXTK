@@ -237,14 +237,14 @@ DebugEffect::DebugEffect(_In_ ID3D11Device* device)
 
 
 // Move constructor.
-DebugEffect::DebugEffect(DebugEffect&& moveFrom)
+DebugEffect::DebugEffect(DebugEffect&& moveFrom) DIRECTX_NOEXCEPT
   : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-DebugEffect& DebugEffect::operator= (DebugEffect&& moveFrom)
+DebugEffect& DebugEffect::operator= (DebugEffect&& moveFrom) DIRECTX_NOEXCEPT
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

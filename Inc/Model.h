@@ -28,6 +28,14 @@
 
 #include <wrl\client.h>
 
+#ifndef DIRECTX_NOEXCEPT
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+#define DIRECTX_NOEXCEPT
+#else
+#define DIRECTX_NOEXCEPT noexcept
+#endif
+#endif
+
 
 namespace DirectX
 {
@@ -41,7 +49,7 @@ namespace DirectX
     class ModelMeshPart
     {
     public:
-        ModelMeshPart();
+        ModelMeshPart() DIRECTX_NOEXCEPT;
         virtual ~ModelMeshPart();
 
         uint32_t                                                indexCount;
@@ -76,7 +84,7 @@ namespace DirectX
     class ModelMesh
     {
     public:
-        ModelMesh();
+        ModelMesh() DIRECTX_NOEXCEPT;
         virtual ~ModelMesh();
 
         BoundingSphere              boundingSphere;

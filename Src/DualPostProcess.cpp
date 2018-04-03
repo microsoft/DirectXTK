@@ -267,14 +267,14 @@ DualPostProcess::DualPostProcess(_In_ ID3D11Device* device)
 
 
 // Move constructor.
-DualPostProcess::DualPostProcess(DualPostProcess&& moveFrom)
+DualPostProcess::DualPostProcess(DualPostProcess&& moveFrom) DIRECTX_NOEXCEPT
   : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-DualPostProcess& DualPostProcess::operator= (DualPostProcess&& moveFrom)
+DualPostProcess& DualPostProcess::operator= (DualPostProcess&& moveFrom) DIRECTX_NOEXCEPT
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

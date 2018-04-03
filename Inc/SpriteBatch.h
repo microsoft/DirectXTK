@@ -20,6 +20,14 @@
 #include <functional>
 #include <memory>
 
+#ifndef DIRECTX_NOEXCEPT
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+#define DIRECTX_NOEXCEPT
+#else
+#define DIRECTX_NOEXCEPT noexcept
+#endif
+#endif
+
 
 namespace DirectX
 {
@@ -46,8 +54,8 @@ namespace DirectX
     {
     public:
         explicit SpriteBatch(_In_ ID3D11DeviceContext* deviceContext);
-        SpriteBatch(SpriteBatch&& moveFrom);
-        SpriteBatch& operator= (SpriteBatch&& moveFrom);
+        SpriteBatch(SpriteBatch&& moveFrom) DIRECTX_NOEXCEPT;
+        SpriteBatch& operator= (SpriteBatch&& moveFrom) DIRECTX_NOEXCEPT;
 
         SpriteBatch(SpriteBatch const&) = delete;
         SpriteBatch& operator= (SpriteBatch const&) = delete;

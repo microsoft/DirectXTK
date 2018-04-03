@@ -250,14 +250,14 @@ SpriteFont::SpriteFont(ID3D11ShaderResourceView* texture, Glyph const* glyphs, s
 
 
 // Move constructor.
-SpriteFont::SpriteFont(SpriteFont&& moveFrom)
+SpriteFont::SpriteFont(SpriteFont&& moveFrom) DIRECTX_NOEXCEPT
     : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-SpriteFont& SpriteFont::operator= (SpriteFont&& moveFrom)
+SpriteFont& SpriteFont::operator= (SpriteFont&& moveFrom) DIRECTX_NOEXCEPT
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

@@ -25,7 +25,7 @@ using namespace DirectX;
 // ModelMeshPart
 //--------------------------------------------------------------------------------------
 
-ModelMeshPart::ModelMeshPart() :
+ModelMeshPart::ModelMeshPart() DIRECTX_NOEXCEPT :
     indexCount(0),
     startIndex(0),
     vertexOffset(0),
@@ -130,7 +130,7 @@ void ModelMeshPart::ModifyEffect(ID3D11Device* d3dDevice, std::shared_ptr<IEffec
 // ModelMesh
 //--------------------------------------------------------------------------------------
 
-ModelMesh::ModelMesh() :
+ModelMesh::ModelMesh() DIRECTX_NOEXCEPT :
     ccw(true),
     pmalpha(true)
 {

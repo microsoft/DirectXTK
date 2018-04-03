@@ -509,12 +509,12 @@ DGSLEffectFactory::~DGSLEffectFactory()
 }
 
 
-DGSLEffectFactory::DGSLEffectFactory(DGSLEffectFactory&& moveFrom)
+DGSLEffectFactory::DGSLEffectFactory(DGSLEffectFactory&& moveFrom) DIRECTX_NOEXCEPT
     : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
-DGSLEffectFactory& DGSLEffectFactory::operator= (DGSLEffectFactory&& moveFrom)
+DGSLEffectFactory& DGSLEffectFactory::operator= (DGSLEffectFactory&& moveFrom) DIRECTX_NOEXCEPT
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

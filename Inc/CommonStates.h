@@ -17,6 +17,14 @@
 
 #include <memory>
 
+#ifndef DIRECTX_NOEXCEPT
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+#define DIRECTX_NOEXCEPT
+#else
+#define DIRECTX_NOEXCEPT noexcept
+#endif
+#endif
+
 
 namespace DirectX
 {
@@ -24,8 +32,8 @@ namespace DirectX
     {
     public:
         explicit CommonStates(_In_ ID3D11Device* device);
-        CommonStates(CommonStates&& moveFrom);
-        CommonStates& operator= (CommonStates&& moveFrom);
+        CommonStates(CommonStates&& moveFrom) DIRECTX_NOEXCEPT;
+        CommonStates& operator= (CommonStates&& moveFrom) DIRECTX_NOEXCEPT;
 
         CommonStates(CommonStates const&) = delete;
         CommonStates& operator= (CommonStates const&) = delete;

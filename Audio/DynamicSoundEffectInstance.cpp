@@ -237,14 +237,14 @@ DynamicSoundEffectInstance::DynamicSoundEffectInstance(AudioEngine* engine,
 
 
 // Move constructor.
-DynamicSoundEffectInstance::DynamicSoundEffectInstance(DynamicSoundEffectInstance&& moveFrom)
+DynamicSoundEffectInstance::DynamicSoundEffectInstance(DynamicSoundEffectInstance&& moveFrom) DIRECTX_NOEXCEPT
     : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-DynamicSoundEffectInstance& DynamicSoundEffectInstance::operator= (DynamicSoundEffectInstance&& moveFrom)
+DynamicSoundEffectInstance& DynamicSoundEffectInstance::operator= (DynamicSoundEffectInstance&& moveFrom) DIRECTX_NOEXCEPT
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;
@@ -335,7 +335,7 @@ size_t DynamicSoundEffectInstance::GetSampleDuration(size_t bytes) const
         return 0;
 
     return static_cast<size_t>((uint64_t(bytes) * 8)
-                               / uint64_t(wfx->wBitsPerSample * wfx->nChannels));
+                               / (uint64_t(wfx->wBitsPerSample) * uint64_t(wfx->nChannels)));
 }
 
 

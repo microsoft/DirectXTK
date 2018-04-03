@@ -116,7 +116,14 @@ PrimitiveBatchBase::Impl::Impl(_In_ ID3D11DeviceContext* deviceContext, size_t m
     mCurrentIndex(0),
     mCurrentVertex(0),
     mBaseIndex(0),
-    mBaseVertex(0)
+    mBaseVertex(0),
+#if defined(_XBOX_ONE) && defined(_TITLE)
+    grfxMemoryIB(nullptr),
+    grfxMemoryVB(nullptr),
+#else
+    mMappedIndices{},
+    mMappedVertices{}
+#endif
 {
     ComPtr<ID3D11Device> device;
     deviceContext->GetDevice(&device);
@@ -399,14 +406,14 @@ PrimitiveBatchBase::PrimitiveBatchBase(_In_ ID3D11DeviceContext* deviceContext, 
 
 
 // Move constructor.
-PrimitiveBatchBase::PrimitiveBatchBase(PrimitiveBatchBase&& moveFrom)
+PrimitiveBatchBase::PrimitiveBatchBase(PrimitiveBatchBase&& moveFrom) DIRECTX_NOEXCEPT
   : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-PrimitiveBatchBase& PrimitiveBatchBase::operator= (PrimitiveBatchBase&& moveFrom)
+PrimitiveBatchBase& PrimitiveBatchBase::operator= (PrimitiveBatchBase&& moveFrom) DIRECTX_NOEXCEPT
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

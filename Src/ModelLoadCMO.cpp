@@ -188,6 +188,8 @@ namespace
         std::wstring                    texture[VSD3DStarter::MAX_TEXTURE];
         std::shared_ptr<IEffect>        effect;
         ComPtr<ID3D11InputLayout>       il;
+
+        MaterialRecordCMO() DIRECTX_NOEXCEPT : pMaterial(nullptr) {}
     };
 
     // Helper for creating a D3D input layout.

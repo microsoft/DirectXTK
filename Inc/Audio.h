@@ -57,6 +57,14 @@
 #include <string>
 #include <vector>
 
+#ifndef DIRECTX_NOEXCEPT
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+#define DIRECTX_NOEXCEPT
+#else
+#define DIRECTX_NOEXCEPT noexcept
+#endif
+#endif
+
 namespace DirectX
 {
     class SoundEffectInstance;
@@ -186,8 +194,8 @@ namespace DirectX
             AUDIO_ENGINE_FLAGS flags = AudioEngine_Default, _In_opt_ const WAVEFORMATEX* wfx = nullptr, _In_opt_z_ const wchar_t* deviceId = nullptr,
             AUDIO_STREAM_CATEGORY category = AudioCategory_GameEffects);
 
-        AudioEngine(AudioEngine&& moveFrom);
-        AudioEngine& operator= (AudioEngine&& moveFrom);
+        AudioEngine(AudioEngine&& moveFrom) DIRECTX_NOEXCEPT;
+        AudioEngine& operator= (AudioEngine&& moveFrom) DIRECTX_NOEXCEPT;
 
         AudioEngine(AudioEngine const&) = delete;
         AudioEngine& operator= (AudioEngine const&) = delete;
@@ -284,8 +292,8 @@ namespace DirectX
     public:
         WaveBank(_In_ AudioEngine* engine, _In_z_ const wchar_t* wbFileName);
 
-        WaveBank(WaveBank&& moveFrom);
-        WaveBank& operator= (WaveBank&& moveFrom);
+        WaveBank(WaveBank&& moveFrom) DIRECTX_NOEXCEPT;
+        WaveBank& operator= (WaveBank&& moveFrom) DIRECTX_NOEXCEPT;
 
         WaveBank(WaveBank const&) = delete;
         WaveBank& operator= (WaveBank const&) = delete;
@@ -358,8 +366,8 @@ namespace DirectX
 
 #endif
 
-        SoundEffect(SoundEffect&& moveFrom);
-        SoundEffect& operator= (SoundEffect&& moveFrom);
+        SoundEffect(SoundEffect&& moveFrom) DIRECTX_NOEXCEPT;
+        SoundEffect& operator= (SoundEffect&& moveFrom) DIRECTX_NOEXCEPT;
 
         SoundEffect(SoundEffect const&) = delete;
         SoundEffect& operator= (SoundEffect const&) = delete;
@@ -406,7 +414,7 @@ namespace DirectX
     //----------------------------------------------------------------------------------
     struct AudioListener : public X3DAUDIO_LISTENER
     {
-        AudioListener()
+        AudioListener() DIRECTX_NOEXCEPT
         {
             memset(this, 0, sizeof(X3DAUDIO_LISTENER));
 
@@ -490,7 +498,7 @@ namespace DirectX
     {
         float       EmitterAzimuths[XAUDIO2_MAX_AUDIO_CHANNELS];
 
-        AudioEmitter()
+        AudioEmitter() DIRECTX_NOEXCEPT
         {
             memset(this, 0, sizeof(X3DAUDIO_EMITTER));
             memset(EmitterAzimuths, 0, sizeof(EmitterAzimuths));
@@ -582,8 +590,8 @@ namespace DirectX
     class SoundEffectInstance
     {
     public:
-        SoundEffectInstance(SoundEffectInstance&& moveFrom);
-        SoundEffectInstance& operator= (SoundEffectInstance&& moveFrom);
+        SoundEffectInstance(SoundEffectInstance&& moveFrom) DIRECTX_NOEXCEPT;
+        SoundEffectInstance& operator= (SoundEffectInstance&& moveFrom) DIRECTX_NOEXCEPT;
 
         SoundEffectInstance(SoundEffectInstance const&) = delete;
         SoundEffectInstance& operator= (SoundEffectInstance const&) = delete;
@@ -631,8 +639,8 @@ namespace DirectX
             _In_opt_ std::function<void __cdecl(DynamicSoundEffectInstance*)> bufferNeeded,
             int sampleRate, int channels, int sampleBits = 16,
             SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default);
-        DynamicSoundEffectInstance(DynamicSoundEffectInstance&& moveFrom);
-        DynamicSoundEffectInstance& operator= (DynamicSoundEffectInstance&& moveFrom);
+        DynamicSoundEffectInstance(DynamicSoundEffectInstance&& moveFrom) DIRECTX_NOEXCEPT;
+        DynamicSoundEffectInstance& operator= (DynamicSoundEffectInstance&& moveFrom) DIRECTX_NOEXCEPT;
 
         DynamicSoundEffectInstance(DynamicSoundEffectInstance const&) = delete;
         DynamicSoundEffectInstance& operator= (DynamicSoundEffectInstance const&) = delete;

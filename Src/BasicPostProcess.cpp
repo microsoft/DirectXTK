@@ -467,14 +467,14 @@ BasicPostProcess::BasicPostProcess(_In_ ID3D11Device* device)
 
 
 // Move constructor.
-BasicPostProcess::BasicPostProcess(BasicPostProcess&& moveFrom)
+BasicPostProcess::BasicPostProcess(BasicPostProcess&& moveFrom) DIRECTX_NOEXCEPT
   : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-BasicPostProcess& BasicPostProcess::operator= (BasicPostProcess&& moveFrom)
+BasicPostProcess& BasicPostProcess::operator= (BasicPostProcess&& moveFrom) DIRECTX_NOEXCEPT
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

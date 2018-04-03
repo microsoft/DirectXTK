@@ -363,14 +363,14 @@ SkinnedEffect::SkinnedEffect(_In_ ID3D11Device* device)
 
 
 // Move constructor.
-SkinnedEffect::SkinnedEffect(SkinnedEffect&& moveFrom)
+SkinnedEffect::SkinnedEffect(SkinnedEffect&& moveFrom) DIRECTX_NOEXCEPT
   : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-SkinnedEffect& SkinnedEffect::operator= (SkinnedEffect&& moveFrom)
+SkinnedEffect& SkinnedEffect::operator= (SkinnedEffect&& moveFrom) DIRECTX_NOEXCEPT
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

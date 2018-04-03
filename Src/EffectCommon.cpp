@@ -25,7 +25,7 @@ void XM_CALLCONV IEffectMatrices::SetMatrices(FXMMATRIX world, CXMMATRIX view, C
 
 
 // Constructor initializes default matrix values.
-EffectMatrices::EffectMatrices()
+EffectMatrices::EffectMatrices() DIRECTX_NOEXCEPT
 {
     world = XMMatrixIdentity();
     view = XMMatrixIdentity();
@@ -50,7 +50,7 @@ _Use_decl_annotations_ void EffectMatrices::SetConstants(int& dirtyFlags, XMMATR
 
 
 // Constructor initializes default fog settings.
-EffectFog::EffectFog() :
+EffectFog::EffectFog() DIRECTX_NOEXCEPT :
     enabled(false),
     start(0),
     end(1.f)
@@ -109,7 +109,7 @@ void XM_CALLCONV EffectFog::SetConstants(int& dirtyFlags, FXMMATRIX worldView, X
 
 
 // Constructor initializes default material color settings.
-EffectColor::EffectColor() :
+EffectColor::EffectColor() DIRECTX_NOEXCEPT :
     alpha(1.f)
 {
     diffuseColor = g_XMOne;
@@ -133,7 +133,7 @@ void EffectColor::SetConstants(_Inout_ int& dirtyFlags, _Inout_ XMVECTOR& diffus
 
 
 // Constructor initializes default light settings.
-EffectLights::EffectLights()
+EffectLights::EffectLights() DIRECTX_NOEXCEPT
 {
     emissiveColor = g_XMZero;
     ambientLightColor = g_XMZero;

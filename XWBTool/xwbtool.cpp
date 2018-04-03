@@ -808,8 +808,9 @@ struct WaveFile
     MINIWAVEFORMAT miniFmt;
     std::unique_ptr<uint8_t[]> waveData;
 
-    WaveFile() : conv(0) { memset(&data, 0, sizeof(data)); }
+    WaveFile() : conv(0), miniFmt{} { memset(&data, 0, sizeof(data)); }
 
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
     // VS 2013 does not perform impliclit creation of move construtors nor does it support =default,
     // so we explictly add one here
     WaveFile(WaveFile&& moveFrom) :
@@ -819,6 +820,10 @@ struct WaveFile
         waveData(std::move(moveFrom.waveData))
     {
     }
+#else
+    WaveFile(WaveFile&&) = default;
+    WaveFile& operator= (WaveFile&&) = default;
+#endif
 };
 
 namespace
@@ -1314,7 +1319,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         wprintf(L"ERROR: Audio wave data is too large to encode into wavebank (offset %I64u)", waveOffset);
         return 1;
     }
-    else if (waveOffset > (MAX_COMPACT_DATA_SEGMENT_SIZE * dwAlignment))
+    else if (waveOffset > (MAX_COMPACT_DATA_SEGMENT_SIZE * uint64_t(dwAlignment)))
     {
         compact = false;
         reason |= 0x4;
@@ -1333,7 +1338,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         }
         if (reason & 0x4)
         {
-            wprintf(L"- Audio wave data is too large to encode in compact wavebank (%I64u > %I64u).\n", waveOffset, uint64_t(MAX_COMPACT_DATA_SEGMENT_SIZE * dwAlignment));
+            wprintf(L"- Audio wave data is too large to encode in compact wavebank (%I64u > %I64u).\n", waveOffset, (MAX_COMPACT_DATA_SEGMENT_SIZE * uint64_t(dwAlignment)));
         }
         return 1;
     }
@@ -1371,12 +1376,12 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         case MINIWAVEFORMAT::TAG_ADPCM:
         {
             auto adpcmFmt = reinterpret_cast<const ADPCMEWAVEFORMAT*>(wfx);
-            duration = (it->data.audioBytes / wfx->nBlockAlign) * adpcmFmt->wSamplesPerBlock;
+            duration = (uint64_t(it->data.audioBytes) / uint64_t(wfx->nBlockAlign)) * uint64_t(adpcmFmt->wSamplesPerBlock);
             int partial = it->data.audioBytes % wfx->nBlockAlign;
             if (partial)
             {
                 if (partial >= (7 * wfx->nChannels))
-                    duration += (partial * 2 / wfx->nChannels - 12);
+                    duration += (uint64_t(partial) * 2 / uint64_t(wfx->nChannels - 12));
             }
         }
         break;
@@ -1390,7 +1395,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
             break;
 
         default: // MINIWAVEFORMAT::TAG_PCM
-            duration = (uint64_t(it->data.audioBytes) * 8) / uint64_t(wfx->wBitsPerSample * wfx->nChannels);
+            duration = (uint64_t(it->data.audioBytes) * 8) / (uint64_t(wfx->wBitsPerSample) * uint64_t(wfx->nChannels));
             break;
         }
 
@@ -1399,7 +1404,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
             auto entry = reinterpret_cast<ENTRYCOMPACT*>(entries.get() + count * sizeof(ENTRYCOMPACT));
             memset(entry, 0, sizeof(ENTRYCOMPACT));
 
-            assert(waveOffset <= (MAX_COMPACT_DATA_SEGMENT_SIZE * dwAlignment));
+            assert(waveOffset <= (MAX_COMPACT_DATA_SEGMENT_SIZE * uint64_t(dwAlignment)));
             entry->dwOffset = uint32_t(waveOffset / dwAlignment);
 
             assert(dwAlignment <= 2048);

@@ -358,14 +358,14 @@ EnvironmentMapEffect::EnvironmentMapEffect(_In_ ID3D11Device* device)
 
 
 // Move constructor.
-EnvironmentMapEffect::EnvironmentMapEffect(EnvironmentMapEffect&& moveFrom)
+EnvironmentMapEffect::EnvironmentMapEffect(EnvironmentMapEffect&& moveFrom) DIRECTX_NOEXCEPT
   : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-EnvironmentMapEffect& EnvironmentMapEffect::operator= (EnvironmentMapEffect&& moveFrom)
+EnvironmentMapEffect& EnvironmentMapEffect::operator= (EnvironmentMapEffect&& moveFrom) DIRECTX_NOEXCEPT
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;
