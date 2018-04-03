@@ -371,7 +371,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
         }
 
         // Skeletal data?
-        auto bSkeleton = reinterpret_cast<const BYTE*>(meshData + usedSize);
+        const BYTE* bSkeleton = meshData + usedSize;
         usedSize += sizeof(BYTE);
         if (dataSize < usedSize)
             throw std::exception("End of file");

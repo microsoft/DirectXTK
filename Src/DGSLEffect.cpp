@@ -779,7 +779,7 @@ void DGSLEffect::SetLightEnabled(int whichLight, bool value)
 
     if (value)
     {
-        if (whichLight >= (int)pImpl->constants.light.ActiveLights)
+        if (whichLight >= static_cast<int>(pImpl->constants.light.ActiveLights))
             pImpl->constants.light.ActiveLights = static_cast<UINT>(whichLight + 1);
 
         pImpl->constants.light.LightColor[whichLight] = pImpl->lightDiffuseColor[whichLight];

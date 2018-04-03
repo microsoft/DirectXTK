@@ -91,7 +91,7 @@ namespace DirectX
                 deviceContext->Map(mConstantBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)
             );
 
-            *(T*)mappedResource.pData = value;
+            *static_cast<T*>(mappedResource.pData) = value;
 
             deviceContext->Unmap(mConstantBuffer.Get(), 0);
         }

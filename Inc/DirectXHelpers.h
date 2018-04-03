@@ -77,20 +77,20 @@ namespace DirectX
 
         uint8_t* get() const
         {
-            return reinterpret_cast<uint8_t*>(pData);
+            return static_cast<uint8_t*>(pData);
         }
         uint8_t* get(size_t slice) const
         {
-            return reinterpret_cast<uint8_t*>(pData) + (slice * DepthPitch);
+            return static_cast<uint8_t*>(pData) + (slice * DepthPitch);
         }
 
         uint8_t* scanline(size_t row) const
         {
-            return reinterpret_cast<uint8_t*>(pData) + (row * RowPitch);
+            return static_cast<uint8_t*>(pData) + (row * RowPitch);
         }
         uint8_t* scanline(size_t slice, size_t row) const
         {
-            return reinterpret_cast<uint8_t*>(pData) + (slice * DepthPitch) + (row * RowPitch);
+            return static_cast<uint8_t*>(pData) + (slice * DepthPitch) + (row * RowPitch);
         }
 
     private:

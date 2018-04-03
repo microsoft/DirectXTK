@@ -440,7 +440,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(ID3D11Device* d3dDevice
 
         materialFlags[j] = flags;
 
-        auto verts = reinterpret_cast<const uint8_t*>(bufferData + (vh.DataOffset - bufferDataOffset));
+        auto verts = bufferData + (vh.DataOffset - bufferDataOffset);
 
         D3D11_BUFFER_DESC desc = {};
         desc.Usage = D3D11_USAGE_DEFAULT;
@@ -472,7 +472,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(ID3D11Device* d3dDevice
         if (ih.IndexType != DXUT::IT_16BIT && ih.IndexType != DXUT::IT_32BIT)
             throw std::exception("Invalid index buffer type found");
 
-        auto indices = reinterpret_cast<const uint8_t*>(bufferData + (ih.DataOffset - bufferDataOffset));
+        auto indices = bufferData + (ih.DataOffset - bufferDataOffset);
 
         D3D11_BUFFER_DESC desc = {};
         desc.Usage = D3D11_USAGE_DEFAULT;

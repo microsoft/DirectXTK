@@ -252,7 +252,7 @@ HRESULT DirectX::SaveDDSTextureToFile(
             memcpy_s(&header->ddspf, sizeof(header->ddspf), &DDSPF_DX10, sizeof(DDS_PIXELFORMAT));
 
             headerSize += sizeof(DDS_HEADER_DXT10);
-            extHeader = reinterpret_cast<DDS_HEADER_DXT10*>(reinterpret_cast<uint8_t*>(&fileHeader[0]) + sizeof(uint32_t) + sizeof(DDS_HEADER));
+            extHeader = reinterpret_cast<DDS_HEADER_DXT10*>(fileHeader + sizeof(uint32_t) + sizeof(DDS_HEADER));
             memset(extHeader, 0, sizeof(DDS_HEADER_DXT10));
             extHeader->dxgiFormat = desc.Format;
             extHeader->resourceDimension = D3D11_RESOURCE_DIMENSION_TEXTURE2D;
@@ -284,7 +284,7 @@ HRESULT DirectX::SaveDDSTextureToFile(
     if (FAILED(hr))
         return hr;
 
-    auto sptr = reinterpret_cast<const uint8_t*>(mapped.pData);
+    auto sptr = static_cast<const uint8_t*>(mapped.pData);
     if (!sptr)
     {
         pContext->Unmap(pStaging.Get(), 0);
@@ -596,7 +596,7 @@ HRESULT DirectX::SaveWICTextureToFile(
         ComPtr<IWICBitmap> source;
         hr = pWIC->CreateBitmapFromMemory(desc.Width, desc.Height, pfGuid,
                                           mapped.RowPitch, mapped.RowPitch * desc.Height,
-                                          reinterpret_cast<BYTE*>(mapped.pData), source.GetAddressOf());
+                                          static_cast<BYTE*>(mapped.pData), source.GetAddressOf());
         if (FAILED(hr))
         {
             pContext->Unmap(pStaging.Get(), 0);
@@ -636,7 +636,7 @@ HRESULT DirectX::SaveWICTextureToFile(
     else
     {
         // No conversion required
-        hr = frame->WritePixels(desc.Height, mapped.RowPitch, mapped.RowPitch * desc.Height, reinterpret_cast<BYTE*>(mapped.pData));
+        hr = frame->WritePixels(desc.Height, mapped.RowPitch, mapped.RowPitch * desc.Height, static_cast<BYTE*>(mapped.pData));
         if (FAILED(hr))
             return hr;
     }

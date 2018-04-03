@@ -91,7 +91,7 @@ namespace
 
                     assert(index < mipCount * arraySize);
                     _Analysis_assume_(index < mipCount * arraySize);
-                    initData[index].pSysMem = reinterpret_cast<const void*>(pSrcBits);
+                    initData[index].pSysMem = pSrcBits;
                     initData[index].SysMemPitch = static_cast<UINT>(RowBytes);
                     initData[index].SysMemSlicePitch = static_cast<UINT>(NumBytes);
                     ++index;
@@ -402,7 +402,7 @@ namespace
         if ((header->ddspf.flags & DDS_FOURCC) &&
             (MAKEFOURCC('D', 'X', '1', '0') == header->ddspf.fourCC))
         {
-            auto d3d10ext = reinterpret_cast<const DDS_HEADER_DXT10*>((const char*)header + sizeof(DDS_HEADER));
+            auto d3d10ext = reinterpret_cast<const DDS_HEADER_DXT10*>(reinterpret_cast<const char*>(header) + sizeof(DDS_HEADER));
 
             arraySize = d3d10ext->arraySize;
             if (arraySize == 0)
