@@ -1271,10 +1271,8 @@
     <None Include="Src\Shaders\PixelPacking_Velocity.hlsli">
       <Filter>Src\Shaders\Shared</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="Src\Shaders\DebugEffect.fx">
-      <Filter>Src\Shaders\Shared</Filter>
-    </FxCompile>
+    <None Include="Src\Shaders\DebugEffect.fx">
+      <Filter>Src\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

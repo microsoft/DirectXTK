@@ -489,7 +489,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Src\Shaders\DebugEffect.fx" />
+    <None Include="Src\Shaders\DebugEffect.fx">
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and '$(VisualStudioVersion)' == ''">$(VCTargetsPath11)</VCTargetsPath>

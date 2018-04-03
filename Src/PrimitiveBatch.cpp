@@ -119,7 +119,7 @@ PrimitiveBatchBase::Impl::Impl(_In_ ID3D11DeviceContext* deviceContext, size_t m
     mBaseVertex(0),
 #if defined(_XBOX_ONE) && defined(_TITLE)
     grfxMemoryIB(nullptr),
-    grfxMemoryVB(nullptr),
+    grfxMemoryVB(nullptr)
 #else
     mMappedIndices{},
     mMappedVertices{}
