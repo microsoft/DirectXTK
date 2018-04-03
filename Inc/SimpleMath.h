@@ -51,6 +51,14 @@ namespace DirectX
             Rectangle(long ix, long iy, long iw, long ih) : x(ix), y(iy), width(iw), height(ih) {}
             explicit Rectangle(const RECT& rct) : x(rct.left), y(rct.top), width(rct.right - rct.left), height(rct.bottom - rct.top) {}
 
+            Rectangle(const Rectangle&) = default;
+            Rectangle& operator=(const Rectangle&) = default;
+
+        #if !defined(_MSC_VER) || _MSC_VER >= 1900
+            Rectangle(Rectangle&&) = default;
+            Rectangle& operator=(Rectangle&&) = default;
+        #endif
+
             operator RECT() { RECT rct; rct.left = x; rct.top = y; rct.right = (x + width); rct.bottom = (y + height); return rct; }
         #ifdef __cplusplus_winrt
             operator Windows::Foundation::Rect() { return Windows::Foundation::Rect(float(x), float(y), float(width), float(height)); }
@@ -64,7 +72,6 @@ namespace DirectX
             bool operator != (const RECT& rct) const { return (x != rct.left) || (y != rct.top) || (width != (rct.right - rct.left)) || (height != (rct.bottom - rct.top)); }
 
             // Assignment operators
-            Rectangle& operator=(_In_ const Rectangle& r) { x = r.x; y = r.y; width = r.width; height = r.height; return *this; }
             Rectangle& operator=(_In_ const RECT& rct) { x = rct.left; y = rct.top; width = (rct.right - rct.left); height = (rct.bottom - rct.top); return *this; }
 
             // Rectangle operations
@@ -105,6 +112,14 @@ namespace DirectX
             Vector2(const XMFLOAT2& V) { this->x = V.x; this->y = V.y; }
             explicit Vector2(const XMVECTORF32& F) { this->x = F.f[0]; this->y = F.f[1]; }
 
+            Vector2(const Vector2&) = default;
+            Vector2& operator=(const Vector2&) = default;
+
+        #if !defined(_MSC_VER) || _MSC_VER >= 1900
+            Vector2(Vector2&&) = default;
+            Vector2& operator=(Vector2&&) = default;
+        #endif
+
             operator XMVECTOR() const { return XMLoadFloat2(this); }
 
             // Comparison operators
@@ -112,7 +127,6 @@ namespace DirectX
             bool operator != (const Vector2& V) const;
 
             // Assignment operators
-            Vector2& operator= (const Vector2& V) { x = V.x; y = V.y; return *this; }
             Vector2& operator= (const XMFLOAT2& V) { x = V.x; y = V.y; return *this; }
             Vector2& operator= (const XMVECTORF32& F) { x = F.f[0]; y = F.f[1]; return *this; }
             Vector2& operator+= (const Vector2& V);
@@ -213,6 +227,14 @@ namespace DirectX
             Vector3(const XMFLOAT3& V) { this->x = V.x; this->y = V.y; this->z = V.z; }
             explicit Vector3(const XMVECTORF32& F) { this->x = F.f[0]; this->y = F.f[1]; this->z = F.f[2]; }
 
+            Vector3(const Vector3&) = default;
+            Vector3& operator=(const Vector3&) = default;
+
+        #if !defined(_MSC_VER) || _MSC_VER >= 1900
+            Vector3(Vector3&&) = default;
+            Vector3& operator=(Vector3&&) = default;
+        #endif
+
             operator XMVECTOR() const { return XMLoadFloat3(this); }
 
             // Comparison operators
@@ -220,7 +242,6 @@ namespace DirectX
             bool operator != (const Vector3& V) const;
 
             // Assignment operators
-            Vector3& operator= (const Vector3& V) { x = V.x; y = V.y; z = V.z; return *this; }
             Vector3& operator= (const XMFLOAT3& V) { x = V.x; y = V.y; z = V.z; return *this; }
             Vector3& operator= (const XMVECTORF32& F) { x = F.f[0]; y = F.f[1]; z = F.f[2]; return *this; }
             Vector3& operator+= (const Vector3& V);
@@ -328,6 +349,14 @@ namespace DirectX
             Vector4(const XMFLOAT4& V) { this->x = V.x; this->y = V.y; this->z = V.z; this->w = V.w; }
             explicit Vector4(const XMVECTORF32& F) { this->x = F.f[0]; this->y = F.f[1]; this->z = F.f[2]; this->w = F.f[3]; }
 
+            Vector4(const Vector4&) = default;
+            Vector4& operator=(const Vector4&) = default;
+
+        #if !defined(_MSC_VER) || _MSC_VER >= 1900
+            Vector4(Vector4&&) = default;
+            Vector4& operator=(Vector4&&) = default;
+        #endif
+
             operator XMVECTOR() const { return XMLoadFloat4(this); }
 
             // Comparison operators
@@ -335,7 +364,6 @@ namespace DirectX
             bool operator != (const Vector4& V) const;
 
             // Assignment operators
-            Vector4& operator= (const Vector4& V) { x = V.x; y = V.y; z = V.z; w = V.w; return *this; }
             Vector4& operator= (const XMFLOAT4& V) { x = V.x; y = V.y; z = V.z; w = V.w; return *this; }
             Vector4& operator= (const XMVECTORF32& F) { x = F.f[0]; y = F.f[1]; z = F.f[2]; w = F.f[3]; return *this; }
             Vector4& operator+= (const Vector4& V);
@@ -429,10 +457,11 @@ namespace DirectX
         // 4x4 Matrix (assumes right-handed cooordinates)
         struct Matrix : public XMFLOAT4X4
         {
-            Matrix() : XMFLOAT4X4(1.f, 0, 0, 0,
-                                  0, 1.f, 0, 0,
-                                  0, 0, 1.f, 0,
-                                  0, 0, 0, 1.f) {}
+            Matrix()
+                : XMFLOAT4X4(1.f, 0, 0, 0,
+                            0, 1.f, 0, 0,
+                            0, 0, 1.f, 0,
+                            0, 0, 0, 1.f) {}
             Matrix(float m00, float m01, float m02, float m03,
                    float m10, float m11, float m12, float m13,
                    float m20, float m21, float m22, float m23,
@@ -455,6 +484,14 @@ namespace DirectX
             explicit Matrix(_In_reads_(16) const float *pArray) : XMFLOAT4X4(pArray) {}
             Matrix(CXMMATRIX M) { XMStoreFloat4x4(this, M); }
 
+            Matrix(const Matrix&) = default;
+            Matrix& operator=(const Matrix&) = default;
+
+        #if !defined(_MSC_VER) || _MSC_VER >= 1900
+            Matrix(Matrix&&) = default;
+            Matrix& operator=(Matrix&&) = default;
+        #endif
+
             operator XMMATRIX() const { return XMLoadFloat4x4(this); }
 
             // Comparison operators
@@ -462,7 +499,6 @@ namespace DirectX
             bool operator != (const Matrix& M) const;
 
             // Assignment operators
-            Matrix& operator= (const Matrix& M) { memcpy_s(this, sizeof(float) * 16, &M, sizeof(float) * 16); return *this; }
             Matrix& operator= (const XMFLOAT4X4& M) { memcpy_s(this, sizeof(float) * 16, &M, sizeof(XMFLOAT4X4)); return *this; }
             Matrix& operator= (const XMFLOAT3X3& M);
             Matrix& operator= (const XMFLOAT4X3& M);
@@ -584,6 +620,14 @@ namespace DirectX
             Plane(const XMFLOAT4& p) { this->x = p.x; this->y = p.y; this->z = p.z; this->w = p.w; }
             explicit Plane(const XMVECTORF32& F) { this->x = F.f[0]; this->y = F.f[1]; this->z = F.f[2]; this->w = F.f[3]; }
 
+            Plane(const Plane&) = default;
+            Plane& operator=(const Plane&) = default;
+
+        #if !defined(_MSC_VER) || _MSC_VER >= 1900
+            Plane(Plane&&) = default;
+            Plane& operator=(Plane&&) = default;
+        #endif
+
             operator XMVECTOR() const { return XMLoadFloat4(this); }
 
             // Comparison operators
@@ -591,7 +635,6 @@ namespace DirectX
             bool operator != (const Plane& p) const;
 
             // Assignment operators
-            Plane& operator= (const Plane& p) { x = p.x; y = p.y; z = p.z; w = p.w; return *this; }
             Plane& operator= (const XMFLOAT4& p) { x = p.x; y = p.y; z = p.z; w = p.w; return *this; }
             Plane& operator= (const XMVECTORF32& F) { x = F.f[0]; y = F.f[1]; z = F.f[2]; w = F.f[3]; return *this; }
 
@@ -632,6 +675,14 @@ namespace DirectX
             Quaternion(const XMFLOAT4& q) { this->x = q.x; this->y = q.y; this->z = q.z; this->w = q.w; }
             explicit Quaternion(const XMVECTORF32& F) { this->x = F.f[0]; this->y = F.f[1]; this->z = F.f[2]; this->w = F.f[3]; }
 
+            Quaternion(const Quaternion&) = default;
+            Quaternion& operator=(const Quaternion&) = default;
+
+        #if !defined(_MSC_VER) || _MSC_VER >= 1900
+            Quaternion(Quaternion&&) = default;
+            Quaternion& operator=(Quaternion&&) = default;
+        #endif
+
             operator XMVECTOR() const { return XMLoadFloat4(this); }
 
             // Comparison operators
@@ -639,7 +690,6 @@ namespace DirectX
             bool operator != (const Quaternion& q) const;
 
             // Assignment operators
-            Quaternion& operator= (const Quaternion& q) { x = q.x; y = q.y; z = q.z; w = q.w; return *this; }
             Quaternion& operator= (const XMFLOAT4& q) { x = q.x; y = q.y; z = q.z; w = q.w; return *this; }
             Quaternion& operator= (const XMVECTORF32& F) { x = F.f[0]; y = F.f[1]; z = F.f[2]; w = F.f[3]; return *this; }
             Quaternion& operator+= (const Quaternion& q);
@@ -712,6 +762,14 @@ namespace DirectX
             explicit Color(const DirectX::PackedVector::XMUBYTEN4& Packed);
                 // RGBA XNA Game Studio packed color
 
+            Color(const Color&) = default;
+            Color& operator=(const Color&) = default;
+
+        #if !defined(_MSC_VER) || _MSC_VER >= 1900
+            Color(Color&&) = default;
+            Color& operator=(Color&&) = default;
+        #endif
+
             operator XMVECTOR() const { return XMLoadFloat4(this); }
             operator const float*() const { return reinterpret_cast<const float*>(this); }
 
@@ -720,7 +778,6 @@ namespace DirectX
             bool operator != (const Color& c) const;
 
             // Assignment operators
-            Color& operator= (const Color& c) { x = c.x; y = c.y; z = c.z; w = c.w; return *this; }
             Color& operator= (const XMFLOAT4& c) { x = c.x; y = c.y; z = c.z; w = c.w; return *this; }
             Color& operator= (const XMVECTORF32& F) { x = F.f[0]; y = F.f[1]; z = F.f[2]; w = F.f[3]; return *this; }
             Color& operator= (const DirectX::PackedVector::XMCOLOR& Packed);
@@ -797,6 +854,14 @@ namespace DirectX
             Ray() : position(0, 0, 0), direction(0, 0, 1) {}
             Ray(const Vector3& pos, const Vector3& dir) : position(pos), direction(dir) {}
 
+            Ray(const Ray&) = default;
+            Ray& operator=(const Ray&) = default;
+
+        #if !defined(_MSC_VER) || _MSC_VER >= 1900
+            Ray(Ray&&) = default;
+            Ray& operator=(Ray&&) = default;
+        #endif
+
             // Comparison operators
             bool operator == (const Ray& r) const;
             bool operator != (const Ray& r) const;
@@ -854,12 +919,19 @@ namespace DirectX
             Viewport& operator= (const D3D12_VIEWPORT& vp);
         #endif
 
+            Viewport(const Viewport&) = default;
+            Viewport& operator=(const Viewport&) = default;
+
+        #if !defined(_MSC_VER) || _MSC_VER >= 1900
+            Viewport(Viewport&&) = default;
+            Viewport& operator=(Viewport&&) = default;
+        #endif
+
             // Comparison operators
             bool operator == (const Viewport& vp) const;
             bool operator != (const Viewport& vp) const;
 
             // Assignment operators
-            Viewport& operator= (const Viewport& vp);
             Viewport& operator= (const RECT& rct);
 
             // Viewport operations

@@ -3613,14 +3613,6 @@ inline bool Viewport::operator != (const Viewport& vp) const
 // Assignment operators
 //------------------------------------------------------------------------------
 
-inline Viewport& Viewport::operator= (const Viewport& vp)
-{
-    x = vp.x; y = vp.y;
-    width = vp.width; height = vp.height;
-    minDepth = vp.minDepth; maxDepth = vp.maxDepth;
-    return *this;
-}
-
 inline Viewport& Viewport::operator= (const RECT& rct)
 {
     x = float(rct.left); y = float(rct.top);
