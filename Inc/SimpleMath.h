@@ -34,6 +34,10 @@
 #endif
 #endif
 
+#ifndef XM_CONSTEXPR
+#define XM_CONSTEXPR
+#endif
+
 
 namespace DirectX
 {
@@ -56,7 +60,7 @@ namespace DirectX
 
             // Creators
             Rectangle() DIRECTX_NOEXCEPT : x(0), y(0), width(0), height(0) {}
-            Rectangle(long ix, long iy, long iw, long ih) : x(ix), y(iy), width(iw), height(ih) {}
+            XM_CONSTEXPR Rectangle(long ix, long iy, long iw, long ih) : x(ix), y(iy), width(iw), height(ih) {}
             explicit Rectangle(const RECT& rct) : x(rct.left), y(rct.top), width(rct.right - rct.left), height(rct.bottom - rct.top) {}
 
             Rectangle(const Rectangle&) = default;
@@ -113,8 +117,8 @@ namespace DirectX
         struct Vector2 : public XMFLOAT2
         {
             Vector2() DIRECTX_NOEXCEPT : XMFLOAT2(0.f, 0.f) {}
-            explicit Vector2(float x) : XMFLOAT2(x, x) {}
-            Vector2(float _x, float _y) : XMFLOAT2(_x, _y) {}
+            XM_CONSTEXPR explicit Vector2(float x) : XMFLOAT2(x, x) {}
+            XM_CONSTEXPR Vector2(float _x, float _y) : XMFLOAT2(_x, _y) {}
             explicit Vector2(_In_reads_(2) const float *pArray) : XMFLOAT2(pArray) {}
             Vector2(FXMVECTOR V) { XMStoreFloat2(this, V); }
             Vector2(const XMFLOAT2& V) { this->x = V.x; this->y = V.y; }
@@ -228,8 +232,8 @@ namespace DirectX
         struct Vector3 : public XMFLOAT3
         {
             Vector3() DIRECTX_NOEXCEPT : XMFLOAT3(0.f, 0.f, 0.f) {}
-            explicit Vector3(float x) : XMFLOAT3(x, x, x) {}
-            Vector3(float _x, float _y, float _z) : XMFLOAT3(_x, _y, _z) {}
+            XM_CONSTEXPR explicit Vector3(float x) : XMFLOAT3(x, x, x) {}
+            XM_CONSTEXPR Vector3(float _x, float _y, float _z) : XMFLOAT3(_x, _y, _z) {}
             explicit Vector3(_In_reads_(3) const float *pArray) : XMFLOAT3(pArray) {}
             Vector3(FXMVECTOR V) { XMStoreFloat3(this, V); }
             Vector3(const XMFLOAT3& V) { this->x = V.x; this->y = V.y; this->z = V.z; }
@@ -350,8 +354,8 @@ namespace DirectX
         struct Vector4 : public XMFLOAT4
         {
             Vector4() DIRECTX_NOEXCEPT : XMFLOAT4(0.f, 0.f, 0.f, 0.f) {}
-            explicit Vector4(float x) : XMFLOAT4(x, x, x, x) {}
-            Vector4(float _x, float _y, float _z, float _w) : XMFLOAT4(_x, _y, _z, _w) {}
+            XM_CONSTEXPR explicit Vector4(float x) : XMFLOAT4(x, x, x, x) {}
+            XM_CONSTEXPR Vector4(float _x, float _y, float _z, float _w) : XMFLOAT4(_x, _y, _z, _w) {}
             explicit Vector4(_In_reads_(4) const float *pArray) : XMFLOAT4(pArray) {}
             Vector4(FXMVECTOR V) { XMStoreFloat4(this, V); }
             Vector4(const XMFLOAT4& V) { this->x = V.x; this->y = V.y; this->z = V.z; this->w = V.w; }
@@ -470,21 +474,24 @@ namespace DirectX
                             0, 1.f, 0, 0,
                             0, 0, 1.f, 0,
                             0, 0, 0, 1.f) {}
-            Matrix(float m00, float m01, float m02, float m03,
-                   float m10, float m11, float m12, float m13,
-                   float m20, float m21, float m22, float m23,
-                   float m30, float m31, float m32, float m33) : XMFLOAT4X4(m00, m01, m02, m03,
-                                                                            m10, m11, m12, m13,
-                                                                            m20, m21, m22, m23,
-                                                                            m30, m31, m32, m33) {}
-            explicit Matrix(const Vector3& r0, const Vector3& r1, const Vector3& r2) : XMFLOAT4X4(r0.x, r0.y, r0.z, 0,
-                                                                                                  r1.x, r1.y, r1.z, 0,
-                                                                                                  r2.x, r2.y, r2.z, 0,
-                                                                                                  0, 0, 0, 1.f) {}
-            explicit Matrix(const Vector4& r0, const Vector4& r1, const Vector4& r2, const Vector4& r3) : XMFLOAT4X4(r0.x, r0.y, r0.z, r0.w,
-                                                                                                                     r1.x, r1.y, r1.z, r1.w,
-                                                                                                                     r2.x, r2.y, r2.z, r2.w,
-                                                                                                                     r3.x, r3.y, r3.z, r3.w) {}
+            XM_CONSTEXPR Matrix(float m00, float m01, float m02, float m03,
+                                float m10, float m11, float m12, float m13,
+                                float m20, float m21, float m22, float m23,
+                                float m30, float m31, float m32, float m33)
+                : XMFLOAT4X4(m00, m01, m02, m03,
+                             m10, m11, m12, m13,
+                             m20, m21, m22, m23,
+                             m30, m31, m32, m33) {}
+            explicit Matrix(const Vector3& r0, const Vector3& r1, const Vector3& r2)
+                : XMFLOAT4X4(r0.x, r0.y, r0.z, 0,
+                             r1.x, r1.y, r1.z, 0,
+                             r2.x, r2.y, r2.z, 0,
+                             0, 0, 0, 1.f) {}
+            explicit Matrix(const Vector4& r0, const Vector4& r1, const Vector4& r2, const Vector4& r3)
+                : XMFLOAT4X4(r0.x, r0.y, r0.z, r0.w,
+                             r1.x, r1.y, r1.z, r1.w,
+                             r2.x, r2.y, r2.z, r2.w,
+                             r3.x, r3.y, r3.z, r3.w) {}
             Matrix(const XMFLOAT4X4& M) { memcpy_s(this, sizeof(float) * 16, &M, sizeof(XMFLOAT4X4)); }
             Matrix(const XMFLOAT3X3& M);
             Matrix(const XMFLOAT4X3& M);
@@ -618,7 +625,7 @@ namespace DirectX
         struct Plane : public XMFLOAT4
         {
             Plane() DIRECTX_NOEXCEPT : XMFLOAT4(0.f, 1.f, 0.f, 0.f) {}
-            Plane(float _x, float _y, float _z, float _w) : XMFLOAT4(_x, _y, _z, _w) {}
+            XM_CONSTEXPR Plane(float _x, float _y, float _z, float _w) : XMFLOAT4(_x, _y, _z, _w) {}
             Plane(const Vector3& normal, float d) : XMFLOAT4(normal.x, normal.y, normal.z, d) {}
             Plane(const Vector3& point1, const Vector3& point2, const Vector3& point3);
             Plane(const Vector3& point, const Vector3& normal);
@@ -675,7 +682,7 @@ namespace DirectX
         struct Quaternion : public XMFLOAT4
         {
             Quaternion() DIRECTX_NOEXCEPT : XMFLOAT4(0, 0, 0, 1.f) {}
-            Quaternion(float _x, float _y, float _z, float _w) : XMFLOAT4(_x, _y, _z, _w) {}
+            XM_CONSTEXPR Quaternion(float _x, float _y, float _z, float _w) : XMFLOAT4(_x, _y, _z, _w) {}
             Quaternion(const Vector3& v, float scalar) : XMFLOAT4(v.x, v.y, v.z, scalar) {}
             explicit Quaternion(const Vector4& v) : XMFLOAT4(v.x, v.y, v.z, v.w) {}
             explicit Quaternion(_In_reads_(4) const float *pArray) : XMFLOAT4(pArray) {}
@@ -755,8 +762,8 @@ namespace DirectX
         struct Color : public XMFLOAT4
         {
             Color() DIRECTX_NOEXCEPT : XMFLOAT4(0, 0, 0, 1.f) {}
-            Color(float _r, float _g, float _b) : XMFLOAT4(_r, _g, _b, 1.f) {}
-            Color(float _r, float _g, float _b, float _a) : XMFLOAT4(_r, _g, _b, _a) {}
+            XM_CONSTEXPR Color(float _r, float _g, float _b) : XMFLOAT4(_r, _g, _b, 1.f) {}
+            XM_CONSTEXPR Color(float _r, float _g, float _b, float _a) : XMFLOAT4(_r, _g, _b, _a) {}
             explicit Color(const Vector3& clr) : XMFLOAT4(clr.x, clr.y, clr.z, 1.f) {}
             explicit Color(const Vector4& clr) : XMFLOAT4(clr.x, clr.y, clr.z, clr.w) {}
             explicit Color(_In_reads_(4) const float *pArray) : XMFLOAT4(pArray) {}
@@ -895,7 +902,7 @@ namespace DirectX
 
             Viewport() DIRECTX_NOEXCEPT :
                 x(0.f), y(0.f), width(0.f), height(0.f), minDepth(0.f), maxDepth(1.f) {}
-            Viewport(float ix, float iy, float iw, float ih, float iminz = 0.f, float imaxz = 1.f) :
+            XM_CONSTEXPR Viewport(float ix, float iy, float iw, float ih, float iminz = 0.f, float imaxz = 1.f) :
                 x(ix), y(iy), width(iw), height(ih), minDepth(iminz), maxDepth(imaxz) {}
             explicit Viewport(const RECT& rct) :
                 x(float(rct.left)), y(float(rct.top)),
