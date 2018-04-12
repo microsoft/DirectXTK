@@ -139,7 +139,6 @@ namespace DirectX
             bool operator != (const Vector2& V) const;
 
             // Assignment operators
-            Vector2& operator= (const XMFLOAT2& V) { x = V.x; y = V.y; return *this; }
             Vector2& operator= (const XMVECTORF32& F) { x = F.f[0]; y = F.f[1]; return *this; }
             Vector2& operator+= (const Vector2& V);
             Vector2& operator-= (const Vector2& V);
@@ -254,7 +253,6 @@ namespace DirectX
             bool operator != (const Vector3& V) const;
 
             // Assignment operators
-            Vector3& operator= (const XMFLOAT3& V) { x = V.x; y = V.y; z = V.z; return *this; }
             Vector3& operator= (const XMVECTORF32& F) { x = F.f[0]; y = F.f[1]; z = F.f[2]; return *this; }
             Vector3& operator+= (const Vector3& V);
             Vector3& operator-= (const Vector3& V);
@@ -376,7 +374,6 @@ namespace DirectX
             bool operator != (const Vector4& V) const;
 
             // Assignment operators
-            Vector4& operator= (const XMFLOAT4& V) { x = V.x; y = V.y; z = V.z; w = V.w; return *this; }
             Vector4& operator= (const XMVECTORF32& F) { x = F.f[0]; y = F.f[1]; z = F.f[2]; w = F.f[3]; return *this; }
             Vector4& operator+= (const Vector4& V);
             Vector4& operator-= (const Vector4& V);
@@ -514,7 +511,6 @@ namespace DirectX
             bool operator != (const Matrix& M) const;
 
             // Assignment operators
-            Matrix& operator= (const XMFLOAT4X4& M) { memcpy_s(this, sizeof(float) * 16, &M, sizeof(XMFLOAT4X4)); return *this; }
             Matrix& operator= (const XMFLOAT3X3& M);
             Matrix& operator= (const XMFLOAT4X3& M);
             Matrix& operator+= (const Matrix& M);
@@ -650,7 +646,6 @@ namespace DirectX
             bool operator != (const Plane& p) const;
 
             // Assignment operators
-            Plane& operator= (const XMFLOAT4& p) { x = p.x; y = p.y; z = p.z; w = p.w; return *this; }
             Plane& operator= (const XMVECTORF32& F) { x = F.f[0]; y = F.f[1]; z = F.f[2]; w = F.f[3]; return *this; }
 
             // Properties
@@ -705,7 +700,6 @@ namespace DirectX
             bool operator != (const Quaternion& q) const;
 
             // Assignment operators
-            Quaternion& operator= (const XMFLOAT4& q) { x = q.x; y = q.y; z = q.z; w = q.w; return *this; }
             Quaternion& operator= (const XMVECTORF32& F) { x = F.f[0]; y = F.f[1]; z = F.f[2]; w = F.f[3]; return *this; }
             Quaternion& operator+= (const Quaternion& q);
             Quaternion& operator-= (const Quaternion& q);
@@ -793,7 +787,6 @@ namespace DirectX
             bool operator != (const Color& c) const;
 
             // Assignment operators
-            Color& operator= (const XMFLOAT4& c) { x = c.x; y = c.y; z = c.z; w = c.w; return *this; }
             Color& operator= (const XMVECTORF32& F) { x = F.f[0]; y = F.f[1]; z = F.f[2]; w = F.f[3]; return *this; }
             Color& operator= (const DirectX::PackedVector::XMCOLOR& Packed);
             Color& operator= (const DirectX::PackedVector::XMUBYTEN4& Packed);
