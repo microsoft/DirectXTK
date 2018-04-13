@@ -250,7 +250,7 @@ void WaveBank::Impl::Play(int index, float volume, float pitch, float pan)
 // Public constructors.
 _Use_decl_annotations_
 WaveBank::WaveBank(AudioEngine* engine, const wchar_t* wbFileName)
-    : pImpl(new Impl(engine))
+    : pImpl(std::make_unique<Impl>(engine))
 {
     HRESULT hr = pImpl->Initialize(engine, wbFileName);
     if (FAILED(hr))

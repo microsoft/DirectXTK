@@ -354,7 +354,7 @@ void SoundEffect::Impl::Play(float volume, float pitch, float pan)
 // Public constructors.
 _Use_decl_annotations_
 SoundEffect::SoundEffect(AudioEngine* engine, const wchar_t* waveFileName)
-    : pImpl(new Impl(engine))
+    : pImpl(std::make_unique<Impl>(engine))
 {
     WAVData wavInfo;
     std::unique_ptr<uint8_t[]> wavData;
@@ -385,7 +385,7 @@ SoundEffect::SoundEffect(AudioEngine* engine, const wchar_t* waveFileName)
 _Use_decl_annotations_
 SoundEffect::SoundEffect(AudioEngine* engine, std::unique_ptr<uint8_t[]>& wavData,
                          const WAVEFORMATEX* wfx, const uint8_t* startAudio, size_t audioBytes)
-    : pImpl(new Impl(engine))
+    : pImpl(std::make_unique<Impl>(engine))
 {
 #if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
     HRESULT hr = pImpl->Initialize(engine, wavData, wfx, startAudio, audioBytes, nullptr, 0, 0, 0);
@@ -404,7 +404,7 @@ _Use_decl_annotations_
 SoundEffect::SoundEffect(AudioEngine* engine, std::unique_ptr<uint8_t[]>& wavData,
                          const WAVEFORMATEX* wfx, const uint8_t* startAudio, size_t audioBytes,
                          uint32_t loopStart, uint32_t loopLength)
-    : pImpl(new Impl(engine))
+    : pImpl(std::make_unique<Impl>(engine))
 {
 #if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
     HRESULT hr = pImpl->Initialize(engine, wavData, wfx, startAudio, audioBytes, nullptr, 0, loopStart, loopLength);

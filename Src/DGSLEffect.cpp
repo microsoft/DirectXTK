@@ -563,7 +563,7 @@ int DGSLEffect::Impl::GetCurrentPSPermutation() const
 //--------------------------------------------------------------------------------------
 
 DGSLEffect::DGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader, _In_ bool enableSkinning)
-    : pImpl(new Impl(device, pixelShader, enableSkinning))
+    : pImpl(std::make_unique<Impl>(device, pixelShader, enableSkinning))
 {
 }
 

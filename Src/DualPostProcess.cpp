@@ -261,7 +261,7 @@ void DualPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, std
 
 // Public constructor.
 DualPostProcess::DualPostProcess(_In_ ID3D11Device* device)
-  : pImpl(new Impl(device))
+  : pImpl(std::make_unique<Impl>(device))
 {
 }
 

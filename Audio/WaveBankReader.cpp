@@ -1248,7 +1248,7 @@ bool WaveBankReader::Impl::UpdatePrepared()
 
 //--------------------------------------------------------------------------------------
 WaveBankReader::WaveBankReader() :
-    pImpl(new Impl)
+    pImpl(std::make_unique<Impl>())
 {
 }
 

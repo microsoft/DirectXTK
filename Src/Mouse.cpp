@@ -1019,7 +1019,7 @@ void Mouse::SetDpi(float dpi)
 
 // Public constructor.
 Mouse::Mouse()
-    : pImpl(new Impl(this))
+    : pImpl(std::make_unique<Impl>(this))
 {
 }
 

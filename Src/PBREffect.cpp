@@ -286,7 +286,7 @@ void PBREffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
 
 // Public constructor.
 PBREffect::PBREffect(_In_ ID3D11Device* device)
-    : pImpl(new Impl(device))
+    : pImpl(std::make_unique<Impl>(device))
 {
 }
 

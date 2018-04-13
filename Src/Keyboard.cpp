@@ -468,7 +468,7 @@ void Keyboard::SetWindow(ABI::Windows::UI::Core::ICoreWindow* window)
 
 // Public constructor.
 Keyboard::Keyboard()
-    : pImpl(new Impl(this))
+    : pImpl(std::make_unique<Impl>(this))
 {
 }
 

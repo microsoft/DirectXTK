@@ -244,7 +244,7 @@ SpriteFont::SpriteFont(ID3D11Device* device, uint8_t const* dataBlob, size_t dat
 // Construct from arbitrary user specified glyph data (for those not using the MakeSpriteFont utility).
 _Use_decl_annotations_
 SpriteFont::SpriteFont(ID3D11ShaderResourceView* texture, Glyph const* glyphs, size_t glyphCount, float lineSpacing)
-    : pImpl(new Impl(texture, glyphs, glyphCount, lineSpacing))
+    : pImpl(std::make_unique<Impl>(texture, glyphs, glyphCount, lineSpacing))
 {
 }
 

@@ -231,7 +231,7 @@ _Use_decl_annotations_
 DynamicSoundEffectInstance::DynamicSoundEffectInstance(AudioEngine* engine,
                                                        std::function<void(DynamicSoundEffectInstance*)> bufferNeeded,
                                                        int sampleRate, int channels, int sampleBits, SOUND_EFFECT_INSTANCE_FLAGS flags) :
-    pImpl(new Impl(engine, this, bufferNeeded, sampleRate, channels, sampleBits, flags))
+    pImpl(std::make_unique<Impl>(engine, this, bufferNeeded, sampleRate, channels, sampleBits, flags))
 {
 }
 

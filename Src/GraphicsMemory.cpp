@@ -271,7 +271,7 @@ GraphicsMemory::GraphicsMemory(_In_ ID3D11DeviceX* device, UINT backBufferCount)
 #else
 GraphicsMemory::GraphicsMemory(_In_ ID3D11Device* device, UINT backBufferCount)
 #endif
-    : pImpl(new Impl(this))
+    : pImpl(std::make_unique<Impl>(this))
 {
     pImpl->Initialize(device, backBufferCount);
 }

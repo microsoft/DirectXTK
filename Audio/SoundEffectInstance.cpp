@@ -214,13 +214,13 @@ void SoundEffectInstance::Impl::Play(bool loop)
 // Private constructors
 _Use_decl_annotations_
 SoundEffectInstance::SoundEffectInstance(AudioEngine* engine, SoundEffect* effect, SOUND_EFFECT_INSTANCE_FLAGS flags) :
-    pImpl(new Impl(engine, effect, flags))
+    pImpl(std::make_unique<Impl>(engine, effect, flags))
 {
 }
 
 _Use_decl_annotations_
 SoundEffectInstance::SoundEffectInstance(AudioEngine* engine, WaveBank* waveBank, int index, SOUND_EFFECT_INSTANCE_FLAGS flags) :
-    pImpl(new Impl(engine, waveBank, index, flags))
+    pImpl(std::make_unique<Impl>(engine, waveBank, index, flags))
 {
 }
 

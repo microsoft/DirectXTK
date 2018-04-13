@@ -1007,7 +1007,7 @@ XMMATRIX SpriteBatch::Impl::GetViewportTransform(_In_ ID3D11DeviceContext* devic
 
 // Public constructor.
 SpriteBatch::SpriteBatch(_In_ ID3D11DeviceContext* deviceContext)
-  : pImpl(new Impl(deviceContext))
+  : pImpl(std::make_unique<Impl>(deviceContext))
 {
 }
 

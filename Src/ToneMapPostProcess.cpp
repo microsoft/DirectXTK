@@ -345,7 +345,7 @@ int ToneMapPostProcess::Impl::GetCurrentShaderPermutation() const
 
 // Public constructor.
 ToneMapPostProcess::ToneMapPostProcess(_In_ ID3D11Device* device)
-  : pImpl(new Impl(device))
+  : pImpl(std::make_unique<Impl>(device))
 {
 }
 

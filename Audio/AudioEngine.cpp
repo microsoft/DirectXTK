@@ -1240,7 +1240,7 @@ void AudioEngine::Impl::UnregisterNotify(_In_ IVoiceNotify* notify, bool usesOne
 // Public constructor.
 _Use_decl_annotations_
 AudioEngine::AudioEngine(AUDIO_ENGINE_FLAGS flags, const WAVEFORMATEX* wfx, const wchar_t* deviceId, AUDIO_STREAM_CATEGORY category)
-    : pImpl(new Impl())
+    : pImpl(std::make_unique<Impl>())
 {
     HRESULT hr = pImpl->Initialize(flags, wfx, deviceId, category);
     if (FAILED(hr))
