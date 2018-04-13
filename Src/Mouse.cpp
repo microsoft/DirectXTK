@@ -157,6 +157,38 @@ public:
         return GetSystemMetrics(SM_MOUSEPRESENT) != 0;
     }
 
+    bool IsVisible() const
+    {
+        if (mMode == MODE_RELATIVE)
+            return false;
+
+        CURSORINFO info = { sizeof(CURSORINFO) };
+        if (!GetCursorInfo(&info))
+        {
+            throw std::exception("GetCursorInfo");
+        }
+
+        return (info.flags & CURSOR_SHOWING) != 0;
+    }
+
+    void SetVisible(bool visible)
+    {
+        if (mMode == MODE_RELATIVE)
+            return;
+
+        CURSORINFO info = { sizeof(CURSORINFO) };
+        if (!GetCursorInfo(&info))
+        {
+            throw std::exception("GetCursorInfo");
+        }
+
+        bool isvisible = (info.flags & CURSOR_SHOWING) != 0;
+        if (isvisible != visible)
+        {
+            ShowCursor(visible);
+        }
+    }
+
     void SetWindow(HWND window)
     {
         if (mWindow == window)
@@ -449,7 +481,7 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 
-#elif defined(_XBOX_ONE) || ( defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP) )
+#elif (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)) || (defined(_XBOX_ONE) && (!defined(_TITLE) || (_XDK_VER < 0x42D907D1)))
 
 //======================================================================================
 // Null device for Windows Phone
@@ -483,14 +515,22 @@ public:
     {
     }
 
-    void SetMode(Mode mode)
+    void SetMode(Mode)
     {
-        UNREFERENCED_PARAMETER(mode);
     }
 
     bool IsConnected() const
     {
         return false;
+    }
+
+    bool IsVisible() const
+    {
+        return false;
+    }
+
+    void SetVisible(bool)
+    {
     }
 
     Mouse*  mOwner;
@@ -671,6 +711,49 @@ public:
         }
 
         return false;
+    }
+
+    bool IsVisible() const
+    {
+        if (mMode == MODE_RELATIVE)
+            return false;
+
+        ComPtr<ABI::Windows::UI::Core::ICoreCursor> cursor;
+        HRESULT hr = mWindow->get_PointerCursor(cursor.GetAddressOf());
+        ThrowIfFailed(hr);
+
+        return cursor != 0;
+    }
+
+    void SetVisible(bool visible)
+    {
+        using namespace Microsoft::WRL::Wrappers;
+        using namespace ABI::Windows::Foundation;
+        using namespace ABI::Windows::UI::Core;
+
+        if (mMode == MODE_RELATIVE)
+            return;
+
+        if (visible)
+        {
+            if (!mCursor)
+            {
+                ComPtr<ICoreCursorFactory> factory;
+                HRESULT hr = GetActivationFactory(HStringReference(RuntimeClass_Windows_UI_Core_CoreCursor).Get(), factory.GetAddressOf());
+                ThrowIfFailed(hr);
+
+                hr = factory->CreateCursor(CoreCursorType_Arrow, 0, mCursor.GetAddressOf());
+                ThrowIfFailed(hr);
+            }
+
+            HRESULT hr = mWindow->put_PointerCursor(mCursor.Get());
+            ThrowIfFailed(hr);
+        }
+        else
+        {
+            HRESULT hr = mWindow->put_PointerCursor(nullptr);
+            ThrowIfFailed(hr);
+        }
     }
 
     void SetWindow(ABI::Windows::UI::Core::ICoreWindow* window)
@@ -989,6 +1072,15 @@ bool Mouse::IsConnected() const
     return pImpl->IsConnected();
 }
 
+bool Mouse::IsVisible() const
+{
+    return pImpl->IsVisible();
+}
+
+void Mouse::SetVisible(bool visible)
+{
+    pImpl->SetVisible(visible);
+}
 
 Mouse& Mouse::Get()
 {
