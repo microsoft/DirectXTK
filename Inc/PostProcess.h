@@ -23,14 +23,6 @@
 #include <memory>
 #include <functional>
 
-#ifndef DIRECTX_NOEXCEPT
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-#define DIRECTX_NOEXCEPT
-#else
-#define DIRECTX_NOEXCEPT noexcept
-#endif
-#endif
-
 
 namespace DirectX
 {
@@ -64,8 +56,8 @@ namespace DirectX
         };
 
         explicit BasicPostProcess(_In_ ID3D11Device* device);
-        BasicPostProcess(BasicPostProcess&& moveFrom) DIRECTX_NOEXCEPT;
-        BasicPostProcess& operator= (BasicPostProcess&& moveFrom) DIRECTX_NOEXCEPT;
+        BasicPostProcess(BasicPostProcess&& moveFrom) throw();
+        BasicPostProcess& operator= (BasicPostProcess&& moveFrom) throw();
 
         BasicPostProcess(BasicPostProcess const&) = delete;
         BasicPostProcess& operator= (BasicPostProcess const&) = delete;
@@ -111,8 +103,8 @@ namespace DirectX
         };
 
         explicit DualPostProcess(_In_ ID3D11Device* device);
-        DualPostProcess(DualPostProcess&& moveFrom) DIRECTX_NOEXCEPT;
-        DualPostProcess& operator= (DualPostProcess&& moveFrom) DIRECTX_NOEXCEPT;
+        DualPostProcess(DualPostProcess&& moveFrom) throw();
+        DualPostProcess& operator= (DualPostProcess&& moveFrom) throw();
 
         DualPostProcess(DualPostProcess const&) = delete;
         DualPostProcess& operator= (DualPostProcess const&) = delete;
@@ -166,8 +158,8 @@ namespace DirectX
         };
 
         explicit ToneMapPostProcess(_In_ ID3D11Device* device);
-        ToneMapPostProcess(ToneMapPostProcess&& moveFrom) DIRECTX_NOEXCEPT;
-        ToneMapPostProcess& operator= (ToneMapPostProcess&& moveFrom) DIRECTX_NOEXCEPT;
+        ToneMapPostProcess(ToneMapPostProcess&& moveFrom) throw();
+        ToneMapPostProcess& operator= (ToneMapPostProcess&& moveFrom) throw();
 
         ToneMapPostProcess(ToneMapPostProcess const&) = delete;
         ToneMapPostProcess& operator= (ToneMapPostProcess const&) = delete;

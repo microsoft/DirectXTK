@@ -1282,7 +1282,7 @@ GamePad::GamePad()
 
 
 // Move constructor.
-GamePad::GamePad(GamePad&& moveFrom) DIRECTX_NOEXCEPT
+GamePad::GamePad(GamePad&& moveFrom) throw()
     : pImpl(std::move(moveFrom.pImpl))
 {
     pImpl->mOwner = this;
@@ -1290,7 +1290,7 @@ GamePad::GamePad(GamePad&& moveFrom) DIRECTX_NOEXCEPT
 
 
 // Move assignment.
-GamePad& GamePad::operator= (GamePad&& moveFrom) DIRECTX_NOEXCEPT
+GamePad& GamePad::operator= (GamePad&& moveFrom) throw()
 {
     pImpl = std::move(moveFrom.pImpl);
     pImpl->mOwner = this;

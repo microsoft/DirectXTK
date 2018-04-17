@@ -351,14 +351,14 @@ ToneMapPostProcess::ToneMapPostProcess(_In_ ID3D11Device* device)
 
 
 // Move constructor.
-ToneMapPostProcess::ToneMapPostProcess(ToneMapPostProcess&& moveFrom) DIRECTX_NOEXCEPT
+ToneMapPostProcess::ToneMapPostProcess(ToneMapPostProcess&& moveFrom) throw()
   : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-ToneMapPostProcess& ToneMapPostProcess::operator= (ToneMapPostProcess&& moveFrom) DIRECTX_NOEXCEPT
+ToneMapPostProcess& ToneMapPostProcess::operator= (ToneMapPostProcess&& moveFrom) throw()
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

@@ -172,14 +172,14 @@ CommonStates::CommonStates(_In_ ID3D11Device* device)
 
 
 // Move constructor.
-CommonStates::CommonStates(CommonStates&& moveFrom) DIRECTX_NOEXCEPT
+CommonStates::CommonStates(CommonStates&& moveFrom) throw()
   : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-CommonStates& CommonStates::operator= (CommonStates&& moveFrom) DIRECTX_NOEXCEPT
+CommonStates& CommonStates::operator= (CommonStates&& moveFrom) throw()
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

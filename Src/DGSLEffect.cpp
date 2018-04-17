@@ -568,13 +568,13 @@ DGSLEffect::DGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pi
 }
 
 
-DGSLEffect::DGSLEffect(DGSLEffect&& moveFrom) DIRECTX_NOEXCEPT
+DGSLEffect::DGSLEffect(DGSLEffect&& moveFrom) throw()
     : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
-DGSLEffect& DGSLEffect::operator= (DGSLEffect&& moveFrom) DIRECTX_NOEXCEPT
+DGSLEffect& DGSLEffect::operator= (DGSLEffect&& moveFrom) throw()
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

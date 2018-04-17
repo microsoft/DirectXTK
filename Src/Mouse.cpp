@@ -1025,7 +1025,7 @@ Mouse::Mouse()
 
 
 // Move constructor.
-Mouse::Mouse(Mouse&& moveFrom) DIRECTX_NOEXCEPT
+Mouse::Mouse(Mouse&& moveFrom) throw()
     : pImpl(std::move(moveFrom.pImpl))
 {
     pImpl->mOwner = this;
@@ -1033,7 +1033,7 @@ Mouse::Mouse(Mouse&& moveFrom) DIRECTX_NOEXCEPT
 
 
 // Move assignment.
-Mouse& Mouse::operator= (Mouse&& moveFrom) DIRECTX_NOEXCEPT
+Mouse& Mouse::operator= (Mouse&& moveFrom) throw()
 {
     pImpl = std::move(moveFrom.pImpl);
     pImpl->mOwner = this;

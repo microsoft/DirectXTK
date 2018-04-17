@@ -438,14 +438,14 @@ SoundEffect::SoundEffect(AudioEngine* engine, std::unique_ptr<uint8_t[]>& wavDat
 
 
 // Move constructor.
-SoundEffect::SoundEffect(SoundEffect&& moveFrom) DIRECTX_NOEXCEPT
+SoundEffect::SoundEffect(SoundEffect&& moveFrom) throw()
     : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-SoundEffect& SoundEffect::operator= (SoundEffect&& moveFrom) DIRECTX_NOEXCEPT
+SoundEffect& SoundEffect::operator= (SoundEffect&& moveFrom) throw()
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

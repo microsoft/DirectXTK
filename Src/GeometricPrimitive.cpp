@@ -76,7 +76,7 @@ namespace
 class GeometricPrimitive::Impl
 {
 public:
-    Impl() DIRECTX_NOEXCEPT : mIndexCount(0) {}
+    Impl() throw() : mIndexCount(0) {}
 
     void Initialize(_In_ ID3D11DeviceContext* deviceContext, const VertexCollection& vertices, const IndexCollection& indices);
 

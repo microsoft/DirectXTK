@@ -474,7 +474,7 @@ Keyboard::Keyboard()
 
 
 // Move constructor.
-Keyboard::Keyboard(Keyboard&& moveFrom) DIRECTX_NOEXCEPT
+Keyboard::Keyboard(Keyboard&& moveFrom) throw()
     : pImpl(std::move(moveFrom.pImpl))
 {
     pImpl->mOwner = this;
@@ -482,7 +482,7 @@ Keyboard::Keyboard(Keyboard&& moveFrom) DIRECTX_NOEXCEPT
 
 
 // Move assignment.
-Keyboard& Keyboard::operator= (Keyboard&& moveFrom) DIRECTX_NOEXCEPT
+Keyboard& Keyboard::operator= (Keyboard&& moveFrom) throw()
 {
     pImpl = std::move(moveFrom.pImpl);
     pImpl->mOwner = this;

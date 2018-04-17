@@ -69,7 +69,7 @@ namespace DirectX
     class SoundEffectInstanceBase
     {
     public:
-        SoundEffectInstanceBase() DIRECTX_NOEXCEPT :
+        SoundEffectInstanceBase() throw() :
             voice(nullptr),
             state(STOPPED),
             engine(nullptr),

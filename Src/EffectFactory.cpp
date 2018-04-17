@@ -453,12 +453,12 @@ EffectFactory::~EffectFactory()
 }
 
 
-EffectFactory::EffectFactory(EffectFactory&& moveFrom) DIRECTX_NOEXCEPT
+EffectFactory::EffectFactory(EffectFactory&& moveFrom) throw()
     : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
-EffectFactory& EffectFactory::operator= (EffectFactory&& moveFrom) DIRECTX_NOEXCEPT
+EffectFactory& EffectFactory::operator= (EffectFactory&& moveFrom) throw()
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

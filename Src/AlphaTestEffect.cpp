@@ -286,14 +286,14 @@ AlphaTestEffect::AlphaTestEffect(_In_ ID3D11Device* device)
 
 
 // Move constructor.
-AlphaTestEffect::AlphaTestEffect(AlphaTestEffect&& moveFrom) DIRECTX_NOEXCEPT
+AlphaTestEffect::AlphaTestEffect(AlphaTestEffect&& moveFrom) throw()
   : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-AlphaTestEffect& AlphaTestEffect::operator= (AlphaTestEffect&& moveFrom) DIRECTX_NOEXCEPT
+AlphaTestEffect& AlphaTestEffect::operator= (AlphaTestEffect&& moveFrom) throw()
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

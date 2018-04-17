@@ -17,14 +17,6 @@
 namespace ABI { namespace Windows { namespace UI { namespace Core { struct ICoreWindow; } } } }
 #endif
 
-#ifndef DIRECTX_NOEXCEPT
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-#define DIRECTX_NOEXCEPT
-#else
-#define DIRECTX_NOEXCEPT noexcept
-#endif
-#endif
-
 
 namespace DirectX
 {
@@ -32,8 +24,8 @@ namespace DirectX
     {
     public:
         Keyboard();
-        Keyboard(Keyboard&& moveFrom) DIRECTX_NOEXCEPT;
-        Keyboard& operator= (Keyboard&& moveFrom) DIRECTX_NOEXCEPT;
+        Keyboard(Keyboard&& moveFrom) throw();
+        Keyboard& operator= (Keyboard&& moveFrom) throw();
 
         Keyboard(Keyboard const&) = delete;
         Keyboard& operator=(Keyboard const&) = delete;
@@ -436,7 +428,7 @@ namespace DirectX
             State released;
             State pressed;
 
-            KeyboardStateTracker() DIRECTX_NOEXCEPT { Reset(); }
+            KeyboardStateTracker() throw() { Reset(); }
 
             void __cdecl Update(const State& state);
 

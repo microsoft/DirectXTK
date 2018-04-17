@@ -426,7 +426,7 @@ using namespace DirectX;
 class WaveBankReader::Impl
 {
 public:
-    Impl() DIRECTX_NOEXCEPT :
+    Impl() throw() :
         m_async(INVALID_HANDLE_VALUE),
         m_prepared(false)
     #if defined(_XBOX_ONE) && defined(_TITLE)

@@ -17,14 +17,6 @@
 
 #include <memory>
 
-#ifndef DIRECTX_NOEXCEPT
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-#define DIRECTX_NOEXCEPT
-#else
-#define DIRECTX_NOEXCEPT noexcept
-#endif
-#endif
-
 
 namespace DirectX
 {
@@ -36,8 +28,8 @@ namespace DirectX
     #else
         GraphicsMemory(_In_ ID3D11Device* device, UINT backBufferCount = 2);
     #endif
-        GraphicsMemory(GraphicsMemory&& moveFrom) DIRECTX_NOEXCEPT;
-        GraphicsMemory& operator= (GraphicsMemory&& moveFrom) DIRECTX_NOEXCEPT;
+        GraphicsMemory(GraphicsMemory&& moveFrom) throw();
+        GraphicsMemory& operator= (GraphicsMemory&& moveFrom) throw();
 
         GraphicsMemory(GraphicsMemory const&) = delete;
         GraphicsMemory& operator=(GraphicsMemory const&) = delete;

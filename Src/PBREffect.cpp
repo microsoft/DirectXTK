@@ -292,14 +292,14 @@ PBREffect::PBREffect(_In_ ID3D11Device* device)
 
 
 // Move constructor.
-PBREffect::PBREffect(PBREffect&& moveFrom) DIRECTX_NOEXCEPT
+PBREffect::PBREffect(PBREffect&& moveFrom) throw()
   : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-PBREffect& PBREffect::operator= (PBREffect&& moveFrom) DIRECTX_NOEXCEPT
+PBREffect& PBREffect::operator= (PBREffect&& moveFrom) throw()
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

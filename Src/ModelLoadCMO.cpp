@@ -189,7 +189,7 @@ namespace
         std::shared_ptr<IEffect>        effect;
         ComPtr<ID3D11InputLayout>       il;
 
-        MaterialRecordCMO() DIRECTX_NOEXCEPT : pMaterial(nullptr) {}
+        MaterialRecordCMO() throw() : pMaterial(nullptr) {}
     };
 
     // Helper for creating a D3D input layout.

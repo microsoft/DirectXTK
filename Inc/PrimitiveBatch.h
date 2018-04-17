@@ -19,14 +19,6 @@
 #include <utility>
 #include <stdint.h>
 
-#ifndef DIRECTX_NOEXCEPT
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-#define DIRECTX_NOEXCEPT
-#else
-#define DIRECTX_NOEXCEPT noexcept
-#endif
-#endif
-
 
 namespace DirectX
 {
@@ -37,8 +29,8 @@ namespace DirectX
         {
         protected:
             PrimitiveBatchBase(_In_ ID3D11DeviceContext* deviceContext, size_t maxIndices, size_t maxVertices, size_t vertexSize);
-            PrimitiveBatchBase(PrimitiveBatchBase&& moveFrom) DIRECTX_NOEXCEPT;
-            PrimitiveBatchBase& operator= (PrimitiveBatchBase&& moveFrom) DIRECTX_NOEXCEPT;
+            PrimitiveBatchBase(PrimitiveBatchBase&& moveFrom) throw();
+            PrimitiveBatchBase& operator= (PrimitiveBatchBase&& moveFrom) throw();
 
             PrimitiveBatchBase(PrimitiveBatchBase const&) = delete;
             PrimitiveBatchBase& operator= (PrimitiveBatchBase const&) = delete;
@@ -74,11 +66,11 @@ namespace DirectX
             : PrimitiveBatchBase(deviceContext, maxIndices, maxVertices, sizeof(TVertex))
         { }
 
-        PrimitiveBatch(PrimitiveBatch&& moveFrom) DIRECTX_NOEXCEPT
+        PrimitiveBatch(PrimitiveBatch&& moveFrom) throw()
             : PrimitiveBatchBase(std::move(moveFrom))
         { }
 
-        PrimitiveBatch& operator= (PrimitiveBatch&& moveFrom) DIRECTX_NOEXCEPT
+        PrimitiveBatch& operator= (PrimitiveBatch&& moveFrom) throw()
         {
             PrimitiveBatchBase::operator=(std::move(moveFrom));
             return *this;

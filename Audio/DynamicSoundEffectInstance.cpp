@@ -237,14 +237,14 @@ DynamicSoundEffectInstance::DynamicSoundEffectInstance(AudioEngine* engine,
 
 
 // Move constructor.
-DynamicSoundEffectInstance::DynamicSoundEffectInstance(DynamicSoundEffectInstance&& moveFrom) DIRECTX_NOEXCEPT
+DynamicSoundEffectInstance::DynamicSoundEffectInstance(DynamicSoundEffectInstance&& moveFrom) throw()
     : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-DynamicSoundEffectInstance& DynamicSoundEffectInstance::operator= (DynamicSoundEffectInstance&& moveFrom) DIRECTX_NOEXCEPT
+DynamicSoundEffectInstance& DynamicSoundEffectInstance::operator= (DynamicSoundEffectInstance&& moveFrom) throw()
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

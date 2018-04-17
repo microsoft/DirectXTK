@@ -406,14 +406,14 @@ PrimitiveBatchBase::PrimitiveBatchBase(_In_ ID3D11DeviceContext* deviceContext, 
 
 
 // Move constructor.
-PrimitiveBatchBase::PrimitiveBatchBase(PrimitiveBatchBase&& moveFrom) DIRECTX_NOEXCEPT
+PrimitiveBatchBase::PrimitiveBatchBase(PrimitiveBatchBase&& moveFrom) throw()
   : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-PrimitiveBatchBase& PrimitiveBatchBase::operator= (PrimitiveBatchBase&& moveFrom) DIRECTX_NOEXCEPT
+PrimitiveBatchBase& PrimitiveBatchBase::operator= (PrimitiveBatchBase&& moveFrom) throw()
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

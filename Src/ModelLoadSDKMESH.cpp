@@ -38,7 +38,7 @@ namespace
         std::shared_ptr<IEffect> effect;
         bool alpha;
 
-        MaterialRecordSDKMESH() DIRECTX_NOEXCEPT : alpha(false) {}
+        MaterialRecordSDKMESH() throw() : alpha(false) {}
     };
 
     void LoadMaterial(const DXUT::SDKMESH_MATERIAL& mh,

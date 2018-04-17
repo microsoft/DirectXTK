@@ -808,7 +808,7 @@ struct WaveFile
     MINIWAVEFORMAT miniFmt;
     std::unique_ptr<uint8_t[]> waveData;
 
-    WaveFile() : conv(0), miniFmt{} { memset(&data, 0, sizeof(data)); }
+    WaveFile() throw() : conv(0), miniFmt{} { memset(&data, 0, sizeof(data)); }
 
 #if defined(_MSC_VER) && (_MSC_VER < 1900)
     // VS 2013 does not perform impliclit creation of move construtors nor does it support =default,

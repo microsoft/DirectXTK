@@ -29,14 +29,6 @@
 #include <string>
 #endif
 
-#ifndef DIRECTX_NOEXCEPT
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-#define DIRECTX_NOEXCEPT
-#else
-#define DIRECTX_NOEXCEPT noexcept
-#endif
-#endif
-
 
 namespace DirectX
 {
@@ -44,8 +36,8 @@ namespace DirectX
     {
     public:
         GamePad();
-        GamePad(GamePad&& moveFrom) DIRECTX_NOEXCEPT;
-        GamePad& operator= (GamePad&& moveFrom) DIRECTX_NOEXCEPT;
+        GamePad(GamePad&& moveFrom) throw();
+        GamePad& operator= (GamePad&& moveFrom) throw();
 
         GamePad(GamePad const&) = delete;
         GamePad& operator=(GamePad const&) = delete;
@@ -236,7 +228,7 @@ namespace DirectX
             ButtonState leftTrigger;
             ButtonState rightTrigger;
 
-            ButtonStateTracker() DIRECTX_NOEXCEPT { Reset(); }
+            ButtonStateTracker() throw() { Reset(); }
 
             void __cdecl Update(const State& state);
 
