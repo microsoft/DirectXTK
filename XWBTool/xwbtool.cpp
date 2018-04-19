@@ -921,7 +921,7 @@ namespace
                     break;
             }
         }
-            
+
         // Process directories
         if (recursive)
         {
@@ -1485,8 +1485,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     }
 
     // Setup wave bank header
-    HEADER header;
-    memset(&header, 0, sizeof(header));
+    HEADER header = {};
     header.dwSignature = HEADER::SIGNATURE;
     header.dwHeaderVersion = HEADER::VERSION;
     header.dwVersion = XACT_CONTENT_VERSION;
@@ -1496,8 +1495,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     // Write bank metadata
     assert((segmentOffset % 4) == 0);
 
-    BANKDATA data;
-    memset(&data, 0, sizeof(data));
+    BANKDATA data = {};
 
     data.dwEntryCount = uint32_t(waves.size());
     data.dwAlignment = dwAlignment;
@@ -1542,7 +1540,9 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         return 1;
     }
 
-    if (!WriteFile(hFile.get(), &data, sizeof(data), nullptr, nullptr))
+    DWORD bytesWritten;
+    if (!WriteFile(hFile.get(), &data, sizeof(data), &bytesWritten, nullptr)
+        || bytesWritten != sizeof(data))
     {
         wprintf(L"ERROR: Failed writing bank data to %ls, %u\n", szOutputFile, GetLastError());
         return 1;
@@ -1562,7 +1562,8 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     }
 
     uint32_t entryBytes = uint32_t(waves.size() * data.dwEntryMetaDataElementSize);
-    if (!WriteFile(hFile.get(), entries.get(), entryBytes, nullptr, nullptr))
+    if (!WriteFile(hFile.get(), entries.get(), entryBytes, &bytesWritten, nullptr)
+        || bytesWritten != entryBytes)
     {
         wprintf(L"ERROR: Failed writing entry metadata to %ls, %u\n", szOutputFile, GetLastError());
         return 1;
@@ -1629,7 +1630,8 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
 
         uint32_t seekLen = uint32_t(sizeof(uint32_t) * seekEntries);
 
-        if (!WriteFile(hFile.get(), seekTables.get(), seekLen, nullptr, nullptr))
+        if (!WriteFile(hFile.get(), seekTables.get(), seekLen, &bytesWritten, nullptr)
+            || bytesWritten != seekLen)
         {
             wprintf(L"ERROR: Failed writing seek tables to %ls, %u\n", szOutputFile, GetLastError());
             return 1;
@@ -1656,7 +1658,8 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         }
 
         uint32_t entryNamesBytes = uint32_t(count * data.dwEntryNameElementSize);
-        if (!WriteFile(hFile.get(), entryNames.get(), entryNamesBytes, nullptr, nullptr))
+        if (!WriteFile(hFile.get(), entryNames.get(), entryNamesBytes, &bytesWritten, nullptr)
+            || bytesWritten != entryNamesBytes)
         {
             wprintf(L"ERROR: Failed writing friendly entry names to %ls, %u\n", szOutputFile, GetLastError());
             return 1;
@@ -1681,7 +1684,8 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
             return 1;
         }
 
-        if (!WriteFile(hFile.get(), it->data.startAudio, it->data.audioBytes, nullptr, nullptr))
+        if (!WriteFile(hFile.get(), it->data.startAudio, it->data.audioBytes, &bytesWritten, nullptr)
+            || bytesWritten != it->data.audioBytes)
         {
             wprintf(L"ERROR: Failed writing audio data to %ls, %u\n", szOutputFile, GetLastError());
             return 1;
@@ -1719,7 +1723,8 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         return 1;
     }
 
-    if (!WriteFile(hFile.get(), &header, sizeof(header), nullptr, nullptr))
+    if (!WriteFile(hFile.get(), &header, sizeof(header), &bytesWritten, nullptr)
+        || bytesWritten != sizeof(header))
     {
         wprintf(L"ERROR: Failed committing output file %ls, HDR %u\n", szOutputFile, GetLastError());
         return 1;
