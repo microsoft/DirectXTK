@@ -253,6 +253,7 @@ void DualPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, std
     }
 
     // Draw quad.
+    deviceContext->IASetInputLayout(nullptr);
     deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     deviceContext->Draw(3, 0);
