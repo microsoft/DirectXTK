@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit for DirectX 11
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-February 7, 2018
+April 23, 2018
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Universal Windows Platform (UWP) apps for Windows 10,
@@ -91,6 +91,17 @@ RELEASE NOTES
 ---------------
 RELEASE HISTORY
 ---------------
+
+April 23, 2018
+    AlignUp, AlignDown template functions in DirectXHelpers.h
+    Mouse support for cursor visibility
+    SimpleMath and VertexTypes updated with default copy and move ctors
+    SimpleMath updates to use constexpr
+    EffectFactory updated with GetDevice method
+    PostProcess updated with 'big triangle' optimization
+    Fix for CMO handling of skinning vertex data
+    Code and project file cleanup
+    xwbtool: Fixed Windows 7 compatibility issue
 
 February 7, 2018
     Mouse fix for cursor behavior when using Remote Desktop for Win32
