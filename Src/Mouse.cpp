@@ -575,7 +575,7 @@ public:
         mPointerReleasedToken{},
         mPointerMovedToken{},
         mPointerWheelToken{},
-        mPointerMouseMovedToken{},
+        mPointerMouseMovedToken{}
     {
         if (s_mouse)
         {
