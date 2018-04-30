@@ -226,14 +226,14 @@ SoundEffectInstance::SoundEffectInstance(AudioEngine* engine, WaveBank* waveBank
 
 
 // Move constructor.
-SoundEffectInstance::SoundEffectInstance(SoundEffectInstance&& moveFrom) throw()
+SoundEffectInstance::SoundEffectInstance(SoundEffectInstance&& moveFrom) noexcept
     : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-SoundEffectInstance& SoundEffectInstance::operator= (SoundEffectInstance&& moveFrom) throw()
+SoundEffectInstance& SoundEffectInstance::operator= (SoundEffectInstance&& moveFrom) noexcept
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

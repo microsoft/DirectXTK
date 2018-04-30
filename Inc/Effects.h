@@ -100,8 +100,8 @@ namespace DirectX
     {
     public:
         explicit BasicEffect(_In_ ID3D11Device* device);
-        BasicEffect(BasicEffect&& moveFrom) throw();
-        BasicEffect& operator= (BasicEffect&& moveFrom) throw();
+        BasicEffect(BasicEffect&& moveFrom) noexcept;
+        BasicEffect& operator= (BasicEffect&& moveFrom) noexcept;
 
         BasicEffect(BasicEffect const&) = delete;
         BasicEffect& operator= (BasicEffect const&) = delete;
@@ -170,8 +170,8 @@ namespace DirectX
     {
     public:
         explicit AlphaTestEffect(_In_ ID3D11Device* device);
-        AlphaTestEffect(AlphaTestEffect&& moveFrom) throw();
-        AlphaTestEffect& operator= (AlphaTestEffect&& moveFrom) throw();
+        AlphaTestEffect(AlphaTestEffect&& moveFrom) noexcept;
+        AlphaTestEffect& operator= (AlphaTestEffect&& moveFrom) noexcept;
 
         AlphaTestEffect(AlphaTestEffect const&) = delete;
         AlphaTestEffect& operator= (AlphaTestEffect const&) = delete;
@@ -224,8 +224,8 @@ namespace DirectX
     {
     public:
         explicit DualTextureEffect(_In_ ID3D11Device* device);
-        DualTextureEffect(DualTextureEffect&& moveFrom) throw();
-        DualTextureEffect& operator= (DualTextureEffect&& moveFrom) throw();
+        DualTextureEffect(DualTextureEffect&& moveFrom) noexcept;
+        DualTextureEffect& operator= (DualTextureEffect&& moveFrom) noexcept;
 
         DualTextureEffect(DualTextureEffect const&) = delete;
         DualTextureEffect& operator= (DualTextureEffect const&) = delete;
@@ -275,8 +275,8 @@ namespace DirectX
     {
     public:
         explicit EnvironmentMapEffect(_In_ ID3D11Device* device);
-        EnvironmentMapEffect(EnvironmentMapEffect&& moveFrom) throw();
-        EnvironmentMapEffect& operator= (EnvironmentMapEffect&& moveFrom) throw();
+        EnvironmentMapEffect(EnvironmentMapEffect&& moveFrom) noexcept;
+        EnvironmentMapEffect& operator= (EnvironmentMapEffect&& moveFrom) noexcept;
 
         EnvironmentMapEffect(EnvironmentMapEffect const&) = delete;
         EnvironmentMapEffect& operator= (EnvironmentMapEffect const&) = delete;
@@ -346,8 +346,8 @@ namespace DirectX
     {
     public:
         explicit SkinnedEffect(_In_ ID3D11Device* device);
-        SkinnedEffect(SkinnedEffect&& moveFrom) throw();
-        SkinnedEffect& operator= (SkinnedEffect&& moveFrom) throw();
+        SkinnedEffect(SkinnedEffect&& moveFrom) noexcept;
+        SkinnedEffect& operator= (SkinnedEffect&& moveFrom) noexcept;
 
         SkinnedEffect(SkinnedEffect const&) = delete;
         SkinnedEffect& operator= (SkinnedEffect const&) = delete;
@@ -419,8 +419,8 @@ namespace DirectX
     public:
         explicit DGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader = nullptr,
                             _In_ bool enableSkinning = false);
-        DGSLEffect(DGSLEffect&& moveFrom) throw();
-        DGSLEffect& operator= (DGSLEffect&& moveFrom) throw();
+        DGSLEffect(DGSLEffect&& moveFrom) noexcept;
+        DGSLEffect& operator= (DGSLEffect&& moveFrom) noexcept;
 
         DGSLEffect(DGSLEffect const&) = delete;
         DGSLEffect& operator= (DGSLEffect const&) = delete;
@@ -498,8 +498,8 @@ namespace DirectX
     {
     public:
         explicit NormalMapEffect(_In_ ID3D11Device* device);
-        NormalMapEffect(NormalMapEffect&& moveFrom) throw();
-        NormalMapEffect& operator= (NormalMapEffect&& moveFrom) throw();
+        NormalMapEffect(NormalMapEffect&& moveFrom) noexcept;
+        NormalMapEffect& operator= (NormalMapEffect&& moveFrom) noexcept;
 
         NormalMapEffect(NormalMapEffect const&) = delete;
         NormalMapEffect& operator= (NormalMapEffect const&) = delete;
@@ -570,8 +570,8 @@ namespace DirectX
     {
     public:
         explicit PBREffect(_In_ ID3D11Device* device);
-        PBREffect(PBREffect&& moveFrom) throw();
-        PBREffect& operator= (PBREffect&& moveFrom) throw();
+        PBREffect(PBREffect&& moveFrom) noexcept;
+        PBREffect& operator= (PBREffect&& moveFrom) noexcept;
 
         PBREffect(PBREffect const&) = delete;
         PBREffect& operator= (PBREffect const&) = delete;
@@ -651,8 +651,8 @@ namespace DirectX
         };
 
         explicit DebugEffect(_In_ ID3D11Device* device);
-        DebugEffect(DebugEffect&& moveFrom) throw();
-        DebugEffect& operator= (DebugEffect&& moveFrom) throw();
+        DebugEffect(DebugEffect&& moveFrom) noexcept;
+        DebugEffect& operator= (DebugEffect&& moveFrom) noexcept;
 
         DebugEffect(DebugEffect const&) = delete;
         DebugEffect& operator= (DebugEffect const&) = delete;
@@ -713,7 +713,23 @@ namespace DirectX
             const wchar_t*      specularTexture;
             const wchar_t*      normalTexture;
 
-            EffectInfo() throw() { memset(this, 0, sizeof(EffectInfo)); };
+            EffectInfo() noexcept :
+                name(nullptr),
+                perVertexColor(false),
+                enableSkinning(false),
+                enableDualTexture(false),
+                enableNormalMaps(false),
+                biasedVertexNormals(false),
+                specularPower(0.f),
+                alpha(0.f),
+                ambientColor{ 0.f, 0.f, 0.f },
+                diffuseColor{ 0.f, 0.f, 0.f },
+                specularColor{ 0.f, 0.f, 0.f },
+                emissiveColor{ 0.f, 0.f, 0.f },
+                diffuseTexture(nullptr),
+                specularTexture(nullptr),
+                normalTexture(nullptr)
+                {}
         };
 
         virtual std::shared_ptr<IEffect> __cdecl CreateEffect(_In_ const EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext) = 0;
@@ -727,8 +743,8 @@ namespace DirectX
     {
     public:
         explicit EffectFactory(_In_ ID3D11Device* device);
-        EffectFactory(EffectFactory&& moveFrom) throw();
-        EffectFactory& operator= (EffectFactory&& moveFrom) throw();
+        EffectFactory(EffectFactory&& moveFrom) noexcept;
+        EffectFactory& operator= (EffectFactory&& moveFrom) noexcept;
 
         EffectFactory(EffectFactory const&) = delete;
         EffectFactory& operator= (EffectFactory const&) = delete;
@@ -765,8 +781,8 @@ namespace DirectX
     {
     public:
         explicit DGSLEffectFactory(_In_ ID3D11Device* device);
-        DGSLEffectFactory(DGSLEffectFactory&& moveFrom) throw();
-        DGSLEffectFactory& operator= (DGSLEffectFactory&& moveFrom) throw();
+        DGSLEffectFactory(DGSLEffectFactory&& moveFrom) noexcept;
+        DGSLEffectFactory& operator= (DGSLEffectFactory&& moveFrom) noexcept;
 
         DGSLEffectFactory(DGSLEffectFactory const&) = delete;
         DGSLEffectFactory& operator= (DGSLEffectFactory const&) = delete;
@@ -785,7 +801,11 @@ namespace DirectX
             const wchar_t* textures[DGSLEffect::MaxTextures - BaseTextureOffset];
             const wchar_t* pixelShader;
 
-            DGSLEffectInfo() throw() { memset(this, 0, sizeof(DGSLEffectInfo)); };
+            DGSLEffectInfo() noexcept :
+                EffectInfo(),
+                textures{},
+                pixelShader(nullptr)
+                {}
         };
 
         virtual std::shared_ptr<IEffect> __cdecl CreateDGSLEffect(_In_ const DGSLEffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext);

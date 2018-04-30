@@ -25,10 +25,8 @@ namespace DirectX
     public:
         WaveBankReader();
 
-    #if !defined(_MSC_VER) || _MSC_VER >= 1900
         WaveBankReader(WaveBankReader&&) = default;
         WaveBankReader& operator= (WaveBankReader&&) = default;
-    #endif
 
         WaveBankReader(WaveBankReader const&) = delete;
         WaveBankReader& operator= (WaveBankReader const&) = delete;

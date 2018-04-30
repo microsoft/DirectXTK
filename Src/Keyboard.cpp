@@ -77,6 +77,7 @@ class Keyboard::Impl
 {
 public:
     Impl(Keyboard* owner) :
+        mState{},
         mOwner(owner)
     {
         if (s_keyboard)
@@ -85,8 +86,6 @@ public:
         }
 
         s_keyboard = this;
-
-        memset(&mState, 0, sizeof(State));
     }
 
     ~Impl()
@@ -248,19 +247,17 @@ class Keyboard::Impl
 {
 public:
     Impl(Keyboard* owner) :
-        mOwner(owner)
+        mState{},
+        mOwner(owner),
+        mAcceleratorKeyToken{},
+        mActivatedToken{}
     {
-        mAcceleratorKeyToken.value = 0;
-        mActivatedToken.value = 0;
-
         if (s_keyboard)
         {
             throw std::exception("Keyboard is a singleton");
         }
 
         s_keyboard = this;
-
-        memset(&mState, 0, sizeof(State));
     }
 
     ~Impl()
@@ -474,7 +471,7 @@ Keyboard::Keyboard()
 
 
 // Move constructor.
-Keyboard::Keyboard(Keyboard&& moveFrom) throw()
+Keyboard::Keyboard(Keyboard&& moveFrom) noexcept
     : pImpl(std::move(moveFrom.pImpl))
 {
     pImpl->mOwner = this;
@@ -482,7 +479,7 @@ Keyboard::Keyboard(Keyboard&& moveFrom) throw()
 
 
 // Move assignment.
-Keyboard& Keyboard::operator= (Keyboard&& moveFrom) throw()
+Keyboard& Keyboard::operator= (Keyboard&& moveFrom) noexcept
 {
     pImpl = std::move(moveFrom.pImpl);
     pImpl->mOwner = this;

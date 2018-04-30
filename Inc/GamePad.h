@@ -36,8 +36,8 @@ namespace DirectX
     {
     public:
         GamePad();
-        GamePad(GamePad&& moveFrom) throw();
-        GamePad& operator= (GamePad&& moveFrom) throw();
+        GamePad(GamePad&& moveFrom) noexcept;
+        GamePad& operator= (GamePad&& moveFrom) noexcept;
 
         GamePad(GamePad const&) = delete;
         GamePad& operator=(GamePad const&) = delete;
@@ -228,7 +228,7 @@ namespace DirectX
             ButtonState leftTrigger;
             ButtonState rightTrigger;
 
-            ButtonStateTracker() throw() { Reset(); }
+            ButtonStateTracker() noexcept { Reset(); }
 
             void __cdecl Update(const State& state);
 

@@ -252,14 +252,14 @@ NormalMapEffect::NormalMapEffect(_In_ ID3D11Device* device)
 
 
 // Move constructor.
-NormalMapEffect::NormalMapEffect(NormalMapEffect&& moveFrom) throw()
+NormalMapEffect::NormalMapEffect(NormalMapEffect&& moveFrom) noexcept
   : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-NormalMapEffect& NormalMapEffect::operator= (NormalMapEffect&& moveFrom) throw()
+NormalMapEffect& NormalMapEffect::operator= (NormalMapEffect&& moveFrom) noexcept
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

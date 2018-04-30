@@ -244,7 +244,7 @@ static_assert(_countof(gReverbPresets) == Reverb_MAX, "AUDIO_ENGINE_REVERB enum 
 class AudioEngine::Impl
 {
 public:
-    Impl() throw() :
+    Impl() noexcept :
         mMasterVoice(nullptr),
         mReverbVoice(nullptr),
         masterChannelMask(0),
@@ -1267,14 +1267,14 @@ AudioEngine::AudioEngine(AUDIO_ENGINE_FLAGS flags, const WAVEFORMATEX* wfx, cons
 
 
 // Move constructor.
-AudioEngine::AudioEngine(AudioEngine&& moveFrom) throw()
+AudioEngine::AudioEngine(AudioEngine&& moveFrom) noexcept
     : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-AudioEngine& AudioEngine::operator= (AudioEngine&& moveFrom) throw()
+AudioEngine& AudioEngine::operator= (AudioEngine&& moveFrom) noexcept
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

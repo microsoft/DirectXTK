@@ -24,8 +24,8 @@ namespace DirectX
     {
     public:
         Keyboard();
-        Keyboard(Keyboard&& moveFrom) throw();
-        Keyboard& operator= (Keyboard&& moveFrom) throw();
+        Keyboard(Keyboard&& moveFrom) noexcept;
+        Keyboard& operator= (Keyboard&& moveFrom) noexcept;
 
         Keyboard(Keyboard const&) = delete;
         Keyboard& operator=(Keyboard const&) = delete;
@@ -428,7 +428,7 @@ namespace DirectX
             State released;
             State pressed;
 
-            KeyboardStateTracker() throw() { Reset(); }
+            KeyboardStateTracker() noexcept { Reset(); }
 
             void __cdecl Update(const State& state);
 

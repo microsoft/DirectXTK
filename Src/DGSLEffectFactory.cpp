@@ -22,9 +22,7 @@
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1900)
 static_assert(DGSLEffect::MaxTextures == DGSLEffectFactory::DGSLEffectInfo::BaseTextureOffset + _countof(DGSLEffectFactory::DGSLEffectInfo::textures), "DGSL supports 8 textures");
-#endif
 
 // Internal DGSLEffectFactory implementation class. Only one of these helpers is allocated
 // per D3D device, even if there are multiple public facing DGSLEffectFactory instances.
@@ -509,12 +507,12 @@ DGSLEffectFactory::~DGSLEffectFactory()
 }
 
 
-DGSLEffectFactory::DGSLEffectFactory(DGSLEffectFactory&& moveFrom) throw()
+DGSLEffectFactory::DGSLEffectFactory(DGSLEffectFactory&& moveFrom) noexcept
     : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
-DGSLEffectFactory& DGSLEffectFactory::operator= (DGSLEffectFactory&& moveFrom) throw()
+DGSLEffectFactory& DGSLEffectFactory::operator= (DGSLEffectFactory&& moveFrom) noexcept
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;
