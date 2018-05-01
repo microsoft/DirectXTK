@@ -347,12 +347,14 @@ namespace DirectX
             : position(position),
             normal(normal),
             tangent(tangent),
+            color{},
             textureCoordinate(textureCoordinate)
         {
             SetColor(color);
         }
 
-        VertexPositionNormalTangentColorTexture(FXMVECTOR position, FXMVECTOR normal, FXMVECTOR tangent, CXMVECTOR color, CXMVECTOR textureCoordinate)
+        VertexPositionNormalTangentColorTexture(FXMVECTOR position, FXMVECTOR normal, FXMVECTOR tangent, CXMVECTOR color, CXMVECTOR textureCoordinate) :
+            color{}
         {
             XMStoreFloat3(&this->position, position);
             XMStoreFloat3(&this->normal, normal);
@@ -385,33 +387,65 @@ namespace DirectX
         uint32_t indices;
         uint32_t weights;
 
-        VertexPositionNormalTangentColorTextureSkinning(XMFLOAT3 const& position, XMFLOAT3 const& normal, XMFLOAT4 const& tangent, uint32_t rgba,
-                                                        XMFLOAT2 const& textureCoordinate, XMUINT4 const& indices, XMFLOAT4 const& weights)
-            : VertexPositionNormalTangentColorTexture(position, normal, tangent, rgba, textureCoordinate)
+        VertexPositionNormalTangentColorTextureSkinning(
+            XMFLOAT3 const& position,
+            XMFLOAT3 const& normal,
+            XMFLOAT4 const& tangent,
+            uint32_t rgba,
+            XMFLOAT2 const& textureCoordinate,
+            XMUINT4 const& indices,
+            XMFLOAT4 const& weights)
+            : VertexPositionNormalTangentColorTexture(position, normal, tangent, rgba, textureCoordinate),
+            indices{},
+            weights{}
         {
             SetBlendIndices(indices);
             SetBlendWeights(weights);
         }
 
-        VertexPositionNormalTangentColorTextureSkinning(FXMVECTOR position, FXMVECTOR normal, FXMVECTOR tangent, uint32_t rgba, CXMVECTOR textureCoordinate,
-                                                        XMUINT4 const& indices, CXMVECTOR weights)
-            : VertexPositionNormalTangentColorTexture(position, normal, tangent, rgba, textureCoordinate)
+        VertexPositionNormalTangentColorTextureSkinning(
+            FXMVECTOR position,
+            FXMVECTOR normal,
+            FXMVECTOR tangent,
+            uint32_t rgba,
+            CXMVECTOR textureCoordinate,
+            XMUINT4 const& indices,
+            CXMVECTOR weights)
+            : VertexPositionNormalTangentColorTexture(position, normal, tangent, rgba, textureCoordinate),
+            indices{},
+            weights{}
         {
             SetBlendIndices(indices);
             SetBlendWeights(weights);
         }
 
-        VertexPositionNormalTangentColorTextureSkinning(XMFLOAT3 const& position, XMFLOAT3 const& normal, XMFLOAT4 const& tangent, XMFLOAT4 const& color,
-                                                        XMFLOAT2 const& textureCoordinate, XMUINT4 const& indices, XMFLOAT4 const& weights)
-            : VertexPositionNormalTangentColorTexture(position, normal, tangent, color, textureCoordinate)
+        VertexPositionNormalTangentColorTextureSkinning(
+            XMFLOAT3 const& position,
+            XMFLOAT3 const& normal,
+            XMFLOAT4 const& tangent,
+            XMFLOAT4 const& color,
+            XMFLOAT2 const& textureCoordinate,
+            XMUINT4 const& indices,
+            XMFLOAT4 const& weights)
+            : VertexPositionNormalTangentColorTexture(position, normal, tangent, color, textureCoordinate),
+            indices{},
+            weights{}
         {
             SetBlendIndices(indices);
             SetBlendWeights(weights);
         }
 
-        VertexPositionNormalTangentColorTextureSkinning(FXMVECTOR position, FXMVECTOR normal, FXMVECTOR tangent, CXMVECTOR color, CXMVECTOR textureCoordinate,
-                                                        XMUINT4 const& indices, CXMVECTOR weights)
-            : VertexPositionNormalTangentColorTexture(position, normal, tangent, color, textureCoordinate)
+        VertexPositionNormalTangentColorTextureSkinning(
+            FXMVECTOR position,
+            FXMVECTOR normal,
+            FXMVECTOR tangent,
+            CXMVECTOR color,
+            CXMVECTOR textureCoordinate,
+            XMUINT4 const& indices,
+            CXMVECTOR weights)
+            : VertexPositionNormalTangentColorTexture(position, normal, tangent, color, textureCoordinate),
+            indices{},
+            weights{}
         {
             SetBlendIndices(indices);
             SetBlendWeights(weights);

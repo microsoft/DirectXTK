@@ -879,16 +879,19 @@ class GamePad::Impl
 {
 public:
     Impl(GamePad* owner) :
-        mOwner(owner)
+        mOwner(owner),
+        mConnected{},
+        mLastReadTime{}
+    #if (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+        , mLeftMotor{}
+        , mRightMotor{}
+        , mSuspended(false)
+    #endif
     {
         for (int j = 0; j < XUSER_MAX_COUNT; ++j)
         {
             ClearSlot(j, 0);
         }
-
-    #if (_WIN32_WINNT < _WIN32_WINNT_WIN8)
-        mSuspended = false;
-    #endif
 
         if (s_gamePad)
         {

@@ -428,7 +428,11 @@ namespace DirectX
             State released;
             State pressed;
 
-            KeyboardStateTracker() noexcept { Reset(); }
+            KeyboardStateTracker() noexcept :
+                released{},
+                pressed{},
+                lastState{}
+            {}
 
             void __cdecl Update(const State& state);
 
