@@ -499,7 +499,7 @@ void Keyboard::KeyboardStateTracker::Update(const State& state)
 }
 
 
-void Keyboard::KeyboardStateTracker::Reset()
+void Keyboard::KeyboardStateTracker::Reset() noexcept
 {
     memset(this, 0, sizeof(KeyboardStateTracker));
 }

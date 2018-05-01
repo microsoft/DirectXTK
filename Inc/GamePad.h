@@ -228,36 +228,11 @@ namespace DirectX
             ButtonState leftTrigger;
             ButtonState rightTrigger;
 
-            ButtonStateTracker() noexcept :
-                a{},
-                b{},
-                x{},
-                y{},
-                leftStick{},
-                rightStick{},
-                leftShoulder{},
-                rightShoulder{},
-                back{},
-                start{},
-                dpadUp{},
-                dpadDown{},
-                dpadLeft{},
-                dpadRight{},
-                leftStickUp{},
-                leftStickDown{},
-                leftStickLeft{},
-                leftStickRight{},
-                rightStickUp{},
-                rightStickDown{},
-                rightStickLeft{},
-                rightStickRight{},
-                leftTrigger{},
-                rightTrigger{}
-            {}
+            ButtonStateTracker() noexcept { Reset(); }
 
             void __cdecl Update(const State& state);
 
-            void __cdecl Reset();
+            void __cdecl Reset() noexcept;
 
             State __cdecl GetLastState() const { return lastState; }
 

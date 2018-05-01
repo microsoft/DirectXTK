@@ -67,18 +67,11 @@ namespace DirectX
             ButtonState xButton1;
             ButtonState xButton2;
 
-            ButtonStateTracker() noexcept :
-                leftButton{},
-                middleButton{},
-                rightButton{},
-                xButton1{},
-                xButton2{},
-                lastState{}
-            {}
+            ButtonStateTracker() noexcept { Reset(); }
 
             void __cdecl Update(const State& state);
 
-            void __cdecl Reset();
+            void __cdecl Reset() noexcept;
 
             State __cdecl GetLastState() const { return lastState; }
 

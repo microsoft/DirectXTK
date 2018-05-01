@@ -1115,7 +1115,7 @@ void Mouse::ButtonStateTracker::Update(const Mouse::State& state)
 #undef UPDATE_BUTTON_STATE
 
 
-void Mouse::ButtonStateTracker::Reset()
+void Mouse::ButtonStateTracker::Reset() noexcept
 {
     memset(this, 0, sizeof(ButtonStateTracker));
 }

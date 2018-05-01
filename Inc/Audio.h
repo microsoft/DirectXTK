@@ -403,14 +403,14 @@ namespace DirectX
     //----------------------------------------------------------------------------------
     struct AudioListener : public X3DAUDIO_LISTENER
     {
-        AudioListener() noexcept :
-            X3DAUDIO_LISTENER{
-                { 0.f, 0.f, -1.f } /*OrientFront*/,
-                { 0.f, 1.f, 0.f } /*OrientedTop*/,
-                { 0.f, 0.f, 0.f },
-                { 0.f, 0.f, 0.f },
-                nullptr }
-            {}
+        AudioListener() noexcept
+        {
+            memset(this, 0, sizeof(X3DAUDIO_LISTENER));
+
+            OrientFront.z = -1.f;
+
+            OrientTop.y = 1.f;
+        }
 
         void XM_CALLCONV SetPosition(FXMVECTOR v)
         {
@@ -488,26 +488,22 @@ namespace DirectX
         float       EmitterAzimuths[XAUDIO2_MAX_AUDIO_CHANNELS];
 
         AudioEmitter() noexcept :
-            X3DAUDIO_EMITTER{
-                nullptr,
-                { 0.f, 0.f, -1.f } /*OrientFront*/,
-                { 0.f, 1.f, 0.f } /*OrientedTop*/,
-                { 0.f, 0.f, 0.f },
-                { 0.f, 0.f, 0.f },
-                0.f,
-                X3DAUDIO_PI / 4.0f /*InnerRadiusAngle*/,
-                1 /*ChannelCount*/,
-                1.f /*ChannelRadius*/,
-                EmitterAzimuths,
-                nullptr,
-                nullptr,
-                nullptr,
-                nullptr,
-                nullptr,
-                1.f /*CurveDistanceScaler*/,
-                1.f /*DopplerScaler*/ },
-                EmitterAzimuths{}
-            {}
+            EmitterAzimuths{}
+        {
+            memset(this, 0, sizeof(X3DAUDIO_EMITTER));
+
+            OrientFront.z = -1.f;
+
+            OrientTop.y =
+                ChannelRadius =
+                CurveDistanceScaler =
+                DopplerScaler = 1.f;
+
+            ChannelCount = 1;
+            pChannelAzimuths = EmitterAzimuths;
+
+            InnerRadiusAngle = X3DAUDIO_PI / 4.0f;
+        }
 
         void XM_CALLCONV SetPosition(FXMVECTOR v)
         {

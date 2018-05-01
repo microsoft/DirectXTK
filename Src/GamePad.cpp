@@ -1366,7 +1366,7 @@ void GamePad::ButtonStateTracker::Update(const GamePad::State& state)
 #undef UPDATE_BUTTON_STATE
 
 
-void GamePad::ButtonStateTracker::Reset()
+void GamePad::ButtonStateTracker::Reset() noexcept
 {
     memset(this, 0, sizeof(ButtonStateTracker));
 }
