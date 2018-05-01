@@ -41,7 +41,7 @@ public:
     {
         if (!mInstances.empty())
         {
-            DebugTrace("WARNING: Destroying WaveBank \"%hs\" with %Iu outstanding SoundEffectInstances\n", mReader.BankName(), mInstances.size());
+            DebugTrace("WARNING: Destroying WaveBank \"%hs\" with %zu outstanding SoundEffectInstances\n", mReader.BankName(), mInstances.size());
 
             for (auto it = mInstances.begin(); it != mInstances.end(); ++it)
             {

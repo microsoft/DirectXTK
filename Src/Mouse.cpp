@@ -480,10 +480,10 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 
-#elif (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)) || (defined(_XBOX_ONE) && (!defined(_TITLE) || (_XDK_VER < 0x42D907D1)))
+#elif defined(_XBOX_ONE) && (!defined(_TITLE) || (_XDK_VER < 0x42D907D1))
 
 //======================================================================================
-// Null device for Windows Phone
+// Null device
 //======================================================================================
 
 class Mouse::Impl

@@ -555,7 +555,7 @@ namespace
 
             if (wfx->cbSize != (sizeof(XMA2WAVEFORMATEX) - sizeof(WAVEFORMATEX)))
             {
-                wprintf(L"ERROR: XMA2 cbSize must be %Iu (%u)", (sizeof(XMA2WAVEFORMATEX) - sizeof(WAVEFORMATEX)), wfx->cbSize);
+                wprintf(L"ERROR: XMA2 cbSize must be %zu (%u)", (sizeof(XMA2WAVEFORMATEX) - sizeof(WAVEFORMATEX)), wfx->cbSize);
                 return false;
             }
             else
@@ -624,7 +624,7 @@ namespace
         case WAVE_FORMAT_EXTENSIBLE:
             if (wfx->cbSize < (sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX)))
             {
-                wprintf(L"ERROR: WAVEFORMATEXTENSIBLE cbSize must be at least %Iu (%u)", (sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX)), wfx->cbSize);
+                wprintf(L"ERROR: WAVEFORMATEXTENSIBLE cbSize must be at least %zu (%u)", (sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX)), wfx->cbSize);
                 return false;
             }
             else
@@ -1448,7 +1448,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     // Create wave bank
     assert(*szOutputFile != 0);
 
-    wprintf(L"writing %ls%ls wavebank %ls w/ %Iu entries\n", (compact) ? L"compact " : L"", (dwOptions & (1 << OPT_STREAMING)) ? L"streaming" : L"in-memory", szOutputFile, waves.size());
+    wprintf(L"writing %ls%ls wavebank %ls w/ %zu entries\n", (compact) ? L"compact " : L"", (dwOptions & (1 << OPT_STREAMING)) ? L"streaming" : L"in-memory", szOutputFile, waves.size());
     fflush(stdout);
 
     if (dwOptions & (1 << OPT_NOOVERWRITE))
@@ -1749,10 +1749,10 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
 
                 FileNameToIdentifier(wEntryName, _MAX_FNAME);
 
-                fprintf_s(file, "    XACT_WAVEBANK_%ls_%ls = %Iu,\n", wBankName, wEntryName, index);
+                fprintf_s(file, "    XACT_WAVEBANK_%ls_%ls = %zu,\n", wBankName, wEntryName, index);
             }
 
-            fprintf_s(file, "};\n\n#define XACT_WAVEBANK_%ls_ENTRY_COUNT %Iu\n", wBankName, count);
+            fprintf_s(file, "};\n\n#define XACT_WAVEBANK_%ls_ENTRY_COUNT %zu\n", wBankName, count);
 
             fclose(file);
         }

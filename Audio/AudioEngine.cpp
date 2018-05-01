@@ -1021,7 +1021,7 @@ void AudioEngine::Impl::AllocateVoice(const WAVEFORMATEX* wfx, SOUND_EFFECT_INST
                 }
                 else if ((mVoicePool.size() + mOneShots.size() + 1) >= maxVoiceOneshots)
                 {
-                    DebugTrace("WARNING: Too many one-shot voices in use (%Iu + %Iu >= %Iu); one-shot not played\n",
+                    DebugTrace("WARNING: Too many one-shot voices in use (%zu + %zu >= %zu); one-shot not played\n",
                                mVoicePool.size(), mOneShots.size() + 1, maxVoiceOneshots);
                     return;
                 }
@@ -1089,14 +1089,14 @@ void AudioEngine::Impl::AllocateVoice(const WAVEFORMATEX* wfx, SOUND_EFFECT_INST
         {
             if ((mVoicePool.size() + mOneShots.size() + 1) >= maxVoiceOneshots)
             {
-                DebugTrace("WARNING: Too many one-shot voices in use (%Iu + %Iu >= %Iu); one-shot not played; see TrimVoicePool\n",
+                DebugTrace("WARNING: Too many one-shot voices in use (%zu + %zu >= %zu); one-shot not played; see TrimVoicePool\n",
                            mVoicePool.size(), mOneShots.size() + 1, maxVoiceOneshots);
                 return;
             }
         }
         else if ((mVoiceInstances + 1) >= maxVoiceInstances)
         {
-            DebugTrace("ERROR: Too many instance voices (%Iu >= %Iu); see TrimVoicePool\n", mVoiceInstances + 1, maxVoiceInstances);
+            DebugTrace("ERROR: Too many instance voices (%zu >= %zu); see TrimVoicePool\n", mVoiceInstances + 1, maxVoiceInstances);
             throw std::exception("Too many instance voices");
         }
 
@@ -1538,9 +1538,7 @@ X3DAUDIO_HANDLE& AudioEngine::Get3DHandle() const
 
 
 // Static methods.
-#if defined(WINAPI_FAMILY) && WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
-#include <phoneaudioclient.h>
-#elif defined(_XBOX_ONE)
+#ifdef _XBOX_ONE
 #include <Windows.Media.Devices.h>
 #include <wrl.h>
 #elif (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
@@ -1556,19 +1554,7 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
 {
     std::vector<RendererDetail> list;
 
-#if defined(WINAPI_FAMILY) && WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
-
-    LPCWSTR id = GetDefaultAudioRenderId(Default);
-    if (!id)
-        return list;
-
-    RendererDetail device;
-    device.deviceId = id;
-    device.description = L"Default";
-
-    CoTaskMemFree((LPVOID)id);
-
-#elif defined(_XBOX_ONE)
+#ifdef _XBOX_ONE
 
     using namespace Microsoft::WRL;
     using namespace Microsoft::WRL::Wrappers;

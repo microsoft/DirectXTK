@@ -21,10 +21,6 @@
 #pragma comment(lib,"acphal.lib")
 #endif
 
-#if defined(WINAPI_FAMILY) && WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
-#pragma comment(lib,"PhoneAudioSes.lib")
-#endif
-
 #ifndef XAUDIO2_HELPER_FUNCTIONS
 #define XAUDIO2_HELPER_FUNCTIONS
 #endif

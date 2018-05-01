@@ -198,7 +198,7 @@ void SoundEffectInstance::Impl::Play(bool loop)
 
         size_t length = (mWaveBank) ? mWaveBank->GetSampleSizeInBytes(mIndex) : mEffect->GetSampleSizeInBytes();
 
-        DebugTrace("\tFormat Tag %u, %u channels, %u-bit, %u Hz, %Iu bytes\n", wfx->wFormatTag,
+        DebugTrace("\tFormat Tag %u, %u channels, %u-bit, %u Hz, %zu bytes\n", wfx->wFormatTag,
                    wfx->nChannels, wfx->wBitsPerSample, wfx->nSamplesPerSec, length);
     #endif
         mBase.Stop(true, mLooped);

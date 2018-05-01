@@ -53,7 +53,7 @@ public:
     {
         if (!mInstances.empty())
         {
-            DebugTrace("WARNING: Destroying SoundEffect with %Iu outstanding SoundEffectInstances\n", mInstances.size());
+            DebugTrace("WARNING: Destroying SoundEffect with %zu outstanding SoundEffectInstances\n", mInstances.size());
 
             for (auto it = mInstances.begin(); it != mInstances.end(); ++it)
             {

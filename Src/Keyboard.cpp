@@ -178,54 +178,6 @@ void Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
     }
 }
 
-
-#elif defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)
-
-//======================================================================================
-// Null device for Windows Phone
-//======================================================================================
-
-class Keyboard::Impl
-{
-public:
-    Impl(Keyboard* owner) :
-        mOwner(owner)
-    {
-        if (s_keyboard)
-        {
-            throw std::exception("Keyboard is a singleton");
-        }
-
-        s_keyboard = this;
-    }
-
-    ~Impl()
-    {
-        s_keyboard = nullptr;
-    }
-
-    void GetState(State& state) const
-    {
-        memset(&state, 0, sizeof(State));
-    }
-
-    void Reset()
-    {
-    }
-
-    bool IsConnected() const
-    {
-        return false;
-    }
-
-    Keyboard*   mOwner;
-
-    static Keyboard::Impl* s_keyboard;
-};
-
-Keyboard::Impl* Keyboard::Impl::s_keyboard = nullptr;
-
-
 #else
 
 //======================================================================================
