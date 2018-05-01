@@ -145,10 +145,10 @@ namespace DirectX
     public:
         // Constructor.
         EffectBase(_In_ ID3D11Device* device)
-          : dirtyFlags(INT_MAX),
+          : constants{},
+            dirtyFlags(INT_MAX),
             mConstantBuffer(device),
-            mDeviceResources(deviceResourcesPool.DemandCreate(device)),
-            constants{}
+            mDeviceResources(deviceResourcesPool.DemandCreate(device))
         {
         }
 

@@ -155,8 +155,8 @@ public:
     void SetDirtyFlag() { mDirtyFlags = INT_MAX; }
 
     // Fields.
-    BasicPostProcess::Effect                fx;
     PostProcessConstants                    constants;
+    BasicPostProcess::Effect                fx;
     ComPtr<ID3D11ShaderResourceView>        texture;
     unsigned                                texWidth;
     unsigned                                texHeight;
@@ -190,7 +190,8 @@ SharedResourcePool<ID3D11Device*, DeviceResources> BasicPostProcess::Impl::devic
 
 // Constructor.
 BasicPostProcess::Impl::Impl(_In_ ID3D11Device* device)
-    : fx(BasicPostProcess::Copy),
+    : constants{},
+    fx(BasicPostProcess::Copy),
     texWidth(0),
     texHeight(0),
     guassianMultiplier(1.f),
@@ -201,8 +202,7 @@ BasicPostProcess::Impl::Impl(_In_ ID3D11Device* device)
     mUseConstants(false),
     mDirtyFlags(INT_MAX),
     mConstantBuffer(device),
-    mDeviceResources(deviceResourcesPool.DemandCreate(device)),
-    constants{}
+    mDeviceResources(deviceResourcesPool.DemandCreate(device))
 {
     if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
     {
