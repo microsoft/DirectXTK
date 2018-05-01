@@ -102,7 +102,7 @@
 #include <stdint.h>
 
 #pragma warning(push)
-#pragma warning(disable : 4467)
+#pragma warning(disable : 4467 5038)
 #include <wrl.h>
 #pragma warning(pop)
 
