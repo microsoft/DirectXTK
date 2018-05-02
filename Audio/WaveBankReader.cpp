@@ -22,8 +22,6 @@
 
 namespace
 {
-
-//--------------------------------------------------------------------------------------
 #pragma pack(push, 1)
 
     static const size_t DVD_SECTOR_SIZE = 2048;
@@ -379,7 +377,7 @@ namespace
 
                 default:
                     return uint32_t((uint64_t(length) * 8)
-                                    / (uint64_t(data.CompactFormat.BitsPerSample()) * uint64_t(data.CompactFormat.nChannels)));
+                        / (uint64_t(data.CompactFormat.BitsPerSample()) * uint64_t(data.CompactFormat.nChannels)));
             }
         }
     };
@@ -408,8 +406,7 @@ namespace
 
         return reinterpret_cast<const uint32_t*>(seekTable + offset);
     }
-
-};
+}
 
 static_assert(sizeof(REGION) == 8, "Mismatch with xact3wb.h");
 static_assert(sizeof(SAMPLEREGION) == 8, "Mismatch with xact3wb.h");
