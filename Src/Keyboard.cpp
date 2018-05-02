@@ -77,6 +77,7 @@ class Keyboard::Impl
 {
 public:
     Impl(Keyboard* owner) :
+        mState{},
         mOwner(owner)
     {
         if (s_keyboard)
@@ -85,8 +86,6 @@ public:
         }
 
         s_keyboard = this;
-
-        memset(&mState, 0, sizeof(State));
     }
 
     ~Impl()
@@ -179,54 +178,6 @@ void Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
     }
 }
 
-
-#elif defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)
-
-//======================================================================================
-// Null device for Windows Phone
-//======================================================================================
-
-class Keyboard::Impl
-{
-public:
-    Impl(Keyboard* owner) :
-        mOwner(owner)
-    {
-        if (s_keyboard)
-        {
-            throw std::exception("Keyboard is a singleton");
-        }
-
-        s_keyboard = this;
-    }
-
-    ~Impl()
-    {
-        s_keyboard = nullptr;
-    }
-
-    void GetState(State& state) const
-    {
-        memset(&state, 0, sizeof(State));
-    }
-
-    void Reset()
-    {
-    }
-
-    bool IsConnected() const
-    {
-        return false;
-    }
-
-    Keyboard*   mOwner;
-
-    static Keyboard::Impl* s_keyboard;
-};
-
-Keyboard::Impl* Keyboard::Impl::s_keyboard = nullptr;
-
-
 #else
 
 //======================================================================================
@@ -248,19 +199,17 @@ class Keyboard::Impl
 {
 public:
     Impl(Keyboard* owner) :
-        mOwner(owner)
+        mState{},
+        mOwner(owner),
+        mAcceleratorKeyToken{},
+        mActivatedToken{}
     {
-        mAcceleratorKeyToken.value = 0;
-        mActivatedToken.value = 0;
-
         if (s_keyboard)
         {
             throw std::exception("Keyboard is a singleton");
         }
 
         s_keyboard = this;
-
-        memset(&mState, 0, sizeof(State));
     }
 
     ~Impl()
@@ -474,7 +423,7 @@ Keyboard::Keyboard()
 
 
 // Move constructor.
-Keyboard::Keyboard(Keyboard&& moveFrom) throw()
+Keyboard::Keyboard(Keyboard&& moveFrom) noexcept
     : pImpl(std::move(moveFrom.pImpl))
 {
     pImpl->mOwner = this;
@@ -482,7 +431,7 @@ Keyboard::Keyboard(Keyboard&& moveFrom) throw()
 
 
 // Move assignment.
-Keyboard& Keyboard::operator= (Keyboard&& moveFrom) throw()
+Keyboard& Keyboard::operator= (Keyboard&& moveFrom) noexcept
 {
     pImpl = std::move(moveFrom.pImpl);
     pImpl->mOwner = this;
@@ -550,7 +499,7 @@ void Keyboard::KeyboardStateTracker::Update(const State& state)
 }
 
 
-void Keyboard::KeyboardStateTracker::Reset()
+void Keyboard::KeyboardStateTracker::Reset() noexcept
 {
     memset(this, 0, sizeof(KeyboardStateTracker));
 }

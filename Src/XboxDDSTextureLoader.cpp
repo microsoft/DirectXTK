@@ -235,8 +235,7 @@ namespace
         {
         case D3D11_RESOURCE_DIMENSION_TEXTURE1D:
         {
-            D3D11_TEXTURE1D_DESC desc;
-            memset(&desc, 0, sizeof(desc));
+            D3D11_TEXTURE1D_DESC desc = {};
             desc.Width = static_cast<UINT>(width);
             desc.MipLevels = static_cast<UINT>(mipCount);
             desc.ArraySize = static_cast<UINT>(arraySize);
@@ -250,8 +249,7 @@ namespace
             {
                 if (textureView != 0)
                 {
-                    D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
-                    memset(&SRVDesc, 0, sizeof(SRVDesc));
+                    D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
                     SRVDesc.Format = format;
 
                     if (arraySize > 1)
@@ -292,8 +290,7 @@ namespace
 
         case D3D11_RESOURCE_DIMENSION_TEXTURE2D:
         {
-            D3D11_TEXTURE2D_DESC desc;
-            memset(&desc, 0, sizeof(desc));
+            D3D11_TEXTURE2D_DESC desc = {};
             desc.Width = static_cast<UINT>(width);
             desc.Height = static_cast<UINT>(height);
             desc.MipLevels = static_cast<UINT>(mipCount);
@@ -310,8 +307,7 @@ namespace
             {
                 if (textureView != 0)
                 {
-                    D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
-                    memset(&SRVDesc, 0, sizeof(SRVDesc));
+                    D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
                     SRVDesc.Format = format;
 
                     if (isCubeMap)
@@ -368,8 +364,7 @@ namespace
 
         case D3D11_RESOURCE_DIMENSION_TEXTURE3D:
         {
-            D3D11_TEXTURE3D_DESC desc;
-            memset(&desc, 0, sizeof(desc));
+            D3D11_TEXTURE3D_DESC desc = {};
             desc.Width = static_cast<UINT>(width);
             desc.Height = static_cast<UINT>(height);
             desc.Depth = static_cast<UINT>(depth);
@@ -384,8 +379,7 @@ namespace
             {
                 if (textureView != 0)
                 {
-                    D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
-                    memset(&SRVDesc, 0, sizeof(SRVDesc));
+                    D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
                     SRVDesc.Format = format;
 
                     SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE3D;

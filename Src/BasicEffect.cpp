@@ -481,14 +481,14 @@ BasicEffect::BasicEffect(_In_ ID3D11Device* device)
 
 
 // Move constructor.
-BasicEffect::BasicEffect(BasicEffect&& moveFrom) throw()
+BasicEffect::BasicEffect(BasicEffect&& moveFrom) noexcept
   : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-BasicEffect& BasicEffect::operator= (BasicEffect&& moveFrom) throw()
+BasicEffect& BasicEffect::operator= (BasicEffect&& moveFrom) noexcept
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

@@ -130,8 +130,8 @@ public:
     void SetDirtyFlag() { mDirtyFlags = INT_MAX; }
 
     // Fields.
-    DualPostProcess::Effect                 fx;
     PostProcessConstants                    constants;
+    DualPostProcess::Effect                 fx;
     ComPtr<ID3D11ShaderResourceView>        texture;
     ComPtr<ID3D11ShaderResourceView>        texture2;
     float                                   mergeWeight1;
@@ -159,7 +159,8 @@ SharedResourcePool<ID3D11Device*, DeviceResources> DualPostProcess::Impl::device
 
 // Constructor.
 DualPostProcess::Impl::Impl(_In_ ID3D11Device* device)
-    : fx(DualPostProcess::Merge),
+    : constants{},
+    fx(DualPostProcess::Merge),
     mergeWeight1(0.5f),
     mergeWeight2(0.5f),
     bloomIntensity(1.25f),
@@ -168,8 +169,7 @@ DualPostProcess::Impl::Impl(_In_ ID3D11Device* device)
     bloomBaseSaturation(1.f),
     mDirtyFlags(INT_MAX),
     mConstantBuffer(device),
-    mDeviceResources(deviceResourcesPool.DemandCreate(device)),
-    constants{}
+    mDeviceResources(deviceResourcesPool.DemandCreate(device))
 {
     if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
     {
@@ -268,14 +268,14 @@ DualPostProcess::DualPostProcess(_In_ ID3D11Device* device)
 
 
 // Move constructor.
-DualPostProcess::DualPostProcess(DualPostProcess&& moveFrom) throw()
+DualPostProcess::DualPostProcess(DualPostProcess&& moveFrom) noexcept
   : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-DualPostProcess& DualPostProcess::operator= (DualPostProcess&& moveFrom) throw()
+DualPostProcess& DualPostProcess::operator= (DualPostProcess&& moveFrom) noexcept
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

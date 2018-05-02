@@ -189,7 +189,7 @@ void DynamicSoundEffectInstance::Impl::SubmitBuffer(const uint8_t* pAudioData, u
     #ifdef _DEBUG
         DebugTrace("ERROR: DynamicSoundEffectInstance failed (%08X) when submitting buffer:\n", hr);
 
-        DebugTrace("\tFormat Tag %u, %u channels, %u-bit, %u Hz, %Iu bytes [%u offset)\n", mWaveFormat.wFormatTag,
+        DebugTrace("\tFormat Tag %u, %u channels, %u-bit, %u Hz, %zu bytes [%u offset)\n", mWaveFormat.wFormatTag,
                    mWaveFormat.nChannels, mWaveFormat.wBitsPerSample, mWaveFormat.nSamplesPerSec, audioBytes, offset);
     #endif
         throw std::exception("SubmitSourceBuffer");
@@ -237,14 +237,14 @@ DynamicSoundEffectInstance::DynamicSoundEffectInstance(AudioEngine* engine,
 
 
 // Move constructor.
-DynamicSoundEffectInstance::DynamicSoundEffectInstance(DynamicSoundEffectInstance&& moveFrom) throw()
+DynamicSoundEffectInstance::DynamicSoundEffectInstance(DynamicSoundEffectInstance&& moveFrom) noexcept
     : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-DynamicSoundEffectInstance& DynamicSoundEffectInstance::operator= (DynamicSoundEffectInstance&& moveFrom) throw()
+DynamicSoundEffectInstance& DynamicSoundEffectInstance::operator= (DynamicSoundEffectInstance&& moveFrom) noexcept
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

@@ -91,16 +91,14 @@ public:
         mOwner(owner),
         mCtrlChanged(INVALID_HANDLE_VALUE),
         mUserChanged(INVALID_HANDLE_VALUE),
-        mMostRecentGamepad(0)
+        mMostRecentGamepad(0),
+        mUserChangeToken{},
+        mAddedToken{},
+        mRemovedToken{}
     {
         using namespace Microsoft::WRL;
         using namespace Microsoft::WRL::Wrappers;
         using namespace ABI::Windows::Foundation;
-
-        mAddedToken.value = 0;
-        mRemovedToken.value = 0;
-
-        memset(&mUserChangeToken, 0, sizeof(mUserChangeToken));
 
         if (s_gamePad)
         {
@@ -544,15 +542,14 @@ public:
         mOwner(owner),
         mCtrlChanged(INVALID_HANDLE_VALUE),
         mUserChanged(INVALID_HANDLE_VALUE),
-        mMostRecentGamepad(0)
+        mMostRecentGamepad(0),
+        mAddedToken{},
+        mRemovedToken{},
+        mUserParingToken{}
     {
         using namespace Microsoft::WRL;
         using namespace Microsoft::WRL::Wrappers;
         using namespace ABI::Windows::Foundation;
-
-        mAddedToken.value = 0;
-        mRemovedToken.value = 0;
-        mUserParingToken.value = 0;
 
         if (s_gamePad)
         {
@@ -868,73 +865,6 @@ private:
 
 GamePad::Impl* GamePad::Impl::s_gamePad = nullptr;
 
-
-#elif defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)
-
-//======================================================================================
-// Null device for Windows Phone
-//======================================================================================
-
-class GamePad::Impl
-{
-public:
-    Impl(GamePad* owner) :
-        mOwner(owner)
-    {
-        if (s_gamePad)
-        {
-            throw std::exception("GamePad is a singleton");
-        }
-
-        s_gamePad = this;
-    }
-
-    ~Impl()
-    {
-        s_gamePad = nullptr;
-    }
-
-    void GetState(int player, _Out_ State& state, DeadZone)
-    {
-        UNREFERENCED_PARAMETER(player);
-
-        memset(&state, 0, sizeof(State));
-    }
-
-    void GetCapabilities(int player, _Out_ Capabilities& caps)
-    {
-        UNREFERENCED_PARAMETER(player);
-
-        memset(&caps, 0, sizeof(Capabilities));
-    }
-
-    bool SetVibration(int player, float leftMotor, float rightMotor, float leftTrigger, float rightTrigger)
-    {
-        UNREFERENCED_PARAMETER(player);
-        UNREFERENCED_PARAMETER(leftMotor);
-        UNREFERENCED_PARAMETER(rightMotor);
-        UNREFERENCED_PARAMETER(leftTrigger);
-        UNREFERENCED_PARAMETER(rightTrigger);
-
-        return false;
-    }
-
-    void Suspend()
-    {
-    }
-
-    void Resume()
-    {
-    }
-
-    GamePad*    mOwner;
-
-    static GamePad::Impl* s_gamePad;
-};
-
-GamePad::Impl* GamePad::Impl::s_gamePad = nullptr;
-
-
 #else
 
 //======================================================================================
@@ -949,16 +879,19 @@ class GamePad::Impl
 {
 public:
     Impl(GamePad* owner) :
-        mOwner(owner)
+        mOwner(owner),
+        mConnected{},
+        mLastReadTime{}
+    #if (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+        , mLeftMotor{}
+        , mRightMotor{}
+        , mSuspended(false)
+    #endif
     {
         for (int j = 0; j < XUSER_MAX_COUNT; ++j)
         {
             ClearSlot(j, 0);
         }
-
-    #if (_WIN32_WINNT < _WIN32_WINNT_WIN8)
-        mSuspended = false;
-    #endif
 
         if (s_gamePad)
         {
@@ -1282,7 +1215,7 @@ GamePad::GamePad()
 
 
 // Move constructor.
-GamePad::GamePad(GamePad&& moveFrom) throw()
+GamePad::GamePad(GamePad&& moveFrom) noexcept
     : pImpl(std::move(moveFrom.pImpl))
 {
     pImpl->mOwner = this;
@@ -1290,7 +1223,7 @@ GamePad::GamePad(GamePad&& moveFrom) throw()
 
 
 // Move assignment.
-GamePad& GamePad::operator= (GamePad&& moveFrom) throw()
+GamePad& GamePad::operator= (GamePad&& moveFrom) noexcept
 {
     pImpl = std::move(moveFrom.pImpl);
     pImpl->mOwner = this;
@@ -1433,7 +1366,7 @@ void GamePad::ButtonStateTracker::Update(const GamePad::State& state)
 #undef UPDATE_BUTTON_STATE
 
 
-void GamePad::ButtonStateTracker::Reset()
+void GamePad::ButtonStateTracker::Reset() noexcept
 {
     memset(this, 0, sizeof(ButtonStateTracker));
 }

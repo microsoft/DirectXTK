@@ -53,7 +53,7 @@ public:
     {
         if (!mInstances.empty())
         {
-            DebugTrace("WARNING: Destroying SoundEffect with %Iu outstanding SoundEffectInstances\n", mInstances.size());
+            DebugTrace("WARNING: Destroying SoundEffect with %zu outstanding SoundEffectInstances\n", mInstances.size());
 
             for (auto it = mInstances.begin(); it != mInstances.end(); ++it)
             {
@@ -438,14 +438,14 @@ SoundEffect::SoundEffect(AudioEngine* engine, std::unique_ptr<uint8_t[]>& wavDat
 
 
 // Move constructor.
-SoundEffect::SoundEffect(SoundEffect&& moveFrom) throw()
+SoundEffect::SoundEffect(SoundEffect&& moveFrom) noexcept
     : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-SoundEffect& SoundEffect::operator= (SoundEffect&& moveFrom) throw()
+SoundEffect& SoundEffect::operator= (SoundEffect&& moveFrom) noexcept
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

@@ -249,15 +249,15 @@ SharedResourcePool<ID3D11Device*, DeviceResources> ToneMapPostProcess::Impl::dev
 
 // Constructor.
 ToneMapPostProcess::Impl::Impl(_In_ ID3D11Device* device)
-    : linearExposure(1.f),
+    : constants{},
+    linearExposure(1.f),
     paperWhiteNits(200.f),
     op(None),
     func(Linear),
     mrt(false),
     mDirtyFlags(INT_MAX),
     mConstantBuffer(device),
-    mDeviceResources(deviceResourcesPool.DemandCreate(device)),
-    constants{}
+    mDeviceResources(deviceResourcesPool.DemandCreate(device))
 {
     if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
     {
@@ -352,14 +352,14 @@ ToneMapPostProcess::ToneMapPostProcess(_In_ ID3D11Device* device)
 
 
 // Move constructor.
-ToneMapPostProcess::ToneMapPostProcess(ToneMapPostProcess&& moveFrom) throw()
+ToneMapPostProcess::ToneMapPostProcess(ToneMapPostProcess&& moveFrom) noexcept
   : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-ToneMapPostProcess& ToneMapPostProcess::operator= (ToneMapPostProcess&& moveFrom) throw()
+ToneMapPostProcess& ToneMapPostProcess::operator= (ToneMapPostProcess&& moveFrom) noexcept
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

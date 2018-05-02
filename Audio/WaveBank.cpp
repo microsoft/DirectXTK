@@ -41,7 +41,7 @@ public:
     {
         if (!mInstances.empty())
         {
-            DebugTrace("WARNING: Destroying WaveBank \"%hs\" with %Iu outstanding SoundEffectInstances\n", mReader.BankName(), mInstances.size());
+            DebugTrace("WARNING: Destroying WaveBank \"%hs\" with %zu outstanding SoundEffectInstances\n", mReader.BankName(), mInstances.size());
 
             for (auto it = mInstances.begin(); it != mInstances.end(); ++it)
             {
@@ -265,14 +265,14 @@ WaveBank::WaveBank(AudioEngine* engine, const wchar_t* wbFileName)
 
 
 // Move constructor.
-WaveBank::WaveBank(WaveBank&& moveFrom) throw()
+WaveBank::WaveBank(WaveBank&& moveFrom) noexcept
     : pImpl(std::move(moveFrom.pImpl))
 {
 }
 
 
 // Move assignment.
-WaveBank& WaveBank::operator= (WaveBank&& moveFrom) throw()
+WaveBank& WaveBank::operator= (WaveBank&& moveFrom) noexcept
 {
     pImpl = std::move(moveFrom.pImpl);
     return *this;

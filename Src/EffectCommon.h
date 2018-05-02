@@ -43,7 +43,7 @@ namespace DirectX
     // Helper stores matrix parameter values, and computes derived matrices.
     struct EffectMatrices
     {
-        EffectMatrices() throw();
+        EffectMatrices() noexcept;
 
         XMMATRIX world;
         XMMATRIX view;
@@ -57,7 +57,7 @@ namespace DirectX
     // Helper stores the current fog settings, and computes derived shader parameters.
     struct EffectFog
     {
-        EffectFog() throw();
+        EffectFog() noexcept;
 
         bool enabled;
         float start;
@@ -70,7 +70,7 @@ namespace DirectX
     // Helper stores material color settings, and computes derived parameters for shaders that do not support realtime lighting.
     struct EffectColor
     {
-        EffectColor() throw();
+        EffectColor() noexcept;
 
         XMVECTOR diffuseColor;
         float alpha;
@@ -82,7 +82,7 @@ namespace DirectX
     // Helper stores the current light settings, and computes derived shader parameters.
     struct EffectLights : public EffectColor
     {
-        EffectLights() throw();
+        EffectLights() noexcept;
 
         static const int MaxDirectionalLights = IEffectLights::MaxDirectionalLights;
 
@@ -145,10 +145,10 @@ namespace DirectX
     public:
         // Constructor.
         EffectBase(_In_ ID3D11Device* device)
-          : dirtyFlags(INT_MAX),
+          : constants{},
+            dirtyFlags(INT_MAX),
             mConstantBuffer(device),
-            mDeviceResources(deviceResourcesPool.DemandCreate(device)),
-            constants{}
+            mDeviceResources(deviceResourcesPool.DemandCreate(device))
         {
         }
 

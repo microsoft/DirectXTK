@@ -58,6 +58,7 @@ class Mouse::Impl
 {
 public:
     Impl(Mouse* owner) :
+        mState{},
         mOwner(owner),
         mWindow(nullptr),
         mMode(MODE_ABSOLUTE),
@@ -73,8 +74,6 @@ public:
         }
 
         s_mouse = this;
-
-        memset(&mState, 0, sizeof(State));
 
         mScrollWheelValue.reset(CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE));
         mRelativeRead.reset(CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE));
@@ -481,10 +480,10 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 
-#elif (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)) || (defined(_XBOX_ONE) && (!defined(_TITLE) || (_XDK_VER < 0x42D907D1)))
+#elif defined(_XBOX_ONE) && (!defined(_TITLE) || (_XDK_VER < 0x42D907D1))
 
 //======================================================================================
-// Null device for Windows Phone
+// Null device
 //======================================================================================
 
 class Mouse::Impl
@@ -568,24 +567,22 @@ class Mouse::Impl
 {
 public:
     Impl(Mouse* owner) :
+        mState{},
         mOwner(owner),
         mDPI(96.f),
-        mMode(MODE_ABSOLUTE)
+        mMode(MODE_ABSOLUTE),
+        mPointerPressedToken{},
+        mPointerReleasedToken{},
+        mPointerMovedToken{},
+        mPointerWheelToken{},
+        mPointerMouseMovedToken{}
     {
-        mPointerPressedToken.value = 0;
-        mPointerReleasedToken.value = 0;
-        mPointerMovedToken.value = 0;
-        mPointerWheelToken.value = 0;
-        mPointerMouseMovedToken.value = 0;
-
         if (s_mouse)
         {
             throw std::exception("Mouse is a singleton");
         }
 
         s_mouse = this;
-
-        memset(&mState, 0, sizeof(State));
 
         mScrollWheelValue.reset(CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE));
         mRelativeRead.reset(CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE));
@@ -1025,7 +1022,7 @@ Mouse::Mouse()
 
 
 // Move constructor.
-Mouse::Mouse(Mouse&& moveFrom) throw()
+Mouse::Mouse(Mouse&& moveFrom) noexcept
     : pImpl(std::move(moveFrom.pImpl))
 {
     pImpl->mOwner = this;
@@ -1033,7 +1030,7 @@ Mouse::Mouse(Mouse&& moveFrom) throw()
 
 
 // Move assignment.
-Mouse& Mouse::operator= (Mouse&& moveFrom) throw()
+Mouse& Mouse::operator= (Mouse&& moveFrom) noexcept
 {
     pImpl = std::move(moveFrom.pImpl);
     pImpl->mOwner = this;
@@ -1118,7 +1115,7 @@ void Mouse::ButtonStateTracker::Update(const Mouse::State& state)
 #undef UPDATE_BUTTON_STATE
 
 
-void Mouse::ButtonStateTracker::Reset()
+void Mouse::ButtonStateTracker::Reset() noexcept
 {
     memset(this, 0, sizeof(ButtonStateTracker));
 }

@@ -41,7 +41,7 @@ namespace DirectX
     class ModelMeshPart
     {
     public:
-        ModelMeshPart() throw();
+        ModelMeshPart() noexcept;
         virtual ~ModelMeshPart();
 
         uint32_t                                                indexCount;
@@ -76,7 +76,7 @@ namespace DirectX
     class ModelMesh
     {
     public:
-        ModelMesh() throw();
+        ModelMesh() noexcept;
         virtual ~ModelMesh();
 
         BoundingSphere              boundingSphere;

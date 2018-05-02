@@ -239,7 +239,7 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx)
 
             if (wfx->cbSize != (sizeof(XMA2WAVEFORMATEX) - sizeof(WAVEFORMATEX)))
             {
-                DebugTrace("ERROR: Wave format XMA2 - cbSize must be %Iu (%u)\n", (sizeof(XMA2WAVEFORMATEX) - sizeof(WAVEFORMATEX)), wfx->cbSize);
+                DebugTrace("ERROR: Wave format XMA2 - cbSize must be %zu (%u)\n", (sizeof(XMA2WAVEFORMATEX) - sizeof(WAVEFORMATEX)), wfx->cbSize);
                 return false;
             }
             else
@@ -303,7 +303,7 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx)
         case WAVE_FORMAT_EXTENSIBLE:
             if (wfx->cbSize < (sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX)))
             {
-                DebugTrace("ERROR: Wave format WAVE_FORMAT_EXTENSIBLE - cbSize must be %Iu (%u)\n", (sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX)), wfx->cbSize);
+                DebugTrace("ERROR: Wave format WAVE_FORMAT_EXTENSIBLE - cbSize must be %zu (%u)\n", (sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX)), wfx->cbSize);
                 return false;
             }
             else
@@ -532,7 +532,7 @@ void DirectX::CreateADPCM(WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int
 {
     if (wfxSize < (sizeof(WAVEFORMATEX) + 32 /*MSADPCM_FORMAT_EXTRA_BYTES*/))
     {
-        DebugTrace("CreateADPCM needs at least %Iu bytes for the result\n", (sizeof(WAVEFORMATEX) + 32 /*MSADPCM_FORMAT_EXTRA_BYTES*/));
+        DebugTrace("CreateADPCM needs at least %zu bytes for the result\n", (sizeof(WAVEFORMATEX) + 32 /*MSADPCM_FORMAT_EXTRA_BYTES*/));
         throw std::invalid_argument("ADPCMWAVEFORMAT");
     }
 
@@ -587,7 +587,7 @@ void DirectX::CreateXMA2(WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int 
 {
     if (wfxSize < sizeof(XMA2WAVEFORMATEX))
     {
-        DebugTrace("XMA2 needs at least %Iu bytes for the result\n", sizeof(XMA2WAVEFORMATEX));
+        DebugTrace("XMA2 needs at least %zu bytes for the result\n", sizeof(XMA2WAVEFORMATEX));
         throw std::invalid_argument("XMA2WAVEFORMATEX");
     }
 
