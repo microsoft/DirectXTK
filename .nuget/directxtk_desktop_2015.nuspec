@@ -66,7 +66,7 @@ DirectX Tool Kit for Audio in this package uses XAudio 2.8 which requires Window
         <file target="lib\x64\Release" src="Audio\Bin\Desktop_2015\x64\Release\*.lib" />
         <file target="lib\x64\Release" src="Audio\Bin\Desktop_2015\x64\Release\*.pdb" />
 
-        <file src="nuget/directxtk_desktop_2015.targets" target="build\native" />
+        <file src=".nuget/directxtk_desktop_2015.targets" target="build\native" />
       
     </files>
 </package>

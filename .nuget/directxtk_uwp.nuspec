@@ -62,7 +62,7 @@ WICTextureLoader - WIC-based image file texture loader</description>
         <file target="lib\x64\Release" src="Bin\Windows10\x64\Release\*.lib" />
         <file target="lib\x64\Release" src="Bin\Windows10\x64\Release\*.pdb" />
 
-        <file src="nuget/directxtk_uwp.targets" target="build\native" />
+        <file src=".nuget/directxtk_uwp.targets" target="build\native" />
       
     </files>
 </package>
