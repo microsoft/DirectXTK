@@ -1308,7 +1308,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
 
     if (waveOffset > UINT32_MAX)
     {
-        wprintf(L"ERROR: Audio wave data is too large to encode into wavebank (offset %I64u)", waveOffset);
+        wprintf(L"ERROR: Audio wave data is too large to encode into wavebank (offset %llu)", waveOffset);
         return 1;
     }
     else if (waveOffset > (MAX_COMPACT_DATA_SEGMENT_SIZE * uint64_t(dwAlignment)))
@@ -1330,7 +1330,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         }
         if (reason & 0x4)
         {
-            wprintf(L"- Audio wave data is too large to encode in compact wavebank (%I64u > %I64u).\n", waveOffset, (MAX_COMPACT_DATA_SEGMENT_SIZE * uint64_t(dwAlignment)));
+            wprintf(L"- Audio wave data is too large to encode in compact wavebank (%llu > %llu).\n", waveOffset, (MAX_COMPACT_DATA_SEGMENT_SIZE * uint64_t(dwAlignment)));
         }
         return 1;
     }
@@ -1409,7 +1409,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
 
             if (duration > 268435455)
             {
-                wprintf(L"ERROR: Duration of audio too long to encode into wavebank (%I64u > 2^28))\n", duration);
+                wprintf(L"ERROR: Duration of audio too long to encode into wavebank (%llu > 2^28))\n", duration);
                 return 1;
             }
 
