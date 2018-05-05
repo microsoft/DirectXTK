@@ -330,7 +330,8 @@ void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indi
                     vertexPositions.push_back(outVertex);
 
                     // Now add it to the map.
-                    subdividedEdges.insert(std::make_pair(edge, outIndex));
+                    auto entry = std::make_pair(edge, outIndex);
+                    subdividedEdges.insert(entry);
                 }
             };
 

@@ -26,7 +26,7 @@ namespace DirectX
     class SharedResourcePool
     {
     public:
-        SharedResourcePool()
+        SharedResourcePool() noexcept(false)
             : mResourceMap(std::make_shared<ResourceMap>())
         { }
 
@@ -54,7 +54,8 @@ namespace DirectX
             // Allocate a new instance.
             auto newValue = std::make_shared<WrappedData>(key, mResourceMap, args...);
 
-            mResourceMap->insert(std::make_pair(key, newValue));
+            auto entry = std::make_pair(key, newValue);
+            mResourceMap->insert(entry);
 
             return newValue;
         }

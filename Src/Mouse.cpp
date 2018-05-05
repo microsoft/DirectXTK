@@ -1015,7 +1015,7 @@ void Mouse::SetDpi(float dpi)
 #pragma warning( disable : 4355 )
 
 // Public constructor.
-Mouse::Mouse()
+Mouse::Mouse() noexcept(false)
     : pImpl(std::make_unique<Impl>(this))
 {
 }

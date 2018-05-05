@@ -127,7 +127,8 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
         if (mSharing && info.name && *info.name)
         {
             std::lock_guard<std::mutex> lock(mutex);
-            mEffectCacheSkinning.insert(EffectCache::value_type(info.name, effect));
+            EffectCache::value_type v(info.name, effect);
+            mEffectCacheSkinning.insert(v);
         }
 
         return effect;
@@ -179,7 +180,8 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
         if (mSharing && info.name && *info.name)
         {
             std::lock_guard<std::mutex> lock(mutex);
-            mEffectCacheDualTexture.insert(EffectCache::value_type(info.name, effect));
+            EffectCache::value_type v(info.name, effect);
+            mEffectCacheDualTexture.insert(v);
         }
 
         return effect;
@@ -264,7 +266,8 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
         if (mSharing && info.name && *info.name)
         {
             std::lock_guard<std::mutex> lock(mutex);
-            mEffectNormalMap.insert(EffectCache::value_type(info.name, effect));
+            EffectCache::value_type v(info.name, effect);
+            mEffectNormalMap.insert(v);
         }
 
         return effect;
@@ -333,7 +336,8 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
         if (mSharing && info.name && *info.name)
         {
             std::lock_guard<std::mutex> lock(mutex);
-            mEffectCache.insert(EffectCache::value_type(info.name, effect));
+            EffectCache::value_type v(info.name, effect);
+            mEffectCache.insert(v);
         }
 
         return effect;
@@ -422,7 +426,8 @@ void EffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext
         if (mSharing && *name && it == mTextureCache.end())
         {
             std::lock_guard<std::mutex> lock(mutex);
-            mTextureCache.insert(TextureCache::value_type(name, *textureView));
+            TextureCache::value_type v(name, *textureView);
+            mTextureCache.insert(v);
         }
     }
 }

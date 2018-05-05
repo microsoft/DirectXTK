@@ -416,7 +416,7 @@ void Keyboard::SetWindow(ABI::Windows::UI::Core::ICoreWindow* window)
 #pragma warning( disable : 4355 )
 
 // Public constructor.
-Keyboard::Keyboard()
+Keyboard::Keyboard() noexcept(false)
     : pImpl(std::make_unique<Impl>(this))
 {
 }

@@ -71,7 +71,7 @@ namespace DirectX
         void __cdecl CreateInputLayout(_In_ IEffect* effect, _Outptr_ ID3D11InputLayout** inputLayout) const;
 
     private:
-        GeometricPrimitive();
+        GeometricPrimitive() noexcept(false);
 
         // Private implementation.
         class Impl;

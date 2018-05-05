@@ -241,7 +241,9 @@ namespace DirectX
         {
         public:
             DeviceResources(_In_ ID3D11Device* device)
-              : EffectDeviceResources(device)
+              : EffectDeviceResources(device),
+                mVertexShaders{},
+                mPixelShaders{}
             { }
 
         

@@ -167,7 +167,8 @@ SharedResourcePool<ID3D11Device*, EffectBase<PBREffectTraits>::DeviceResources> 
 PBREffect::Impl::Impl(_In_ ID3D11Device* device)
     : EffectBase(device),
     biasedVertexNormals(false),
-    velocityEnabled(false)
+    velocityEnabled(false),
+    lightColor{}
 {
     if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
     {

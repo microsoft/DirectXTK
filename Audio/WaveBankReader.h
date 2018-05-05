@@ -23,7 +23,7 @@ namespace DirectX
     class WaveBankReader
     {
     public:
-        WaveBankReader();
+        WaveBankReader() noexcept(false);
 
         WaveBankReader(WaveBankReader&&) = default;
         WaveBankReader& operator= (WaveBankReader&&) = default;

@@ -23,7 +23,7 @@ namespace DirectX
     class Keyboard
     {
     public:
-        Keyboard();
+        Keyboard() noexcept(false);
         Keyboard(Keyboard&& moveFrom) noexcept;
         Keyboard& operator= (Keyboard&& moveFrom) noexcept;
 

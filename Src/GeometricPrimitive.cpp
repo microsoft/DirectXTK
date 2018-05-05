@@ -308,7 +308,7 @@ void GeometricPrimitive::Impl::CreateInputLayout(IEffect* effect, ID3D11InputLay
 //--------------------------------------------------------------------------------------
 
 // Constructor.
-GeometricPrimitive::GeometricPrimitive()
+GeometricPrimitive::GeometricPrimitive() noexcept(false)
     : pImpl(std::make_unique<Impl>())
 {
 }

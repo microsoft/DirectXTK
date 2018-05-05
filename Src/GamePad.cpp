@@ -92,9 +92,12 @@ public:
         mCtrlChanged(INVALID_HANDLE_VALUE),
         mUserChanged(INVALID_HANDLE_VALUE),
         mMostRecentGamepad(0),
+        mStatics{},
+        mGamePad{},
         mUserChangeToken{},
         mAddedToken{},
-        mRemovedToken{}
+        mRemovedToken{},
+        mChanged{}
     {
         using namespace Microsoft::WRL;
         using namespace Microsoft::WRL::Wrappers;
@@ -543,9 +546,13 @@ public:
         mCtrlChanged(INVALID_HANDLE_VALUE),
         mUserChanged(INVALID_HANDLE_VALUE),
         mMostRecentGamepad(0),
+        mStatics{},
+        mStaticsCtrl{},
+        mGamePad{},
         mAddedToken{},
         mRemovedToken{},
-        mUserParingToken{}
+        mUserParingToken{},
+        mChanged{}
     {
         using namespace Microsoft::WRL;
         using namespace Microsoft::WRL::Wrappers;
@@ -1208,7 +1215,7 @@ GamePad::Impl* GamePad::Impl::s_gamePad = nullptr;
 #pragma warning( disable : 4355 )
 
 // Public constructor.
-GamePad::GamePad()
+GamePad::GamePad() noexcept(false)
     : pImpl(std::make_unique<Impl>(this))
 {
 }
