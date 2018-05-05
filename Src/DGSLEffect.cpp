@@ -309,7 +309,12 @@ private:
     class DeviceResources : protected EffectDeviceResources
     {
     public:
-        DeviceResources(_In_ ID3D11Device* device) : EffectDeviceResources(device) {}
+        DeviceResources(_In_ ID3D11Device* device)
+            : EffectDeviceResources(device),
+            mVertexShaders{},
+            mPixelShaders{},
+            mDefaultTexture{}
+        { }
 
         // Gets or lazily creates the vertex shader.
         ID3D11VertexShader* GetVertexShader(int permutation)

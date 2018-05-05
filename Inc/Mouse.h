@@ -22,7 +22,7 @@ namespace DirectX
     class Mouse
     {
     public:
-        Mouse();
+        Mouse() noexcept(false);
         Mouse(Mouse&& moveFrom) noexcept;
         Mouse& operator= (Mouse&& moveFrom) noexcept;
 

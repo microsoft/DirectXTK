@@ -24,7 +24,7 @@ namespace
 {
     struct EngineCallback : public IXAudio2EngineCallback
     {
-        EngineCallback()
+        EngineCallback() noexcept(false)
         {
             mCriticalError.reset(CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE));
             if (!mCriticalError)
@@ -54,7 +54,7 @@ namespace
 
     struct VoiceCallback : public IXAudio2VoiceCallback
     {
-        VoiceCallback()
+        VoiceCallback() noexcept(false)
         {
             mBufferEnd.reset(CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE));
             if (!mBufferEnd)
@@ -1239,7 +1239,7 @@ void AudioEngine::Impl::UnregisterNotify(_In_ IVoiceNotify* notify, bool usesOne
 
 // Public constructor.
 _Use_decl_annotations_
-AudioEngine::AudioEngine(AUDIO_ENGINE_FLAGS flags, const WAVEFORMATEX* wfx, const wchar_t* deviceId, AUDIO_STREAM_CATEGORY category)
+AudioEngine::AudioEngine(AUDIO_ENGINE_FLAGS flags, const WAVEFORMATEX* wfx, const wchar_t* deviceId, AUDIO_STREAM_CATEGORY category) noexcept(false)
     : pImpl(std::make_unique<Impl>())
 {
     HRESULT hr = pImpl->Initialize(flags, wfx, deviceId, category);
