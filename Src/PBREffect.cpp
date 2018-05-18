@@ -42,7 +42,7 @@ static_assert((sizeof(PBREffectConstants) % 16) == 0, "CB size not padded correc
 // Traits type describes our characteristics to the EffectBase template.
 struct PBREffectTraits
 {
-    typedef PBREffectConstants ConstantBufferType;
+    using ConstantBufferType = PBREffectConstants;
 
     static const int VertexShaderCount = 4;
     static const int PixelShaderCount = 5;

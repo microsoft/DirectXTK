@@ -40,7 +40,7 @@ static_assert((sizeof(NormalMapEffectConstants) % 16) == 0, "CB size not padded 
 // Traits type describes our characteristics to the EffectBase template.
 struct NormalMapEffectTraits
 {
-    typedef NormalMapEffectConstants ConstantBufferType;
+    using ConstantBufferType = NormalMapEffectConstants;
 
     static const int VertexShaderCount = 4;
     static const int PixelShaderCount = 4;

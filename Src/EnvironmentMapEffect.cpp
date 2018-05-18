@@ -44,7 +44,7 @@ static_assert((sizeof(EnvironmentMapEffectConstants) % 16) == 0, "CB size not pa
 // Traits type describes our characteristics to the EffectBase template.
 struct EnvironmentMapEffectTraits
 {
-    typedef EnvironmentMapEffectConstants ConstantBufferType;
+    using ConstantBufferType = EnvironmentMapEffectConstants;
 
     static const int VertexShaderCount = 10;
     static const int PixelShaderCount = 8;
