@@ -29,7 +29,7 @@ static_assert((sizeof(AlphaTestEffectConstants) % 16) == 0, "CB size not padded 
 // Traits type describes our characteristics to the EffectBase template.
 struct AlphaTestEffectTraits
 {
-    typedef AlphaTestEffectConstants ConstantBufferType;
+    using ConstantBufferType = AlphaTestEffectConstants;
 
     static const int VertexShaderCount = 4;
     static const int PixelShaderCount = 4;

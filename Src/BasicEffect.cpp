@@ -40,7 +40,7 @@ static_assert((sizeof(BasicEffectConstants) % 16) == 0, "CB size not padded corr
 // Traits type describes our characteristics to the EffectBase template.
 struct BasicEffectTraits
 {
-    typedef BasicEffectConstants ConstantBufferType;
+    using ConstantBufferType = BasicEffectConstants;
 
     static const int VertexShaderCount = 32;
     static const int PixelShaderCount = 10;

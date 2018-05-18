@@ -29,7 +29,7 @@ static_assert((sizeof(DualTextureEffectConstants) % 16) == 0, "CB size not padde
 // Traits type describes our characteristics to the EffectBase template.
 struct DualTextureEffectTraits
 {
-    typedef DualTextureEffectConstants ConstantBufferType;
+    using ConstantBufferType = DualTextureEffectConstants;
 
     static const int VertexShaderCount = 4;
     static const int PixelShaderCount = 2;
