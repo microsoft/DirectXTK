@@ -296,8 +296,10 @@ std::vector<short> SpriteBatch::Impl::DeviceResources::CreateIndexValues()
 
     indices.reserve(MaxBatchSize * IndicesPerSprite);
 
-    for (short i = 0; i < MaxBatchSize * VerticesPerSprite; i += VerticesPerSprite)
+    for (size_t j = 0; j < MaxBatchSize * VerticesPerSprite; j += VerticesPerSprite)
     {
+        short i = static_cast<short>(j);
+
         indices.push_back(i);
         indices.push_back(i + 1);
         indices.push_back(i + 2);
@@ -886,10 +888,10 @@ void XM_CALLCONV SpriteBatch::Impl::RenderSprite(SpriteInfo const* sprite,
     static_assert(SpriteEffects_FlipHorizontally == 1 &&
                   SpriteEffects_FlipVertically == 2, "If you change these enum values, the mirroring implementation must be updated to match");
 
-    int mirrorBits = flags & 3;
+    const unsigned int mirrorBits = flags & 3;
 
     // Generate the four output vertices.
-    for (int i = 0; i < VerticesPerSprite; i++)
+    for (size_t i = 0; i < VerticesPerSprite; i++)
     {
         // Calculate position.
         XMVECTOR cornerOffset = (cornerOffsets[i] - origin) * destinationSize;
@@ -910,7 +912,7 @@ void XM_CALLCONV SpriteBatch::Impl::RenderSprite(SpriteInfo const* sprite,
         XMStoreFloat4(&vertices[i].color, color);
 
         // Compute and write the texture coordinate.
-        XMVECTOR textureCoordinate = XMVectorMultiplyAdd(cornerOffsets[i ^ mirrorBits], sourceSize, source);
+        XMVECTOR textureCoordinate = XMVectorMultiplyAdd(cornerOffsets[static_cast<unsigned int>(i) ^ mirrorBits], sourceSize, source);
 
         XMStoreFloat2(&vertices[i].textureCoordinate, textureCoordinate);
     }

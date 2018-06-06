@@ -1157,7 +1157,7 @@ void DirectX::ComputeTeapot(VertexCollection& vertices, IndexCollection& indices
     XMVECTOR scaleNegateZ = scaleVector * g_XMNegateZ;
     XMVECTOR scaleNegateXZ = scaleVector * g_XMNegateX * g_XMNegateZ;
 
-    for (int i = 0; i < sizeof(TeapotPatches) / sizeof(TeapotPatches[0]); i++)
+    for (size_t i = 0; i < _countof(TeapotPatches); i++)
     {
         TeapotPatch const& patch = TeapotPatches[i];
 

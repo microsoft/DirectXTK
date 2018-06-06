@@ -310,7 +310,7 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateDGSLEffect(DGSLEffectFac
         effect->SetTextureEnabled(true);
     }
 
-    for (int j = 0; j < _countof(info.textures); ++j)
+    for (size_t j = 0; j < _countof(info.textures); ++j)
     {
         if (info.textures[j] && *info.textures[j])
         {
@@ -318,7 +318,7 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateDGSLEffect(DGSLEffectFac
 
             factory->CreateTexture(info.textures[j], deviceContext, srv.GetAddressOf());
 
-            effect->SetTexture(j + DGSLEffectInfo::BaseTextureOffset, srv.Get());
+            effect->SetTexture(static_cast<int>(j) + DGSLEffectInfo::BaseTextureOffset, srv.Get());
             effect->SetTextureEnabled(true);
         }
     }

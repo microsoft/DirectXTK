@@ -19,6 +19,11 @@
 #include <apu.h>
 #endif
 
+#ifndef MAKEFOURCC
+#define MAKEFOURCC(ch0, ch1, ch2, ch3)                              \
+                ((uint32_t)(uint8_t)(ch0) | ((uint32_t)(uint8_t)(ch1) << 8) |       \
+                ((uint32_t)(uint8_t)(ch2) << 16) | ((uint32_t)(uint8_t)(ch3) << 24 ))
+#endif /* defined(MAKEFOURCC) */
 
 namespace
 {
@@ -59,8 +64,8 @@ namespace
 
     struct HEADER
     {
-        static const uint32_t SIGNATURE = 'DNBW';
-        static const uint32_t BE_SIGNATURE = 'WBND';
+        static const uint32_t SIGNATURE = MAKEFOURCC('W', 'B', 'N', 'D');
+        static const uint32_t BE_SIGNATURE = MAKEFOURCC('D', 'N', 'B', 'W');
         static const uint32_t VERSION = 44;
 
         enum SEGIDX
@@ -347,7 +352,7 @@ namespace
                     uint32_t partial = length % data.CompactFormat.BlockAlign();
                     if (partial)
                     {
-                        if (partial >= (7 * data.CompactFormat.nChannels))
+                        if (partial >= (7u * data.CompactFormat.nChannels))
                             duration += (partial * 2 / data.CompactFormat.nChannels - 12);
                     }
                     return duration;

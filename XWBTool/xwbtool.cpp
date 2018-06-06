@@ -40,9 +40,20 @@
 
 #include "WAVFileReader.h"
 
+#ifdef __INTEL_COMPILER
+#pragma warning(disable : 161)
+// warning #161: unrecognized #pragma
+#endif
+
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
+
+#ifndef MAKEFOURCC
+#define MAKEFOURCC(ch0, ch1, ch2, ch3)                              \
+                ((uint32_t)(uint8_t)(ch0) | ((uint32_t)(uint8_t)(ch1) << 8) |       \
+                ((uint32_t)(uint8_t)(ch2) << 16) | ((uint32_t)(uint8_t)(ch3) << 24 ))
+#endif /* defined(MAKEFOURCC) */
 
 #ifndef WAVE_FORMAT_XMA2
 #define WAVE_FORMAT_XMA2 0x166
@@ -86,13 +97,13 @@ namespace
 {
     struct handle_closer { void operator()(HANDLE h) { if (h) CloseHandle(h); } };
 
-    typedef public std::unique_ptr<void, handle_closer> ScopedHandle;
+    typedef std::unique_ptr<void, handle_closer> ScopedHandle;
 
     inline HANDLE safe_handle(HANDLE h) { return (h == INVALID_HANDLE_VALUE) ? 0 : h; }
 
     struct find_closer { void operator()(HANDLE h) { assert(h != INVALID_HANDLE_VALUE); if (h) FindClose(h); } };
 
-    typedef public std::unique_ptr<void, find_closer> ScopedFindHandle;
+    typedef std::unique_ptr<void, find_closer> ScopedFindHandle;
 
 #define BLOCKALIGNPAD(a, b) \
     ((((a) + ((b) - 1)) / (b)) * (b))
@@ -126,7 +137,7 @@ namespace
 
     struct HEADER
     {
-        static const uint32_t SIGNATURE = 'DNBW';
+        static const uint32_t SIGNATURE = MAKEFOURCC('W', 'B', 'N', 'D');
         static const uint32_t VERSION = 44;
 
         enum SEGIDX
