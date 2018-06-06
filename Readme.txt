@@ -85,7 +85,14 @@ RELEASE NOTES
 * The VS 2017 projects make use of /permissive- for improved C++ standard conformance. Use of a Windows 10 SDK prior to
   the Fall Creators Update (16299) or an Xbox One XDK prior to June 2017 QFE 4 may result in failures due to problems
   with the system headers. You can work around these by disabling this switch in the project files which is found
-  in the <ConformanceMode> or <AdditionalOptions> elements.
+  in the <ConformanceMode> elements.
+
+* The VS 2017 projects require the 15.5 update or later. For UWP and Win32 classic desktop projects with the 15.5
+  or 15.6 updates, you need to install the standalone Windows 10 SDK (17134) which is otherwise included in
+  the 15.7 update. Older VS 2017 updates will fail to load the projects due to use of the <ConformanceMode> element.
+  If using the 15.5 or 15.6 updates, you will see "warning D9002: ignoring unknown option '/Zc:__cplusplus'" because
+  this switch isn't supported until 15.7. It is safe to ignore this warning, or you can edit the project files
+  <AdditionalOptions> elements.
 
 
 ---------------
