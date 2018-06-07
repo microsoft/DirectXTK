@@ -86,7 +86,7 @@ public:
 
     void SubmitBuffer(_In_reads_bytes_(audioBytes) const uint8_t* pAudioData, uint32_t offset, size_t audioBytes);
 
-    const WAVEFORMATEX* GetFormat() const { return &mWaveFormat; };
+    const WAVEFORMATEX* GetFormat() const { return &mWaveFormat; }
 
     // IVoiceNotify
     virtual void __cdecl OnBufferEnd() override

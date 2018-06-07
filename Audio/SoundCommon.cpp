@@ -308,7 +308,7 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx)
             }
             else
             {
-                static const GUID s_wfexBase = { 0x00000000, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71 };
+                static const GUID s_wfexBase = { 0x00000000, 0x0000, 0x0010, { 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71 } };
 
                 auto wfex = reinterpret_cast<const WAVEFORMATEXTENSIBLE*>(wfx);
 

@@ -31,7 +31,7 @@ namespace
             {
                 throw std::exception("CreateEvent");
             }
-        };
+        }
 
         virtual ~EngineCallback()
         {
@@ -264,7 +264,7 @@ public:
         , mDLL(nullptr)
     #endif
     {
-    };
+    }
 
 #if (_WIN32_WINNT < _WIN32_WINNT_WIN8)
     ~Impl()
@@ -1431,7 +1431,7 @@ WAVEFORMATEXTENSIBLE AudioEngine::GetOutputFormat() const
     wfx.Format.nBlockAlign = WORD(wfx.Format.nChannels * wfx.Format.wBitsPerSample / 8);
     wfx.Format.nAvgBytesPerSec = wfx.Format.nSamplesPerSec * wfx.Format.nBlockAlign;
 
-    static const GUID s_pcm = { WAVE_FORMAT_PCM, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71 };
+    static const GUID s_pcm = { WAVE_FORMAT_PCM, 0x0000, 0x0010, { 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71 } };
     memcpy(&wfx.SubFormat, &s_pcm, sizeof(GUID));
 
     return wfx;
