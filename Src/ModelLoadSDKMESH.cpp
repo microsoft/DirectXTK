@@ -106,7 +106,7 @@ namespace
             else
                 info.alpha = 1.f;
 
-            if (mh.Power)
+            if (mh.Power > 0)
             {
                 info.specularPower = mh.Power;
                 info.specularColor = XMFLOAT3(mh.Specular.x, mh.Specular.y, mh.Specular.z);

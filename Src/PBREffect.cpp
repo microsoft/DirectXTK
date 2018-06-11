@@ -181,7 +181,7 @@ PBREffect::Impl::Impl(_In_ ID3D11Device* device)
     static_assert(_countof(EffectBase<PBREffectTraits>::PixelShaderIndices) == PBREffectTraits::ShaderPermutationCount, "array/max mismatch");
 
     // Lighting
-    static const XMVECTORF32 defaultLightDirection = { 0, -1, 0, 0 };
+    static const XMVECTORF32 defaultLightDirection = { { { 0, -1, 0, 0 } } };
     for (int i = 0; i < MaxDirectionalLights; i++)
     {
         lightColor[i] = g_XMOne;

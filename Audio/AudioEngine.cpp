@@ -371,8 +371,8 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
     }
 
     assert(!xaudio2);
-    assert(!mMasterVoice);
-    assert(!mReverbVoice);
+    assert(mMasterVoice == nullptr);
+    assert(mReverbVoice == nullptr);
 
     masterChannelMask = masterChannels = masterRate = 0;
 
@@ -701,7 +701,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
     //
     for (auto it = mNotifyObjects.begin(); it != mNotifyObjects.end(); ++it)
     {
-        assert(*it != 0);
+        assert(*it != nullptr);
         (*it)->OnReset();
     }
 
@@ -713,20 +713,20 @@ void AudioEngine::Impl::SetSilentMode()
 {
     for (auto it = mNotifyObjects.begin(); it != mNotifyObjects.end(); ++it)
     {
-        assert(*it != 0);
+        assert(*it != nullptr);
         (*it)->OnCriticalError();
     }
 
     for (auto it = mOneShots.begin(); it != mOneShots.end(); ++it)
     {
-        assert(it->second != 0);
+        assert(it->second != nullptr);
         it->second->DestroyVoice();
     }
     mOneShots.clear();
 
     for (auto it = mVoicePool.begin(); it != mVoicePool.end(); ++it)
     {
-        assert(it->second != 0);
+        assert(it->second != nullptr);
         it->second->DestroyVoice();
     }
     mVoicePool.clear();
@@ -746,7 +746,7 @@ void AudioEngine::Impl::Shutdown()
 {
     for (auto it = mNotifyObjects.begin(); it != mNotifyObjects.end(); ++it)
     {
-        assert(*it != 0);
+        assert(*it != nullptr);
         (*it)->OnDestroyEngine();
     }
 
@@ -758,14 +758,14 @@ void AudioEngine::Impl::Shutdown()
 
         for (auto it = mOneShots.begin(); it != mOneShots.end(); ++it)
         {
-            assert(it->second != 0);
+            assert(it->second != nullptr);
             it->second->DestroyVoice();
         }
         mOneShots.clear();
 
         for (auto it = mVoicePool.begin(); it != mVoicePool.end(); ++it)
         {
-            assert(it->second != 0);
+            assert(it->second != nullptr);
             it->second->DestroyVoice();
         }
         mVoicePool.clear();
@@ -811,7 +811,7 @@ bool AudioEngine::Impl::Update()
             // Scan for completed one-shot voices
             for (auto it = mOneShots.begin(); it != mOneShots.end(); )
             {
-                assert(it->second != 0);
+                assert(it->second != nullptr);
 
                 XAUDIO2_VOICE_STATE xstate;
             #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
@@ -856,7 +856,7 @@ bool AudioEngine::Impl::Update()
     //
     for (auto it = mNotifyUpdates.begin(); it != mNotifyUpdates.end(); ++it)
     {
-        assert(*it != 0);
+        assert(*it != nullptr);
         (*it)->OnUpdate();
     }
 
@@ -917,7 +917,7 @@ AudioStatistics AudioEngine::Impl::GetStatistics() const
 
     for (auto it = mNotifyObjects.begin(); it != mNotifyObjects.end(); ++it)
     {
-        assert(*it != 0);
+        assert(*it != nullptr);
         (*it)->GatherStatistics(stats);
     }
 
@@ -931,13 +931,13 @@ void AudioEngine::Impl::TrimVoicePool()
 {
     for (auto it = mNotifyObjects.begin(); it != mNotifyObjects.end(); ++it)
     {
-        assert(*it != 0);
+        assert(*it != nullptr);
         (*it)->OnTrim();
     }
 
     for (auto it = mVoicePool.begin(); it != mVoicePool.end(); ++it)
     {
-        assert(it->second != 0);
+        assert(it->second != nullptr);
         it->second->DestroyVoice();
     }
     mVoicePool.clear();
@@ -998,7 +998,7 @@ void AudioEngine::Impl::AllocateVoice(const WAVEFORMATEX* wfx, SOUND_EFFECT_INST
                 if (it != mVoicePool.end())
                 {
                     // Found a matching (stopped) voice to reuse
-                    assert(it->second != 0);
+                    assert(it->second != nullptr);
                     *voice = it->second;
                     mVoicePool.erase(it);
 
@@ -1072,7 +1072,7 @@ void AudioEngine::Impl::AllocateVoice(const WAVEFORMATEX* wfx, SOUND_EFFECT_INST
                     }
                 }
 
-                assert(*voice != 0);
+                assert(*voice != nullptr);
                 HRESULT hr = (*voice)->SetSourceSampleRate(wfx->nSamplesPerSec);
                 if (FAILED(hr))
                 {
@@ -1141,7 +1141,7 @@ void AudioEngine::Impl::AllocateVoice(const WAVEFORMATEX* wfx, SOUND_EFFECT_INST
 
     if (oneshot)
     {
-        assert(*voice != 0);
+        assert(*voice != nullptr);
         mOneShots.emplace_back(std::make_pair(voiceKey, *voice));
     }
 }
@@ -1180,7 +1180,7 @@ void AudioEngine::Impl::DestroyVoice(_In_ IXAudio2SourceVoice* voice)
 
 void AudioEngine::Impl::RegisterNotify(_In_ IVoiceNotify* notify, bool usesUpdate)
 {
-    assert(notify != 0);
+    assert(notify != nullptr);
     mNotifyObjects.insert(notify);
 
     if (usesUpdate)
@@ -1192,7 +1192,7 @@ void AudioEngine::Impl::RegisterNotify(_In_ IVoiceNotify* notify, bool usesUpdat
 
 void AudioEngine::Impl::UnregisterNotify(_In_ IVoiceNotify* notify, bool usesOneShots, bool usesUpdate)
 {
-    assert(notify != 0);
+    assert(notify != nullptr);
     mNotifyObjects.erase(notify);
 
     // Check for any pending one-shots for this notification object
@@ -1202,7 +1202,7 @@ void AudioEngine::Impl::UnregisterNotify(_In_ IVoiceNotify* notify, bool usesOne
 
         for (auto it = mOneShots.begin(); it != mOneShots.end(); ++it)
         {
-            assert(it->second != 0);
+            assert(it->second != nullptr);
 
             XAUDIO2_VOICE_STATE state;
         #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
@@ -1452,7 +1452,7 @@ int AudioEngine::GetOutputChannels() const
 
 bool AudioEngine::IsAudioDevicePresent() const
 {
-    return (pImpl->xaudio2.Get() != 0) && !pImpl->mCriticalError;
+    return pImpl->xaudio2 && !pImpl->mCriticalError;
 }
 
 

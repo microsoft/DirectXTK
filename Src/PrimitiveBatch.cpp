@@ -292,7 +292,7 @@ void PrimitiveBatchBase::Impl::Draw(D3D11_PRIMITIVE_TOPOLOGY topology, bool isIn
     // Copy over the index data.
     if (isIndexed)
     {
-        assert(grfxMemoryIB != 0);
+        assert(grfxMemoryIB != nullptr);
         auto outputIndices = reinterpret_cast<uint16_t*>(grfxMemoryIB) + mCurrentIndex;
 
         for (size_t i = 0; i < indexCount; i++)
@@ -304,7 +304,7 @@ void PrimitiveBatchBase::Impl::Draw(D3D11_PRIMITIVE_TOPOLOGY topology, bool isIn
     }
 
     // Return the output vertex data location.
-    assert(grfxMemoryVB != 0);
+    assert(grfxMemoryVB != nullptr);
     *pMappedVertices = reinterpret_cast<uint8_t*>(grfxMemoryVB) + (mCurrentVertex * mVertexSize);
 
     mCurrentVertex += vertexCount;

@@ -61,7 +61,7 @@ public:
 
         CreateIntegerPCM(&mWaveFormat, sampleRate, channels, sampleBits);
 
-        assert(engine != 0);
+        assert(engine != nullptr);
         engine->RegisterNotify(this, true);
 
         mBase.Initialize(engine, &mWaveFormat, flags);
@@ -69,7 +69,7 @@ public:
         mBufferNeeded = bufferNeeded;
     }
 
-    virtual ~Impl()
+    virtual ~Impl() override
     {
         mBase.DestroyVoice();
 

@@ -33,11 +33,11 @@ public:
         mPrepared(false),
         mStreaming(false)
     {
-        assert(mEngine != 0);
+        assert(mEngine != nullptr);
         mEngine->RegisterNotify(this, false);
     }
 
-    virtual ~Impl()
+    virtual ~Impl() override
     {
         if (!mInstances.empty())
         {
@@ -45,7 +45,7 @@ public:
 
             for (auto it = mInstances.begin(); it != mInstances.end(); ++it)
             {
-                assert(*it != 0);
+                assert(*it != nullptr);
                 (*it)->OnDestroyParent();
             }
 
@@ -347,7 +347,7 @@ std::unique_ptr<SoundEffectInstance> WaveBank::CreateInstance(int index, SOUND_E
     }
 
     auto effect = new SoundEffectInstance(pImpl->mEngine, this, index, flags);
-    assert(effect != 0);
+    assert(effect != nullptr);
     pImpl->mInstances.emplace_back(effect);
     return std::unique_ptr<SoundEffectInstance>(effect);
 }

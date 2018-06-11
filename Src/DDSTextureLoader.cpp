@@ -178,9 +178,9 @@ namespace
                                                 initData,
                                                 &tex
                 );
-                if (SUCCEEDED(hr) && tex != 0)
+                if (SUCCEEDED(hr) && tex)
                 {
-                    if (textureView != 0)
+                    if (textureView)
                     {
                         D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
                         SRVDesc.Format = format;
@@ -208,7 +208,7 @@ namespace
                         }
                     }
 
-                    if (texture != 0)
+                    if (texture)
                     {
                         *texture = tex;
                     }
@@ -248,9 +248,9 @@ namespace
                                                 initData,
                                                 &tex
                 );
-                if (SUCCEEDED(hr) && tex != 0)
+                if (SUCCEEDED(hr) && tex)
                 {
-                    if (textureView != 0)
+                    if (textureView)
                     {
                         D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
                         SRVDesc.Format = format;
@@ -294,7 +294,7 @@ namespace
                         }
                     }
 
-                    if (texture != 0)
+                    if (texture)
                     {
                         *texture = tex;
                     }
@@ -325,9 +325,9 @@ namespace
                                                 initData,
                                                 &tex
                 );
-                if (SUCCEEDED(hr) && tex != 0)
+                if (SUCCEEDED(hr) && tex)
                 {
-                    if (textureView != 0)
+                    if (textureView)
                     {
                         D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
                         SRVDesc.Format = format;
@@ -346,7 +346,7 @@ namespace
                         }
                     }
 
-                    if (texture != 0)
+                    if (texture)
                     {
                         *texture = tex;
                     }
@@ -551,7 +551,7 @@ namespace
         }
 
         bool autogen = false;
-        if (mipCount == 1 && d3dContext != 0 && textureView != 0) // Must have context and shader-view to auto generate mipmaps
+        if (mipCount == 1 && d3dContext && textureView) // Must have context and shader-view to auto generate mipmaps
         {
             // See if format is supported for auto-gen mipmaps (varies by feature level)
             UINT fmtSupport = 0;
@@ -912,12 +912,12 @@ HRESULT DirectX::CreateDDSTextureFromMemoryEx(ID3D11Device* d3dDevice,
                                       texture, textureView);
     if (SUCCEEDED(hr))
     {
-        if (texture != 0 && *texture != 0)
+        if (texture && *texture)
         {
             SetDebugObjectName(*texture, "DDSTextureLoader");
         }
 
-        if (textureView != 0 && *textureView != 0)
+        if (textureView && *textureView)
         {
             SetDebugObjectName(*textureView, "DDSTextureLoader");
         }
@@ -973,7 +973,7 @@ HRESULT DirectX::CreateDDSTextureFromMemoryEx(ID3D11DeviceX* d3dDevice,
         return E_FAIL;
     }
 
-    uint32_t dwMagicNumber = *(const uint32_t*)(ddsData);
+    const uint32_t dwMagicNumber = *reinterpret_cast<const uint32_t*>(ddsData);
     if (dwMagicNumber != DDS_MAGIC)
     {
         return E_FAIL;
@@ -1015,12 +1015,12 @@ HRESULT DirectX::CreateDDSTextureFromMemoryEx(ID3D11DeviceX* d3dDevice,
                                       texture, textureView);
     if (SUCCEEDED(hr))
     {
-        if (texture != 0 && *texture != 0)
+        if (texture && *texture)
         {
             SetDebugObjectName(*texture, "DDSTextureLoader");
         }
 
-        if (textureView != 0 && *textureView != 0)
+        if (textureView && *textureView)
         {
             SetDebugObjectName(*textureView, "DDSTextureLoader");
         }
@@ -1123,7 +1123,7 @@ HRESULT DirectX::CreateDDSTextureFromFileEx(ID3D11Device* d3dDevice,
     if (SUCCEEDED(hr))
     {
     #if !defined(NO_D3D11_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
-        if (texture != 0 || textureView != 0)
+        if (texture || textureView)
         {
         #if defined(_XBOX_ONE) && defined(_TITLE)
             const wchar_t* pstrName = wcsrchr(fileName, '\\');
@@ -1135,11 +1135,11 @@ HRESULT DirectX::CreateDDSTextureFromFileEx(ID3D11Device* d3dDevice,
             {
                 pstrName++;
             }
-            if (texture != 0 && *texture != 0)
+            if (texture && *texture)
             {
                 (*texture)->SetName(pstrName);
             }
-            if (textureView != 0 && *textureView != 0)
+            if (textureView && *textureView)
             {
                 (*textureView)->SetName(pstrName);
             }
@@ -1166,7 +1166,7 @@ HRESULT DirectX::CreateDDSTextureFromFileEx(ID3D11Device* d3dDevice,
                     pstrName++;
                 }
 
-                if (texture != 0 && *texture != 0)
+                if (texture && *texture)
                 {
                     (*texture)->SetPrivateData(WKPDID_D3DDebugObjectName,
                                                static_cast<UINT>(strnlen_s(pstrName, MAX_PATH)),
@@ -1174,7 +1174,7 @@ HRESULT DirectX::CreateDDSTextureFromFileEx(ID3D11Device* d3dDevice,
                     );
                 }
 
-                if (textureView != 0 && *textureView != 0)
+                if (textureView && *textureView)
                 {
                     (*textureView)->SetPrivateData(WKPDID_D3DDebugObjectName,
                                                    static_cast<UINT>(strnlen_s(pstrName, MAX_PATH)),
@@ -1257,7 +1257,7 @@ HRESULT DirectX::CreateDDSTextureFromFileEx(ID3D11DeviceX* d3dDevice,
     if (SUCCEEDED(hr))
     {
     #if !defined(NO_D3D11_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
-        if (texture != 0 || textureView != 0)
+        if (texture || textureView )
         {
         #if defined(_XBOX_ONE) && defined(_TITLE)
             const wchar_t* pstrName = wcsrchr(fileName, '\\');
@@ -1269,11 +1269,11 @@ HRESULT DirectX::CreateDDSTextureFromFileEx(ID3D11DeviceX* d3dDevice,
             {
                 pstrName++;
             }
-            if (texture != 0 && *texture != 0)
+            if (texture && *texture)
             {
                 (*texture)->SetName(pstrName);
             }
-            if (textureView != 0 && *textureView != 0)
+            if (textureView && *textureView)
             {
                 (*textureView)->SetName(pstrName);
             }
@@ -1300,7 +1300,7 @@ HRESULT DirectX::CreateDDSTextureFromFileEx(ID3D11DeviceX* d3dDevice,
                     pstrName++;
                 }
 
-                if (texture != 0 && *texture != 0)
+                if (texture && *texture)
                 {
                     (*texture)->SetPrivateData(WKPDID_D3DDebugObjectName,
                                                static_cast<UINT>(strnlen_s(pstrName, MAX_PATH)),
@@ -1308,7 +1308,7 @@ HRESULT DirectX::CreateDDSTextureFromFileEx(ID3D11DeviceX* d3dDevice,
                     );
                 }
 
-                if (textureView != 0 && *textureView != 0)
+                if (textureView && *textureView)
                 {
                     (*textureView)->SetPrivateData(WKPDID_D3DDebugObjectName,
                                                    static_cast<UINT>(strnlen_s(pstrName, MAX_PATH)),

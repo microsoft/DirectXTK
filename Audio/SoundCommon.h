@@ -86,12 +86,12 @@ namespace DirectX
 
         ~SoundEffectInstanceBase()
         {
-            assert(!voice);
+            assert(voice == nullptr);
         }
 
         void Initialize(_In_ AudioEngine* eng, _In_ const WAVEFORMATEX* wfx, SOUND_EFFECT_INSTANCE_FLAGS flags)
         {
-            assert(eng != 0);
+            assert(eng != nullptr);
             engine = eng;
             mDirectVoice = eng->GetMasterVoice();
             mReverbVoice = eng->GetReverbVoice();
@@ -102,7 +102,7 @@ namespace DirectX
                 mFlags = static_cast<SOUND_EFFECT_INSTANCE_FLAGS>(static_cast<int>(flags) & ~SoundEffectInstance_UseRedirectLFE);
 
             memset(&mDSPSettings, 0, sizeof(X3DAUDIO_DSP_SETTINGS));
-            assert(wfx != 0);
+            assert(wfx != nullptr);
             mDSPSettings.SrcChannelCount = wfx->nChannels;
             mDSPSettings.DstChannelCount = eng->GetOutputChannels();
         }
@@ -112,7 +112,7 @@ namespace DirectX
             if (voice)
                 return;
 
-            assert(engine != 0);
+            assert(engine != nullptr);
             engine->AllocateVoice(wfx, mFlags, false, &voice);
         }
 
@@ -120,7 +120,7 @@ namespace DirectX
         {
             if (voice)
             {
-                assert(engine != 0);
+                assert(engine != nullptr);
                 engine->DestroyVoice(voice);
                 voice = nullptr;
             }
@@ -299,7 +299,7 @@ namespace DirectX
 
         void OnReset()
         {
-            assert(engine != 0);
+            assert(engine != nullptr);
             mDirectVoice = engine->GetMasterVoice();
             mReverbVoice = engine->GetReverbVoice();
 

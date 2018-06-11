@@ -727,7 +727,7 @@ void SoundEffectInstanceBase::Apply3D(const AudioListener& listener, const Audio
     assert(mDSPSettings.DstChannelCount <= 8);
     mDSPSettings.pMatrixCoefficients = matrix;
 
-    assert(engine != 0);
+    assert(engine != nullptr);
     if (rhcoords)
     {
         X3DAUDIO_EMITTER lhEmitter;
@@ -756,7 +756,7 @@ void SoundEffectInstanceBase::Apply3D(const AudioListener& listener, const Audio
     (void)voice->SetFrequencyRatio(mFreqRatio * mDSPSettings.DopplerFactor);
 
     auto direct = mDirectVoice;
-    assert(direct != 0);
+    assert(direct != nullptr);
     (void)voice->SetOutputMatrix(direct, mDSPSettings.SrcChannelCount, mDSPSettings.DstChannelCount, matrix);
 
     if (reverb)

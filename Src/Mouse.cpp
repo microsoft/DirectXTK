@@ -1,4 +1,4 @@
-﻿//--------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------
 // File: Mouse.cpp
 //
 // Copyright (c) Microsoft Corporation. All rights reserved.
@@ -138,7 +138,7 @@ public:
 
         SetEvent((mode == MODE_ABSOLUTE) ? mAbsoluteMode.get() : mRelativeMode.get());
 
-        assert(mWindow != 0);
+        assert(mWindow != nullptr);
 
         TRACKMOUSEEVENT tme;
         tme.cbSize = sizeof(tme);
@@ -161,7 +161,7 @@ public:
         if (mMode == MODE_RELATIVE)
             return false;
 
-        CURSORINFO info = { sizeof(CURSORINFO) };
+        CURSORINFO info = { sizeof(CURSORINFO), 0, nullptr, {} };
         if (!GetCursorInfo(&info))
         {
             throw std::exception("GetCursorInfo");
@@ -175,7 +175,7 @@ public:
         if (mMode == MODE_RELATIVE)
             return;
 
-        CURSORINFO info = { sizeof(CURSORINFO) };
+        CURSORINFO info = { sizeof(CURSORINFO), 0, nullptr, {} };
         if (!GetCursorInfo(&info))
         {
             throw std::exception("GetCursorInfo");
@@ -193,7 +193,7 @@ public:
         if (mWindow == window)
             return;
 
-        assert(window != 0);
+        assert(window != nullptr);
 
         RAWINPUTDEVICE Rid;
         Rid.usUsagePage = 0x1 /* HID_USAGE_PAGE_GENERIC */;
@@ -234,7 +234,7 @@ private:
 
     void ClipToWindow()
     {
-        assert(mWindow != 0);
+        assert(mWindow != nullptr);
 
         RECT rect;
         GetClientRect(mWindow, &rect);

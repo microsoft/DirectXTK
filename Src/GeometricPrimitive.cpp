@@ -25,7 +25,7 @@ namespace
     template<typename T>
     void CreateBuffer(_In_ ID3D11Device* device, T const& data, D3D11_BIND_FLAG bindFlags, _Outptr_ ID3D11Buffer** pBuffer)
     {
-        assert(pBuffer != 0);
+        assert(pBuffer != nullptr);
 
         D3D11_BUFFER_DESC bufferDesc = {};
 
@@ -50,7 +50,7 @@ namespace
     // Helper for creating a D3D input layout.
     void CreateInputLayout(_In_ ID3D11Device* device, IEffect* effect, _Outptr_ ID3D11InputLayout** pInputLayout)
     {
-        assert(pInputLayout != 0);
+        assert(pInputLayout != nullptr);
 
         void const* shaderByteCode;
         size_t byteCodeLength;
@@ -210,9 +210,9 @@ void XM_CALLCONV GeometricPrimitive::Impl::Draw(
     bool wireframe,
     std::function<void()>& setCustomState) const
 {
-    assert(mResources != 0);
+    assert(mResources);
     auto effect = mResources->effect.get();
-    assert(effect != 0);
+    assert(effect != nullptr);
 
     ID3D11InputLayout *inputLayout;
     if (texture)
@@ -248,19 +248,19 @@ void GeometricPrimitive::Impl::Draw(
     bool wireframe,
     std::function<void()>& setCustomState) const
 {
-    assert(mResources != 0);
+    assert(mResources);
     auto deviceContext = mResources->deviceContext.Get();
-    assert(deviceContext != 0);
+    assert(deviceContext != nullptr);
 
     // Set state objects.
     mResources->PrepareForRendering(alpha, wireframe);
 
     // Set input layout.
-    assert(inputLayout != 0);
+    assert(inputLayout != nullptr);
     deviceContext->IASetInputLayout(inputLayout);
 
     // Activate our shaders, constant buffers, texture, etc.
-    assert(effect != 0);
+    assert(effect != nullptr);
     effect->Apply(deviceContext);
 
     // Set the vertex and index buffer.
@@ -289,12 +289,12 @@ void GeometricPrimitive::Impl::Draw(
 _Use_decl_annotations_
 void GeometricPrimitive::Impl::CreateInputLayout(IEffect* effect, ID3D11InputLayout** inputLayout) const
 {
-    assert(effect != 0);
-    assert(inputLayout != 0);
+    assert(effect != nullptr);
+    assert(inputLayout != nullptr);
 
-    assert(mResources != 0);
+    assert(mResources);
     auto deviceContext = mResources->deviceContext.Get();
-    assert(deviceContext != 0);
+    assert(deviceContext != nullptr);
 
     ComPtr<ID3D11Device> device;
     deviceContext->GetDevice(&device);

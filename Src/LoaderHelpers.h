@@ -837,7 +837,7 @@ namespace DirectX
                 }
             }
 
-            void clear() { m_handle = 0; }
+            void clear() { m_handle = nullptr; }
 
         private:
             HANDLE m_handle;
@@ -860,7 +860,7 @@ namespace DirectX
                 }
             }
 
-            void clear() { m_filename = 0; }
+            void clear() { m_filename = nullptr; }
 
         private:
             LPCWSTR m_filename;

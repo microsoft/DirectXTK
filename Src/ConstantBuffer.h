@@ -53,10 +53,10 @@ namespace DirectX
         // Writes new data into the constant buffer.
         void SetData(_In_ ID3D11DeviceContext* deviceContext, T const& value, void** grfxMemory)
         {
-            assert(grfxMemory != 0);
+            assert(grfxMemory != nullptr);
 
             void* ptr = GraphicsMemory::Get().Allocate(deviceContext, sizeof(T), 64);
-            assert(ptr != 0);
+            assert(ptr != nullptr);
 
             *(T*)ptr = value;
 
@@ -83,7 +83,7 @@ namespace DirectX
         // Writes new data into the constant buffer.
         void SetData(_In_ ID3D11DeviceContext* deviceContext, T const& value)
         {
-            assert(mConstantBuffer.Get() != 0);
+            assert(mConstantBuffer);
 
             D3D11_MAPPED_SUBRESOURCE mappedResource;
 

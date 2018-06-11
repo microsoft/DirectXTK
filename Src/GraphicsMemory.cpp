@@ -58,7 +58,7 @@ public:
 
     void Initialize(_In_ ID3D11DeviceX* device, UINT backBufferCount)
     {
-        assert(device != 0);
+        assert(device != nullptr);
         mDevice = device;
 
         device->GetImmediateContextX(mDeviceContext.GetAddressOf());

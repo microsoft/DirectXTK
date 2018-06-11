@@ -67,7 +67,7 @@ namespace DirectX
         BasicPostProcess(BasicPostProcess const&) = delete;
         BasicPostProcess& operator= (BasicPostProcess const&) = delete;
 
-        virtual ~BasicPostProcess();
+        virtual ~BasicPostProcess() override;
 
         // IPostProcess methods.
         void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext, _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) override;
@@ -114,7 +114,7 @@ namespace DirectX
         DualPostProcess(DualPostProcess const&) = delete;
         DualPostProcess& operator= (DualPostProcess const&) = delete;
 
-        virtual ~DualPostProcess();
+        virtual ~DualPostProcess() override;
 
         // IPostProcess methods.
         void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext, _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) override;
@@ -169,7 +169,7 @@ namespace DirectX
         ToneMapPostProcess(ToneMapPostProcess const&) = delete;
         ToneMapPostProcess& operator= (ToneMapPostProcess const&) = delete;
 
-        virtual ~ToneMapPostProcess();
+        virtual ~ToneMapPostProcess() override;
 
         // IPostProcess methods.
         void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext, _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) override;

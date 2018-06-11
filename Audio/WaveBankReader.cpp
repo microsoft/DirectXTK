@@ -201,7 +201,6 @@ namespace
                     uint32_t samplesPerAdpcmBlock = AdpcmSamplesPerBlock();
                     return blockAlign * nSamplesPerSec / samplesPerAdpcmBlock;
                 }
-                break;
 
                 case TAG_WMA:
                 {
@@ -510,7 +509,7 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName)
     }
 
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
-    CREATEFILE2_EXTENDED_PARAMETERS params = { sizeof(CREATEFILE2_EXTENDED_PARAMETERS), 0 };
+    CREATEFILE2_EXTENDED_PARAMETERS params = { sizeof(CREATEFILE2_EXTENDED_PARAMETERS), 0, 0, 0, {}, nullptr };
     params.dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
     params.dwFileFlags = FILE_FLAG_OVERLAPPED | FILE_FLAG_SEQUENTIAL_SCAN;
     ScopedHandle hFile(safe_handle(CreateFile2(szFileName,
@@ -814,7 +813,7 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName)
         hFile.reset();
 
     #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
-        CREATEFILE2_EXTENDED_PARAMETERS params2 = { sizeof(CREATEFILE2_EXTENDED_PARAMETERS), 0 };
+        CREATEFILE2_EXTENDED_PARAMETERS params2 = { sizeof(CREATEFILE2_EXTENDED_PARAMETERS), 0, 0, 0, {}, nullptr };
         params2.dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
         params2.dwFileFlags = FILE_FLAG_OVERLAPPED | FILE_FLAG_NO_BUFFERING;
         m_async = CreateFile2(szFileName,
@@ -912,7 +911,7 @@ void WaveBankReader::Impl::Close()
 {
     if (m_async != INVALID_HANDLE_VALUE)
     {
-        if (m_request.hEvent != 0)
+        if (m_request.hEvent)
         {
             DWORD bytes;
         #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
@@ -1226,7 +1225,7 @@ bool WaveBankReader::Impl::UpdatePrepared()
     if (m_async == INVALID_HANDLE_VALUE)
         return false;
 
-    if (m_request.hEvent != 0)
+    if (m_request.hEvent)
     {
 
     #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
@@ -1294,7 +1293,7 @@ void WaveBankReader::WaitOnPrepare()
     if (pImpl->m_prepared)
         return;
 
-    if (pImpl->m_request.hEvent != 0)
+    if (pImpl->m_request.hEvent)
     {
         WaitForSingleObjectEx(pImpl->m_request.hEvent, INFINITE, FALSE);
 

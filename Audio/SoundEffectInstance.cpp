@@ -29,10 +29,10 @@ public:
         mIndex(0),
         mLooped(false)
     {
-        assert(engine != 0);
+        assert(engine != nullptr);
         engine->RegisterNotify(this, false);
 
-        assert(mEffect != 0);
+        assert(mEffect != nullptr);
         mBase.Initialize(engine, effect->GetFormat(), flags);
     }
 
@@ -43,16 +43,16 @@ public:
         mIndex(index),
         mLooped(false)
     {
-        assert(engine != 0);
+        assert(engine != nullptr);
         engine->RegisterNotify(this, false);
 
         char buff[64] = {};
         auto wfx = reinterpret_cast<WAVEFORMATEX*>(buff);
-        assert(mWaveBank != 0);
+        assert(mWaveBank != nullptr);
         mBase.Initialize(engine, mWaveBank->GetFormat(index, wfx, sizeof(buff)), flags);
     }
 
-    virtual ~Impl()
+    virtual ~Impl() override
     {
         mBase.DestroyVoice();
 
@@ -123,7 +123,7 @@ void SoundEffectInstance::Impl::Play(bool loop)
         }
         else
         {
-            assert(mEffect != 0);
+            assert(mEffect != nullptr);
             mBase.AllocateVoice(mEffect->GetFormat());
         }
     }
@@ -144,7 +144,7 @@ void SoundEffectInstance::Impl::Play(bool loop)
     }
     else
     {
-        assert(mEffect != 0);
+        assert(mEffect != nullptr);
         iswma = mEffect->FillSubmitBuffer(buffer, wmaBuffer);
     }
 

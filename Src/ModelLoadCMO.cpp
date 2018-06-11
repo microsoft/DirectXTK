@@ -668,13 +668,13 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
                 auto visited = reinterpret_cast<UINT*>(temp.get() + bytes);
                 memset(visited, 0xff, sizeof(UINT) * nVerts);
 
-                assert(vbData[j].ptr != 0);
+                assert(vbData[j].ptr != nullptr);
 
                 if (enableSkinning)
                 {
                     // Combine CMO multi-stream data into a single stream
                     auto skinptr = vbData[j].skinPtr;
-                    assert(skinptr != 0);
+                    assert(skinptr != nullptr);
 
                     uint8_t* ptr = temp.get();
 
