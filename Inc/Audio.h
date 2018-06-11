@@ -473,8 +473,9 @@ namespace DirectX
             {
                 XMVECTOR lastPos = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(&Position));
 
-                XMVECTOR vDelta = (newPos - lastPos);
-                XMVECTOR v = vDelta / dt;
+                XMVECTOR vDelta = XMVectorSubtract(newPos, lastPos);
+                XMVECTOR vt = XMVectorReplicate(dt);
+                XMVECTOR v = XMVectorDivide(vDelta, vt);
                 XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&Velocity), v);
 
                 vDelta = XMVector3Normalize(vDelta);
@@ -566,8 +567,9 @@ namespace DirectX
             {
                 XMVECTOR lastPos = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(&Position));
 
-                XMVECTOR vDelta = (newPos - lastPos);
-                XMVECTOR v = vDelta / dt;
+                XMVECTOR vDelta = XMVectorSubtract(newPos, lastPos);
+                XMVECTOR vt = XMVectorReplicate(dt);
+                XMVECTOR v = XMVectorDivide(vDelta, vt);
                 XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&Velocity), v);
 
                 vDelta = XMVector3Normalize(vDelta);

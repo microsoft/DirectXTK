@@ -316,7 +316,10 @@ void XM_CALLCONV SpriteFont::DrawString(_In_ SpriteBatch* spriteBatch, _In_z_ wc
     // If the text is mirrored, offset the start position accordingly.
     if (effects)
     {
-        baseOffset -= MeasureString(text) * axisIsMirroredTable[effects & 3];
+        baseOffset = XMVectorNegativeMultiplySubtract(
+            MeasureString(text),
+            axisIsMirroredTable[effects & 3],
+            baseOffset);
     }
 
     // Draw each character in turn.
@@ -332,7 +335,7 @@ void XM_CALLCONV SpriteFont::DrawString(_In_ SpriteBatch* spriteBatch, _In_z_ wc
             XMVECTOR glyphRect = XMConvertVectorIntToFloat(XMLoadInt4(reinterpret_cast<uint32_t const*>(&glyph->Subrect)), 0);
 
             // xy = glyph width/height.
-            glyphRect = XMVectorSwizzle<2, 3, 0, 1>(glyphRect) - glyphRect;
+            glyphRect = XMVectorSubtract(XMVectorSwizzle<2, 3, 0, 1>(glyphRect), glyphRect);
 
             offset = XMVectorMultiplyAdd(glyphRect, axisIsMirroredTable[effects & 3], offset);
         }
