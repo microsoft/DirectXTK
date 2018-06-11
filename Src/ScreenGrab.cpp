@@ -412,7 +412,7 @@ HRESULT DirectX::SaveWICTextureToFile(
     auto_delete_file_wic delonfail(stream, fileName);
 
     ComPtr<IWICBitmapEncoder> encoder;
-    hr = pWIC->CreateEncoder(guidContainerFormat, 0, encoder.GetAddressOf());
+    hr = pWIC->CreateEncoder(guidContainerFormat, nullptr, encoder.GetAddressOf());
     if (FAILED(hr))
         return hr;
 
