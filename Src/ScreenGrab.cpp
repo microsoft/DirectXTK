@@ -26,8 +26,8 @@
 #include "ScreenGrab.h"
 #include "DirectXHelpers.h"
 
-#include "dds.h"
 #include "PlatformHelpers.h"
+#include "dds.h"
 #include "LoaderHelpers.h"
 
 using Microsoft::WRL::ComPtr;
