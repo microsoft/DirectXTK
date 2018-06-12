@@ -224,7 +224,7 @@ namespace
         DWORD AdpcmSamplesPerBlock() const
         {
             uint32_t nBlockAlign = (wBlockAlign + ADPCM_BLOCKALIGN_CONVERSION_OFFSET) * nChannels;
-            return nBlockAlign * 2 / (uint32_t)nChannels - 12;
+            return nBlockAlign * 2 / uint32_t(nChannels) - 12;
         }
 
         void AdpcmFillCoefficientTable(ADPCMWAVEFORMAT *fmt) const
@@ -968,7 +968,7 @@ HRESULT WaveBankReader::Impl::GetFormat(uint32_t index, WAVEFORMATEX* pFormat, s
             pFormat->cbSize = 32 /*MSADPCM_FORMAT_EXTRA_BYTES*/;
             {
                 auto adpcmFmt = reinterpret_cast<ADPCMWAVEFORMAT*>(pFormat);
-                adpcmFmt->wSamplesPerBlock = (WORD)miniFmt.AdpcmSamplesPerBlock();
+                adpcmFmt->wSamplesPerBlock = static_cast<WORD>(miniFmt.AdpcmSamplesPerBlock());
                 miniFmt.AdpcmFillCoefficientTable(adpcmFmt);
             }
             break;
@@ -1061,7 +1061,7 @@ HRESULT WaveBankReader::Impl::GetFormat(uint32_t index, WAVEFORMATEX* pFormat, s
 
     pFormat->nChannels = miniFmt.nChannels;
     pFormat->wBitsPerSample = miniFmt.BitsPerSample();
-    pFormat->nBlockAlign = (WORD)miniFmt.BlockAlign();
+    pFormat->nBlockAlign = static_cast<WORD>(miniFmt.BlockAlign());
     pFormat->nSamplesPerSec = miniFmt.nSamplesPerSec;
     pFormat->nAvgBytesPerSec = miniFmt.AvgBytesPerSec();
 
