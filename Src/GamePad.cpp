@@ -1163,14 +1163,14 @@ private:
         if (mConnected[player])
             return false;
 
-        for (size_t j = 0; j < XUSER_MAX_COUNT; ++j)
+        for (int j = 0; j < XUSER_MAX_COUNT; ++j)
         {
             if (!mConnected[j])
             {
                 LONGLONG delta = time - mLastReadTime[j];
 
                 LONGLONG interval = 1000;
-                if ((int)j != player)
+                if (j != player)
                     interval /= 4;
 
                 if ((delta >= 0) && (delta < interval))

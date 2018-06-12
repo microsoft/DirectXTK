@@ -788,8 +788,8 @@ void SpriteBatch::Impl::RenderBatch(ID3D11ShaderResourceView* texture, SpriteInf
 #endif
 
         // Ok lads, the time has come for us draw ourselves some sprites!
-        UINT startIndex = (UINT)mContextResources->vertexBufferPosition * IndicesPerSprite;
-        UINT indexCount = (UINT)batchSize * IndicesPerSprite;
+        auto startIndex = static_cast<UINT>(mContextResources->vertexBufferPosition * IndicesPerSprite);
+        auto indexCount = static_cast<UINT>(batchSize * IndicesPerSprite);
 
         deviceContext->DrawIndexed(indexCount, startIndex, 0);
 

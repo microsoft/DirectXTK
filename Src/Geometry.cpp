@@ -32,7 +32,7 @@ namespace
     inline void index_push_back(IndexCollection& indices, size_t value)
     {
         CheckIndexOverflow(value);
-        indices.push_back((uint16_t)value);
+        indices.push_back(static_cast<uint16_t>(value));
     }
 
 
@@ -160,7 +160,7 @@ void DirectX::ComputeSphere(VertexCollection& vertices, IndexCollection& indices
     // Create rings of vertices at progressively higher latitudes.
     for (size_t i = 0; i <= verticalSegments; i++)
     {
-        float v = 1 - (float)i / verticalSegments;
+        float v = 1 - float(i) / verticalSegments;
 
         float latitude = (i * XM_PI / verticalSegments) - XM_PIDIV2;
         float dy, dxz;
@@ -170,7 +170,7 @@ void DirectX::ComputeSphere(VertexCollection& vertices, IndexCollection& indices
         // Create a single ring of vertices at this latitude.
         for (size_t j = 0; j <= horizontalSegments; j++)
         {
-            float u = (float)j / horizontalSegments;
+            float u = float(j) / horizontalSegments;
 
             float longitude = j * XM_2PI / horizontalSegments;
             float dx, dz;
@@ -633,7 +633,7 @@ void DirectX::ComputeCylinder(VertexCollection& vertices, IndexCollection& indic
 
         XMVECTOR sideOffset = XMVectorScale(normal, radius);
 
-        float u = (float)i / tessellation;
+        float u = float(i) / tessellation;
 
         XMVECTOR textureCoordinate = XMLoadFloat(&u);
 
@@ -682,7 +682,7 @@ void DirectX::ComputeCone(VertexCollection& vertices, IndexCollection& indices, 
 
         XMVECTOR sideOffset = XMVectorScale(circlevec, radius);
 
-        float u = (float)i / tessellation;
+        float u = float(i) / tessellation;
 
         XMVECTOR textureCoordinate = XMLoadFloat(&u);
 
@@ -727,7 +727,7 @@ void DirectX::ComputeTorus(VertexCollection& vertices, IndexCollection& indices,
     // First we loop around the main ring of the torus.
     for (size_t i = 0; i <= tessellation; i++)
     {
-        float u = (float)i / tessellation;
+        float u = float(i) / tessellation;
 
         float outerAngle = i * XM_2PI / tessellation - XM_PIDIV2;
 
@@ -738,7 +738,7 @@ void DirectX::ComputeTorus(VertexCollection& vertices, IndexCollection& indices,
         // Now we loop along the other axis, around the side of the tube.
         for (size_t j = 0; j <= tessellation; j++)
         {
-            float v = 1 - (float)j / tessellation;
+            float v = 1 - float(j) / tessellation;
 
             float innerAngle = j * XM_2PI / tessellation + XM_PI;
             float dx, dy;

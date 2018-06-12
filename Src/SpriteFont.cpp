@@ -93,7 +93,7 @@ SpriteFont::Impl::Impl(_In_ ID3D11Device* device, _In_ BinaryReader* reader, boo
     // Read font properties.
     lineSpacing = reader->Read<float>();
 
-    SetDefaultCharacter((wchar_t)reader->Read<uint32_t>());
+    SetDefaultCharacter(static_cast<wchar_t>(reader->Read<uint32_t>()));
 
     // Read the texture data.
     auto textureWidth = reader->Read<uint32_t>();
@@ -353,8 +353,8 @@ XMVECTOR XM_CALLCONV SpriteFont::MeasureString(_In_z_ wchar_t const* text) const
     {
         UNREFERENCED_PARAMETER(advance);
 
-        float w = (float)(glyph->Subrect.right - glyph->Subrect.left);
-        float h = (float)(glyph->Subrect.bottom - glyph->Subrect.top) + glyph->YOffset;
+        auto w = static_cast<float>(glyph->Subrect.right - glyph->Subrect.left);
+        auto h = static_cast<float>(glyph->Subrect.bottom - glyph->Subrect.top) + glyph->YOffset;
 
         h = std::max(h, pImpl->lineSpacing);
 
@@ -371,8 +371,8 @@ RECT SpriteFont::MeasureDrawBounds(_In_z_ wchar_t const* text, XMFLOAT2 const& p
 
     pImpl->ForEachGlyph(text, [&](Glyph const* glyph, float x, float y, float advance)
     {
-        float w = (float)(glyph->Subrect.right - glyph->Subrect.left);
-        float h = (float)(glyph->Subrect.bottom - glyph->Subrect.top);
+        auto w = static_cast<float>(glyph->Subrect.right - glyph->Subrect.left);
+        auto h = static_cast<float>(glyph->Subrect.bottom - glyph->Subrect.top);
 
         float minX = position.x + x;
         float minY = position.y + y + glyph->YOffset;
@@ -428,7 +428,7 @@ void SpriteFont::SetLineSpacing(float spacing)
 // Font properties
 wchar_t SpriteFont::GetDefaultCharacter() const
 {
-    return pImpl->defaultGlyph ? (wchar_t)pImpl->defaultGlyph->Character : 0;
+    return static_cast<wchar_t>(pImpl->defaultGlyph ? pImpl->defaultGlyph->Character : 0);
 }
 
 
