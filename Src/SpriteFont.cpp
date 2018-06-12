@@ -111,7 +111,7 @@ SpriteFont::Impl::Impl(_In_ ID3D11Device* device, _In_ BinaryReader* reader, boo
     // Create the D3D texture.
     CD3D11_TEXTURE2D_DESC textureDesc(textureFormat, textureWidth, textureHeight, 1, 1, D3D11_BIND_SHADER_RESOURCE, D3D11_USAGE_IMMUTABLE);
     CD3D11_SHADER_RESOURCE_VIEW_DESC viewDesc(D3D11_SRV_DIMENSION_TEXTURE2D, textureFormat);
-    D3D11_SUBRESOURCE_DATA initData = { textureData, textureStride };
+    D3D11_SUBRESOURCE_DATA initData = { textureData, textureStride, 0 };
     ComPtr<ID3D11Texture2D> texture2D;
 
     ThrowIfFailed(

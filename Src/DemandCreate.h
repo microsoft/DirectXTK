@@ -17,7 +17,7 @@ namespace DirectX
 {
     // Helper for lazily creating a D3D resource.
     template<typename T, typename TCreateFunc>
-    static T* DemandCreate(Microsoft::WRL::ComPtr<T>& comPtr, std::mutex& mutex, TCreateFunc createFunc)
+    inline T* DemandCreate(Microsoft::WRL::ComPtr<T>& comPtr, std::mutex& mutex, TCreateFunc createFunc)
     {
         T* result = comPtr.Get();
 

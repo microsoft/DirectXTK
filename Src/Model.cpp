@@ -283,7 +283,7 @@ void Model::UpdateEffects(_In_ std::function<void(IEffect*)> setEffect)
 
             for (auto it = mesh->meshParts.cbegin(); it != mesh->meshParts.cend(); ++it)
             {
-                if ((*it)->effect != 0)
+                if ((*it)->effect)
                     mEffectCache.insert((*it)->effect.get());
             }
         }

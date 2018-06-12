@@ -71,7 +71,7 @@ namespace
             desc.SampleDesc.Quality = 0;
 
             ComPtr<ID3D11Texture2D> pTemp;
-            hr = d3dDevice->CreateTexture2D(&desc, 0, pTemp.GetAddressOf());
+            hr = d3dDevice->CreateTexture2D(&desc, nullptr, pTemp.GetAddressOf());
             if (FAILED(hr))
                 return hr;
 
@@ -101,7 +101,7 @@ namespace
             desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
             desc.Usage = D3D11_USAGE_STAGING;
 
-            hr = d3dDevice->CreateTexture2D(&desc, 0, pStaging.ReleaseAndGetAddressOf());
+            hr = d3dDevice->CreateTexture2D(&desc, nullptr, pStaging.ReleaseAndGetAddressOf());
             if (FAILED(hr))
                 return hr;
 
@@ -122,7 +122,7 @@ namespace
             desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
             desc.Usage = D3D11_USAGE_STAGING;
 
-            hr = d3dDevice->CreateTexture2D(&desc, 0, pStaging.ReleaseAndGetAddressOf());
+            hr = d3dDevice->CreateTexture2D(&desc, nullptr, pStaging.ReleaseAndGetAddressOf());
             if (FAILED(hr))
                 return hr;
 
