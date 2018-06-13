@@ -312,8 +312,7 @@ private:
         DeviceResources(_In_ ID3D11Device* device)
             : EffectDeviceResources(device),
             mVertexShaders{},
-            mPixelShaders{},
-            mDefaultTexture{}
+            mPixelShaders{}
         { }
 
         // Gets or lazily creates the vertex shader.
@@ -339,7 +338,6 @@ private:
     private:
         ComPtr<ID3D11VertexShader> mVertexShaders[DGSLEffectTraits::VertexShaderCount];
         ComPtr<ID3D11PixelShader> mPixelShaders[DGSLEffectTraits::PixelShaderCount];
-        ComPtr<ID3D11ShaderResourceView> mDefaultTexture;
     };
 
     // Per-device resources.
@@ -349,6 +347,7 @@ private:
 };
 
 
+// Global pool of per-device DGSLEffect resources.
 SharedResourcePool<ID3D11Device*, DGSLEffect::Impl::DeviceResources> DGSLEffect::Impl::deviceResourcesPool;
 
 
@@ -500,7 +499,7 @@ void DGSLEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
     }
     else
     {
-        ID3D11ShaderResourceView* txt[MaxTextures] = { mDeviceResources->GetDefaultTexture(), 0 };
+        ID3D11ShaderResourceView* txt[MaxTextures] = { mDeviceResources->GetDefaultTexture(), nullptr };
         deviceContext->PSSetShaderResources(0, MaxTextures, txt);
     }
 }

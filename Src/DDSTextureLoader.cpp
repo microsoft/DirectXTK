@@ -18,9 +18,9 @@
 
 #include "DDSTextureLoader.h"
 
+#include "PlatformHelpers.h"
 #include "dds.h"
 #include "DirectXHelpers.h"
-#include "PlatformHelpers.h"
 #include "LoaderHelpers.h"
 
 using namespace DirectX;
@@ -870,7 +870,7 @@ HRESULT DirectX::CreateDDSTextureFromMemoryEx(ID3D11Device* d3dDevice,
         return E_FAIL;
     }
 
-    uint32_t dwMagicNumber = *(const uint32_t*)(ddsData);
+    auto dwMagicNumber = *reinterpret_cast<const uint32_t*>(ddsData);
     if (dwMagicNumber != DDS_MAGIC)
     {
         return E_FAIL;

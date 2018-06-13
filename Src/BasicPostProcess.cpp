@@ -409,10 +409,12 @@ void BasicPostProcess::Impl::GaussianBlur5x5(float multiplier)
     // blur kernels add to 1.0f to ensure that the intensity of the image isn't
     // changed when the blur occurs. An optional multiplier variable is used to
     // add or remove image intensity during the blur.
+    XMVECTOR vtw = XMVectorReplicate(totalWeight);
+    XMVECTOR vm = XMVectorReplicate(multiplier);
     for (size_t i = 0; i < index; ++i)
     {
-        weights[i] /= totalWeight;
-        weights[i] *= multiplier;
+        weights[i] = XMVectorDivide(weights[i], vtw);
+        weights[i] = XMVectorMultiply(weights[i], vm);
     }
 }
 

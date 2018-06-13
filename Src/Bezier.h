@@ -19,25 +19,37 @@ namespace Bezier
 {
     // Performs a cubic bezier interpolation between four control points,
     // returning the value at the specified time (t ranges 0 to 1).
-    // This template implementation can be used to interpolate XMVECTOR,
-    // float, or any other types that define suitable * and + operators.
     template<typename T>
-    T CubicInterpolate(T const& p1, T const& p2, T const& p3, T const& p4, float t)
+    inline T CubicInterpolate(T const& p1, T const& p2, T const& p3, T const& p4, float t)
     {
-        using DirectX::operator*;
-        using DirectX::operator+;
-
         return p1 * (1 - t) * (1 - t) * (1 - t) +
             p2 * 3 * t * (1 - t) * (1 - t) +
             p3 * 3 * t * t * (1 - t) +
             p4 * t * t * t;
     }
 
+     template<>
+     inline DirectX::XMVECTOR CubicInterpolate(DirectX::XMVECTOR const& p1, DirectX::XMVECTOR const& p2, DirectX::XMVECTOR const& p3, DirectX::XMVECTOR const& p4, float t)
+    {
+        using namespace DirectX;
+
+        XMVECTOR T0 = XMVectorReplicate((1 - t) * (1 - t) * (1 - t));
+        XMVECTOR T1 = XMVectorReplicate(3 * t * (1 - t) * (1 - t));
+        XMVECTOR T2 = XMVectorReplicate(3 * t * t * (1 - t));
+        XMVECTOR T3 = XMVectorReplicate(t * t * t);
+
+        XMVECTOR Result = XMVectorMultiply(p1, T0);
+        Result = XMVectorMultiplyAdd(p2, T1, Result);
+        Result = XMVectorMultiplyAdd(p3, T2, Result);
+        Result = XMVectorMultiplyAdd(p4, T3, Result);
+
+        return Result;
+    }
+
 
     // Computes the tangent of a cubic bezier curve at the specified time.
-    // Template supports XMVECTOR, float, or any other types with * and + operators.
     template<typename T>
-    T CubicTangent(T const& p1, T const& p2, T const& p3, T const& p4, float t)
+    inline T CubicTangent(T const& p1, T const& p2, T const& p3, T const& p4, float t)
     {
         using DirectX::operator*;
         using DirectX::operator+;
@@ -46,6 +58,24 @@ namespace Bezier
             p2 * (1 - 4 * t + 3 * t * t) +
             p3 * (2 * t - 3 * t * t) +
             p4 * (t * t);
+    }
+
+    template<>
+    inline DirectX::XMVECTOR CubicTangent(DirectX::XMVECTOR const& p1, DirectX::XMVECTOR const& p2, DirectX::XMVECTOR const& p3, DirectX::XMVECTOR const& p4, float t)
+    {
+        using namespace DirectX;
+
+        XMVECTOR T0 = XMVectorReplicate(-1 + 2 * t - t * t);
+        XMVECTOR T1 = XMVectorReplicate(1 - 4 * t + 3 * t * t);
+        XMVECTOR T2 = XMVectorReplicate(2 * t - 3 * t * t);
+        XMVECTOR T3 = XMVectorReplicate(t * t);
+
+        XMVECTOR Result = XMVectorMultiply(p1, T0);
+        Result = XMVectorMultiplyAdd(p2, T1, Result);
+        Result = XMVectorMultiplyAdd(p3, T2, Result);
+        Result = XMVectorMultiplyAdd(p4, T3, Result);
+
+        return Result;
     }
 
 
@@ -59,11 +89,11 @@ namespace Bezier
 
         for (size_t i = 0; i <= tessellation; i++)
         {
-            float u = (float)i / tessellation;
+            float u = float(i) / tessellation;
 
             for (size_t j = 0; j <= tessellation; j++)
             {
-                float v = (float)j / tessellation;
+                float v = float(j) / tessellation;
 
                 // Perform four horizontal bezier interpolations
                 // between the control points of this patch.
@@ -97,7 +127,7 @@ namespace Bezier
                     // If this patch is mirrored, we must invert the normal.
                     if (isMirrored)
                     {
-                        normal = -normal;
+                        normal = XMVectorNegate(normal);
                     }
                 }
                 else

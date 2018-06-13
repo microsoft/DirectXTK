@@ -89,7 +89,8 @@ void XM_CALLCONV EffectFog::SetConstants(int& dirtyFlags, FXMMATRIX worldView, X
                 // 0, 0, 0, fogStart
                 XMVECTOR wOffset = XMVectorSwizzle<1, 2, 3, 0>(XMLoadFloat(&start));
 
-                fogVectorConstant = (worldViewZ + wOffset) / (start - end);
+                // (worldViewZ + wOffset) / (start - end);
+                fogVectorConstant = XMVectorDivide(XMVectorAdd(worldViewZ, wOffset), XMVectorReplicate(start - end));
             }
 
             dirtyFlags &= ~(EffectDirtyFlags::FogVector | EffectDirtyFlags::FogEnable);
@@ -126,7 +127,7 @@ void EffectColor::SetConstants(_Inout_ int& dirtyFlags, _Inout_ XMVECTOR& diffus
         XMVECTOR alphaVector = XMVectorReplicate(alpha);
 
         // xyz = diffuse * alpha, w = alpha.
-        diffuseColorConstant = XMVectorSelect(alphaVector, diffuseColor * alphaVector, g_XMSelect1110);
+        diffuseColorConstant = XMVectorSelect(alphaVector, XMVectorMultiply(diffuseColor, alphaVector), g_XMSelect1110);
 
         dirtyFlags &= ~EffectDirtyFlags::MaterialColor;
         dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
@@ -238,16 +239,17 @@ _Use_decl_annotations_ void EffectLights::SetConstants(int& dirtyFlags, EffectMa
         if (lightingEnabled)
         {
             // Merge emissive and ambient light contributions.
-            emissiveColorConstant = (emissiveColor + ambientLightColor * diffuse) * alphaVector;
+            // (emissiveColor + ambientLightColor * diffuse) * alphaVector;
+            emissiveColorConstant = XMVectorMultiply(XMVectorMultiplyAdd(ambientLightColor, diffuse, emissiveColor), alphaVector);
         }
         else
         {
             // Merge diffuse and emissive light contributions.
-            diffuse += emissiveColor;
+            diffuse = XMVectorAdd(diffuse, emissiveColor);
         }
 
         // xyz = diffuse * alpha, w = alpha.
-        diffuseColorConstant = XMVectorSelect(alphaVector, diffuse * alphaVector, g_XMSelect1110);
+        diffuseColorConstant = XMVectorSelect(alphaVector, XMVectorMultiply(diffuse, alphaVector), g_XMSelect1110);
 
         dirtyFlags &= ~EffectDirtyFlags::MaterialColor;
         dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
