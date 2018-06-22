@@ -76,6 +76,40 @@ void ModelMeshPart::Draw(
 
 
 _Use_decl_annotations_
+void ModelMeshPart::DrawInstanced(
+    ID3D11DeviceContext* deviceContext,
+    IEffect* ieffect,
+    ID3D11InputLayout* iinputLayout,
+    uint32_t instanceCount, uint32_t startInstanceLocation,
+    std::function<void()> setCustomState) const
+{
+    deviceContext->IASetInputLayout(iinputLayout);
+
+    auto vb = vertexBuffer.Get();
+    UINT vbStride = vertexStride;
+    UINT vbOffset = 0;
+    deviceContext->IASetVertexBuffers(0, 1, &vb, &vbStride, &vbOffset);
+
+    // Note that if indexFormat is DXGI_FORMAT_R32_UINT, this model mesh part requires a Feature Level 9.2 or greater device
+    deviceContext->IASetIndexBuffer(indexBuffer.Get(), indexFormat, 0);
+
+    assert(ieffect != nullptr);
+    ieffect->Apply(deviceContext);
+
+    // Hook lets the caller replace our shaders or state settings with whatever else they see fit.
+    if (setCustomState)
+    {
+        setCustomState();
+    }
+
+    // Draw the primitive.
+    deviceContext->IASetPrimitiveTopology(primitiveType);
+
+    deviceContext->DrawIndexedInstanced(indexCount, instanceCount, startIndex, vertexOffset, startInstanceLocation);
+}
+
+
+_Use_decl_annotations_
 void ModelMeshPart::CreateInputLayout(ID3D11Device* d3dDevice, IEffect* ieffect, ID3D11InputLayout** iinputLayout) const
 {
     if (!vbDecl || vbDecl->empty())

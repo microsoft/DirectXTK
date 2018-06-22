@@ -61,7 +61,11 @@ namespace DirectX
 
         // Draw mesh part with custom effect
         void __cdecl Draw(_In_ ID3D11DeviceContext* deviceContext, _In_ IEffect* ieffect, _In_ ID3D11InputLayout* iinputLayout,
-                          _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
+            _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
+
+        void __cdecl DrawInstanced(_In_ ID3D11DeviceContext* deviceContext, _In_ IEffect* ieffect, _In_ ID3D11InputLayout* iinputLayout,
+            uint32_t instanceCount, uint32_t startInstanceLocation = 0,
+            _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
 
        // Create input layout for drawing with a custom effect.
         void __cdecl CreateInputLayout(_In_ ID3D11Device* d3dDevice, _In_ IEffect* ieffect, _Outptr_ ID3D11InputLayout** iinputLayout) const;
