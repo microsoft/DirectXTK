@@ -44,6 +44,10 @@
 // C4986 exception specification does not match previous declaration
 // C5029 nonstandard extension used
 
+// Xbox One XDK related Off by default warnings
+#pragma warning(disable : 4643)
+// C4643 Forward declaring in namespace std is not permitted by the C++ Standard
+
 #ifdef __INTEL_COMPILER
 #pragma warning(disable : 161 2960 3280)
 // warning #161: unrecognized #pragma
