@@ -101,7 +101,7 @@ SpriteFont::Impl::Impl(_In_ ID3D11Device* device, _In_ BinaryReader* reader, boo
     auto textureFormat = reader->Read<DXGI_FORMAT>();
     auto textureStride = reader->Read<uint32_t>();
     auto textureRows = reader->Read<uint32_t>();
-    auto textureData = reader->ReadArray<uint8_t>(textureStride * textureRows);
+    auto textureData = reader->ReadArray<uint8_t>(size_t(textureStride) * size_t(textureRows));
 
     if (forceSRGB)
     {
