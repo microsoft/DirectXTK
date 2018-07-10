@@ -527,7 +527,7 @@ public:
         Microsoft::WRL::FtmBase>
     {
     public:
-        UserPairingListener() {}
+        UserPairingListener() noexcept {}
 
         STDMETHOD(Invoke)(_In_ IInspectable *, _In_ ABI::Windows::Xbox::Input::IControllerPairingChangedEventArgs *) override
         {

@@ -67,6 +67,7 @@ namespace DirectX
             ButtonState xButton1;
             ButtonState xButton2;
 
+            #pragma prefast(suppress: 26495, "Reset() performs the initialization")
             ButtonStateTracker() noexcept { Reset(); }
 
             void __cdecl Update(const State& state);

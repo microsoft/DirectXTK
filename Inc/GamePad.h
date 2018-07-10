@@ -169,6 +169,8 @@ namespace DirectX
             Type            gamepadType;
         #if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/)
             std::wstring    id;
+
+            Capabilities() noexcept : connected(false), gamepadType(UNKNOWN) {}
         #else
             uint64_t        id;
         #endif
@@ -228,6 +230,7 @@ namespace DirectX
             ButtonState leftTrigger;
             ButtonState rightTrigger;
 
+            #pragma prefast(suppress: 26495, "Reset() performs the initialization")
             ButtonStateTracker() noexcept { Reset(); }
 
             void __cdecl Update(const State& state);

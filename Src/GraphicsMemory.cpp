@@ -99,7 +99,7 @@ public:
 
     struct MemoryPage
     {
-        MemoryPage() : mPageSize(0), mGrfxMemory(nullptr) {}
+        MemoryPage() noexcept : mPageSize(0), mGrfxMemory(nullptr) {}
 
         void Initialize(size_t reqSize)
         {
@@ -122,7 +122,7 @@ public:
 
     struct MemoryFrame
     {
-        MemoryFrame() : mCurOffset(0), mFence(0) {}
+        MemoryFrame() noexcept : mCurOffset(0), mFence(0) {}
 
         ~MemoryFrame() { Clear(); }
 
