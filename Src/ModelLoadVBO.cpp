@@ -65,13 +65,21 @@ std::unique_ptr<Model> DirectX::Model::CreateFromVBO(ID3D11Device* d3dDevice, co
     if (!header->numVertices || !header->numIndices)
         throw std::exception("No vertices or indices found");
 
-    size_t vertSize = sizeof(VertexPositionNormalTexture) * header->numVertices;
+    uint64_t sizeInBytes = uint64_t(header->numVertices) * sizeof(VertexPositionNormalTexture);
+    if (sizeInBytes > uint64_t(D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u))
+        throw std::exception("VB too large for DirectX 11");
+
+    auto vertSize = static_cast<size_t>(sizeInBytes);
 
     if (dataSize < (vertSize + sizeof(VBO::header_t)))
         throw std::exception("End of file");
     auto verts = reinterpret_cast<const VertexPositionNormalTexture*>(meshData + sizeof(VBO::header_t));
 
-    size_t indexSize = sizeof(uint16_t) * header->numIndices;
+    sizeInBytes = uint64_t(header->numIndices) * sizeof(uint16_t);
+    if (sizeInBytes > uint64_t(D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u))
+        throw std::exception("IB too large for DirectX 11");
+
+    auto indexSize = static_cast<size_t>(sizeInBytes);
 
     if (dataSize < (sizeof(VBO::header_t) + vertSize + indexSize))
         throw std::exception("End of file");
@@ -173,7 +181,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromVBO(ID3D11Device* d3dDevice, co
     HRESULT hr = BinaryReader::ReadEntireFile(szFileName, data, &dataSize);
     if (FAILED(hr))
     {
-        DebugTrace("CreateFromVBO failed (%08X) loading '%ls'\n", hr, szFileName);
+        DebugTrace("ERROR: CreateFromVBO failed (%08X) loading '%ls'\n", hr, szFileName);
         throw std::exception("CreateFromVBO");
     }
 

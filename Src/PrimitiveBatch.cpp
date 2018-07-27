@@ -72,7 +72,7 @@ namespace
     {
         D3D11_BUFFER_DESC desc = {};
 
-        desc.ByteWidth = (UINT)bufferSize;
+        desc.ByteWidth = static_cast<UINT>(bufferSize);
         desc.BindFlags = bindFlag;
         desc.Usage = D3D11_USAGE_DEFAULT;
         desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
@@ -127,6 +127,18 @@ PrimitiveBatchBase::Impl::Impl(_In_ ID3D11DeviceContext* deviceContext, size_t m
 {
     ComPtr<ID3D11Device> device;
     deviceContext->GetDevice(&device);
+
+    if (!maxVertices)
+        throw std::exception("maxVertices must be greater than 0");
+
+    if (vertexSize > D3D11_REQ_MULTI_ELEMENT_STRUCTURE_SIZE_IN_BYTES)
+        throw std::exception("Vertex size is too large for DirectX 11");
+
+    if ((uint64_t(maxIndices) * sizeof(uint16_t)) > uint64_t(D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u))
+        throw std::exception("IB too large for DirectX 11");
+
+    if ((uint64_t(maxVertices) * uint64_t(vertexSize)) > uint64_t(D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u))
+        throw std::exception("VB too large for DirectX 11");
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
     ThrowIfFailed(deviceContext->QueryInterface(IID_GRAPHICS_PPV_ARGS(mDeviceContext.GetAddressOf())));

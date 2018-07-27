@@ -50,7 +50,10 @@ namespace
         pSource->GetType(&resType);
 
         if (resType != D3D11_RESOURCE_DIMENSION_TEXTURE2D)
+        {
+            DebugTrace("ERROR: ScreenGrab does not support 1D or volume textures. Consider using DirectXTex instead.\n");
             return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
+        }
 
         ComPtr<ID3D11Texture2D> pTexture;
         HRESULT hr = pSource->QueryInterface(IID_GRAPHICS_PPV_ARGS(pTexture.GetAddressOf()));
@@ -60,6 +63,11 @@ namespace
         assert(pTexture);
 
         pTexture->GetDesc(&desc);
+
+        if (desc.ArraySize > 1 || desc.MipLevels > 1)
+        {
+            DebugTrace("WARNING: ScreenGrab does not support 2D arrays, cubemaps, or mipmaps; only the first surface is written. Consider using DirectXTex instead.\n");
+        }
 
         ComPtr<ID3D11Device> d3dDevice;
         pContext->GetDevice(d3dDevice.GetAddressOf());
@@ -246,6 +254,7 @@ HRESULT DirectX::SaveDDSTextureToFile(
         case DXGI_FORMAT_IA44:
         case DXGI_FORMAT_P8:
         case DXGI_FORMAT_A8P8:
+            DebugTrace("ERROR: ScreenGrab does not support video textures. Consider using DirectXTex.\n");
             return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
 
         default:
@@ -262,6 +271,9 @@ HRESULT DirectX::SaveDDSTextureToFile(
 
     size_t rowPitch, slicePitch, rowCount;
     GetSurfaceInfo(desc.Width, desc.Height, desc.Format, &slicePitch, &rowPitch, &rowCount);
+
+    if (rowPitch > UINT32_MAX || slicePitch > UINT32_MAX)
+        return HRESULT_FROM_WIN32(ERROR_ARITHMETIC_OVERFLOW);
 
     if (IsCompressed(desc.Format))
     {
@@ -393,6 +405,7 @@ HRESULT DirectX::SaveWICTextureToFile(
             break;
 
         default:
+            DebugTrace("ERROR: ScreenGrab does not support all DXGI formats (%u). Consider using DirectXTex.\n", static_cast<uint32_t>(desc.Format));
             return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
     }
 

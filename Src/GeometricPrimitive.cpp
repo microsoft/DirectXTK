@@ -27,9 +27,14 @@ namespace
     {
         assert(pBuffer != nullptr);
 
+        uint64_t sizeInBytes = uint64_t(data.size()) * sizeof(typename T::value_type);
+
+        if (sizeInBytes > uint64_t(D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u))
+            throw std::exception("Buffer too large for DirectX 11");
+
         D3D11_BUFFER_DESC bufferDesc = {};
 
-        bufferDesc.ByteWidth = static_cast<UINT>(data.size() * sizeof(typename T::value_type));
+        bufferDesc.ByteWidth = static_cast<UINT>(sizeInBytes);
         bufferDesc.BindFlags = bindFlags;
         bufferDesc.Usage = D3D11_USAGE_DEFAULT;
 
@@ -186,6 +191,9 @@ void GeometricPrimitive::Impl::Initialize(ID3D11DeviceContext* deviceContext, co
 {
     if (vertices.size() >= USHRT_MAX)
         throw std::exception("Too many vertices for 16-bit index buffer");
+
+    if (indices.size() > UINT32_MAX)
+        throw std::exception("Too many indices");
 
     mResources = sharedResourcesPool.DemandCreate(deviceContext);
 

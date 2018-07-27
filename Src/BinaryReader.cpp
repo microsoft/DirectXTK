@@ -25,7 +25,7 @@ BinaryReader::BinaryReader(_In_z_ wchar_t const* fileName) :
     HRESULT hr = ReadEntireFile(fileName, mOwnedData, &dataSize);
     if (FAILED(hr))
     {
-        DebugTrace("BinaryReader failed (%08X) to load '%ls'\n", hr, fileName);
+        DebugTrace("ERROR: BinaryReader failed (%08X) to load '%ls'\n", hr, fileName);
         throw std::exception("BinaryReader");
     }
 

@@ -279,6 +279,9 @@ namespace
         if (FAILED(hr))
             return hr;
 
+        if (maxsize > UINT32_MAX)
+            return E_INVALIDARG;
+
         assert(width > 0 && height > 0);
 
         if (!maxsize)
@@ -381,7 +384,13 @@ namespace
             }
 
             if (format == DXGI_FORMAT_UNKNOWN)
+            {
+                DebugTrace("ERROR: WICTextureLoader does not support all DXGI formats (WIC GUID {%8.8lX-%4.4X-%4.4X-%2.2X%2.2X-%2.2X%2.2X%2.2X%2.2X%2.2X%2.2X}). Consider using DirectXTex.\n",
+                    pixelFormat.Data1, pixelFormat.Data2, pixelFormat.Data3,
+                    pixelFormat.Data4[0], pixelFormat.Data4[1], pixelFormat.Data4[2], pixelFormat.Data4[3],
+                    pixelFormat.Data4[4], pixelFormat.Data4[5], pixelFormat.Data4[6], pixelFormat.Data4[7]);
                 return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
+            }
         }
         else
         {
@@ -477,8 +486,14 @@ namespace
         }
 
         // Allocate temporary memory for image
-        size_t rowPitch = (twidth * bpp + 7) / 8;
-        size_t imageSize = rowPitch * theight;
+        uint64_t rowBytes = (uint64_t(twidth) * uint64_t(bpp) + 7u) / 8u;
+        uint64_t numBytes = rowBytes * uint64_t(height);
+
+        if (rowBytes > UINT32_MAX || numBytes > UINT32_MAX)
+            return HRESULT_FROM_WIN32(ERROR_ARITHMETIC_OVERFLOW);
+
+        auto rowPitch = static_cast<size_t>(rowBytes);
+        auto imageSize = static_cast<size_t>(numBytes);
 
         std::unique_ptr<uint8_t[]> temp(new (std::nothrow) uint8_t[imageSize]);
         if (!temp)

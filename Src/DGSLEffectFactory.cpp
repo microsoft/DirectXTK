@@ -372,7 +372,7 @@ void DGSLEffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceCon
             wcscpy_s(fullName, name);
             if (!GetFileAttributesExW(fullName, GetFileExInfoStandard, &fileAttr))
             {
-                DebugTrace("DGSLEffectFactory could not find texture file '%ls'\n", name);
+                DebugTrace("ERROR: DGSLEffectFactory could not find texture file '%ls'\n", name);
                 throw std::exception("CreateTexture");
             }
         }
@@ -388,7 +388,7 @@ void DGSLEffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceCon
                 mForceSRGB, nullptr, textureView);
             if (FAILED(hr))
             {
-                DebugTrace("CreateDDSTextureFromFile failed (%08X) for '%ls'\n", hr, fullName);
+                DebugTrace("ERROR: CreateDDSTextureFromFile failed (%08X) for '%ls'\n", hr, fullName);
                 throw std::exception("CreateDDSTextureFromFile");
             }
         }
@@ -402,7 +402,7 @@ void DGSLEffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceCon
                 mForceSRGB ? WIC_LOADER_FORCE_SRGB : WIC_LOADER_DEFAULT, nullptr, textureView);
             if (FAILED(hr))
             {
-                DebugTrace("CreateWICTextureFromFile failed (%08X) for '%ls'\n", hr, fullName);
+                DebugTrace("ERROR: CreateWICTextureFromFile failed (%08X) for '%ls'\n", hr, fullName);
                 throw std::exception("CreateWICTextureFromFile");
             }
         }
@@ -415,7 +415,7 @@ void DGSLEffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceCon
                 mForceSRGB ? WIC_LOADER_FORCE_SRGB : WIC_LOADER_DEFAULT, nullptr, textureView);
             if (FAILED(hr))
             {
-                DebugTrace("CreateWICTextureFromFile failed (%08X) for '%ls'\n", hr, fullName);
+                DebugTrace("ERROR: CreateWICTextureFromFile failed (%08X) for '%ls'\n", hr, fullName);
                 throw std::exception("CreateWICTextureFromFile");
             }
         }
@@ -457,7 +457,7 @@ void DGSLEffectFactory::Impl::CreatePixelShader(const wchar_t* name, ID3D11Pixel
             wcscpy_s(fullName, name);
             if (!GetFileAttributesExW(fullName, GetFileExInfoStandard, &fileAttr))
             {
-                DebugTrace("DGSLEffectFactory could not find shader file '%ls'\n", name);
+                DebugTrace("ERROR: DGSLEffectFactory could not find shader file '%ls'\n", name);
                 throw std::exception("CreatePixelShader");
             }
         }
@@ -467,7 +467,7 @@ void DGSLEffectFactory::Impl::CreatePixelShader(const wchar_t* name, ID3D11Pixel
         HRESULT hr = BinaryReader::ReadEntireFile(fullName, data, &dataSize);
         if (FAILED(hr))
         {
-            DebugTrace("CreatePixelShader failed (%08X) to load shader file '%ls'\n", hr, fullName);
+            DebugTrace("ERROR: CreatePixelShader failed (%08X) to load shader file '%ls'\n", hr, fullName);
             throw std::exception("CreatePixelShader");
         }
 

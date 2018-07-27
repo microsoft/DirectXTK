@@ -423,7 +423,12 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
             if (!*nIndexes)
                 throw std::exception("Empty index buffer found\n");
 
-            size_t ibBytes = sizeof(USHORT) * (*(nIndexes));
+            uint64_t sizeInBytes = uint64_t(*(nIndexes)) * sizeof(USHORT);
+
+            if (sizeInBytes > (D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u))
+                throw std::exception("IB too large for DirectX 11");
+
+            auto ibBytes = static_cast<size_t>(sizeInBytes);
 
             auto indexes = reinterpret_cast<const USHORT*>(meshData + usedSize);
             usedSize += ibBytes;
@@ -644,7 +649,11 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
         {
             size_t nVerts = vbData[j].nVerts;
 
-            size_t bytes = stride * nVerts;
+            uint64_t sizeInBytes = uint64_t(stride) * uint64_t(nVerts);
+            if (sizeInBytes > uint64_t(D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u))
+                throw std::exception("VB too large for DirectX 11");
+
+            size_t bytes = static_cast<size_t>(sizeInBytes);
 
             D3D11_BUFFER_DESC desc = {};
             desc.Usage = D3D11_USAGE_DEFAULT;
@@ -866,7 +875,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
     HRESULT hr = BinaryReader::ReadEntireFile(szFileName, data, &dataSize);
     if (FAILED(hr))
     {
-        DebugTrace("CreateFromCMO failed (%08X) loading '%ls'\n", hr, szFileName);
+        DebugTrace("ERROR: CreateFromCMO failed (%08X) loading '%ls'\n", hr, szFileName);
         throw std::exception("CreateFromCMO");
     }
 

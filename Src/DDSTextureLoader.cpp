@@ -72,13 +72,10 @@ namespace
             size_t d = depth;
             for (size_t i = 0; i < mipCount; i++)
             {
-                GetSurfaceInfo(w,
-                               h,
-                               format,
-                               &NumBytes,
-                               &RowBytes,
-                               nullptr
-                );
+                GetSurfaceInfo(w, h, format, &NumBytes, &RowBytes, nullptr);
+
+                if (NumBytes > UINT32_MAX || RowBytes > UINT32_MAX)
+                    return HRESULT_FROM_WIN32(ERROR_ARITHMETIC_OVERFLOW);
 
                 if ((mipCount <= 1) || !maxsize || (w <= maxsize && h <= maxsize && d <= maxsize))
                 {
@@ -416,11 +413,13 @@ namespace
                 case DXGI_FORMAT_IA44:
                 case DXGI_FORMAT_P8:
                 case DXGI_FORMAT_A8P8:
+                    DebugTrace("ERROR: DDSTextureLoader does not support video textures. Consider using DirectXTex instead.\n");
                     return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
 
                 default:
                     if (BitsPerPixel(d3d10ext->dxgiFormat) == 0)
                     {
+                        DebugTrace("ERROR: Unknown DXGI format (%u)\n", static_cast<uint32_t>(d3d10ext->dxgiFormat));
                         return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
                     }
             }
@@ -455,11 +454,13 @@ namespace
 
                     if (arraySize > 1)
                     {
+                        DebugTrace("ERROR: Volume textures are not texture arrays\n");
                         return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
                     }
                     break;
 
                 default:
+                    DebugTrace("ERROR: Unknown resource dimension (%u)\n", static_cast<uint32_t>(d3d10ext->resourceDimension));
                     return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
             }
 
@@ -471,6 +472,7 @@ namespace
 
             if (format == DXGI_FORMAT_UNKNOWN)
             {
+                DebugTrace("ERROR: DDSTextureLoader does not support all legacy DDS formats. Consider using DirectXTex.\n");
                 return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
             }
 
@@ -485,6 +487,7 @@ namespace
                     // We require all six faces to be defined
                     if ((header->caps2 & DDS_CUBEMAP_ALLFACES) != DDS_CUBEMAP_ALLFACES)
                     {
+                        DebugTrace("ERROR: DirectX 11 does not support partial cubemaps\n");
                         return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
                     }
 
@@ -504,6 +507,7 @@ namespace
         // Bound sizes (for security purposes we don't trust DDS file metadata larger than the Direct3D hardware requirements)
         if (mipCount > D3D11_REQ_MIP_LEVELS)
         {
+            DebugTrace("ERROR: Too many mipmap levels defined for DirectX 11 (%zu).\n", mipCount);
             return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
         }
 
@@ -513,6 +517,7 @@ namespace
                 if ((arraySize > D3D11_REQ_TEXTURE1D_ARRAY_AXIS_DIMENSION) ||
                     (width > D3D11_REQ_TEXTURE1D_U_DIMENSION))
                 {
+                    DebugTrace("ERROR: Resource dimensions too large for DirectX 11 (1D: array %u, size %u)\n", arraySize, width);
                     return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
                 }
                 break;
@@ -525,13 +530,15 @@ namespace
                         (width > D3D11_REQ_TEXTURECUBE_DIMENSION) ||
                         (height > D3D11_REQ_TEXTURECUBE_DIMENSION))
                     {
+                        DebugTrace("ERROR: Resource dimensions too large for DirectX 11 (2D cubemap: array %u, size %u by %u)\n", arraySize, width, height);
                         return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
                     }
                 }
                 else if ((arraySize > D3D11_REQ_TEXTURE2D_ARRAY_AXIS_DIMENSION) ||
-                    (width > D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION) ||
+                         (width > D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION) ||
                          (height > D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION))
                 {
+                    DebugTrace("ERROR: Resource dimensions too large for DirectX 11 (2D: array %u, size %u by %u)\n", arraySize, width, height);
                     return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
                 }
                 break;
@@ -542,11 +549,13 @@ namespace
                     (height > D3D11_REQ_TEXTURE3D_U_V_OR_W_DIMENSION) ||
                     (depth > D3D11_REQ_TEXTURE3D_U_V_OR_W_DIMENSION))
                 {
+                    DebugTrace("ERROR: Resource dimensions too large for DirectX 11 (3D: array %u, size %u by %u by %u)\n", arraySize, width, height, depth);
                     return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
                 }
                 break;
 
             default:
+                DebugTrace("ERROR: Unknown resource dimension (%u)\n", static_cast<uint32_t>(resDim));
                 return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
         }
 
@@ -594,6 +603,9 @@ namespace
                     tex->Release();
                     return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
                 }
+
+                if (numBytes > UINT32_MAX || rowBytes > UINT32_MAX)
+                    return HRESULT_FROM_WIN32(ERROR_ARITHMETIC_OVERFLOW);
 
                 D3D11_SHADER_RESOURCE_VIEW_DESC desc;
                 (*textureView)->GetDesc(&desc);
