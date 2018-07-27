@@ -309,7 +309,7 @@ private:
     class DeviceResources : protected EffectDeviceResources
     {
     public:
-        DeviceResources(_In_ ID3D11Device* device)
+        DeviceResources(_In_ ID3D11Device* device) noexcept
             : EffectDeviceResources(device),
             mVertexShaders{},
             mPixelShaders{}

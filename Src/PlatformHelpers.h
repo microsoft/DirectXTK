@@ -29,7 +29,7 @@ namespace DirectX
     class com_exception : public std::exception
     {
     public:
-        com_exception(HRESULT hr) : result(hr) {}
+        com_exception(HRESULT hr) noexcept : result(hr) {}
 
         virtual const char* what() const override
         {
@@ -53,7 +53,7 @@ namespace DirectX
 
 
     // Helper for output debug tracing
-    inline void DebugTrace(_In_z_ _Printf_format_string_ const char* format, ...)
+    inline void DebugTrace(_In_z_ _Printf_format_string_ const char* format, ...) noexcept
     {
     #ifdef _DEBUG
         va_list args;
@@ -71,14 +71,14 @@ namespace DirectX
 
     // Helper smart-pointers
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN10) || (defined(_XBOX_ONE) && defined(_TITLE)) || !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
-    struct virtual_deleter { void operator()(void* p) { if (p) VirtualFree(p, 0, MEM_RELEASE); } };
+    struct virtual_deleter { void operator()(void* p) noexcept { if (p) VirtualFree(p, 0, MEM_RELEASE); } };
 #endif
 
-    struct aligned_deleter { void operator()(void* p) { _aligned_free(p); } };
+    struct aligned_deleter { void operator()(void* p) noexcept { _aligned_free(p); } };
 
-    struct handle_closer { void operator()(HANDLE h) { if (h) CloseHandle(h); } };
+    struct handle_closer { void operator()(HANDLE h) noexcept { if (h) CloseHandle(h); } };
 
     typedef std::unique_ptr<void, handle_closer> ScopedHandle;
 
-    inline HANDLE safe_handle(HANDLE h) { return (h == INVALID_HANDLE_VALUE) ? nullptr : h; }
+    inline HANDLE safe_handle(HANDLE h) noexcept { return (h == INVALID_HANDLE_VALUE) ? nullptr : h; }
 }

@@ -122,7 +122,7 @@ namespace DirectX
     class EffectDeviceResources
     {
     public:
-        EffectDeviceResources(_In_ ID3D11Device* device)
+        EffectDeviceResources(_In_ ID3D11Device* device) noexcept
           : mDevice(device)
         { }
 
@@ -240,7 +240,7 @@ namespace DirectX
         class DeviceResources : protected EffectDeviceResources
         {
         public:
-            DeviceResources(_In_ ID3D11Device* device)
+            DeviceResources(_In_ ID3D11Device* device) noexcept
               : EffectDeviceResources(device),
                 mVertexShaders{},
                 mPixelShaders{}
