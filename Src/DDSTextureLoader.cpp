@@ -506,6 +506,13 @@ namespace
             assert(BitsPerPixel(format) != 0);
         }
 
+        if ((miscFlags & D3D11_RESOURCE_MISC_TEXTURECUBE)
+            && (resDim == D3D11_RESOURCE_DIMENSION_TEXTURE2D)
+            && ((arraySize % 6) == 0))
+        {
+            isCubeMap = true;
+        }
+
         // Bound sizes (for security purposes we don't trust DDS file metadata larger than the Direct3D hardware requirements)
         if (mipCount > D3D11_REQ_MIP_LEVELS)
         {
