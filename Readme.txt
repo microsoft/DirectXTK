@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit for DirectX 11
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-July 3, 2018
+August 17, 2018
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for 
 writing Direct3D 11 C++ code for Universal Windows Platform (UWP) apps for Windows 10,
@@ -14,7 +14,7 @@ Windows Vista Service Pack 2 Direct3D 11.0 applications.
 
 This code is designed to build with Visual Studio 2015 Update 3 or Visual Studio 2017.
 It is recommended that you make use of VS 2015 Update 3, Windows Tools 1.4.1, and the
-Windows 10 Anniversary Update SDK (14393) or VS 2017 (15.7 update) or later with the
+Windows 10 Anniversary Update SDK (14393) or VS 2017 (15.8 update) with the
 Windows 10 April 2018 Update SDK (17134).
 
 These components are designed to work without requiring any content from the DirectX SDK. For details,
@@ -89,7 +89,7 @@ RELEASE NOTES
 
 * The VS 2017 projects require the 15.5 update or later. For UWP and Win32 classic desktop projects with the 15.5
   or 15.6 updates, you need to install the standalone Windows 10 SDK (17134) which is otherwise included in
-  the 15.7 update. Older VS 2017 updates will fail to load the projects due to use of the <ConformanceMode> element.
+  the 15.7/15.8 update. Older VS 2017 updates will fail to load the projects due to use of the <ConformanceMode> element.
   If using the 15.5 or 15.6 updates, you will see "warning D9002: ignoring unknown option '/Zc:__cplusplus'" because
   this switch isn't supported until 15.7. It is safe to ignore this warning, or you can edit the project files
   <AdditionalOptions> elements.
@@ -98,6 +98,12 @@ RELEASE NOTES
 ---------------
 RELEASE HISTORY
 ---------------
+
+August 17, 2018
+    Improved validation for 16k textures and other large resources
+    Improved debug output for failed texture loads and screengrabs
+    Updated for VS 2017 15.8
+    Code cleanup
 
 July 3, 2018
     ModelMeshPart DrawInstanced method added
