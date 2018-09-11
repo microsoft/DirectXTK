@@ -40,6 +40,7 @@ if exist %PCFXC% goto continue
 set PCFXC=fxc.exe
 
 :continue
+@if not exist Compiled mkdir Compiled
 call :CompileShader%1 AlphaTestEffect vs VSAlphaTest
 call :CompileShader%1 AlphaTestEffect vs VSAlphaTestNoFog
 call :CompileShader%1 AlphaTestEffect vs VSAlphaTestVc
