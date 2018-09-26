@@ -12,6 +12,7 @@
 *.fxh eol=crlf
 *.inc eol=crlf
 *.inl eol=crlf
+*.csproj eol=crlf
 *.vcxproj eol=crlf
 *.filters eol=crlf
 *.sln eol=crlf
