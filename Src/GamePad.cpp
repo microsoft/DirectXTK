@@ -19,6 +19,8 @@ using Microsoft::WRL::ComPtr;
 
 namespace
 {
+    const float c_XboxOneThumbDeadZone = .24f;  // Recommended Xbox One controller deadzone
+
     float ApplyLinearDeadZone(float value, float maxValue, float deadZoneSize)
     {
         if (value < -deadZoneSize)
@@ -205,11 +207,11 @@ public:
                     state.dpad.left = (reading.Buttons & GamepadButtons::GamepadButtons_DPadLeft) != 0;
 
                     ApplyStickDeadZone(static_cast<float>(reading.LeftThumbstickX), static_cast<float>(reading.LeftThumbstickY),
-                                       deadZoneMode, 1.f, .24f /* Recommended Xbox One deadzone */,
+                                       deadZoneMode, 1.f, c_XboxOneThumbDeadZone,
                                        state.thumbSticks.leftX, state.thumbSticks.leftY);
 
                     ApplyStickDeadZone(static_cast<float>(reading.RightThumbstickX), static_cast<float>(reading.RightThumbstickY),
-                                       deadZoneMode, 1.f, .24f /* Recommended Xbox One deadzone */,
+                                       deadZoneMode, 1.f, c_XboxOneThumbDeadZone,
                                        state.thumbSticks.rightX, state.thumbSticks.rightY);
 
                     state.triggers.left = static_cast<float>(reading.LeftTrigger);
@@ -652,11 +654,11 @@ public:
                     state.dpad.left = (reading.Buttons & GamepadButtons::GamepadButtons_DPadLeft) != 0;
 
                     ApplyStickDeadZone(reading.LeftThumbstickX, reading.LeftThumbstickY,
-                                       deadZoneMode, 1.f, .24f /* Recommended Xbox One deadzone */,
+                                       deadZoneMode, 1.f, c_XboxOneThumbDeadZone,
                                        state.thumbSticks.leftX, state.thumbSticks.leftY);
 
                     ApplyStickDeadZone(reading.RightThumbstickX, reading.RightThumbstickY,
-                                       deadZoneMode, 1.f, .24f /* Recommended Xbox One deadzone */,
+                                       deadZoneMode, 1.f, c_XboxOneThumbDeadZone,
                                        state.thumbSticks.rightX, state.thumbSticks.rightY);
 
                     state.triggers.left = reading.LeftTrigger;
