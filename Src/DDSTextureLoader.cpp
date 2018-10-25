@@ -1168,14 +1168,14 @@ HRESULT DirectX::CreateDDSTextureFromFileEx(ID3D11Device* d3dDevice,
             }
         #else
             CHAR strFileA[MAX_PATH];
-            int result = WideCharToMultiByte(CP_ACP,
+            int result = WideCharToMultiByte(CP_UTF8,
                                              WC_NO_BEST_FIT_CHARS,
                                              fileName,
                                              -1,
                                              strFileA,
                                              MAX_PATH,
                                              nullptr,
-                                             FALSE
+                                             nullptr
             );
             if (result > 0)
             {
@@ -1302,14 +1302,14 @@ HRESULT DirectX::CreateDDSTextureFromFileEx(ID3D11DeviceX* d3dDevice,
             }
         #else
             CHAR strFileA[MAX_PATH];
-            int result = WideCharToMultiByte(CP_ACP,
+            int result = WideCharToMultiByte(CP_UTF8,
                                              WC_NO_BEST_FIT_CHARS,
                                              fileName,
                                              -1,
                                              strFileA,
                                              MAX_PATH,
                                              nullptr,
-                                             FALSE
+                                             nullptr
             );
             if (result > 0)
             {
