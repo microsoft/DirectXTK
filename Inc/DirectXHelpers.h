@@ -110,7 +110,7 @@ namespace DirectX
         #if !defined(NO_D3D11_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
             #if defined(_XBOX_ONE) && defined(_TITLE)
                 wchar_t wname[MAX_PATH];
-                int result = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, name, TNameLength, wname, MAX_PATH);
+                int result = MultiByteToWideChar(CP_UTF8, 0, name, TNameLength, wname, MAX_PATH);
                 if (result > 0)
                 {
                     resource->SetName(wname);
@@ -132,7 +132,7 @@ namespace DirectX
                 resource->SetName( name );
             #else
                 char aname[MAX_PATH];
-                int result = WideCharToMultiByte(CP_ACP, 0, name, TNameLength, aname, MAX_PATH, nullptr, nullptr);
+                int result = WideCharToMultiByte(CP_UTF8, 0, name, TNameLength, aname, MAX_PATH, nullptr, nullptr);
                 if (result > 0)
                 {
                     resource->SetPrivateData(WKPDID_D3DDebugObjectName, TNameLength - 1, aname);
