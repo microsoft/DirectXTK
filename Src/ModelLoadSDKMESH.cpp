@@ -31,7 +31,7 @@ namespace
         DUAL_TEXTURE            = 0x4,
         NORMAL_MAPS             = 0x8,
         BIASED_VERTEX_NORMALS   = 0x10,
-        USES_OBSOLETE_DE3CN     = 0x20,
+        USES_OBSOLETE_DEC3N     = 0x20,
     };
 
     struct MaterialRecordSDKMESH
@@ -201,7 +201,7 @@ namespace
                     case 14 /*D3DDECLTYPE_DEC3N*/:           desc.Format = DXGI_FORMAT_R10G10B10_SNORM_A2_UNORM; offset += 4; break;
                     case (32 + DXGI_FORMAT_R10G10B10_SNORM_A2_UNORM): desc.Format = DXGI_FORMAT_R10G10B10_SNORM_A2_UNORM; offset += 4; break;
                     #else
-                    case 14 /*D3DDECLTYPE_DEC3N*/:           desc.Format = DXGI_FORMAT_R10G10B10A2_UNORM; flags |= USES_OBSOLETE_DE3CN; offset += 4; break;
+                    case 14 /*D3DDECLTYPE_DEC3N*/:           desc.Format = DXGI_FORMAT_R10G10B10A2_UNORM; flags |= USES_OBSOLETE_DEC3N; offset += 4; break;
                     #endif
 
                     default:
@@ -448,7 +448,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(ID3D11Device* d3dDevice
             flags &= ~NORMAL_MAPS;
         }
 
-        if (flags & USES_OBSOLETE_DE3CN)
+        if (flags & USES_OBSOLETE_DEC3N)
         {
             dec3nwarning = true;
         }
