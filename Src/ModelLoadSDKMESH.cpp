@@ -31,6 +31,7 @@ namespace
         DUAL_TEXTURE            = 0x4,
         NORMAL_MAPS             = 0x8,
         BIASED_VERTEX_NORMALS   = 0x10,
+        USES_OBSOLETE_DEC3N     = 0x20,
     };
 
     struct MaterialRecordSDKMESH
@@ -197,7 +198,10 @@ namespace
                     case D3DDECLTYPE_DXGI_R8G8B8A8_SNORM:    desc.Format = DXGI_FORMAT_R8G8B8A8_SNORM; offset += 4; break;
 
                     #if defined(_XBOX_ONE) && defined(_TITLE)
+                    case 14 /*D3DDECLTYPE_DEC3N*/:           desc.Format = DXGI_FORMAT_R10G10B10_SNORM_A2_UNORM; offset += 4; break;
                     case (32 + DXGI_FORMAT_R10G10B10_SNORM_A2_UNORM): desc.Format = DXGI_FORMAT_R10G10B10_SNORM_A2_UNORM; offset += 4; break;
+                    #else
+                    case 14 /*D3DDECLTYPE_DEC3N*/:           desc.Format = DXGI_FORMAT_R10G10B10A2_UNORM; flags |= USES_OBSOLETE_DEC3N; offset += 4; break;
                     #endif
 
                     default:
@@ -420,6 +424,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(ID3D11Device* d3dDevice
     std::vector<unsigned int> materialFlags;
     materialFlags.resize(header->NumVertexBuffers);
 
+    bool dec3nwarning = false;
     for (UINT j = 0; j < header->NumVertexBuffers; ++j)
     {
         auto& vh = vbArray[j];
@@ -443,6 +448,11 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(ID3D11Device* d3dDevice
             flags &= ~NORMAL_MAPS;
         }
 
+        if (flags & USES_OBSOLETE_DEC3N)
+        {
+            dec3nwarning = true;
+        }
+
         materialFlags[j] = flags;
 
         auto verts = bufferData + (vh.DataOffset - bufferDataOffset);
@@ -460,6 +470,12 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(ID3D11Device* d3dDevice
         );
 
         SetDebugObjectName(vbs[j].Get(), "ModelSDKMESH");
+    }
+
+    if (dec3nwarning)
+    {
+        DebugTrace("WARNING: Vertex declaration uses legacy Direct3D 9 D3DDECLTYPE_DEC3N which has no DXGI equivalent\n"
+                   "         (treating as DXGI_FORMAT_R10G10B10A2_UNORM which is not a signed format)\n");
     }
 
     // Create index buffers
