@@ -4,21 +4,22 @@ DirectXTK - the DirectX Tool Kit for DirectX 11
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-October 25, 2018
+October 31, 2018
 
-This package contains the "DirectX Tool Kit", a collection of helper classes for 
-writing Direct3D 11 C++ code for Universal Windows Platform (UWP) apps for Windows 10,
-Windows Store apps, Windows phone 8.1 applications, Xbox One exclusive apps,
-Windows 8.x Win32 desktop applications, Windows 7 Service Pack 1 applications, and
-Windows Vista Service Pack 2 Direct3D 11.0 applications.
+This package contains the "DirectX Tool Kit", a collection of helper classes for
+writing Direct3D 11 C++ code for Universal Windows Platform (UWP) apps for
+Windows 10, Windows Store apps, Windows phone 8.1 applications, Xbox One,
+Windows 8.x Win32 desktop applications, Windows 7 Service Pack 1 applications,
+and Windows Vista Service Pack 2 Direct3D 11.0 applications.
 
-This code is designed to build with Visual Studio 2015 Update 3 or Visual Studio 2017.
-It is recommended that you make use of VS 2015 Update 3, Windows Tools 1.4.1, and the
-Windows 10 Anniversary Update SDK (14393) or VS 2017 (15.8 update) with the
-Windows 10 April 2018 Update SDK (17134).
+This code is designed to build with Visual Studio 2015 Update 3 or
+Visual Studio 2017. It is recommended that you make use of VS 2015 Update 3,
+Windows Tools 1.4.1, and the Windows 10 Anniversary Update SDK (14393) -or-
+VS 2017 (15.8 update) with the Windows 10 April 2018 Update SDK (17134).
 
-These components are designed to work without requiring any content from the DirectX SDK. For details,
-see "Where is the DirectX SDK?" <http://msdn.microsoft.com/en-us/library/ee663275.aspx>.
+These components are designed to work without requiring any content from the
+DirectX SDK. For details, see "Where is the DirectX SDK?"
+<http://msdn.microsoft.com/en-us/library/ee663275.aspx>.
 
 Inc\
     Public Header Files (in the DirectX C++ namespace):
@@ -54,50 +55,64 @@ MakeSpriteFont\
     Command line tool used to generate binary resources for use with SpriteFont
 
 XWBTool\
-    Command line tool for building XACT-style wave banks for use with DirectXTK for Audio's WaveBank class
+    Command line tool for building XACT-style wave banks for use with DirectXTK
+    for Audio's WaveBank class
 
-All content and source code for this package are subject to the terms of the MIT License.
-<http://opensource.org/licenses/MIT>.
+All content and source code for this package are subject to the terms of the
+MIT License. <http://opensource.org/licenses/MIT>.
 
 Documentation is available at <https://github.com/Microsoft/DirectXTK/wiki>.
 
-For the latest version of DirectX Tool Kit, bug reports, etc. please visit the project site.
+For the latest version of DirectX Tool Kit, bug reports, etc. please visit
+the project site. <http://go.microsoft.com/fwlink/?LinkId=248929>
 
-http://go.microsoft.com/fwlink/?LinkId=248929
-
-Note: Xbox One exclusive apps developers using the Xbox One XDK need to generate the
-      Src\Shaders\Compiled\XboxOne*.inc files to build the library as they are not
-      included in the distribution package. They are built by running the script
-      in Src\Shaders - "CompileShaders xbox", and should be generated with the matching
-      FXC compiler from the Xbox One XDK. While they will continue to work if outdated,
-      a mismatch will cause runtime compilation overhead that would otherwise be avoided.
-
-This project has adopted the Microsoft Open Source Code of Conduct. For more information see the
-Code of Conduct FAQ or contact opencode@microsoft.com with any additional questions or comments.
+This project has adopted the Microsoft Open Source Code of Conduct. For more
+information see the Code of Conduct FAQ or contact opencode@microsoft.com with
+any additional questions or comments.
 
 https://opensource.microsoft.com/codeofconduct/
+
+
+--------
+XBOX ONE
+--------
+
+* Developers using the Xbox One XDK need to generate the
+  Src\Shaders\Compiled\XboxOne*.inc files to build the library as they are not
+  included in the distribution package. They are built by running the script
+  in Src\Shaders - "CompileShaders xbox" from the "Xbox One XDK Command Prompt".
+  They are XDK version-specific. While they will continue to work if outdated,
+  a mismatch will cause runtime compilation overhead that would otherwise be
+  avoided.
 
 
 -------------
 RELEASE NOTES
 -------------
 
-* The VS 2017 projects make use of /permissive- for improved C++ standard conformance. Use of a Windows 10 SDK prior to
-  the Fall Creators Update (16299) or an Xbox One XDK prior to June 2017 QFE 4 may result in failures due to problems
-  with the system headers. You can work around these by disabling this switch in the project files which is found
-  in the <ConformanceMode> elements.
+* The VS 2017 projects make use of /permissive- for improved C++ standard
+  conformance. Use of a Windows 10 SDK prior to the Fall Creators Update (16299)
+  or an Xbox One XDK prior to June 2017 QFE 4 may result in failures due to
+  problems with the system headers. You can work around these by disabling this
+  switch in the project files which is found in the <ConformanceMode> elements.
 
-* The VS 2017 projects require the 15.5 update or later. For UWP and Win32 classic desktop projects with the 15.5
-  or 15.6 updates, you need to install the standalone Windows 10 SDK (17134) which is otherwise included in
-  the 15.7/15.8 update. Older VS 2017 updates will fail to load the projects due to use of the <ConformanceMode> element.
-  If using the 15.5 or 15.6 updates, you will see "warning D9002: ignoring unknown option '/Zc:__cplusplus'" because
-  this switch isn't supported until 15.7. It is safe to ignore this warning, or you can edit the project files
-  <AdditionalOptions> elements.
+* The VS 2017 projects require the 15.5 update or later. For UWP and Win32
+  classic desktop projects with the 15.5 or 15.6 updates, you need to install
+  the standalone Windows 10 SDK (17134) which is otherwise included in the
+  15.7/15.8 update. Older VS 2017 updates will fail to load the projects due
+  to use of the <ConformanceMode> element. If using the 15.5 or 15.6 updates,
+  you will see "warning D9002: ignoring unknown option '/Zc:__cplusplus'"
+  because this switch isn't supported until 15.7. It is safe to ignore this
+  warning, or you can edit the project files <AdditionalOptions> elements.
 
 
 ---------------
 RELEASE HISTORY
 ---------------
+
+October 31, 2018
+    Model loader for SDKMESH now attempts to use legacy DE3CN compressed normals
+    - This is an approximation only and emits a warning in debug builds
 
 October 25, 2018
     Use UTF-8 instead of ANSI for narrow strings
@@ -173,7 +188,7 @@ April 24, 2017
     Regenerated shaders using Windows 10 Creators Update SDK (15063)
     Fixed NormalMapEffect shader selection for specular texture usage
     Fixed AudioEngine enumeration when using Single Threaded Apartment (STA)
-    Fixed bug with GamePad (Windows.Gaming.Input) when no user bound 
+    Fixed bug with GamePad (Windows.Gaming.Input) when no user bound
 
 April 7, 2017
     VS 2017 updated for Windows Creators Update SDK (15063)
@@ -271,7 +286,7 @@ October 30, 2015
     *breaking change* emitters/listeners now use RH coordinates by default
     GeometricPrimitive support for custom geometry
     SimpleMath Matrix class improvements
-    DDS support for legacy bumpmap formats (V8U8, Q8W8V8U8, V16U16)  
+    DDS support for legacy bumpmap formats (V8U8, Q8W8V8U8, V16U16)
     Mouse fix for WinRT implementation with multiple buttons pressed
     Wireframe CommonStates no longer does backface culling
     Xbox One platform updates
@@ -398,7 +413,7 @@ February 22, 2013
     Added WIC_USE_FACTORY_PROXY build option (uses WindowsCodecs.dll entrypoint rather than CoCreateInstance)
 
 January 25, 2013
-    GeometricPrimitive support for left-handed coordinates and drawing with custom effects 
+    GeometricPrimitive support for left-handed coordinates and drawing with custom effects
     Model, ModelMesh, and ModelMeshPart added with loading of rigid non-animating models from .CMO and .SDKMESH files
     EffectFactory helper class added
 
