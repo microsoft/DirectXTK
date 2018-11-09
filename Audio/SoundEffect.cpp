@@ -16,6 +16,7 @@
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
 #include <apu.h>
+#include <shapexmacontext.h>
 #endif
 
 using namespace DirectX;
