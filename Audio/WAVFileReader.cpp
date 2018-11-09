@@ -192,7 +192,7 @@ namespace
         {
             case WAVE_FORMAT_PCM:
             case WAVE_FORMAT_IEEE_FLOAT:
-                // Can be a PCMWAVEFORMAT (8 bytes) or WAVEFORMATEX (10 bytes)
+                // Can be a PCMWAVEFORMAT (16 bytes) or WAVEFORMATEX (18 bytes)
                 // We validiated chunk as at least sizeof(PCMWAVEFORMAT) above
                 break;
 
