@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit for DirectX 11
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-October 31, 2018
+November 16, 2018
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for
 writing Direct3D 11 C++ code for Universal Windows Platform (UWP) apps for
@@ -12,10 +12,10 @@ Windows 10, Windows Store apps, Windows phone 8.1 applications, Xbox One,
 Windows 8.x Win32 desktop applications, Windows 7 Service Pack 1 applications,
 and Windows Vista Service Pack 2 Direct3D 11.0 applications.
 
-This code is designed to build with Visual Studio 2015 Update 3 or
-Visual Studio 2017. It is recommended that you make use of VS 2015 Update 3,
-Windows Tools 1.4.1, and the Windows 10 Anniversary Update SDK (14393) -or-
-VS 2017 (15.8 update) with the Windows 10 April 2018 Update SDK (17134).
+This code is designed to build with Visual Studio 2015 Update 3 or Visual Studio 2017.
+It is recommended that you make use of VS 2015 Update 3, Windows Tools 1.4.1, and the
+Windows 10 Anniversary Update SDK (14393) -or- VS 2017 (15.9 update) with the
+Windows 10 October 2018 Update SDK (17763).
 
 These components are designed to work without requiring any content from the
 DirectX SDK. For details, see "Where is the DirectX SDK?"
@@ -97,18 +97,26 @@ RELEASE NOTES
   switch in the project files which is found in the <ConformanceMode> elements.
 
 * The VS 2017 projects require the 15.5 update or later. For UWP and Win32
-  classic desktop projects with the 15.5 or 15.6 updates, you need to install
-  the standalone Windows 10 SDK (17134) which is otherwise included in the
-  15.7/15.8 update. Older VS 2017 updates will fail to load the projects due
-  to use of the <ConformanceMode> element. If using the 15.5 or 15.6 updates,
-  you will see "warning D9002: ignoring unknown option '/Zc:__cplusplus'"
-  because this switch isn't supported until 15.7. It is safe to ignore this
-  warning, or you can edit the project files <AdditionalOptions> elements.
+  classic desktop projects with the 15.5 - 15.7 updates, you need to install the
+  standalone Windows 10 SDK (17763) which is otherwise included in the 15.8.6 or
+  later update. Older VS 2017 updates will fail to load the projects due to use
+  of the <ConformanceMode> element. If using the 15.5 or 15.6 updates, you will
+  see "warning D9002: ignoring unknown option '/Zc:__cplusplus'" because this
+  switch isn't supported until 15.7. It is safe to ignore this warning, or you
+  can edit the project files <AdditionalOptions> elements.
+
+* The UWP projects include configurations for the ARM64 platform. These require
+  VS 2017 (15.9 update) to build.
 
 
 ---------------
 RELEASE HISTORY
 ---------------
+
+November 16, 2018
+    VS 2017 updated for Windows 10 October 2018 Update SDK (17763)
+    ARM64 platform configurations added to UWP projects
+    Minor code review
 
 October 31, 2018
     Model loader for SDKMESH now attempts to use legacy DE3CN compressed normals
