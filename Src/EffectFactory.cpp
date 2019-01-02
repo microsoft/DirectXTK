@@ -168,8 +168,17 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
             effect->SetTexture(srv.Get());
         }
 
-        if (info.specularTexture && *info.specularTexture)
+        if (info.emissiveTexture && *info.emissiveTexture)
         {
+            ComPtr<ID3D11ShaderResourceView> srv;
+
+            factory->CreateTexture(info.emissiveTexture, deviceContext, srv.GetAddressOf());
+
+            effect->SetTexture2(srv.Get());
+        }
+        else if (info.specularTexture && *info.specularTexture)
+        {
+            // If there's no emissive texture specified, use the specular texture as the second texture
             ComPtr<ID3D11ShaderResourceView> srv;
 
             factory->CreateTexture(info.specularTexture, deviceContext, srv.GetAddressOf());

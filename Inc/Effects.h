@@ -763,6 +763,7 @@ namespace DirectX
             const wchar_t*      diffuseTexture;
             const wchar_t*      specularTexture;
             const wchar_t*      normalTexture;
+            const wchar_t*      emissiveTexture;
 
             EffectInfo() noexcept :
                 name(nullptr),
@@ -779,7 +780,8 @@ namespace DirectX
                 emissiveColor(0, 0, 0),
                 diffuseTexture(nullptr),
                 specularTexture(nullptr),
-                normalTexture(nullptr)
+                normalTexture(nullptr),
+                emissiveTexture(nullptr)
                 {}
         };
 
@@ -850,7 +852,7 @@ namespace DirectX
         // DGSL methods.
         struct DGSLEffectInfo : public EffectInfo
         {
-            static const int BaseTextureOffset = 3;
+            static const int BaseTextureOffset = 4;
 
             const wchar_t* textures[DGSLEffect::MaxTextures - BaseTextureOffset];
             const wchar_t* pixelShader;
