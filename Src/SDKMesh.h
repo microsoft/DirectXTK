@@ -191,10 +191,7 @@ namespace DXUT
         uint64_t SizeBytes;
         uint64_t StrideBytes;
         D3DVERTEXELEMENT9 Decl[MAX_VERTEX_ELEMENTS];
-        union
-        {
-            uint64_t DataOffset;
-        };
+        uint64_t DataOffset;
     };
 
     struct SDKMESH_INDEX_BUFFER_HEADER
@@ -202,10 +199,7 @@ namespace DXUT
         uint64_t NumIndices;
         uint64_t SizeBytes;
         uint32_t IndexType;
-        union
-        {
-            uint64_t DataOffset;
-        };
+        uint64_t DataOffset;
     };
 
     struct SDKMESH_MESH
@@ -272,31 +266,12 @@ namespace DXUT
         DirectX::XMFLOAT4 Emissive;
         float Power;
 
-        union
-        {
-            uint64_t Force64_1;			//Force the union to 64bits
-        };
-        union
-        {
-            uint64_t Force64_2;			//Force the union to 64bits
-        };
-        union
-        {
-            uint64_t Force64_3;			//Force the union to 64bits
-        };
-
-        union
-        {
-            uint64_t Force64_4;			//Force the union to 64bits
-        };
-        union
-        {
-            uint64_t Force64_5;		    //Force the union to 64bits
-        };
-        union
-        {
-            uint64_t Force64_6;			//Force the union to 64bits
-        };
+        uint64_t Force64_1;
+        uint64_t Force64_2;
+        uint64_t Force64_3;
+        uint64_t Force64_4;
+        uint64_t Force64_5;
+        uint64_t Force64_6;
     };
 
     struct SDKMESH_MATERIAL_V2
@@ -313,31 +288,12 @@ namespace DXUT
 
         char    Reserved[60];
 
-        union
-        {
-            uint64_t Force64_1;			//Force the union to 64bits
-        };
-        union
-        {
-            uint64_t Force64_2;			//Force the union to 64bits
-        };
-        union
-        {
-            uint64_t Force64_3;			//Force the union to 64bits
-        };
-
-        union
-        {
-            uint64_t Force64_4;			//Force the union to 64bits
-        };
-        union
-        {
-            uint64_t Force64_5;		    //Force the union to 64bits
-        };
-        union
-        {
-            uint64_t Force64_6;			//Force the union to 64bits
-        };
+        uint64_t Force64_1;
+        uint64_t Force64_2;
+        uint64_t Force64_3;
+        uint64_t Force64_4;
+        uint64_t Force64_5;
+        uint64_t Force64_6;
     };
 
     struct SDKANIMATION_FILE_HEADER
@@ -362,11 +318,7 @@ namespace DXUT
     struct SDKANIMATION_FRAME_DATA
     {
         char FrameName[MAX_FRAME_NAME];
-        union
-        {
-            uint64_t DataOffset;
-            SDKANIMATION_DATA* pAnimationData;
-        };
+        uint64_t DataOffset;
     };
 
     #pragma pack(pop)
