@@ -280,6 +280,9 @@
     <ClCompile Include="Src\DebugEffect.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="Src\PBREffectFactory.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Src\Shaders\CompileShaders.cmd">

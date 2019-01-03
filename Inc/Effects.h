@@ -832,6 +832,43 @@ namespace DirectX
     };
 
 
+    // Factory for Physically Based Rendering (PBR)
+    class PBREffectFactory : public IEffectFactory
+    {
+    public:
+        explicit PBREffectFactory(_In_ ID3D11Device* device);
+        PBREffectFactory(PBREffectFactory&& moveFrom) noexcept;
+        PBREffectFactory& operator= (PBREffectFactory&& moveFrom) noexcept;
+
+        PBREffectFactory(PBREffectFactory const&) = delete;
+        PBREffectFactory& operator= (PBREffectFactory const&) = delete;
+
+        virtual ~PBREffectFactory() override;
+
+        // IEffectFactory methods.
+        virtual std::shared_ptr<IEffect> __cdecl CreateEffect(_In_ const EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext) override;
+        virtual void __cdecl CreateTexture(_In_z_ const wchar_t* name, _In_opt_ ID3D11DeviceContext* deviceContext, _Outptr_ ID3D11ShaderResourceView** textureView) override;
+
+        // Settings.
+        void __cdecl ReleaseCache();
+
+        void __cdecl SetSharing(bool enabled);
+
+        void __cdecl EnableForceSRGB(bool forceSRGB);
+
+        void __cdecl SetDirectory(_In_opt_z_ const wchar_t* path);
+
+        // Properties.
+        ID3D11Device* GetDevice() const;
+
+    private:
+        // Private implementation.
+        class Impl;
+
+        std::shared_ptr<Impl> pImpl;
+    };
+
+
     // Factory for sharing Visual Studio Shader Designer (DGSL) shaders and texture resources
     class DGSLEffectFactory : public IEffectFactory
     {
