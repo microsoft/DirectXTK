@@ -501,7 +501,6 @@
       <FileType>Document</FileType>
     </None>
   </ItemGroup>
-  <PropertyGroup Label="Globals" />
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E0B52AE7-E160-4D32-BF3F-910B785E5A8E}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
