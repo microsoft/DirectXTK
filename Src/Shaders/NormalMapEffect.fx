@@ -105,7 +105,7 @@ float4 PSNormalPixelLightingTxNoFog(PSInputPixelLightingTx pin) : SV_Target0
     float3 eyeVector = normalize(EyePosition - pin.PositionWS.xyz);
 
     // Before lighting, peturb the surface's normal by the one given in normal map.
-    float3 localNormal = BiasX2(NormalTexture.Sample(Sampler, pin.TexCoord).xyz);
+    float3 localNormal = TwoChannelNormalX2(NormalTexture.Sample(Sampler, pin.TexCoord).xy);
     float3 normal = PeturbNormal(localNormal, pin.PositionWS.xyz, pin.NormalWS, pin.TexCoord);
 
     // Do lighting
@@ -128,7 +128,7 @@ float4 PSNormalPixelLightingTx(PSInputPixelLightingTx pin) : SV_Target0
     float3 eyeVector = normalize(EyePosition - pin.PositionWS.xyz);
  
     // Before lighting, peturb the surface's normal by the one given in normal map.
-    float3 localNormal = BiasX2(NormalTexture.Sample(Sampler, pin.TexCoord).xyz);
+    float3 localNormal = TwoChannelNormalX2(NormalTexture.Sample(Sampler, pin.TexCoord).xy);
     float3 normal = PeturbNormal(localNormal, pin.PositionWS.xyz, pin.NormalWS, pin.TexCoord);
 
     // Do lighting
@@ -153,7 +153,7 @@ float4 PSNormalPixelLightingTxNoFogSpec(PSInputPixelLightingTx pin) : SV_Target0
     float3 eyeVector = normalize(EyePosition - pin.PositionWS.xyz);
 
     // Before lighting, peturb the surface's normal by the one given in normal map.
-    float3 localNormal = BiasX2(NormalTexture.Sample(Sampler, pin.TexCoord).xyz);
+    float3 localNormal = TwoChannelNormalX2(NormalTexture.Sample(Sampler, pin.TexCoord).xy);
     float3 normal = PeturbNormal(localNormal, pin.PositionWS.xyz, pin.NormalWS, pin.TexCoord);
 
     // Do lighting
@@ -175,7 +175,7 @@ float4 PSNormalPixelLightingTxNoSpec(PSInputPixelLightingTx pin) : SV_Target0
     float3 eyeVector = normalize(EyePosition - pin.PositionWS.xyz);
 
     // Before lighting, peturb the surface's normal by the one given in normal map.
-    float3 localNormal = BiasX2(NormalTexture.Sample(Sampler, pin.TexCoord).xyz);
+    float3 localNormal = TwoChannelNormalX2(NormalTexture.Sample(Sampler, pin.TexCoord).xy);
     float3 normal = PeturbNormal(localNormal, pin.PositionWS.xyz, pin.NormalWS, pin.TexCoord);
 
     // Do lighting

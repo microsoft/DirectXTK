@@ -39,6 +39,13 @@ float3 PeturbNormal(float3 localNormal, float3 position, float3 normal, float2 t
     return normalize(mul(localNormal, TBN));
 }
 
+float3 TwoChannelNormalX2(float2 normal)
+{
+    float2 xy = 2.0f * normal - 1.0f;
+    float z = sqrt(1 - dot(xy, xy));
+    return float3(xy.x, xy.y, z);
+}
+
 
 // sRGB 
 // https://en.wikipedia.org/wiki/SRGB

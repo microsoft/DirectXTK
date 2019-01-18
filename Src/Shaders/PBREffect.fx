@@ -143,7 +143,7 @@ float4 PSTextured(PSInputPixelLightingTx pin) : SV_Target0
     const float3 L = normalize(-LightDirection[0]);               // light vector ("to light" opposite of light's direction)
 
     // Before lighting, peturb the surface's normal by the one given in normal map.
-    float3 localNormal = BiasX2(NormalTexture.Sample(SurfaceSampler, pin.TexCoord).xyz);
+    float3 localNormal = TwoChannelNormalX2(NormalTexture.Sample(SurfaceSampler, pin.TexCoord).xy);
     float3 N = PeturbNormal(localNormal, pin.PositionWS.xyz, pin.NormalWS, pin.TexCoord);
 
     // Get albedo
@@ -168,7 +168,7 @@ float4 PSTexturedEmissive(PSInputPixelLightingTx pin) : SV_Target0
     const float3 L = normalize(-LightDirection[0]);               // light vector ("to light" opposite of light's direction)
 
     // Before lighting, peturb the surface's normal by the one given in normal map.
-    float3 localNormal = BiasX2(NormalTexture.Sample(SurfaceSampler, pin.TexCoord).xyz);
+    float3 localNormal = TwoChannelNormalX2(NormalTexture.Sample(SurfaceSampler, pin.TexCoord).xy);
     float3 N = PeturbNormal(localNormal, pin.PositionWS.xyz, pin.NormalWS, pin.TexCoord);
 
     // Get albedo
@@ -205,7 +205,7 @@ PSOut_Velocity PSTexturedVelocity(VSOut_Velocity pin)
     const float3 L = normalize(-LightDirection[0]);                       // light vector ("to light" opposite of light's direction)
 
     // Before lighting, peturb the surface's normal by the one given in normal map.
-    float3 localNormal = BiasX2(NormalTexture.Sample(SurfaceSampler, pin.current.TexCoord).xyz);
+    float3 localNormal = TwoChannelNormalX2(NormalTexture.Sample(SurfaceSampler, pin.current.TexCoord).xy);
     float3 N = PeturbNormal(localNormal, pin.current.PositionWS.xyz, pin.current.NormalWS, pin.current.TexCoord);
 
     // Get albedo
@@ -241,7 +241,7 @@ PSOut_Velocity PSTexturedEmissiveVelocity(VSOut_Velocity pin)
     const float3 L = normalize(-LightDirection[0]);                       // light vector ("to light" opposite of light's direction)
 
     // Before lighting, peturb the surface's normal by the one given in normal map.
-    float3 localNormal = BiasX2(NormalTexture.Sample(SurfaceSampler, pin.current.TexCoord).xyz);
+    float3 localNormal = TwoChannelNormalX2(NormalTexture.Sample(SurfaceSampler, pin.current.TexCoord).xy);
     float3 N = PeturbNormal(localNormal, pin.current.PositionWS.xyz, pin.current.NormalWS, pin.current.TexCoord);
 
     // Get albedo
