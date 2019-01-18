@@ -122,6 +122,44 @@ namespace
         m.alpha = (info.alpha < 1.f);
     }
 
+    void LoadMaterial(const DXUT::SDKMESH_MATERIAL_V2& mh,
+        unsigned int flags,
+        IEffectFactory& fxFactory,
+        MaterialRecordSDKMESH& m)
+    {
+        wchar_t matName[DXUT::MAX_MATERIAL_NAME] = {};
+        MultiByteToWideChar(CP_UTF8, 0, mh.Name, -1, matName, DXUT::MAX_MATERIAL_NAME);
+
+        wchar_t albetoTexture[DXUT::MAX_TEXTURE_NAME] = {};
+        MultiByteToWideChar(CP_UTF8, 0, mh.AlbetoTexture, -1, albetoTexture, DXUT::MAX_TEXTURE_NAME);
+
+        wchar_t normalName[DXUT::MAX_TEXTURE_NAME] = {};
+        MultiByteToWideChar(CP_UTF8, 0, mh.NormalTexture, -1, normalName, DXUT::MAX_TEXTURE_NAME);
+
+        wchar_t rmaName[DXUT::MAX_TEXTURE_NAME] = {};
+        MultiByteToWideChar(CP_UTF8, 0, mh.RMATexture, -1, rmaName, DXUT::MAX_TEXTURE_NAME);
+
+        wchar_t emissiveName[DXUT::MAX_TEXTURE_NAME] = {};
+        MultiByteToWideChar(CP_UTF8, 0, mh.EmissiveTexture, -1, emissiveName, DXUT::MAX_TEXTURE_NAME);
+
+        EffectFactory::EffectInfo info;
+        info.name = matName;
+        info.perVertexColor = false;
+        info.enableSkinning = false;
+        info.enableDualTexture = false;
+        info.enableNormalMaps = true;
+        info.biasedVertexNormals = (flags & BIASED_VERTEX_NORMALS) != 0;
+        info.alpha = (!mh.Alpha) ? 1.f : mh.Alpha;
+
+        info.diffuseTexture = albetoTexture;
+        info.specularTexture = rmaName;
+        info.normalTexture = normalName;
+        info.emissiveTexture = emissiveName;
+
+        m.effect = fxFactory.CreateEffect(info, nullptr);
+        m.alpha = (info.alpha < 1.f);
+    }
+
 
     //--------------------------------------------------------------------------------------
     // Direct3D 9 Vertex Declaration to Direct3D 11 Input Layout mapping
@@ -355,7 +393,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(ID3D11Device* d3dDevice
     if (dataSize < header->HeaderSize)
         throw std::exception("End of file");
 
-    if (header->Version != DXUT::SDKMESH_FILE_VERSION)
+    if (header->Version != DXUT::SDKMESH_FILE_VERSION && header->Version != DXUT::SDKMESH_FILE_VERSION_V2)
         throw std::exception("Not a supported SDKMESH version");
 
     if (header->IsBigEndian)
@@ -405,7 +443,17 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(ID3D11Device* d3dDevice
     if (dataSize < header->MaterialDataOffset
         || (dataSize < (header->MaterialDataOffset + uint64_t(header->NumMaterials) * sizeof(DXUT::SDKMESH_MATERIAL))))
         throw std::exception("End of file");
-    auto materialArray = reinterpret_cast<const DXUT::SDKMESH_MATERIAL*>(meshData + header->MaterialDataOffset);
+
+    const DXUT::SDKMESH_MATERIAL* materialArray = nullptr;
+    const DXUT::SDKMESH_MATERIAL_V2* materialArray_v2 = nullptr;
+    if (header->Version == DXUT::SDKMESH_FILE_VERSION_V2)
+    {
+        materialArray_v2 = reinterpret_cast<const DXUT::SDKMESH_MATERIAL_V2*>(meshData + header->MaterialDataOffset);
+    }
+    else
+    {
+        materialArray = reinterpret_cast<const DXUT::SDKMESH_MATERIAL*>(meshData + header->MaterialDataOffset);
+    }
 
     // Buffer data
     uint64_t bufferDataOffset = header->HeaderSize + header->NonBufferDataSize;
@@ -598,11 +646,23 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(ID3D11Device* d3dDevice
             if (!mat.effect)
             {
                 size_t vi = mh.VertexBuffers[0];
-                LoadMaterial(
-                    materialArray[subset.MaterialID],
-                    materialFlags[vi],
-                    fxFactory,
-                    mat);
+
+                if (materialArray_v2)
+                {
+                    LoadMaterial(
+                        materialArray_v2[subset.MaterialID],
+                        materialFlags[vi],
+                        fxFactory,
+                        mat);
+                }
+                else
+                {
+                    LoadMaterial(
+                        materialArray[subset.MaterialID],
+                        materialFlags[vi],
+                        fxFactory,
+                        mat);
+                }
             }
 
             ComPtr<ID3D11InputLayout> il;

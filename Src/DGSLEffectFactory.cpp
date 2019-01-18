@@ -310,6 +310,16 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateDGSLEffect(DGSLEffectFac
         effect->SetTextureEnabled(true);
     }
 
+    if (info.emissiveTexture && *info.emissiveTexture)
+    {
+        ComPtr<ID3D11ShaderResourceView> srv;
+
+        factory->CreateTexture(info.emissiveTexture, deviceContext, srv.GetAddressOf());
+
+        effect->SetTexture(3, srv.Get());
+        effect->SetTextureEnabled(true);
+    }
+
     for (size_t j = 0; j < _countof(info.textures); ++j)
     {
         if (info.textures[j] && *info.textures[j])

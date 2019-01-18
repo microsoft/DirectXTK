@@ -106,6 +106,8 @@ namespace DXUT
     // Hard Defines for the various structures
     //--------------------------------------------------------------------------------------
     const uint32_t SDKMESH_FILE_VERSION = 101;
+    const uint32_t SDKMESH_FILE_VERSION_V2 = 200;
+
     const uint32_t MAX_VERTEX_ELEMENTS = 32;
     const uint32_t MAX_VERTEX_STREAMS = 16;
     const uint32_t MAX_FRAME_NAME = 100;
@@ -189,10 +191,7 @@ namespace DXUT
         uint64_t SizeBytes;
         uint64_t StrideBytes;
         D3DVERTEXELEMENT9 Decl[MAX_VERTEX_ELEMENTS];
-        union
-        {
-            uint64_t DataOffset;
-        };
+        uint64_t DataOffset;
     };
 
     struct SDKMESH_INDEX_BUFFER_HEADER
@@ -200,10 +199,7 @@ namespace DXUT
         uint64_t NumIndices;
         uint64_t SizeBytes;
         uint32_t IndexType;
-        union
-        {
-            uint64_t DataOffset;
-        };
+        uint64_t DataOffset;
     };
 
     struct SDKMESH_MESH
@@ -270,31 +266,34 @@ namespace DXUT
         DirectX::XMFLOAT4 Emissive;
         float Power;
 
-        union
-        {
-            uint64_t Force64_1;			//Force the union to 64bits
-        };
-        union
-        {
-            uint64_t Force64_2;			//Force the union to 64bits
-        };
-        union
-        {
-            uint64_t Force64_3;			//Force the union to 64bits
-        };
+        uint64_t Force64_1;
+        uint64_t Force64_2;
+        uint64_t Force64_3;
+        uint64_t Force64_4;
+        uint64_t Force64_5;
+        uint64_t Force64_6;
+    };
 
-        union
-        {
-            uint64_t Force64_4;			//Force the union to 64bits
-        };
-        union
-        {
-            uint64_t Force64_5;		    //Force the union to 64bits
-        };
-        union
-        {
-            uint64_t Force64_6;			//Force the union to 64bits
-        };
+    struct SDKMESH_MATERIAL_V2
+    {
+        char    Name[MAX_MATERIAL_NAME];
+
+        // PBR materials
+        char    RMATexture[MAX_TEXTURE_NAME];
+        char    AlbetoTexture[MAX_TEXTURE_NAME];
+        char    NormalTexture[MAX_TEXTURE_NAME];
+        char    EmissiveTexture[MAX_TEXTURE_NAME];
+
+        float   Alpha;
+
+        char    Reserved[60];
+
+        uint64_t Force64_1;
+        uint64_t Force64_2;
+        uint64_t Force64_3;
+        uint64_t Force64_4;
+        uint64_t Force64_5;
+        uint64_t Force64_6;
     };
 
     struct SDKANIMATION_FILE_HEADER
@@ -319,11 +318,7 @@ namespace DXUT
     struct SDKANIMATION_FRAME_DATA
     {
         char FrameName[MAX_FRAME_NAME];
-        union
-        {
-            uint64_t DataOffset;
-            SDKANIMATION_DATA* pAnimationData;
-        };
+        uint64_t DataOffset;
     };
 
     #pragma pack(pop)
@@ -338,6 +333,7 @@ static_assert( sizeof(DXUT::SDKMESH_MESH) == 224, "SDK Mesh structure size incor
 static_assert( sizeof(DXUT::SDKMESH_SUBSET) == 144, "SDK Mesh structure size incorrect" );
 static_assert( sizeof(DXUT::SDKMESH_FRAME) == 184, "SDK Mesh structure size incorrect" );
 static_assert( sizeof(DXUT::SDKMESH_MATERIAL) == 1256, "SDK Mesh structure size incorrect" );
+static_assert( sizeof(DXUT::SDKMESH_MATERIAL_V2) == sizeof(DXUT::SDKMESH_MATERIAL), "SDK Mesh structure size incorrect" );
 static_assert( sizeof(DXUT::SDKANIMATION_FILE_HEADER) == 40, "SDK Mesh structure size incorrect" );
 static_assert( sizeof(DXUT::SDKANIMATION_DATA) == 40, "SDK Mesh structure size incorrect" );
 static_assert( sizeof(DXUT::SDKANIMATION_FRAME_DATA) == 112, "SDK Mesh structure size incorrect" );

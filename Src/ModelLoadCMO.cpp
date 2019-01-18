@@ -797,6 +797,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
                 info.diffuseTexture = m.texture[0].empty() ? nullptr : m.texture[0].c_str();
                 info.specularTexture = m.texture[1].empty() ? nullptr : m.texture[1].c_str();
                 info.normalTexture = m.texture[2].empty() ? nullptr : m.texture[2].c_str();
+                info.emissiveTexture = m.texture[3].empty() ? nullptr : m.texture[3].c_str();
                 info.pixelShader = m.pixelShader.c_str();
 
                 const int offset = DGSLEffectFactory::DGSLEffectInfo::BaseTextureOffset;

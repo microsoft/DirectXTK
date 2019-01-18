@@ -1324,6 +1324,9 @@
     <ClCompile Include="Src\DebugEffect.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="Src\PBREffectFactory.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Readme.txt" />
