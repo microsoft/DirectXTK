@@ -237,7 +237,7 @@ const wchar_t* SpriteFont::Impl::ConvertUTF8(_In_z_ const char *text)
         utfBuffer.reset(new wchar_t[1024]);
     }
 
-    int result = MultiByteToWideChar(CP_UTF8, 0, text, -1, utfBuffer.get(), utfBufferSize);
+    int result = MultiByteToWideChar(CP_UTF8, 0, text, -1, utfBuffer.get(), static_cast<int>(utfBufferSize));
     if (!result && (GetLastError() == ERROR_INSUFFICIENT_BUFFER))
     {
         // Compute required buffer size
@@ -246,7 +246,7 @@ const wchar_t* SpriteFont::Impl::ConvertUTF8(_In_z_ const char *text)
         utfBuffer.reset(new wchar_t[utfBufferSize]);
 
         // Retry conversion
-        result = MultiByteToWideChar(CP_UTF8, 0, text, -1, utfBuffer.get(), utfBufferSize);
+        result = MultiByteToWideChar(CP_UTF8, 0, text, -1, utfBuffer.get(), static_cast<int>(utfBufferSize));
     }
 
     if (!result)
