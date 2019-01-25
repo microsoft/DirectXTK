@@ -35,12 +35,17 @@ public:
     template<typename TAction>
     void ForEachGlyph(_In_z_ wchar_t const* text, TAction action) const;
 
+    const wchar_t* ConvertUTF8(_In_z_ const char *text);
 
     // Fields.
     ComPtr<ID3D11ShaderResourceView> texture;
     std::vector<Glyph> glyphs;
     Glyph const* defaultGlyph;
     float lineSpacing;
+
+private:
+    size_t utfBufferSize;
+    std::unique_ptr<wchar_t[]> utfBuffer;
 };
 
 
@@ -72,7 +77,8 @@ namespace DirectX
 
 // Reads a SpriteFont from the binary format created by the MakeSpriteFont utility.
 SpriteFont::Impl::Impl(_In_ ID3D11Device* device, _In_ BinaryReader* reader, bool forceSRGB) :
-    defaultGlyph(nullptr)
+    defaultGlyph(nullptr),
+    utfBufferSize(0)
 {
     // Validate the header.
     for (char const* magic = spriteFontMagic; *magic; magic++)
@@ -133,7 +139,8 @@ SpriteFont::Impl::Impl(ID3D11ShaderResourceView* texture, Glyph const* glyphs, s
     : texture(texture),
     glyphs(glyphs, glyphs + glyphCount),
     defaultGlyph(nullptr),
-    lineSpacing(lineSpacing)
+    lineSpacing(lineSpacing),
+    utfBufferSize(0)
 {
     if (!std::is_sorted(glyphs, glyphs + glyphCount))
     {
@@ -222,6 +229,36 @@ void SpriteFont::Impl::ForEachGlyph(_In_z_ wchar_t const* text, TAction action) 
 }
 
 
+const wchar_t* SpriteFont::Impl::ConvertUTF8(_In_z_ const char *text)
+{
+    if (!utfBuffer)
+    {
+        utfBufferSize = 1024;
+        utfBuffer.reset(new wchar_t[1024]);
+    }
+
+    int result = MultiByteToWideChar(CP_UTF8, 0, text, -1, utfBuffer.get(), static_cast<int>(utfBufferSize));
+    if (!result && (GetLastError() == ERROR_INSUFFICIENT_BUFFER))
+    {
+        // Compute required buffer size
+        result = MultiByteToWideChar(CP_UTF8, 0, text, -1, nullptr, 0);
+        utfBufferSize = AlignUp(result, 1024);
+        utfBuffer.reset(new wchar_t[utfBufferSize]);
+
+        // Retry conversion
+        result = MultiByteToWideChar(CP_UTF8, 0, text, -1, utfBuffer.get(), static_cast<int>(utfBufferSize));
+    }
+
+    if (!result)
+    {
+        DebugTrace("ERROR: MultiByteToWideChar failed with error %u.\n", GetLastError());
+        throw std::exception("MultiByteToWideChar");
+    }
+
+    return utfBuffer.get();
+}
+
+
 // Construct from a binary file created by the MakeSpriteFont utility.
 SpriteFont::SpriteFont(_In_ ID3D11Device* device, _In_z_ wchar_t const* fileName, bool forceSRGB)
 {
@@ -270,6 +307,7 @@ SpriteFont::~SpriteFont()
 }
 
 
+// Wide-character / UTF-16LE
 void XM_CALLCONV SpriteFont::DrawString(_In_ SpriteBatch* spriteBatch, _In_z_ wchar_t const* text, XMFLOAT2 const& position, FXMVECTOR color, float rotation, XMFLOAT2 const& origin, float scale, SpriteEffects effects, float layerDepth) const
 {
     DrawString(spriteBatch, text, XMLoadFloat2(&position), color, rotation, XMLoadFloat2(&origin), XMVectorReplicate(scale), effects, layerDepth);
@@ -409,6 +447,52 @@ RECT XM_CALLCONV SpriteFont::MeasureDrawBounds(_In_z_ wchar_t const* text, FXMVE
     XMStoreFloat2(&pos, position);
 
     return MeasureDrawBounds(text, pos);
+}
+
+
+// UTF-8
+void XM_CALLCONV SpriteFont::DrawString(_In_ SpriteBatch* spriteBatch, _In_z_ char const* text, XMFLOAT2 const& position, FXMVECTOR color, float rotation, XMFLOAT2 const& origin, float scale, SpriteEffects effects, float layerDepth) const
+{
+    DrawString(spriteBatch, pImpl->ConvertUTF8(text), XMLoadFloat2(&position), color, rotation, XMLoadFloat2(&origin), XMVectorReplicate(scale), effects, layerDepth);
+}
+
+
+void XM_CALLCONV SpriteFont::DrawString(_In_ SpriteBatch* spriteBatch, _In_z_ char const* text, XMFLOAT2 const& position, FXMVECTOR color, float rotation, XMFLOAT2 const& origin, XMFLOAT2 const& scale, SpriteEffects effects, float layerDepth) const
+{
+    DrawString(spriteBatch, pImpl->ConvertUTF8(text), XMLoadFloat2(&position), color, rotation, XMLoadFloat2(&origin), XMLoadFloat2(&scale), effects, layerDepth);
+}
+
+
+void XM_CALLCONV SpriteFont::DrawString(_In_ SpriteBatch* spriteBatch, _In_z_ char const* text, FXMVECTOR position, FXMVECTOR color, float rotation, FXMVECTOR origin, float scale, SpriteEffects effects, float layerDepth) const
+{
+    DrawString(spriteBatch, pImpl->ConvertUTF8(text), position, color, rotation, origin, XMVectorReplicate(scale), effects, layerDepth);
+}
+
+
+void XM_CALLCONV SpriteFont::DrawString(_In_ SpriteBatch* spriteBatch, _In_z_ char const* text, FXMVECTOR position, FXMVECTOR color, float rotation, FXMVECTOR origin, GXMVECTOR scale, SpriteEffects effects, float layerDepth) const
+{
+    DrawString(spriteBatch, pImpl->ConvertUTF8(text), position, color, rotation, origin, scale, effects, layerDepth);
+}
+
+
+XMVECTOR XM_CALLCONV SpriteFont::MeasureString(_In_z_ char const* text) const
+{
+    return MeasureString(pImpl->ConvertUTF8(text));
+}
+
+
+RECT SpriteFont::MeasureDrawBounds(_In_z_ char const* text, XMFLOAT2 const& position) const
+{
+    return MeasureDrawBounds(pImpl->ConvertUTF8(text), position);
+}
+
+
+RECT XM_CALLCONV SpriteFont::MeasureDrawBounds(_In_z_ char const* text, FXMVECTOR position) const
+{
+    XMFLOAT2 pos;
+    XMStoreFloat2(&pos, position);
+
+    return MeasureDrawBounds(pImpl->ConvertUTF8(text), pos);
 }
 
 
