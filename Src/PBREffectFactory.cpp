@@ -75,7 +75,7 @@ std::shared_ptr<IEffect> PBREffectFactory::Impl::CreateEffect(IEffectFactory* fa
 
     auto effect = std::make_shared<PBREffect>(mDevice.Get());
 
-    effect->EnableDefaultLighting();
+    // We don't use EnableDefaultLighting generally for PBR as it uses Image-Based Lighting instead.
 
     effect->SetAlpha(info.alpha);
 
