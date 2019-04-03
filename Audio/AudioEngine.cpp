@@ -130,6 +130,10 @@ namespace
         if (wfx->nChannels > 0x7F)
             return 0;
 
+        // This hash does not use nSamplesPerSec because voice reuse can change the source sample rate.
+
+        // nAvgBytesPerSec and nBlockAlign are derived from other values in XAudio2 supported formats.
+
         union KeyGen
         {
             struct
