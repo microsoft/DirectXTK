@@ -466,7 +466,14 @@ namespace DirectX
             SetWindow(reinterpret_cast<ABI::Windows::UI::Core::ICoreWindow*>(window));
         }
     #endif
+    #ifdef CPPWINRT_VERSION
+        void __cdecl SetWindow(winrt::Windows::UI::Core::CoreWindow window)
+        {
+            // See https://docs.microsoft.com/en-us/windows/uwp/cpp-and-winrt-apis/interop-winrt-abi
+            SetWindow(reinterpret_cast<ABI::Windows::UI::Core::ICoreWindow*>(winrt::get_abi(window)));
+        }
     #endif
+    #endif // WINAPI_FAMILY == WINAPI_FAMILY_APP
 
         // Singleton
         static Keyboard& __cdecl Get();
