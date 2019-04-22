@@ -33,10 +33,6 @@
 // C5039 pointer or reference to potentially throwing function passed to extern C function under - EHc
 // C5045 Spectre mitigation warning
 
-// XBox One XDK related Off by default warnings
-#pragma warning(disable : 5043)
-// C5043 exception specification does not match previous declaration
-
 // Windows 8.1 SDK related Off by default warnings
 #pragma warning(disable : 4471 4917 4986 5029)
 // C4471 forward declaration of an unscoped enumeration must have an underlying type
@@ -45,8 +41,9 @@
 // C5029 nonstandard extension used
 
 // Xbox One XDK related Off by default warnings
-#pragma warning(disable : 4643)
+#pragma warning(disable : 4643 5043)
 // C4643 Forward declaring in namespace std is not permitted by the C++ Standard
+// C5043 exception specification does not match previous declaration
 
 #ifdef __INTEL_COMPILER
 #pragma warning(disable : 161 2960 3280)
@@ -75,7 +72,6 @@
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
 #include <d3d11_x.h>
-#define DCOMMON_H_INCLUDED
 #else
 #include <d3d11_1.h>
 #endif
