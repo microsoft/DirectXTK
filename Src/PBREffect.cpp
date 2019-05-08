@@ -462,6 +462,29 @@ void PBREffect::SetConstantRoughness(float value)
 
 
 // Texture settings.
+void PBREffect::SetAlbedoTexture(_In_opt_ ID3D11ShaderResourceView* value)
+{
+    pImpl->albedoTexture = value;
+}
+
+
+void PBREffect::SetNormalTexture(_In_opt_ ID3D11ShaderResourceView* value)
+{
+    pImpl->normalTexture = value;
+}
+
+
+void PBREffect::SetRMATexture(_In_opt_ ID3D11ShaderResourceView* value)
+{
+    pImpl->rmaTexture = value;
+}
+
+void PBREffect::SetEmissiveTexture(_In_opt_ ID3D11ShaderResourceView* value)
+{
+    pImpl->emissiveTexture = value;
+}
+
+
 void PBREffect::SetSurfaceTextures(
     _In_opt_ ID3D11ShaderResourceView* albedo,
     _In_opt_ ID3D11ShaderResourceView* normal,
@@ -483,12 +506,6 @@ void PBREffect::SetIBLTextures(
 
     pImpl->constants.numRadianceMipLevels = numRadianceMips;
     pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
-}
-
-
-void PBREffect::SetEmissiveTexture(_In_opt_ ID3D11ShaderResourceView* emissive)
-{
-    pImpl->emissiveTexture = emissive;
 }
 
 
