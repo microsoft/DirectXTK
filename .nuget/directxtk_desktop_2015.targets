@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <PropertyGroup Label="Debug" Condition="'$(Configuration.ToLower())' == 'debug'">
+    <NuGetConfiguration>Debug</NuGetConfiguration>
+  </PropertyGroup>
+  <PropertyGroup Label="Non_Debug" Condition="'$(Configuration.ToLower())' != 'debug'">
+    <NuGetConfiguration>Release</NuGetConfiguration>
+  </PropertyGroup>
+
   <PropertyGroup>
-    <directxtk-LibPath>$(MSBuildThisFileDirectory)..\..\lib\$(Platform)\$(Configuration)</directxtk-LibPath>
+    <directxtk-LibPath>$(MSBuildThisFileDirectory)..\..\lib\$(Platform)\$(NuGetConfiguration)</directxtk-LibPath>
   </PropertyGroup>
 
   <ItemDefinitionGroup>
