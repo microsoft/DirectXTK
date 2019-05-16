@@ -563,6 +563,9 @@ void BasicPostProcess::SetSourceTexture(_In_opt_ ID3D11ShaderResourceView* value
             break;
         }
 
+        case D3D11_RESOURCE_DIMENSION_UNKNOWN:
+        case D3D11_RESOURCE_DIMENSION_BUFFER:
+        case D3D11_RESOURCE_DIMENSION_TEXTURE3D:
         default:
             throw std::exception("Unsupported texture type");
         }

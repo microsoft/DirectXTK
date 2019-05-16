@@ -464,6 +464,11 @@ namespace
                 }
                 break;
 
+            case D3D11_RESOURCE_DIMENSION_BUFFER:
+                DebugTrace("ERROR: Resource dimension buffer type not supported for textures\n");
+                return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
+
+            case D3D11_RESOURCE_DIMENSION_UNKNOWN:
             default:
                 DebugTrace("ERROR: Unknown resource dimension (%u)\n", static_cast<uint32_t>(d3d10ext->resourceDimension));
                 return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
@@ -566,6 +571,11 @@ namespace
             }
             break;
 
+        case D3D11_RESOURCE_DIMENSION_BUFFER:
+            DebugTrace("ERROR: Resource dimension buffer type not supported for textures\n");
+            return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
+
+        case D3D11_RESOURCE_DIMENSION_UNKNOWN:
         default:
             DebugTrace("ERROR: Unknown resource dimension (%u)\n", static_cast<uint32_t>(resDim));
             return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);

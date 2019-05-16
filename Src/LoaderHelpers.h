@@ -193,6 +193,8 @@ namespace DirectX
 
             #endif // _XBOX_ONE && _TITLE
 
+                case DXGI_FORMAT_UNKNOWN:
+                case DXGI_FORMAT_FORCE_UINT:
                 default:
                     return 0;
             }
@@ -896,6 +898,7 @@ namespace DirectX
                         case DDS_ALPHA_MODE_CUSTOM:
                             return mode;
 
+                        case DDS_ALPHA_MODE_UNKNOWN:
                         default:
                             break;
                     }
