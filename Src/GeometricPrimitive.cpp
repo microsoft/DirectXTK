@@ -46,7 +46,8 @@ namespace
             device->CreateBuffer(&bufferDesc, &dataDesc, pBuffer)
         );
 
-        _Analysis_assume_(*pBuffer != 0);
+        assert(pBuffer != nullptr && *pBuffer != nullptr);
+        _Analysis_assume_(pBuffer != nullptr && *pBuffer != nullptr);
 
         SetDebugObjectName(*pBuffer, "DirectXTK:GeometricPrimitive");
     }
@@ -70,7 +71,8 @@ namespace
             pInputLayout)
         );
 
-        _Analysis_assume_(*pInputLayout != 0);
+        assert(pInputLayout != nullptr && *pInputLayout != nullptr);
+        _Analysis_assume_(pInputLayout != nullptr && *pInputLayout != nullptr);
 
         SetDebugObjectName(*pInputLayout, "DirectXTK:GeometricPrimitive");
     }

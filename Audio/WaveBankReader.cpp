@@ -1313,7 +1313,7 @@ bool WaveBankReader::IsStreamingBank() const
 #if defined(_XBOX_ONE) && defined(_TITLE)
 bool WaveBankReader::HasXMA() const
 {
-    return (pImpl->m_xmaMemory != 0);
+    return (pImpl->m_xmaMemory != nullptr);
 }
 #endif
 

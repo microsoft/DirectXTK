@@ -156,7 +156,7 @@ void SoundEffectInstance::Impl::Play(bool loop)
     }
     else
     {
-        assert(mEffect != 0);
+        assert(mEffect != nullptr);
         mEffect->FillSubmitBuffer(buffer);
     }
 

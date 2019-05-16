@@ -484,7 +484,8 @@ void DGSLEffectFactory::Impl::CreatePixelShader(const wchar_t* name, ID3D11Pixel
         ThrowIfFailed(
             mDevice->CreatePixelShader(data.get(), dataSize, nullptr, pixelShader));
 
-        _Analysis_assume_(*pixelShader != 0);
+        assert(pixelShader != nullptr && *pixelShader != nullptr);
+        _Analysis_assume_(pixelShader != nullptr && *pixelShader != nullptr);
 
         if (mSharing && *name && it == mShaderCache.end())
         {

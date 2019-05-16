@@ -362,7 +362,8 @@ namespace
             pInputLayout)
         );
 
-        _Analysis_assume_(*pInputLayout != 0);
+        assert(pInputLayout != nullptr && *pInputLayout != nullptr);
+        _Analysis_assume_(pInputLayout != nullptr && *pInputLayout != nullptr);
 
         SetDebugObjectName(*pInputLayout, "ModelSDKMESH");
     }
