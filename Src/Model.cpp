@@ -105,7 +105,10 @@ void ModelMeshPart::DrawInstanced(
     // Draw the primitive.
     deviceContext->IASetPrimitiveTopology(primitiveType);
 
-    deviceContext->DrawIndexedInstanced(indexCount, instanceCount, startIndex, vertexOffset, startInstanceLocation);
+    deviceContext->DrawIndexedInstanced(
+        indexCount, instanceCount, startIndex,
+        vertexOffset,
+        startInstanceLocation);
 }
 
 

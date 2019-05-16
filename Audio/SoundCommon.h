@@ -63,7 +63,7 @@ namespace DirectX
 #endif
 
     // Helper for computing pan volume matrix
-    bool ComputePan(float pan, int channels, _Out_writes_(16) float* matrix);
+    bool ComputePan(float pan, unsigned int channels, _Out_writes_(16) float* matrix);
 
     // Helper class for implementing SoundEffectInstance
     class SoundEffectInstanceBase

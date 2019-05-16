@@ -676,26 +676,29 @@ void SpriteBatch::Impl::SortSprites()
     {
         case SpriteSortMode_Texture:
             // Sort by texture.
-            std::sort(mSortedSprites.begin(), mSortedSprites.begin() + mSpriteQueueCount, [](SpriteInfo const* x, SpriteInfo const* y) -> bool
-            {
-                return x->texture < y->texture;
-            });
+            std::sort(mSortedSprites.begin(), mSortedSprites.begin() + static_cast<int>(mSpriteQueueCount),
+                [](SpriteInfo const* x, SpriteInfo const* y) -> bool
+                {
+                    return x->texture < y->texture;
+                });
             break;
 
         case SpriteSortMode_BackToFront:
             // Sort back to front.
-            std::sort(mSortedSprites.begin(), mSortedSprites.begin() + mSpriteQueueCount, [](SpriteInfo const* x, SpriteInfo const* y) -> bool
-            {
-                return x->originRotationDepth.w > y->originRotationDepth.w;
-            });
+            std::sort(mSortedSprites.begin(), mSortedSprites.begin() + static_cast<int>(mSpriteQueueCount),
+                [](SpriteInfo const* x, SpriteInfo const* y) -> bool
+                {
+                    return x->originRotationDepth.w > y->originRotationDepth.w;
+                });
             break;
 
         case SpriteSortMode_FrontToBack:
             // Sort front to back.
-            std::sort(mSortedSprites.begin(), mSortedSprites.begin() + mSpriteQueueCount, [](SpriteInfo const* x, SpriteInfo const* y) -> bool
-            {
-                return x->originRotationDepth.w < y->originRotationDepth.w;
-            });
+            std::sort(mSortedSprites.begin(), mSortedSprites.begin() + static_cast<int>(mSpriteQueueCount),
+                [](SpriteInfo const* x, SpriteInfo const* y) -> bool
+                {
+                    return x->originRotationDepth.w < y->originRotationDepth.w;
+                });
             break;
 
         default:
@@ -888,7 +891,7 @@ void XM_CALLCONV SpriteBatch::Impl::RenderSprite(SpriteInfo const* sprite,
     static_assert(SpriteEffects_FlipHorizontally == 1 &&
                   SpriteEffects_FlipVertically == 2, "If you change these enum values, the mirroring implementation must be updated to match");
 
-    const unsigned int mirrorBits = flags & 3;
+    const unsigned int mirrorBits = flags & 3u;
 
     // Generate the four output vertices.
     for (size_t i = 0; i < VerticesPerSprite; i++)

@@ -609,7 +609,7 @@ namespace
         D3D11_TEXTURE2D_DESC desc;
         desc.Width = twidth;
         desc.Height = theight;
-        desc.MipLevels = (autogen) ? 0 : 1;
+        desc.MipLevels = (autogen) ? 0u : 1u;
         desc.ArraySize = 1;
         desc.Format = format;
         desc.SampleDesc.Count = 1;
@@ -643,7 +643,7 @@ namespace
                 SRVDesc.Format = desc.Format;
 
                 SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-                SRVDesc.Texture2D.MipLevels = (autogen) ? -1 : 1;
+                SRVDesc.Texture2D.MipLevels = (autogen) ? unsigned(-1) : 1u;
 
                 hr = d3dDevice->CreateShaderResourceView(tex, &SRVDesc, textureView);
                 if (FAILED(hr))

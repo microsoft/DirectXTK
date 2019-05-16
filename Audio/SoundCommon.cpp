@@ -568,7 +568,7 @@ void DirectX::CreateADPCM(WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int
 _Use_decl_annotations_
 void DirectX::CreateXWMA(WAVEFORMATEX* wfx, int sampleRate, int channels, int blockAlign, int avgBytes, bool wma3)
 {
-    wfx->wFormatTag = (wma3) ? WAVE_FORMAT_WMAUDIO3 : WAVE_FORMAT_WMAUDIO2;
+    wfx->wFormatTag = static_cast<WORD>((wma3) ? WAVE_FORMAT_WMAUDIO3 : WAVE_FORMAT_WMAUDIO2);
     wfx->nChannels = static_cast<WORD>(channels);
     wfx->nSamplesPerSec = static_cast<DWORD>(sampleRate);
     wfx->nAvgBytesPerSec = static_cast<DWORD>(avgBytes);
@@ -626,7 +626,7 @@ void DirectX::CreateXMA2(WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int 
 
 
 _Use_decl_annotations_
-bool DirectX::ComputePan(float pan, int channels, float* matrix)
+bool DirectX::ComputePan(float pan, unsigned int channels, float* matrix)
 {
     memset(matrix, 0, sizeof(float) * 16);
 

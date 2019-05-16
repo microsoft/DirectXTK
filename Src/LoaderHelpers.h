@@ -346,9 +346,9 @@ namespace DirectX
 
             // setup the pointers in the process request
             *header = hdr;
-            ptrdiff_t offset = sizeof(uint32_t)
+            auto offset = sizeof(uint32_t)
                 + sizeof(DDS_HEADER)
-                + (bDXT10Header ? sizeof(DDS_HEADER_DXT10) : 0);
+                + (bDXT10Header ? sizeof(DDS_HEADER_DXT10) : 0u);
             *bitData = ddsData + offset;
             *bitSize = ddsDataSize - offset;
 
@@ -465,8 +465,8 @@ namespace DirectX
 
             // setup the pointers in the process request
             *header = hdr;
-            ptrdiff_t offset = sizeof(uint32_t) + sizeof(DDS_HEADER)
-                + (bDXT10Header ? sizeof(DDS_HEADER_DXT10) : 0);
+            auto offset = sizeof(uint32_t) + sizeof(DDS_HEADER)
+                + (bDXT10Header ? sizeof(DDS_HEADER_DXT10) : 0u);
             *bitData = ddsData.get() + offset;
             *bitSize = fileInfo.EndOfFile.LowPart - offset;
 

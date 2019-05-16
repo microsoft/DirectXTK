@@ -1,4 +1,4 @@
-﻿//--------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------
 // File: Keyboard.cpp
 //
 // Copyright (c) Microsoft Corporation. All rights reserved.
@@ -150,7 +150,9 @@ void Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
     switch (vk)
     {
         case VK_SHIFT:
-            vk = MapVirtualKey((lParam & 0x00ff0000) >> 16, MAPVK_VSC_TO_VK_EX);
+            vk = static_cast<int>(
+                MapVirtualKey((static_cast<UINT>(lParam) & 0x00ff0000) >> 16u,
+                    MAPVK_VSC_TO_VK_EX));
             if (!down)
             {
                 // Workaround to ensure left vs. right shift get cleared when both were pressed at same time
@@ -160,11 +162,11 @@ void Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
             break;
 
         case VK_CONTROL:
-            vk = (lParam & 0x01000000) ? VK_RCONTROL : VK_LCONTROL;
+            vk = (static_cast<UINT>(lParam) & 0x01000000) ? VK_RCONTROL : VK_LCONTROL;
             break;
 
         case VK_MENU:
-            vk = (lParam & 0x01000000) ? VK_RMENU : VK_LMENU;
+            vk = (static_cast<UINT>(lParam) & 0x01000000) ? VK_RMENU : VK_LMENU;
             break;
     }
 

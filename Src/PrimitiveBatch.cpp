@@ -397,7 +397,10 @@ void PrimitiveBatchBase::Impl::FlushBatch()
         // Draw indexed geometry.
         mDeviceContext->Unmap(mIndexBuffer.Get(), 0);
 
-        mDeviceContext->DrawIndexed(static_cast<UINT>(mCurrentIndex - mBaseIndex), static_cast<UINT>(mBaseIndex), static_cast<UINT>(mBaseVertex));
+        mDeviceContext->DrawIndexed(
+            static_cast<UINT>(mCurrentIndex - mBaseIndex),
+            static_cast<UINT>(mBaseIndex),
+            static_cast<INT>(mBaseVertex));
     }
     else
     {

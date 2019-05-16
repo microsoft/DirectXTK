@@ -46,7 +46,7 @@ namespace DirectX
 
         uint32_t                                                indexCount;
         uint32_t                                                startIndex;
-        uint32_t                                                vertexOffset;
+        int32_t                                                 vertexOffset;
         uint32_t                                                vertexStride;
         D3D_PRIMITIVE_TOPOLOGY                                  primitiveType;
         DXGI_FORMAT                                             indexFormat;
