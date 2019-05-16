@@ -114,7 +114,7 @@ namespace DirectX
     };
 
     //----------------------------------------------------------------------------------
-    enum AUDIO_ENGINE_FLAGS
+    enum AUDIO_ENGINE_FLAGS : uint32_t
     {
         AudioEngine_Default             = 0x0,
 
@@ -129,7 +129,7 @@ namespace DirectX
 
     inline AUDIO_ENGINE_FLAGS operator|(AUDIO_ENGINE_FLAGS a, AUDIO_ENGINE_FLAGS b) { return static_cast<AUDIO_ENGINE_FLAGS>( static_cast<int>(a) | static_cast<int>(b) ); }
 
-    enum SOUND_EFFECT_INSTANCE_FLAGS
+    enum SOUND_EFFECT_INSTANCE_FLAGS : uint32_t
     {
         SoundEffectInstance_Default             = 0x0,
 
