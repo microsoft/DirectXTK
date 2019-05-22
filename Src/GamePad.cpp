@@ -83,7 +83,7 @@ namespace
 
 #pragma warning(push)
 #pragma warning(disable : 4471)
-#include <Windows.Gaming.Input.h>
+#include <windows.gaming.input.h>
 #pragma warning(pop)
 
 class GamePad::Impl
@@ -283,10 +283,10 @@ public:
             if (mGamePad[player])
             {
                 GamepadVibration vib;
-                vib.LeftMotor = leftMotor;
-                vib.RightMotor = rightMotor;
-                vib.LeftTrigger = leftTrigger;
-                vib.RightTrigger = rightTrigger;
+                vib.LeftMotor = double(leftMotor);
+                vib.RightMotor = double(rightMotor);
+                vib.LeftTrigger = double(leftTrigger);
+                vib.RightTrigger = double(rightTrigger);
                 HRESULT hr = mGamePad[player]->put_Vibration(vib);
 
                 if (SUCCEEDED(hr))
