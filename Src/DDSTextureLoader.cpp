@@ -19,7 +19,7 @@
 #include "DDSTextureLoader.h"
 
 #include "PlatformHelpers.h"
-#include "dds.h"
+#include "DDS.h"
 #include "DirectXHelpers.h"
 #include "LoaderHelpers.h"
 
