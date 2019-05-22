@@ -503,7 +503,7 @@ void BasicPostProcess::Process(_In_ ID3D11DeviceContext* deviceContext, _In_opt_
 // Shader control.
 void BasicPostProcess::SetEffect(Effect fx)
 {
-    if (fx < 0 || fx >= Effect_Max)
+    if (fx >= Effect_Max)
         throw std::out_of_range("Effect not defined");
 
     pImpl->fx = fx;

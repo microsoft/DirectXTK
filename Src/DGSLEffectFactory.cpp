@@ -155,7 +155,7 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateEffect(DGSLEffectFactory
         }
     }
 
-    return effect;
+    return std::move(effect);
 }
 
 
@@ -347,7 +347,7 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateDGSLEffect(DGSLEffectFac
         }
     }
 
-    return effect;
+    return std::move(effect);
 }
 
 

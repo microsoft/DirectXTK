@@ -1381,7 +1381,7 @@ void AudioEngine::SetMasterVolume(float volume)
 
 void AudioEngine::SetReverb(AUDIO_ENGINE_REVERB reverb)
 {
-    if (reverb < 0 || reverb >= Reverb_MAX)
+    if (reverb >= Reverb_MAX)
         throw std::out_of_range("AudioEngine::SetReverb");
 
     if (reverb == Reverb_Off)
@@ -1549,7 +1549,7 @@ X3DAUDIO_HANDLE& AudioEngine::Get3DHandle() const
 #pragma comment(lib,"runtimeobject.lib")
 #pragma warning(push)
 #pragma warning(disable: 4471)
-#include <Windows.Devices.Enumeration.h>
+#include <windows.devices.enumeration.h>
 #pragma warning(pop)
 #include <wrl.h>
 #endif

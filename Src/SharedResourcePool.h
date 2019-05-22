@@ -57,7 +57,7 @@ namespace DirectX
             auto entry = std::make_pair(key, newValue);
             mResourceMap->insert(entry);
 
-            return newValue;
+            return std::move(newValue);
         }
 
 

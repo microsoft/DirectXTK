@@ -880,7 +880,7 @@ GamePad::Impl* GamePad::Impl::s_gamePad = nullptr;
 // XInput
 //======================================================================================
 
-#include <xinput.h>
+#include <Xinput.h>
 
 static_assert(GamePad::MAX_PLAYER_COUNT == XUSER_MAX_COUNT, "xinput.h mismatch");
 
@@ -1169,7 +1169,7 @@ private:
         {
             if (!mConnected[j])
             {
-                LONGLONG delta = time - mLastReadTime[j];
+                LONGLONG delta = LONGLONG(time) - LONGLONG(mLastReadTime[j]);
 
                 LONGLONG interval = 1000;
                 if (j != player)

@@ -23,7 +23,7 @@
 #include <d3d11_1.h>
 #endif
 
-#include <ocidl.h>
+#include <OCIdl.h>
 
 #include <functional>
 #include <stdint.h>

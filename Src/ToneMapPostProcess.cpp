@@ -385,7 +385,7 @@ void ToneMapPostProcess::Process(_In_ ID3D11DeviceContext* deviceContext, _In_op
 // Shader control.
 void ToneMapPostProcess::SetOperator(Operator op)
 {
-    if (op < 0 || op >= Operator_Max)
+    if (op >= Operator_Max)
         throw std::out_of_range("Tonemap operator not defined");
 
     pImpl->op = op;
@@ -394,7 +394,7 @@ void ToneMapPostProcess::SetOperator(Operator op)
 
 void ToneMapPostProcess::SetTransferFunction(TransferFunction func)
 {
-    if (func < 0 || func >= TransferFunction_Max)
+    if (func >= TransferFunction_Max)
         throw std::out_of_range("Electro-optical transfer function not defined");
 
     pImpl->func = func;

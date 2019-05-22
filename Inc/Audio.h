@@ -14,7 +14,7 @@
 
 #include <objbase.h>
 #include <mmreg.h>
-#include <audioclient.h>
+#include <Audioclient.h>
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
 #include <xma2defs.h>

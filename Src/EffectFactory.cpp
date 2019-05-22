@@ -131,7 +131,7 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
             mEffectCacheSkinning.insert(v);
         }
 
-        return effect;
+        return std::move(effect);
     }
     else if (info.enableDualTexture)
     {
@@ -193,7 +193,7 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
             mEffectCacheDualTexture.insert(v);
         }
 
-        return effect;
+        return std::move(effect);
     }
     else if (info.enableNormalMaps && mUseNormalMapEffect)
     {
@@ -279,7 +279,7 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
             mEffectNormalMap.insert(v);
         }
 
-        return effect;
+        return std::move(effect);
     }
     else
     {
@@ -349,7 +349,7 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
             mEffectCache.insert(v);
         }
 
-        return effect;
+        return std::move(effect);
     }
 }
 

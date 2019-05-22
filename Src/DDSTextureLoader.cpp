@@ -172,7 +172,7 @@ namespace
             desc.Usage = usage;
             desc.BindFlags = bindFlags;
             desc.CPUAccessFlags = cpuAccessFlags;
-            desc.MiscFlags = miscFlags & ~D3D11_RESOURCE_MISC_TEXTURECUBE;
+            desc.MiscFlags = miscFlags & ~static_cast<unsigned int>(D3D11_RESOURCE_MISC_TEXTURECUBE);
 
             ID3D11Texture1D* tex = nullptr;
             hr = d3dDevice->CreateTexture1D(&desc,
@@ -189,13 +189,13 @@ namespace
                     if (arraySize > 1)
                     {
                         SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1DARRAY;
-                        SRVDesc.Texture1DArray.MipLevels = (!mipCount) ? -1 : desc.MipLevels;
+                        SRVDesc.Texture1DArray.MipLevels = (!mipCount) ? UINT(-1) : desc.MipLevels;
                         SRVDesc.Texture1DArray.ArraySize = static_cast<UINT>(arraySize);
                     }
                     else
                     {
                         SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1D;
-                        SRVDesc.Texture1D.MipLevels = (!mipCount) ? -1 : desc.MipLevels;
+                        SRVDesc.Texture1D.MipLevels = (!mipCount) ? UINT(-1) : desc.MipLevels;
                     }
 
                     hr = d3dDevice->CreateShaderResourceView(tex,
@@ -241,7 +241,7 @@ namespace
             }
             else
             {
-                desc.MiscFlags = miscFlags & ~D3D11_RESOURCE_MISC_TEXTURECUBE;
+                desc.MiscFlags = miscFlags & ~static_cast<unsigned int>(D3D11_RESOURCE_MISC_TEXTURECUBE);
             }
 
             ID3D11Texture2D* tex = nullptr;
@@ -261,7 +261,7 @@ namespace
                         if (arraySize > 6)
                         {
                             SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBEARRAY;
-                            SRVDesc.TextureCubeArray.MipLevels = (!mipCount) ? -1 : desc.MipLevels;
+                            SRVDesc.TextureCubeArray.MipLevels = (!mipCount) ? UINT(-1) : desc.MipLevels;
 
                             // Earlier we set arraySize to (NumCubes * 6)
                             SRVDesc.TextureCubeArray.NumCubes = static_cast<UINT>(arraySize / 6);
@@ -269,19 +269,19 @@ namespace
                         else
                         {
                             SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
-                            SRVDesc.TextureCube.MipLevels = (!mipCount) ? -1 : desc.MipLevels;
+                            SRVDesc.TextureCube.MipLevels = (!mipCount) ? UINT(-1) : desc.MipLevels;
                         }
                     }
                     else if (arraySize > 1)
                     {
                         SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
-                        SRVDesc.Texture2DArray.MipLevels = (!mipCount) ? -1 : desc.MipLevels;
+                        SRVDesc.Texture2DArray.MipLevels = (!mipCount) ? UINT(-1) : desc.MipLevels;
                         SRVDesc.Texture2DArray.ArraySize = static_cast<UINT>(arraySize);
                     }
                     else
                     {
                         SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-                        SRVDesc.Texture2D.MipLevels = (!mipCount) ? -1 : desc.MipLevels;
+                        SRVDesc.Texture2D.MipLevels = (!mipCount) ? UINT(-1) : desc.MipLevels;
                     }
 
                     hr = d3dDevice->CreateShaderResourceView(tex,
@@ -319,7 +319,7 @@ namespace
             desc.Usage = usage;
             desc.BindFlags = bindFlags;
             desc.CPUAccessFlags = cpuAccessFlags;
-            desc.MiscFlags = miscFlags & ~D3D11_RESOURCE_MISC_TEXTURECUBE;
+            desc.MiscFlags = miscFlags & ~UINT(D3D11_RESOURCE_MISC_TEXTURECUBE);
 
             ID3D11Texture3D* tex = nullptr;
             hr = d3dDevice->CreateTexture3D(&desc,
@@ -334,7 +334,7 @@ namespace
                     SRVDesc.Format = format;
 
                     SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE3D;
-                    SRVDesc.Texture3D.MipLevels = (!mipCount) ? -1 : desc.MipLevels;
+                    SRVDesc.Texture3D.MipLevels = (!mipCount) ? UINT(-1) : desc.MipLevels;
 
                     hr = d3dDevice->CreateShaderResourceView(tex,
                         &SRVDesc,
