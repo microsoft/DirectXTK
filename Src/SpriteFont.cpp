@@ -135,14 +135,14 @@ SpriteFont::Impl::Impl(_In_ ID3D11Device* device, _In_ BinaryReader* reader, boo
 
 // Constructs a SpriteFont from arbitrary user specified glyph data.
 _Use_decl_annotations_
-SpriteFont::Impl::Impl(ID3D11ShaderResourceView* texture, Glyph const* glyphs, size_t glyphCount, float lineSpacing)
-    : texture(texture),
-    glyphs(glyphs, glyphs + glyphCount),
+SpriteFont::Impl::Impl(ID3D11ShaderResourceView* itexture, Glyph const* iglyphs, size_t glyphCount, float ilineSpacing)
+    : texture(itexture),
+    glyphs(iglyphs, iglyphs + glyphCount),
     defaultGlyph(nullptr),
-    lineSpacing(lineSpacing),
+    lineSpacing(ilineSpacing),
     utfBufferSize(0)
 {
-    if (!std::is_sorted(glyphs, glyphs + glyphCount))
+    if (!std::is_sorted(iglyphs, iglyphs + glyphCount))
     {
         throw std::exception("Glyphs must be in ascending codepoint order");
     }
@@ -242,7 +242,7 @@ const wchar_t* SpriteFont::Impl::ConvertUTF8(_In_z_ const char *text)
     {
         // Compute required buffer size
         result = MultiByteToWideChar(CP_UTF8, 0, text, -1, nullptr, 0);
-        utfBufferSize = AlignUp(result, 1024);
+        utfBufferSize = AlignUp(static_cast<size_t>(result), 1024u);
         utfBuffer.reset(new wchar_t[utfBufferSize]);
 
         // Retry conversion

@@ -133,8 +133,8 @@ RECT DirectX::SimpleMath::Viewport::ComputeDisplayArea(DXGI_SCALING scaling, UIN
             // Output is displayed in the upper left corner of the window area
             rct.top = 0;
             rct.left = 0;
-            rct.right = std::min<UINT>(backBufferWidth, UINT(outputWidth));
-            rct.bottom = std::min<UINT>(backBufferHeight, UINT(outputHeight));
+            rct.right = std::min<LONG>(static_cast<LONG>(backBufferWidth), outputWidth);
+            rct.bottom = std::min<LONG>(static_cast<LONG>(backBufferHeight), outputHeight);
             break;
     }
 

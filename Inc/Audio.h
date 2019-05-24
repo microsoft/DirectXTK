@@ -14,7 +14,7 @@
 
 #include <objbase.h>
 #include <mmreg.h>
-#include <audioclient.h>
+#include <Audioclient.h>
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
 #include <xma2defs.h>
@@ -114,7 +114,7 @@ namespace DirectX
     };
 
     //----------------------------------------------------------------------------------
-    enum AUDIO_ENGINE_FLAGS
+    enum AUDIO_ENGINE_FLAGS : uint32_t
     {
         AudioEngine_Default             = 0x0,
 
@@ -129,7 +129,7 @@ namespace DirectX
 
     inline AUDIO_ENGINE_FLAGS operator|(AUDIO_ENGINE_FLAGS a, AUDIO_ENGINE_FLAGS b) { return static_cast<AUDIO_ENGINE_FLAGS>( static_cast<int>(a) | static_cast<int>(b) ); }
 
-    enum SOUND_EFFECT_INSTANCE_FLAGS
+    enum SOUND_EFFECT_INSTANCE_FLAGS : uint32_t
     {
         SoundEffectInstance_Default             = 0x0,
 
@@ -234,7 +234,7 @@ namespace DirectX
         uint32_t __cdecl GetChannelMask() const;
             // Returns the output channel mask
 
-        int __cdecl GetOutputChannels() const;
+        unsigned int __cdecl GetOutputChannels() const;
             // Returns the number of output channels
 
         bool __cdecl IsAudioDevicePresent() const;
@@ -300,36 +300,36 @@ namespace DirectX
 
         virtual ~WaveBank();
 
-        void __cdecl Play(int index);
-        void __cdecl Play(int index, float volume, float pitch, float pan);
+        void __cdecl Play(unsigned int index);
+        void __cdecl Play(unsigned int index, float volume, float pitch, float pan);
 
         void __cdecl Play(_In_z_ const char* name);
         void __cdecl Play(_In_z_ const char* name, float volume, float pitch, float pan);
 
-        std::unique_ptr<SoundEffectInstance> __cdecl CreateInstance(int index, SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default);
+        std::unique_ptr<SoundEffectInstance> __cdecl CreateInstance(unsigned int index, SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default);
         std::unique_ptr<SoundEffectInstance> __cdecl CreateInstance(_In_z_ const char* name, SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default);
 
         bool __cdecl IsPrepared() const;
         bool __cdecl IsInUse() const;
         bool __cdecl IsStreamingBank() const;
 
-        size_t __cdecl GetSampleSizeInBytes(int index) const;
+        size_t __cdecl GetSampleSizeInBytes(unsigned int index) const;
         // Returns size of wave audio data
 
-        size_t __cdecl GetSampleDuration(int index) const;
+        size_t __cdecl GetSampleDuration(unsigned int index) const;
         // Returns the duration in samples
 
-        size_t __cdecl GetSampleDurationMS(int index) const;
+        size_t __cdecl GetSampleDurationMS(unsigned int index) const;
         // Returns the duration in milliseconds
 
-        const WAVEFORMATEX* __cdecl GetFormat(int index, _Out_writes_bytes_(maxsize) WAVEFORMATEX* wfx, size_t maxsize) const;
+        const WAVEFORMATEX* __cdecl GetFormat(unsigned int index, _Out_writes_bytes_(maxsize) WAVEFORMATEX* wfx, size_t maxsize) const;
 
         int __cdecl Find(_In_z_ const char* name) const;
 
 #if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/ )
-        bool __cdecl FillSubmitBuffer(int index, _Out_ XAUDIO2_BUFFER& buffer, _Out_ XAUDIO2_BUFFER_WMA& wmaBuffer) const;
+        bool __cdecl FillSubmitBuffer(unsigned int index, _Out_ XAUDIO2_BUFFER& buffer, _Out_ XAUDIO2_BUFFER_WMA& wmaBuffer) const;
 #else
-        void __cdecl FillSubmitBuffer(int index, _Out_ XAUDIO2_BUFFER& buffer) const;
+        void __cdecl FillSubmitBuffer(unsigned int index, _Out_ XAUDIO2_BUFFER& buffer) const;
 #endif
 
     private:
@@ -626,10 +626,10 @@ namespace DirectX
 
         // Private constructors
         SoundEffectInstance(_In_ AudioEngine* engine, _In_ SoundEffect* effect, SOUND_EFFECT_INSTANCE_FLAGS flags);
-        SoundEffectInstance(_In_ AudioEngine* engine, _In_ WaveBank* effect, int index, SOUND_EFFECT_INSTANCE_FLAGS flags);
+        SoundEffectInstance(_In_ AudioEngine* engine, _In_ WaveBank* effect, unsigned int index, SOUND_EFFECT_INSTANCE_FLAGS flags);
 
         friend std::unique_ptr<SoundEffectInstance> __cdecl SoundEffect::CreateInstance(SOUND_EFFECT_INSTANCE_FLAGS);
-        friend std::unique_ptr<SoundEffectInstance> __cdecl WaveBank::CreateInstance(int, SOUND_EFFECT_INSTANCE_FLAGS);
+        friend std::unique_ptr<SoundEffectInstance> __cdecl WaveBank::CreateInstance(unsigned int, SOUND_EFFECT_INSTANCE_FLAGS);
     };
 
 

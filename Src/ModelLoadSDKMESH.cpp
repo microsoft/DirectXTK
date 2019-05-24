@@ -62,14 +62,14 @@ namespace
         if (flags & DUAL_TEXTURE && !mh.SpecularTexture[0])
         {
             DebugTrace("WARNING: Material '%s' has multiple texture coords but not multiple textures\n", mh.Name);
-            flags &= ~DUAL_TEXTURE;
+            flags &= ~static_cast<unsigned int>(DUAL_TEXTURE);
         }
 
         if (flags & NORMAL_MAPS)
         {
             if (!mh.NormalTexture[0])
             {
-                flags &= ~NORMAL_MAPS;
+                flags &= ~static_cast<unsigned int>(NORMAL_MAPS);
                 *normalName = 0;
             }
         }
@@ -149,7 +149,7 @@ namespace
         info.enableDualTexture = false;
         info.enableNormalMaps = true;
         info.biasedVertexNormals = (flags & BIASED_VERTEX_NORMALS) != 0;
-        info.alpha = (!mh.Alpha) ? 1.f : mh.Alpha;
+        info.alpha = (mh.Alpha == 0.f) ? 1.f : mh.Alpha;
 
         info.diffuseTexture = albetoTexture;
         info.specularTexture = rmaName;
@@ -362,7 +362,8 @@ namespace
             pInputLayout)
         );
 
-        _Analysis_assume_(*pInputLayout != 0);
+        assert(pInputLayout != nullptr && *pInputLayout != nullptr);
+        _Analysis_assume_(pInputLayout != nullptr && *pInputLayout != nullptr);
 
         SetDebugObjectName(*pInputLayout, "ModelSDKMESH");
     }
@@ -489,11 +490,11 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(ID3D11Device* d3dDevice
 
         if (flags & SKINNING)
         {
-            flags &= ~(DUAL_TEXTURE | NORMAL_MAPS);
+            flags &= ~static_cast<unsigned int>(DUAL_TEXTURE | NORMAL_MAPS);
         }
         if (flags & DUAL_TEXTURE)
         {
-            flags &= ~NORMAL_MAPS;
+            flags &= ~static_cast<unsigned int>(NORMAL_MAPS);
         }
 
         if (flags & USES_OBSOLETE_DEC3N)
@@ -673,7 +674,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(ID3D11Device* d3dDevice
 
             part->indexCount = static_cast<uint32_t>(subset.IndexCount);
             part->startIndex = static_cast<uint32_t>(subset.IndexStart);
-            part->vertexOffset = static_cast<uint32_t>(subset.VertexStart);
+            part->vertexOffset = static_cast<int32_t>(subset.VertexStart);
             part->vertexStride = static_cast<uint32_t>(vbArray[mh.VertexBuffers[0]].StrideBytes);
             part->indexFormat = (ibArray[mh.IndexBuffer].IndexType == DXUT::IT_32BIT) ? DXGI_FORMAT_R32_UINT : DXGI_FORMAT_R16_UINT;
             part->primitiveType = primType;

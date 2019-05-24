@@ -27,7 +27,7 @@
 #include "DirectXHelpers.h"
 
 #include "PlatformHelpers.h"
-#include "dds.h"
+#include "DDS.h"
 #include "LoaderHelpers.h"
 
 using Microsoft::WRL::ComPtr;

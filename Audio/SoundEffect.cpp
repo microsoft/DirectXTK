@@ -516,10 +516,10 @@ size_t SoundEffect::GetSampleDuration() const
             auto adpcmFmt = reinterpret_cast<const ADPCMWAVEFORMAT*>(pImpl->mWaveFormat);
 
             uint64_t duration = uint64_t(pImpl->mAudioBytes / adpcmFmt->wfx.nBlockAlign) * adpcmFmt->wSamplesPerBlock;
-            int partial = pImpl->mAudioBytes % adpcmFmt->wfx.nBlockAlign;
+            unsigned int partial = pImpl->mAudioBytes % adpcmFmt->wfx.nBlockAlign;
             if (partial)
             {
-                if (partial >= (7 * adpcmFmt->wfx.nChannels))
+                if (partial >= (7u * adpcmFmt->wfx.nChannels))
                     duration += (uint64_t(partial) * 2 / uint64_t(adpcmFmt->wfx.nChannels - 12));
             }
             return static_cast<size_t>(duration);

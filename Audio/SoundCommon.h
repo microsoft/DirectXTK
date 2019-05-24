@@ -63,7 +63,7 @@ namespace DirectX
 #endif
 
     // Helper for computing pan volume matrix
-    bool ComputePan(float pan, int channels, _Out_writes_(16) float* matrix);
+    bool ComputePan(float pan, unsigned int channels, _Out_writes_(16) float* matrix);
 
     // Helper class for implementing SoundEffectInstance
     class SoundEffectInstanceBase
@@ -99,7 +99,7 @@ namespace DirectX
             if (eng->GetChannelMask() & SPEAKER_LOW_FREQUENCY)
                 mFlags = flags | SoundEffectInstance_UseRedirectLFE;
             else
-                mFlags = static_cast<SOUND_EFFECT_INSTANCE_FLAGS>(static_cast<int>(flags) & ~SoundEffectInstance_UseRedirectLFE);
+                mFlags = static_cast<SOUND_EFFECT_INSTANCE_FLAGS>(static_cast<unsigned int>(flags) & ~static_cast<unsigned int>(SoundEffectInstance_UseRedirectLFE));
 
             memset(&mDSPSettings, 0, sizeof(X3DAUDIO_DSP_SETTINGS));
             assert(wfx != nullptr);
@@ -306,7 +306,7 @@ namespace DirectX
             if (engine->GetChannelMask() & SPEAKER_LOW_FREQUENCY)
                 mFlags = mFlags | SoundEffectInstance_UseRedirectLFE;
             else
-                mFlags = static_cast<SOUND_EFFECT_INSTANCE_FLAGS>(static_cast<int>(mFlags) & ~SoundEffectInstance_UseRedirectLFE);
+                mFlags = static_cast<SOUND_EFFECT_INSTANCE_FLAGS>(static_cast<unsigned int>(mFlags) & ~static_cast<unsigned int>(SoundEffectInstance_UseRedirectLFE));
 
             mDSPSettings.DstChannelCount = engine->GetOutputChannels();
         }

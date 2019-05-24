@@ -503,7 +503,7 @@ void BasicPostProcess::Process(_In_ ID3D11DeviceContext* deviceContext, _In_opt_
 // Shader control.
 void BasicPostProcess::SetEffect(Effect fx)
 {
-    if (fx < 0 || fx >= Effect_Max)
+    if (fx >= Effect_Max)
         throw std::out_of_range("Effect not defined");
 
     pImpl->fx = fx;
@@ -563,6 +563,9 @@ void BasicPostProcess::SetSourceTexture(_In_opt_ ID3D11ShaderResourceView* value
             break;
         }
 
+        case D3D11_RESOURCE_DIMENSION_UNKNOWN:
+        case D3D11_RESOURCE_DIMENSION_BUFFER:
+        case D3D11_RESOURCE_DIMENSION_TEXTURE3D:
         default:
             throw std::exception("Unsupported texture type");
         }

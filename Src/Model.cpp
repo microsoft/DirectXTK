@@ -105,7 +105,10 @@ void ModelMeshPart::DrawInstanced(
     // Draw the primitive.
     deviceContext->IASetPrimitiveTopology(primitiveType);
 
-    deviceContext->DrawIndexedInstanced(indexCount, instanceCount, startIndex, vertexOffset, startInstanceLocation);
+    deviceContext->DrawIndexedInstanced(
+        indexCount, instanceCount, startIndex,
+        vertexOffset,
+        startInstanceLocation);
 }
 
 
@@ -133,7 +136,8 @@ void ModelMeshPart::CreateInputLayout(ID3D11Device* d3dDevice, IEffect* ieffect,
         iinputLayout)
     );
 
-    _Analysis_assume_(*iinputLayout != 0);
+    assert(iinputLayout != nullptr && *iinputLayout != nullptr);
+    _Analysis_assume_(iinputLayout != nullptr && *iinputLayout != nullptr);
 }
 
 

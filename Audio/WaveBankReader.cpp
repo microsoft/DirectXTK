@@ -132,7 +132,7 @@ namespace
                 return 4; // MSADPCM_BITS_PER_SAMPLE == 4
 
             // wFormatTag must be TAG_PCM (2 bits can only represent 4 different values)
-            return (wBitsPerSample == BITDEPTH_16) ? 16 : 8;
+            return (wBitsPerSample == BITDEPTH_16) ? 16u : 8u;
         }
 
         DWORD BlockAlign() const
@@ -978,7 +978,7 @@ HRESULT WaveBankReader::Impl::GetFormat(uint32_t index, WAVEFORMATEX* pFormat, s
             if (maxsize < sizeof(WAVEFORMATEX))
                 return HRESULT_FROM_WIN32(ERROR_MORE_DATA);
 
-            pFormat->wFormatTag = (miniFmt.wBitsPerSample & 0x1) ? WAVE_FORMAT_WMAUDIO3 : WAVE_FORMAT_WMAUDIO2;
+            pFormat->wFormatTag = static_cast<WORD>((miniFmt.wBitsPerSample & 0x1) ? WAVE_FORMAT_WMAUDIO3 : WAVE_FORMAT_WMAUDIO2);
             pFormat->cbSize = 0;
             break;
 
@@ -1155,7 +1155,7 @@ HRESULT WaveBankReader::Impl::GetSeekTable(uint32_t index, const uint32_t** pDat
     switch (miniFmt.wFormatTag)
     {
         case MINIWAVEFORMAT::TAG_WMA:
-            tag = (miniFmt.wBitsPerSample & 0x1) ? WAVE_FORMAT_WMAUDIO3 : WAVE_FORMAT_WMAUDIO2;
+            tag = static_cast<uint32_t>((miniFmt.wBitsPerSample & 0x1) ? WAVE_FORMAT_WMAUDIO3 : WAVE_FORMAT_WMAUDIO2);
             break;
 
         case MINIWAVEFORMAT::TAG_XMA:
@@ -1313,7 +1313,7 @@ bool WaveBankReader::IsStreamingBank() const
 #if defined(_XBOX_ONE) && defined(_TITLE)
 bool WaveBankReader::HasXMA() const
 {
-    return (pImpl->m_xmaMemory != 0);
+    return (pImpl->m_xmaMemory != nullptr);
 }
 #endif
 

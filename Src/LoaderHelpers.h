@@ -193,6 +193,8 @@ namespace DirectX
 
             #endif // _XBOX_ONE && _TITLE
 
+                case DXGI_FORMAT_UNKNOWN:
+                case DXGI_FORMAT_FORCE_UINT:
                 default:
                     return 0;
             }
@@ -346,9 +348,9 @@ namespace DirectX
 
             // setup the pointers in the process request
             *header = hdr;
-            ptrdiff_t offset = sizeof(uint32_t)
+            auto offset = sizeof(uint32_t)
                 + sizeof(DDS_HEADER)
-                + (bDXT10Header ? sizeof(DDS_HEADER_DXT10) : 0);
+                + (bDXT10Header ? sizeof(DDS_HEADER_DXT10) : 0u);
             *bitData = ddsData + offset;
             *bitSize = ddsDataSize - offset;
 
@@ -465,8 +467,8 @@ namespace DirectX
 
             // setup the pointers in the process request
             *header = hdr;
-            ptrdiff_t offset = sizeof(uint32_t) + sizeof(DDS_HEADER)
-                + (bDXT10Header ? sizeof(DDS_HEADER_DXT10) : 0);
+            auto offset = sizeof(uint32_t) + sizeof(DDS_HEADER)
+                + (bDXT10Header ? sizeof(DDS_HEADER_DXT10) : 0u);
             *bitData = ddsData.get() + offset;
             *bitSize = fileInfo.EndOfFile.LowPart - offset;
 
@@ -896,6 +898,7 @@ namespace DirectX
                         case DDS_ALPHA_MODE_CUSTOM:
                             return mode;
 
+                        case DDS_ALPHA_MODE_UNKNOWN:
                         default:
                             break;
                     }

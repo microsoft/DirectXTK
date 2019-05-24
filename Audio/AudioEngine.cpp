@@ -464,9 +464,9 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
 
     hr = xaudio2->CreateMasteringVoice(&mMasterVoice,
-        (wfx) ? wfx->nChannels : XAUDIO2_DEFAULT_CHANNELS,
-                                       (wfx) ? wfx->nSamplesPerSec : XAUDIO2_DEFAULT_SAMPLERATE,
-                                       0, deviceId, nullptr, mCategory);
+        (wfx) ? wfx->nChannels : 0u /*XAUDIO2_DEFAULT_CHANNELS */,
+        (wfx) ? wfx->nSamplesPerSec : 0u /* XAUDIO2_DEFAULT_SAMPLERATE */,
+        0u, deviceId, nullptr, mCategory);
     if (FAILED(hr))
     {
         xaudio2.Reset();
@@ -653,8 +653,8 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
         mReverbEnabled = true;
 
         hr = xaudio2->CreateSubmixVoice(&mReverbVoice, 1, masterRate,
-            (mEngineFlags & AudioEngine_ReverbUseFilters) ? XAUDIO2_VOICE_USEFILTER : 0, 0,
-                                        nullptr, &effectChain);
+            (mEngineFlags & AudioEngine_ReverbUseFilters) ? XAUDIO2_VOICE_USEFILTER : 0u, 0u,
+            nullptr, &effectChain);
         if (FAILED(hr))
         {
             SAFE_DESTROY_VOICE(mMasterVoice);
@@ -1104,13 +1104,13 @@ void AudioEngine::Impl::AllocateVoice(const WAVEFORMATEX* wfx, SOUND_EFFECT_INST
             throw std::exception("Too many instance voices");
         }
 
-        UINT32 vflags = (flags & SoundEffectInstance_NoSetPitch) ? XAUDIO2_VOICE_NOPITCH : 0;
+        UINT32 vflags = (flags & SoundEffectInstance_NoSetPitch) ? XAUDIO2_VOICE_NOPITCH : 0u;
 
         HRESULT hr;
         if (flags & SoundEffectInstance_Use3D)
         {
             XAUDIO2_SEND_DESCRIPTOR sendDescriptors[2];
-            sendDescriptors[0].Flags = sendDescriptors[1].Flags = (flags & SoundEffectInstance_ReverbUseFilters) ? XAUDIO2_SEND_USEFILTER : 0;
+            sendDescriptors[0].Flags = sendDescriptors[1].Flags = (flags & SoundEffectInstance_ReverbUseFilters) ? XAUDIO2_SEND_USEFILTER : 0u;
             sendDescriptors[0].pOutputVoice = mMasterVoice;
             sendDescriptors[1].pOutputVoice = mReverbVoice;
             const XAUDIO2_VOICE_SENDS sendList = { mReverbVoice ? 2U : 1U, sendDescriptors };
@@ -1381,7 +1381,7 @@ void AudioEngine::SetMasterVolume(float volume)
 
 void AudioEngine::SetReverb(AUDIO_ENGINE_REVERB reverb)
 {
-    if (reverb < 0 || reverb >= Reverb_MAX)
+    if (reverb >= Reverb_MAX)
         throw std::out_of_range("AudioEngine::SetReverb");
 
     if (reverb == Reverb_Off)
@@ -1448,7 +1448,7 @@ uint32_t AudioEngine::GetChannelMask() const
 }
 
 
-int AudioEngine::GetOutputChannels() const
+unsigned int AudioEngine::GetOutputChannels() const
 {
     return pImpl->masterChannels;
 }
@@ -1549,7 +1549,7 @@ X3DAUDIO_HANDLE& AudioEngine::Get3DHandle() const
 #pragma comment(lib,"runtimeobject.lib")
 #pragma warning(push)
 #pragma warning(disable: 4471)
-#include <Windows.Devices.Enumeration.h>
+#include <windows.devices.enumeration.h>
 #pragma warning(pop)
 #include <wrl.h>
 #endif

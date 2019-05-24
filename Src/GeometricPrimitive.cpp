@@ -46,7 +46,8 @@ namespace
             device->CreateBuffer(&bufferDesc, &dataDesc, pBuffer)
         );
 
-        _Analysis_assume_(*pBuffer != 0);
+        assert(pBuffer != nullptr && *pBuffer != nullptr);
+        _Analysis_assume_(pBuffer != nullptr && *pBuffer != nullptr);
 
         SetDebugObjectName(*pBuffer, "DirectXTK:GeometricPrimitive");
     }
@@ -70,7 +71,8 @@ namespace
             pInputLayout)
         );
 
-        _Analysis_assume_(*pInputLayout != 0);
+        assert(pInputLayout != nullptr && *pInputLayout != nullptr);
+        _Analysis_assume_(pInputLayout != nullptr && *pInputLayout != nullptr);
 
         SetDebugObjectName(*pInputLayout, "DirectXTK:GeometricPrimitive");
     }
@@ -105,7 +107,7 @@ private:
 
         void PrepareForRendering(bool alpha, bool wireframe) const;
 
-        ComPtr<ID3D11DeviceContext> deviceContext;
+        ComPtr<ID3D11DeviceContext> mDeviceContext;
         std::unique_ptr<BasicEffect> effect;
 
         ComPtr<ID3D11InputLayout> inputLayoutTextured;
@@ -128,7 +130,7 @@ SharedResourcePool<ID3D11DeviceContext*, GeometricPrimitive::Impl::SharedResourc
 
 // Per-device-context constructor.
 GeometricPrimitive::Impl::SharedResources::SharedResources(_In_ ID3D11DeviceContext* deviceContext)
-    : deviceContext(deviceContext)
+    : mDeviceContext(deviceContext)
 {
     ComPtr<ID3D11Device> device;
     deviceContext->GetDevice(&device);
@@ -170,18 +172,18 @@ void GeometricPrimitive::Impl::SharedResources::PrepareForRendering(bool alpha, 
         depthStencilState = stateObjects->DepthDefault();
     }
 
-    deviceContext->OMSetBlendState(blendState, nullptr, 0xFFFFFFFF);
-    deviceContext->OMSetDepthStencilState(depthStencilState, 0);
+    mDeviceContext->OMSetBlendState(blendState, nullptr, 0xFFFFFFFF);
+    mDeviceContext->OMSetDepthStencilState(depthStencilState, 0);
 
     // Set the rasterizer state.
     if (wireframe)
-        deviceContext->RSSetState(stateObjects->Wireframe());
+        mDeviceContext->RSSetState(stateObjects->Wireframe());
     else
-        deviceContext->RSSetState(stateObjects->CullCounterClockwise());
+        mDeviceContext->RSSetState(stateObjects->CullCounterClockwise());
 
     ID3D11SamplerState* samplerState = stateObjects->LinearWrap();
 
-    deviceContext->PSSetSamplers(0, 1, &samplerState);
+    mDeviceContext->PSSetSamplers(0, 1, &samplerState);
 }
 
 
@@ -257,7 +259,7 @@ void GeometricPrimitive::Impl::Draw(
     std::function<void()>& setCustomState) const
 {
     assert(mResources);
-    auto deviceContext = mResources->deviceContext.Get();
+    auto deviceContext = mResources->mDeviceContext.Get();
     assert(deviceContext != nullptr);
 
     // Set state objects.
@@ -301,7 +303,7 @@ void GeometricPrimitive::Impl::CreateInputLayout(IEffect* effect, ID3D11InputLay
     assert(inputLayout != nullptr);
 
     assert(mResources);
-    auto deviceContext = mResources->deviceContext.Get();
+    auto deviceContext = mResources->mDeviceContext.Get();
     assert(deviceContext != nullptr);
 
     ComPtr<ID3D11Device> device;

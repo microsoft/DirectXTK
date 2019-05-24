@@ -120,7 +120,7 @@ std::shared_ptr<IEffect> PBREffectFactory::Impl::CreateEffect(IEffectFactory* fa
         mEffectCache.insert(v);
     }
 
-    return effect;
+    return std::move(effect);
 }
 
 _Use_decl_annotations_

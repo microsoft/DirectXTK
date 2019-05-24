@@ -33,7 +33,7 @@ namespace DirectX
     };
 
 
-    enum SpriteEffects
+    enum SpriteEffects : uint32_t
     {
         SpriteEffects_None = 0,
         SpriteEffects_FlipHorizontally = 1,

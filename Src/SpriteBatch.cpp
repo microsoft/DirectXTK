@@ -77,7 +77,7 @@ public:
         _In_opt_ RECT const* sourceRectangle,
         FXMVECTOR color,
         FXMVECTOR originRotationDepth,
-        int flags);
+        unsigned int flags);
 
 
     // Info about a single sprite that is waiting to be drawn.
@@ -88,12 +88,12 @@ public:
         XMFLOAT4A color;
         XMFLOAT4A originRotationDepth;
         ID3D11ShaderResourceView* texture;
-        int flags;
+        unsigned int flags;
 
 
         // Combine values from the public SpriteEffects enum with these internal-only flags.
-        static const int SourceInTexels = 4;
-        static const int DestSizeInPixels = 8;
+        static const unsigned int SourceInTexels = 4;
+        static const unsigned int DestSizeInPixels = 8;
 
         static_assert((SpriteEffects_FlipBoth & (SourceInTexels | DestSizeInPixels)) == 0, "Flag bits must not overlap");
     };
@@ -455,7 +455,7 @@ void XM_CALLCONV SpriteBatch::Impl::Draw(ID3D11ShaderResourceView* texture,
     RECT const* sourceRectangle,
     FXMVECTOR color,
     FXMVECTOR originRotationDepth,
-    int flags)
+    unsigned int flags)
 {
     if (!texture)
         throw std::exception("Texture cannot be null");
@@ -676,26 +676,29 @@ void SpriteBatch::Impl::SortSprites()
     {
         case SpriteSortMode_Texture:
             // Sort by texture.
-            std::sort(mSortedSprites.begin(), mSortedSprites.begin() + mSpriteQueueCount, [](SpriteInfo const* x, SpriteInfo const* y) -> bool
-            {
-                return x->texture < y->texture;
-            });
+            std::sort(mSortedSprites.begin(), mSortedSprites.begin() + static_cast<int>(mSpriteQueueCount),
+                [](SpriteInfo const* x, SpriteInfo const* y) -> bool
+                {
+                    return x->texture < y->texture;
+                });
             break;
 
         case SpriteSortMode_BackToFront:
             // Sort back to front.
-            std::sort(mSortedSprites.begin(), mSortedSprites.begin() + mSpriteQueueCount, [](SpriteInfo const* x, SpriteInfo const* y) -> bool
-            {
-                return x->originRotationDepth.w > y->originRotationDepth.w;
-            });
+            std::sort(mSortedSprites.begin(), mSortedSprites.begin() + static_cast<int>(mSpriteQueueCount),
+                [](SpriteInfo const* x, SpriteInfo const* y) -> bool
+                {
+                    return x->originRotationDepth.w > y->originRotationDepth.w;
+                });
             break;
 
         case SpriteSortMode_FrontToBack:
             // Sort front to back.
-            std::sort(mSortedSprites.begin(), mSortedSprites.begin() + mSpriteQueueCount, [](SpriteInfo const* x, SpriteInfo const* y) -> bool
-            {
-                return x->originRotationDepth.w < y->originRotationDepth.w;
-            });
+            std::sort(mSortedSprites.begin(), mSortedSprites.begin() + static_cast<int>(mSpriteQueueCount),
+                [](SpriteInfo const* x, SpriteInfo const* y) -> bool
+                {
+                    return x->originRotationDepth.w < y->originRotationDepth.w;
+                });
             break;
 
         default:
@@ -818,7 +821,7 @@ void XM_CALLCONV SpriteBatch::Impl::RenderSprite(SpriteInfo const* sprite,
     XMVECTOR originRotationDepth = XMLoadFloat4A(&sprite->originRotationDepth);
 
     float rotation = sprite->originRotationDepth.z;
-    int flags = sprite->flags;
+    unsigned int flags = sprite->flags;
 
     // Extract the source and destination sizes into separate vectors.
     XMVECTOR sourceSize = XMVectorSwizzle<2, 3, 2, 3>(source);
@@ -888,7 +891,7 @@ void XM_CALLCONV SpriteBatch::Impl::RenderSprite(SpriteInfo const* sprite,
     static_assert(SpriteEffects_FlipHorizontally == 1 &&
                   SpriteEffects_FlipVertically == 2, "If you change these enum values, the mirroring implementation must be updated to match");
 
-    const unsigned int mirrorBits = flags & 3;
+    const unsigned int mirrorBits = flags & 3u;
 
     // Generate the four output vertices.
     for (size_t i = 0; i < VerticesPerSprite; i++)
@@ -1078,7 +1081,7 @@ void XM_CALLCONV SpriteBatch::Draw(ID3D11ShaderResourceView* texture,
     
     XMVECTOR originRotationDepth = XMVectorSet(origin.x, origin.y, rotation, layerDepth);
 
-    pImpl->Draw(texture, destination, sourceRectangle, color, originRotationDepth, effects);
+    pImpl->Draw(texture, destination, sourceRectangle, color, originRotationDepth, static_cast<unsigned int>(effects));
 }
 
 
@@ -1097,7 +1100,7 @@ void XM_CALLCONV SpriteBatch::Draw(ID3D11ShaderResourceView* texture,
     
     XMVECTOR originRotationDepth = XMVectorSet(origin.x, origin.y, rotation, layerDepth);
     
-    pImpl->Draw(texture, destination, sourceRectangle, color, originRotationDepth, effects);
+    pImpl->Draw(texture, destination, sourceRectangle, color, originRotationDepth, static_cast<unsigned int>(effects));
 }
 
 
@@ -1127,7 +1130,7 @@ void XM_CALLCONV SpriteBatch::Draw(ID3D11ShaderResourceView* texture,
 
     XMVECTOR originRotationDepth = XMVectorPermute<0, 1, 4, 5>(origin, rotationDepth);
     
-    pImpl->Draw(texture, destination, sourceRectangle, color, originRotationDepth, effects);
+    pImpl->Draw(texture, destination, sourceRectangle, color, originRotationDepth, static_cast<unsigned int>(effects));
 }
 
 
@@ -1148,7 +1151,7 @@ void XM_CALLCONV SpriteBatch::Draw(ID3D11ShaderResourceView* texture,
 
     XMVECTOR originRotationDepth = XMVectorPermute<0, 1, 4, 5>(origin, rotationDepth);
 
-    pImpl->Draw(texture, destination, sourceRectangle, color, originRotationDepth, effects);
+    pImpl->Draw(texture, destination, sourceRectangle, color, originRotationDepth, static_cast<unsigned int>(effects));
 }
 
 
@@ -1175,7 +1178,7 @@ void XM_CALLCONV SpriteBatch::Draw(ID3D11ShaderResourceView* texture,
 
     XMVECTOR originRotationDepth = XMVectorSet(origin.x, origin.y, rotation, layerDepth);
     
-    pImpl->Draw(texture, destination, sourceRectangle, color, originRotationDepth, effects | Impl::SpriteInfo::DestSizeInPixels);
+    pImpl->Draw(texture, destination, sourceRectangle, color, originRotationDepth, static_cast<unsigned int>(effects) | Impl::SpriteInfo::DestSizeInPixels);
 }
 
 
