@@ -375,10 +375,12 @@ namespace
 //======================================================================================
 
 _Use_decl_annotations_
-std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(ID3D11Device* d3dDevice, const uint8_t* meshData, size_t dataSize, IEffectFactory& fxFactory, bool ccw, bool pmalpha)
+std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(ID3D11Device* d3dDevice, const uint8_t* meshData, size_t idataSize, IEffectFactory& fxFactory, bool ccw, bool pmalpha)
 {
     if (!d3dDevice || !meshData)
         throw std::exception("Device and meshData cannot be null");
+
+    uint64_t dataSize = idataSize;
 
     // File Headers
     if (dataSize < sizeof(DXUT::SDKMESH_HEADER))

@@ -109,11 +109,16 @@ source_group(Src REGULAR_EXPRESSION Src/*.*)
 target_include_directories( directxtk PUBLIC Inc )
 target_include_directories( directxtk PRIVATE Audio Src )
 
+target_compile_options( directxtk PRIVATE /EHsc /GR /fp:fast )
+
 if ( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
     target_compile_options( directxtk PRIVATE -Wall -Wpedantic -Wextra )
+    if (${CMAKE_SIZEOF_VOID_P} EQUAL "4")
+        target_compile_options( directxtk PRIVATE /arch:SSE2 )
+    endif()
 endif()
 if ( CMAKE_CXX_COMPILER_ID MATCHES "MSVC" )
-    target_compile_options( directxtk PRIVATE /Wall /fp:fast /permissive- /Zc:__cplusplus )
+    target_compile_options( directxtk PRIVATE /Wall /permissive- /Zc:__cplusplus )
 endif()
 
 # Windows 8 is used here to use XAudio 2.8 rather than require the legacy DirectX SDK
