@@ -184,6 +184,10 @@ namespace
 //--------------------------------------------------------------------------------------
 namespace DirectX
 {
+    bool _IsWIC2();
+    IWICImagingFactory* _GetWIC();
+        // Also used by ScreenGrab
+
     bool _IsWIC2()
     {
         return g_WIC2;
