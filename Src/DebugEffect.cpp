@@ -156,7 +156,7 @@ const int EffectBase<DebugEffectTraits>::PixelShaderIndices[] =
 
 // Global pool of per-deviceDebugEffect resources.
 template<>
-SharedResourcePool<ID3D11Device*, EffectBase<DebugEffectTraits>::DeviceResources> EffectBase<DebugEffectTraits>::deviceResourcesPool;
+SharedResourcePool<ID3D11Device*, EffectBase<DebugEffectTraits>::DeviceResources> EffectBase<DebugEffectTraits>::deviceResourcesPool = {};
 
 
 // Constructor.

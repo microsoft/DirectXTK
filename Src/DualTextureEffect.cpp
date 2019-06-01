@@ -120,7 +120,7 @@ const int EffectBase<DualTextureEffectTraits>::PixelShaderIndices[] =
 
 // Global pool of per-device DualTextureEffect resources.
 template<>
-SharedResourcePool<ID3D11Device*, EffectBase<DualTextureEffectTraits>::DeviceResources> EffectBase<DualTextureEffectTraits>::deviceResourcesPool;
+SharedResourcePool<ID3D11Device*, EffectBase<DualTextureEffectTraits>::DeviceResources> EffectBase<DualTextureEffectTraits>::deviceResourcesPool = {};
 
 
 // Constructor.

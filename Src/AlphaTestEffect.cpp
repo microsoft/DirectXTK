@@ -135,7 +135,7 @@ const int EffectBase<AlphaTestEffectTraits>::PixelShaderIndices[] =
 
 // Global pool of per-device AlphaTestEffect resources.
 template<>
-SharedResourcePool<ID3D11Device*, EffectBase<AlphaTestEffectTraits>::DeviceResources> EffectBase<AlphaTestEffectTraits>::deviceResourcesPool;
+SharedResourcePool<ID3D11Device*, EffectBase<AlphaTestEffectTraits>::DeviceResources> EffectBase<AlphaTestEffectTraits>::deviceResourcesPool = {};
 
 
 // Constructor.

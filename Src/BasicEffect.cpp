@@ -379,7 +379,7 @@ const int EffectBase<BasicEffectTraits>::PixelShaderIndices[] =
 
 // Global pool of per-device BasicEffect resources.
 template<>
-SharedResourcePool<ID3D11Device*, EffectBase<BasicEffectTraits>::DeviceResources> EffectBase<BasicEffectTraits>::deviceResourcesPool;
+SharedResourcePool<ID3D11Device*, EffectBase<BasicEffectTraits>::DeviceResources> EffectBase<BasicEffectTraits>::deviceResourcesPool = {};
 
 
 // Constructor.
