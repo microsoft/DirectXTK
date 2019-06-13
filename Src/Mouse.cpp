@@ -1097,17 +1097,17 @@ Mouse& Mouse::Get()
 
 void Mouse::ButtonStateTracker::Update(const Mouse::State& state)
 {
-    UPDATE_BUTTON_STATE(leftButton);
+    UPDATE_BUTTON_STATE(leftButton)
 
     assert((!state.leftButton && !lastState.leftButton) == (leftButton == UP));
     assert((state.leftButton && lastState.leftButton) == (leftButton == HELD));
     assert((!state.leftButton && lastState.leftButton) == (leftButton == RELEASED));
     assert((state.leftButton && !lastState.leftButton) == (leftButton == PRESSED));
 
-    UPDATE_BUTTON_STATE(middleButton);
-    UPDATE_BUTTON_STATE(rightButton);
-    UPDATE_BUTTON_STATE(xButton1);
-    UPDATE_BUTTON_STATE(xButton2);
+    UPDATE_BUTTON_STATE(middleButton)
+    UPDATE_BUTTON_STATE(rightButton)
+    UPDATE_BUTTON_STATE(xButton1)
+    UPDATE_BUTTON_STATE(xButton2)
 
     lastState = state;
 }

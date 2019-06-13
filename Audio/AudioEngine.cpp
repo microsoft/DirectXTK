@@ -477,7 +477,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
     hr = mMasterVoice->GetChannelMask(&dwChannelMask);
     if (FAILED(hr))
     {
-        SAFE_DESTROY_VOICE(mMasterVoice);
+        SAFE_DESTROY_VOICE(mMasterVoice)
         xaudio2.Reset();
         return hr;
     }
@@ -570,7 +570,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
         hr = mMasterVoice->SetVolume(mMasterVolume);
         if (FAILED(hr))
         {
-            SAFE_DESTROY_VOICE(mMasterVoice);
+            SAFE_DESTROY_VOICE(mMasterVoice)
             xaudio2.Reset();
             return hr;
         }
@@ -592,7 +592,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
     #endif
         if (FAILED(hr))
         {
-            SAFE_DESTROY_VOICE(mMasterVoice);
+            SAFE_DESTROY_VOICE(mMasterVoice)
             xaudio2.Reset();
             return hr;
         }
@@ -606,7 +606,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
         hr = mMasterVoice->SetEffectChain(&chain);
         if (FAILED(hr))
         {
-            SAFE_DESTROY_VOICE(mMasterVoice);
+            SAFE_DESTROY_VOICE(mMasterVoice)
             mVolumeLimiter.Reset();
             xaudio2.Reset();
             return hr;
@@ -616,7 +616,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
         hr = mMasterVoice->SetEffectParameters(0, &params, sizeof(params));
         if (FAILED(hr))
         {
-            SAFE_DESTROY_VOICE(mMasterVoice);
+            SAFE_DESTROY_VOICE(mMasterVoice)
             mVolumeLimiter.Reset();
             xaudio2.Reset();
             return hr;
@@ -641,7 +641,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
         hr = XAudio2CreateReverb(mReverbEffect.ReleaseAndGetAddressOf(), rflags);
         if (FAILED(hr))
         {
-            SAFE_DESTROY_VOICE(mMasterVoice);
+            SAFE_DESTROY_VOICE(mMasterVoice)
             mVolumeLimiter.Reset();
             xaudio2.Reset();
             return hr;
@@ -657,7 +657,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
             nullptr, &effectChain);
         if (FAILED(hr))
         {
-            SAFE_DESTROY_VOICE(mMasterVoice);
+            SAFE_DESTROY_VOICE(mMasterVoice)
             mReverbEffect.Reset();
             mVolumeLimiter.Reset();
             xaudio2.Reset();
@@ -669,8 +669,8 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
         hr = mReverbVoice->SetEffectParameters(0, &native, sizeof(XAUDIO2FX_REVERB_PARAMETERS));
         if (FAILED(hr))
         {
-            SAFE_DESTROY_VOICE(mReverbVoice);
-            SAFE_DESTROY_VOICE(mMasterVoice);
+            SAFE_DESTROY_VOICE(mReverbVoice)
+            SAFE_DESTROY_VOICE(mMasterVoice)
             mReverbEffect.Reset();
             mVolumeLimiter.Reset();
             xaudio2.Reset();
@@ -689,8 +689,8 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
     hr = X3DAudioInitialize(masterChannelMask, SPEEDOFSOUND, mX3DAudio);
     if (FAILED(hr))
     {
-        SAFE_DESTROY_VOICE(mReverbVoice);
-        SAFE_DESTROY_VOICE(mMasterVoice);
+        SAFE_DESTROY_VOICE(mReverbVoice)
+        SAFE_DESTROY_VOICE(mMasterVoice)
         mReverbEffect.Reset();
         mVolumeLimiter.Reset();
         xaudio2.Reset();
@@ -737,8 +737,8 @@ void AudioEngine::Impl::SetSilentMode()
 
     mVoiceInstances = 0;
 
-    SAFE_DESTROY_VOICE(mReverbVoice);
-    SAFE_DESTROY_VOICE(mMasterVoice);
+    SAFE_DESTROY_VOICE(mReverbVoice)
+    SAFE_DESTROY_VOICE(mMasterVoice)
 
     mReverbEffect.Reset();
     mVolumeLimiter.Reset();
@@ -776,8 +776,8 @@ void AudioEngine::Impl::Shutdown()
 
         mVoiceInstances = 0;
 
-        SAFE_DESTROY_VOICE(mReverbVoice);
-        SAFE_DESTROY_VOICE(mMasterVoice);
+        SAFE_DESTROY_VOICE(mReverbVoice)
+        SAFE_DESTROY_VOICE(mMasterVoice)
 
         mReverbEffect.Reset();
         mVolumeLimiter.Reset();

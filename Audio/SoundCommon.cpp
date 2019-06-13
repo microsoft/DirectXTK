@@ -591,7 +591,7 @@ void DirectX::CreateXMA2(WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int 
         throw std::invalid_argument("XMA2WAVEFORMATEX");
     }
 
-    if (!bytesPerBlock || (bytesPerBlock > XMA_READBUFFER_MAX_BYTES))
+    if ((bytesPerBlock < 1) || (bytesPerBlock > int(XMA_READBUFFER_MAX_BYTES)))
     {
         DebugTrace("XMA2 needs a valid bytes per block\n");
         throw std::invalid_argument("XMA2WAVEFORMATEX");
@@ -614,7 +614,7 @@ void DirectX::CreateXMA2(WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int 
     xmaFmt->ChannelMask = GetDefaultChannelMask(channels);
 
     xmaFmt->SamplesEncoded = static_cast<DWORD>(samplesEncoded);
-    xmaFmt->BytesPerBlock = bytesPerBlock;
+    xmaFmt->BytesPerBlock = static_cast<DWORD>(bytesPerBlock);
     xmaFmt->PlayBegin = xmaFmt->PlayLength =
         xmaFmt->LoopBegin = xmaFmt->LoopLength = xmaFmt->LoopCount = 0;
     xmaFmt->EncoderVersion = 4 /* XMAENCODER_VERSION_XMA2 */;

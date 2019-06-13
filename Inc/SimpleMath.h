@@ -107,8 +107,8 @@ namespace DirectX
         struct Vector2 : public XMFLOAT2
         {
             Vector2() noexcept : XMFLOAT2(0.f, 0.f) {}
-            XM_CONSTEXPR explicit Vector2(float x) : XMFLOAT2(x, x) {}
-            XM_CONSTEXPR Vector2(float _x, float _y) : XMFLOAT2(_x, _y) {}
+            XM_CONSTEXPR explicit Vector2(float ix) : XMFLOAT2(ix, ix) {}
+            XM_CONSTEXPR Vector2(float ix, float iy) : XMFLOAT2(ix, iy) {}
             explicit Vector2(_In_reads_(2) const float *pArray) : XMFLOAT2(pArray) {}
             Vector2(FXMVECTOR V) { XMStoreFloat2(this, V); }
             Vector2(const XMFLOAT2& V) { this->x = V.x; this->y = V.y; }
@@ -219,8 +219,8 @@ namespace DirectX
         struct Vector3 : public XMFLOAT3
         {
             Vector3() noexcept : XMFLOAT3(0.f, 0.f, 0.f) {}
-            XM_CONSTEXPR explicit Vector3(float x) : XMFLOAT3(x, x, x) {}
-            XM_CONSTEXPR Vector3(float _x, float _y, float _z) : XMFLOAT3(_x, _y, _z) {}
+            XM_CONSTEXPR explicit Vector3(float ix) : XMFLOAT3(ix, ix, ix) {}
+            XM_CONSTEXPR Vector3(float ix, float iy, float iz) : XMFLOAT3(ix, iy, iz) {}
             explicit Vector3(_In_reads_(3) const float *pArray) : XMFLOAT3(pArray) {}
             Vector3(FXMVECTOR V) { XMStoreFloat3(this, V); }
             Vector3(const XMFLOAT3& V) { this->x = V.x; this->y = V.y; this->z = V.z; }
@@ -338,8 +338,8 @@ namespace DirectX
         struct Vector4 : public XMFLOAT4
         {
             Vector4() noexcept : XMFLOAT4(0.f, 0.f, 0.f, 0.f) {}
-            XM_CONSTEXPR explicit Vector4(float x) : XMFLOAT4(x, x, x, x) {}
-            XM_CONSTEXPR Vector4(float _x, float _y, float _z, float _w) : XMFLOAT4(_x, _y, _z, _w) {}
+            XM_CONSTEXPR explicit Vector4(float ix) : XMFLOAT4(ix, ix, ix, ix) {}
+            XM_CONSTEXPR Vector4(float ix, float iy, float iz, float iw) : XMFLOAT4(ix, iy, iz, iw) {}
             explicit Vector4(_In_reads_(4) const float *pArray) : XMFLOAT4(pArray) {}
             Vector4(FXMVECTOR V) { XMStoreFloat4(this, V); }
             Vector4(const XMFLOAT4& V) { this->x = V.x; this->y = V.y; this->z = V.z; this->w = V.w; }
@@ -603,7 +603,7 @@ namespace DirectX
         struct Plane : public XMFLOAT4
         {
             Plane() noexcept : XMFLOAT4(0.f, 1.f, 0.f, 0.f) {}
-            XM_CONSTEXPR Plane(float _x, float _y, float _z, float _w) : XMFLOAT4(_x, _y, _z, _w) {}
+            XM_CONSTEXPR Plane(float ix, float iy, float iz, float iw) : XMFLOAT4(ix, iy, iz, iw) {}
             Plane(const Vector3& normal, float d) : XMFLOAT4(normal.x, normal.y, normal.z, d) {}
             Plane(const Vector3& point1, const Vector3& point2, const Vector3& point3);
             Plane(const Vector3& point, const Vector3& normal);
@@ -657,7 +657,7 @@ namespace DirectX
         struct Quaternion : public XMFLOAT4
         {
             Quaternion() noexcept : XMFLOAT4(0, 0, 0, 1.f) {}
-            XM_CONSTEXPR Quaternion(float _x, float _y, float _z, float _w) : XMFLOAT4(_x, _y, _z, _w) {}
+            XM_CONSTEXPR Quaternion(float ix, float iy, float iz, float iw) : XMFLOAT4(ix, iy, iz, iw) {}
             Quaternion(const Vector3& v, float scalar) : XMFLOAT4(v.x, v.y, v.z, scalar) {}
             explicit Quaternion(const Vector4& v) : XMFLOAT4(v.x, v.y, v.z, v.w) {}
             explicit Quaternion(_In_reads_(4) const float *pArray) : XMFLOAT4(pArray) {}

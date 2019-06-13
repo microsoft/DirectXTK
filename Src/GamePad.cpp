@@ -1307,25 +1307,25 @@ GamePad& GamePad::Get()
 
 void GamePad::ButtonStateTracker::Update(const GamePad::State& state)
 {
-    UPDATE_BUTTON_STATE(a);
+    UPDATE_BUTTON_STATE(a)
 
     assert((!state.buttons.a && !lastState.buttons.a) == (a == UP));
     assert((state.buttons.a && lastState.buttons.a) == (a == HELD));
     assert((!state.buttons.a && lastState.buttons.a) == (a == RELEASED));
     assert((state.buttons.a && !lastState.buttons.a) == (a == PRESSED));
 
-    UPDATE_BUTTON_STATE(b);
-    UPDATE_BUTTON_STATE(x);
-    UPDATE_BUTTON_STATE(y);
+    UPDATE_BUTTON_STATE(b)
+    UPDATE_BUTTON_STATE(x)
+    UPDATE_BUTTON_STATE(y)
 
-    UPDATE_BUTTON_STATE(leftStick);
-    UPDATE_BUTTON_STATE(rightStick);
+    UPDATE_BUTTON_STATE(leftStick)
+    UPDATE_BUTTON_STATE(rightStick)
 
-    UPDATE_BUTTON_STATE(leftShoulder);
-    UPDATE_BUTTON_STATE(rightShoulder);
+    UPDATE_BUTTON_STATE(leftShoulder)
+    UPDATE_BUTTON_STATE(rightShoulder)
 
-    UPDATE_BUTTON_STATE(back);
-    UPDATE_BUTTON_STATE(start);
+    UPDATE_BUTTON_STATE(back)
+    UPDATE_BUTTON_STATE(start)
 
     dpadUp = static_cast<ButtonState>((!!state.dpad.up) | ((!!state.dpad.up ^ !!lastState.dpad.up) << 1));
     dpadDown = static_cast<ButtonState>((!!state.dpad.down) | ((!!state.dpad.down ^ !!lastState.dpad.down) << 1));
