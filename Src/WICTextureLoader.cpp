@@ -839,7 +839,14 @@ HRESULT DirectX::CreateWICTextureFromMemoryEx(
     }
 
     if (!d3dDevice || !wicData || (!texture && !textureView))
+    {
         return E_INVALIDARG;
+    }
+
+    if (textureView && !(bindFlags & D3D11_BIND_SHADER_RESOURCE))
+    {
+        return E_INVALIDARG;
+    }
 
     if (!wicDataSize)
         return E_FAIL;
@@ -927,7 +934,14 @@ _Use_decl_annotations_
     }
 
     if (!d3dDevice || !wicData || (!texture && !textureView))
+    {
         return E_INVALIDARG;
+    }
+
+    if (textureView && !(bindFlags & D3D11_BIND_SHADER_RESOURCE))
+    {
+        return E_INVALIDARG;
+    }
 
     if (!wicDataSize)
         return E_FAIL;
@@ -1048,7 +1062,14 @@ HRESULT DirectX::CreateWICTextureFromFileEx(
     }
 
     if (!d3dDevice || !fileName || (!texture && !textureView))
+    {
         return E_INVALIDARG;
+    }
+
+    if (textureView && !(bindFlags & D3D11_BIND_SHADER_RESOURCE))
+    {
+        return E_INVALIDARG;
+    }
 
     auto pWIC = _GetWIC();
     if (!pWIC)
@@ -1117,7 +1138,14 @@ _Use_decl_annotations_
     }
 
     if (!d3dDevice || !fileName || (!texture && !textureView))
+    {
         return E_INVALIDARG;
+    }
+
+    if (textureView && !(bindFlags & D3D11_BIND_SHADER_RESOURCE))
+    {
+        return E_INVALIDARG;
+    }
 
     auto pWIC = _GetWIC();
     if (!pWIC)
