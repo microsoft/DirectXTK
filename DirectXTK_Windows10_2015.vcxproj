@@ -53,7 +53,7 @@
     <ClInclude Include="Src\Bezier.h" />
     <ClInclude Include="Src\BinaryReader.h" />
     <ClInclude Include="Src\ConstantBuffer.h" />
-    <ClInclude Include="Src\dds.h" />
+    <ClInclude Include="Src\DDS.h" />
     <ClInclude Include="Src\DemandCreate.h" />
     <ClInclude Include="Src\EffectCommon.h" />
     <ClInclude Include="Src\Geometry.h" />

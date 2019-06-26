@@ -104,7 +104,7 @@
     <ClInclude Include="Src\BinaryReader.h">
       <Filter>Src\Shared</Filter>
     </ClInclude>
-    <ClInclude Include="Src\dds.h">
+    <ClInclude Include="Src\DDS.h">
       <Filter>Src\Shared</Filter>
     </ClInclude>
     <ClInclude Include="Src\DemandCreate.h">
