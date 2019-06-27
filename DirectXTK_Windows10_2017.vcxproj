@@ -611,50 +611,50 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>Bin\Windows10\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Windows10\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>Bin\Windows10_2017\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\Windows10_2017\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DirectXTK</TargetName>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>Bin\Windows10\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Windows10\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>Bin\Windows10_2017\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\Windows10_2017\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DirectXTK</TargetName>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <OutDir>Bin\Windows10\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Windows10\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>Bin\Windows10_2017\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\Windows10_2017\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DirectXTK</TargetName>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
-    <OutDir>Bin\Windows10\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Windows10\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>Bin\Windows10_2017\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\Windows10_2017\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DirectXTK</TargetName>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <OutDir>Bin\Windows10\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Windows10\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>Bin\Windows10_2017\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\Windows10_2017\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DirectXTK</TargetName>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
-    <OutDir>Bin\Windows10\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Windows10\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>Bin\Windows10_2017\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\Windows10_2017\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DirectXTK</TargetName>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>Bin\Windows10\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Windows10\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>Bin\Windows10_2017\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\Windows10_2017\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DirectXTK</TargetName>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>Bin\Windows10\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>Bin\Windows10\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>Bin\Windows10_2017\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Bin\Windows10_2017\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DirectXTK</TargetName>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
