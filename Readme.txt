@@ -4,7 +4,7 @@ DirectXTK - the DirectX Tool Kit for DirectX 11
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-May 30, 2019
+June 30, 2019
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for
 writing Direct3D 11 C++ code for Universal Windows Platform (UWP) apps for
@@ -111,6 +111,12 @@ RELEASE NOTES
 ---------------
 RELEASE HISTORY
 ---------------
+
+June 30, 2019
+    Additional validation for Ex texture loaders
+    Clang/LLVM warning cleanup
+    Renamed DirectXTK_Windows10.vcxproj to _Windows10_2017.vcxproj
+    Added VS 2019 UWP project
 
 May 30, 2019
     PBREffect updated with additional set methods
