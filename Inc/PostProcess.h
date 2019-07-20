@@ -158,8 +158,7 @@ namespace DirectX
         {
             Linear,             // Pass-through
             SRGB,               // sRGB (Rec.709 and approximate sRGB display curve)
-            ST2084,             // HDR10 (Rec.2020 color primaries and ST.2084 display curve),
-            Static,             // HDR10 (with no mapping)
+            ST2084,             // HDR10 (Rec.2020 color primaries and ST.2084 display curve)
             TransferFunction_Max
         };
 

@@ -125,10 +125,6 @@ float3 HDR10(float3 color)
     return LinearToST2084(normalized);
 }
 
-float3 HDR10_Direct(float3 color) {
-    return color * paperWhiteNits / 10000.f;
-}
-
 float4 PSHDR10(VSInputTx pin) : SV_Target0
 {
     float4 hdr = HDRTexture.Sample(Sampler, pin.TexCoord);
@@ -136,12 +132,6 @@ float4 PSHDR10(VSInputTx pin) : SV_Target0
     return float4(rgb, hdr.a);
 }
 
-float4 PSHDR10_Direct(VSInputTx pin) : SV_Target0
-{
-    float4 hdr = HDRTexture.Sample(Sampler, pin.TexCoord);
-    float3 rgb = HDR10_Direct(hdr.xyz);
-    return float4(rgb, hdr.a);
-}
 
 //--------------------------------------------------------------------------------------
 struct MRTOut
