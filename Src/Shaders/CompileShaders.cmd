@@ -36,7 +36,8 @@ set PCFXC="%WindowsSdkDir%bin\%WindowsSDKVersion%\x86\fxc.exe"
 if exist %PCFXC% goto continue
 set PCFXC="%WindowsSdkDir%bin\x86\fxc.exe"
 if exist %PCFXC% goto continue
-
+set PCFXC="C:\Program Files (x86)\Windows Kits\10\bin\10.0.17763.0\x86\fxc.exe"
+if exist %PCFXC% goto continue
 set PCFXC=fxc.exe
 
 :continue
@@ -234,6 +235,7 @@ call :CompileShaderSM4%1 ToneMap ps PSSaturate_SRGB
 call :CompileShaderSM4%1 ToneMap ps PSReinhard_SRGB
 call :CompileShaderSM4%1 ToneMap ps PSACESFilmic_SRGB
 call :CompileShaderSM4%1 ToneMap ps PSHDR10
+call :CompileShaderSM4%1 ToneMap ps PSHDR10_Direct
 
 if NOT %1.==xbox. goto skipxboxonly
 
