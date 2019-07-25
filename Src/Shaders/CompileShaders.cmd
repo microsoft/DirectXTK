@@ -234,6 +234,8 @@ call :CompileShaderSM4%1 ToneMap ps PSSaturate_SRGB
 call :CompileShaderSM4%1 ToneMap ps PSReinhard_SRGB
 call :CompileShaderSM4%1 ToneMap ps PSACESFilmic_SRGB
 call :CompileShaderSM4%1 ToneMap ps PSHDR10
+call :CompileShaderSM4%1 ToneMap ps PSHDR10_2020
+call :CompileShaderSM4%1 ToneMap ps PSScaled
 
 if NOT %1.==xbox. goto skipxboxonly
 

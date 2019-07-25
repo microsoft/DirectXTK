@@ -30,8 +30,8 @@ namespace
     const int PixelShaderCount = 15;
     const int ShaderPermutationCount = 24;
 #else
-    const int PixelShaderCount = 9;
-    const int ShaderPermutationCount = 12;
+    const int PixelShaderCount = 11;
+    const int ShaderPermutationCount = 20;
 #endif
 
     // Constant buffer layout. Must match the shader!
@@ -78,6 +78,8 @@ namespace
     #include "Shaders/Compiled/ToneMap_PSReinhard_SRGB.inc"
     #include "Shaders/Compiled/ToneMap_PSACESFilmic_SRGB.inc"
     #include "Shaders/Compiled/ToneMap_PSHDR10.inc"
+    #include "Shaders/Compiled/ToneMap_PSHDR10_2020.inc"
+    #include "Shaders/Compiled/ToneMap_PSScaled.inc"
 #endif
 }
 
@@ -100,6 +102,8 @@ namespace
         { ToneMap_PSReinhard_SRGB,          sizeof(ToneMap_PSReinhard_SRGB) },
         { ToneMap_PSACESFilmic_SRGB,        sizeof(ToneMap_PSACESFilmic_SRGB) },
         { ToneMap_PSHDR10,                  sizeof(ToneMap_PSHDR10) },
+        { ToneMap_PSHDR10_2020,             sizeof(ToneMap_PSHDR10_2020) },
+        { ToneMap_PSScaled,                 sizeof(ToneMap_PSScaled) },
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
         // Shaders that generate both HDR10 and GameDVR SDR signals via Multiple Render Targets.
@@ -133,6 +137,18 @@ namespace
         8,  // HDR10
         8,  // HDR10
         8,  // HDR10
+
+        // HDR 2020
+        9,
+        9,
+        9,
+        9,
+
+        // Scaled
+        10,
+        10,
+        10,
+        10,
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
         // MRT Linear EOTF
