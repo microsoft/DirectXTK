@@ -810,7 +810,7 @@ struct WaveFile
         data{},
         conv(0),
         miniFmt{}
-        {}
+    {}
 
     WaveFile(WaveFile&&) = default;
     WaveFile& operator= (WaveFile&&) = default;
@@ -835,7 +835,7 @@ namespace
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
-const SValue g_pOptions [] =
+const SValue g_pOptions[] =
 {
     { L"r",         OPT_RECURSIVE },
     { L"s",         OPT_STREAMING },
@@ -999,7 +999,7 @@ namespace
     {
         switch (dwChannelMask)
         {
-        case 0x00000004 /*SPEAKER_MONO*/: return "Mono"; // 
+        case 0x00000004 /*SPEAKER_MONO*/: return "Mono";
         case 0x00000003 /* SPEAKER_STEREO */: return "Stereo";
         case 0x0000000B /* SPEAKER_2POINT1 */: return "2.1";
         case 0x00000107 /* SPEAKER_SURROUND */: return "Surround";
@@ -1137,46 +1137,46 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
                 break;
 
             case OPT_FILELIST:
+            {
+                std::wifstream inFile(pValue);
+                if (!inFile)
                 {
-                    std::wifstream inFile(pValue);
+                    wprintf(L"Error opening -flist file %ls\n", pValue);
+                    return 1;
+                }
+                wchar_t fname[1024] = {};
+                for (;;)
+                {
+                    inFile >> fname;
                     if (!inFile)
+                        break;
+
+                    if (*fname == L'#')
                     {
-                        wprintf(L"Error opening -flist file %ls\n", pValue);
+                        // Comment
+                    }
+                    else if (*fname == L'-')
+                    {
+                        wprintf(L"Command-line arguments not supported in -flist file\n");
                         return 1;
                     }
-                    wchar_t fname[1024] = {};
-                    for (;;)
+                    else if (wcspbrk(fname, L"?*") != nullptr)
                     {
-                        inFile >> fname;
-                        if (!inFile)
-                            break;
-
-                        if (*fname == L'#')
-                        {
-                            // Comment
-                        }
-                        else if (*fname == L'-')
-                        {
-                            wprintf(L"Command-line arguments not supported in -flist file\n");
-                            return 1;
-                        }
-                        else if (wcspbrk(fname, L"?*") != nullptr)
-                        {
-                            wprintf(L"Wildcards not supported in -flist file\n");
-                            return 1;
-                        }
-                        else
-                        {
-                            SConversion conv;
-                            wcscpy_s(conv.szSrc, MAX_PATH, fname);
-                            conversion.push_back(conv);
-                        }
-
-                        inFile.ignore(1000, '\n');
+                        wprintf(L"Wildcards not supported in -flist file\n");
+                        return 1;
                     }
-                    inFile.close();
+                    else
+                    {
+                        SConversion conv;
+                        wcscpy_s(conv.szSrc, MAX_PATH, fname);
+                        conversion.push_back(conv);
+                    }
+
+                    inFile.ignore(1000, '\n');
                 }
-                break;
+                inFile.close();
+            }
+            break;
             }
         }
         else if (wcspbrk(pArg, L"?*") != nullptr)
@@ -1247,7 +1247,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         HRESULT hr = DirectX::LoadWAVAudioFromFileEx(pConv->szSrc, waveData, wave.data);
         if (FAILED(hr))
         {
-            wprintf(L"\nERROR: Failed to load file (%08X)\n", hr);
+            wprintf(L"\nERROR: Failed to load file (%08X)\n", static_cast<unsigned int>(hr));
             return 1;
         }
 
