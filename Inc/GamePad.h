@@ -25,7 +25,7 @@
 #include <memory>
 #include <stdint.h>
 
-#if (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
+#if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/)
 #include <string>
 #endif
 
@@ -44,7 +44,7 @@ namespace DirectX
 
         virtual ~GamePad();
 
-    #if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/ ) || defined(_XBOX_ONE)
+    #if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/) || defined(_XBOX_ONE)
         static const int MAX_PLAYER_COUNT = 8;
     #else
         static const int MAX_PLAYER_COUNT = 4;
@@ -165,15 +165,15 @@ namespace DirectX
                 ARCADE_PAD = 19,
             };
 
-            bool            connected;
-            Type            gamepadType;
+            bool                connected;
+            Type                gamepadType;
         #if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/)
-            std::wstring    id;
-
-            Capabilities() noexcept : connected(false), gamepadType(UNKNOWN) {}
+            std::wstring        id;
         #else
-            uint64_t        id;
+            uint64_t            id;
         #endif
+
+            Capabilities() noexcept : connected(false), gamepadType(UNKNOWN), id{} {}
 
             bool __cdecl IsConnected() const { return connected; }
         };
