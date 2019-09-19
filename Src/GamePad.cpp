@@ -266,6 +266,8 @@ public:
                         }
                     }
 
+                // Requires the Windows 10 Creators Update SDK (15063)
+                #if defined(NTDDI_WIN10_RS2) && (NTDDI_VERSION >= NTDDI_WIN10_RS2)
                     ComPtr<IRawGameControllerStatics> rawStatics;
                     hr = GetActivationFactory(HStringReference(RuntimeClass_Windows_Gaming_Input_RawGameController).Get(), rawStatics.GetAddressOf());
                     if (SUCCEEDED(hr))
@@ -281,6 +283,7 @@ public:
                                 caps.pid = 0;
                         }
                     }
+                #endif // NTDDI_WIN10_RS2
                 }
                 return;
             }
