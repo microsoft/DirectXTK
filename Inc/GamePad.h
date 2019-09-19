@@ -172,8 +172,10 @@ namespace DirectX
         #else
             uint64_t            id;
         #endif
+            uint16_t            vid;
+            uint16_t            pid;
 
-            Capabilities() noexcept : connected(false), gamepadType(UNKNOWN), id{} {}
+            Capabilities() noexcept : connected(false), gamepadType(UNKNOWN), id{}, vid(0), pid(0) {}
 
             bool __cdecl IsConnected() const { return connected; }
         };
