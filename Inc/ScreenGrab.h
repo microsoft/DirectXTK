@@ -1,3 +1,4 @@
+
 //--------------------------------------------------------------------------------------
 // File: ScreenGrab.h
 //
@@ -24,9 +25,7 @@
 #endif
 
 #include <OCIdl.h>
-
 #include <functional>
-#include <stdint.h>
 
 
 namespace DirectX

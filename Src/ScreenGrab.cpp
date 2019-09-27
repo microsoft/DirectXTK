@@ -611,8 +611,8 @@ HRESULT DirectX::SaveWICTextureToFile(
         // Conversion required to write
         ComPtr<IWICBitmap> source;
         hr = pWIC->CreateBitmapFromMemory(desc.Width, desc.Height, pfGuid,
-                                          mapped.RowPitch, mapped.RowPitch * desc.Height,
-                                          static_cast<BYTE*>(mapped.pData), source.GetAddressOf());
+            mapped.RowPitch, mapped.RowPitch * desc.Height,
+            static_cast<BYTE*>(mapped.pData), source.GetAddressOf());
         if (FAILED(hr))
         {
             pContext->Unmap(pStaging.Get(), 0);
