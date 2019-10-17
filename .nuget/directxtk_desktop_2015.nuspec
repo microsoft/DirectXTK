@@ -29,7 +29,7 @@ SpriteBatch - simple &amp; efficient 2D sprite rendering
 SpriteFont - bitmap based text rendering
 VertexTypes - structures for commonly used vertex data formats
 WICTextureLoader - WIC-based image file texture loader</description>
-        <releaseNotes>Matches the August 21, 2019 release on GitHub.
+        <releaseNotes>Matches the October 17, 2019 release on GitHub.
 
 DirectX Tool Kit for Audio in this package uses XAudio 2.8 which requires Windows 8 or later. To support Windows 7, you need to build DirectXTKAudioDX.lib using the legacy DirectX SDK and deploy it via the legacy DXSETUP.</releaseNotes>
         <projectUrl>http://go.microsoft.com/fwlink/?LinkId=248929</projectUrl>
