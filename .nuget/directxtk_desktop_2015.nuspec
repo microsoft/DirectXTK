@@ -33,7 +33,7 @@ WICTextureLoader - WIC-based image file texture loader</description>
 
 DirectX Tool Kit for Audio in this package uses XAudio 2.8 which requires Windows 8 or later. To support Windows 7, you need to build DirectXTKAudioDX.lib using the legacy DirectX SDK and deploy it via the legacy DXSETUP.</releaseNotes>
         <projectUrl>http://go.microsoft.com/fwlink/?LinkId=248929</projectUrl>
-        <iconUrl>https://github.com/Microsoft/DirectXTK/wiki/X_jpg.jpg</iconUrl>
+        <icon>images\icon.jpg</icon>
         <license type="expression">MIT</license>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <copyright>© Microsoft Corporation. All rights reserved.</copyright>
@@ -67,6 +67,8 @@ DirectX Tool Kit for Audio in this package uses XAudio 2.8 which requires Window
         <file target="lib\x64\Release" src="Audio\Bin\Desktop_2015\x64\Release\*.pdb" />
 
         <file src=".nuget/directxtk_desktop_2015.targets" target="build\native" />
+
+        <file src=".nuget/icon.jpg" target="images\" />
       
     </files>
 </package>
