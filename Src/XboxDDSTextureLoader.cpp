@@ -494,6 +494,11 @@ namespace
             return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
         }
 
+        if (xboxext->tileMode == uint32_t(-1))
+        {
+            return HRESULT_FROM_WIN32(ERROR_INVALID_DATA);
+        }
+
         // Bound sizes
         if (mipCount > D3D11_REQ_MIP_LEVELS)
         {
