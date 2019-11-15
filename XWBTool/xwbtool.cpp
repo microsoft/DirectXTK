@@ -574,7 +574,7 @@ namespace
 
                 if (!xmaFmt->BytesPerBlock || (xmaFmt->BytesPerBlock > 8386560 /*XMA_READBUFFER_MAX_BYTES*/))
                 {
-                    wprintf(L"ERROR: XMA2 BytesPerBlock (%u) is invalid\n", xmaFmt->BytesPerBlock);
+                    wprintf(L"ERROR: XMA2 BytesPerBlock (%lu) is invalid\n", xmaFmt->BytesPerBlock);
                     return false;
                 }
 
@@ -583,7 +583,7 @@ namespace
                     auto channelBits = ChannelsSpecifiedInMask(xmaFmt->ChannelMask);
                     if (channelBits != wfx->nChannels)
                     {
-                        wprintf(L"ERROR: XMA2 nChannels=%u but ChannelMask (%08X) has %u bits set\n",
+                        wprintf(L"ERROR: XMA2 nChannels=%lu but ChannelMask (%08X) has %u bits set\n",
                             xmaFmt->ChannelMask, wfx->nChannels, channelBits);
                         return false;
                     }
@@ -603,13 +603,13 @@ namespace
 
                 if ((xmaFmt->PlayBegin + xmaFmt->PlayLength) > xmaFmt->SamplesEncoded)
                 {
-                    wprintf(L"ERROR: XMA2 play region too large (%u + %u > %u)", xmaFmt->PlayBegin, xmaFmt->PlayLength, xmaFmt->SamplesEncoded);
+                    wprintf(L"ERROR: XMA2 play region too large (%lu + %lu > %lu)", xmaFmt->PlayBegin, xmaFmt->PlayLength, xmaFmt->SamplesEncoded);
                     return false;
                 }
 
                 if ((xmaFmt->LoopBegin + xmaFmt->LoopLength) > xmaFmt->SamplesEncoded)
                 {
-                    wprintf(L"ERROR: XMA2 loop region too large (%u + %u > %u)", xmaFmt->LoopBegin, xmaFmt->LoopLength, xmaFmt->SamplesEncoded);
+                    wprintf(L"ERROR: XMA2 loop region too large (%lu + %lu > %lu)", xmaFmt->LoopBegin, xmaFmt->LoopLength, xmaFmt->SamplesEncoded);
                     return false;
                 }
 
@@ -811,6 +811,9 @@ struct WaveFile
         conv(0),
         miniFmt{}
     {}
+
+    WaveFile(WaveFile&) = delete;
+    WaveFile& operator= (WaveFile&) = delete;
 
     WaveFile(WaveFile&&) = default;
     WaveFile& operator= (WaveFile&&) = default;
@@ -1020,11 +1023,11 @@ namespace
         {
             auto wext = reinterpret_cast<const WAVEFORMATEXTENSIBLE*>(&wave.data.wfx);
 
-            wprintf(L" (%hs %u channels, %u-bit, %u Hz, CMask:%hs)", GetFormatTagName(wave.data.wfx->wFormatTag), wave.data.wfx->nChannels, wave.data.wfx->wBitsPerSample, wave.data.wfx->nSamplesPerSec, ChannelDesc(wext->dwChannelMask));
+            wprintf(L" (%hs %u channels, %u-bit, %lu Hz, CMask:%hs)", GetFormatTagName(wave.data.wfx->wFormatTag), wave.data.wfx->nChannels, wave.data.wfx->wBitsPerSample, wave.data.wfx->nSamplesPerSec, ChannelDesc(wext->dwChannelMask));
         }
         else
         {
-            wprintf(L" (%hs %u channels, %u-bit, %u Hz)", GetFormatTagName(wave.data.wfx->wFormatTag), wave.data.wfx->nChannels, wave.data.wfx->wBitsPerSample, wave.data.wfx->nSamplesPerSec);
+            wprintf(L" (%hs %u channels, %u-bit, %lu Hz)", GetFormatTagName(wave.data.wfx->wFormatTag), wave.data.wfx->nChannels, wave.data.wfx->wBitsPerSample, wave.data.wfx->nSamplesPerSec);
         }
     }
 
@@ -1329,7 +1332,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         }
         if (reason & 0x4)
         {
-            wprintf(L"- Audio wave data is too large to encode in compact wavebank (%llu > %llu).\n", waveOffset, (MAX_COMPACT_DATA_SEGMENT_SIZE * uint64_t(dwAlignment)));
+            wprintf(L"- Audio wave data is too large to encode in compact wavebank (%llu > %llu).\n", waveOffset, (uint64_t(MAX_COMPACT_DATA_SEGMENT_SIZE) * uint64_t(dwAlignment)));
         }
         return 1;
     }
@@ -1471,7 +1474,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     hFile.reset(safe_handle(CreateFileW(szOutputFile, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr)));
     if (!hFile)
     {
-        wprintf(L"ERROR: Failed opening output file %ls, %u\n", szOutputFile, GetLastError());
+        wprintf(L"ERROR: Failed opening output file %ls, %lu\n", szOutputFile, GetLastError());
         return 1;
     }
 
@@ -1527,7 +1530,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
 
     if (SetFilePointer(hFile.get(), LONG(segmentOffset), nullptr, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
     {
-        wprintf(L"ERROR: Failed writing bank data to %ls, SFP %u\n", szOutputFile, GetLastError());
+        wprintf(L"ERROR: Failed writing bank data to %ls, SFP %lu\n", szOutputFile, GetLastError());
         return 1;
     }
 
@@ -1535,7 +1538,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     if (!WriteFile(hFile.get(), &data, sizeof(data), &bytesWritten, nullptr)
         || bytesWritten != sizeof(data))
     {
-        wprintf(L"ERROR: Failed writing bank data to %ls, %u\n", szOutputFile, GetLastError());
+        wprintf(L"ERROR: Failed writing bank data to %ls, %lu\n", szOutputFile, GetLastError());
         return 1;
     }
 
@@ -1548,7 +1551,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
 
     if (SetFilePointer(hFile.get(), LONG(segmentOffset), nullptr, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
     {
-        wprintf(L"ERROR: Failed writing entry metadata to %ls, SFP %u\n", szOutputFile, GetLastError());
+        wprintf(L"ERROR: Failed writing entry metadata to %ls, SFP %lu\n", szOutputFile, GetLastError());
         return 1;
     }
 
@@ -1556,7 +1559,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     if (!WriteFile(hFile.get(), entries.get(), entryBytes, &bytesWritten, nullptr)
         || bytesWritten != entryBytes)
     {
-        wprintf(L"ERROR: Failed writing entry metadata to %ls, %u\n", szOutputFile, GetLastError());
+        wprintf(L"ERROR: Failed writing entry metadata to %ls, %lu\n", szOutputFile, GetLastError());
         return 1;
     }
 
@@ -1577,7 +1580,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
 
         if (SetFilePointer(hFile.get(), LONG(segmentOffset), nullptr, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
         {
-            wprintf(L"ERROR: Failed writing seek tables to %ls, SFP %u\n", szOutputFile, GetLastError());
+            wprintf(L"ERROR: Failed writing seek tables to %ls, SFP %lu\n", szOutputFile, GetLastError());
             return 1;
         }
 
@@ -1624,7 +1627,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         if (!WriteFile(hFile.get(), seekTables.get(), seekLen, &bytesWritten, nullptr)
             || bytesWritten != seekLen)
         {
-            wprintf(L"ERROR: Failed writing seek tables to %ls, %u\n", szOutputFile, GetLastError());
+            wprintf(L"ERROR: Failed writing seek tables to %ls, %lu\n", szOutputFile, GetLastError());
             return 1;
         }
 
@@ -1644,7 +1647,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
 
         if (SetFilePointer(hFile.get(), LONG(segmentOffset), nullptr, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
         {
-            wprintf(L"ERROR: Failed writing friendly entry names to %ls, SFP %u\n", szOutputFile, GetLastError());
+            wprintf(L"ERROR: Failed writing friendly entry names to %ls, SFP %lu\n", szOutputFile, GetLastError());
             return 1;
         }
 
@@ -1652,7 +1655,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         if (!WriteFile(hFile.get(), entryNames.get(), entryNamesBytes, &bytesWritten, nullptr)
             || bytesWritten != entryNamesBytes)
         {
-            wprintf(L"ERROR: Failed writing friendly entry names to %ls, %u\n", szOutputFile, GetLastError());
+            wprintf(L"ERROR: Failed writing friendly entry names to %ls, %lu\n", szOutputFile, GetLastError());
             return 1;
         }
 
@@ -1671,14 +1674,14 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     {
         if (SetFilePointer(hFile.get(), LONG(segmentOffset), nullptr, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
         {
-            wprintf(L"ERROR: Failed writing audio data to %ls, SFP %u\n", szOutputFile, GetLastError());
+            wprintf(L"ERROR: Failed writing audio data to %ls, SFP %lu\n", szOutputFile, GetLastError());
             return 1;
         }
 
         if (!WriteFile(hFile.get(), it->data.startAudio, it->data.audioBytes, &bytesWritten, nullptr)
             || bytesWritten != it->data.audioBytes)
         {
-            wprintf(L"ERROR: Failed writing audio data to %ls, %u\n", szOutputFile, GetLastError());
+            wprintf(L"ERROR: Failed writing audio data to %ls, %lu\n", szOutputFile, GetLastError());
             return 1;
         }
 
@@ -1698,26 +1701,26 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     // Commit wave bank
     if (SetFilePointer(hFile.get(), LONG(segmentOffset), nullptr, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
     {
-        wprintf(L"ERROR: Failed committing output file %ls, EOF %u\n", szOutputFile, GetLastError());
+        wprintf(L"ERROR: Failed committing output file %ls, EOF %lu\n", szOutputFile, GetLastError());
         return 1;
     }
 
     if (!SetEndOfFile(hFile.get()))
     {
-        wprintf(L"ERROR: Failed committing output file %ls, EOF %u\n", szOutputFile, GetLastError());
+        wprintf(L"ERROR: Failed committing output file %ls, EOF %lu\n", szOutputFile, GetLastError());
         return 1;
     }
 
     if (SetFilePointer(hFile.get(), 0, nullptr, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
     {
-        wprintf(L"ERROR: Failed committing output file %ls, HDR %u\n", szOutputFile, GetLastError());
+        wprintf(L"ERROR: Failed committing output file %ls, HDR %lu\n", szOutputFile, GetLastError());
         return 1;
     }
 
     if (!WriteFile(hFile.get(), &header, sizeof(header), &bytesWritten, nullptr)
         || bytesWritten != sizeof(header))
     {
-        wprintf(L"ERROR: Failed committing output file %ls, HDR %u\n", szOutputFile, GetLastError());
+        wprintf(L"ERROR: Failed committing output file %ls, HDR %lu\n", szOutputFile, GetLastError());
         return 1;
     }
 
