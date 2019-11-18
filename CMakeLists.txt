@@ -115,6 +115,8 @@ string(REPLACE "/W3" "/Wall" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 string(REPLACE "/W3" "/Wall" CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
 string(REPLACE "/W3" "/Wall" CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
 
+# Model uses dynamic_cast, so we need /GR (Enable RTTI)
+
 add_executable(xwbtool
     xwbtool/xwbtool.cpp
     Audio/WAVFileReader.cpp
@@ -122,7 +124,7 @@ add_executable(xwbtool
 target_include_directories(xwbtool PRIVATE Audio Src)
 source_group(xwbtool REGULAR_EXPRESSION XWBTool/*.*)
 
-target_compile_options(${PROJECT_NAME} PRIVATE /GR /fp:fast)
+target_compile_options(${PROJECT_NAME} PRIVATE /fp:fast)
 target_compile_options(xwbtool PRIVATE /fp:fast)
 
 if (${CMAKE_SIZEOF_VOID_P} EQUAL "4")
