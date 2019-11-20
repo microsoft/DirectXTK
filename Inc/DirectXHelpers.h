@@ -26,6 +26,8 @@
 #endif
 
 #include <exception>
+
+#include <assert.h>
 #include <stdint.h>
 
 //
