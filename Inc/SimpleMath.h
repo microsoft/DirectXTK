@@ -30,6 +30,11 @@
 #define XM_CONSTEXPR
 #endif
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wfloat-equal"
+#endif
+
 
 namespace DirectX
 {
@@ -1071,3 +1076,7 @@ namespace std
     };
 
 } // namespace std
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
