@@ -17,6 +17,11 @@
 namespace ABI { namespace Windows { namespace UI { namespace Core { struct ICoreWindow; } } } }
 #endif
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunknown-pragmas"
+#endif
+
 
 namespace DirectX
 {
@@ -485,3 +490,7 @@ namespace DirectX
         std::unique_ptr<Impl> pImpl;
     };
 }
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
