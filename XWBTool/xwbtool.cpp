@@ -1362,7 +1362,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         {
         case MINIWAVEFORMAT::TAG_XMA:
             if (it->data.seekCount > 0)
-                seekEntries += it->data.seekCount + 1;
+                seekEntries += size_t(it->data.seekCount) + 1u;
 
             duration = reinterpret_cast<const XMA2WAVEFORMATEX*>(wfx)->SamplesEncoded;
             break;
@@ -1383,7 +1383,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         case MINIWAVEFORMAT::TAG_WMA:
             if (it->data.seekCount > 0)
             {
-                seekEntries += it->data.seekCount + 1;
+                seekEntries += size_t(it->data.seekCount) + 1u;
                 duration = it->data.seek[it->data.seekCount - 1] / uint32_t(2 * wfx->nChannels);
             }
             break;
@@ -1597,10 +1597,10 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
 
                 for (uint32_t j = 0; j < it->data.seekCount; ++j)
                 {
-                    seekTables[baseoffset + j + 1] = it->data.seek[j];
+                    seekTables[size_t(baseoffset) + size_t(j) + 1u] = it->data.seek[j];
                 }
 
-                seekoffset += it->data.seekCount + 1;
+                seekoffset += size_t(it->data.seekCount) + 1u;
             }
             else if (it->miniFmt.wFormatTag == MINIWAVEFORMAT::TAG_XMA)
             {
@@ -1611,7 +1611,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
 
                 for (uint32_t j = 0; j < it->data.seekCount; ++j)
                 {
-                    seekTables[baseoffset + j + 1] = _byteswap_ulong(it->data.seek[j]);
+                    seekTables[size_t(baseoffset) + size_t(j) + 1u] = _byteswap_ulong(it->data.seek[j]);
                 }
 
                 seekoffset += it->data.seekCount + 1;
