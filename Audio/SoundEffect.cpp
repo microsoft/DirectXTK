@@ -498,13 +498,13 @@ bool SoundEffect::IsInUse() const
 }
 
 
-size_t SoundEffect::GetSampleSizeInBytes() const
+size_t SoundEffect::GetSampleSizeInBytes() const noexcept
 {
     return pImpl->mAudioBytes;
 }
 
 
-size_t SoundEffect::GetSampleDuration() const
+size_t SoundEffect::GetSampleDuration() const noexcept
 {
     if (!pImpl->mWaveFormat || !pImpl->mWaveFormat->nChannels)
         return 0;
@@ -556,7 +556,7 @@ size_t SoundEffect::GetSampleDuration() const
 }
 
 
-size_t SoundEffect::GetSampleDurationMS() const
+size_t SoundEffect::GetSampleDurationMS() const noexcept
 {
     if (!pImpl->mWaveFormat || !pImpl->mWaveFormat->nSamplesPerSec)
         return 0;
@@ -566,7 +566,7 @@ size_t SoundEffect::GetSampleDurationMS() const
 }
 
 
-const WAVEFORMATEX* SoundEffect::GetFormat() const
+const WAVEFORMATEX* SoundEffect::GetFormat() const noexcept
 {
     return pImpl->mWaveFormat;
 }

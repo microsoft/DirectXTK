@@ -86,7 +86,7 @@ public:
 
     void SubmitBuffer(_In_reads_bytes_(audioBytes) const uint8_t* pAudioData, uint32_t offset, size_t audioBytes);
 
-    const WAVEFORMATEX* GetFormat() const { return &mWaveFormat; }
+    const WAVEFORMATEX* GetFormat() const noexcept { return &mWaveFormat; }
 
     // IVoiceNotify
     virtual void __cdecl OnBufferEnd() override
@@ -328,7 +328,7 @@ SoundState DynamicSoundEffectInstance::GetState()
 }
 
 
-size_t DynamicSoundEffectInstance::GetSampleDuration(size_t bytes) const
+size_t DynamicSoundEffectInstance::GetSampleDuration(size_t bytes) const noexcept
 {
     auto wfx = pImpl->GetFormat();
     if (!wfx || !wfx->wBitsPerSample || !wfx->nChannels)
@@ -339,7 +339,7 @@ size_t DynamicSoundEffectInstance::GetSampleDuration(size_t bytes) const
 }
 
 
-size_t DynamicSoundEffectInstance::GetSampleDurationMS(size_t bytes) const
+size_t DynamicSoundEffectInstance::GetSampleDurationMS(size_t bytes) const noexcept
 {
     auto wfx = pImpl->GetFormat();
     if (!wfx || !wfx->nAvgBytesPerSec)
@@ -349,7 +349,7 @@ size_t DynamicSoundEffectInstance::GetSampleDurationMS(size_t bytes) const
 }
 
 
-size_t DynamicSoundEffectInstance::GetSampleSizeInBytes(uint64_t duration) const
+size_t DynamicSoundEffectInstance::GetSampleSizeInBytes(uint64_t duration) const noexcept
 {
     auto wfx = pImpl->GetFormat();
     if (!wfx || !wfx->nSamplesPerSec)
@@ -359,13 +359,13 @@ size_t DynamicSoundEffectInstance::GetSampleSizeInBytes(uint64_t duration) const
 }
 
 
-int DynamicSoundEffectInstance::GetPendingBufferCount() const
+int DynamicSoundEffectInstance::GetPendingBufferCount() const noexcept
 {
     return pImpl->mBase.GetPendingBufferCount();
 }
 
 
-const WAVEFORMATEX* DynamicSoundEffectInstance::GetFormat() const
+const WAVEFORMATEX* DynamicSoundEffectInstance::GetFormat() const noexcept
 {
     return pImpl->GetFormat();
 }

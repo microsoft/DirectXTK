@@ -48,6 +48,7 @@
 #include <DirectXMath.h>
 
 #include <stdint.h>
+
 #include <functional>
 #include <memory>
 #include <string>
@@ -210,7 +211,7 @@ namespace DirectX
             // Returns true if succesfully reset, false if in 'silent mode' due to no default device
             // Note: One shots are lost, all SoundEffectInstances are in the STOPPED state after successful reset
 
-        void __cdecl Suspend();
+        void __cdecl Suspend() noexcept;
         void __cdecl Resume();
             // Suspend/resumes audio processing (i.e. global pause/resume)
 
@@ -264,10 +265,10 @@ namespace DirectX
         void __cdecl UnregisterNotify(_In_ IVoiceNotify* notify, bool usesOneShots, bool usesUpdate);
 
         // XAudio2 interface access
-        IXAudio2* __cdecl GetInterface() const;
-        IXAudio2MasteringVoice* __cdecl GetMasterVoice() const;
-        IXAudio2SubmixVoice* __cdecl GetReverbVoice() const;
-        X3DAUDIO_HANDLE& __cdecl Get3DHandle() const;
+        IXAudio2* __cdecl GetInterface() const noexcept;
+        IXAudio2MasteringVoice* __cdecl GetMasterVoice() const noexcept;
+        IXAudio2SubmixVoice* __cdecl GetReverbVoice() const noexcept;
+        X3DAUDIO_HANDLE& __cdecl Get3DHandle() const noexcept;
 
         // Static functions
         struct RendererDetail
@@ -313,16 +314,16 @@ namespace DirectX
         bool __cdecl IsInUse() const;
         bool __cdecl IsStreamingBank() const;
 
-        size_t __cdecl GetSampleSizeInBytes(unsigned int index) const;
+        size_t __cdecl GetSampleSizeInBytes(unsigned int index) const noexcept;
         // Returns size of wave audio data
 
-        size_t __cdecl GetSampleDuration(unsigned int index) const;
+        size_t __cdecl GetSampleDuration(unsigned int index) const noexcept;
         // Returns the duration in samples
 
-        size_t __cdecl GetSampleDurationMS(unsigned int index) const;
+        size_t __cdecl GetSampleDurationMS(unsigned int index) const noexcept;
         // Returns the duration in milliseconds
 
-        const WAVEFORMATEX* __cdecl GetFormat(unsigned int index, _Out_writes_bytes_(maxsize) WAVEFORMATEX* wfx, size_t maxsize) const;
+        const WAVEFORMATEX* __cdecl GetFormat(unsigned int index, _Out_writes_bytes_(maxsize) WAVEFORMATEX* wfx, size_t maxsize) const noexcept;
 
         int __cdecl Find(_In_z_ const char* name) const;
 
@@ -381,16 +382,16 @@ namespace DirectX
 
         bool __cdecl IsInUse() const;
 
-        size_t __cdecl GetSampleSizeInBytes() const;
+        size_t __cdecl GetSampleSizeInBytes() const noexcept;
         // Returns size of wave audio data
 
-        size_t __cdecl GetSampleDuration() const;
+        size_t __cdecl GetSampleDuration() const noexcept;
         // Returns the duration in samples
 
-        size_t __cdecl GetSampleDurationMS() const;
+        size_t __cdecl GetSampleDurationMS() const noexcept;
         // Returns the duration in milliseconds
 
-        const WAVEFORMATEX* __cdecl GetFormat() const;
+        const WAVEFORMATEX* __cdecl GetFormat() const noexcept;
 
 #if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/)
         bool __cdecl FillSubmitBuffer(_Out_ XAUDIO2_BUFFER& buffer, _Out_ XAUDIO2_BUFFER_WMA& wmaBuffer) const;
@@ -665,18 +666,18 @@ namespace DirectX
 
         SoundState __cdecl GetState();
 
-        size_t __cdecl GetSampleDuration(size_t bytes) const;
+        size_t __cdecl GetSampleDuration(size_t bytes) const noexcept;
         // Returns duration in samples of a buffer of a given size
 
-        size_t __cdecl GetSampleDurationMS(size_t bytes) const;
+        size_t __cdecl GetSampleDurationMS(size_t bytes) const noexcept;
         // Returns duration in milliseconds of a buffer of a given size
 
-        size_t __cdecl GetSampleSizeInBytes(uint64_t duration) const;
+        size_t __cdecl GetSampleSizeInBytes(uint64_t duration) const noexcept;
         // Returns size of a buffer for a duration given in milliseconds
 
-        int __cdecl GetPendingBufferCount() const;
+        int __cdecl GetPendingBufferCount() const noexcept;
 
-        const WAVEFORMATEX* __cdecl GetFormat() const;
+        const WAVEFORMATEX* __cdecl GetFormat() const noexcept;
 
     private:
         // Private implementation.

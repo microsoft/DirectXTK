@@ -33,33 +33,33 @@ namespace DirectX
 
         ~WaveBankReader();
 
-        HRESULT Open(_In_z_ const wchar_t* szFileName);
+        HRESULT Open(_In_z_ const wchar_t* szFileName) noexcept;
 
         uint32_t Find(_In_z_ const char* name) const;
 
-        bool IsPrepared();
-        void WaitOnPrepare();
+        bool IsPrepared() noexcept;
+        void WaitOnPrepare() noexcept;
 
-        bool HasNames() const;
-        bool IsStreamingBank() const;
+        bool HasNames() const noexcept;
+        bool IsStreamingBank() const noexcept;
 
     #if defined(_XBOX_ONE) && defined(_TITLE)
-        bool HasXMA() const;
+        bool HasXMA() const noexcept;
     #endif
 
-        const char* BankName() const;
+        const char* BankName() const noexcept;
 
-        uint32_t Count() const;
+        uint32_t Count() const noexcept;
 
-        uint32_t BankAudioSize() const;
+        uint32_t BankAudioSize() const noexcept;
 
-        HRESULT GetFormat(_In_ uint32_t index, _Out_writes_bytes_(maxsize) WAVEFORMATEX* pFormat, _In_ size_t maxsize) const;
+        HRESULT GetFormat(_In_ uint32_t index, _Out_writes_bytes_(maxsize) WAVEFORMATEX* pFormat, _In_ size_t maxsize) const noexcept;
 
-        HRESULT GetWaveData(_In_ uint32_t index, _Outptr_ const uint8_t** pData, _Out_ uint32_t& dataSize) const;
+        HRESULT GetWaveData(_In_ uint32_t index, _Outptr_ const uint8_t** pData, _Out_ uint32_t& dataSize) const noexcept;
 
-        HRESULT GetSeekTable(_In_ uint32_t index, _Out_ const uint32_t** pData, _Out_ uint32_t& dataCount, _Out_ uint32_t& tag) const;
+        HRESULT GetSeekTable(_In_ uint32_t index, _Out_ const uint32_t** pData, _Out_ uint32_t& dataCount, _Out_ uint32_t& tag) const noexcept;
 
-        HANDLE GetAsyncHandle() const;
+        HANDLE GetAsyncHandle() const noexcept;
 
         struct Metadata
         {
@@ -69,7 +69,7 @@ namespace DirectX
             uint32_t    offsetBytes;
             uint32_t    lengthBytes;
         };
-        HRESULT GetMetadata(_In_ uint32_t index, _Out_ Metadata& metadata) const;
+        HRESULT GetMetadata(_In_ uint32_t index, _Out_ Metadata& metadata) const noexcept;
 
     private:
         // Private implementation.

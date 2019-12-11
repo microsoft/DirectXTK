@@ -43,7 +43,7 @@ namespace DirectX
     };
 
     // Helper utility converts D3D API failures into exceptions.
-    inline void ThrowIfFailed(HRESULT hr)
+    inline void ThrowIfFailed(HRESULT hr) noexcept(false)
     {
         if (FAILED(hr))
         {

@@ -25,14 +25,14 @@ namespace DirectX
         _In_ size_t wavDataSize,
         _Outptr_ const WAVEFORMATEX** wfx,
         _Outptr_ const uint8_t** startAudio,
-        _Out_ uint32_t* audioBytes);
+        _Out_ uint32_t* audioBytes) noexcept;
 
     HRESULT LoadWAVAudioFromFile(
         _In_z_ const wchar_t* szFileName,
         _Inout_ std::unique_ptr<uint8_t[]>& wavData,
         _Outptr_ const WAVEFORMATEX** wfx,
         _Outptr_ const uint8_t** startAudio,
-        _Out_ uint32_t* audioBytes);
+        _Out_ uint32_t* audioBytes) noexcept;
 
     struct WAVData
     {
@@ -48,10 +48,10 @@ namespace DirectX
     HRESULT LoadWAVAudioInMemoryEx(
         _In_reads_bytes_(wavDataSize) const uint8_t* wavData,
         _In_ size_t wavDataSize,
-        _Out_ WAVData& result);
+        _Out_ WAVData& result) noexcept;
 
     HRESULT LoadWAVAudioFromFileEx(
         _In_z_ const wchar_t* szFileName,
         _Inout_ std::unique_ptr<uint8_t[]>& wavData,
-        _Out_ WAVData& result);
+        _Out_ WAVData& result) noexcept;
 }

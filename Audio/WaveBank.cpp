@@ -402,31 +402,35 @@ bool WaveBank::IsStreamingBank() const
 }
 
 
-size_t WaveBank::GetSampleSizeInBytes(unsigned int index) const
+size_t WaveBank::GetSampleSizeInBytes(unsigned int index) const noexcept
 {
     if (index >= pImpl->mReader.Count())
         return 0;
 
     WaveBankReader::Metadata metadata;
     HRESULT hr = pImpl->mReader.GetMetadata(index, metadata);
-    ThrowIfFailed(hr);
+    if (FAILED(hr))
+        return 0;
+
     return metadata.lengthBytes;
 }
 
 
-size_t WaveBank::GetSampleDuration(unsigned int index) const
+size_t WaveBank::GetSampleDuration(unsigned int index) const noexcept
 {
     if (index >= pImpl->mReader.Count())
         return 0;
 
     WaveBankReader::Metadata metadata;
     HRESULT hr = pImpl->mReader.GetMetadata(index, metadata);
-    ThrowIfFailed(hr);
+    if (FAILED(hr))
+        return 0;
+
     return metadata.duration;
 }
 
 
-size_t WaveBank::GetSampleDurationMS(unsigned int index) const
+size_t WaveBank::GetSampleDurationMS(unsigned int index) const noexcept
 {
     if (index >= pImpl->mReader.Count())
         return 0;
@@ -434,23 +438,28 @@ size_t WaveBank::GetSampleDurationMS(unsigned int index) const
     char buff[64] = {};
     auto wfx = reinterpret_cast<WAVEFORMATEX*>(buff);
     HRESULT hr = pImpl->mReader.GetFormat(index, wfx, sizeof(buff));
-    ThrowIfFailed(hr);
+    if (FAILED(hr))
+        return 0;
 
     WaveBankReader::Metadata metadata;
     hr = pImpl->mReader.GetMetadata(index, metadata);
-    ThrowIfFailed(hr);
+    if (FAILED(hr))
+        return 0;
+
     return static_cast<size_t>((uint64_t(metadata.duration) * 1000) / wfx->nSamplesPerSec);
 }
 
 
 _Use_decl_annotations_
-const WAVEFORMATEX* WaveBank::GetFormat(unsigned int index, WAVEFORMATEX* wfx, size_t maxsize) const
+const WAVEFORMATEX* WaveBank::GetFormat(unsigned int index, WAVEFORMATEX* wfx, size_t maxsize) const noexcept
 {
     if (index >= pImpl->mReader.Count())
         return nullptr;
 
     HRESULT hr = pImpl->mReader.GetFormat(index, wfx, maxsize);
-    ThrowIfFailed(hr);
+    if (FAILED(hr))
+        return nullptr;
+
     return wfx;
 }
 

@@ -437,20 +437,20 @@ public:
 
     ~Impl() { Close(); }
 
-    HRESULT Open(_In_z_ const wchar_t* szFileName);
-    void Close();
+    HRESULT Open(_In_z_ const wchar_t* szFileName) noexcept;
+    void Close() noexcept;
 
-    HRESULT GetFormat(_In_ uint32_t index, _Out_writes_bytes_(maxsize) WAVEFORMATEX* pFormat, _In_ size_t maxsize) const;
+    HRESULT GetFormat(_In_ uint32_t index, _Out_writes_bytes_(maxsize) WAVEFORMATEX* pFormat, _In_ size_t maxsize) const noexcept;
 
-    HRESULT GetWaveData(_In_ uint32_t index, _Outptr_ const uint8_t** pData, _Out_ uint32_t& dataSize) const;
+    HRESULT GetWaveData(_In_ uint32_t index, _Outptr_ const uint8_t** pData, _Out_ uint32_t& dataSize) const noexcept;
 
-    HRESULT GetSeekTable(_In_ uint32_t index, _Out_ const uint32_t** pData, _Out_ uint32_t& dataCount, _Out_ uint32_t& tag) const;
+    HRESULT GetSeekTable(_In_ uint32_t index, _Out_ const uint32_t** pData, _Out_ uint32_t& dataCount, _Out_ uint32_t& tag) const noexcept;
 
-    HRESULT GetMetadata(_In_ uint32_t index, _Out_ Metadata& metadata) const;
+    HRESULT GetMetadata(_In_ uint32_t index, _Out_ Metadata& metadata) const noexcept;
 
-    bool UpdatePrepared();
+    bool UpdatePrepared() noexcept;
 
-    void Clear()
+    void Clear() noexcept
     {
         memset(&m_header, 0, sizeof(HEADER));
         memset(&m_data, 0, sizeof(BANKDATA));
@@ -491,7 +491,7 @@ public:
 
 
 _Use_decl_annotations_
-HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName)
+HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept
 {
     Close();
     Clear();
@@ -903,7 +903,7 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName)
 }
 
 
-void WaveBankReader::Impl::Close()
+void WaveBankReader::Impl::Close() noexcept
 {
     if (m_async != INVALID_HANDLE_VALUE)
     {
@@ -935,7 +935,7 @@ void WaveBankReader::Impl::Close()
 
 
 _Use_decl_annotations_
-HRESULT WaveBankReader::Impl::GetFormat(uint32_t index, WAVEFORMATEX* pFormat, size_t maxsize) const
+HRESULT WaveBankReader::Impl::GetFormat(uint32_t index, WAVEFORMATEX* pFormat, size_t maxsize) const noexcept
 {
     if (!pFormat || !maxsize)
         return E_INVALIDARG;
@@ -1071,7 +1071,7 @@ HRESULT WaveBankReader::Impl::GetFormat(uint32_t index, WAVEFORMATEX* pFormat, s
 
 
 _Use_decl_annotations_
-HRESULT WaveBankReader::Impl::GetWaveData(uint32_t index, const uint8_t** pData, uint32_t& dataSize) const
+HRESULT WaveBankReader::Impl::GetWaveData(uint32_t index, const uint8_t** pData, uint32_t& dataSize) const noexcept
 {
     if (!pData)
         return E_INVALIDARG;
@@ -1133,7 +1133,7 @@ HRESULT WaveBankReader::Impl::GetWaveData(uint32_t index, const uint8_t** pData,
 
 
 _Use_decl_annotations_
-HRESULT WaveBankReader::Impl::GetSeekTable(uint32_t index, const uint32_t** pData, uint32_t& dataCount, uint32_t& tag) const
+HRESULT WaveBankReader::Impl::GetSeekTable(uint32_t index, const uint32_t** pData, uint32_t& dataCount, uint32_t& tag) const noexcept
 {
     if (!pData)
         return E_INVALIDARG;
@@ -1178,7 +1178,7 @@ HRESULT WaveBankReader::Impl::GetSeekTable(uint32_t index, const uint32_t** pDat
 
 
 _Use_decl_annotations_
-HRESULT WaveBankReader::Impl::GetMetadata(uint32_t index, Metadata& metadata) const
+HRESULT WaveBankReader::Impl::GetMetadata(uint32_t index, Metadata& metadata) const noexcept
 {
     if (index >= m_data.dwEntryCount || !m_entries)
     {
@@ -1213,7 +1213,7 @@ HRESULT WaveBankReader::Impl::GetMetadata(uint32_t index, Metadata& metadata) co
 }
 
 
-bool WaveBankReader::Impl::UpdatePrepared()
+bool WaveBankReader::Impl::UpdatePrepared() noexcept
 {
     if (m_prepared)
         return true;
@@ -1256,7 +1256,7 @@ WaveBankReader::~WaveBankReader()
 
 
 _Use_decl_annotations_
-HRESULT WaveBankReader::Open(const wchar_t* szFileName)
+HRESULT WaveBankReader::Open(const wchar_t* szFileName) noexcept
 {
     return pImpl->Open(szFileName);
 }
@@ -1275,7 +1275,7 @@ uint32_t WaveBankReader::Find(const char* name) const
 }
 
 
-bool WaveBankReader::IsPrepared()
+bool WaveBankReader::IsPrepared() noexcept
 {
     if (pImpl->m_prepared)
         return true;
@@ -1284,87 +1284,87 @@ bool WaveBankReader::IsPrepared()
 }
 
 
-void WaveBankReader::WaitOnPrepare()
+void WaveBankReader::WaitOnPrepare() noexcept
 {
     if (pImpl->m_prepared)
         return;
 
     if (pImpl->m_request.hEvent)
     {
-        WaitForSingleObjectEx(pImpl->m_request.hEvent, INFINITE, FALSE);
+        (void)WaitForSingleObjectEx(pImpl->m_request.hEvent, INFINITE, FALSE);
 
         pImpl->UpdatePrepared();
     }
 }
 
 
-bool WaveBankReader::HasNames() const
+bool WaveBankReader::HasNames() const noexcept
 {
     return !pImpl->m_names.empty();
 }
 
 
-bool WaveBankReader::IsStreamingBank() const
+bool WaveBankReader::IsStreamingBank() const noexcept
 {
     return (pImpl->m_data.dwFlags  & BANKDATA::TYPE_STREAMING) != 0;
 }
 
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
-bool WaveBankReader::HasXMA() const
+bool WaveBankReader::HasXMA() const noexcept
 {
     return (pImpl->m_xmaMemory != nullptr);
 }
 #endif
 
 
-const char* WaveBankReader::BankName() const
+const char* WaveBankReader::BankName() const noexcept
 {
     return pImpl->m_data.szBankName;
 }
 
 
-uint32_t WaveBankReader::Count() const
+uint32_t WaveBankReader::Count() const noexcept
 {
     return pImpl->m_data.dwEntryCount;
 }
 
 
-uint32_t WaveBankReader::BankAudioSize() const
+uint32_t WaveBankReader::BankAudioSize() const noexcept
 {
     return pImpl->m_header.Segments[HEADER::SEGIDX_ENTRYWAVEDATA].dwLength;
 }
 
 
 _Use_decl_annotations_
-HRESULT WaveBankReader::GetFormat(uint32_t index, WAVEFORMATEX* pFormat, size_t maxsize) const
+HRESULT WaveBankReader::GetFormat(uint32_t index, WAVEFORMATEX* pFormat, size_t maxsize) const noexcept
 {
     return pImpl->GetFormat(index, pFormat, maxsize);
 }
 
 
 _Use_decl_annotations_
-HRESULT WaveBankReader::GetWaveData(uint32_t index, const uint8_t** pData, uint32_t& dataSize) const
+HRESULT WaveBankReader::GetWaveData(uint32_t index, const uint8_t** pData, uint32_t& dataSize) const noexcept
 {
     return pImpl->GetWaveData(index, pData, dataSize);
 }
 
 
 _Use_decl_annotations_
-HRESULT WaveBankReader::GetSeekTable(uint32_t index, const uint32_t** pData, uint32_t& dataCount, uint32_t& tag) const
+HRESULT WaveBankReader::GetSeekTable(uint32_t index, const uint32_t** pData, uint32_t& dataCount, uint32_t& tag) const noexcept
 {
     return pImpl->GetSeekTable(index, pData, dataCount, tag);
 }
 
 
 _Use_decl_annotations_
-HRESULT WaveBankReader::GetMetadata(uint32_t index, Metadata& metadata) const
+HRESULT WaveBankReader::GetMetadata(uint32_t index, Metadata& metadata) const noexcept
 {
     return pImpl->GetMetadata(index, metadata);
 }
 
 
-HANDLE WaveBankReader::GetAsyncHandle() const
+HANDLE WaveBankReader::GetAsyncHandle() const noexcept
 {
     return (pImpl->m_data.dwFlags & BANKDATA::TYPE_STREAMING) ? pImpl->m_async : INVALID_HANDLE_VALUE;
 }

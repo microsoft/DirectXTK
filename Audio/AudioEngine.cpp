@@ -1340,7 +1340,7 @@ bool AudioEngine::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceId)
 }
 
 
-void AudioEngine::Suspend()
+void AudioEngine::Suspend() noexcept
 {
     if (!pImpl->xaudio2)
         return;
@@ -1517,25 +1517,25 @@ void AudioEngine::UnregisterNotify(_In_ IVoiceNotify* notify, bool oneshots, boo
 }
 
 
-IXAudio2* AudioEngine::GetInterface() const
+IXAudio2* AudioEngine::GetInterface() const noexcept
 {
     return pImpl->xaudio2.Get();
 }
 
 
-IXAudio2MasteringVoice* AudioEngine::GetMasterVoice() const
+IXAudio2MasteringVoice* AudioEngine::GetMasterVoice() const noexcept
 {
     return pImpl->mMasterVoice;
 }
 
 
-IXAudio2SubmixVoice* AudioEngine::GetReverbVoice() const
+IXAudio2SubmixVoice* AudioEngine::GetReverbVoice() const noexcept
 {
     return pImpl->mReverbVoice;
 }
 
 
-X3DAUDIO_HANDLE& AudioEngine::Get3DHandle() const
+X3DAUDIO_HANDLE& AudioEngine::Get3DHandle() const noexcept
 {
     return pImpl->mX3DAudio;
 }
