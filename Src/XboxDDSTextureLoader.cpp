@@ -612,14 +612,15 @@ namespace
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_
-HRESULT Xbox::CreateDDSTextureFromMemory( ID3D11DeviceX* d3dDevice,
-                                          const uint8_t* ddsData,
-                                          size_t ddsDataSize,
-                                          ID3D11Resource** texture,
-                                          ID3D11ShaderResourceView** textureView,
-                                          void** grfxMemory,
-                                          DDS_ALPHA_MODE* alphaMode,
-                                          bool forceSRGB )
+HRESULT Xbox::CreateDDSTextureFromMemory(
+    ID3D11DeviceX* d3dDevice,
+    const uint8_t* ddsData,
+    size_t ddsDataSize,
+    ID3D11Resource** texture,
+    ID3D11ShaderResourceView** textureView,
+    void** grfxMemory,
+    DDS_ALPHA_MODE* alphaMode,
+    bool forceSRGB ) noexcept
 {
     if ( texture )
     {
@@ -705,13 +706,14 @@ HRESULT Xbox::CreateDDSTextureFromMemory( ID3D11DeviceX* d3dDevice,
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_
-HRESULT Xbox::CreateDDSTextureFromFile( ID3D11DeviceX* d3dDevice,
-                                        const wchar_t* fileName,
-                                        ID3D11Resource** texture,
-                                        ID3D11ShaderResourceView** textureView,
-                                        void** grfxMemory,
-                                        DDS_ALPHA_MODE* alphaMode,
-                                        bool forceSRGB )
+HRESULT Xbox::CreateDDSTextureFromFile(
+    ID3D11DeviceX* d3dDevice,
+    const wchar_t* fileName,
+    ID3D11Resource** texture,
+    ID3D11ShaderResourceView** textureView,
+    void** grfxMemory,
+    DDS_ALPHA_MODE* alphaMode,
+    bool forceSRGB ) noexcept
 {
     if ( texture )
     {
@@ -778,7 +780,7 @@ HRESULT Xbox::CreateDDSTextureFromFile( ID3D11DeviceX* d3dDevice,
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_
-void Xbox::FreeDDSTextureMemory(void* grfxMemory)
+void Xbox::FreeDDSTextureMemory(void* grfxMemory) noexcept
 {
     if (grfxMemory)
     {

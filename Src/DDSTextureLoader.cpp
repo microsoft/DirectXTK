@@ -933,7 +933,7 @@ HRESULT DirectX::CreateDDSTextureFromMemory(
     ID3D11Resource** texture,
     ID3D11ShaderResourceView** textureView,
     size_t maxsize,
-    DDS_ALPHA_MODE* alphaMode)
+    DDS_ALPHA_MODE* alphaMode) noexcept
 {
     return CreateDDSTextureFromMemoryEx(d3dDevice,
         ddsData, ddsDataSize,
@@ -958,7 +958,7 @@ HRESULT DirectX::CreateDDSTextureFromMemory(
     ID3D11Resource** texture,
     ID3D11ShaderResourceView** textureView,
     size_t maxsize,
-    DDS_ALPHA_MODE* alphaMode)
+    DDS_ALPHA_MODE* alphaMode) noexcept
 {
     return CreateDDSTextureFromMemoryEx(d3dDevice, d3dContext,
         ddsData, ddsDataSize,
@@ -981,7 +981,7 @@ HRESULT DirectX::CreateDDSTextureFromMemoryEx(
     bool forceSRGB,
     ID3D11Resource** texture,
     ID3D11ShaderResourceView** textureView,
-    DDS_ALPHA_MODE* alphaMode)
+    DDS_ALPHA_MODE* alphaMode) noexcept
 {
     if (texture)
     {
@@ -1069,7 +1069,7 @@ HRESULT DirectX::CreateDDSTextureFromMemoryEx(
     bool forceSRGB,
     ID3D11Resource** texture,
     ID3D11ShaderResourceView** textureView,
-    DDS_ALPHA_MODE* alphaMode)
+    DDS_ALPHA_MODE* alphaMode) noexcept
 {
     if (texture)
     {
@@ -1145,7 +1145,7 @@ HRESULT DirectX::CreateDDSTextureFromFile(
     ID3D11Resource** texture,
     ID3D11ShaderResourceView** textureView,
     size_t maxsize,
-    DDS_ALPHA_MODE* alphaMode)
+    DDS_ALPHA_MODE* alphaMode) noexcept
 {
     return CreateDDSTextureFromFileEx(d3dDevice,
         fileName,
@@ -1169,7 +1169,7 @@ HRESULT DirectX::CreateDDSTextureFromFile(
     ID3D11Resource** texture,
     ID3D11ShaderResourceView** textureView,
     size_t maxsize,
-    DDS_ALPHA_MODE* alphaMode)
+    DDS_ALPHA_MODE* alphaMode) noexcept
 {
     return CreateDDSTextureFromFileEx(d3dDevice, d3dContext,
         fileName,
@@ -1191,7 +1191,7 @@ HRESULT DirectX::CreateDDSTextureFromFileEx(
     bool forceSRGB,
     ID3D11Resource** texture,
     ID3D11ShaderResourceView** textureView,
-    DDS_ALPHA_MODE* alphaMode)
+    DDS_ALPHA_MODE* alphaMode) noexcept
 {
     if (texture)
     {
@@ -1272,7 +1272,7 @@ HRESULT DirectX::CreateDDSTextureFromFileEx(
     bool forceSRGB,
     ID3D11Resource** texture,
     ID3D11ShaderResourceView** textureView,
-    DDS_ALPHA_MODE* alphaMode)
+    DDS_ALPHA_MODE* alphaMode) noexcept
 {
     if (texture)
     {

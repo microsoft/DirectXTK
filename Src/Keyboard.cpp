@@ -98,7 +98,7 @@ public:
         memcpy(&state, &mState, sizeof(State));
     }
 
-    void Reset()
+    void Reset() noexcept
     {
         memset(&mState, 0, sizeof(State));
     }
@@ -226,7 +226,7 @@ public:
         memcpy(&state, &mState, sizeof(State));
     }
 
-    void Reset()
+    void Reset() noexcept
     {
         memset(&mState, 0, sizeof(State));
     }
@@ -455,7 +455,7 @@ Keyboard::State Keyboard::GetState() const
 }
 
 
-void Keyboard::Reset()
+void Keyboard::Reset() noexcept
 {
     pImpl->Reset();
 }
@@ -480,7 +480,7 @@ Keyboard& Keyboard::Get()
 // KeyboardStateTracker
 //======================================================================================
 
-void Keyboard::KeyboardStateTracker::Update(const State& state)
+void Keyboard::KeyboardStateTracker::Update(const State& state) noexcept
 {
     auto currPtr = reinterpret_cast<const uint32_t*>(&state);
     auto prevPtr = reinterpret_cast<const uint32_t*>(&lastState);

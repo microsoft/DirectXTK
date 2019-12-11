@@ -75,7 +75,7 @@ namespace DirectX
             #pragma prefast(suppress: 26495, "Reset() performs the initialization")
             ButtonStateTracker() noexcept { Reset(); }
 
-            void __cdecl Update(const State& state);
+            void __cdecl Update(const State& state) noexcept;
 
             void __cdecl Reset() noexcept;
 
@@ -89,7 +89,7 @@ namespace DirectX
         State __cdecl GetState() const;
 
         // Resets the accumulated scroll wheel value
-        void __cdecl ResetScrollWheelValue();
+        void __cdecl ResetScrollWheelValue() noexcept;
 
         // Sets mouse mode (defaults to absolute)
         void __cdecl SetMode(Mode mode);

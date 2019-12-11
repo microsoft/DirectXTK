@@ -173,7 +173,7 @@ _Use_decl_annotations_
 HRESULT DirectX::SaveDDSTextureToFile(
     ID3D11DeviceContext* pContext,
     ID3D11Resource* pSource,
-    const wchar_t* fileName)
+    const wchar_t* fileName) noexcept
 {
     if (!fileName)
         return E_INVALIDARG;
@@ -351,7 +351,7 @@ HRESULT DirectX::SaveWICTextureToFile(
     const wchar_t* fileName,
     const GUID* targetFormat,
     std::function<void(IPropertyBag2*)> setCustomProps,
-    bool forceSRGB)
+    bool forceSRGB) noexcept
 {
     if (!fileName)
         return E_INVALIDARG;

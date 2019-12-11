@@ -44,7 +44,7 @@ namespace Xbox
         _Outptr_opt_ ID3D11ShaderResourceView** textureView,
         _Outptr_ void** grfxMemory,
         _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr, 
-        _In_ bool forceSRGB = false);
+        _In_ bool forceSRGB = false) noexcept;
 
     HRESULT __cdecl CreateDDSTextureFromFile( _In_ ID3D11DeviceX* d3dDevice,
         _In_z_ const wchar_t* szFileName,
@@ -52,7 +52,7 @@ namespace Xbox
         _Outptr_opt_ ID3D11ShaderResourceView** textureView,
         _Outptr_ void** grfxMemory,
         _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr,
-        _In_ bool forceSRGB = false);
+        _In_ bool forceSRGB = false) noexcept;
 
-    void FreeDDSTextureMemory( _In_opt_ void* grfxMemory );
+    void FreeDDSTextureMemory( _In_opt_ void* grfxMemory ) noexcept;
 }

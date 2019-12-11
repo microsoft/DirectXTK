@@ -436,7 +436,7 @@ namespace DirectX
             #pragma prefast(suppress: 26495, "Reset() performs the initialization")
             KeyboardStateTracker() noexcept { Reset(); }
 
-            void __cdecl Update(const State& state);
+            void __cdecl Update(const State& state) noexcept;
 
             void __cdecl Reset() noexcept;
 
@@ -453,7 +453,7 @@ namespace DirectX
         State __cdecl GetState() const;
 
         // Reset the keyboard state
-        void __cdecl Reset();
+        void __cdecl Reset() noexcept;
 
         // Feature detection
         bool __cdecl IsConnected() const;

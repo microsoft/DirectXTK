@@ -126,7 +126,7 @@ public:
         }
     }
 
-    void ResetScrollWheelValue()
+    void ResetScrollWheelValue() noexcept
     {
         SetEvent(mScrollWheelValue.get());
     }
@@ -510,7 +510,7 @@ public:
         memset(&state, 0, sizeof(State));
     }
 
-    void ResetScrollWheelValue()
+    void ResetScrollWheelValue() noexcept
     {
     }
 
@@ -634,7 +634,7 @@ public:
         state.positionMode = mMode;
     }
 
-    void ResetScrollWheelValue()
+    void ResetScrollWheelValue() noexcept
     {
         SetEvent(mScrollWheelValue.get());
     }
@@ -1052,7 +1052,7 @@ Mouse::State Mouse::GetState() const
 }
 
 
-void Mouse::ResetScrollWheelValue()
+void Mouse::ResetScrollWheelValue() noexcept
 {
     pImpl->ResetScrollWheelValue();
 }
@@ -1095,7 +1095,7 @@ Mouse& Mouse::Get()
 
 #define UPDATE_BUTTON_STATE(field) field = static_cast<ButtonState>( ( !!state.field ) | ( ( !!state.field ^ !!lastState.field ) << 1 ) );
 
-void Mouse::ButtonStateTracker::Update(const Mouse::State& state)
+void Mouse::ButtonStateTracker::Update(const Mouse::State& state) noexcept
 {
     UPDATE_BUTTON_STATE(leftButton)
 

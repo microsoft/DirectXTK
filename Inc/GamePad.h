@@ -240,7 +240,7 @@ namespace DirectX
             #pragma prefast(suppress: 26495, "Reset() performs the initialization")
             ButtonStateTracker() noexcept { Reset(); }
 
-            void __cdecl Update(const State& state);
+            void __cdecl Update(const State& state) noexcept;
 
             void __cdecl Reset() noexcept;
 
@@ -257,14 +257,14 @@ namespace DirectX
         Capabilities __cdecl GetCapabilities(int player);
 
         // Set the vibration motor speeds of the gamepad
-        bool __cdecl SetVibration(int player, float leftMotor, float rightMotor, float leftTrigger = 0.f, float rightTrigger = 0.f);
+        bool __cdecl SetVibration(int player, float leftMotor, float rightMotor, float leftTrigger = 0.f, float rightTrigger = 0.f) noexcept;
 
         // Handle suspending/resuming
-        void __cdecl Suspend();
-        void __cdecl Resume();
+        void __cdecl Suspend() noexcept;
+        void __cdecl Resume() noexcept;
 
     #if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/ ) || defined(_XBOX_ONE)
-        void __cdecl RegisterEvents(void* ctrlChanged, void* userChanged);
+        void __cdecl RegisterEvents(void* ctrlChanged, void* userChanged) noexcept;
     #endif
 
         // Singleton
