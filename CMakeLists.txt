@@ -155,5 +155,8 @@ if ( CMAKE_CXX_COMPILER_ID MATCHES "MSVC" )
     target_compile_options(xwbtool PRIVATE ${WarningsEXE})
 endif()
 
-# Windows 8 is used here to use XAudio 2.8 rather than require the legacy DirectX SDK
-add_compile_definitions(_UNICODE UNICODE _WIN32_WINNT=0x0602)
+if(WIN32)
+    # Windows 8 is used here to use XAudio 2.8 rather than require the legacy DirectX SDK or NuGet (https://aka.ms/XAudio2Redist)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE _UNICODE UNICODE _WIN32_WINNT=0x0602)
+    target_compile_definitions(xwbtool PRIVATE _UNICODE UNICODE _WIN32_WINNT=0x0602)
+endif()
