@@ -34,8 +34,8 @@ public:
     void CreateTexture(_In_z_ const wchar_t* texture, _In_opt_ ID3D11DeviceContext* deviceContext, _Outptr_ ID3D11ShaderResourceView** textureView);
 
     void ReleaseCache();
-    void SetSharing(bool enabled) { mSharing = enabled; }
-    void EnableForceSRGB(bool forceSRGB) { mForceSRGB = forceSRGB; }
+    void SetSharing(bool enabled) noexcept { mSharing = enabled; }
+    void EnableForceSRGB(bool forceSRGB) noexcept { mForceSRGB = forceSRGB; }
 
     static SharedResourcePool<ID3D11Device*, Impl> instancePool;
 
@@ -262,17 +262,17 @@ void PBREffectFactory::ReleaseCache()
     pImpl->ReleaseCache();
 }
 
-void PBREffectFactory::SetSharing(bool enabled)
+void PBREffectFactory::SetSharing(bool enabled) noexcept
 {
     pImpl->SetSharing(enabled);
 }
 
-void PBREffectFactory::EnableForceSRGB(bool forceSRGB)
+void PBREffectFactory::EnableForceSRGB(bool forceSRGB) noexcept
 {
     pImpl->EnableForceSRGB(forceSRGB);
 }
 
-void PBREffectFactory::SetDirectory(_In_opt_z_ const wchar_t* path)
+void PBREffectFactory::SetDirectory(_In_opt_z_ const wchar_t* path) noexcept
 {
     if (path && *path != 0)
     {
@@ -292,7 +292,7 @@ void PBREffectFactory::SetDirectory(_In_opt_z_ const wchar_t* path)
         *pImpl->mPath = 0;
 }
 
-ID3D11Device* PBREffectFactory::GetDevice() const
+ID3D11Device* PBREffectFactory::GetDevice() const noexcept
 {
     return pImpl->mDevice.Get();
 }

@@ -16,7 +16,7 @@ using namespace DirectX;
 
 namespace
 {
-    template <typename T> WORD ChannelsSpecifiedInMask(T x)
+    template <typename T> WORD ChannelsSpecifiedInMask(T x) noexcept
     {
         WORD bitCount = 0;
         while (x) { ++bitCount; x &= (x - 1); }
@@ -29,7 +29,7 @@ namespace
 // Wave format utilities
 //======================================================================================
 
-bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx)
+bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
 {
     if (!wfx)
         return false;
@@ -476,7 +476,7 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx)
 }
 
 
-uint32_t DirectX::GetDefaultChannelMask(int channels)
+uint32_t DirectX::GetDefaultChannelMask(int channels) noexcept
 {
     switch (channels)
     {
@@ -494,7 +494,7 @@ uint32_t DirectX::GetDefaultChannelMask(int channels)
 
 
 _Use_decl_annotations_
-void DirectX::CreateIntegerPCM(WAVEFORMATEX* wfx, int sampleRate, int channels, int sampleBits)
+void DirectX::CreateIntegerPCM(WAVEFORMATEX* wfx, int sampleRate, int channels, int sampleBits) noexcept
 {
     int blockAlign = channels * sampleBits / 8;
 
@@ -511,7 +511,7 @@ void DirectX::CreateIntegerPCM(WAVEFORMATEX* wfx, int sampleRate, int channels, 
 
 
 _Use_decl_annotations_
-void DirectX::CreateFloatPCM(WAVEFORMATEX* wfx, int sampleRate, int channels)
+void DirectX::CreateFloatPCM(WAVEFORMATEX* wfx, int sampleRate, int channels) noexcept
 {
     int blockAlign = channels * 4;
 
@@ -528,7 +528,7 @@ void DirectX::CreateFloatPCM(WAVEFORMATEX* wfx, int sampleRate, int channels)
 
 
 _Use_decl_annotations_
-void DirectX::CreateADPCM(WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int samplesPerBlock)
+void DirectX::CreateADPCM(WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int samplesPerBlock) noexcept(false)
 {
     if (wfxSize < (sizeof(WAVEFORMATEX) + 32 /*MSADPCM_FORMAT_EXTRA_BYTES*/))
     {
@@ -566,7 +566,7 @@ void DirectX::CreateADPCM(WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int
 
 #if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
 _Use_decl_annotations_
-void DirectX::CreateXWMA(WAVEFORMATEX* wfx, int sampleRate, int channels, int blockAlign, int avgBytes, bool wma3)
+void DirectX::CreateXWMA(WAVEFORMATEX* wfx, int sampleRate, int channels, int blockAlign, int avgBytes, bool wma3) noexcept
 {
     wfx->wFormatTag = static_cast<WORD>((wma3) ? WAVE_FORMAT_WMAUDIO3 : WAVE_FORMAT_WMAUDIO2);
     wfx->nChannels = static_cast<WORD>(channels);
@@ -583,7 +583,7 @@ void DirectX::CreateXWMA(WAVEFORMATEX* wfx, int sampleRate, int channels, int bl
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
 _Use_decl_annotations_
-void DirectX::CreateXMA2(WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int bytesPerBlock, int blockCount, int samplesEncoded)
+void DirectX::CreateXMA2(WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int bytesPerBlock, int blockCount, int samplesEncoded) noexcept(false)
 {
     if (wfxSize < sizeof(XMA2WAVEFORMATEX))
     {
@@ -626,7 +626,7 @@ void DirectX::CreateXMA2(WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int 
 
 
 _Use_decl_annotations_
-bool DirectX::ComputePan(float pan, unsigned int channels, float* matrix)
+bool DirectX::ComputePan(float pan, unsigned int channels, float* matrix) noexcept
 {
     memset(matrix, 0, sizeof(float) * 16);
 

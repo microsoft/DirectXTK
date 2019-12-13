@@ -115,42 +115,42 @@ namespace DirectX
             ThumbSticks thumbSticks;
             Triggers    triggers;
 
-            bool __cdecl IsConnected() const { return connected; }
+            bool __cdecl IsConnected() const noexcept { return connected; }
 
             // Is the button pressed currently?
-            bool __cdecl IsAPressed() const { return buttons.a; }
-            bool __cdecl IsBPressed() const { return buttons.b; }
-            bool __cdecl IsXPressed() const { return buttons.x; }
-            bool __cdecl IsYPressed() const { return buttons.y; }
+            bool __cdecl IsAPressed() const noexcept { return buttons.a; }
+            bool __cdecl IsBPressed() const noexcept { return buttons.b; }
+            bool __cdecl IsXPressed() const noexcept { return buttons.x; }
+            bool __cdecl IsYPressed() const noexcept { return buttons.y; }
 
-            bool __cdecl IsLeftStickPressed() const { return buttons.leftStick; }
-            bool __cdecl IsRightStickPressed() const { return buttons.rightStick; }
+            bool __cdecl IsLeftStickPressed() const noexcept { return buttons.leftStick; }
+            bool __cdecl IsRightStickPressed() const noexcept { return buttons.rightStick; }
 
-            bool __cdecl IsLeftShoulderPressed() const { return buttons.leftShoulder; }
-            bool __cdecl IsRightShoulderPressed() const { return buttons.rightShoulder; }
+            bool __cdecl IsLeftShoulderPressed() const noexcept { return buttons.leftShoulder; }
+            bool __cdecl IsRightShoulderPressed() const noexcept { return buttons.rightShoulder; }
 
-            bool __cdecl IsBackPressed() const { return buttons.back; }
-            bool __cdecl IsViewPressed() const { return buttons.view; }
-            bool __cdecl IsStartPressed() const { return buttons.start; }
-            bool __cdecl IsMenuPressed() const { return buttons.menu; }
+            bool __cdecl IsBackPressed() const noexcept { return buttons.back; }
+            bool __cdecl IsViewPressed() const noexcept { return buttons.view; }
+            bool __cdecl IsStartPressed() const noexcept { return buttons.start; }
+            bool __cdecl IsMenuPressed() const noexcept { return buttons.menu; }
 
-            bool __cdecl IsDPadDownPressed() const { return dpad.down; }
-            bool __cdecl IsDPadUpPressed() const { return dpad.up; }
-            bool __cdecl IsDPadLeftPressed() const { return dpad.left; }
-            bool __cdecl IsDPadRightPressed() const { return dpad.right; }
+            bool __cdecl IsDPadDownPressed() const noexcept { return dpad.down; }
+            bool __cdecl IsDPadUpPressed() const noexcept { return dpad.up; }
+            bool __cdecl IsDPadLeftPressed() const noexcept { return dpad.left; }
+            bool __cdecl IsDPadRightPressed() const noexcept { return dpad.right; }
 
-            bool __cdecl IsLeftThumbStickUp() const { return (thumbSticks.leftY > 0.5f) != 0; }
-            bool __cdecl IsLeftThumbStickDown() const { return (thumbSticks.leftY < -0.5f) != 0; }
-            bool __cdecl IsLeftThumbStickLeft() const { return (thumbSticks.leftX < -0.5f) != 0; }
-            bool __cdecl IsLeftThumbStickRight() const { return (thumbSticks.leftX > 0.5f) != 0; }
+            bool __cdecl IsLeftThumbStickUp() const noexcept { return (thumbSticks.leftY > 0.5f) != 0; }
+            bool __cdecl IsLeftThumbStickDown() const noexcept { return (thumbSticks.leftY < -0.5f) != 0; }
+            bool __cdecl IsLeftThumbStickLeft() const noexcept { return (thumbSticks.leftX < -0.5f) != 0; }
+            bool __cdecl IsLeftThumbStickRight() const noexcept { return (thumbSticks.leftX > 0.5f) != 0; }
 
-            bool __cdecl IsRightThumbStickUp() const { return (thumbSticks.rightY > 0.5f) != 0; }
-            bool __cdecl IsRightThumbStickDown() const { return (thumbSticks.rightY < -0.5f) != 0; }
-            bool __cdecl IsRightThumbStickLeft() const { return (thumbSticks.rightX < -0.5f) != 0; }
-            bool __cdecl IsRightThumbStickRight() const { return (thumbSticks.rightX > 0.5f) != 0; }
+            bool __cdecl IsRightThumbStickUp() const noexcept { return (thumbSticks.rightY > 0.5f) != 0; }
+            bool __cdecl IsRightThumbStickDown() const noexcept { return (thumbSticks.rightY < -0.5f) != 0; }
+            bool __cdecl IsRightThumbStickLeft() const noexcept { return (thumbSticks.rightX < -0.5f) != 0; }
+            bool __cdecl IsRightThumbStickRight() const noexcept { return (thumbSticks.rightX > 0.5f) != 0; }
 
-            bool __cdecl IsLeftTriggerPressed() const { return (triggers.left > 0.5f) != 0; }
-            bool __cdecl IsRightTriggerPressed() const { return (triggers.right > 0.5f) != 0; }
+            bool __cdecl IsLeftTriggerPressed() const noexcept { return (triggers.left > 0.5f) != 0; }
+            bool __cdecl IsRightTriggerPressed() const noexcept { return (triggers.right > 0.5f) != 0; }
         };
 
         struct Capabilities
@@ -182,7 +182,7 @@ namespace DirectX
 
             Capabilities() noexcept : connected(false), gamepadType(UNKNOWN), id{}, vid(0), pid(0) {}
 
-            bool __cdecl IsConnected() const { return connected; }
+            bool __cdecl IsConnected() const noexcept { return connected; }
         };
 
         class ButtonStateTracker
@@ -244,7 +244,7 @@ namespace DirectX
 
             void __cdecl Reset() noexcept;
 
-            State __cdecl GetLastState() const { return lastState; }
+            State __cdecl GetLastState() const noexcept { return lastState; }
 
         private:
             State lastState;

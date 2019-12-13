@@ -404,7 +404,7 @@ namespace DirectX
             bool OemClear : 1;          // VK_OEM_CLEAR, 0xFE
             bool Reserved26: 1;
 
-            bool __cdecl IsKeyDown(Keys key) const
+            bool __cdecl IsKeyDown(Keys key) const noexcept
             {
                 if (key <= 0xfe)
                 {
@@ -415,7 +415,7 @@ namespace DirectX
                 return false;
             }
 
-            bool __cdecl IsKeyUp(Keys key) const
+            bool __cdecl IsKeyUp(Keys key) const noexcept
             {
                 if (key <= 0xfe)
                 {
@@ -440,10 +440,10 @@ namespace DirectX
 
             void __cdecl Reset() noexcept;
 
-            bool __cdecl IsKeyPressed(Keys key) const { return pressed.IsKeyDown(key); }
-            bool __cdecl IsKeyReleased(Keys key) const { return released.IsKeyDown(key); }
+            bool __cdecl IsKeyPressed(Keys key) const noexcept { return pressed.IsKeyDown(key); }
+            bool __cdecl IsKeyReleased(Keys key) const noexcept { return released.IsKeyDown(key); }
 
-            State __cdecl GetLastState() const { return lastState; }
+            State __cdecl GetLastState() const noexcept { return lastState; }
 
         public:
             State lastState;

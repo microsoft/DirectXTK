@@ -88,7 +88,7 @@ public:
         assert(false);
     }
 
-    virtual void __cdecl OnDestroyEngine() override
+    virtual void __cdecl OnDestroyEngine() noexcept override
     {
         mBase.OnDestroy();
     }
@@ -98,7 +98,7 @@ public:
         mBase.OnTrim();
     }
 
-    virtual void __cdecl GatherStatistics(AudioStatistics& stats) const override
+    virtual void __cdecl GatherStatistics(AudioStatistics& stats) const noexcept override
     {
         mBase.GatherStatistics(stats);
     }
@@ -267,13 +267,13 @@ void SoundEffectInstance::Play(bool loop)
 }
 
 
-void SoundEffectInstance::Stop(bool immediate)
+void SoundEffectInstance::Stop(bool immediate) noexcept
 {
     pImpl->mBase.Stop(immediate, pImpl->mLooped);
 }
 
 
-void SoundEffectInstance::Pause()
+void SoundEffectInstance::Pause() noexcept
 {
     pImpl->mBase.Pause();
 }
@@ -310,20 +310,20 @@ void SoundEffectInstance::Apply3D(const AudioListener& listener, const AudioEmit
 
 
 // Public accessors.
-bool SoundEffectInstance::IsLooped() const
+bool SoundEffectInstance::IsLooped() const noexcept
 {
     return pImpl->mLooped;
 }
 
 
-SoundState SoundEffectInstance::GetState()
+SoundState SoundEffectInstance::GetState() noexcept
 {
     return pImpl->mBase.GetState(true);
 }
 
 
 // Notifications.
-void SoundEffectInstance::OnDestroyParent()
+void SoundEffectInstance::OnDestroyParent() noexcept
 {
     pImpl->mBase.OnDestroy();
     pImpl->mWaveBank = nullptr;

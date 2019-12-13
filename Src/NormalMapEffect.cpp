@@ -62,7 +62,7 @@ public:
   
     EffectLights lights;
 
-    int GetCurrentShaderPermutation() const;
+    int GetCurrentShaderPermutation() const noexcept;
 
     void Apply(_In_ ID3D11DeviceContext* deviceContext);
 };
@@ -193,7 +193,7 @@ NormalMapEffect::Impl::Impl(_In_ ID3D11Device* device)
 }
 
 
-int NormalMapEffect::Impl::GetCurrentShaderPermutation() const
+int NormalMapEffect::Impl::GetCurrentShaderPermutation() const noexcept
 {
     int permutation = 0;
 

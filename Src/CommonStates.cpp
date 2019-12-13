@@ -22,7 +22,7 @@ using Microsoft::WRL::ComPtr;
 class CommonStates::Impl
 {
 public:
-    Impl(_In_ ID3D11Device* device)
+    Impl(_In_ ID3D11Device* device) noexcept
       : mDevice(device)
     { }
 

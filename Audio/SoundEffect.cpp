@@ -116,7 +116,7 @@ public:
         assert(false);
     }
 
-    virtual void __cdecl OnDestroyEngine() override
+    virtual void __cdecl OnDestroyEngine() noexcept override
     {
         mEngine = nullptr;
         mOneShots = 0;
@@ -127,7 +127,7 @@ public:
         // No action required
     }
 
-    virtual void __cdecl GatherStatistics(AudioStatistics& stats) const override
+    virtual void __cdecl GatherStatistics(AudioStatistics& stats) const noexcept override
     {
         stats.playingOneShots += mOneShots;
         stats.audioBytes += mAudioBytes;
@@ -492,7 +492,7 @@ void SoundEffect::UnregisterInstance(_In_ SoundEffectInstance* instance)
 
 
 // Public accessors.
-bool SoundEffect::IsInUse() const
+bool SoundEffect::IsInUse() const noexcept
 {
     return (pImpl->mOneShots > 0) || !pImpl->mInstances.empty();
 }

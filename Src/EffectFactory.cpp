@@ -35,9 +35,9 @@ public:
     void CreateTexture(_In_z_ const wchar_t* texture, _In_opt_ ID3D11DeviceContext* deviceContext, _Outptr_ ID3D11ShaderResourceView** textureView);
 
     void ReleaseCache();
-    void SetSharing(bool enabled) { mSharing = enabled; }
-    void EnableNormalMapEffect(bool enabled) { mUseNormalMapEffect = enabled; }
-    void EnableForceSRGB(bool forceSRGB) { mForceSRGB = forceSRGB; }
+    void SetSharing(bool enabled) noexcept { mSharing = enabled; }
+    void EnableNormalMapEffect(bool enabled) noexcept { mUseNormalMapEffect = enabled; }
+    void EnableForceSRGB(bool forceSRGB) noexcept { mForceSRGB = forceSRGB; }
 
     static SharedResourcePool<ID3D11Device*, Impl> instancePool;
 
@@ -495,22 +495,22 @@ void EffectFactory::ReleaseCache()
     pImpl->ReleaseCache();
 }
 
-void EffectFactory::SetSharing(bool enabled)
+void EffectFactory::SetSharing(bool enabled) noexcept
 {
     pImpl->SetSharing(enabled);
 }
 
-void EffectFactory::EnableNormalMapEffect(bool enabled)
+void EffectFactory::EnableNormalMapEffect(bool enabled) noexcept
 {
     pImpl->EnableNormalMapEffect(enabled);
 }
 
-void EffectFactory::EnableForceSRGB(bool forceSRGB)
+void EffectFactory::EnableForceSRGB(bool forceSRGB) noexcept
 {
     pImpl->EnableForceSRGB(forceSRGB);
 }
 
-void EffectFactory::SetDirectory(_In_opt_z_ const wchar_t* path)
+void EffectFactory::SetDirectory(_In_opt_z_ const wchar_t* path) noexcept
 {
     if (path && *path != 0)
     {
@@ -530,7 +530,7 @@ void EffectFactory::SetDirectory(_In_opt_z_ const wchar_t* path)
         *pImpl->mPath = 0;
 }
 
-ID3D11Device* EffectFactory::GetDevice() const
+ID3D11Device* EffectFactory::GetDevice() const noexcept
 {
     return pImpl->mDevice.Get();
 }

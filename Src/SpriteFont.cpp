@@ -58,17 +58,17 @@ static const char spriteFontMagic[] = "DXTKfont";
 // Comparison operators make our sorted glyph vector work with std::binary_search and lower_bound.
 namespace DirectX
 {
-    static inline bool operator< (SpriteFont::Glyph const& left, SpriteFont::Glyph const& right)
+    static inline bool operator< (SpriteFont::Glyph const& left, SpriteFont::Glyph const& right) noexcept
     {
         return left.Character < right.Character;
     }
 
-    static inline bool operator< (wchar_t left, SpriteFont::Glyph const& right)
+    static inline bool operator< (wchar_t left, SpriteFont::Glyph const& right) noexcept
     {
         return left < right.Character;
     }
 
-    static inline bool operator< (SpriteFont::Glyph const& left, wchar_t right)
+    static inline bool operator< (SpriteFont::Glyph const& left, wchar_t right) noexcept
     {
         return left.Character < right;
     }
@@ -407,7 +407,7 @@ RECT SpriteFont::MeasureDrawBounds(_In_z_ wchar_t const* text, XMFLOAT2 const& p
 {
     RECT result = { LONG_MAX, LONG_MAX, 0, 0 };
 
-    pImpl->ForEachGlyph(text, [&](Glyph const* glyph, float x, float y, float advance)
+    pImpl->ForEachGlyph(text, [&](Glyph const* glyph, float x, float y, float advance) noexcept
     {
         auto w = static_cast<float>(glyph->Subrect.right - glyph->Subrect.left);
         auto h = static_cast<float>(glyph->Subrect.bottom - glyph->Subrect.top);
@@ -497,7 +497,7 @@ RECT XM_CALLCONV SpriteFont::MeasureDrawBounds(_In_z_ char const* text, FXMVECTO
 
 
 // Spacing properties
-float SpriteFont::GetLineSpacing() const
+float SpriteFont::GetLineSpacing() const noexcept
 {
     return pImpl->lineSpacing;
 }
@@ -510,7 +510,7 @@ void SpriteFont::SetLineSpacing(float spacing)
 
 
 // Font properties
-wchar_t SpriteFont::GetDefaultCharacter() const
+wchar_t SpriteFont::GetDefaultCharacter() const noexcept
 {
     return static_cast<wchar_t>(pImpl->defaultGlyph ? pImpl->defaultGlyph->Character : 0);
 }

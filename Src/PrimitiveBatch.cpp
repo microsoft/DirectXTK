@@ -221,7 +221,7 @@ void PrimitiveBatchBase::Impl::End()
 namespace
 {
     // Can we combine adjacent primitives using this topology into a single draw call?
-    bool CanBatchPrimitives(D3D11_PRIMITIVE_TOPOLOGY topology)
+    bool CanBatchPrimitives(D3D11_PRIMITIVE_TOPOLOGY topology) noexcept
     {
         switch (topology)
         {

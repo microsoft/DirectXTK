@@ -42,8 +42,8 @@ public:
     void CreatePixelShader(_In_z_ const wchar_t* shader, _Outptr_ ID3D11PixelShader** pixelShader);
 
     void ReleaseCache();
-    void SetSharing(bool enabled) { mSharing = enabled; }
-    void EnableForceSRGB(bool forceSRGB) { mForceSRGB = forceSRGB; }
+    void SetSharing(bool enabled) noexcept { mSharing = enabled; }
+    void EnableForceSRGB(bool forceSRGB) noexcept { mForceSRGB = forceSRGB; }
 
     static SharedResourcePool<ID3D11Device*, Impl> instancePool;
 
@@ -569,17 +569,17 @@ void DGSLEffectFactory::ReleaseCache()
     pImpl->ReleaseCache();
 }
 
-void DGSLEffectFactory::SetSharing(bool enabled)
+void DGSLEffectFactory::SetSharing(bool enabled) noexcept
 {
     pImpl->SetSharing(enabled);
 }
 
-void DGSLEffectFactory::EnableForceSRGB(bool forceSRGB)
+void DGSLEffectFactory::EnableForceSRGB(bool forceSRGB) noexcept
 {
     pImpl->EnableForceSRGB(forceSRGB);
 }
 
-void DGSLEffectFactory::SetDirectory(_In_opt_z_ const wchar_t* path)
+void DGSLEffectFactory::SetDirectory(_In_opt_z_ const wchar_t* path) noexcept
 {
     if (path && *path != 0)
     {
@@ -599,7 +599,7 @@ void DGSLEffectFactory::SetDirectory(_In_opt_z_ const wchar_t* path)
         *pImpl->mPath = 0;
 }
 
-ID3D11Device* DGSLEffectFactory::GetDevice() const
+ID3D11Device* DGSLEffectFactory::GetDevice() const noexcept
 {
     return pImpl->mDevice.Get();
 }

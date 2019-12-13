@@ -70,7 +70,7 @@ public:
 
     XMVECTOR lightColor[MaxDirectionalLights];
 
-    int GetCurrentShaderPermutation() const;
+    int GetCurrentShaderPermutation() const noexcept;
 
     void Apply(_In_ ID3D11DeviceContext* deviceContext);
 };
@@ -197,7 +197,7 @@ PBREffect::Impl::Impl(_In_ ID3D11Device* device)
 }
 
 
-int PBREffect::Impl::GetCurrentShaderPermutation() const
+int PBREffect::Impl::GetCurrentShaderPermutation() const noexcept
 {
     int permutation = 0;
 

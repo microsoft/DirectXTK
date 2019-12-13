@@ -24,8 +24,8 @@ namespace DirectX
     class BinaryReader
     {
     public:
-        explicit BinaryReader(_In_z_ wchar_t const* fileName);
-        BinaryReader(_In_reads_bytes_(dataSize) uint8_t const* dataBlob, size_t dataSize);
+        explicit BinaryReader(_In_z_ wchar_t const* fileName) noexcept(false);
+        BinaryReader(_In_reads_bytes_(dataSize) uint8_t const* dataBlob, size_t dataSize) noexcept;
 
         BinaryReader(BinaryReader const&) = delete;
         BinaryReader& operator= (BinaryReader const&) = delete;

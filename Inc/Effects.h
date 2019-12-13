@@ -818,15 +818,15 @@ namespace DirectX
         // Settings.
         void __cdecl ReleaseCache();
 
-        void __cdecl SetSharing(bool enabled);
+        void __cdecl SetSharing(bool enabled) noexcept;
 
-        void __cdecl EnableNormalMapEffect(bool enabled);
-        void __cdecl EnableForceSRGB(bool forceSRGB);
+        void __cdecl EnableNormalMapEffect(bool enabled) noexcept;
+        void __cdecl EnableForceSRGB(bool forceSRGB) noexcept;
 
-        void __cdecl SetDirectory(_In_opt_z_ const wchar_t* path);
+        void __cdecl SetDirectory(_In_opt_z_ const wchar_t* path) noexcept;
 
         // Properties.
-        ID3D11Device* GetDevice() const;
+        ID3D11Device* GetDevice() const noexcept;
 
     private:
         // Private implementation.
@@ -856,14 +856,14 @@ namespace DirectX
         // Settings.
         void __cdecl ReleaseCache();
 
-        void __cdecl SetSharing(bool enabled);
+        void __cdecl SetSharing(bool enabled) noexcept;
 
-        void __cdecl EnableForceSRGB(bool forceSRGB);
+        void __cdecl EnableForceSRGB(bool forceSRGB) noexcept;
 
-        void __cdecl SetDirectory(_In_opt_z_ const wchar_t* path);
+        void __cdecl SetDirectory(_In_opt_z_ const wchar_t* path) noexcept;
 
         // Properties.
-        ID3D11Device* GetDevice() const;
+        ID3D11Device* GetDevice() const noexcept;
 
     private:
         // Private implementation.
@@ -912,14 +912,14 @@ namespace DirectX
         // Settings.
         void __cdecl ReleaseCache();
 
-        void __cdecl SetSharing(bool enabled);
+        void __cdecl SetSharing(bool enabled) noexcept;
 
-        void __cdecl EnableForceSRGB(bool forceSRGB);
+        void __cdecl EnableForceSRGB(bool forceSRGB) noexcept;
 
-        void __cdecl SetDirectory(_In_opt_z_ const wchar_t* path);
+        void __cdecl SetDirectory(_In_opt_z_ const wchar_t* path) noexcept;
 
         // Properties.
-        ID3D11Device* GetDevice() const;
+        ID3D11Device* GetDevice() const noexcept;
 
     private:
         // Private implementation.

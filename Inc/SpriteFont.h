@@ -54,11 +54,11 @@ namespace DirectX
         RECT XM_CALLCONV MeasureDrawBounds(_In_z_ char const* text, FXMVECTOR position) const;
 
         // Spacing properties
-        float __cdecl GetLineSpacing() const;
+        float __cdecl GetLineSpacing() const noexcept;
         void __cdecl SetLineSpacing(float spacing);
 
         // Font properties
-        wchar_t __cdecl GetDefaultCharacter() const;
+        wchar_t __cdecl GetDefaultCharacter() const noexcept;
         void __cdecl SetDefaultCharacter(wchar_t character);
 
         bool __cdecl ContainsCharacter(wchar_t character) const;

@@ -38,7 +38,7 @@ namespace
     static_assert((sizeof(PostProcessConstants) % 16) == 0, "CB size not padded correctly");
 
     // 2-parameter Gaussian distribution given standard deviation (rho)
-    inline float GaussianDistribution(float x, float y, float rho)
+    inline float GaussianDistribution(float x, float y, float rho) noexcept
     {
         return expf(-(x * x + y * y) / (2 * rho * rho)) / sqrtf(2 * XM_PI * rho * rho);
     }
@@ -154,8 +154,8 @@ public:
 
     void Process(_In_ ID3D11DeviceContext* deviceContext, std::function<void __cdecl()>& setCustomState);
 
-    void SetConstants(bool value = true) { mUseConstants = value; mDirtyFlags = INT_MAX; }
-    void SetDirtyFlag() { mDirtyFlags = INT_MAX; }
+    void SetConstants(bool value = true) noexcept { mUseConstants = value; mDirtyFlags = INT_MAX; }
+    void SetDirtyFlag() noexcept { mDirtyFlags = INT_MAX; }
 
     // Fields.
     PostProcessConstants                    constants;

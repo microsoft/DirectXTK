@@ -21,7 +21,7 @@ namespace
 {
     const float c_XboxOneThumbDeadZone = .24f;  // Recommended Xbox One controller deadzone
 
-    float ApplyLinearDeadZone(float value, float maxValue, float deadZoneSize)
+    float ApplyLinearDeadZone(float value, float maxValue, float deadZoneSize) noexcept
     {
         if (value < -deadZoneSize)
         {
@@ -44,8 +44,14 @@ namespace
         return std::max(-1.f, std::min(scaledValue, 1.f));
     }
 
-    void ApplyStickDeadZone(float x, float y, GamePad::DeadZone deadZoneMode, float maxValue, float deadZoneSize,
-                            _Out_ float& resultX, _Out_ float& resultY)
+    void ApplyStickDeadZone(
+        float x,
+        float y,
+        GamePad::DeadZone deadZoneMode,
+        float maxValue,
+        float deadZoneSize,
+        _Out_ float& resultX,
+        _Out_ float& resultY) noexcept
     {
         switch (deadZoneMode)
         {

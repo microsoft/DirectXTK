@@ -48,7 +48,7 @@ public:
     bool biasedVertexNormals;
     DebugEffect::Mode debugMode;
 
-    int GetCurrentShaderPermutation() const;
+    int GetCurrentShaderPermutation() const noexcept;
 
     void Apply(_In_ ID3D11DeviceContext* deviceContext);
 };
@@ -183,7 +183,7 @@ DebugEffect::Impl::Impl(_In_ ID3D11Device* device)
 }
 
 
-int DebugEffect::Impl::GetCurrentShaderPermutation() const
+int DebugEffect::Impl::GetCurrentShaderPermutation() const noexcept
 {
     int permutation = static_cast<int>(debugMode);
 

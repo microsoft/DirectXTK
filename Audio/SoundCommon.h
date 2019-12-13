@@ -17,7 +17,7 @@
 namespace DirectX
 {
     // Helper for getting a format tag from a WAVEFORMATEX
-    inline uint32_t GetFormatTag(const WAVEFORMATEX* wfx)
+    inline uint32_t GetFormatTag(const WAVEFORMATEX* wfx) noexcept
     {
         if (wfx->wFormatTag == WAVE_FORMAT_EXTENSIBLE)
         {
@@ -44,26 +44,26 @@ namespace DirectX
 
 
     // Helper for validating wave format structure
-    bool IsValid(_In_ const WAVEFORMATEX* wfx);
+    bool IsValid(_In_ const WAVEFORMATEX* wfx) noexcept;
 
 
     // Helper for getting a default channel mask from channels
-    uint32_t GetDefaultChannelMask(int channels);
+    uint32_t GetDefaultChannelMask(int channels) noexcept;
 
 
     // Helpers for creating various wave format structures
-    void CreateIntegerPCM(_Out_ WAVEFORMATEX* wfx, int sampleRate, int channels, int sampleBits);
-    void CreateFloatPCM(_Out_ WAVEFORMATEX* wfx, int sampleRate, int channels);
-    void CreateADPCM(_Out_writes_bytes_(wfxSize) WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int samplesPerBlock);
+    void CreateIntegerPCM(_Out_ WAVEFORMATEX* wfx, int sampleRate, int channels, int sampleBits) noexcept;
+    void CreateFloatPCM(_Out_ WAVEFORMATEX* wfx, int sampleRate, int channels) noexcept;
+    void CreateADPCM(_Out_writes_bytes_(wfxSize) WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int samplesPerBlock) noexcept(false);
 #if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
-    void CreateXWMA(_Out_ WAVEFORMATEX* wfx, int sampleRate, int channels, int blockAlign, int avgBytes, bool wma3);
+    void CreateXWMA(_Out_ WAVEFORMATEX* wfx, int sampleRate, int channels, int blockAlign, int avgBytes, bool wma3) noexcept;
 #endif
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    void CreateXMA2(_Out_writes_bytes_(wfxSize) WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int bytesPerBlock, int blockCount, int samplesEncoded);
+    void CreateXMA2(_Out_writes_bytes_(wfxSize) WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int bytesPerBlock, int blockCount, int samplesEncoded) noexcept(false);
 #endif
 
     // Helper for computing pan volume matrix
-    bool ComputePan(float pan, unsigned int channels, _Out_writes_(16) float* matrix);
+    bool ComputePan(float pan, unsigned int channels, _Out_writes_(16) float* matrix) noexcept;
 
     // Helper class for implementing SoundEffectInstance
     class SoundEffectInstanceBase
@@ -89,7 +89,7 @@ namespace DirectX
             assert(voice == nullptr);
         }
 
-        void Initialize(_In_ AudioEngine* eng, _In_ const WAVEFORMATEX* wfx, SOUND_EFFECT_INSTANCE_FLAGS flags)
+        void Initialize(_In_ AudioEngine* eng, _In_ const WAVEFORMATEX* wfx, SOUND_EFFECT_INSTANCE_FLAGS flags) noexcept
         {
             assert(eng != nullptr);
             engine = eng;
@@ -166,7 +166,7 @@ namespace DirectX
             return false;
         }
 
-        void Stop(bool immediate, bool& looped)
+        void Stop(bool immediate, bool& looped) noexcept
         {
             if (!voice)
             {
@@ -191,7 +191,7 @@ namespace DirectX
             }
         }
 
-        void Pause()
+        void Pause() noexcept 
         {
             if (voice && state == PLAYING)
             {
@@ -249,7 +249,7 @@ namespace DirectX
 
         void Apply3D(const AudioListener& listener, const AudioEmitter& emitter, bool rhcoords);
 
-        SoundState GetState(bool autostop)
+        SoundState GetState(bool autostop) noexcept
         {
             if (autostop && voice && (state == PLAYING))
             {
@@ -271,7 +271,7 @@ namespace DirectX
             return state;
         }
 
-        int GetPendingBufferCount() const
+        int GetPendingBufferCount() const noexcept
         {
             if (!voice)
                 return 0;
@@ -285,7 +285,7 @@ namespace DirectX
             return static_cast<int>(xstate.BuffersQueued);
         }
 
-        void OnCriticalError()
+        void OnCriticalError() noexcept
         {
             if (voice)
             {
@@ -297,7 +297,7 @@ namespace DirectX
             mReverbVoice = nullptr;
         }
 
-        void OnReset()
+        void OnReset() noexcept
         {
             assert(engine != nullptr);
             mDirectVoice = engine->GetMasterVoice();
@@ -311,7 +311,7 @@ namespace DirectX
             mDSPSettings.DstChannelCount = engine->GetOutputChannels();
         }
 
-        void OnDestroy()
+        void OnDestroy() noexcept
         {
             if (voice)
             {
@@ -335,7 +335,7 @@ namespace DirectX
             }
         }
 
-        void GatherStatistics(AudioStatistics& stats) const
+        void GatherStatistics(AudioStatistics& stats) const noexcept
         {
             ++stats.allocatedInstances;
             if (voice)

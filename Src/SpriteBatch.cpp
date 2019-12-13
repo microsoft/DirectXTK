@@ -677,7 +677,7 @@ void SpriteBatch::Impl::SortSprites()
         case SpriteSortMode_Texture:
             // Sort by texture.
             std::sort(mSortedSprites.begin(), mSortedSprites.begin() + static_cast<int>(mSpriteQueueCount),
-                [](SpriteInfo const* x, SpriteInfo const* y) -> bool
+                [](SpriteInfo const* x, SpriteInfo const* y) noexcept -> bool
                 {
                     return x->texture < y->texture;
                 });
@@ -686,7 +686,7 @@ void SpriteBatch::Impl::SortSprites()
         case SpriteSortMode_BackToFront:
             // Sort back to front.
             std::sort(mSortedSprites.begin(), mSortedSprites.begin() + static_cast<int>(mSpriteQueueCount),
-                [](SpriteInfo const* x, SpriteInfo const* y) -> bool
+                [](SpriteInfo const* x, SpriteInfo const* y) noexcept -> bool
                 {
                     return x->originRotationDepth.w > y->originRotationDepth.w;
                 });
@@ -695,7 +695,7 @@ void SpriteBatch::Impl::SortSprites()
         case SpriteSortMode_FrontToBack:
             // Sort front to back.
             std::sort(mSortedSprites.begin(), mSortedSprites.begin() + static_cast<int>(mSpriteQueueCount),
-                [](SpriteInfo const* x, SpriteInfo const* y) -> bool
+                [](SpriteInfo const* x, SpriteInfo const* y) noexcept -> bool
                 {
                     return x->originRotationDepth.w < y->originRotationDepth.w;
                 });
@@ -1188,7 +1188,7 @@ void SpriteBatch::SetRotation(DXGI_MODE_ROTATION mode)
 }
 
 
-DXGI_MODE_ROTATION SpriteBatch::GetRotation() const
+DXGI_MODE_ROTATION SpriteBatch::GetRotation() const noexcept
 {
     return pImpl->mRotation;
 }

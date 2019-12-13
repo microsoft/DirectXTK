@@ -31,11 +31,11 @@ namespace DirectX
         VertexPosition(VertexPosition&&) = default;
         VertexPosition& operator=(VertexPosition&&) = default;
 
-        VertexPosition(XMFLOAT3 const& iposition)
+        VertexPosition(XMFLOAT3 const& iposition) noexcept
             : position(iposition)
         { }
 
-        VertexPosition(FXMVECTOR iposition)
+        VertexPosition(FXMVECTOR iposition) noexcept
         {
             XMStoreFloat3(&this->position, iposition);
         }
@@ -58,12 +58,12 @@ namespace DirectX
         VertexPositionColor(VertexPositionColor&&) = default;
         VertexPositionColor& operator=(VertexPositionColor&&) = default;
 
-        VertexPositionColor(XMFLOAT3 const& iposition, XMFLOAT4 const& icolor)
+        VertexPositionColor(XMFLOAT3 const& iposition, XMFLOAT4 const& icolor) noexcept
             : position(iposition),
             color(icolor)
         { }
 
-        VertexPositionColor(FXMVECTOR iposition, FXMVECTOR icolor)
+        VertexPositionColor(FXMVECTOR iposition, FXMVECTOR icolor) noexcept
         {
             XMStoreFloat3(&this->position, iposition);
             XMStoreFloat4(&this->color, icolor);
@@ -88,12 +88,12 @@ namespace DirectX
         VertexPositionTexture(VertexPositionTexture&&) = default;
         VertexPositionTexture& operator=(VertexPositionTexture&&) = default;
 
-        VertexPositionTexture(XMFLOAT3 const& iposition, XMFLOAT2 const& itextureCoordinate)
+        VertexPositionTexture(XMFLOAT3 const& iposition, XMFLOAT2 const& itextureCoordinate) noexcept
             : position(iposition),
             textureCoordinate(itextureCoordinate)
         { }
 
-        VertexPositionTexture(FXMVECTOR iposition, FXMVECTOR itextureCoordinate)
+        VertexPositionTexture(FXMVECTOR iposition, FXMVECTOR itextureCoordinate) noexcept
         {
             XMStoreFloat3(&this->position, iposition);
             XMStoreFloat2(&this->textureCoordinate, itextureCoordinate);
@@ -118,15 +118,19 @@ namespace DirectX
         VertexPositionDualTexture(VertexPositionDualTexture&&) = default;
         VertexPositionDualTexture& operator=(VertexPositionDualTexture&&) = default;
 
-        VertexPositionDualTexture(XMFLOAT3 const& iposition, XMFLOAT2 const& itextureCoordinate0, XMFLOAT2 const& itextureCoordinate1)
-            : position(iposition),
-            textureCoordinate0(itextureCoordinate0),
-            textureCoordinate1(itextureCoordinate1)
+        VertexPositionDualTexture(
+            XMFLOAT3 const& iposition,
+            XMFLOAT2 const& itextureCoordinate0,
+            XMFLOAT2 const& itextureCoordinate1) noexcept
+                : position(iposition),
+                  textureCoordinate0(itextureCoordinate0),
+                  textureCoordinate1(itextureCoordinate1)
         { }
 
-        VertexPositionDualTexture(FXMVECTOR iposition,
-                                  FXMVECTOR itextureCoordinate0,
-                                  FXMVECTOR itextureCoordinate1)
+        VertexPositionDualTexture(
+            FXMVECTOR iposition,
+            FXMVECTOR itextureCoordinate0,
+            FXMVECTOR itextureCoordinate1) noexcept
         {
             XMStoreFloat3(&this->position, iposition);
             XMStoreFloat2(&this->textureCoordinate0, itextureCoordinate0);
@@ -153,12 +157,12 @@ namespace DirectX
         VertexPositionNormal(VertexPositionNormal&&) = default;
         VertexPositionNormal& operator=(VertexPositionNormal&&) = default;
 
-        VertexPositionNormal(XMFLOAT3 const& iposition, XMFLOAT3 const& inormal)
+        VertexPositionNormal(XMFLOAT3 const& iposition, XMFLOAT3 const& inormal) noexcept
             : position(iposition),
             normal(inormal)
         { }
 
-        VertexPositionNormal(FXMVECTOR iposition, FXMVECTOR inormal)
+        VertexPositionNormal(FXMVECTOR iposition, FXMVECTOR inormal) noexcept
         {
             XMStoreFloat3(&this->position, iposition);
             XMStoreFloat3(&this->normal, inormal);
@@ -183,13 +187,13 @@ namespace DirectX
         VertexPositionColorTexture(VertexPositionColorTexture&&) = default;
         VertexPositionColorTexture& operator=(VertexPositionColorTexture&&) = default;
 
-        VertexPositionColorTexture(XMFLOAT3 const& iposition, XMFLOAT4 const& icolor, XMFLOAT2 const& itextureCoordinate)
+        VertexPositionColorTexture(XMFLOAT3 const& iposition, XMFLOAT4 const& icolor, XMFLOAT2 const& itextureCoordinate) noexcept
             : position(iposition),
             color(icolor),
             textureCoordinate(itextureCoordinate)
         { }
 
-        VertexPositionColorTexture(FXMVECTOR iposition, FXMVECTOR icolor, FXMVECTOR itextureCoordinate)
+        VertexPositionColorTexture(FXMVECTOR iposition, FXMVECTOR icolor, FXMVECTOR itextureCoordinate) noexcept
         {
             XMStoreFloat3(&this->position, iposition);
             XMStoreFloat4(&this->color, icolor);
@@ -216,13 +220,13 @@ namespace DirectX
         VertexPositionNormalColor(VertexPositionNormalColor&&) = default;
         VertexPositionNormalColor& operator=(VertexPositionNormalColor&&) = default;
 
-        VertexPositionNormalColor(XMFLOAT3 const& iposition, XMFLOAT3 const& inormal, XMFLOAT4 const& icolor)
+        VertexPositionNormalColor(XMFLOAT3 const& iposition, XMFLOAT3 const& inormal, XMFLOAT4 const& icolor) noexcept
             : position(iposition),
             normal(inormal),
             color(icolor)
         { }
 
-        VertexPositionNormalColor(FXMVECTOR iposition, FXMVECTOR inormal, FXMVECTOR icolor)
+        VertexPositionNormalColor(FXMVECTOR iposition, FXMVECTOR inormal, FXMVECTOR icolor) noexcept
         {
             XMStoreFloat3(&this->position, iposition);
             XMStoreFloat3(&this->normal, inormal);
@@ -249,13 +253,13 @@ namespace DirectX
         VertexPositionNormalTexture(VertexPositionNormalTexture&&) = default;
         VertexPositionNormalTexture& operator=(VertexPositionNormalTexture&&) = default;
 
-        VertexPositionNormalTexture(XMFLOAT3 const& iposition, XMFLOAT3 const& inormal, XMFLOAT2 const& itextureCoordinate)
+        VertexPositionNormalTexture(XMFLOAT3 const& iposition, XMFLOAT3 const& inormal, XMFLOAT2 const& itextureCoordinate) noexcept
             : position(iposition),
             normal(inormal),
             textureCoordinate(itextureCoordinate)
         { }
 
-        VertexPositionNormalTexture(FXMVECTOR iposition, FXMVECTOR inormal, FXMVECTOR itextureCoordinate)
+        VertexPositionNormalTexture(FXMVECTOR iposition, FXMVECTOR inormal, FXMVECTOR itextureCoordinate) noexcept
         {
             XMStoreFloat3(&this->position, iposition);
             XMStoreFloat3(&this->normal, inormal);
@@ -282,14 +286,18 @@ namespace DirectX
         VertexPositionNormalColorTexture(VertexPositionNormalColorTexture&&) = default;
         VertexPositionNormalColorTexture& operator=(VertexPositionNormalColorTexture&&) = default;
 
-        VertexPositionNormalColorTexture(XMFLOAT3 const& iposition, XMFLOAT3 const& inormal, XMFLOAT4 const& icolor, XMFLOAT2 const& itextureCoordinate)
-            : position(iposition),
-            normal(inormal),
-            color(icolor),
-            textureCoordinate(itextureCoordinate)
+        VertexPositionNormalColorTexture(
+            XMFLOAT3 const& iposition,
+            XMFLOAT3 const& inormal,
+            XMFLOAT4 const& icolor,
+            XMFLOAT2 const& itextureCoordinate) noexcept
+                : position(iposition),
+                  normal(inormal),
+                  color(icolor),
+                 textureCoordinate(itextureCoordinate)
         { }
 
-        VertexPositionNormalColorTexture(FXMVECTOR iposition, FXMVECTOR inormal, FXMVECTOR icolor, CXMVECTOR itextureCoordinate)
+        VertexPositionNormalColorTexture(FXMVECTOR iposition, FXMVECTOR inormal, FXMVECTOR icolor, CXMVECTOR itextureCoordinate) noexcept
         {
             XMStoreFloat3(&this->position, iposition);
             XMStoreFloat3(&this->normal, inormal);
@@ -325,16 +333,26 @@ namespace DirectX
         uint32_t color;
         XMFLOAT2 textureCoordinate;
 
-        VertexPositionNormalTangentColorTexture(XMFLOAT3 const& iposition, XMFLOAT3 const& inormal, XMFLOAT4 const& itangent, uint32_t irgba, XMFLOAT2 const& itextureCoordinate)
-            : position(iposition),
-            normal(inormal),
-            tangent(itangent),
-            color(irgba),
-            textureCoordinate(itextureCoordinate)
+        VertexPositionNormalTangentColorTexture(
+            XMFLOAT3 const& iposition,
+            XMFLOAT3 const& inormal,
+            XMFLOAT4 const& itangent,
+            uint32_t irgba,
+            XMFLOAT2 const& itextureCoordinate) noexcept
+                : position(iposition),
+                  normal(inormal),
+                  tangent(itangent),
+                  color(irgba),
+                  textureCoordinate(itextureCoordinate)
         {
         }
 
-        VertexPositionNormalTangentColorTexture(FXMVECTOR iposition, FXMVECTOR inormal, FXMVECTOR itangent, uint32_t irgba, CXMVECTOR itextureCoordinate)
+        VertexPositionNormalTangentColorTexture(
+            FXMVECTOR iposition,
+            FXMVECTOR inormal,
+            FXMVECTOR itangent,
+            uint32_t irgba,
+            CXMVECTOR itextureCoordinate) noexcept
             : color(irgba)
         {
             XMStoreFloat3(&this->position, iposition);
@@ -343,18 +361,28 @@ namespace DirectX
             XMStoreFloat2(&this->textureCoordinate, itextureCoordinate);
         }
 
-        VertexPositionNormalTangentColorTexture(XMFLOAT3 const& iposition, XMFLOAT3 const& inormal, XMFLOAT4 const& itangent, XMFLOAT4 const& icolor, XMFLOAT2 const& itextureCoordinate)
-            : position(iposition),
-            normal(inormal),
-            tangent(itangent),
-            color{},
-            textureCoordinate(itextureCoordinate)
+        VertexPositionNormalTangentColorTexture(
+            XMFLOAT3 const& iposition,
+            XMFLOAT3 const& inormal,
+            XMFLOAT4 const& itangent,
+            XMFLOAT4 const& icolor,
+            XMFLOAT2 const& itextureCoordinate) noexcept
+                : position(iposition),
+                  normal(inormal),
+                  tangent(itangent),
+                  color{},
+                  textureCoordinate(itextureCoordinate)
         {
             SetColor(icolor);
         }
 
-        VertexPositionNormalTangentColorTexture(FXMVECTOR iposition, FXMVECTOR inormal, FXMVECTOR itangent, CXMVECTOR icolor, CXMVECTOR itextureCoordinate) :
-            color{}
+        VertexPositionNormalTangentColorTexture(
+            FXMVECTOR iposition,
+            FXMVECTOR inormal,
+            FXMVECTOR itangent,
+            CXMVECTOR icolor,
+            CXMVECTOR itextureCoordinate) noexcept
+            : color{}
         {
             XMStoreFloat3(&this->position, iposition);
             XMStoreFloat3(&this->normal, inormal);
@@ -364,8 +392,8 @@ namespace DirectX
             SetColor(icolor);
         }
 
-        void __cdecl SetColor(XMFLOAT4 const& icolor) { SetColor(XMLoadFloat4(&icolor)); }
-        void XM_CALLCONV SetColor(FXMVECTOR icolor);
+        void __cdecl SetColor(XMFLOAT4 const& icolor) noexcept { SetColor(XMLoadFloat4(&icolor)); }
+        void XM_CALLCONV SetColor(FXMVECTOR icolor) noexcept;
 
         static const int InputElementCount = 5;
         static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
@@ -394,7 +422,7 @@ namespace DirectX
             uint32_t irgba,
             XMFLOAT2 const& itextureCoordinate,
             XMUINT4 const& iindices,
-            XMFLOAT4 const& iweights)
+            XMFLOAT4 const& iweights) noexcept
             : VertexPositionNormalTangentColorTexture(iposition, inormal, itangent, irgba, itextureCoordinate),
             indices{},
             weights{}
@@ -410,7 +438,7 @@ namespace DirectX
             uint32_t irgba,
             CXMVECTOR itextureCoordinate,
             XMUINT4 const& iindices,
-            CXMVECTOR iweights)
+            CXMVECTOR iweights) noexcept
             : VertexPositionNormalTangentColorTexture(iposition, inormal, itangent, irgba, itextureCoordinate),
             indices{},
             weights{}
@@ -426,7 +454,7 @@ namespace DirectX
             XMFLOAT4 const& icolor,
             XMFLOAT2 const& itextureCoordinate,
             XMUINT4 const& iindices,
-            XMFLOAT4 const& iweights)
+            XMFLOAT4 const& iweights) noexcept
             : VertexPositionNormalTangentColorTexture(iposition, inormal, itangent, icolor, itextureCoordinate),
             indices{},
             weights{}
@@ -442,7 +470,7 @@ namespace DirectX
             CXMVECTOR icolor,
             CXMVECTOR itextureCoordinate,
             XMUINT4 const& iindices,
-            CXMVECTOR iweights)
+            CXMVECTOR iweights) noexcept
             : VertexPositionNormalTangentColorTexture(iposition, inormal, itangent, icolor, itextureCoordinate),
             indices{},
             weights{}
@@ -451,10 +479,10 @@ namespace DirectX
             SetBlendWeights(iweights);
         }
 
-        void __cdecl SetBlendIndices(XMUINT4 const& iindices);
+        void __cdecl SetBlendIndices(XMUINT4 const& iindices) noexcept;
 
-        void __cdecl SetBlendWeights(XMFLOAT4 const& iweights) { SetBlendWeights(XMLoadFloat4(&iweights)); }
-        void XM_CALLCONV SetBlendWeights(FXMVECTOR iweights);
+        void __cdecl SetBlendWeights(XMFLOAT4 const& iweights) noexcept { SetBlendWeights(XMLoadFloat4(&iweights)); }
+        void XM_CALLCONV SetBlendWeights(FXMVECTOR iweights) noexcept;
 
         static const int InputElementCount = 7;
         static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];

@@ -230,7 +230,7 @@ void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indi
 
     // Makes an undirected edge. Rather than overloading comparison operators to give us the (a,b)==(b,a) property,
     // we'll just ensure that the larger of the two goes first. This'll simplify things greatly.
-    auto makeUndirectedEdge = [](uint16_t a, uint16_t b)
+    auto makeUndirectedEdge = [](uint16_t a, uint16_t b) noexcept
     {
         return std::make_pair(std::max(a, b), std::min(a, b));
     };

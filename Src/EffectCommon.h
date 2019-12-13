@@ -166,7 +166,7 @@ namespace DirectX
 
         // Helper looks up the bytecode for the specified vertex shader permutation.
         // Client code needs this in order to create matching input layouts.
-        void GetVertexShaderBytecode(int permutation, _Out_ void const** pShaderByteCode, _Out_ size_t* pByteCodeLength)
+        void GetVertexShaderBytecode(int permutation, _Out_ void const** pShaderByteCode, _Out_ size_t* pByteCodeLength) noexcept
         {
             assert(permutation >= 0 && permutation < Traits::ShaderPermutationCount);
             _Analysis_assume_(permutation >= 0 && permutation < Traits::ShaderPermutationCount);

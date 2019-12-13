@@ -271,7 +271,7 @@ public:
 
     // Methods
     void Apply(_In_ ID3D11DeviceContext* deviceContext);
-    void GetVertexShaderBytecode(_Out_ void const** pShaderByteCode, _Out_ size_t* pByteCodeLength);
+    void GetVertexShaderBytecode(_Out_ void const** pShaderByteCode, _Out_ size_t* pByteCodeLength) noexcept;
 
     // Fields
     DGSLEffectConstants constants;
@@ -302,8 +302,8 @@ private:
     ConstantBuffer<BoneConstants>               mCBBone;
     ComPtr<ID3D11PixelShader>                   mPixelShader;
 
-    int GetCurrentVSPermutation() const;
-    int GetCurrentPSPermutation() const;
+    int GetCurrentVSPermutation() const noexcept;
+    int GetCurrentPSPermutation() const noexcept;
 
     // Only one of these helpers is allocated per D3D device, even if there are multiple effect instances.
     class DeviceResources : protected EffectDeviceResources
@@ -505,7 +505,7 @@ void DGSLEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
 }
 
 
-void DGSLEffect::Impl::GetVertexShaderBytecode(_Out_ void const** pShaderByteCode, _Out_ size_t* pByteCodeLength)
+void DGSLEffect::Impl::GetVertexShaderBytecode(_Out_ void const** pShaderByteCode, _Out_ size_t* pByteCodeLength) noexcept
 {
     int permutation = GetCurrentVSPermutation();
 
@@ -518,7 +518,7 @@ void DGSLEffect::Impl::GetVertexShaderBytecode(_Out_ void const** pShaderByteCod
 }
 
 
-int DGSLEffect::Impl::GetCurrentVSPermutation() const
+int DGSLEffect::Impl::GetCurrentVSPermutation() const noexcept
 {
     int permutation = (vertexColorEnabled) ? 1 : 0;
 
@@ -541,7 +541,7 @@ int DGSLEffect::Impl::GetCurrentVSPermutation() const
 }
 
 
-int DGSLEffect::Impl::GetCurrentPSPermutation() const
+int DGSLEffect::Impl::GetCurrentPSPermutation() const noexcept
 {
     int permutation = 0;
 

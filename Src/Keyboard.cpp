@@ -20,7 +20,7 @@ static_assert(sizeof(Keyboard::State) == (256 / 8), "Size mismatch for State");
 
 namespace
 {
-    void KeyDown(int key, Keyboard::State& state)
+    void KeyDown(int key, Keyboard::State& state) noexcept
     {
         if (key < 0 || key > 0xfe)
             return;
@@ -31,7 +31,7 @@ namespace
         ptr[(key >> 5)] |= bf;
     }
 
-    void KeyUp(int key, Keyboard::State& state)
+    void KeyUp(int key, Keyboard::State& state) noexcept
     {
         if (key < 0 || key > 0xfe)
             return;

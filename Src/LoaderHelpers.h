@@ -24,7 +24,7 @@ namespace DirectX
         //--------------------------------------------------------------------------------------
         // Return the BPP for a particular format
         //--------------------------------------------------------------------------------------
-        inline size_t BitsPerPixel(_In_ DXGI_FORMAT fmt)
+        inline size_t BitsPerPixel(_In_ DXGI_FORMAT fmt) noexcept
         {
             switch (fmt)
             {
@@ -201,7 +201,7 @@ namespace DirectX
         }
 
         //--------------------------------------------------------------------------------------
-        inline DXGI_FORMAT MakeSRGB(_In_ DXGI_FORMAT format)
+        inline DXGI_FORMAT MakeSRGB(_In_ DXGI_FORMAT format) noexcept
         {
             switch (format)
             {
@@ -232,7 +232,7 @@ namespace DirectX
         }
 
         //--------------------------------------------------------------------------------------
-        inline bool IsCompressed(_In_ DXGI_FORMAT fmt)
+        inline bool IsCompressed(_In_ DXGI_FORMAT fmt) noexcept
         {
             switch (fmt)
             {
@@ -265,7 +265,7 @@ namespace DirectX
         }
 
         //--------------------------------------------------------------------------------------
-        inline DXGI_FORMAT EnsureNotTypeless(DXGI_FORMAT fmt)
+        inline DXGI_FORMAT EnsureNotTypeless(DXGI_FORMAT fmt) noexcept
         {
             // Assumes UNORM or FLOAT; doesn't use UINT or SINT
             switch (fmt)
@@ -299,7 +299,7 @@ namespace DirectX
             size_t ddsDataSize,
             const DDS_HEADER** header,
             const uint8_t** bitData,
-            size_t* bitSize)
+            size_t* bitSize) noexcept
         {
             if (!header || !bitData || !bitSize)
             {
@@ -363,7 +363,7 @@ namespace DirectX
             std::unique_ptr<uint8_t[]>& ddsData,
             const DDS_HEADER** header,
             const uint8_t** bitData,
-            size_t* bitSize)
+            size_t* bitSize) noexcept
         {
             if (!header || !bitData || !bitSize)
             {
@@ -484,7 +484,7 @@ namespace DirectX
             _In_ DXGI_FORMAT fmt,
             _Out_opt_ size_t* outNumBytes,
             _Out_opt_ size_t* outRowBytes,
-            _Out_opt_ size_t* outNumRows)
+            _Out_opt_ size_t* outNumRows) noexcept
         {
             uint64_t numBytes = 0;
             uint64_t rowBytes = 0;
@@ -640,7 +640,7 @@ namespace DirectX
         //--------------------------------------------------------------------------------------
     #define ISBITMASK( r,g,b,a ) ( ddpf.RBitMask == r && ddpf.GBitMask == g && ddpf.BBitMask == b && ddpf.ABitMask == a )
 
-        inline DXGI_FORMAT GetDXGIFormat(const DDS_PIXELFORMAT& ddpf)
+        inline DXGI_FORMAT GetDXGIFormat(const DDS_PIXELFORMAT& ddpf) noexcept
         {
             if (ddpf.flags & DDS_RGB)
             {
@@ -882,7 +882,7 @@ namespace DirectX
     #undef ISBITMASK
 
             //--------------------------------------------------------------------------------------
-        inline DirectX::DDS_ALPHA_MODE GetAlphaMode(_In_ const DDS_HEADER* header)
+        inline DirectX::DDS_ALPHA_MODE GetAlphaMode(_In_ const DDS_HEADER* header) noexcept
         {
             if (header->ddspf.flags & DDS_FOURCC)
             {
@@ -917,7 +917,7 @@ namespace DirectX
         class auto_delete_file
         {
         public:
-            auto_delete_file(HANDLE hFile) : m_handle(hFile) {}
+            auto_delete_file(HANDLE hFile) noexcept : m_handle(hFile) {}
 
             auto_delete_file(const auto_delete_file&) = delete;
             auto_delete_file& operator=(const auto_delete_file&) = delete;
@@ -932,7 +932,7 @@ namespace DirectX
                 }
             }
 
-            void clear() { m_handle = nullptr; }
+            void clear() noexcept { m_handle = nullptr; }
 
         private:
             HANDLE m_handle;
@@ -941,7 +941,7 @@ namespace DirectX
         class auto_delete_file_wic
         {
         public:
-            auto_delete_file_wic(Microsoft::WRL::ComPtr<IWICStream>& hFile, LPCWSTR szFile) : m_filename(szFile), m_handle(hFile) {}
+            auto_delete_file_wic(Microsoft::WRL::ComPtr<IWICStream>& hFile, LPCWSTR szFile) noexcept : m_filename(szFile), m_handle(hFile) {}
 
             auto_delete_file_wic(const auto_delete_file_wic&) = delete;
             auto_delete_file_wic& operator=(const auto_delete_file_wic&) = delete;
@@ -955,7 +955,7 @@ namespace DirectX
                 }
             }
 
-            void clear() { m_filename = nullptr; }
+            void clear() noexcept { m_filename = nullptr; }
 
         private:
             LPCWSTR m_filename;

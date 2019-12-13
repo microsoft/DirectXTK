@@ -41,7 +41,7 @@ namespace
         _In_ ID3D11DeviceContext* pContext,
         _In_ ID3D11Resource* pSource,
         D3D11_TEXTURE2D_DESC& desc,
-        ComPtr<ID3D11Texture2D>& pStaging)
+        ComPtr<ID3D11Texture2D>& pStaging) noexcept
     {
         if (!pContext || !pSource)
             return E_INVALIDARG;
@@ -339,8 +339,8 @@ HRESULT DirectX::SaveDDSTextureToFile(
 //--------------------------------------------------------------------------------------
 namespace DirectX
 {
-    extern bool _IsWIC2();
-    extern IWICImagingFactory* _GetWIC();
+    extern bool _IsWIC2() noexcept;
+    extern IWICImagingFactory* _GetWIC() noexcept;
 }
 
 _Use_decl_annotations_

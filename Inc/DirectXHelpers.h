@@ -62,7 +62,7 @@ namespace DirectX
                  _In_ ID3D11Resource *resource,
                  _In_ UINT subresource,
                  _In_ D3D11_MAP mapType,
-                 _In_ UINT mapFlags)
+                 _In_ UINT mapFlags) noexcept(false)
             : mContext(context), mResource(resource), mSubresource(subresource)
         {
             HRESULT hr = mContext->Map(resource, subresource, mapType, mapFlags, this);
@@ -77,20 +77,20 @@ namespace DirectX
             mContext->Unmap(mResource, mSubresource);
         }
 
-        uint8_t* get() const
+        uint8_t* get() const noexcept
         {
             return static_cast<uint8_t*>(pData);
         }
-        uint8_t* get(size_t slice) const
+        uint8_t* get(size_t slice) const noexcept
         {
             return static_cast<uint8_t*>(pData) + (slice * DepthPitch);
         }
 
-        uint8_t* scanline(size_t row) const
+        uint8_t* scanline(size_t row) const noexcept
         {
             return static_cast<uint8_t*>(pData) + (row * RowPitch);
         }
-        uint8_t* scanline(size_t slice, size_t row) const
+        uint8_t* scanline(size_t slice, size_t row) const noexcept
         {
             return static_cast<uint8_t*>(pData) + (slice * DepthPitch) + (row * RowPitch);
         }
@@ -107,7 +107,7 @@ namespace DirectX
 
     // Helper sets a D3D resource name string (used by PIX and debug layer leak reporting).
     template<UINT TNameLength>
-    inline void SetDebugObjectName(_In_ ID3D11DeviceChild* resource, _In_z_ const char (&name)[TNameLength])
+    inline void SetDebugObjectName(_In_ ID3D11DeviceChild* resource, _In_z_ const char (&name)[TNameLength]) noexcept
     {
         #if !defined(NO_D3D11_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
             #if defined(_XBOX_ONE) && defined(_TITLE)
@@ -148,7 +148,7 @@ namespace DirectX
 
     // Helpers for aligning values by a power of 2
     template<typename T>
-    inline T AlignDown(T size, size_t alignment)
+    inline T AlignDown(T size, size_t alignment) noexcept
     {
         if (alignment > 0)
         {
@@ -160,7 +160,7 @@ namespace DirectX
     }
 
     template<typename T>
-    inline T AlignUp(T size, size_t alignment)
+    inline T AlignUp(T size, size_t alignment) noexcept
     {
         if (alignment > 0)
         {

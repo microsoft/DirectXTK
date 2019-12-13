@@ -130,7 +130,7 @@ public:
 
     void Process(_In_ ID3D11DeviceContext* deviceContext, std::function<void __cdecl()>& setCustomState);
 
-    void SetDirtyFlag() { mDirtyFlags = INT_MAX; }
+    void SetDirtyFlag() noexcept { mDirtyFlags = INT_MAX; }
 
     // Fields.
     PostProcessConstants                    constants;

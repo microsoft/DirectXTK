@@ -48,7 +48,7 @@ namespace
         _Out_ size_t& theight,
         _Out_ size_t& tdepth,
         _Out_ size_t& skipMip,
-        _Out_writes_(mipCount*arraySize) D3D11_SUBRESOURCE_DATA* initData)
+        _Out_writes_(mipCount*arraySize) D3D11_SUBRESOURCE_DATA* initData) noexcept
     {
         if (!bitData || !initData)
         {
@@ -148,7 +148,7 @@ namespace
         _In_ bool isCubeMap,
         _In_reads_opt_(mipCount*arraySize) const D3D11_SUBRESOURCE_DATA* initData,
         _Outptr_opt_ ID3D11Resource** texture,
-        _Outptr_opt_ ID3D11ShaderResourceView** textureView)
+        _Outptr_opt_ ID3D11ShaderResourceView** textureView) noexcept
     {
         if (!d3dDevice)
             return E_POINTER;
@@ -164,7 +164,7 @@ namespace
         {
         case D3D11_RESOURCE_DIMENSION_TEXTURE1D:
         {
-            D3D11_TEXTURE1D_DESC desc;
+            D3D11_TEXTURE1D_DESC desc = {};
             desc.Width = static_cast<UINT>(width);
             desc.MipLevels = static_cast<UINT>(mipCount);
             desc.ArraySize = static_cast<UINT>(arraySize);
@@ -224,7 +224,7 @@ namespace
 
         case D3D11_RESOURCE_DIMENSION_TEXTURE2D:
         {
-            D3D11_TEXTURE2D_DESC desc;
+            D3D11_TEXTURE2D_DESC desc = {};
             desc.Width = static_cast<UINT>(width);
             desc.Height = static_cast<UINT>(height);
             desc.MipLevels = static_cast<UINT>(mipCount);
@@ -310,7 +310,7 @@ namespace
 
         case D3D11_RESOURCE_DIMENSION_TEXTURE3D:
         {
-            D3D11_TEXTURE3D_DESC desc;
+            D3D11_TEXTURE3D_DESC desc = {};
             desc.Width = static_cast<UINT>(width);
             desc.Height = static_cast<UINT>(height);
             desc.Depth = static_cast<UINT>(depth);
@@ -382,7 +382,7 @@ namespace
         _In_ unsigned int miscFlags,
         _In_ bool forceSRGB,
         _Outptr_opt_ ID3D11Resource** texture,
-        _Outptr_opt_ ID3D11ShaderResourceView** textureView)
+        _Outptr_opt_ ID3D11ShaderResourceView** textureView) noexcept
     {
         HRESULT hr = S_OK;
 
@@ -635,7 +635,7 @@ namespace
                 if (numBytes > UINT32_MAX || rowBytes > UINT32_MAX)
                     return HRESULT_FROM_WIN32(ERROR_ARITHMETIC_OVERFLOW);
 
-                D3D11_SHADER_RESOURCE_VIEW_DESC desc;
+                D3D11_SHADER_RESOURCE_VIEW_DESC desc = {};
                 (*textureView)->GetDesc(&desc);
 
                 UINT mipLevels = 1;
@@ -851,7 +851,7 @@ namespace
     void SetDebugTextureInfo(
         _In_z_ const wchar_t* fileName,
         _In_opt_ ID3D11Resource** texture,
-        _In_opt_ ID3D11ShaderResourceView** textureView)
+        _In_opt_ ID3D11ShaderResourceView** textureView) noexcept
     {
 #if !defined(NO_D3D11_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
         if (texture || textureView)

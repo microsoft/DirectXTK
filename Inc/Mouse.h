@@ -79,7 +79,7 @@ namespace DirectX
 
             void __cdecl Reset() noexcept;
 
-            State __cdecl GetLastState() const { return lastState; }
+            State __cdecl GetLastState() const noexcept { return lastState; }
 
         private:
             State lastState;

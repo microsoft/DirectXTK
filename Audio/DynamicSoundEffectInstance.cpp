@@ -106,7 +106,7 @@ public:
 
     virtual void __cdecl OnUpdate() override;
 
-    virtual void __cdecl OnDestroyEngine() override
+    virtual void __cdecl OnDestroyEngine() noexcept override
     {
         mBase.OnDestroy();
     }
@@ -116,7 +116,7 @@ public:
         mBase.OnTrim();
     }
 
-    virtual void __cdecl GatherStatistics(AudioStatistics& stats) const override
+    virtual void __cdecl GatherStatistics(AudioStatistics& stats) const noexcept override
     {
         mBase.GatherStatistics(stats);
     }
@@ -264,14 +264,14 @@ void DynamicSoundEffectInstance::Play()
 }
 
 
-void DynamicSoundEffectInstance::Stop(bool immediate)
+void DynamicSoundEffectInstance::Stop(bool immediate) noexcept
 {
     bool looped = false;
     pImpl->mBase.Stop(immediate, looped);
 }
 
 
-void DynamicSoundEffectInstance::Pause()
+void DynamicSoundEffectInstance::Pause() noexcept
 {
     pImpl->mBase.Pause();
 }
@@ -322,7 +322,7 @@ void DynamicSoundEffectInstance::SubmitBuffer(const uint8_t* pAudioData, uint32_
 
 
 // Public accessors.
-SoundState DynamicSoundEffectInstance::GetState()
+SoundState DynamicSoundEffectInstance::GetState() noexcept
 {
     return pImpl->mBase.GetState(false);
 }

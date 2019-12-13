@@ -39,7 +39,7 @@ namespace
         uint32_t    dwOffset;   // Region offset, in bytes.
         uint32_t    dwLength;   // Region length, in bytes.
 
-        void BigEndian()
+        void BigEndian() noexcept
         {
             dwOffset = _byteswap_ulong(dwOffset);
             dwLength = _byteswap_ulong(dwLength);
@@ -51,7 +51,7 @@ namespace
         uint32_t    dwStartSample;  // Start sample for the region.
         uint32_t    dwTotalSamples; // Region length in samples.
 
-        void BigEndian()
+        void BigEndian() noexcept
         {
             dwStartSample = _byteswap_ulong(dwStartSample);
             dwTotalSamples = _byteswap_ulong(dwTotalSamples);
@@ -79,7 +79,7 @@ namespace
         uint32_t    dwHeaderVersion;        // Version of the file format
         REGION      Segments[SEGIDX_COUNT]; // Segment lookup table
 
-        void BigEndian()
+        void BigEndian() noexcept
         {
             // Leave dwSignature alone as indicator of BE vs. LE
 
@@ -117,12 +117,12 @@ namespace
 
         uint32_t           dwValue;
 
-        void BigEndian()
+        void BigEndian() noexcept
         {
             dwValue = _byteswap_ulong(dwValue);
         }
 
-        WORD BitsPerSample() const
+        WORD BitsPerSample() const noexcept
         {
             if (wFormatTag == TAG_XMA)
                 return 16; // XMA_OUTPUT_SAMPLE_BITS == 16
@@ -135,7 +135,7 @@ namespace
             return (wBitsPerSample == BITDEPTH_16) ? 16u : 8u;
         }
 
-        DWORD BlockAlign() const
+        DWORD BlockAlign() const noexcept
         {
             switch (wFormatTag)
             {
@@ -181,7 +181,7 @@ namespace
             return 0;
         }
 
-        DWORD AvgBytesPerSec() const
+        DWORD AvgBytesPerSec() const noexcept
         {
             switch (wFormatTag)
             {
@@ -222,13 +222,13 @@ namespace
             return 0;
         }
 
-        DWORD AdpcmSamplesPerBlock() const
+        DWORD AdpcmSamplesPerBlock() const noexcept
         {
             uint32_t nBlockAlign = (wBlockAlign + ADPCM_BLOCKALIGN_CONVERSION_OFFSET) * nChannels;
             return nBlockAlign * 2 / uint32_t(nChannels) - 12;
         }
 
-        void AdpcmFillCoefficientTable(ADPCMWAVEFORMAT *fmt) const
+        void AdpcmFillCoefficientTable(ADPCMWAVEFORMAT *fmt) const noexcept
         {
             // These are fixed since we are always using MS ADPCM
             fmt->wNumCoef = 7 /* MSADPCM_NUM_COEFFICIENTS */;
@@ -261,7 +261,7 @@ namespace
         MINIWAVEFORMAT  CompactFormat;                  // Format data for compact bank
         FILETIME        BuildTime;                      // Build timestamp
 
-        void BigEndian()
+        void BigEndian() noexcept
         {
             dwFlags = _byteswap_ulong(dwFlags);
             dwEntryCount = _byteswap_ulong(dwEntryCount);
@@ -304,7 +304,7 @@ namespace
         REGION          PlayRegion;     // Region within the wave data segment that contains this entry.
         SAMPLEREGION    LoopRegion;     // Region within the wave data (in samples) that should loop.
 
-        void BigEndian()
+        void BigEndian() noexcept
         {
             dwFlagsAndDuration = _byteswap_ulong(dwFlagsAndDuration);
             Format.BigEndian();
@@ -318,12 +318,12 @@ namespace
         uint32_t       dwOffset : 21;       // Data offset, in multiplies of the bank alignment
         uint32_t       dwLengthDeviation : 11;       // Data length deviation, in bytes
 
-        void BigEndian()
+        void BigEndian() noexcept
         {
             *reinterpret_cast<uint32_t*>(this) = _byteswap_ulong(*reinterpret_cast<const uint32_t*>(this));
         }
 
-        void ComputeLocations(DWORD& offset, DWORD& length, uint32_t index, const HEADER& header, const BANKDATA& data, const ENTRYCOMPACT* entries) const
+        void ComputeLocations(DWORD& offset, DWORD& length, uint32_t index, const HEADER& header, const BANKDATA& data, const ENTRYCOMPACT* entries) const noexcept
         {
             offset = dwOffset * data.dwAlignment;
 
@@ -337,7 +337,7 @@ namespace
             }
         }
 
-        static uint32_t GetDuration(DWORD length, const BANKDATA& data, const uint32_t* seekTable)
+        static uint32_t GetDuration(DWORD length, const BANKDATA& data, const uint32_t* seekTable) noexcept
         {
             switch (data.CompactFormat.wFormatTag)
             {
@@ -384,7 +384,7 @@ namespace
 
 #pragma pack(pop)
 
-    inline const uint32_t* FindSeekTable(uint32_t index, const uint8_t* seekTable, const HEADER& header, const BANKDATA& data)
+    inline const uint32_t* FindSeekTable(uint32_t index, const uint8_t* seekTable, const HEADER& header, const BANKDATA& data) noexcept
     {
         if (!seekTable || index >= data.dwEntryCount)
             return nullptr;

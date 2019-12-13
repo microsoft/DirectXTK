@@ -151,7 +151,7 @@ public:
         }
     }
 
-    bool IsConnected() const
+    bool IsConnected() const noexcept
     {
         return GetSystemMetrics(SM_MOUSEPRESENT) != 0;
     }
@@ -232,7 +232,7 @@ private:
 
     friend void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam);
 
-    void ClipToWindow()
+    void ClipToWindow() noexcept
     {
         assert(mWindow != nullptr);
 

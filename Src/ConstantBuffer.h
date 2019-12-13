@@ -98,7 +98,7 @@ namespace DirectX
     #endif
 
     // Looks up the underlying D3D constant buffer.
-        ID3D11Buffer* GetBuffer()
+        ID3D11Buffer* GetBuffer() const noexcept
         {
             return mConstantBuffer.Get();
         }

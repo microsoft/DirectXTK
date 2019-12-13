@@ -50,7 +50,7 @@ public:
 
     EffectColor color;
 
-    int GetCurrentShaderPermutation() const;
+    int GetCurrentShaderPermutation() const noexcept;
 
     void Apply(_In_ ID3D11DeviceContext* deviceContext);
 };
@@ -152,7 +152,7 @@ AlphaTestEffect::Impl::Impl(_In_ ID3D11Device* device)
 }
 
 
-int AlphaTestEffect::Impl::GetCurrentShaderPermutation() const
+int AlphaTestEffect::Impl::GetCurrentShaderPermutation() const noexcept
 {
     int permutation = 0;
 

@@ -220,9 +220,9 @@ public:
 
     void Process(_In_ ID3D11DeviceContext* deviceContext, std::function<void __cdecl()>& setCustomState);
 
-    void SetDirtyFlag() { mDirtyFlags = INT_MAX; }
+    void SetDirtyFlag() noexcept { mDirtyFlags = INT_MAX; }
 
-    int GetCurrentShaderPermutation() const;
+    int GetCurrentShaderPermutation() const noexcept;
 
     // Fields.
     ToneMapConstants                        constants;
@@ -336,7 +336,7 @@ void ToneMapPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, 
 }
 
 
-int ToneMapPostProcess::Impl::GetCurrentShaderPermutation() const
+int ToneMapPostProcess::Impl::GetCurrentShaderPermutation() const noexcept
 {
 #if defined(_XBOX_ONE) && defined(_TITLE)
     int permutation = (mrt) ? 12 : 0;

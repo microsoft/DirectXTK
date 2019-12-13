@@ -64,7 +64,7 @@ public:
         }
     }
 
-    HRESULT Initialize(_In_ AudioEngine* engine, _In_z_ const wchar_t* wbFileName);
+    HRESULT Initialize(_In_ AudioEngine* engine, _In_z_ const wchar_t* wbFileName) noexcept;
 
     void Play(unsigned int index, float volume, float pitch, float pan);
 
@@ -90,7 +90,7 @@ public:
         assert(false);
     }
 
-    virtual void __cdecl OnDestroyEngine() override
+    virtual void __cdecl OnDestroyEngine() noexcept override
     {
         mEngine = nullptr;
         mOneShots = 0;
@@ -101,7 +101,7 @@ public:
         // No action required
     }
 
-    virtual void __cdecl GatherStatistics(AudioStatistics& stats) const override
+    virtual void __cdecl GatherStatistics(AudioStatistics& stats) const noexcept override
     {
         stats.playingOneShots += mOneShots;
 
@@ -126,7 +126,7 @@ public:
 
 
 _Use_decl_annotations_
-HRESULT WaveBank::Impl::Initialize(AudioEngine* engine, const wchar_t* wbFileName)
+HRESULT WaveBank::Impl::Initialize(AudioEngine* engine, const wchar_t* wbFileName) noexcept
 {
     if (!engine || !wbFileName)
         return E_INVALIDARG;
@@ -377,7 +377,7 @@ void WaveBank::UnregisterInstance(_In_ SoundEffectInstance* instance)
 
 
 // Public accessors.
-bool WaveBank::IsPrepared() const
+bool WaveBank::IsPrepared() const noexcept
 {
     if (pImpl->mPrepared)
         return true;
@@ -390,13 +390,13 @@ bool WaveBank::IsPrepared() const
 }
 
 
-bool WaveBank::IsInUse() const
+bool WaveBank::IsInUse() const noexcept
 {
     return (pImpl->mOneShots > 0) || !pImpl->mInstances.empty();
 }
 
 
-bool WaveBank::IsStreamingBank() const
+bool WaveBank::IsStreamingBank() const noexcept
 {
     return pImpl->mReader.IsStreamingBank();
 }

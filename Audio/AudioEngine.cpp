@@ -123,7 +123,7 @@ namespace
         XAUDIO2FX_I3DL2_PRESET_PLATE,               // Reverb_Plate
     };
 
-    inline unsigned int makeVoiceKey(_In_ const WAVEFORMATEX* wfx)
+    inline unsigned int makeVoiceKey(_In_ const WAVEFORMATEX* wfx) noexcept
     {
         assert(IsValid(wfx));
 
@@ -287,11 +287,11 @@ public:
 
     void SetSilentMode();
 
-    void Shutdown();
+    void Shutdown() noexcept;
 
     bool Update();
 
-    void SetReverb(_In_opt_ const XAUDIO2FX_REVERB_PARAMETERS* native);
+    void SetReverb(_In_opt_ const XAUDIO2FX_REVERB_PARAMETERS* native) noexcept;
 
     void SetMasteringLimit(int release, int loudness);
 
@@ -746,7 +746,7 @@ void AudioEngine::Impl::SetSilentMode()
 }
 
 
-void AudioEngine::Impl::Shutdown()
+void AudioEngine::Impl::Shutdown() noexcept
 {
     for (auto it = mNotifyObjects.begin(); it != mNotifyObjects.end(); ++it)
     {
@@ -869,7 +869,7 @@ bool AudioEngine::Impl::Update()
 
 
 _Use_decl_annotations_
-void AudioEngine::Impl::SetReverb(const XAUDIO2FX_REVERB_PARAMETERS* native)
+void AudioEngine::Impl::SetReverb(const XAUDIO2FX_REVERB_PARAMETERS* native) noexcept
 {
     if (!mReverbVoice)
         return;
@@ -1359,7 +1359,7 @@ void AudioEngine::Resume()
 }
 
 
-float AudioEngine::GetMasterVolume() const
+float AudioEngine::GetMasterVolume() const noexcept
 {
     return pImpl->mMasterVolume;
 }
@@ -1417,7 +1417,7 @@ AudioStatistics AudioEngine::GetStatistics() const
 }
 
 
-WAVEFORMATEXTENSIBLE AudioEngine::GetOutputFormat() const
+WAVEFORMATEXTENSIBLE AudioEngine::GetOutputFormat() const noexcept
 {
     WAVEFORMATEXTENSIBLE wfx = {};
 
@@ -1442,25 +1442,25 @@ WAVEFORMATEXTENSIBLE AudioEngine::GetOutputFormat() const
 }
 
 
-uint32_t AudioEngine::GetChannelMask() const
+uint32_t AudioEngine::GetChannelMask() const noexcept
 {
     return pImpl->masterChannelMask;
 }
 
 
-unsigned int AudioEngine::GetOutputChannels() const
+unsigned int AudioEngine::GetOutputChannels() const noexcept
 {
     return pImpl->masterChannels;
 }
 
 
-bool AudioEngine::IsAudioDevicePresent() const
+bool AudioEngine::IsAudioDevicePresent() const noexcept
 {
     return pImpl->xaudio2 && !pImpl->mCriticalError;
 }
 
 
-bool AudioEngine::IsCriticalError() const
+bool AudioEngine::IsCriticalError() const noexcept
 {
     return pImpl->mCriticalError;
 }
