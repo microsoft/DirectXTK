@@ -278,6 +278,16 @@ inline Vector2 operator/ (const Vector2& V1, const Vector2& V2) noexcept
     return R;
 }
 
+inline Vector2 operator/ (const Vector2& V, float S) noexcept
+{
+    using namespace DirectX;
+    XMVECTOR v1 = XMLoadFloat2(&V);
+    XMVECTOR X = XMVectorScale(v1, 1.f / S);
+    Vector2 R;
+    XMStoreFloat2(&R, X);
+    return R;
+}
+
 inline Vector2 operator* (float S, const Vector2& V) noexcept
 {
     using namespace DirectX;
@@ -857,6 +867,16 @@ inline Vector3 operator/ (const Vector3& V1, const Vector3& V2) noexcept
     return R;
 }
 
+inline Vector3 operator/ (const Vector3& V, float S) noexcept
+{
+    using namespace DirectX;
+    XMVECTOR v1 = XMLoadFloat3(&V);
+    XMVECTOR X = XMVectorScale(v1, 1.f / S);
+    Vector3 R;
+    XMStoreFloat3(&R, X);
+    return R;
+}
+
 inline Vector3 operator* (float S, const Vector3& V) noexcept
 {
     using namespace DirectX;
@@ -1431,6 +1451,16 @@ inline Vector4 operator/ (const Vector4& V1, const Vector4& V2) noexcept
     XMVECTOR v1 = XMLoadFloat4(&V1);
     XMVECTOR v2 = XMLoadFloat4(&V2);
     XMVECTOR X = XMVectorDivide(v1, v2);
+    Vector4 R;
+    XMStoreFloat4(&R, X);
+    return R;
+}
+
+inline Vector4 operator/ (const Vector4& V, float S) noexcept
+{
+    using namespace DirectX;
+    XMVECTOR v1 = XMLoadFloat4(&V);
+    XMVECTOR X = XMVectorScale(v1, 1.f / S);
     Vector4 R;
     XMStoreFloat4(&R, X);
     return R;

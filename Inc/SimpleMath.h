@@ -218,6 +218,7 @@ namespace DirectX
         Vector2 operator* (const Vector2& V1, const Vector2& V2) noexcept;
         Vector2 operator* (const Vector2& V, float S) noexcept;
         Vector2 operator/ (const Vector2& V1, const Vector2& V2) noexcept;
+        Vector2 operator/ (const Vector2& V, float S) noexcept;
         Vector2 operator* (float S, const Vector2& V) noexcept;
 
         //------------------------------------------------------------------------------
@@ -337,6 +338,7 @@ namespace DirectX
         Vector3 operator* (const Vector3& V1, const Vector3& V2) noexcept;
         Vector3 operator* (const Vector3& V, float S) noexcept;
         Vector3 operator/ (const Vector3& V1, const Vector3& V2) noexcept;
+        Vector3 operator/ (const Vector3& V, float S) noexcept;
         Vector3 operator* (float S, const Vector3& V) noexcept;
 
         //------------------------------------------------------------------------------
@@ -450,6 +452,7 @@ namespace DirectX
         Vector4 operator* (const Vector4& V1, const Vector4& V2) noexcept;
         Vector4 operator* (const Vector4& V, float S) noexcept;
         Vector4 operator/ (const Vector4& V1, const Vector4& V2) noexcept;
+        Vector4 operator/ (const Vector4& V, float S) noexcept;
         Vector4 operator* (float S, const Vector4& V) noexcept;
 
         //------------------------------------------------------------------------------
