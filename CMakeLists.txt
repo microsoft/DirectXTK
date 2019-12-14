@@ -9,6 +9,9 @@ cmake_minimum_required (VERSION 3.11)
 
 project (DirectXTK LANGUAGES CXX)
 
+option(BUILD_XAUDIO_WIN10 "Build for XAudio 2.9" OFF)
+option(BUILD_XAUDIO_WIN8 "Build for XAudio 2.8" ON)
+
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -17,8 +20,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/CMake")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/CMake")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/CMake")
 
-add_library (${PROJECT_NAME} STATIC
-    Inc/Audio.h
+set(LIBRARY_SOURCES
     Inc/CommonStates.h
     Inc/DDSTextureLoader.h
     Inc/DirectXHelpers.h
@@ -38,17 +40,6 @@ add_library (${PROJECT_NAME} STATIC
     Inc/SpriteFont.h
     Inc/VertexTypes.h
     Inc/WICTextureLoader.h
-    Audio/AudioEngine.cpp
-    Audio/DynamicSoundEffectInstance.cpp
-    Audio/SoundCommon.cpp
-    Audio/SoundCommon.h
-    Audio/SoundEffect.cpp
-    Audio/SoundEffectInstance.cpp
-    Audio/WaveBank.cpp
-    Audio/WaveBankReader.cpp
-    Audio/WaveBankReader.h
-    Audio/WAVFileReader.cpp
-    Audio/WAVFileReader.h
     Src/AlignedNew.h
     Src/AlphaTestEffect.cpp
     Src/BasicEffect.cpp
@@ -90,7 +81,6 @@ add_library (${PROJECT_NAME} STATIC
     Src/PrimitiveBatch.cpp
     Src/ScreenGrab.cpp
     Src/SDKMesh.h
-    Src/Shaders
     Src/SharedResourcePool.h
     Src/SimpleMath.cpp
     Src/SkinnedEffect.cpp
@@ -100,15 +90,36 @@ add_library (${PROJECT_NAME} STATIC
     Src/ToneMapPostProcess.cpp
     Src/vbo.h
     Src/VertexTypes.cpp
-    Src/WICTextureLoader.cpp
-)
+    Src/WICTextureLoader.cpp)
+
+if((BUILD_XAUDIO_WIN10 MATCHES ON) OR (BUILD_XAUDIO_WIN8 MATCHES ON))
+    set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
+        Inc/Audio.h
+        Audio/AudioEngine.cpp
+        Audio/DynamicSoundEffectInstance.cpp
+        Audio/SoundCommon.cpp
+        Audio/SoundCommon.h
+        Audio/SoundEffect.cpp
+        Audio/SoundEffectInstance.cpp
+        Audio/WaveBank.cpp
+        Audio/WaveBankReader.cpp
+        Audio/WaveBankReader.h
+        Audio/WAVFileReader.cpp
+        Audio/WAVFileReader.h)
+endif()
+
+add_library(${PROJECT_NAME} STATIC ${LIBRARY_SOURCES})
 
 source_group(Audio REGULAR_EXPRESSION Audio/*.*)
 source_group(Inc REGULAR_EXPRESSION Inc/*.*)
 source_group(Src REGULAR_EXPRESSION Src/*.*)
 
 target_include_directories(${PROJECT_NAME} PUBLIC Inc)
-target_include_directories(${PROJECT_NAME} PRIVATE Audio Src)
+target_include_directories(${PROJECT_NAME} PRIVATE Src)
+
+if((BUILD_XAUDIO_WIN10 MATCHES ON) OR (BUILD_XAUDIO_WIN8 MATCHES ON))
+    target_include_directories(${PROJECT_NAME} PRIVATE Audio)
+endif()
 
 if(MSVC)
     # Use max Warning Level 
@@ -156,7 +167,14 @@ if ( CMAKE_CXX_COMPILER_ID MATCHES "MSVC" )
 endif()
 
 if(WIN32)
-    # Windows 8 is used here to use XAudio 2.8 rather than require the legacy DirectX SDK or NuGet (https://aka.ms/XAudio2Redist)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE _UNICODE UNICODE _WIN32_WINNT=0x0602)
-    target_compile_definitions(xwbtool PRIVATE _UNICODE UNICODE _WIN32_WINNT=0x0602)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE _UNICODE UNICODE)
+    target_compile_definitions(xwbtool PRIVATE _UNICODE UNICODE _WIN32_WINNT=0x0601)
+
+    if(BUILD_XAUDIO_WIN10 MATCHES ON)
+        target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0A00)
+    elseif(BUILD_XAUDIO_WIN8 MATCHES ON)
+        target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0602)
+    else()
+        target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0601)
+    endif()
 endif()
