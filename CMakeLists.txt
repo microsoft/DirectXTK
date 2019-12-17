@@ -92,6 +92,29 @@ set(LIBRARY_SOURCES
     Src/VertexTypes.cpp
     Src/WICTextureLoader.cpp)
 
+set(SHADER_SOURCES
+    Src/Shaders/AlphaTestEffect.fx
+    Src/Shaders/BasicEffect.fx
+    Src/Shaders/Common.fxh
+    Src/Shaders/DebugEffect.fx
+    Src/Shaders/DGSLEffect.fx
+    Src/Shaders/DGSLLambert.hlsl
+    Src/Shaders/DGSLPhong.hlsl
+    Src/Shaders/DGSLUnlit.hlsl
+    Src/Shaders/DualTextureEffect.fx
+    Src/Shaders/EnvironmentMapEffect.fx
+    Src/Shaders/Lighting.fxh
+    Src/Shaders/NormalMapEffect.fx
+    Src/Shaders/PBRCommon.fxh
+    Src/Shaders/PBREffect.fx
+    Src/Shaders/PixelPacking_Velocity.hlsli
+    Src/Shaders/PostProcess.fx
+    Src/Shaders/SkinnedEffect.fx
+    Src/Shaders/SpriteEffect.fx
+    Src/Shaders/Structures.fxh
+    Src/Shaders/ToneMap.fx
+    Src/Shaders/Utilities.fxh)
+
 if((BUILD_XAUDIO_WIN10 MATCHES ON) OR (BUILD_XAUDIO_WIN8 MATCHES ON))
     set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
         Inc/Audio.h
@@ -108,7 +131,16 @@ if((BUILD_XAUDIO_WIN10 MATCHES ON) OR (BUILD_XAUDIO_WIN8 MATCHES ON))
         Audio/WAVFileReader.h)
 endif()
 
-add_library(${PROJECT_NAME} STATIC ${LIBRARY_SOURCES})
+add_library(${PROJECT_NAME} STATIC ${LIBRARY_SOURCES} Src/Shaders/Compiled/SpriteEffect_SpriteVertexShader.inc)
+
+add_custom_command(
+    OUTPUT "${CMAKE_SOURCE_DIR}/Src/Shaders/Compiled/SpriteEffect_SpriteVertexShader.inc"
+    MAIN_DEPENDENCY "${CMAKE_SOURCE_DIR}/Src/Shaders/CompileShaders.cmd"
+    DEPENDS ${SHADER_SOURCES}
+    COMMENT "Generating HLSL shaders..."
+    COMMAND "CompileShaders.cmd"
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/Src/Shaders"
+    USES_TERMINAL)
 
 source_group(Audio REGULAR_EXPRESSION Audio/*.*)
 source_group(Inc REGULAR_EXPRESSION Inc/*.*)
