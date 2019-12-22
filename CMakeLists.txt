@@ -77,6 +77,7 @@ set(LIBRARY_SOURCES
     Src/PBREffect.cpp
     Src/PBREffectFactory.cpp
     Src/pch.h
+    Src/pch.cpp
     Src/PlatformHelpers.h
     Src/PrimitiveBatch.cpp
     Src/ScreenGrab.cpp
@@ -167,7 +168,9 @@ endif()
 add_executable(xwbtool
     xwbtool/xwbtool.cpp
     Audio/WAVFileReader.cpp
-    Audio/WAVFileReader.h)
+    Audio/WAVFileReader.h
+    Src/pch.h
+    Src/pch.cpp)
 target_include_directories(xwbtool PRIVATE Audio Src)
 source_group(xwbtool REGULAR_EXPRESSION XWBTool/*.*)
 
@@ -196,6 +199,12 @@ if ( CMAKE_CXX_COMPILER_ID MATCHES "MSVC" )
 
     set(WarningsEXE "/wd4365" "/wd4710" "/wd4820" "/wd5039" "/wd5045")
     target_compile_options(xwbtool PRIVATE ${WarningsEXE})
+
+    # Pre-compiled headers
+    set_source_files_properties(${LIBRARY_SOURCES} PROPERTIES COMPILE_FLAGS /Yu"pch.h")
+    set_source_files_properties(Src/pch.cpp PROPERTIES COMPILE_FLAGS /Yc"pch.h")
+    set_source_files_properties(xwbtool/xwbtool.cpp PROPERTIES COMPILE_FLAGS /Yu"pch.h" COMPILE_FLAGS /FI"pch.h")
+    set_source_files_properties(Audio/WAVFileReader.cpp PROPERTIES COMPILE_FLAGS /Yu"pch.h")
 endif()
 
 if(WIN32)
