@@ -17,7 +17,7 @@ float3 BiasD2(float3 x)
 }
 
 
-// Christian Schüler, "Normal Mapping without Precomputed Tangents", ShaderX 5, Chapter 2.6, pp. 131 – 140
+// Christian Schuler, "Normal Mapping without Precomputed Tangents", ShaderX 5, Chapter 2.6, pp. 131-140
 // See also follow-up blog post: http://www.thetenthplanet.de/archives/1180
 float3x3 CalculateTBN(float3 p, float3 n, float2 tex)
 {
