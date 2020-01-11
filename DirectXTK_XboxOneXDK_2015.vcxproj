@@ -670,4 +670,12 @@
   <Target Name="ATGEnsureShaders" BeforeTargets="PrepareForBuild">
     <Exec Condition="!Exists('src/Shaders/Compiled/XboxOneSpriteEffect_SpriteVertexShader.inc')" WorkingDirectory="$(ProjectDir)src/Shaders" Command="CompileShaders xbox" />
   </Target>
+  <Target Name="ATGDeleteShaders" AfterTargets="Clean">
+    <ItemGroup>
+      <_ATGShaderHeaders Include="$(ProjectDir)src/Shaders/Compiled/XboxOne*.inc"/>
+      <_ATGShaderSymbols Include="$(ProjectDir)src/Shaders/Compiled/XboxOne*.pdb"/>
+    </ItemGroup>
+    <Delete Files="@(_ATGShaderHeaders)"/>
+    <Delete Files="@(_ATGShaderSymbols)"/>
+  </Target>
 </Project>
