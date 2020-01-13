@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata minClientVersion="2.8.6">
-        <id>directxtk_desktop_2015</id>
+        <id>directxtk_desktop_win10</id>
         <version>0.0.0-SpecifyVersionOnCommandline</version>
-        <title>DirectX Tool Kit (VS 2015/2017/2019 Win32)</title>
+        <title>DirectX Tool Kit (VS 2017/2019 Win32 for Windows 10)</title>
         <authors>Microsoft</authors>
         <owners>microsoft,directxtk</owners>
         <summary>The DirectX Tool Kit (aka DirectXTK) is a collection of helper classes for writing Direct3D 11.x code in C++.</summary>
-        <description>This version is for Windows desktop applications using Visual Studio 2015 Update 3, Visual Studio 2017, or Visual Studio 2019.
+        <description>This version is for Windows desktop applications using Visual Studio 2017 or Visual Studio 2019 on Windows 10.
 
 Features:
 Audio - low-level audio API using XAudio2
@@ -31,7 +31,7 @@ VertexTypes - structures for commonly used vertex data formats
 WICTextureLoader - WIC-based image file texture loader</description>
         <releaseNotes>Matches the December 17, 2019 release on GitHub.
 
-DirectX Tool Kit for Audio in this package uses XAudio 2.8 which requires Windows 8 or later. To support Windows 7, you need to build DirectXTKAudioDX.lib using the legacy DirectX SDK and deploy it via the legacy DXSETUP.</releaseNotes>
+DirectX Tool Kit for Audio in this package uses XAudio 2.9 which requires Windows 10.</releaseNotes>
         <projectUrl>http://go.microsoft.com/fwlink/?LinkId=248929</projectUrl>
         <icon>images\icon.jpg</icon>
         <license type="expression">MIT</license>
@@ -46,27 +46,25 @@ DirectX Tool Kit for Audio in this package uses XAudio 2.8 which requires Window
 
         <file target="include" src="Inc\*" exclude="Inc\XboxDDSTextureLoader.h" />
 
-        <file target="lib\Win32\Debug" src="Bin\Desktop_2015\Win32\Debug\*.lib" />
-        <file target="lib\Win32\Debug" src="Bin\Desktop_2015\Win32\Debug\*.pdb" />
-        <file target="lib\Win32\Debug" src="Audio\Bin\Desktop_2015\Win32\Debug\*.lib" />
-        <file target="lib\Win32\Debug" src="Audio\Bin\Desktop_2015\Win32\Debug\*.pdb" />
+        <file target="lib\Win32\Debug" src="Bin\Desktop_2017_Win10\Win32\Debug\*.lib" />
+        <file target="lib\Win32\Debug" src="Bin\Desktop_2017_Win10\Win32\Debug\*.pdb" />
 
-        <file target="lib\Win32\Release" src="Bin\Desktop_2015\Win32\Release\*.lib" />
-        <file target="lib\Win32\Release" src="Bin\Desktop_2015\Win32\Release\*.pdb" />
-        <file target="lib\Win32\Release" src="Audio\Bin\Desktop_2015\Win32\Release\*.lib" />
-        <file target="lib\Win32\Release" src="Audio\Bin\Desktop_2015\Win32\Release\*.pdb" />
+        <file target="lib\Win32\Release" src="Bin\Desktop_2017_Win10\Win32\Release\*.lib" />
+        <file target="lib\Win32\Release" src="Bin\Desktop_2017_Win10\Win32\Release\*.pdb" />
 
-        <file target="lib\x64\Debug" src="Bin\Desktop_2015\x64\Debug\*.lib" />
-        <file target="lib\x64\Debug" src="Bin\Desktop_2015\x64\Debug\*.pdb" />
-        <file target="lib\x64\Debug" src="Audio\Bin\Desktop_2015\x64\Debug\*.lib" />
-        <file target="lib\x64\Debug" src="Audio\Bin\Desktop_2015\x64\Debug\*.pdb" />
+        <file target="lib\x64\Debug" src="Bin\Desktop_2017_Win10\x64\Debug\*.lib" />
+        <file target="lib\x64\Debug" src="Bin\Desktop_2017_Win10\x64\Debug\*.pdb" />
 
-        <file target="lib\x64\Release" src="Bin\Desktop_2015\x64\Release\*.lib" />
-        <file target="lib\x64\Release" src="Bin\Desktop_2015\x64\Release\*.pdb" />
-        <file target="lib\x64\Release" src="Audio\Bin\Desktop_2015\x64\Release\*.lib" />
-        <file target="lib\x64\Release" src="Audio\Bin\Desktop_2015\x64\Release\*.pdb" />
+        <file target="lib\x64\Release" src="Bin\Desktop_2017_Win10\x64\Release\*.lib" />
+        <file target="lib\x64\Release" src="Bin\Desktop_2017_Win10\x64\Release\*.pdb" />
 
-        <file src=".nuget/directxtk_desktop_2015.targets" target="build\native" />
+        <file target="lib\ARM64\Debug" src="Bin\Desktop_2019_Win10\ARM64\Debug\*.lib" />
+        <file target="lib\ARM64\Debug" src="Bin\Desktop_2019_Win10\ARM64\Debug\*.pdb" />
+
+        <file target="lib\ARM64\Release" src="Bin\Desktop_2019_Win10\ARM64\Release\*.lib" />
+        <file target="lib\ARM64\Release" src="Bin\Desktop_2019_Win10\ARM64\Release\*.pdb" />
+
+        <file src=".nuget/directxtk_desktop_win10.targets" target="build\native" />
 
         <file src=".nuget/icon.jpg" target="images\" />
       
