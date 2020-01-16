@@ -74,6 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Inc\SimpleMath.inl" />
+    <None Include="README.md" />
     <None Include="Src\Shaders\Common.fxh" />
     <None Include="Src\Shaders\Compiled\AlphaTestEffect_PSAlphaTestEqNe.inc" />
     <None Include="Src\Shaders\Compiled\AlphaTestEffect_PSAlphaTestEqNe.pdb" />
@@ -496,9 +497,6 @@
     <None Include="Src\Shaders\SpriteEffect.fx">
       <FileType>Document</FileType>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Src\Shaders\NormalMapEffect.fx">

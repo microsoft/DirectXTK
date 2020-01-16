@@ -98,7 +98,7 @@
     <ClCompile Include="Src\WICTextureLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Readme.txt" />
+    <None Include="README.md" />
     <None Include="Src\Shaders\Common.fxh" />
     <None Include="Src\Shaders\Compiled\AlphaTestEffect_PSAlphaTestEqNe.inc" />
     <None Include="Src\Shaders\Compiled\AlphaTestEffect_PSAlphaTestEqNe.pdb" />

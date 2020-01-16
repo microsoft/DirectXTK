@@ -107,6 +107,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Inc\SimpleMath.inl" />
+    <None Include="README.md" />
     <None Include="Src\Shaders\Common.fxh" />
     <None Include="Src\Shaders\Compiled\XboxOneAlphaTestEffect_PSAlphaTestEqNe.inc" />
     <None Include="Src\Shaders\Compiled\XboxOneAlphaTestEffect_PSAlphaTestEqNe.pdb" />
@@ -487,9 +488,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Readme.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Src\Shaders\NormalMapEffect.fx">
       <FileType>Document</FileType>
     </None>
@@ -679,10 +677,10 @@
   </Target>
   <Target Name="ATGDeleteShaders" AfterTargets="Clean">
     <ItemGroup>
-      <_ATGShaderHeaders Include="$(ProjectDir)src/Shaders/Compiled/XboxOne*.inc"/>
-      <_ATGShaderSymbols Include="$(ProjectDir)src/Shaders/Compiled/XboxOne*.pdb"/>
+      <_ATGShaderHeaders Include="$(ProjectDir)src/Shaders/Compiled/XboxOne*.inc" />
+      <_ATGShaderSymbols Include="$(ProjectDir)src/Shaders/Compiled/XboxOne*.pdb" />
     </ItemGroup>
-    <Delete Files="@(_ATGShaderHeaders)"/>
-    <Delete Files="@(_ATGShaderSymbols)"/>
+    <Delete Files="@(_ATGShaderHeaders)" />
+    <Delete Files="@(_ATGShaderSymbols)" />
   </Target>
 </Project>

@@ -1371,8 +1371,6 @@
     <None Include="Src\Shaders\PixelPacking_Velocity.hlsli">
       <Filter>Src\Shaders\Shared</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Readme.txt" />
+    <None Include="README.md" />
   </ItemGroup>
 </Project>

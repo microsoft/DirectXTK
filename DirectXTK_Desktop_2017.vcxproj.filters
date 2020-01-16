@@ -262,7 +262,6 @@
     <None Include="Src\Shaders\SkinnedEffect.fx">
       <Filter>Src\Shaders</Filter>
     </None>
-    <None Include="Readme.txt" />
     <None Include="Src\Shaders\DGSLEffect.fx">
       <Filter>Src\Shaders</Filter>
     </None>
@@ -1289,5 +1288,6 @@
     <None Include="Src\Shaders\PixelPacking_Velocity.hlsli">
       <Filter>Src\Shaders\Shared</Filter>
     </None>
+    <None Include="README.md" />
   </ItemGroup>
 </Project>
