@@ -58,11 +58,11 @@ DirectX Tool Kit for Audio in this package uses XAudio 2.9 which requires Window
         <file target="lib\x64\Release" src="Bin\Desktop_2017_Win10\x64\Release\*.lib" />
         <file target="lib\x64\Release" src="Bin\Desktop_2017_Win10\x64\Release\*.pdb" />
 
-        <file target="lib\ARM64\Debug" src="Bin\Desktop_2019_Win10\ARM64\Debug\*.lib" />
-        <file target="lib\ARM64\Debug" src="Bin\Desktop_2019_Win10\ARM64\Debug\*.pdb" />
+        <file target="lib\ARM64\Debug" src="Bin\Desktop_2017_Win10\ARM64\Debug\*.lib" />
+        <file target="lib\ARM64\Debug" src="Bin\Desktop_2017_Win10\ARM64\Debug\*.pdb" />
 
-        <file target="lib\ARM64\Release" src="Bin\Desktop_2019_Win10\ARM64\Release\*.lib" />
-        <file target="lib\ARM64\Release" src="Bin\Desktop_2019_Win10\ARM64\Release\*.pdb" />
+        <file target="lib\ARM64\Release" src="Bin\Desktop_2017_Win10\ARM64\Release\*.lib" />
+        <file target="lib\ARM64\Release" src="Bin\Desktop_2017_Win10\ARM64\Release\*.pdb" />
 
         <file src=".nuget/directxtk_desktop_win10.targets" target="build\native" />
 
