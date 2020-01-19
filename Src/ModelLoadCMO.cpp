@@ -23,7 +23,7 @@ using Microsoft::WRL::ComPtr;
 //--------------------------------------------------------------------------------------
 // .CMO files are built by Visual Studio 2012 and an example renderer is provided
 // in the VS Direct3D Starter Kit
-// http://code.msdn.microsoft.com/Visual-Studio-3D-Starter-455a15f1
+// http://aka.ms/vs3dkitwin
 //--------------------------------------------------------------------------------------
 
 namespace VSD3DStarter
@@ -566,8 +566,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
         XMVECTOR max = XMVectorSet(extents->MaxX, extents->MaxY, extents->MaxZ, 0.f);
         BoundingBox::CreateFromPoints(mesh->boundingBox, min, max);
 
-    #if 0
-            // Animation data
+        // Animation data
         if (*bSkeleton)
         {
             // Bones
@@ -597,15 +596,16 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
                 boneName;
 
                 // Bone settings
-                auto bones = reinterpret_cast<const VSD3DStarter::Bone*>(meshData + usedSize);
+                auto cmobones = reinterpret_cast<const VSD3DStarter::Bone*>(meshData + usedSize);
                 usedSize += sizeof(VSD3DStarter::Bone);
                 if (dataSize < usedSize)
                     throw std::runtime_error("End of file");
 
                 // TODO - What to do with bone data?
-                bones;
+                cmobones;
             }
 
+#if 0
             // Animation Clips
             auto nClips = reinterpret_cast<const UINT*>(meshData + usedSize);
             usedSize += sizeof(UINT);
@@ -645,10 +645,8 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
                 // TODO - What to do with keys and clip->StartTime, clip->EndTime?
                 keys;
             }
-        }
-    #else
-        UNREFERENCED_PARAMETER(bSkeleton);
     #endif
+        }
 
         bool enableSkinning = (*nSkinVBs) != 0;
 
