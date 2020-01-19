@@ -41,7 +41,8 @@ public:
     {
         if (!mInstances.empty())
         {
-            DebugTrace("WARNING: Destroying WaveBank \"%hs\" with %zu outstanding SoundEffectInstances\n", mReader.BankName(), mInstances.size());
+            DebugTrace("WARNING: Destroying WaveBank \"%hs\" with %zu outstanding SoundEffectInstances\n",
+                mReader.BankName(), mInstances.size());
 
             for (auto it = mInstances.begin(); it != mInstances.end(); ++it)
             {
@@ -54,7 +55,8 @@ public:
 
         if (mOneShots > 0)
         {
-            DebugTrace("WARNING: Destroying WaveBank \"%hs\" with %u outstanding one shot effects\n", mReader.BankName(), mOneShots);
+            DebugTrace("WARNING: Destroying WaveBank \"%hs\" with %u outstanding one shot effects\n",
+                mReader.BankName(), mOneShots);
         }
 
         if (mEngine)
@@ -155,7 +157,8 @@ void WaveBank::Impl::Play(unsigned int index, float volume, float pitch, float p
 
     if (index >= mReader.Count())
     {
-        DebugTrace("WARNING: Index %u not found in wave bank with only %u entries, one-shot not triggered\n", index, mReader.Count());
+        DebugTrace("WARNING: Index %u not found in wave bank with only %u entries, one-shot not triggered\n",
+            index, mReader.Count());
         return;
     }
 
@@ -233,9 +236,9 @@ void WaveBank::Impl::Play(unsigned int index, float volume, float pitch, float p
     }
     if (FAILED(hr))
     {
-        DebugTrace("ERROR: WaveBank failed (%08X) when submitting buffer:\n", hr);
-        DebugTrace("\tFormat Tag %u, %u channels, %u-bit, %u Hz, %u bytes\n", wfx->wFormatTag,
-                   wfx->nChannels, wfx->wBitsPerSample, wfx->nSamplesPerSec, metadata.lengthBytes);
+        DebugTrace("ERROR: WaveBank failed (%08X) when submitting buffer:\n", static_cast<unsigned int>(hr));
+        DebugTrace("\tFormat Tag %u, %u channels, %u-bit, %u Hz, %u bytes\n",
+            wfx->wFormatTag, wfx->nChannels, wfx->wBitsPerSample, wfx->nSamplesPerSec, metadata.lengthBytes);
         throw std::exception("SubmitSourceBuffer");
     }
 
@@ -255,7 +258,8 @@ WaveBank::WaveBank(AudioEngine* engine, const wchar_t* wbFileName)
     HRESULT hr = pImpl->Initialize(engine, wbFileName);
     if (FAILED(hr))
     {
-        DebugTrace("ERROR: WaveBank failed (%08X) to intialize from .xwb file \"%ls\"\n", hr, wbFileName);
+        DebugTrace("ERROR: WaveBank failed (%08X) to intialize from .xwb file \"%ls\"\n",
+            static_cast<unsigned int>(hr), wbFileName);
         throw std::exception("WaveBank");
     }
 

@@ -877,7 +877,8 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
     HRESULT hr = BinaryReader::ReadEntireFile(szFileName, data, &dataSize);
     if (FAILED(hr))
     {
-        DebugTrace("ERROR: CreateFromCMO failed (%08X) loading '%ls'\n", hr, szFileName);
+        DebugTrace("ERROR: CreateFromCMO failed (%08X) loading '%ls'\n",
+            static_cast<unsigned int>(hr), szFileName);
         throw std::exception("CreateFromCMO");
     }
 

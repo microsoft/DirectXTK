@@ -12,7 +12,6 @@
 #include "Audio.h"
 #include "SoundCommon.h"
 
-#include <list>
 #include <unordered_map>
 
 using namespace DirectX;
@@ -45,7 +44,7 @@ namespace
         #ifndef _DEBUG
             UNREFERENCED_PARAMETER(error);
         #endif
-            DebugTrace("ERROR: AudioEngine encountered critical error (%08X)\n", error);
+            DebugTrace("ERROR: AudioEngine encountered critical error (%08X)\n", static_cast<unsigned int>(error));
             SetEvent(mCriticalError.get());
         }
 
@@ -281,7 +280,10 @@ public:
     }
 #endif
 
-    HRESULT Initialize(AUDIO_ENGINE_FLAGS flags, _In_opt_ const WAVEFORMATEX* wfx, _In_opt_z_ const wchar_t* deviceId, AUDIO_STREAM_CATEGORY category);
+    HRESULT Initialize(AUDIO_ENGINE_FLAGS flags,
+        _In_opt_ const WAVEFORMATEX* wfx,
+        _In_opt_z_ const wchar_t* deviceId,
+        AUDIO_STREAM_CATEGORY category);
 
     HRESULT Reset(_In_opt_ const WAVEFORMATEX* wfx, _In_opt_z_ const wchar_t* deviceId);
 
@@ -299,7 +301,9 @@ public:
 
     void TrimVoicePool();
 
-    void AllocateVoice(_In_ const WAVEFORMATEX* wfx, SOUND_EFFECT_INSTANCE_FLAGS flags, bool oneshot, _Outptr_result_maybenull_ IXAudio2SourceVoice** voice);
+    void AllocateVoice(_In_ const WAVEFORMATEX* wfx,
+        SOUND_EFFECT_INSTANCE_FLAGS flags, bool oneshot,
+        _Outptr_result_maybenull_ IXAudio2SourceVoice** voice);
     void DestroyVoice(_In_ IXAudio2SourceVoice* voice);
 
     void RegisterNotify(_In_ IVoiceNotify* notify, bool usesUpdate);
@@ -348,7 +352,11 @@ private:
 
 
 _Use_decl_annotations_
-HRESULT AudioEngine::Impl::Initialize(AUDIO_ENGINE_FLAGS flags, const WAVEFORMATEX* wfx, const wchar_t* deviceId, AUDIO_STREAM_CATEGORY category)
+HRESULT AudioEngine::Impl::Initialize(
+    AUDIO_ENGINE_FLAGS flags,
+    const WAVEFORMATEX* wfx,
+    const wchar_t* deviceId,
+    AUDIO_STREAM_CATEGORY category)
 {
     mEngineFlags = flags;
     mCategory = category;
@@ -563,7 +571,8 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
 
 #endif
 
-    DebugTrace("INFO: mastering voice has %u channels, %u sample rate, %08X channel mask\n", masterChannels, masterRate, masterChannelMask);
+    DebugTrace("INFO: mastering voice has %u channels, %u sample rate, %08X channel mask\n",
+        masterChannels, masterRate, masterChannelMask);
 
     if (mMasterVolume != 1.f)
     {
@@ -949,7 +958,11 @@ void AudioEngine::Impl::TrimVoicePool()
 
 
 _Use_decl_annotations_
-void AudioEngine::Impl::AllocateVoice(const WAVEFORMATEX* wfx, SOUND_EFFECT_INSTANCE_FLAGS flags, bool oneshot, IXAudio2SourceVoice** voice)
+void AudioEngine::Impl::AllocateVoice(
+    const WAVEFORMATEX* wfx,
+    SOUND_EFFECT_INSTANCE_FLAGS flags,
+    bool oneshot,
+    IXAudio2SourceVoice** voice)
 {
     if (!wfx)
         throw std::exception("Wave format is required\n");
@@ -983,13 +996,13 @@ void AudioEngine::Impl::AllocateVoice(const WAVEFORMATEX* wfx, SOUND_EFFECT_INST
     #ifdef VERBOSE_TRACE
         if (wfx->wFormatTag == WAVE_FORMAT_EXTENSIBLE)
         {
-            DebugTrace("INFO: Requesting one-shot: Format Tag EXTENSIBLE %u, %u channels, %u-bit, %u blkalign, %u Hz\n", GetFormatTag(wfx),
-                       wfx->nChannels, wfx->wBitsPerSample, wfx->nBlockAlign, wfx->nSamplesPerSec);
+            DebugTrace("INFO: Requesting one-shot: Format Tag EXTENSIBLE %u, %u channels, %u-bit, %u blkalign, %u Hz\n",
+                GetFormatTag(wfx), wfx->nChannels, wfx->wBitsPerSample, wfx->nBlockAlign, wfx->nSamplesPerSec);
         }
         else
         {
-            DebugTrace("INFO: Requesting one-shot: Format Tag %u, %u channels, %u-bit, %u blkalign, %u Hz\n", wfx->wFormatTag,
-                       wfx->nChannels, wfx->wBitsPerSample, wfx->nBlockAlign, wfx->nSamplesPerSec);
+            DebugTrace("INFO: Requesting one-shot: Format Tag %u, %u channels, %u-bit, %u blkalign, %u Hz\n",
+                wfx->wFormatTag, wfx->nChannels, wfx->wBitsPerSample, wfx->nBlockAlign, wfx->nSamplesPerSec);
         }
     #endif
 
@@ -1062,8 +1075,8 @@ void AudioEngine::Impl::AllocateVoice(const WAVEFORMATEX* wfx, SOUND_EFFECT_INST
                     }
 
                 #ifdef VERBOSE_TRACE
-                    DebugTrace("INFO: Allocate reuse voice: Format Tag %u, %u channels, %u-bit, %u blkalign, %u Hz\n", wfmt->wFormatTag,
-                               wfmt->nChannels, wfmt->wBitsPerSample, wfmt->nBlockAlign, wfmt->nSamplesPerSec);
+                    DebugTrace("INFO: Allocate reuse voice: Format Tag %u, %u channels, %u-bit, %u blkalign, %u Hz\n",
+                        wfmt->wFormatTag, wfmt->nChannels, wfmt->wBitsPerSample, wfmt->nBlockAlign, wfmt->nSamplesPerSec);
                 #endif
 
                     assert(voiceKey == makeVoiceKey(wfmt));
@@ -1071,7 +1084,7 @@ void AudioEngine::Impl::AllocateVoice(const WAVEFORMATEX* wfx, SOUND_EFFECT_INST
                     HRESULT hr = xaudio2->CreateSourceVoice(voice, wfmt, 0, XAUDIO2_DEFAULT_FREQ_RATIO, &mVoiceCallback, nullptr, nullptr);
                     if (FAILED(hr))
                     {
-                        DebugTrace("ERROR: CreateSourceVoice (reuse) failed with error %08X\n", hr);
+                        DebugTrace("ERROR: CreateSourceVoice (reuse) failed with error %08X\n", static_cast<unsigned int>(hr));
                         throw std::exception("CreateSourceVoice");
                     }
                 }
@@ -1080,7 +1093,7 @@ void AudioEngine::Impl::AllocateVoice(const WAVEFORMATEX* wfx, SOUND_EFFECT_INST
                 HRESULT hr = (*voice)->SetSourceSampleRate(wfx->nSamplesPerSec);
                 if (FAILED(hr))
                 {
-                    DebugTrace("ERROR: SetSourceSampleRate failed with error %08X\n", hr);
+                    DebugTrace("ERROR: SetSourceSampleRate failed with error %08X\n", static_cast<unsigned int>(hr));
                     throw std::exception("SetSourceSampleRate");
                 }
             }
@@ -1100,7 +1113,8 @@ void AudioEngine::Impl::AllocateVoice(const WAVEFORMATEX* wfx, SOUND_EFFECT_INST
         }
         else if ((mVoiceInstances + 1) >= maxVoiceInstances)
         {
-            DebugTrace("ERROR: Too many instance voices (%zu >= %zu); see TrimVoicePool\n", mVoiceInstances + 1, maxVoiceInstances);
+            DebugTrace("ERROR: Too many instance voices (%zu >= %zu); see TrimVoicePool\n",
+                mVoiceInstances + 1, maxVoiceInstances);
             throw std::exception("Too many instance voices");
         }
 
@@ -1110,14 +1124,15 @@ void AudioEngine::Impl::AllocateVoice(const WAVEFORMATEX* wfx, SOUND_EFFECT_INST
         if (flags & SoundEffectInstance_Use3D)
         {
             XAUDIO2_SEND_DESCRIPTOR sendDescriptors[2];
-            sendDescriptors[0].Flags = sendDescriptors[1].Flags = (flags & SoundEffectInstance_ReverbUseFilters) ? XAUDIO2_SEND_USEFILTER : 0u;
+            sendDescriptors[0].Flags = sendDescriptors[1].Flags = (flags & SoundEffectInstance_ReverbUseFilters)
+                ? XAUDIO2_SEND_USEFILTER : 0u;
             sendDescriptors[0].pOutputVoice = mMasterVoice;
             sendDescriptors[1].pOutputVoice = mReverbVoice;
             const XAUDIO2_VOICE_SENDS sendList = { mReverbVoice ? 2U : 1U, sendDescriptors };
 
         #ifdef VERBOSE_TRACE
-            DebugTrace("INFO: Allocate voice 3D: Format Tag %u, %u channels, %u-bit, %u blkalign, %u Hz\n", wfx->wFormatTag,
-                       wfx->nChannels, wfx->wBitsPerSample, wfx->nBlockAlign, wfx->nSamplesPerSec);
+            DebugTrace("INFO: Allocate voice 3D: Format Tag %u, %u channels, %u-bit, %u blkalign, %u Hz\n",
+                wfx->wFormatTag, wfx->nChannels, wfx->wBitsPerSample, wfx->nBlockAlign, wfx->nSamplesPerSec);
         #endif
 
             hr = xaudio2->CreateSourceVoice(voice, wfx, vflags, XAUDIO2_DEFAULT_FREQ_RATIO, &mVoiceCallback, &sendList, nullptr);
@@ -1125,8 +1140,8 @@ void AudioEngine::Impl::AllocateVoice(const WAVEFORMATEX* wfx, SOUND_EFFECT_INST
         else
         {
         #ifdef VERBOSE_TRACE
-            DebugTrace("INFO: Allocate voice: Format Tag %u, %u channels, %u-bit, %u blkalign, %u Hz\n", wfx->wFormatTag,
-                       wfx->nChannels, wfx->wBitsPerSample, wfx->nBlockAlign, wfx->nSamplesPerSec);
+            DebugTrace("INFO: Allocate voice: Format Tag %u, %u channels, %u-bit, %u blkalign, %u Hz\n",
+                wfx->wFormatTag, wfx->nChannels, wfx->wBitsPerSample, wfx->nBlockAlign, wfx->nSamplesPerSec);
         #endif
 
             hr = xaudio2->CreateSourceVoice(voice, wfx, vflags, XAUDIO2_DEFAULT_FREQ_RATIO, &mVoiceCallback, nullptr, nullptr);
@@ -1134,7 +1149,7 @@ void AudioEngine::Impl::AllocateVoice(const WAVEFORMATEX* wfx, SOUND_EFFECT_INST
 
         if (FAILED(hr))
         {
-            DebugTrace("ERROR: CreateSourceVoice failed with error %08X\n", hr);
+            DebugTrace("ERROR: CreateSourceVoice failed with error %08X\n", static_cast<unsigned int>(hr));
             throw std::exception("CreateSourceVoice");
         }
         else if (!oneshot)
@@ -1243,7 +1258,11 @@ void AudioEngine::Impl::UnregisterNotify(_In_ IVoiceNotify* notify, bool usesOne
 
 // Public constructor.
 _Use_decl_annotations_
-AudioEngine::AudioEngine(AUDIO_ENGINE_FLAGS flags, const WAVEFORMATEX* wfx, const wchar_t* deviceId, AUDIO_STREAM_CATEGORY category) noexcept(false)
+AudioEngine::AudioEngine(
+    AUDIO_ENGINE_FLAGS flags,
+    const WAVEFORMATEX* wfx,
+    const wchar_t* deviceId,
+    AUDIO_STREAM_CATEGORY category) noexcept(false)
     : pImpl(std::make_unique<Impl>())
 {
     HRESULT hr = pImpl->Initialize(flags, wfx, deviceId, category);
@@ -1263,7 +1282,9 @@ AudioEngine::AudioEngine(AUDIO_ENGINE_FLAGS flags, const WAVEFORMATEX* wfx, cons
         }
         else
         {
-            DebugTrace("ERROR: AudioEngine failed (%08X) to initialize using device [%ls]\n", hr, (deviceId) ? deviceId : L"default");
+            DebugTrace("ERROR: AudioEngine failed (%08X) to initialize using device [%ls]\n",
+                static_cast<unsigned int>(hr),
+                (deviceId) ? deviceId : L"default");
             throw std::exception("AudioEngine");
         }
     }
@@ -1329,7 +1350,8 @@ bool AudioEngine::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceId)
         }
         else
         {
-            DebugTrace("ERROR: AudioEngine failed (%08X) to Reset using device [%ls]\n", hr, (deviceId) ? deviceId : L"default");
+            DebugTrace("ERROR: AudioEngine failed (%08X) to Reset using device [%ls]\n",
+                static_cast<unsigned int>(hr), (deviceId) ? deviceId : L"default");
             throw std::exception("AudioEngine::Reset");
         }
     }
@@ -1493,7 +1515,11 @@ void AudioEngine::TrimVoicePool()
 
 
 _Use_decl_annotations_
-void AudioEngine::AllocateVoice(const WAVEFORMATEX* wfx, SOUND_EFFECT_INSTANCE_FLAGS flags, bool oneshot, IXAudio2SourceVoice** voice)
+void AudioEngine::AllocateVoice(
+    const WAVEFORMATEX* wfx,
+    SOUND_EFFECT_INSTANCE_FLAGS flags,
+    bool oneshot,
+    IXAudio2SourceVoice** voice)
 {
     pImpl->AllocateVoice(wfx, flags, oneshot, voice);
 }

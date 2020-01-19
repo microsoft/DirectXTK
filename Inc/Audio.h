@@ -192,7 +192,9 @@ namespace DirectX
     {
     public:
         explicit AudioEngine(
-            AUDIO_ENGINE_FLAGS flags = AudioEngine_Default, _In_opt_ const WAVEFORMATEX* wfx = nullptr, _In_opt_z_ const wchar_t* deviceId = nullptr,
+            AUDIO_ENGINE_FLAGS flags = AudioEngine_Default,
+            _In_opt_ const WAVEFORMATEX* wfx = nullptr,
+            _In_opt_z_ const wchar_t* deviceId = nullptr,
             AUDIO_STREAM_CATEGORY category = AudioCategory_GameEffects) noexcept(false);
 
         AudioEngine(AudioEngine&& moveFrom) noexcept;
@@ -256,7 +258,8 @@ namespace DirectX
             // Releases any currently unused voices
 
         // Internal-use functions
-        void __cdecl AllocateVoice(_In_ const WAVEFORMATEX* wfx, SOUND_EFFECT_INSTANCE_FLAGS flags, bool oneshot, _Outptr_result_maybenull_ IXAudio2SourceVoice** voice);
+        void __cdecl AllocateVoice(_In_ const WAVEFORMATEX* wfx,
+            SOUND_EFFECT_INSTANCE_FLAGS flags, bool oneshot, _Outptr_result_maybenull_ IXAudio2SourceVoice** voice);
 
         void __cdecl DestroyVoice(_In_ IXAudio2SourceVoice* voice);
             // Should only be called for instance voices, not one-shots
@@ -307,8 +310,10 @@ namespace DirectX
         void __cdecl Play(_In_z_ const char* name);
         void __cdecl Play(_In_z_ const char* name, float volume, float pitch, float pan);
 
-        std::unique_ptr<SoundEffectInstance> __cdecl CreateInstance(unsigned int index, SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default);
-        std::unique_ptr<SoundEffectInstance> __cdecl CreateInstance(_In_z_ const char* name, SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default);
+        std::unique_ptr<SoundEffectInstance> __cdecl CreateInstance(unsigned int index,
+            SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default);
+        std::unique_ptr<SoundEffectInstance> __cdecl CreateInstance(_In_z_ const char* name,
+            SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default);
 
         bool __cdecl IsPrepared() const noexcept;
         bool __cdecl IsInUse() const noexcept;

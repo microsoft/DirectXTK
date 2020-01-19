@@ -190,7 +190,7 @@ void SoundEffectInstance::Impl::Play(bool loop)
     if (FAILED(hr))
     {
     #ifdef _DEBUG
-        DebugTrace("ERROR: SoundEffectInstance failed (%08X) when submitting buffer:\n", hr);
+        DebugTrace("ERROR: SoundEffectInstance failed (%08X) when submitting buffer:\n", static_cast<unsigned int>(hr));
 
         char buff[64] = {};
         auto wfx = (mWaveBank) ? mWaveBank->GetFormat(mIndex, reinterpret_cast<WAVEFORMATEX*>(buff), sizeof(buff))
@@ -198,8 +198,8 @@ void SoundEffectInstance::Impl::Play(bool loop)
 
         size_t length = (mWaveBank) ? mWaveBank->GetSampleSizeInBytes(mIndex) : mEffect->GetSampleSizeInBytes();
 
-        DebugTrace("\tFormat Tag %u, %u channels, %u-bit, %u Hz, %zu bytes\n", wfx->wFormatTag,
-                   wfx->nChannels, wfx->wBitsPerSample, wfx->nSamplesPerSec, length);
+        DebugTrace("\tFormat Tag %u, %u channels, %u-bit, %u Hz, %zu bytes\n",
+            wfx->wFormatTag, wfx->nChannels, wfx->wBitsPerSample, wfx->nSamplesPerSec, length);
     #endif
         mBase.Stop(true, mLooped);
         throw std::exception("SubmitSourceBuffer");

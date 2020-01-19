@@ -181,7 +181,8 @@ std::unique_ptr<Model> DirectX::Model::CreateFromVBO(ID3D11Device* d3dDevice, co
     HRESULT hr = BinaryReader::ReadEntireFile(szFileName, data, &dataSize);
     if (FAILED(hr))
     {
-        DebugTrace("ERROR: CreateFromVBO failed (%08X) loading '%ls'\n", hr, szFileName);
+        DebugTrace("ERROR: CreateFromVBO failed (%08X) loading '%ls'\n",
+            static_cast<unsigned int>(hr), szFileName);
         throw std::exception("CreateFromVBO");
     }
 
