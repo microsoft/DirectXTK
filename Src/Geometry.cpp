@@ -226,7 +226,7 @@ void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indi
 
     // An undirected edge between two vertices, represented by a pair of indexes into a vertex array.
     // Becuse this edge is undirected, (a,b) is the same as (b,a).
-    typedef std::pair<uint16_t, uint16_t> UndirectedEdge;
+    using UndirectedEdge = std::pair<uint16_t, uint16_t>;
 
     // Makes an undirected edge. Rather than overloading comparison operators to give us the (a,b)==(b,a) property,
     // we'll just ensure that the larger of the two goes first. This'll simplify things greatly.
@@ -238,7 +238,7 @@ void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indi
     // Key: an edge
     // Value: the index of the vertex which lies midway between the two vertices pointed to by the key value
     // This map is used to avoid duplicating vertices when subdividing triangles along edges.
-    typedef std::map<UndirectedEdge, uint16_t> EdgeSubdivisionMap;
+    using EdgeSubdivisionMap = std::map<UndirectedEdge, uint16_t>;
 
 
     static const XMFLOAT3 OctahedronVertices[] =

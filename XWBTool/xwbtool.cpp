@@ -61,7 +61,7 @@
 #define WAVE_FORMAT_XMA2 0x166
 
 #pragma pack(push,1)
-typedef struct XMA2WAVEFORMATEX
+struct XMA2WAVEFORMATEX
 {
     WAVEFORMATEX wfx;
     // Meaning of the WAVEFORMATEX fields here:
@@ -85,7 +85,7 @@ typedef struct XMA2WAVEFORMATEX
     BYTE  LoopCount;         // Number of loop repetitions; 255 = infinite
     BYTE  EncoderVersion;    // Version of XMA encoder that generated the file
     WORD  BlockCount;        // XMA blocks in file (and entries in its seek table)
-} XMA2WAVEFORMATEX;
+};
 #pragma pack(pop)
 #endif
 
@@ -99,13 +99,13 @@ namespace
 {
     struct handle_closer { void operator()(HANDLE h) { if (h) CloseHandle(h); } };
 
-    typedef std::unique_ptr<void, handle_closer> ScopedHandle;
+    using ScopedHandle = std::unique_ptr<void, handle_closer>;
 
     inline HANDLE safe_handle(HANDLE h) { return (h == INVALID_HANDLE_VALUE) ? nullptr : h; }
 
     struct find_closer { void operator()(HANDLE h) { assert(h != INVALID_HANDLE_VALUE); if (h) FindClose(h); } };
 
-    typedef std::unique_ptr<void, find_closer> ScopedFindHandle;
+    using ScopedFindHandle = std::unique_ptr<void, find_closer>;
 
 #define BLOCKALIGNPAD(a, b) \
     ((((a) + ((b) - 1)) / (b)) * (b))

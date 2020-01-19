@@ -12,8 +12,8 @@
 
 namespace DirectX
 {
-    typedef std::vector<DirectX::VertexPositionNormalTexture> VertexCollection;
-    typedef std::vector<uint16_t> IndexCollection;
+    using VertexCollection = std::vector<DirectX::VertexPositionNormalTexture>;
+    using IndexCollection = std::vector<uint16_t>;
 
     void ComputeBox(VertexCollection& vertices, IndexCollection& indices, const XMFLOAT3& size, bool rhcoords, bool invertn);
     void ComputeSphere(VertexCollection& vertices, IndexCollection& indices, float diameter, size_t tessellation, bool rhcoords, bool invertn);

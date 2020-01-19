@@ -326,9 +326,9 @@ public:
     AUDIO_ENGINE_FLAGS                  mEngineFlags;
 
 private:
-    typedef std::set<IVoiceNotify*> notifylist_t;
-    typedef std::list<std::pair<unsigned int, IXAudio2SourceVoice*>> oneshotlist_t;
-    typedef std::unordered_multimap<unsigned int, IXAudio2SourceVoice*> voicepool_t;
+    using notifylist_t = std::set<IVoiceNotify*>;
+    using oneshotlist_t = std::list<std::pair<unsigned int, IXAudio2SourceVoice*>>;
+    using voicepool_t = std::unordered_multimap<unsigned int, IXAudio2SourceVoice*>;
 
     AUDIO_STREAM_CATEGORY               mCategory;
     ComPtr<IUnknown>                    mReverbEffect;

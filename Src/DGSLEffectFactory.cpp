@@ -52,9 +52,9 @@ public:
     ComPtr<ID3D11Device> mDevice;
 
 private:
-    typedef std::map< std::wstring, std::shared_ptr<IEffect> > EffectCache;
-    typedef std::map< std::wstring, ComPtr<ID3D11ShaderResourceView> > TextureCache;
-    typedef std::map< std::wstring, ComPtr<ID3D11PixelShader> > ShaderCache;
+    using EffectCache = std::map< std::wstring, std::shared_ptr<IEffect> >;
+    using TextureCache = std::map< std::wstring, ComPtr<ID3D11ShaderResourceView> >;
+    using ShaderCache = std::map< std::wstring, ComPtr<ID3D11PixelShader> >;
 
     EffectCache  mEffectCache;
     EffectCache  mEffectCacheSkinning;
