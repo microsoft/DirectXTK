@@ -381,6 +381,49 @@ std::unique_ptr<SoundEffectInstance> WaveBank::CreateInstance(_In_z_ const char*
 }
 
 
+// Public methods (sound stream instance)
+std::unique_ptr<SoundStreamInstance> WaveBank::CreateStreamInstance(unsigned int index, SOUND_EFFECT_INSTANCE_FLAGS flags)
+{
+    auto& wb = pImpl->mReader;
+
+    if (!pImpl->mStreaming)
+    {
+        DebugTrace("ERROR: SoundStreamInstances can only be created from a streaming wave bank\n");
+        throw std::exception("WaveBank::CreateStreamInstance");
+    }
+
+    if (index >= wb.Count())
+    {
+        // We don't throw an exception here as titles often simply ignore missing assets rather than fail
+        return std::unique_ptr<SoundStreamInstance>();
+    }
+
+    if (!pImpl->mPrepared)
+    {
+        wb.WaitOnPrepare();
+        pImpl->mPrepared = true;
+    }
+
+    auto effect = new SoundStreamInstance(pImpl->mEngine, this, index, flags);
+    assert(effect != nullptr);
+    pImpl->mInstances.emplace_back(effect->GetVoiceNotify());
+    return std::unique_ptr<SoundStreamInstance>(effect);
+}
+
+
+std::unique_ptr<SoundStreamInstance> WaveBank::CreateStreamInstance(_In_z_ const char* name, SOUND_EFFECT_INSTANCE_FLAGS flags)
+{
+    unsigned int index = pImpl->mReader.Find(name);
+    if (index == unsigned(-1))
+    {
+        // We don't throw an exception here as titles often simply ignore missing assets rather than fail
+        return std::unique_ptr<SoundStreamInstance>();
+    }
+
+    return CreateStreamInstance(index, flags);
+}
+
+
 void WaveBank::UnregisterInstance(_In_ IVoiceNotify* instance)
 {
     auto it = std::find(pImpl->mInstances.begin(), pImpl->mInstances.end(), instance);

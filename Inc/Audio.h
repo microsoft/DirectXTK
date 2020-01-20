@@ -69,6 +69,7 @@
 namespace DirectX
 {
     class SoundEffectInstance;
+    class SoundStreamInstance;
 
     //----------------------------------------------------------------------------------
     struct AudioStatistics
@@ -327,6 +328,11 @@ namespace DirectX
         std::unique_ptr<SoundEffectInstance> __cdecl CreateInstance(unsigned int index,
             SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default);
         std::unique_ptr<SoundEffectInstance> __cdecl CreateInstance(_In_z_ const char* name,
+            SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default);
+
+        std::unique_ptr<SoundStreamInstance> __cdecl CreateStreamInstance(unsigned int index,
+            SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default);
+        std::unique_ptr<SoundStreamInstance> __cdecl CreateStreamInstance(_In_z_ const char* name,
             SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default);
 
         bool __cdecl IsPrepared() const noexcept;
@@ -643,6 +649,48 @@ namespace DirectX
 
         friend std::unique_ptr<SoundEffectInstance> __cdecl SoundEffect::CreateInstance(SOUND_EFFECT_INSTANCE_FLAGS);
         friend std::unique_ptr<SoundEffectInstance> __cdecl WaveBank::CreateInstance(unsigned int, SOUND_EFFECT_INSTANCE_FLAGS);
+    };
+
+
+    //----------------------------------------------------------------------------------
+    class SoundStreamInstance
+    {
+    public:
+        SoundStreamInstance(SoundStreamInstance&& moveFrom) noexcept;
+        SoundStreamInstance& operator= (SoundStreamInstance&& moveFrom) noexcept;
+
+        SoundStreamInstance(SoundStreamInstance const&) = delete;
+        SoundStreamInstance& operator= (SoundStreamInstance const&) = delete;
+
+        virtual ~SoundStreamInstance();
+
+        void __cdecl Play(bool loop = false);
+        void __cdecl Stop(bool immediate = true) noexcept;
+        void __cdecl Pause() noexcept;
+        void __cdecl Resume();
+
+        void __cdecl SetVolume(float volume);
+        void __cdecl SetPitch(float pitch);
+        void __cdecl SetPan(float pan);
+
+        void __cdecl Apply3D(const AudioListener& listener, const AudioEmitter& emitter, bool rhcoords = true);
+
+        bool __cdecl IsLooped() const noexcept;
+
+        SoundState __cdecl GetState() noexcept;
+
+        IVoiceNotify* __cdecl GetVoiceNotify() const noexcept;
+
+    private:
+        // Private implementation.
+        class Impl;
+
+        std::unique_ptr<Impl> pImpl;
+
+        // Private constructors
+        SoundStreamInstance(_In_ AudioEngine* engine, _In_ WaveBank* effect, unsigned int index, SOUND_EFFECT_INSTANCE_FLAGS flags);
+
+        friend std::unique_ptr<SoundStreamInstance> __cdecl WaveBank::CreateStreamInstance(unsigned int, SOUND_EFFECT_INSTANCE_FLAGS);
     };
 
 

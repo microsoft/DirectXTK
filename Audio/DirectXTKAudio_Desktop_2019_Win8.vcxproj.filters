@@ -49,5 +49,8 @@
     <ClCompile Include="DynamicSoundEffectInstance.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="SoundStreamInstance.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -71,6 +71,7 @@
     <ClCompile Include="Audio\SoundCommon.cpp" />
     <ClCompile Include="Audio\SoundEffect.cpp" />
     <ClCompile Include="Audio\SoundEffectInstance.cpp" />
+    <ClCompile Include="Audio\SoundStreamInstance.cpp" />
     <ClCompile Include="Audio\WaveBank.cpp" />
     <ClCompile Include="Audio\WaveBankReader.cpp" />
     <ClCompile Include="Audio\WAVFileReader.cpp" />

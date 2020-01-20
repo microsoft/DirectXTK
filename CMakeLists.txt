@@ -124,6 +124,7 @@ if((BUILD_XAUDIO_WIN10 MATCHES ON) OR (BUILD_XAUDIO_WIN8 MATCHES ON))
         Audio/SoundCommon.h
         Audio/SoundEffect.cpp
         Audio/SoundEffectInstance.cpp
+        Audio/SoundStreamInstance.cpp
         Audio/WaveBank.cpp
         Audio/WaveBankReader.cpp
         Audio/WaveBankReader.h

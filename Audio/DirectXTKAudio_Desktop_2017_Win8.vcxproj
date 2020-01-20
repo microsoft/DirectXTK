@@ -35,6 +35,7 @@
     <ClCompile Include="SoundCommon.cpp" />
     <ClCompile Include="SoundEffect.cpp" />
     <ClCompile Include="SoundEffectInstance.cpp" />
+    <ClCompile Include="SoundStreamInstance.cpp" />
     <ClCompile Include="WaveBank.cpp" />
     <ClCompile Include="WaveBankReader.cpp" />
     <ClCompile Include="WAVFileReader.cpp" />

@@ -277,6 +277,9 @@
     <ClCompile Include="Src\PBREffectFactory.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="Audio\SoundStreamInstance.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Src\Shaders\CompileShaders.cmd">
