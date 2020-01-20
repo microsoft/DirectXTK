@@ -41,7 +41,7 @@ public:
     {
         if (!mInstances.empty())
         {
-            DebugTrace("WARNING: Destroying WaveBank \"%hs\" with %zu outstanding SoundEffectInstances\n",
+            DebugTrace("WARNING: Destroying WaveBank \"%hs\" with %zu outstanding instances\n",
                 mReader.BankName(), mInstances.size());
 
             for (auto it = mInstances.begin(); it != mInstances.end(); ++it)
@@ -118,8 +118,12 @@ public:
         }
     }
 
+    virtual void __cdecl OnDestroyParent() noexcept override
+    {
+    }
+
     AudioEngine*                        mEngine;
-    std::list<SoundEffectInstance*>     mInstances;
+    std::list<IVoiceNotify*>            mInstances;
     WaveBankReader                      mReader;
     uint32_t                            mOneShots;
     bool                                mPrepared;
@@ -289,7 +293,7 @@ WaveBank::~WaveBank()
 }
 
 
-// Public methods.
+// Public methods (one-shots)
 void WaveBank::Play(unsigned int index)
 {
     pImpl->Play(index, 1.f, 0.f, 0.f);
@@ -328,6 +332,7 @@ void WaveBank::Play(_In_z_ const char* name, float volume, float pitch, float pa
 }
 
 
+// Public methods (sound effect instance)
 std::unique_ptr<SoundEffectInstance> WaveBank::CreateInstance(unsigned int index, SOUND_EFFECT_INSTANCE_FLAGS flags)
 {
     auto& wb = pImpl->mReader;
@@ -352,7 +357,7 @@ std::unique_ptr<SoundEffectInstance> WaveBank::CreateInstance(unsigned int index
 
     auto effect = new SoundEffectInstance(pImpl->mEngine, this, index, flags);
     assert(effect != nullptr);
-    pImpl->mInstances.emplace_back(effect);
+    pImpl->mInstances.emplace_back(effect->GetVoiceNotify());
     return std::unique_ptr<SoundEffectInstance>(effect);
 }
 
@@ -370,7 +375,7 @@ std::unique_ptr<SoundEffectInstance> WaveBank::CreateInstance(_In_z_ const char*
 }
 
 
-void WaveBank::UnregisterInstance(_In_ SoundEffectInstance* instance)
+void WaveBank::UnregisterInstance(_In_ IVoiceNotify* instance)
 {
     auto it = std::find(pImpl->mInstances.begin(), pImpl->mInstances.end(), instance);
     if (it == pImpl->mInstances.end())

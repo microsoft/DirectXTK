@@ -121,6 +121,10 @@ public:
         mBase.GatherStatistics(stats);
     }
 
+    virtual void __cdecl OnDestroyParent() noexcept override
+    {
+    }
+
     SoundEffectInstanceBase                             mBase;
 
 private:

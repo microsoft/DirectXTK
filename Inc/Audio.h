@@ -110,6 +110,9 @@ namespace DirectX
         virtual void __cdecl GatherStatistics(AudioStatistics& stats) const = 0;
             // Contribute to statistics request
 
+        virtual void __cdecl OnDestroyParent() noexcept = 0;
+            // Optional notification used by some objects
+
     protected:
         IVoiceNotify() = default;
     };
@@ -338,16 +341,13 @@ namespace DirectX
         void __cdecl FillSubmitBuffer(unsigned int index, _Out_ XAUDIO2_BUFFER& buffer) const;
 #endif
 
+        void __cdecl UnregisterInstance(_In_ IVoiceNotify* instance);
+
     private:
         // Private implementation.
         class Impl;
 
         std::unique_ptr<Impl> pImpl;
-
-        // Private interface
-        void __cdecl UnregisterInstance(_In_ SoundEffectInstance* instance);
-
-        friend class SoundEffectInstance;
     };
 
 
@@ -404,16 +404,13 @@ namespace DirectX
         void __cdecl FillSubmitBuffer(_Out_ XAUDIO2_BUFFER& buffer) const;
 #endif
 
+        void __cdecl UnregisterInstance(_In_ IVoiceNotify* instance);
+
     private:
         // Private implementation.
         class Impl;
 
         std::unique_ptr<Impl> pImpl;
-
-        // Private interface
-        void __cdecl UnregisterInstance(_In_ SoundEffectInstance* instance);
-
-        friend class SoundEffectInstance;
     };
 
 
@@ -621,8 +618,7 @@ namespace DirectX
 
         SoundState __cdecl GetState() noexcept;
 
-        // Notifications.
-        void __cdecl OnDestroyParent() noexcept;
+        IVoiceNotify* __cdecl GetVoiceNotify() const noexcept;
 
     private:
         // Private implementation.

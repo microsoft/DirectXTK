@@ -103,6 +103,13 @@ public:
         mBase.GatherStatistics(stats);
     }
 
+    virtual void __cdecl OnDestroyParent() noexcept override
+    {
+        mBase.OnDestroy();
+        mWaveBank = nullptr;
+        mEffect = nullptr;
+    }
+
     SoundEffectInstanceBase         mBase;
     SoundEffect*                    mEffect;
     WaveBank*                       mWaveBank;
@@ -247,13 +254,13 @@ SoundEffectInstance::~SoundEffectInstance()
     {
         if (pImpl->mWaveBank)
         {
-            pImpl->mWaveBank->UnregisterInstance(this);
+            pImpl->mWaveBank->UnregisterInstance(pImpl.get());
             pImpl->mWaveBank = nullptr;
         }
 
         if (pImpl->mEffect)
         {
-            pImpl->mEffect->UnregisterInstance(this);
+            pImpl->mEffect->UnregisterInstance(pImpl.get());
             pImpl->mEffect = nullptr;
         }
     }
@@ -322,10 +329,7 @@ SoundState SoundEffectInstance::GetState() noexcept
 }
 
 
-// Notifications.
-void SoundEffectInstance::OnDestroyParent() noexcept
+IVoiceNotify* SoundEffectInstance::GetVoiceNotify() const noexcept
 {
-    pImpl->mBase.OnDestroy();
-    pImpl->mWaveBank = nullptr;
-    pImpl->mEffect = nullptr;
+    return pImpl.get();
 }

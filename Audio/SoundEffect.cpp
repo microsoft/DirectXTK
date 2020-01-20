@@ -138,13 +138,17 @@ public:
     #endif
     }
 
+    virtual void __cdecl OnDestroyParent() noexcept override
+    {
+    }
+
     const WAVEFORMATEX*                 mWaveFormat;
     const uint8_t*                      mStartAudio;
     uint32_t                            mAudioBytes;
     uint32_t                            mLoopStart;
     uint32_t                            mLoopLength;
     AudioEngine*                        mEngine;
-    std::list<SoundEffectInstance*>     mInstances;
+    std::list<IVoiceNotify*>            mInstances;
     uint32_t                            mOneShots;
 
 #if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
@@ -478,12 +482,12 @@ std::unique_ptr<SoundEffectInstance> SoundEffect::CreateInstance(SOUND_EFFECT_IN
 {
     auto effect = new SoundEffectInstance(pImpl->mEngine, this, flags);
     assert(effect != nullptr);
-    pImpl->mInstances.emplace_back(effect);
+    pImpl->mInstances.emplace_back(effect->GetVoiceNotify());
     return std::unique_ptr<SoundEffectInstance>(effect);
 }
 
 
-void SoundEffect::UnregisterInstance(_In_ SoundEffectInstance* instance)
+void SoundEffect::UnregisterInstance(_In_ IVoiceNotify* instance)
 {
     auto it = std::find(pImpl->mInstances.begin(), pImpl->mInstances.end(), instance);
     if (it == pImpl->mInstances.end())
