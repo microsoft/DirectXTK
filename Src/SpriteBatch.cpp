@@ -533,7 +533,7 @@ void SpriteBatch::Impl::GrowSpriteQueue()
     size_t newSize = std::max(InitialQueueSize, mSpriteQueueArraySize * 2);
 
     // Allocate the new array.
-    std::unique_ptr<SpriteInfo[]> newArray(new SpriteInfo[newSize]);
+    auto newArray = std::make_unique<SpriteInfo[]>(newSize);
 
     // Copy over any existing sprites.
     for (size_t i = 0; i < mSpriteQueueCount; i++)

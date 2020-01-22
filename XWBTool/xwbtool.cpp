@@ -1576,7 +1576,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     {
         seekEntries += waves.size(); // Room for an offset per entry
 
-        std::unique_ptr<uint32_t[]> seekTables(new uint32_t[seekEntries]);
+        auto seekTables = std::make_unique<uint32_t[]>(seekEntries);
 
         if (SetFilePointer(hFile.get(), LONG(segmentOffset), nullptr, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
         {

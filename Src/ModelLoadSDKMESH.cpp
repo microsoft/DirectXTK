@@ -568,7 +568,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(ID3D11Device* d3dDevice
     std::vector<MaterialRecordSDKMESH> materials;
     materials.resize(header->NumMaterials);
 
-    std::unique_ptr<Model> model(new Model());
+    auto model = std::make_unique<Model>();
     model->meshes.reserve(header->NumMeshes);
 
     for (UINT meshIndex = 0; meshIndex < header->NumMeshes; ++meshIndex)

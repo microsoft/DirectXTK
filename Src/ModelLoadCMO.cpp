@@ -274,7 +274,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
     if (!*nMesh)
         throw std::exception("No meshes found");
 
-    std::unique_ptr<Model> model(new Model());
+    auto model = std::make_unique<Model>();
 
     for (UINT meshIndex = 0; meshIndex < *nMesh; ++meshIndex)
     {
@@ -673,7 +673,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
             }
             else
             {
-                std::unique_ptr<uint8_t[]> temp(new uint8_t[bytes + (sizeof(UINT) * nVerts)]);
+                auto temp = std::make_unique<uint8_t[]>(bytes + (sizeof(UINT) * nVerts));
 
                 auto visited = reinterpret_cast<UINT*>(temp.get() + bytes);
                 memset(visited, 0xff, sizeof(UINT) * nVerts);
