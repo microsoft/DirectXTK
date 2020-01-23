@@ -44,29 +44,29 @@ WICTextureLoader - WIC-based image file texture loader</description>
 
         <file target="include" src="Inc\*" exclude="Inc\XboxDDSTextureLoader.h" />
 
-        <file target="lib\ARM\Debug" src="Bin\Windows10_2017\ARM\Debug\*.lib" />
-        <file target="lib\ARM\Debug" src="Bin\Windows10_2017\ARM\Debug\*.pdb" />
+        <file target="native\lib\ARM\Debug" src="Bin\Windows10_2017\ARM\Debug\*.lib" />
+        <file target="native\lib\ARM\Debug" src="Bin\Windows10_2017\ARM\Debug\*.pdb" />
 
-        <file target="lib\ARM\Release" src="Bin\Windows10_2017\ARM\Release\*.lib" />
-        <file target="lib\ARM\Release" src="Bin\Windows10_2017\ARM\Release\*.pdb" />
+        <file target="native\lib\ARM\Release" src="Bin\Windows10_2017\ARM\Release\*.lib" />
+        <file target="native\lib\ARM\Release" src="Bin\Windows10_2017\ARM\Release\*.pdb" />
 
-        <file target="lib\ARM64\Debug" src="Bin\Windows10_2017\ARM64\Debug\*.lib" />
-        <file target="lib\ARM64\Debug" src="Bin\Windows10_2017\ARM64\Debug\*.pdb" />
+        <file target="native\lib\ARM64\Debug" src="Bin\Windows10_2017\ARM64\Debug\*.lib" />
+        <file target="native\lib\ARM64\Debug" src="Bin\Windows10_2017\ARM64\Debug\*.pdb" />
 
-        <file target="lib\ARM64\Release" src="Bin\Windows10_2017\ARM64\Release\*.lib" />
-        <file target="lib\ARM64\Release" src="Bin\Windows10_2017\ARM64\Release\*.pdb" />
+        <file target="native\lib\ARM64\Release" src="Bin\Windows10_2017\ARM64\Release\*.lib" />
+        <file target="native\lib\ARM64\Release" src="Bin\Windows10_2017\ARM64\Release\*.pdb" />
       
-        <file target="lib\Win32\Debug" src="Bin\Windows10_2017\Win32\Debug\*.lib" />
-        <file target="lib\Win32\Debug" src="Bin\Windows10_2017\Win32\Debug\*.pdb" />
+        <file target="native\lib\Win32\Debug" src="Bin\Windows10_2017\Win32\Debug\*.lib" />
+        <file target="native\lib\Win32\Debug" src="Bin\Windows10_2017\Win32\Debug\*.pdb" />
 
-        <file target="lib\Win32\Release" src="Bin\Windows10_2017\Win32\Release\*.lib" />
-        <file target="lib\Win32\Release" src="Bin\Windows10_2017\Win32\Release\*.pdb" />
+        <file target="native\lib\Win32\Release" src="Bin\Windows10_2017\Win32\Release\*.lib" />
+        <file target="native\lib\Win32\Release" src="Bin\Windows10_2017\Win32\Release\*.pdb" />
 
-        <file target="lib\x64\Debug" src="Bin\Windows10_2017\x64\Debug\*.lib" />
-        <file target="lib\x64\Debug" src="Bin\Windows10_2017\x64\Debug\*.pdb" />
+        <file target="native\lib\x64\Debug" src="Bin\Windows10_2017\x64\Debug\*.lib" />
+        <file target="native\lib\x64\Debug" src="Bin\Windows10_2017\x64\Debug\*.pdb" />
 
-        <file target="lib\x64\Release" src="Bin\Windows10_2017\x64\Release\*.lib" />
-        <file target="lib\x64\Release" src="Bin\Windows10_2017\x64\Release\*.pdb" />
+        <file target="native\lib\x64\Release" src="Bin\Windows10_2017\x64\Release\*.lib" />
+        <file target="native\lib\x64\Release" src="Bin\Windows10_2017\x64\Release\*.pdb" />
 
         <file src=".nuget/directxtk_uwp.targets" target="build\native" />
 

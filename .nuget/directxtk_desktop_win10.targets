@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <directxtk-LibPath>$(MSBuildThisFileDirectory)..\..\lib\$(Platform)\$(NuGetConfiguration)</directxtk-LibPath>
+    <directxtk-LibPath>$(MSBuildThisFileDirectory)..\..\native\lib\$(Platform)\$(NuGetConfiguration)</directxtk-LibPath>
   </PropertyGroup>
 
   <ItemDefinitionGroup>
