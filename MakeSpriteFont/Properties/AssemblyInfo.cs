@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription(".spritefont creator command-line tool")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft Corporation")]
-[assembly: AssemblyProduct("MakeSpriteFont")]
+[assembly: AssemblyProduct("DirectX Tool Kit")]
 [assembly: AssemblyCopyright("Copyright (c) Microsoft Corporation. All rights reserved")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
