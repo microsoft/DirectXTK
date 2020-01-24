@@ -7,4 +7,7 @@
   <ItemGroup>
     <ClInclude Include="..\Audio\WAVFileReader.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="xwbtool.rc" />
+  </ItemGroup>
 </Project>
