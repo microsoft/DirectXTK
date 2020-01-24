@@ -434,6 +434,17 @@ void WaveBank::UnregisterInstance(_In_ IVoiceNotify* instance)
 }
 
 
+HANDLE WaveBank::GetAsyncHandle() const noexcept
+{
+    if (pImpl)
+    {
+        return pImpl->mReader.GetAsyncHandle();
+    }
+
+    return nullptr;
+}
+
+
 // Public accessors.
 bool WaveBank::IsPrepared() const noexcept
 {

@@ -85,6 +85,7 @@ namespace DirectX
 #if defined(_XBOX_ONE) && defined(_TITLE)
         size_t  xmaAudioBytes;          // Total wave data (in bytes) in SoundEffects and in-memory WaveBanks allocated with ApuAlloc
 #endif
+        size_t  streamingBytes;         // Total size of streaming buffers (in bytes) in streaming WaveBanks
     };
 
 
@@ -359,6 +360,8 @@ namespace DirectX
 #endif
 
         void __cdecl UnregisterInstance(_In_ IVoiceNotify* instance);
+
+        HANDLE __cdecl GetAsyncHandle() const noexcept;
 
     private:
         // Private implementation.
