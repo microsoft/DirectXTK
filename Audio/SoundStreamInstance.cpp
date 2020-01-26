@@ -52,9 +52,12 @@ public:
         mBase(),
         mWaveBank(waveBank),
         mIndex(index),
+        mPlaying(false),
         mLooped(false),
-        mBuffers{},
-        mRequest{},
+        mPackets{},
+        mCurrentDiskReadBuffer(0),
+        mCurrentPlayBuffer(0),
+        mCurrentPosition(0),
         mPacketSize(0)
     {
         assert(engine != nullptr);
@@ -65,8 +68,10 @@ public:
         assert(mWaveBank != nullptr);
         mBase.Initialize(engine, mWaveBank->GetFormat(index, wfx, sizeof(buff)), flags);
 
-        mBufferEnd.reset(CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE));
-        mBufferRead.reset(CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE));
+        mBufferEnd.reset(CreateEventEx(nullptr, nullptr,
+            CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE));
+        mBufferRead.reset(CreateEventEx(nullptr, nullptr,
+            CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE));
         if (!mBufferEnd || !mBufferRead)
         {
             throw std::exception("CreateEvent");
@@ -79,6 +84,8 @@ public:
         {
             throw std::exception("ERROR: SoundStreamInstance requires block alignment matches packet size (PCM)");
         }
+
+        ThrowIfFailed(ReadBuffers());
     }
 
     virtual ~Impl() override
@@ -89,7 +96,7 @@ public:
         {
             for (size_t j = 0; j < MAX_BUFFER_COUNT; ++j)
             {
-                (void)CancelIoEx(mWaveBank->GetAsyncHandle(), &mRequest[j]);
+                (void)CancelIoEx(mWaveBank->GetAsyncHandle(), &mPackets[j].request);
             }
         }
 
@@ -99,11 +106,29 @@ public:
             mBase.engine = nullptr;
         }
 
-        memset(mBuffers, 0, sizeof(mBuffers));
+        memset(mPackets, 0, sizeof(mPackets));
         mPacketSize = 0;
     }
 
-    void Play(bool loop);
+    void Play(bool loop)
+    {
+        if (!mBase.voice)
+        {
+            if (!mWaveBank)
+                return;
+
+            char buff[64] = {};
+            auto wfx = reinterpret_cast<WAVEFORMATEX*>(buff);
+            mBase.AllocateVoice(mWaveBank->GetFormat(mIndex, wfx, sizeof(buff)));
+        }
+
+        if (!mBase.Play())
+            return;
+
+        mLooped = loop;
+
+        ThrowIfFailed(PlayBuffers());
+    }
 
     // IVoiceNotify
     virtual void __cdecl OnBufferEnd() override
@@ -123,7 +148,26 @@ public:
 
     virtual void __cdecl OnUpdate() override
     {
-        // TOOD -
+        if (!mPlaying)
+            return;
+
+        HANDLE events[] = { mBufferRead.get(), mBufferEnd.get() };
+        switch (WaitForMultipleObjectsEx(_countof(events), events, FALSE, 0, FALSE))
+        {
+        case WAIT_TIMEOUT:
+            break;
+
+        case WAIT_OBJECT_0:
+            // TOOD -
+            break;
+
+        case (WAIT_OBJECT_0 + 1):
+            // TOOD -
+            break;
+
+        case WAIT_FAILED:
+            throw std::exception("WaitForMultipleObjects");
+        }
     }
 
     virtual void __cdecl OnDestroyEngine() noexcept override
@@ -152,19 +196,40 @@ public:
     SoundEffectInstanceBase         mBase;
     WaveBank*                       mWaveBank;
     uint32_t                        mIndex;
+    bool                            mPlaying;
     bool                            mLooped;
 
 private:
     ScopedHandle                    mBufferEnd;
     ScopedHandle                    mBufferRead;
 
-    uint8_t*                        mBuffers[MAX_BUFFER_COUNT];
-    OVERLAPPED                      mRequest[MAX_BUFFER_COUNT];
+    enum class State : uint32_t
+    {
+        FREE = 0,
+        PENDING,
+        READY,
+        PLAYING,
+    };
+
+    struct Packets
+    {
+        State       state;
+        uint8_t*    buffer;
+        OVERLAPPED  request;
+    };
+
+    Packets                         mPackets[MAX_BUFFER_COUNT];
+
+    uint32_t                        mCurrentDiskReadBuffer;
+    uint32_t                        mCurrentPlayBuffer;
+    uint32_t                        mCurrentPosition;
 
     size_t                          mPacketSize;
     std::unique_ptr<uint8_t[], virtual_deleter> mStreamBuffer;
 
     HRESULT AllocateStreamingBuffers(const WAVEFORMATEX* wfx) noexcept;
+    HRESULT ReadBuffers() noexcept;
+    HRESULT PlayBuffers() noexcept;
 };
 
 
@@ -203,9 +268,8 @@ HRESULT SoundStreamInstance::Impl::AllocateStreamingBuffers(const WAVEFORMATEX* 
         uint8_t* ptr = mStreamBuffer.get();
         for (size_t j = 0; j < MAX_BUFFER_COUNT; ++j)
         {
-            mBuffers[j] = ptr;
-            mRequest[j].Pointer = ptr;
-            mRequest[j].hEvent = mBufferRead.get();
+            mPackets[j].buffer = ptr;
+            mPackets[j].request.hEvent = mBufferRead.get();
             ptr += packetSize;
         }
     }
@@ -214,22 +278,17 @@ HRESULT SoundStreamInstance::Impl::AllocateStreamingBuffers(const WAVEFORMATEX* 
 }
 
 
-void SoundStreamInstance::Impl::Play(bool loop)
+HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
 {
-    if (!mBase.voice)
-    {
-        if (!mWaveBank)
-            return;
+    // TODO
+    return E_NOTIMPL;
+}
 
-        char buff[64] = {};
-        auto wfx = reinterpret_cast<WAVEFORMATEX*>(buff);
-        mBase.AllocateVoice(mWaveBank->GetFormat(mIndex, wfx, sizeof(buff)));
-    }
 
-    if (!mBase.Play())
-        return;
-
-    // TODO - buffer.pContext = this;
+HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
+{
+    // TODO
+    return E_NOTIMPL;
 }
 
 
