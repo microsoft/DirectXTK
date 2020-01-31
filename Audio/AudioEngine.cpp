@@ -597,7 +597,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
     #if defined(USING_XAUDIO2_8) || defined(USING_XAUDIO2_9)
         hr = CreateFX(__uuidof(FXMasteringLimiter), mVolumeLimiter.ReleaseAndGetAddressOf(), &params, sizeof(params));
     #else
-        hr = CreateFX(CLSID_FXMasteringLimiter, mVolumeLimiter.ReleaseAndGetAddressOf());
+        hr = CreateFX(__uuidof(FXMasteringLimiter), mVolumeLimiter.ReleaseAndGetAddressOf());
     #endif
         if (FAILED(hr))
         {
