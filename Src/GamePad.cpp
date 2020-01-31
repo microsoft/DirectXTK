@@ -88,7 +88,7 @@ namespace
 //======================================================================================
 
 #pragma warning(push)
-#pragma warning(disable : 4471)
+#pragma warning(disable : 4471 5204)
 #include <windows.gaming.input.h>
 #pragma warning(pop)
 

@@ -1574,7 +1574,7 @@ X3DAUDIO_HANDLE& AudioEngine::Get3DHandle() const noexcept
 #elif (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
 #pragma comment(lib,"runtimeobject.lib")
 #pragma warning(push)
-#pragma warning(disable: 4471)
+#pragma warning(disable: 4471 5204)
 #include <windows.devices.enumeration.h>
 #pragma warning(pop)
 #include <wrl.h>

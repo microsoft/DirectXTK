@@ -100,7 +100,7 @@
 
 #if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)) || (defined(_XBOX_ONE) && defined(_TITLE))
 #pragma warning(push)
-#pragma warning(disable: 4471)
+#pragma warning(disable: 4471 5204)
 #include <Windows.UI.Core.h>
 #pragma warning(pop)
 #endif
@@ -134,7 +134,7 @@
 #include <stdint.h>
 
 #pragma warning(push)
-#pragma warning(disable : 4467 5038)
+#pragma warning(disable : 4467 5038 5204)
 #include <wrl.h>
 #pragma warning(pop)
 
