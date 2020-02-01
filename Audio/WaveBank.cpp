@@ -505,7 +505,7 @@ bool WaveBank::FillSubmitBuffer(unsigned int index, XAUDIO2_BUFFER& buffer, XAUD
     return (tag == WAVE_FORMAT_WMAUDIO2 || tag == WAVE_FORMAT_WMAUDIO3);
 }
 
-#else
+#else // !xWMA
 
 _Use_decl_annotations_
 void WaveBank::FillSubmitBuffer(unsigned int index, XAUDIO2_BUFFER& buffer) const

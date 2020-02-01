@@ -596,7 +596,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
 
     #if defined(USING_XAUDIO2_8) || defined(USING_XAUDIO2_9)
         hr = CreateFX(__uuidof(FXMasteringLimiter), mVolumeLimiter.ReleaseAndGetAddressOf(), &params, sizeof(params));
-    #else
+    #else // USING_XAUDIO2_7_DIRECTX
         hr = CreateFX(__uuidof(FXMasteringLimiter), mVolumeLimiter.ReleaseAndGetAddressOf());
     #endif
         if (FAILED(hr))
@@ -831,7 +831,7 @@ bool AudioEngine::Impl::Update()
                 XAUDIO2_VOICE_STATE xstate;
             #if defined(USING_XAUDIO2_8) || defined(USING_XAUDIO2_9)
                 it->second->GetState(&xstate, XAUDIO2_VOICE_NOSAMPLESPLAYED);
-            #else
+            #else // USING_XAUDIO2_7_DIRECTX
                 it->second->GetState(&xstate);
             #endif
 
@@ -1228,7 +1228,7 @@ void AudioEngine::Impl::UnregisterNotify(_In_ IVoiceNotify* notify, bool usesOne
             XAUDIO2_VOICE_STATE state;
         #if defined(USING_XAUDIO2_8) || defined(USING_XAUDIO2_9)
             it->second->GetState(&state, XAUDIO2_VOICE_NOSAMPLESPLAYED);
-        #else
+        #else // USING_XAUDIO2_7_DIRECTX
             it->second->GetState(&state);
         #endif
 

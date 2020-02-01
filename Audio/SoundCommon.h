@@ -256,7 +256,7 @@ namespace DirectX
                 XAUDIO2_VOICE_STATE xstate;
             #if defined(USING_XAUDIO2_8) || defined(USING_XAUDIO2_9)
                 voice->GetState(&xstate, XAUDIO2_VOICE_NOSAMPLESPLAYED);
-            #else
+            #else // USING_XAUDIO2_7_DIRECTX
                 voice->GetState(&xstate);
             #endif
 
@@ -279,7 +279,7 @@ namespace DirectX
             XAUDIO2_VOICE_STATE xstate;
         #if defined(USING_XAUDIO2_8) || defined(USING_XAUDIO2_9)
             voice->GetState(&xstate, XAUDIO2_VOICE_NOSAMPLESPLAYED);
-        #else
+        #else // USING_XAUDIO2_7_DIRECTX
             voice->GetState(&xstate);
         #endif
             return static_cast<int>(xstate.BuffersQueued);

@@ -155,7 +155,7 @@ void SoundEffectInstance::Impl::Play(bool loop)
         iswma = mEffect->FillSubmitBuffer(buffer, wmaBuffer);
     }
 
-#else
+#else // !xWMA
 
     if (mWaveBank)
     {

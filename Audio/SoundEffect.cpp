@@ -215,7 +215,7 @@ HRESULT SoundEffect::Impl::Initialize(AudioEngine* engine, std::unique_ptr<uint8
             mSeekTable = seekTable;
             break;
 
-        #endif
+        #endif // xWMA
 
         #if defined(_XBOX_ONE) && defined(_TITLE)
 
@@ -262,7 +262,7 @@ HRESULT SoundEffect::Impl::Initialize(AudioEngine* engine, std::unique_ptr<uint8
             wavData.reset();
             break;
 
-        #endif // _XBOX_ONE && _TITLE
+        #endif // XMA2
 
         default:
         {
@@ -601,7 +601,7 @@ bool SoundEffect::FillSubmitBuffer(_Out_ XAUDIO2_BUFFER& buffer, _Out_ XAUDIO2_B
     return false;
 }
 
-#else
+#else // !xWMA
 
 void SoundEffect::FillSubmitBuffer(_Out_ XAUDIO2_BUFFER& buffer) const
 {
