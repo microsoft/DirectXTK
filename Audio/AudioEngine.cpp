@@ -1573,6 +1573,9 @@ X3DAUDIO_HANDLE& AudioEngine::Get3DHandle() const noexcept
 #ifdef _XBOX_ONE
 #include <Windows.Media.Devices.h>
 #include <wrl.h>
+#elif defined(USING_XAUDIO2_9) && (!defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP))
+#include <mmdeviceapi.h>
+#include <Functiondiscoverykeys_devpkey.h>
 #elif (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
 #pragma comment(lib,"runtimeobject.lib")
 #pragma warning(push)
@@ -1580,9 +1583,6 @@ X3DAUDIO_HANDLE& AudioEngine::Get3DHandle() const noexcept
 #include <windows.devices.enumeration.h>
 #pragma warning(pop)
 #include <wrl.h>
-#elif defined(USING_XAUDIO2_REDIST)
-#include <mmdeviceapi.h>
-#include <Functiondiscoverykeys_devpkey.h>
 #endif
 
 std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
@@ -1608,6 +1608,54 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
     device.deviceId = id.GetRawBuffer(nullptr);
     device.description = L"Default";
     list.emplace_back(device);
+
+#elif defined(USING_XAUDIO2_9) && (!defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP))
+
+    ComPtr<IMMDeviceEnumerator> devEnum;
+    HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(devEnum.GetAddressOf()));
+    ThrowIfFailed(hr);
+
+    ComPtr<IMMDeviceCollection> devices;
+    hr = devEnum->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &devices);
+    ThrowIfFailed(hr);
+
+    UINT count = 0;
+    ThrowIfFailed(devices->GetCount(&count));
+
+    if (!count)
+        return list;
+
+    for (UINT j = 0; j < count; ++j)
+    {
+        ComPtr<IMMDevice> endpoint;
+        hr = devices->Item(j, endpoint.GetAddressOf());
+        ThrowIfFailed(hr);
+
+        LPWSTR id = nullptr;
+        ThrowIfFailed(endpoint->GetId(&id));
+
+        RendererDetail device;
+        device.deviceId = id;
+        CoTaskMemFree(id);
+
+        ComPtr<IPropertyStore> props;
+        if (SUCCEEDED(endpoint->OpenPropertyStore(STGM_READ, props.GetAddressOf())))
+        {
+            PROPVARIANT var;
+            PropVariantInit(&var);
+
+            if (SUCCEEDED(props->GetValue(PKEY_Device_FriendlyName, &var)))
+            {
+                if (var.vt == VT_LPWSTR)
+                {
+                    device.description = var.pwszVal;
+                }
+                PropVariantClear(&var);
+            }
+        }
+
+        list.emplace_back(device);
+    }
 
 #elif (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
 
@@ -1715,56 +1763,7 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
         }
     }
 
-#endif 
-
-#elif defined(USING_XAUDIO2_REDIST)
-
-    // Enumeration for XAudio 2.9 down-level on Windows 7
-    ComPtr<IMMDeviceEnumerator> devEnum;
-    HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(devEnum.GetAddressOf()));
-    ThrowIfFailed(hr);
-
-    ComPtr<IMMDeviceCollection> devices;
-    hr = devEnum->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &devices);
-    ThrowIfFailed(hr);
-
-    UINT count = 0;
-    ThrowIfFailed(devices->GetCount(&count));
-
-    if (!count)
-        return list;
-
-    for (UINT j = 0; j < count; ++j)
-    {
-        ComPtr<IMMDevice> endpoint;
-        hr = devices->Item(j, endpoint.GetAddressOf());
-        ThrowIfFailed(hr);
-
-        LPWSTR id = nullptr;
-        ThrowIfFailed(endpoint->GetId(&id));
-
-        RendererDetail device;
-        device.deviceId = id;
-        CoTaskMemFree(id);
-
-        ComPtr<IPropertyStore> props;
-        if (SUCCEEDED(endpoint->OpenPropertyStore(STGM_READ, props.GetAddressOf())))
-        {
-            PROPVARIANT var;
-            PropVariantInit(&var);
-
-            if (SUCCEEDED(props->GetValue(PKEY_Device_FriendlyName, &var)))
-            {
-                if (var.vt == VT_LPWSTR)
-                {
-                    device.description = var.pwszVal;
-                }
-                PropVariantClear(&var);
-            }
-        }
-
-        list.emplace_back(device);
-    }
+#endif
 
 #else // USING_XAUDIO2_7_DIRECTX
 
