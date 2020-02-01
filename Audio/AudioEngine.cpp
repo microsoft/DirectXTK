@@ -1573,7 +1573,7 @@ X3DAUDIO_HANDLE& AudioEngine::Get3DHandle() const noexcept
 #ifdef _XBOX_ONE
 #include <Windows.Media.Devices.h>
 #include <wrl.h>
-#elif defined(USING_XAUDIO2_9) && (!defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP))
+#elif defined(USING_XAUDIO2_REDIST)
 #include <mmdeviceapi.h>
 #include <Functiondiscoverykeys_devpkey.h>
 #elif (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
@@ -1609,7 +1609,7 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
     device.description = L"Default";
     list.emplace_back(device);
 
-#elif defined(USING_XAUDIO2_9) && (!defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP))
+#elif defined(USING_XAUDIO2_REDIST)
 
     ComPtr<IMMDeviceEnumerator> devEnum;
     HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(devEnum.GetAddressOf()));
