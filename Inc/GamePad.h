@@ -26,6 +26,7 @@
 #include <stdint.h>
 
 #if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/)
+#pragma comment(lib,"runtimeobject.lib")
 #include <string>
 #endif
 
