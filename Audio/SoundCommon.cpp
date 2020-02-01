@@ -634,7 +634,7 @@ void DirectX::CreateXMA2(WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int 
 
     assert(IsValid(wfx));
 }
-#endif // _XBOX_ONE && _TITLE
+#endif // XMA2
 
 
 _Use_decl_annotations_
