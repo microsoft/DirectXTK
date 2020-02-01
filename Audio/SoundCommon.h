@@ -55,7 +55,7 @@ namespace DirectX
     void CreateIntegerPCM(_Out_ WAVEFORMATEX* wfx, int sampleRate, int channels, int sampleBits) noexcept;
     void CreateFloatPCM(_Out_ WAVEFORMATEX* wfx, int sampleRate, int channels) noexcept;
     void CreateADPCM(_Out_writes_bytes_(wfxSize) WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int samplesPerBlock) noexcept(false);
-#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
+#if defined(USING_XAUDIO2_7_DIRECTX) || defined(USING_XAUDIO2_9)
     void CreateXWMA(_Out_ WAVEFORMATEX* wfx, int sampleRate, int channels, int blockAlign, int avgBytes, bool wma3) noexcept;
 #endif
 #if defined(_XBOX_ONE) && defined(_TITLE)
@@ -254,9 +254,9 @@ namespace DirectX
             if (autostop && voice && (state == PLAYING))
             {
                 XAUDIO2_VOICE_STATE xstate;
-            #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
+            #if defined(USING_XAUDIO2_8) || defined(USING_XAUDIO2_9)
                 voice->GetState(&xstate, XAUDIO2_VOICE_NOSAMPLESPLAYED);
-            #else
+            #else // USING_XAUDIO2_7_DIRECTX
                 voice->GetState(&xstate);
             #endif
 
@@ -277,9 +277,9 @@ namespace DirectX
                 return 0;
 
             XAUDIO2_VOICE_STATE xstate;
-        #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
+        #if defined(USING_XAUDIO2_8) || defined(USING_XAUDIO2_9)
             voice->GetState(&xstate, XAUDIO2_VOICE_NOSAMPLESPLAYED);
-        #else
+        #else // USING_XAUDIO2_7_DIRECTX
             voice->GetState(&xstate);
         #endif
             return static_cast<int>(xstate.BuffersQueued);

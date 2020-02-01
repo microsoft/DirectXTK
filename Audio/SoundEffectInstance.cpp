@@ -139,12 +139,12 @@ void SoundEffectInstance::Impl::Play(bool loop)
         return;
 
     // Submit audio data for STOPPED -> PLAYING state transition
-    XAUDIO2_BUFFER buffer;
+    XAUDIO2_BUFFER buffer = {};
 
-#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
+#if defined(USING_XAUDIO2_7_DIRECTX) || defined(USING_XAUDIO2_9)
 
     bool iswma = false;
-    XAUDIO2_BUFFER_WMA wmaBuffer;
+    XAUDIO2_BUFFER_WMA wmaBuffer = {};
     if (mWaveBank)
     {
         iswma = mWaveBank->FillSubmitBuffer(mIndex, buffer, wmaBuffer);
@@ -155,7 +155,7 @@ void SoundEffectInstance::Impl::Play(bool loop)
         iswma = mEffect->FillSubmitBuffer(buffer, wmaBuffer);
     }
 
-#else
+#else // !xWMA
 
     if (mWaveBank)
     {
@@ -183,7 +183,7 @@ void SoundEffectInstance::Impl::Play(bool loop)
     buffer.pContext = nullptr;
 
     HRESULT hr;
-#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
+#if defined(USING_XAUDIO2_7_DIRECTX) || defined(USING_XAUDIO2_9)
     if (iswma)
     {
         hr = mBase.voice->SubmitSourceBuffer(&buffer, &wmaBuffer);

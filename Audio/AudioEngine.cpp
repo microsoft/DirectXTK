@@ -263,13 +263,13 @@ public:
         mEngineFlags(AudioEngine_Default),
         mCategory(AudioCategory_GameEffects),
         mVoiceInstances(0)
-    #if (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+    #ifdef USING_XAUDIO2_7_DIRECTX
         , mDLL(nullptr)
     #endif
     {
     }
 
-#if (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+#ifdef USING_XAUDIO2_7_DIRECTX
     ~Impl()
     {
         if (mDLL)
@@ -345,7 +345,7 @@ private:
     VoiceCallback                       mVoiceCallback;
     EngineCallback                      mEngineCallback;
 
-#if (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+#ifdef USING_XAUDIO2_7_DIRECTX
     HMODULE                             mDLL;
 #endif
 };
@@ -397,7 +397,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
     // Create XAudio2 engine
     //
     UINT32 eflags = 0;
-#if (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+#ifdef USING_XAUDIO2_7_DIRECTX
     if (mEngineFlags & AudioEngine_Debug)
     {
         if (!mDLL)
@@ -426,7 +426,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
     HRESULT hr = XAudio2Create(xaudio2.ReleaseAndGetAddressOf(), eflags);
     if (FAILED(hr))
     {
-    #if (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+    #ifdef USING_XAUDIO2_7_DIRECTX
         DebugTrace("ERROR: XAudio 2.7 not found (have you called CoInitialize?)\n");
     #endif
         return hr;
@@ -438,16 +438,16 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
         debug.TraceMask = XAUDIO2_LOG_ERRORS | XAUDIO2_LOG_WARNINGS;
         debug.BreakMask = XAUDIO2_LOG_ERRORS;
         xaudio2->SetDebugConfiguration(&debug, nullptr);
-    #if (_WIN32_WINNT >= _WIN32_WINNT_WIN10) || defined(_XBOX_ONE)
+    #ifdef USING_XAUDIO2_9
         DebugTrace("INFO: XAudio 2.9 debugging enabled\n");
-    #elif (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
+    #elif defined(USING_XAUDIO2_8)
             // To see the trace output, you need to view ETW logs for this application:
             //    Go to Control Panel, Administrative Tools, Event Viewer.
             //    View->Show Analytic and Debug Logs.
             //    Applications and Services Logs / Microsoft / Windows / XAudio2. 
             //    Right click on Microsoft Windows XAudio2 debug logging, Properties, then Enable Logging, and hit OK 
         DebugTrace("INFO: XAudio 2.8 debugging enabled\n");
-    #else
+    #else // USING_XAUDIO2_7_DIRECTX
             // To see the trace output, see the debug output channel window
         DebugTrace("INFO: XAudio 2.7 debugging enabled\n");
     #endif
@@ -469,7 +469,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
     // Create mastering voice for device
     //
 
-#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
+#if defined(USING_XAUDIO2_8) || defined(USING_XAUDIO2_9)
 
     hr = xaudio2->CreateMasteringVoice(&mMasterVoice,
         (wfx) ? wfx->nChannels : 0u /*XAUDIO2_DEFAULT_CHANNELS */,
@@ -497,7 +497,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
     masterChannels = details.InputChannels;
     masterRate = details.InputSampleRate;
 
-#else
+#else // USING_XAUDIO2_7_DIRECTX
 
     UINT32 count = 0;
     hr = xaudio2->GetDeviceCount(&count);
@@ -594,9 +594,9 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
         params.Release = FXMASTERINGLIMITER_DEFAULT_RELEASE;
         params.Loudness = FXMASTERINGLIMITER_DEFAULT_LOUDNESS;
 
-    #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
+    #if defined(USING_XAUDIO2_8) || defined(USING_XAUDIO2_9)
         hr = CreateFX(__uuidof(FXMasteringLimiter), mVolumeLimiter.ReleaseAndGetAddressOf(), &params, sizeof(params));
-    #else
+    #else // USING_XAUDIO2_7_DIRECTX
         hr = CreateFX(__uuidof(FXMasteringLimiter), mVolumeLimiter.ReleaseAndGetAddressOf());
     #endif
         if (FAILED(hr))
@@ -621,7 +621,8 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
             return hr;
         }
 
-    #if (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+    #ifdef USING_XAUDIO2_7_DIRECTX
+
         hr = mMasterVoice->SetEffectParameters(0, &params, sizeof(params));
         if (FAILED(hr))
         {
@@ -630,6 +631,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
             xaudio2.Reset();
             return hr;
         }
+
     #endif
 
         DebugTrace("INFO: Mastering volume limiter enabled\n");
@@ -641,7 +643,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
     if (mEngineFlags & AudioEngine_EnvironmentalReverb)
     {
         UINT32 rflags = 0;
-    #if (_WIN32_WINNT < _WIN32_WINNT_WIN8)
+    #ifdef USING_XAUDIO2_7_DIRECTX
         if (mEngineFlags & AudioEngine_Debug)
         {
             rflags |= XAUDIO2FX_DEBUG;
@@ -694,7 +696,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
     //
     const float SPEEDOFSOUND = X3DAUDIO_SPEED_OF_SOUND;
 
-#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
+#if defined(USING_XAUDIO2_8) || defined(USING_XAUDIO2_9)
     hr = X3DAudioInitialize(masterChannelMask, SPEEDOFSOUND, mX3DAudio);
     if (FAILED(hr))
     {
@@ -705,7 +707,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
         xaudio2.Reset();
         return hr;
     }
-#else
+#else // USING_XAUDIO2_7_DIRECTX
     X3DAudioInitialize(masterChannelMask, SPEEDOFSOUND, mX3DAudio);
 #endif
 
@@ -827,9 +829,9 @@ bool AudioEngine::Impl::Update()
                 assert(it->second != nullptr);
 
                 XAUDIO2_VOICE_STATE xstate;
-            #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
+            #if defined(USING_XAUDIO2_8) || defined(USING_XAUDIO2_9)
                 it->second->GetState(&xstate, XAUDIO2_VOICE_NOSAMPLESPLAYED);
-            #else
+            #else // USING_XAUDIO2_7_DIRECTX
                 it->second->GetState(&xstate);
             #endif
 
@@ -1224,9 +1226,9 @@ void AudioEngine::Impl::UnregisterNotify(_In_ IVoiceNotify* notify, bool usesOne
             assert(it->second != nullptr);
 
             XAUDIO2_VOICE_STATE state;
-        #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
+        #if defined(USING_XAUDIO2_8) || defined(USING_XAUDIO2_9)
             it->second->GetState(&state, XAUDIO2_VOICE_NOSAMPLESPLAYED);
-        #else
+        #else // USING_XAUDIO2_7_DIRECTX
             it->second->GetState(&state);
         #endif
 
@@ -1571,6 +1573,9 @@ X3DAUDIO_HANDLE& AudioEngine::Get3DHandle() const noexcept
 #ifdef _XBOX_ONE
 #include <Windows.Media.Devices.h>
 #include <wrl.h>
+#elif defined(USING_XAUDIO2_REDIST)
+#include <mmdeviceapi.h>
+#include <Functiondiscoverykeys_devpkey.h>
 #elif (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
 #pragma comment(lib,"runtimeobject.lib")
 #pragma warning(push)
@@ -1603,6 +1608,54 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
     device.deviceId = id.GetRawBuffer(nullptr);
     device.description = L"Default";
     list.emplace_back(device);
+
+#elif defined(USING_XAUDIO2_REDIST)
+
+    ComPtr<IMMDeviceEnumerator> devEnum;
+    HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(devEnum.GetAddressOf()));
+    ThrowIfFailed(hr);
+
+    ComPtr<IMMDeviceCollection> devices;
+    hr = devEnum->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &devices);
+    ThrowIfFailed(hr);
+
+    UINT count = 0;
+    ThrowIfFailed(devices->GetCount(&count));
+
+    if (!count)
+        return list;
+
+    for (UINT j = 0; j < count; ++j)
+    {
+        ComPtr<IMMDevice> endpoint;
+        hr = devices->Item(j, endpoint.GetAddressOf());
+        ThrowIfFailed(hr);
+
+        LPWSTR id = nullptr;
+        ThrowIfFailed(endpoint->GetId(&id));
+
+        RendererDetail device;
+        device.deviceId = id;
+        CoTaskMemFree(id);
+
+        ComPtr<IPropertyStore> props;
+        if (SUCCEEDED(endpoint->OpenPropertyStore(STGM_READ, props.GetAddressOf())))
+        {
+            PROPVARIANT var;
+            PropVariantInit(&var);
+
+            if (SUCCEEDED(props->GetValue(PKEY_Device_FriendlyName, &var)))
+            {
+                if (var.vt == VT_LPWSTR)
+                {
+                    device.description = var.pwszVal;
+                }
+                PropVariantClear(&var);
+            }
+        }
+
+        list.emplace_back(device);
+    }
 
 #elif (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
 
@@ -1710,9 +1763,9 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
         }
     }
 
-#endif 
+#endif
 
-#else // _WIN32_WINNT < _WIN32_WINNT_WIN8
+#else // USING_XAUDIO2_7_DIRECTX
 
     // Enumerating with XAudio 2.7
     ComPtr<IXAudio2> pXAudio2;

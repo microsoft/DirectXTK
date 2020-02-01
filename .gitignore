@@ -19,6 +19,7 @@
 *.nupkg
 .vs
 Bin
+packages
 /Src/Shaders/Compiled/Xbox*.inc
 /Src/Shaders/Compiled/Xbox*.pdb
 /ipch

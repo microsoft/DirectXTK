@@ -871,7 +871,7 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept
             dest = m_xmaMemory;
         }
         else
-        #endif // _XBOX_ONE && _TITLE
+        #endif // XMA2
         {
             m_waveData.reset(new (std::nothrow) uint8_t[waveLen]);
             if (!m_waveData)

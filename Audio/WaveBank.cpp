@@ -221,7 +221,7 @@ void WaveBank::Impl::Play(unsigned int index, float volume, float pitch, float p
     buffer.Flags = XAUDIO2_END_OF_STREAM;
     buffer.pContext = this;
 
-#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
+    #if defined(USING_XAUDIO2_7_DIRECTX) || defined(USING_XAUDIO2_9)
 
     XAUDIO2_BUFFER_WMA wmaBuffer = {};
 
@@ -480,7 +480,7 @@ int WaveBank::Find(const char* name) const
 }
 
 
-#if defined(_XBOX_ONE) || (_WIN32_WINNT < _WIN32_WINNT_WIN8) || (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
+#if defined(USING_XAUDIO2_7_DIRECTX) || defined(USING_XAUDIO2_9)
 
 _Use_decl_annotations_
 bool WaveBank::FillSubmitBuffer(unsigned int index, XAUDIO2_BUFFER& buffer, XAUDIO2_BUFFER_WMA& wmaBuffer) const
@@ -505,7 +505,7 @@ bool WaveBank::FillSubmitBuffer(unsigned int index, XAUDIO2_BUFFER& buffer, XAUD
     return (tag == WAVE_FORMAT_WMAUDIO2 || tag == WAVE_FORMAT_WMAUDIO3);
 }
 
-#else
+#else // !xWMA
 
 _Use_decl_annotations_
 void WaveBank::FillSubmitBuffer(unsigned int index, XAUDIO2_BUFFER& buffer) const
