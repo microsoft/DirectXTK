@@ -1575,7 +1575,7 @@ X3DAUDIO_HANDLE& AudioEngine::Get3DHandle() const noexcept
 #include <wrl.h>
 #elif defined(USING_XAUDIO2_REDIST)
 #include <mmdeviceapi.h>
-#include <Functiondiscoverykeys_devpkey.h>
+#include <functiondiscoverykeys_devpkey.h>
 #elif (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
 #pragma comment(lib,"runtimeobject.lib")
 #pragma warning(push)
