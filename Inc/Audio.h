@@ -363,6 +363,8 @@ namespace DirectX
 
         HANDLE __cdecl GetAsyncHandle() const noexcept;
 
+        bool __cdecl GetPrivateData(unsigned int index, _Out_writes_bytes_(datasize) void* data, size_t datasize);
+
     private:
         // Private implementation.
         class Impl;

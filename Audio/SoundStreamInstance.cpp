@@ -10,6 +10,7 @@
 
 #include "pch.h"
 #include "DirectXHelpers.h"
+#include "WaveBankReader.h"
 #include "PlatformHelpers.h"
 #include "SoundCommon.h"
 
@@ -58,6 +59,8 @@ public:
         mCurrentDiskReadBuffer(0),
         mCurrentPlayBuffer(0),
         mCurrentPosition(0),
+        mOffsetBytes(0),
+        mLengthInBytes(0),
         mPacketSize(0)
     {
         assert(engine != nullptr);
@@ -67,6 +70,13 @@ public:
         auto wfx = reinterpret_cast<WAVEFORMATEX*>(buff);
         assert(mWaveBank != nullptr);
         mBase.Initialize(engine, mWaveBank->GetFormat(index, wfx, sizeof(buff)), flags);
+
+        WaveBankReader::Metadata metadata;
+        (void)mWaveBank->GetPrivateData(index, &metadata, sizeof(metadata));
+
+        mOffsetBytes = metadata.offsetBytes;
+        mLengthInBytes = metadata.lengthBytes;
+        // TODO: loop points?
 
         mBufferEnd.reset(CreateEventEx(nullptr, nullptr,
             CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE));
@@ -222,7 +232,9 @@ private:
 
     uint32_t                        mCurrentDiskReadBuffer;
     uint32_t                        mCurrentPlayBuffer;
-    uint32_t                        mCurrentPosition;
+    size_t                          mCurrentPosition;
+    size_t                          mOffsetBytes;
+    size_t                          mLengthInBytes;
 
     size_t                          mPacketSize;
     std::unique_ptr<uint8_t[], virtual_deleter> mStreamBuffer;
@@ -280,8 +292,42 @@ HRESULT SoundStreamInstance::Impl::AllocateStreamingBuffers(const WAVEFORMATEX* 
 
 HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
 {
-    // TODO
-    return E_NOTIMPL;
+    if (mCurrentPosition >= mLengthInBytes)
+    {
+        if (!mLooped)
+            return S_FALSE;
+
+        mCurrentPosition = 0;
+    }
+
+    HANDLE async = mWaveBank->GetAsyncHandle();
+
+    uint32_t readBuffer = mCurrentDiskReadBuffer;
+    for (uint32_t j = 0; j < MAX_BUFFER_COUNT; ++j)
+    {
+        uint32_t entry = (j + readBuffer) % MAX_BUFFER_COUNT;
+        if (mPackets[entry] .state == State::FREE)
+        {
+            uint32_t cbValid = static_cast<uint32_t>(std::min(mPacketSize, mLengthInBytes - mCurrentPosition));
+
+            mPackets[entry].request.Offset = static_cast<DWORD>(mOffsetBytes + mCurrentPosition);
+
+            if (!ReadFile(async, mPackets[entry].buffer, mPacketSize, nullptr, &mPackets[entry].request))
+            {
+                DWORD error = GetLastError();
+                if (error != ERROR_IO_PENDING)
+                {
+                    return HRESULT_FROM_WIN32(error);
+                }
+            }
+
+            mCurrentPosition += cbValid;
+
+            mCurrentDiskReadBuffer = (j + readBuffer + 1) % MAX_BUFFER_COUNT;
+        }
+    }
+
+    return S_OK;
 }
 
 
