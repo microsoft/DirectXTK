@@ -16,6 +16,12 @@
 
 using namespace DirectX;
 
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Wcovered-switch-default"
+#endif
+
+#pragma warning(disable : 4061 4062)
+
 namespace
 {
     const size_t DVD_SECTOR_SIZE = 2048;
@@ -58,6 +64,7 @@ public:
         mPackets{},
         mCurrentDiskReadBuffer(0),
         mCurrentPlayBuffer(0),
+        mPlayingBuffers(0),
         mCurrentPosition(0),
         mOffsetBytes(0),
         mLengthInBytes(0),
@@ -78,10 +85,8 @@ public:
         mLengthInBytes = metadata.lengthBytes;
         // TODO: loop points?
 
-        mBufferEnd.reset(CreateEventEx(nullptr, nullptr,
-            CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE));
-        mBufferRead.reset(CreateEventEx(nullptr, nullptr,
-            CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE));
+        mBufferEnd.reset(CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE));
+        mBufferRead.reset(CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE));
         if (!mBufferEnd || !mBufferRead)
         {
             throw std::exception("CreateEvent");
@@ -168,11 +173,11 @@ public:
             break;
 
         case WAIT_OBJECT_0:
-            // TOOD -
+            ThrowIfFailed(PlayBuffers());
             break;
 
         case (WAIT_OBJECT_0 + 1):
-            // TOOD -
+            ThrowIfFailed(ReadBuffers());
             break;
 
         case WAIT_FAILED:
@@ -225,6 +230,7 @@ private:
     {
         State       state;
         uint8_t*    buffer;
+        uint32_t    valid;
         OVERLAPPED  request;
     };
 
@@ -232,6 +238,7 @@ private:
 
     uint32_t                        mCurrentDiskReadBuffer;
     uint32_t                        mCurrentPlayBuffer;
+    uint32_t                        mPlayingBuffers;
     size_t                          mCurrentPosition;
     size_t                          mOffsetBytes;
     size_t                          mLengthInBytes;
@@ -306,24 +313,60 @@ HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
     for (uint32_t j = 0; j < MAX_BUFFER_COUNT; ++j)
     {
         uint32_t entry = (j + readBuffer) % MAX_BUFFER_COUNT;
-        if (mPackets[entry] .state == State::FREE)
+        switch (mPackets[entry].state)
         {
-            uint32_t cbValid = static_cast<uint32_t>(std::min(mPacketSize, mLengthInBytes - mCurrentPosition));
-
-            mPackets[entry].request.Offset = static_cast<DWORD>(mOffsetBytes + mCurrentPosition);
-
-            if (!ReadFile(async, mPackets[entry].buffer, mPacketSize, nullptr, &mPackets[entry].request))
+        case State::FREE:
+            if (mCurrentPosition < mLengthInBytes)
             {
-                DWORD error = GetLastError();
-                if (error != ERROR_IO_PENDING)
+                auto cbValid = static_cast<uint32_t>(std::min(mPacketSize, mLengthInBytes - mCurrentPosition));
+
+                mPackets[entry].request.Offset = static_cast<DWORD>(mOffsetBytes + mCurrentPosition);
+                mPackets[entry].valid = cbValid;
+
+                if (!ReadFile(async, mPackets[entry].buffer, mPacketSize, nullptr, &mPackets[entry].request))
                 {
-                    return HRESULT_FROM_WIN32(error);
+                    DWORD error = GetLastError();
+                    if (error != ERROR_IO_PENDING)
+                    {
+                        return HRESULT_FROM_WIN32(error);
+                    }
+                }
+
+                mCurrentPosition += cbValid;
+
+                mCurrentDiskReadBuffer = (j + readBuffer + 1) % MAX_BUFFER_COUNT;
+
+                mPackets[entry].state = State::PENDING;
+
+                if ((cbValid < mPacketSize) && mLooped)
+                {
+                    mCurrentPosition = 0;
                 }
             }
+            break;
 
-            mCurrentPosition += cbValid;
-
-            mCurrentDiskReadBuffer = (j + readBuffer + 1) % MAX_BUFFER_COUNT;
+        case State::PENDING:
+            {
+                DWORD cb = 0;
+#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
+                BOOL result = GetOverlappedResultEx(async, &mPackets[entry].request, &cb, 0, FALSE);
+#else
+                BOOL result = GetOverlappedResult(async, &mPackets[entry].request, &cb, FALSE);
+#endif
+                if (result)
+                {
+                    mPackets[entry].state = State::READY;
+                }
+                else
+                {
+                    DWORD error = GetLastError();
+                    if (error != ERROR_IO_INCOMPLETE)
+                    {
+                        ThrowIfFailed(HRESULT_FROM_WIN32(error));
+                    }
+                }
+            }
+            break;
         }
     }
 
@@ -333,8 +376,71 @@ HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
 
 HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
 {
-    // TODO
-    return E_NOTIMPL;
+    if (!mBase.voice)
+        return S_FALSE;
+
+    HANDLE async = mWaveBank->GetAsyncHandle();
+
+    for (uint32_t j = 0; j < MAX_BUFFER_COUNT; ++j)
+    {
+        if (mPackets[j].state == State::PENDING)
+        {
+            DWORD cb = 0;
+#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
+            BOOL result = GetOverlappedResultEx(async, &mPackets[j].request, &cb, 0, FALSE);
+#else
+            BOOL result = GetOverlappedResult(async, &mPackets[j].request, &cb, FALSE);
+#endif
+            if (result)
+            {
+                mPackets[j].state = State::READY;
+            }
+            else
+            {
+                DWORD error = GetLastError();
+                if (error != ERROR_IO_INCOMPLETE)
+                {
+                    ThrowIfFailed(HRESULT_FROM_WIN32(error));
+                }
+            }
+        }
+    }
+
+    uint32_t playBuffer = mCurrentPlayBuffer;
+    for (uint32_t j = 0; j < MAX_BUFFER_COUNT; ++j)
+    {
+        uint32_t entry = (j + playBuffer) % MAX_BUFFER_COUNT;
+        switch (mPackets[entry].state)
+        {
+        case State::READY:
+            {
+                XAUDIO2_BUFFER buf = {};
+                buf.AudioBytes = mPackets[entry].valid;
+                buf.pAudioData = mPackets[entry].buffer;
+                if (buf.AudioBytes < mPacketSize)
+                    buf.Flags = XAUDIO2_END_OF_STREAM;
+                buf.pContext = this;
+
+                mBase.voice->SubmitSourceBuffer(&buf);
+
+                mCurrentPlayBuffer = (j + playBuffer + 1) % MAX_BUFFER_COUNT;
+
+                mPlayingBuffers += 1;
+                mPackets[entry].state = State::PLAYING;
+            }
+            break;
+
+        case State::PLAYING:
+            if (uint32_t(mBase.GetPendingBufferCount()) < mPlayingBuffers)
+            {
+                mPlayingBuffers -= 1;
+                mPackets[entry].state = State::FREE;
+            }
+            break;
+        }
+    }
+
+    return S_OK;
 }
 
 
@@ -383,12 +489,14 @@ SoundStreamInstance::~SoundStreamInstance()
 void SoundStreamInstance::Play(bool loop)
 {
     pImpl->Play(loop);
+    pImpl->mPlaying = true;
 }
 
 
 void SoundStreamInstance::Stop(bool immediate) noexcept
 {
     pImpl->mBase.Stop(immediate, pImpl->mLooped);
+    pImpl->mPlaying = false;
 }
 
 
@@ -437,7 +545,7 @@ bool SoundStreamInstance::IsLooped() const noexcept
 
 SoundState SoundStreamInstance::GetState() noexcept
 {
-    return pImpl->mBase.GetState(true);
+    return pImpl->mBase.GetState(false);
 }
 
 
