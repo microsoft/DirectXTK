@@ -22,6 +22,8 @@ using namespace DirectX;
 
 #pragma warning(disable : 4061 4062)
 
+//#define VERBOSE_TRACE
+
 namespace
 {
     const size_t DVD_SECTOR_SIZE = 2048;
@@ -34,7 +36,7 @@ namespace
             return 0;
 
         // TODO - for now, just a quick calculation
-        size_t buffer = wfx->nBlockAlign * wfx->nChannels * wfx->nSamplesPerSec;
+        size_t buffer = wfx->nBlockAlign * wfx->nChannels * wfx->nSamplesPerSec * 2;
         buffer = AlignUp(buffer, MEMORY_ALLOC_SIZE);
         return buffer;
     }
@@ -64,7 +66,6 @@ public:
         mPackets{},
         mCurrentDiskReadBuffer(0),
         mCurrentPlayBuffer(0),
-        mPlayingBuffers(0),
         mCurrentPosition(0),
         mOffsetBytes(0),
         mLengthInBytes(0),
@@ -93,6 +94,10 @@ public:
         }
 
         ThrowIfFailed(AllocateStreamingBuffers(wfx));
+
+#ifdef VERBOSE_TRACE
+        DebugTrace("INFO (Streaming): packet size %zu, play length %zu\n", mPacketSize, mLengthInBytes);
+#endif
 
         // TODO - PCM only for now...
         if ((mPacketSize % wfx->nBlockAlign) != 0)
@@ -148,7 +153,7 @@ public:
     // IVoiceNotify
     virtual void __cdecl OnBufferEnd() override
     {
-        SetEvent(mBufferEnd.get());
+        // Not used
     }
 
     virtual void __cdecl OnCriticalError() override
@@ -172,11 +177,27 @@ public:
         case WAIT_TIMEOUT:
             break;
 
-        case WAIT_OBJECT_0:
+        case WAIT_OBJECT_0: // Read completed
+#ifdef VERBOSE_TRACE
+            DebugTrace("INFO (Streaming): Playing... (readpos %zu) [", mCurrentPosition);
+            for (uint32_t k = 0; k < MAX_BUFFER_COUNT; ++k)
+            {
+                DebugTrace("%ls ", s_debugState[static_cast<int>(mPackets[k].state)]);
+            }
+            DebugTrace("]\n");
+#endif
             ThrowIfFailed(PlayBuffers());
             break;
 
-        case (WAIT_OBJECT_0 + 1):
+        case (WAIT_OBJECT_0 + 1): // Play completed
+#ifdef VERBOSE_TRACE
+            DebugTrace("INFO (Streaming): Reading... (readpos %zu) [", mCurrentPosition);
+            for (uint32_t k = 0; k < MAX_BUFFER_COUNT; ++k)
+            {
+                DebugTrace("%ls ", s_debugState[static_cast<int>(mPackets[k].state)]);
+            }
+            DebugTrace("]\n");
+#endif
             ThrowIfFailed(ReadBuffers());
             break;
 
@@ -214,7 +235,6 @@ public:
     bool                            mPlaying;
     bool                            mLooped;
 
-private:
     ScopedHandle                    mBufferEnd;
     ScopedHandle                    mBufferRead;
 
@@ -226,19 +246,48 @@ private:
         PLAYING,
     };
 
+#ifdef VERBOSE_TRACE
+    static const wchar_t* s_debugState[4];
+#endif
+
+    struct BufferNotify : public IVoiceNotify
+    {
+        void Set(SoundStreamInstance::Impl* parent, size_t index) noexcept(true) { mParent = parent; mIndex = index; };
+
+        void __cdecl OnBufferEnd() override
+        {
+            assert(mParent != nullptr);
+            mParent->mPackets[mIndex].state = State::FREE;
+            SetEvent(mParent->mBufferEnd.get());
+        }
+
+        void __cdecl OnCriticalError() override { assert(mParent != nullptr); mParent->OnCriticalError(); }
+        void __cdecl OnReset() override { assert(mParent != nullptr); mParent->OnReset(); }
+        void __cdecl OnUpdate() override { assert(mParent != nullptr); mParent->OnUpdate(); }
+        void __cdecl OnDestroyEngine() noexcept override { assert(mParent != nullptr); mParent->OnDestroyEngine(); }
+        void __cdecl OnTrim() override { assert(mParent != nullptr); mParent->OnTrim(); }
+        void __cdecl GatherStatistics(AudioStatistics& stats) const override { assert(mParent != nullptr); mParent->GatherStatistics(stats); }
+        void __cdecl OnDestroyParent() noexcept override { assert(mParent != nullptr); mParent->OnDestroyParent(); }
+
+    private:
+        SoundStreamInstance::Impl* mParent;
+        size_t mIndex;
+    };
+
     struct Packets
     {
         State       state;
         uint8_t*    buffer;
         uint32_t    valid;
         OVERLAPPED  request;
+        BufferNotify notify;
     };
 
     Packets                         mPackets[MAX_BUFFER_COUNT];
 
+private:
     uint32_t                        mCurrentDiskReadBuffer;
     uint32_t                        mCurrentPlayBuffer;
-    uint32_t                        mPlayingBuffers;
     size_t                          mCurrentPosition;
     size_t                          mOffsetBytes;
     size_t                          mLengthInBytes;
@@ -289,6 +338,7 @@ HRESULT SoundStreamInstance::Impl::AllocateStreamingBuffers(const WAVEFORMATEX* 
         {
             mPackets[j].buffer = ptr;
             mPackets[j].request.hEvent = mBufferRead.get();
+            mPackets[j].notify.Set(this, j);
             ptr += packetSize;
         }
     }
@@ -304,6 +354,10 @@ HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
         if (!mLooped)
             return S_FALSE;
 
+#ifdef VERBOSE_TRACE
+        DebugTrace("INFO (Streaming): Loop restart\n");
+#endif
+
         mCurrentPosition = 0;
     }
 
@@ -313,9 +367,8 @@ HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
     for (uint32_t j = 0; j < MAX_BUFFER_COUNT; ++j)
     {
         uint32_t entry = (j + readBuffer) % MAX_BUFFER_COUNT;
-        switch (mPackets[entry].state)
+        if (mPackets[entry].state == State::FREE)
         {
-        case State::FREE:
             if (mCurrentPosition < mLengthInBytes)
             {
                 auto cbValid = static_cast<uint32_t>(std::min(mPacketSize, mLengthInBytes - mCurrentPosition));
@@ -323,7 +376,7 @@ HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
                 mPackets[entry].request.Offset = static_cast<DWORD>(mOffsetBytes + mCurrentPosition);
                 mPackets[entry].valid = cbValid;
 
-                if (!ReadFile(async, mPackets[entry].buffer, mPacketSize, nullptr, &mPackets[entry].request))
+                if (!ReadFile(async, mPackets[entry].buffer, uint32_t(mPacketSize), nullptr, &mPackets[entry].request))
                 {
                     DWORD error = GetLastError();
                     if (error != ERROR_IO_PENDING)
@@ -334,39 +387,18 @@ HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
 
                 mCurrentPosition += cbValid;
 
-                mCurrentDiskReadBuffer = (j + readBuffer + 1) % MAX_BUFFER_COUNT;
+                mCurrentDiskReadBuffer = (entry + 1) % MAX_BUFFER_COUNT;
 
                 mPackets[entry].state = State::PENDING;
 
                 if ((cbValid < mPacketSize) && mLooped)
                 {
+#ifdef VERBOSE_TRACE
+                    DebugTrace("INFO (Streaming): Loop restart\n");
+#endif
                     mCurrentPosition = 0;
                 }
             }
-            break;
-
-        case State::PENDING:
-            {
-                DWORD cb = 0;
-#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
-                BOOL result = GetOverlappedResultEx(async, &mPackets[entry].request, &cb, 0, FALSE);
-#else
-                BOOL result = GetOverlappedResult(async, &mPackets[entry].request, &cb, FALSE);
-#endif
-                if (result)
-                {
-                    mPackets[entry].state = State::READY;
-                }
-                else
-                {
-                    DWORD error = GetLastError();
-                    if (error != ERROR_IO_INCOMPLETE)
-                    {
-                        ThrowIfFailed(HRESULT_FROM_WIN32(error));
-                    }
-                }
-            }
-            break;
         }
     }
 
@@ -376,9 +408,6 @@ HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
 
 HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
 {
-    if (!mBase.voice)
-        return S_FALSE;
-
     HANDLE async = mWaveBank->GetAsyncHandle();
 
     for (uint32_t j = 0; j < MAX_BUFFER_COUNT; ++j)
@@ -406,42 +435,44 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
         }
     }
 
-    uint32_t playBuffer = mCurrentPlayBuffer;
+    if (!mBase.voice || !mPlaying)
+        return S_FALSE;
+
     for (uint32_t j = 0; j < MAX_BUFFER_COUNT; ++j)
     {
-        uint32_t entry = (j + playBuffer) % MAX_BUFFER_COUNT;
-        switch (mPackets[entry].state)
+        if (mPackets[mCurrentPlayBuffer].state != State::READY)
+            break;
+
+        XAUDIO2_BUFFER buf = {};
+        buf.AudioBytes = mPackets[mCurrentPlayBuffer].valid;
+        buf.pAudioData = mPackets[mCurrentPlayBuffer].buffer;
+        if (buf.AudioBytes < mPacketSize)
         {
-        case State::READY:
-            {
-                XAUDIO2_BUFFER buf = {};
-                buf.AudioBytes = mPackets[entry].valid;
-                buf.pAudioData = mPackets[entry].buffer;
-                if (buf.AudioBytes < mPacketSize)
-                    buf.Flags = XAUDIO2_END_OF_STREAM;
-                buf.pContext = this;
-
-                mBase.voice->SubmitSourceBuffer(&buf);
-
-                mCurrentPlayBuffer = (j + playBuffer + 1) % MAX_BUFFER_COUNT;
-
-                mPlayingBuffers += 1;
-                mPackets[entry].state = State::PLAYING;
-            }
-            break;
-
-        case State::PLAYING:
-            if (uint32_t(mBase.GetPendingBufferCount()) < mPlayingBuffers)
-            {
-                mPlayingBuffers -= 1;
-                mPackets[entry].state = State::FREE;
-            }
-            break;
+            buf.Flags = XAUDIO2_END_OF_STREAM;
+#ifdef VERBOSE_TRACE
+            DebugTrace("INFO (Streaming): End of stream (%u of %zu bytes)\n", mPackets[mCurrentPlayBuffer].valid, mPacketSize);
+#endif
         }
+        buf.pContext = &mPackets[mCurrentPlayBuffer].notify;
+
+        ThrowIfFailed(mBase.voice->SubmitSourceBuffer(&buf));
+
+        mPackets[mCurrentPlayBuffer].state = State::PLAYING;
+        mCurrentPlayBuffer = (mCurrentPlayBuffer + 1) % MAX_BUFFER_COUNT;
     }
 
     return S_OK;
 }
+
+#ifdef VERBOSE_TRACE
+const wchar_t* SoundStreamInstance::Impl::s_debugState[4] =
+{
+    L"FREE",
+    L"PENDING",
+    L"READY",
+    L"PLAYING"
+};
+#endif
 
 
 //--------------------------------------------------------------------------------------
