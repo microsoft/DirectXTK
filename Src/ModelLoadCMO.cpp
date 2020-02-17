@@ -255,12 +255,16 @@ namespace
 //======================================================================================
 
 _Use_decl_annotations_
-std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, const uint8_t* meshData, size_t dataSize, IEffectFactory& fxFactory, bool ccw, bool pmalpha)
+std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
+    ID3D11Device* device,
+    const uint8_t* meshData, size_t dataSize,
+    IEffectFactory& fxFactory,
+    uint32_t flags)
 {
     if (!InitOnceExecuteOnce(&g_InitOnce, InitializeDecl, nullptr, nullptr))
         throw std::exception("One-time initialization failed");
 
-    if (!d3dDevice || !meshData)
+    if (!device || !meshData)
         throw std::exception("Device and meshData cannot be null");
 
     auto fxFactoryDGSL = dynamic_cast<DGSLEffectFactory*>(&fxFactory);
@@ -292,8 +296,8 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
 
         auto mesh = std::make_shared<ModelMesh>();
         mesh->name.assign(meshName, *nName);
-        mesh->ccw = ccw;
-        mesh->pmalpha = pmalpha;
+        mesh->ccw = (flags & ModelLoader_CounterClockwise) != 0;
+        mesh->pmalpha = (flags & ModelLoader_PremultipledAlpha) != 0;
 
         // Materials
         auto nMats = reinterpret_cast<const UINT*>(meshData + usedSize);
@@ -426,8 +430,14 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
 
             uint64_t sizeInBytes = uint64_t(*(nIndexes)) * sizeof(USHORT);
 
-            if (sizeInBytes > (D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u))
-                throw std::exception("IB too large for DirectX 11");
+            if (sizeInBytes > UINT32_MAX)
+                throw std::exception("IB too large");
+
+            if (!(flags & ModelLoader_AllowLargeModels))
+            {
+                if (sizeInBytes > (D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u))
+                    throw std::exception("IB too large for DirectX 11");
+            }
 
             auto ibBytes = static_cast<size_t>(sizeInBytes);
 
@@ -450,7 +460,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
             initData.pSysMem = indexes;
 
             ThrowIfFailed(
-                d3dDevice->CreateBuffer(&desc, &initData, &ibs[j])
+                device->CreateBuffer(&desc, &initData, &ibs[j])
             );
 
             SetDebugObjectName(ibs[j].Get(), "ModelCMO");
@@ -651,8 +661,15 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
             size_t nVerts = vbData[j].nVerts;
 
             uint64_t sizeInBytes = uint64_t(stride) * uint64_t(nVerts);
-            if (sizeInBytes > uint64_t(D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u))
-                throw std::exception("VB too large for DirectX 11");
+
+            if (sizeInBytes > UINT32_MAX)
+                throw std::exception("VB too large");
+
+            if (!(flags & ModelLoader_AllowLargeModels))
+            {
+                if (sizeInBytes > uint64_t(D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u))
+                    throw std::exception("VB too large for DirectX 11");
+            }
 
             size_t bytes = static_cast<size_t>(sizeInBytes);
 
@@ -668,7 +685,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
                 initData.pSysMem = vbData[j].ptr;
 
                 ThrowIfFailed(
-                    d3dDevice->CreateBuffer(&desc, &initData, &vbs[j])
+                    device->CreateBuffer(&desc, &initData, &vbs[j])
                 );
             }
             else
@@ -769,7 +786,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
                 initData.pSysMem = temp.get();
 
                 ThrowIfFailed(
-                    d3dDevice->CreateBuffer(&desc, &initData, &vbs[j])
+                    device->CreateBuffer(&desc, &initData, &vbs[j])
                 );
             }
 
@@ -829,7 +846,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
                 m.effect = fxFactory.CreateEffect(info, nullptr);
             }
 
-            CreateInputLayout(d3dDevice, m.effect.get(), &m.il, enableSkinning);
+            CreateInputLayout(device, m.effect.get(), &m.il, enableSkinning);
         }
 
         // Build mesh parts
@@ -870,7 +887,11 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_
-std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, const wchar_t* szFileName, IEffectFactory& fxFactory, bool ccw, bool pmalpha)
+std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
+    ID3D11Device* device,
+    const wchar_t* szFileName,
+    IEffectFactory& fxFactory,
+    uint32_t flags)
 {
     size_t dataSize = 0;
     std::unique_ptr<uint8_t[]> data;
@@ -882,7 +903,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
         throw std::exception("CreateFromCMO");
     }
 
-    auto model = CreateFromCMO(d3dDevice, data.get(), dataSize, fxFactory, ccw, pmalpha);
+    auto model = CreateFromCMO(device, data.get(), dataSize, fxFactory, flags);
 
     model->name = szFileName;
 
