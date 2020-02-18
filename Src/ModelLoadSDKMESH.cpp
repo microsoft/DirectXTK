@@ -24,7 +24,7 @@ using Microsoft::WRL::ComPtr;
 
 namespace
 {
-    enum
+    enum : unsigned int
     {
         PER_VERTEX_COLOR        = 0x1,
         SKINNING                = 0x2,
@@ -42,10 +42,28 @@ namespace
         MaterialRecordSDKMESH() noexcept : alpha(false) {}
     };
 
+    inline XMFLOAT3 GetMaterialColor(float r, float g, float b, bool srgb)
+    {
+        if (srgb)
+        {
+            XMVECTOR v = XMVectorSet(r, g, b, 1.f);
+            v = XMColorSRGBToRGB(v);
+
+            XMFLOAT3 result;
+            XMStoreFloat3(&result, v);
+            return result;
+        }
+        else
+        {
+            return XMFLOAT3(r, g, b);
+        }
+    }
+
     void LoadMaterial(const DXUT::SDKMESH_MATERIAL& mh,
-                      unsigned int flags,
-                      IEffectFactory& fxFactory,
-                      MaterialRecordSDKMESH& m)
+        unsigned int flags,
+        IEffectFactory& fxFactory,
+        MaterialRecordSDKMESH& m,
+        bool srgb)
     {
         wchar_t matName[DXUT::MAX_MATERIAL_NAME] = {};
         MultiByteToWideChar(CP_UTF8, 0, mh.Name, -1, matName, DXUT::MAX_MATERIAL_NAME);
@@ -96,9 +114,9 @@ namespace
         }
         else
         {
-            info.ambientColor = XMFLOAT3(mh.Ambient.x, mh.Ambient.y, mh.Ambient.z);
-            info.diffuseColor = XMFLOAT3(mh.Diffuse.x, mh.Diffuse.y, mh.Diffuse.z);
-            info.emissiveColor = XMFLOAT3(mh.Emissive.x, mh.Emissive.y, mh.Emissive.z);
+            info.ambientColor = GetMaterialColor(mh.Ambient.x, mh.Ambient.y, mh.Ambient.z, srgb);
+            info.diffuseColor = GetMaterialColor(mh.Diffuse.x, mh.Diffuse.y, mh.Diffuse.z, srgb);
+            info.emissiveColor = GetMaterialColor(mh.Emissive.x, mh.Emissive.y, mh.Emissive.z, srgb);
 
             if (mh.Diffuse.w != 1.f && mh.Diffuse.w != 0.f)
             {
@@ -380,7 +398,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
     const uint8_t* meshData,
     size_t idataSize,
     IEffectFactory& fxFactory,
-    uint32_t flags)
+    ModelLoaderFlags flags)
 {
     if (!d3dDevice || !meshData)
         throw std::exception("Device and meshData cannot be null");
@@ -681,7 +699,8 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
                         materialArray[subset.MaterialID],
                         materialFlags[vi],
                         fxFactory,
-                        mat);
+                        mat,
+                        (flags & ModelLoader_MaterialColorsSRGB) != 0);
                 }
             }
 
@@ -719,7 +738,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
     ID3D11Device* device,
     const wchar_t* szFileName,
     IEffectFactory& fxFactory,
-    uint32_t flags)
+    ModelLoaderFlags flags)
 {
     size_t dataSize = 0;
     std::unique_ptr<uint8_t[]> data;

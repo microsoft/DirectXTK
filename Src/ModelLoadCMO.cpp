@@ -247,6 +247,23 @@ namespace
             VertexPositionNormalTangentColorTextureSkinning::InputElements + VertexPositionNormalTangentColorTextureSkinning::InputElementCount);
         return TRUE;
     }
+
+    inline XMFLOAT3 GetMaterialColor(float r, float g, float b, bool srgb)
+    {
+        if (srgb)
+        {
+            XMVECTOR v = XMVectorSet(r, g, b, 1.f);
+            v = XMColorSRGBToRGB(v);
+
+            XMFLOAT3 result;
+            XMStoreFloat3(&result, v);
+            return result;
+        }
+        else
+        {
+            return XMFLOAT3(r, g, b);
+        }
+    }
 }
 
 
@@ -259,7 +276,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
     ID3D11Device* device,
     const uint8_t* meshData, size_t dataSize,
     IEffectFactory& fxFactory,
-    uint32_t flags)
+    ModelLoaderFlags flags)
 {
     if (!InitOnceExecuteOnce(&g_InitOnce, InitializeDecl, nullptr, nullptr))
         throw std::exception("One-time initialization failed");
@@ -796,6 +813,8 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
         assert(vbs.size() == *nVBs);
 
         // Create Effects
+        bool srgb = (flags & ModelLoader_MaterialColorsSRGB) != 0;
+
         for (size_t j = 0; j < materials.size(); ++j)
         {
             auto& m = materials[j];
@@ -808,10 +827,10 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
                 info.perVertexColor = true;
                 info.enableSkinning = enableSkinning;
                 info.alpha = m.pMaterial->Diffuse.w;
-                info.ambientColor = XMFLOAT3(m.pMaterial->Ambient.x, m.pMaterial->Ambient.y, m.pMaterial->Ambient.z);
-                info.diffuseColor = XMFLOAT3(m.pMaterial->Diffuse.x, m.pMaterial->Diffuse.y, m.pMaterial->Diffuse.z);
-                info.specularColor = XMFLOAT3(m.pMaterial->Specular.x, m.pMaterial->Specular.y, m.pMaterial->Specular.z);
-                info.emissiveColor = XMFLOAT3(m.pMaterial->Emissive.x, m.pMaterial->Emissive.y, m.pMaterial->Emissive.z);
+                info.ambientColor = GetMaterialColor(m.pMaterial->Ambient.x, m.pMaterial->Ambient.y, m.pMaterial->Ambient.z, srgb);
+                info.diffuseColor = GetMaterialColor(m.pMaterial->Diffuse.x, m.pMaterial->Diffuse.y, m.pMaterial->Diffuse.z, srgb);
+                info.specularColor = GetMaterialColor(m.pMaterial->Specular.x, m.pMaterial->Specular.y, m.pMaterial->Specular.z, srgb);
+                info.emissiveColor = GetMaterialColor(m.pMaterial->Emissive.x, m.pMaterial->Emissive.y, m.pMaterial->Emissive.z, srgb);
                 info.diffuseTexture = m.texture[0].empty() ? nullptr : m.texture[0].c_str();
                 info.specularTexture = m.texture[1].empty() ? nullptr : m.texture[1].c_str();
                 info.normalTexture = m.texture[2].empty() ? nullptr : m.texture[2].c_str();
@@ -837,10 +856,10 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
                 info.perVertexColor = true;
                 info.enableSkinning = enableSkinning;
                 info.alpha = m.pMaterial->Diffuse.w;
-                info.ambientColor = XMFLOAT3(m.pMaterial->Ambient.x, m.pMaterial->Ambient.y, m.pMaterial->Ambient.z);
-                info.diffuseColor = XMFLOAT3(m.pMaterial->Diffuse.x, m.pMaterial->Diffuse.y, m.pMaterial->Diffuse.z);
-                info.specularColor = XMFLOAT3(m.pMaterial->Specular.x, m.pMaterial->Specular.y, m.pMaterial->Specular.z);
-                info.emissiveColor = XMFLOAT3(m.pMaterial->Emissive.x, m.pMaterial->Emissive.y, m.pMaterial->Emissive.z);
+                info.ambientColor = GetMaterialColor(m.pMaterial->Ambient.x, m.pMaterial->Ambient.y, m.pMaterial->Ambient.z, srgb);
+                info.diffuseColor = GetMaterialColor(m.pMaterial->Diffuse.x, m.pMaterial->Diffuse.y, m.pMaterial->Diffuse.z, srgb);
+                info.specularColor = GetMaterialColor(m.pMaterial->Specular.x, m.pMaterial->Specular.y, m.pMaterial->Specular.z, srgb);
+                info.emissiveColor = GetMaterialColor(m.pMaterial->Emissive.x, m.pMaterial->Emissive.y, m.pMaterial->Emissive.z, srgb);
                 info.diffuseTexture = m.texture[0].c_str();
 
                 m.effect = fxFactory.CreateEffect(info, nullptr);
@@ -891,7 +910,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
     ID3D11Device* device,
     const wchar_t* szFileName,
     IEffectFactory& fxFactory,
-    uint32_t flags)
+    ModelLoaderFlags flags)
 {
     size_t dataSize = 0;
     std::unique_ptr<uint8_t[]> data;

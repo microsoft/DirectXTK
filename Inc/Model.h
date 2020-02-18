@@ -41,11 +41,14 @@ namespace DirectX
     // Model loading options
     enum ModelLoaderFlags : uint32_t
     {
-        ModelLoader_Clockwise = 0,
-        ModelLoader_CounterClockwise = 1,
-        ModelLoader_PremultipledAlpha = 2,
-        ModelLoader_AllowLargeModels = 0x10000,
+        ModelLoader_Clockwise           = 0x0,
+        ModelLoader_CounterClockwise    = 0x1,
+        ModelLoader_PremultipledAlpha   = 0x2,
+        ModelLoader_MaterialColorsSRGB  = 0x4,
+        ModelLoader_AllowLargeModels    = 0x8,
     };
+
+    inline ModelLoaderFlags operator|(ModelLoaderFlags a, ModelLoaderFlags b) noexcept { return static_cast<ModelLoaderFlags>(static_cast<int>(a) | static_cast<int>(b)); }
 
     //----------------------------------------------------------------------------------
     // Each mesh part is a submesh with a single effect
@@ -151,36 +154,36 @@ namespace DirectX
             _In_ ID3D11Device* device,
             _In_reads_bytes_(dataSize) const uint8_t* meshData, size_t dataSize,
             _In_ IEffectFactory& fxFactory,
-            uint32_t flags = ModelLoader_CounterClockwise);
+            ModelLoaderFlags flags = ModelLoader_CounterClockwise);
         static std::unique_ptr<Model> __cdecl CreateFromCMO(
             _In_ ID3D11Device* device,
             _In_z_ const wchar_t* szFileName,
             _In_ IEffectFactory& fxFactory,
-            uint32_t flags = ModelLoader_CounterClockwise);
+            ModelLoaderFlags flags = ModelLoader_CounterClockwise);
 
         // Loads a model from a DirectX SDK .SDKMESH file
         static std::unique_ptr<Model> __cdecl CreateFromSDKMESH(
             _In_ ID3D11Device* device,
             _In_reads_bytes_(dataSize) const uint8_t* meshData, _In_ size_t dataSize,
             _In_ IEffectFactory& fxFactory,
-            uint32_t flags = ModelLoader_Clockwise);
+            ModelLoaderFlags flags = ModelLoader_Clockwise);
         static std::unique_ptr<Model> __cdecl CreateFromSDKMESH(
             _In_ ID3D11Device* device,
             _In_z_ const wchar_t* szFileName,
             _In_ IEffectFactory& fxFactory,
-            uint32_t flags = ModelLoader_Clockwise);
+            ModelLoaderFlags flags = ModelLoader_Clockwise);
 
         // Loads a model from a .VBO file
         static std::unique_ptr<Model> __cdecl CreateFromVBO(
             _In_ ID3D11Device* device,
             _In_reads_bytes_(dataSize) const uint8_t* meshData, _In_ size_t dataSize,
             _In_opt_ std::shared_ptr<IEffect> ieffect = nullptr,
-            uint32_t flags = ModelLoader_Clockwise);
+            ModelLoaderFlags flags = ModelLoader_Clockwise);
         static std::unique_ptr<Model> __cdecl CreateFromVBO(
             _In_ ID3D11Device* device,
             _In_z_ const wchar_t* szFileName,
             _In_opt_ std::shared_ptr<IEffect> ieffect = nullptr,
-            uint32_t flags = ModelLoader_Clockwise);
+            ModelLoaderFlags flags = ModelLoader_Clockwise);
 
     private:
         std::set<IEffect*>  mEffectCache;
