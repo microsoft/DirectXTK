@@ -247,6 +247,23 @@ namespace
             VertexPositionNormalTangentColorTextureSkinning::InputElements + VertexPositionNormalTangentColorTextureSkinning::InputElementCount);
         return TRUE;
     }
+
+    inline XMFLOAT3 GetMaterialColor(float r, float g, float b, bool srgb)
+    {
+        if (srgb)
+        {
+            XMVECTOR v = XMVectorSet(r, g, b, 1.f);
+            v = XMColorSRGBToRGB(v);
+
+            XMFLOAT3 result;
+            XMStoreFloat3(&result, v);
+            return result;
+        }
+        else
+        {
+            return XMFLOAT3(r, g, b);
+        }
+    }
 }
 
 
@@ -255,12 +272,16 @@ namespace
 //======================================================================================
 
 _Use_decl_annotations_
-std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, const uint8_t* meshData, size_t dataSize, IEffectFactory& fxFactory, bool ccw, bool pmalpha)
+std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
+    ID3D11Device* device,
+    const uint8_t* meshData, size_t dataSize,
+    IEffectFactory& fxFactory,
+    ModelLoaderFlags flags)
 {
     if (!InitOnceExecuteOnce(&g_InitOnce, InitializeDecl, nullptr, nullptr))
         throw std::exception("One-time initialization failed");
 
-    if (!d3dDevice || !meshData)
+    if (!device || !meshData)
         throw std::exception("Device and meshData cannot be null");
 
     auto fxFactoryDGSL = dynamic_cast<DGSLEffectFactory*>(&fxFactory);
@@ -292,8 +313,8 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
 
         auto mesh = std::make_shared<ModelMesh>();
         mesh->name.assign(meshName, *nName);
-        mesh->ccw = ccw;
-        mesh->pmalpha = pmalpha;
+        mesh->ccw = (flags & ModelLoader_CounterClockwise) != 0;
+        mesh->pmalpha = (flags & ModelLoader_PremultipledAlpha) != 0;
 
         // Materials
         auto nMats = reinterpret_cast<const UINT*>(meshData + usedSize);
@@ -426,8 +447,14 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
 
             uint64_t sizeInBytes = uint64_t(*(nIndexes)) * sizeof(USHORT);
 
-            if (sizeInBytes > (D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u))
-                throw std::exception("IB too large for DirectX 11");
+            if (sizeInBytes > UINT32_MAX)
+                throw std::exception("IB too large");
+
+            if (!(flags & ModelLoader_AllowLargeModels))
+            {
+                if (sizeInBytes > (D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u))
+                    throw std::exception("IB too large for DirectX 11");
+            }
 
             auto ibBytes = static_cast<size_t>(sizeInBytes);
 
@@ -450,7 +477,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
             initData.pSysMem = indexes;
 
             ThrowIfFailed(
-                d3dDevice->CreateBuffer(&desc, &initData, &ibs[j])
+                device->CreateBuffer(&desc, &initData, &ibs[j])
             );
 
             SetDebugObjectName(ibs[j].Get(), "ModelCMO");
@@ -651,8 +678,15 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
             size_t nVerts = vbData[j].nVerts;
 
             uint64_t sizeInBytes = uint64_t(stride) * uint64_t(nVerts);
-            if (sizeInBytes > uint64_t(D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u))
-                throw std::exception("VB too large for DirectX 11");
+
+            if (sizeInBytes > UINT32_MAX)
+                throw std::exception("VB too large");
+
+            if (!(flags & ModelLoader_AllowLargeModels))
+            {
+                if (sizeInBytes > uint64_t(D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u))
+                    throw std::exception("VB too large for DirectX 11");
+            }
 
             size_t bytes = static_cast<size_t>(sizeInBytes);
 
@@ -668,7 +702,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
                 initData.pSysMem = vbData[j].ptr;
 
                 ThrowIfFailed(
-                    d3dDevice->CreateBuffer(&desc, &initData, &vbs[j])
+                    device->CreateBuffer(&desc, &initData, &vbs[j])
                 );
             }
             else
@@ -769,7 +803,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
                 initData.pSysMem = temp.get();
 
                 ThrowIfFailed(
-                    d3dDevice->CreateBuffer(&desc, &initData, &vbs[j])
+                    device->CreateBuffer(&desc, &initData, &vbs[j])
                 );
             }
 
@@ -779,6 +813,8 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
         assert(vbs.size() == *nVBs);
 
         // Create Effects
+        bool srgb = (flags & ModelLoader_MaterialColorsSRGB) != 0;
+
         for (size_t j = 0; j < materials.size(); ++j)
         {
             auto& m = materials[j];
@@ -791,10 +827,10 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
                 info.perVertexColor = true;
                 info.enableSkinning = enableSkinning;
                 info.alpha = m.pMaterial->Diffuse.w;
-                info.ambientColor = XMFLOAT3(m.pMaterial->Ambient.x, m.pMaterial->Ambient.y, m.pMaterial->Ambient.z);
-                info.diffuseColor = XMFLOAT3(m.pMaterial->Diffuse.x, m.pMaterial->Diffuse.y, m.pMaterial->Diffuse.z);
-                info.specularColor = XMFLOAT3(m.pMaterial->Specular.x, m.pMaterial->Specular.y, m.pMaterial->Specular.z);
-                info.emissiveColor = XMFLOAT3(m.pMaterial->Emissive.x, m.pMaterial->Emissive.y, m.pMaterial->Emissive.z);
+                info.ambientColor = GetMaterialColor(m.pMaterial->Ambient.x, m.pMaterial->Ambient.y, m.pMaterial->Ambient.z, srgb);
+                info.diffuseColor = GetMaterialColor(m.pMaterial->Diffuse.x, m.pMaterial->Diffuse.y, m.pMaterial->Diffuse.z, srgb);
+                info.specularColor = GetMaterialColor(m.pMaterial->Specular.x, m.pMaterial->Specular.y, m.pMaterial->Specular.z, srgb);
+                info.emissiveColor = GetMaterialColor(m.pMaterial->Emissive.x, m.pMaterial->Emissive.y, m.pMaterial->Emissive.z, srgb);
                 info.diffuseTexture = m.texture[0].empty() ? nullptr : m.texture[0].c_str();
                 info.specularTexture = m.texture[1].empty() ? nullptr : m.texture[1].c_str();
                 info.normalTexture = m.texture[2].empty() ? nullptr : m.texture[2].c_str();
@@ -820,16 +856,16 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
                 info.perVertexColor = true;
                 info.enableSkinning = enableSkinning;
                 info.alpha = m.pMaterial->Diffuse.w;
-                info.ambientColor = XMFLOAT3(m.pMaterial->Ambient.x, m.pMaterial->Ambient.y, m.pMaterial->Ambient.z);
-                info.diffuseColor = XMFLOAT3(m.pMaterial->Diffuse.x, m.pMaterial->Diffuse.y, m.pMaterial->Diffuse.z);
-                info.specularColor = XMFLOAT3(m.pMaterial->Specular.x, m.pMaterial->Specular.y, m.pMaterial->Specular.z);
-                info.emissiveColor = XMFLOAT3(m.pMaterial->Emissive.x, m.pMaterial->Emissive.y, m.pMaterial->Emissive.z);
+                info.ambientColor = GetMaterialColor(m.pMaterial->Ambient.x, m.pMaterial->Ambient.y, m.pMaterial->Ambient.z, srgb);
+                info.diffuseColor = GetMaterialColor(m.pMaterial->Diffuse.x, m.pMaterial->Diffuse.y, m.pMaterial->Diffuse.z, srgb);
+                info.specularColor = GetMaterialColor(m.pMaterial->Specular.x, m.pMaterial->Specular.y, m.pMaterial->Specular.z, srgb);
+                info.emissiveColor = GetMaterialColor(m.pMaterial->Emissive.x, m.pMaterial->Emissive.y, m.pMaterial->Emissive.z, srgb);
                 info.diffuseTexture = m.texture[0].c_str();
 
                 m.effect = fxFactory.CreateEffect(info, nullptr);
             }
 
-            CreateInputLayout(d3dDevice, m.effect.get(), &m.il, enableSkinning);
+            CreateInputLayout(device, m.effect.get(), &m.il, enableSkinning);
         }
 
         // Build mesh parts
@@ -870,7 +906,11 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_
-std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, const wchar_t* szFileName, IEffectFactory& fxFactory, bool ccw, bool pmalpha)
+std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
+    ID3D11Device* device,
+    const wchar_t* szFileName,
+    IEffectFactory& fxFactory,
+    ModelLoaderFlags flags)
 {
     size_t dataSize = 0;
     std::unique_ptr<uint8_t[]> data;
@@ -882,7 +922,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(ID3D11Device* d3dDevice, co
         throw std::exception("CreateFromCMO");
     }
 
-    auto model = CreateFromCMO(d3dDevice, data.get(), dataSize, fxFactory, ccw, pmalpha);
+    auto model = CreateFromCMO(device, data.get(), dataSize, fxFactory, flags);
 
     model->name = szFileName;
 
