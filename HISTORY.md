@@ -6,6 +6,15 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### February 24, 2020
+* *breaking change* ``Model::CreateFrom*`` changed to use ModelLoaderFlags instead of default bool parameters
+* DirectX Tool Kit for Audio updated to support XAudio2Redist NuGet
+* Added ``ignoreWhitespace`` defaulted parameter to SpriteFont Measure methods
+* Fixed encoding issue with Utilities.fxh
+* Code and project cleanup
+* Retired VS 2015 projects
+* xwbtool: Changed ``-n`` switch to a more safe ``-y`` switch
+
 ### December 17, 2019
 * Added ARM64 platform to VS 2019 Win32 desktop Win10 project
 * Added Vector ``operator/`` by float scalar to SimpleMath

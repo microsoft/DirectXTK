@@ -29,9 +29,9 @@ SpriteBatch - simple &amp; efficient 2D sprite rendering
 SpriteFont - bitmap based text rendering
 VertexTypes - structures for commonly used vertex data formats
 WICTextureLoader - WIC-based image file texture loader</description>
-        <releaseNotes>Matches the December 17, 2019 release on GitHub.
+        <releaseNotes>Matches the February 24, 2020 release on GitHub.
 
-DirectX Tool Kit for Audio in this package uses XAudio 2.8 which requires Windows 8 or later. To support Windows 7, you need to build DirectXTKAudioDX.lib using the legacy DirectX SDK and deploy it via the legacy DXSETUP.</releaseNotes>
+DirectX Tool Kit for Audio in this package uses XAudio2Redist NuGet package to support Windows 7 or later.</releaseNotes>
         <projectUrl>http://go.microsoft.com/fwlink/?LinkId=248929</projectUrl>
         <icon>images\icon.jpg</icon>
         <license type="expression">MIT</license>
@@ -48,27 +48,33 @@ DirectX Tool Kit for Audio in this package uses XAudio 2.8 which requires Window
 
         <file target="native\lib\Win32\Debug" src="Bin\Desktop_2017\Win32\Debug\*.lib" />
         <file target="native\lib\Win32\Debug" src="Bin\Desktop_2017\Win32\Debug\*.pdb" />
-        <file target="native\lib\Win32\Debug" src="Audio\Bin\Desktop_2017\Win32\Debug\*.lib" />
-        <file target="native\lib\Win32\Debug" src="Audio\Bin\Desktop_2017\Win32\Debug\*.pdb" />
+        <file target="native\lib\Win32\Debug" src="Audio\Bin\Desktop_2017_Win7\Win32\Debug\*.lib" />
+        <file target="native\lib\Win32\Debug" src="Audio\Bin\Desktop_2017_Win7\Win32\Debug\*.pdb" />
 
         <file target="native\lib\Win32\Release" src="Bin\Desktop_2017\Win32\Release\*.lib" />
         <file target="native\lib\Win32\Release" src="Bin\Desktop_2017\Win32\Release\*.pdb" />
-        <file target="native\lib\Win32\Release" src="Audio\Bin\Desktop_2017\Win32\Release\*.lib" />
-        <file target="native\lib\Win32\Release" src="Audio\Bin\Desktop_2017\Win32\Release\*.pdb" />
+        <file target="native\lib\Win32\Release" src="Audio\Bin\Desktop_2017_Win7\Win32\Release\*.lib" />
+        <file target="native\lib\Win32\Release" src="Audio\Bin\Desktop_2017_Win7\Win32\Release\*.pdb" />
 
         <file target="native\lib\x64\Debug" src="Bin\Desktop_2017\x64\Debug\*.lib" />
         <file target="native\lib\x64\Debug" src="Bin\Desktop_2017\x64\Debug\*.pdb" />
-        <file target="native\lib\x64\Debug" src="Audio\Bin\Desktop_2017\x64\Debug\*.lib" />
-        <file target="native\lib\x64\Debug" src="Audio\Bin\Desktop_2017\x64\Debug\*.pdb" />
+        <file target="native\lib\x64\Debug" src="Audio\Bin\Desktop_2017_Win7\x64\Debug\*.lib" />
+        <file target="native\lib\x64\Debug" src="Audio\Bin\Desktop_2017_Win7\x64\Debug\*.pdb" />
 
         <file target="native\lib\x64\Release" src="Bin\Desktop_2017\x64\Release\*.lib" />
         <file target="native\lib\x64\Release" src="Bin\Desktop_2017\x64\Release\*.pdb" />
-        <file target="native\lib\x64\Release" src="Audio\Bin\Desktop_2017\x64\Release\*.lib" />
-        <file target="native\lib\x64\Release" src="Audio\Bin\Desktop_2017\x64\Release\*.pdb" />
+        <file target="native\lib\x64\Release" src="Audio\Bin\Desktop_2017_Win7\x64\Release\*.lib" />
+        <file target="native\lib\x64\Release" src="Audio\Bin\Desktop_2017_Win7\x64\Release\*.pdb" />
 
         <file src=".nuget/directxtk_desktop_2017.targets" target="build\native" />
 
         <file src=".nuget/icon.jpg" target="images\" />
       
     </files>
+
+    <dependencies>
+
+        <dependency id="Microsoft.XAudio2.Redist" version="[1,2)" />
+
+    </dependencies>
 </package>
