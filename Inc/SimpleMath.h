@@ -27,10 +27,6 @@
 #include <DirectXPackedVector.h>
 #include <DirectXCollision.h>
 
-#ifndef XM_CONSTEXPR
-#define XM_CONSTEXPR
-#endif
-
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wfloat-equal"
@@ -58,7 +54,7 @@ namespace DirectX
 
             // Creators
             Rectangle() noexcept : x(0), y(0), width(0), height(0) {}
-            XM_CONSTEXPR Rectangle(long ix, long iy, long iw, long ih) noexcept : x(ix), y(iy), width(iw), height(ih) {}
+            constexpr Rectangle(long ix, long iy, long iw, long ih) noexcept : x(ix), y(iy), width(iw), height(ih) {}
             explicit Rectangle(const RECT& rct) noexcept : x(rct.left), y(rct.top), width(rct.right - rct.left), height(rct.bottom - rct.top) {}
 
             Rectangle(const Rectangle&) = default;
@@ -113,8 +109,8 @@ namespace DirectX
         struct Vector2 : public XMFLOAT2
         {
             Vector2() noexcept : XMFLOAT2(0.f, 0.f) {}
-            XM_CONSTEXPR explicit Vector2(float ix) noexcept : XMFLOAT2(ix, ix) {}
-            XM_CONSTEXPR Vector2(float ix, float iy) noexcept : XMFLOAT2(ix, iy) {}
+            constexpr explicit Vector2(float ix) noexcept : XMFLOAT2(ix, ix) {}
+            constexpr Vector2(float ix, float iy) noexcept : XMFLOAT2(ix, iy) {}
             explicit Vector2(_In_reads_(2) const float *pArray) noexcept : XMFLOAT2(pArray) {}
             Vector2(FXMVECTOR V) noexcept { XMStoreFloat2(this, V); }
             Vector2(const XMFLOAT2& V) noexcept { this->x = V.x; this->y = V.y; }
@@ -226,8 +222,8 @@ namespace DirectX
         struct Vector3 : public XMFLOAT3
         {
             Vector3() noexcept : XMFLOAT3(0.f, 0.f, 0.f) {}
-            XM_CONSTEXPR explicit Vector3(float ix) noexcept : XMFLOAT3(ix, ix, ix) {}
-            XM_CONSTEXPR Vector3(float ix, float iy, float iz) noexcept : XMFLOAT3(ix, iy, iz) {}
+            constexpr explicit Vector3(float ix) noexcept : XMFLOAT3(ix, ix, ix) {}
+            constexpr Vector3(float ix, float iy, float iz) noexcept : XMFLOAT3(ix, iy, iz) {}
             explicit Vector3(_In_reads_(3) const float *pArray) noexcept : XMFLOAT3(pArray) {}
             Vector3(FXMVECTOR V) noexcept { XMStoreFloat3(this, V); }
             Vector3(const XMFLOAT3& V) noexcept { this->x = V.x; this->y = V.y; this->z = V.z; }
@@ -346,8 +342,8 @@ namespace DirectX
         struct Vector4 : public XMFLOAT4
         {
             Vector4() noexcept : XMFLOAT4(0.f, 0.f, 0.f, 0.f) {}
-            XM_CONSTEXPR explicit Vector4(float ix) noexcept : XMFLOAT4(ix, ix, ix, ix) {}
-            XM_CONSTEXPR Vector4(float ix, float iy, float iz, float iw) noexcept : XMFLOAT4(ix, iy, iz, iw) {}
+            constexpr explicit Vector4(float ix) noexcept : XMFLOAT4(ix, ix, ix, ix) {}
+            constexpr Vector4(float ix, float iy, float iz, float iw) noexcept : XMFLOAT4(ix, iy, iz, iw) {}
             explicit Vector4(_In_reads_(4) const float *pArray) noexcept : XMFLOAT4(pArray) {}
             Vector4(FXMVECTOR V) noexcept { XMStoreFloat4(this, V); }
             Vector4(const XMFLOAT4& V) noexcept { this->x = V.x; this->y = V.y; this->z = V.z; this->w = V.w; }
@@ -464,10 +460,10 @@ namespace DirectX
                             0, 1.f, 0, 0,
                             0, 0, 1.f, 0,
                             0, 0, 0, 1.f) {}
-            XM_CONSTEXPR Matrix(float m00, float m01, float m02, float m03,
-                                float m10, float m11, float m12, float m13,
-                                float m20, float m21, float m22, float m23,
-                                float m30, float m31, float m32, float m33) noexcept
+            constexpr Matrix(float m00, float m01, float m02, float m03,
+                             float m10, float m11, float m12, float m13,
+                             float m20, float m21, float m22, float m23,
+                             float m30, float m31, float m32, float m33) noexcept
                 : XMFLOAT4X4(m00, m01, m02, m03,
                              m10, m11, m12, m13,
                              m20, m21, m22, m23,
@@ -614,7 +610,7 @@ namespace DirectX
         struct Plane : public XMFLOAT4
         {
             Plane() noexcept : XMFLOAT4(0.f, 1.f, 0.f, 0.f) {}
-            XM_CONSTEXPR Plane(float ix, float iy, float iz, float iw) noexcept : XMFLOAT4(ix, iy, iz, iw) {}
+            constexpr Plane(float ix, float iy, float iz, float iw) noexcept : XMFLOAT4(ix, iy, iz, iw) {}
             Plane(const Vector3& normal, float d) noexcept : XMFLOAT4(normal.x, normal.y, normal.z, d) {}
             Plane(const Vector3& point1, const Vector3& point2, const Vector3& point3) noexcept;
             Plane(const Vector3& point, const Vector3& normal) noexcept;
@@ -668,7 +664,7 @@ namespace DirectX
         struct Quaternion : public XMFLOAT4
         {
             Quaternion() noexcept : XMFLOAT4(0, 0, 0, 1.f) {}
-            XM_CONSTEXPR Quaternion(float ix, float iy, float iz, float iw) noexcept : XMFLOAT4(ix, iy, iz, iw) {}
+            constexpr Quaternion(float ix, float iy, float iz, float iw) noexcept : XMFLOAT4(ix, iy, iz, iw) {}
             Quaternion(const Vector3& v, float scalar) noexcept : XMFLOAT4(v.x, v.y, v.z, scalar) {}
             explicit Quaternion(const Vector4& v) noexcept : XMFLOAT4(v.x, v.y, v.z, v.w) {}
             explicit Quaternion(_In_reads_(4) const float *pArray) noexcept : XMFLOAT4(pArray) {}
@@ -745,8 +741,8 @@ namespace DirectX
         struct Color : public XMFLOAT4
         {
             Color() noexcept : XMFLOAT4(0, 0, 0, 1.f) {}
-            XM_CONSTEXPR Color(float _r, float _g, float _b) noexcept : XMFLOAT4(_r, _g, _b, 1.f) {}
-            XM_CONSTEXPR Color(float _r, float _g, float _b, float _a) noexcept : XMFLOAT4(_r, _g, _b, _a) {}
+            constexpr Color(float _r, float _g, float _b) noexcept : XMFLOAT4(_r, _g, _b, 1.f) {}
+            constexpr Color(float _r, float _g, float _b, float _a) noexcept : XMFLOAT4(_r, _g, _b, _a) {}
             explicit Color(const Vector3& clr) noexcept : XMFLOAT4(clr.x, clr.y, clr.z, 1.f) {}
             explicit Color(const Vector4& clr) noexcept : XMFLOAT4(clr.x, clr.y, clr.z, clr.w) {}
             explicit Color(_In_reads_(4) const float *pArray) noexcept : XMFLOAT4(pArray) {}
@@ -880,7 +876,7 @@ namespace DirectX
 
             Viewport() noexcept :
                 x(0.f), y(0.f), width(0.f), height(0.f), minDepth(0.f), maxDepth(1.f) {}
-            XM_CONSTEXPR Viewport(float ix, float iy, float iw, float ih, float iminz = 0.f, float imaxz = 1.f) noexcept :
+            constexpr Viewport(float ix, float iy, float iw, float ih, float iminz = 0.f, float imaxz = 1.f) noexcept :
                 x(ix), y(iy), width(iw), height(ih), minDepth(iminz), maxDepth(imaxz) {}
             explicit Viewport(const RECT& rct) noexcept :
                 x(float(rct.left)), y(float(rct.top)),
