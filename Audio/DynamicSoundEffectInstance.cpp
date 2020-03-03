@@ -69,7 +69,7 @@ public:
         mBufferNeeded = bufferNeeded;
     }
 
-    virtual ~Impl() override
+    ~Impl() override
     {
         mBase.DestroyVoice();
 
@@ -89,39 +89,39 @@ public:
     const WAVEFORMATEX* GetFormat() const noexcept { return &mWaveFormat; }
 
     // IVoiceNotify
-    virtual void __cdecl OnBufferEnd() override
+    void __cdecl OnBufferEnd() override
     {
         SetEvent(mBufferEvent.get());
     }
 
-    virtual void __cdecl OnCriticalError() override
+    void __cdecl OnCriticalError() override
     {
         mBase.OnCriticalError();
     }
 
-    virtual void __cdecl OnReset() override
+    void __cdecl OnReset() override
     {
         mBase.OnReset();
     }
 
-    virtual void __cdecl OnUpdate() override;
+    void __cdecl OnUpdate() override;
 
-    virtual void __cdecl OnDestroyEngine() noexcept override
+    void __cdecl OnDestroyEngine() noexcept override
     {
         mBase.OnDestroy();
     }
 
-    virtual void __cdecl OnTrim() override
+    void __cdecl OnTrim() override
     {
         mBase.OnTrim();
     }
 
-    virtual void __cdecl GatherStatistics(AudioStatistics& stats) const noexcept override
+    void __cdecl GatherStatistics(AudioStatistics& stats) const noexcept override
     {
         mBase.GatherStatistics(stats);
     }
 
-    virtual void __cdecl OnDestroyParent() noexcept override
+    void __cdecl OnDestroyParent() noexcept override
     {
     }
 

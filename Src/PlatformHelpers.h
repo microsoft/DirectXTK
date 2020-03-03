@@ -31,7 +31,7 @@ namespace DirectX
     public:
         com_exception(HRESULT hr) noexcept : result(hr) {}
 
-        virtual const char* what() const override
+        const char* what() const override
         {
             static char s_str[64] = {};
             sprintf_s(s_str, "Failure with HRESULT of %08X", static_cast<unsigned int>(result));

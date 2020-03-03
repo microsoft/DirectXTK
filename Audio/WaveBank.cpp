@@ -37,7 +37,7 @@ public:
         mEngine->RegisterNotify(this, false);
     }
 
-    virtual ~Impl() override
+    ~Impl() override
     {
         if (!mInstances.empty())
         {
@@ -71,39 +71,39 @@ public:
     void Play(unsigned int index, float volume, float pitch, float pan);
 
     // IVoiceNotify
-    virtual void __cdecl OnBufferEnd() override
+    void __cdecl OnBufferEnd() override
     {
         InterlockedDecrement(&mOneShots);
     }
 
-    virtual void __cdecl OnCriticalError() override
+    void __cdecl OnCriticalError() override
     {
         mOneShots = 0;
     }
 
-    virtual void __cdecl OnReset() override
+    void __cdecl OnReset() override
     {
         // No action required
     }
 
-    virtual void __cdecl OnUpdate() override
+    void __cdecl OnUpdate() override
     {
         // We do not register for update notification
         assert(false);
     }
 
-    virtual void __cdecl OnDestroyEngine() noexcept override
+    void __cdecl OnDestroyEngine() noexcept override
     {
         mEngine = nullptr;
         mOneShots = 0;
     }
 
-    virtual void __cdecl OnTrim() override
+    void __cdecl OnTrim() override
     {
         // No action required
     }
 
-    virtual void __cdecl GatherStatistics(AudioStatistics& stats) const noexcept override
+    void __cdecl GatherStatistics(AudioStatistics& stats) const noexcept override
     {
         stats.playingOneShots += mOneShots;
 
@@ -118,7 +118,7 @@ public:
         }
     }
 
-    virtual void __cdecl OnDestroyParent() noexcept override
+    void __cdecl OnDestroyParent() noexcept override
     {
     }
 
