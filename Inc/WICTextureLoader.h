@@ -29,7 +29,7 @@
 #include <d3d11_1.h>
 #endif
 
-#include <stdint.h>
+#include <cstdint>
 
 
 namespace DirectX

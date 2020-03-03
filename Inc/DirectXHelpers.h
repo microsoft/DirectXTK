@@ -25,10 +25,10 @@
 #define IID_GRAPHICS_PPV_ARGS(x) IID_PPV_ARGS(x)
 #endif
 
+#include <cstdint>
 #include <exception>
 
 #include <assert.h>
-#include <stdint.h>
 
 //
 // The core Direct3D headers provide the following helper C++ classes

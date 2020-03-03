@@ -12,8 +12,9 @@
 
 #pragma once
 
-#include <stdint.h>
 #include <objbase.h>
+
+#include <cstdint>
 #include <memory>
 #include <mmreg.h>
 

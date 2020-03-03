@@ -15,9 +15,9 @@
 #include <d3d11_1.h>
 #endif
 
+#include <cstdint>
 #include <memory>
 #include <utility>
-#include <stdint.h>
 
 
 namespace DirectX

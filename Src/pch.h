@@ -98,13 +98,6 @@
 #include <d3d11_1.h>
 #endif
 
-#if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)) || (defined(_XBOX_ONE) && defined(_TITLE))
-#pragma warning(push)
-#pragma warning(disable: 4471 5204)
-#include <Windows.UI.Core.h>
-#pragma warning(pop)
-#endif
-
 #define _XM_NO_XMVECTOR_OVERLOADS_
 
 #include <DirectXMath.h>
@@ -113,11 +106,12 @@
 
 #include <algorithm>
 #include <array>
+#include <cstddef>
+#include <cstdint>
 #include <exception>
 #include <list>
 #include <map>
 #include <memory>
-#include <mutex>
 #include <set>
 #include <string>
 #include <type_traits>
@@ -130,8 +124,6 @@
 #pragma warning(pop)
 
 #include <malloc.h>
-#include <stddef.h>
-#include <stdint.h>
 
 #pragma warning(push)
 #pragma warning(disable : 4467 5038 5204)
@@ -139,3 +131,12 @@
 #pragma warning(pop)
 
 #include <wincodec.h>
+
+#if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)) || (defined(_XBOX_ONE) && defined(_TITLE))
+#pragma warning(push)
+#pragma warning(disable: 4471 5204)
+#include <Windows.UI.Core.h>
+#pragma warning(pop)
+#endif
+
+#include <mutex>

@@ -12,10 +12,11 @@
 
 #pragma once
 
-#include <stdint.h>
 #include <objbase.h>
-#include <memory>
 #include <mmreg.h>
+
+#include <cstdint>
+#include <memory>
 
 
 namespace DirectX

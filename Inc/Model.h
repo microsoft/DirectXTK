@@ -19,13 +19,12 @@
 #include <DirectXMath.h>
 #include <DirectXCollision.h>
 
+#include <cstdint>
 #include <memory>
 #include <functional>
 #include <set>
 #include <string>
 #include <vector>
-
-#include <stdint.h>
 
 #include <wrl\client.h>
 
