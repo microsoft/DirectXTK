@@ -404,16 +404,18 @@ XMVECTOR XM_CALLCONV SpriteFont::MeasureString(_In_z_ wchar_t const* text, bool 
     XMVECTOR result = XMVectorZero();
 
     pImpl->ForEachGlyph(text, [&](Glyph const* glyph, float x, float y, float advance)
-    {
-        UNREFERENCED_PARAMETER(advance);
+        {
+            UNREFERENCED_PARAMETER(advance);
 
-        auto w = static_cast<float>(glyph->Subrect.right - glyph->Subrect.left);
-        auto h = static_cast<float>(glyph->Subrect.bottom - glyph->Subrect.top) + glyph->YOffset;
+            auto w = static_cast<float>(glyph->Subrect.right - glyph->Subrect.left);
+            auto h = static_cast<float>(glyph->Subrect.bottom - glyph->Subrect.top) + glyph->YOffset;
 
-        h = std::max(h, pImpl->lineSpacing);
+            h = iswspace(wchar_t(glyph->Character)) ?
+                pImpl->lineSpacing :
+                std::max(h, pImpl->lineSpacing);
 
-        result = XMVectorMax(result, XMVectorSet(x + w, y + h, 0, 0));
-    }, ignoreWhitespace);
+            result = XMVectorMax(result, XMVectorSet(x + w, y + h, 0, 0));
+        }, ignoreWhitespace);
 
     return result;
 }
@@ -424,28 +426,31 @@ RECT SpriteFont::MeasureDrawBounds(_In_z_ wchar_t const* text, XMFLOAT2 const& p
     RECT result = { LONG_MAX, LONG_MAX, 0, 0 };
 
     pImpl->ForEachGlyph(text, [&](Glyph const* glyph, float x, float y, float advance) noexcept
-    {
-        auto w = static_cast<float>(glyph->Subrect.right - glyph->Subrect.left);
-        auto h = static_cast<float>(glyph->Subrect.bottom - glyph->Subrect.top);
+        {
+            auto isWhitespace = iswspace(wchar_t(glyph->Character));
+            auto w = static_cast<float>(glyph->Subrect.right - glyph->Subrect.left);
+            auto h = isWhitespace ?
+                pImpl->lineSpacing :
+                static_cast<float>(glyph->Subrect.bottom - glyph->Subrect.top);
 
-        float minX = position.x + x;
-        float minY = position.y + y + glyph->YOffset;
+            float minX = position.x + x;
+            float minY = position.y + y + (isWhitespace ? 0.0f : glyph->YOffset);
 
-        float maxX = std::max(minX + advance, minX + w);
-        float maxY = minY + h;
+            float maxX = std::max(minX + advance, minX + w);
+            float maxY = minY + h;
 
-        if (minX < result.left)
-            result.left = long(minX);
+            if (minX < result.left)
+                result.left = long(minX);
 
-        if (minY < result.top)
-            result.top = long(minY);
+            if (minY < result.top)
+                result.top = long(minY);
 
-        if (result.right < maxX)
-            result.right = long(maxX);
+            if (result.right < maxX)
+                result.right = long(maxX);
 
-        if (result.bottom < maxY)
-            result.bottom = long(maxY);
-    }, ignoreWhitespace);
+            if (result.bottom < maxY)
+                result.bottom = long(maxY);
+        }, ignoreWhitespace);
 
     if (result.left == LONG_MAX)
     {
