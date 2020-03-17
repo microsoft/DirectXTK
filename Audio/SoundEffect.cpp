@@ -249,7 +249,7 @@ HRESULT SoundEffect::Impl::Initialize(AudioEngine* engine, std::unique_ptr<uint8
             mStartAudio = reinterpret_cast<const uint8_t*>(mXMAMemory);
 
             mWavData.reset(new (std::nothrow) uint8_t[sizeof(XMA2WAVEFORMATEX) + (seekCount * sizeof(uint32_t))]);
-            if (!mWaveData)
+            if (!mWavData)
                 return E_OUTOFMEMORY;
 
             memcpy(mWavData.get(), wfx, sizeof(XMA2WAVEFORMATEX));
