@@ -55,6 +55,13 @@ namespace DirectX
     {
     public:
         ModelMeshPart() noexcept;
+
+        ModelMeshPart(ModelMeshPart&&) = default;
+        ModelMeshPart& operator= (ModelMeshPart&&) = default;
+
+        ModelMeshPart(ModelMeshPart const&) = default;
+        ModelMeshPart& operator= (ModelMeshPart const&) = default;
+
         virtual ~ModelMeshPart();
 
         uint32_t                                                indexCount;
@@ -101,6 +108,13 @@ namespace DirectX
     {
     public:
         ModelMesh() noexcept;
+
+        ModelMesh(ModelMesh&&) = default;
+        ModelMesh& operator= (ModelMesh&&) = default;
+
+        ModelMesh(ModelMesh const&) = default;
+        ModelMesh& operator= (ModelMesh const&) = default;
+
         virtual ~ModelMesh();
 
         BoundingSphere              boundingSphere;
@@ -129,6 +143,14 @@ namespace DirectX
     class Model
     {
     public:
+        Model() = default;
+
+        Model(Model&&) = default;
+        Model& operator= (Model&&) = default;
+
+        Model(Model const&) = default;
+        Model& operator= (Model const&) = default;
+
         virtual ~Model();
 
         ModelMesh::Collection   meshes;

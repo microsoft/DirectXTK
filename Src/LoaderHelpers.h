@@ -922,6 +922,9 @@ namespace DirectX
             auto_delete_file(const auto_delete_file&) = delete;
             auto_delete_file& operator=(const auto_delete_file&) = delete;
 
+            auto_delete_file(const auto_delete_file&&) = delete;
+            auto_delete_file& operator=(const auto_delete_file&&) = delete;
+
             ~auto_delete_file()
             {
                 if (m_handle)
@@ -945,6 +948,9 @@ namespace DirectX
 
             auto_delete_file_wic(const auto_delete_file_wic&) = delete;
             auto_delete_file_wic& operator=(const auto_delete_file_wic&) = delete;
+
+            auto_delete_file_wic(const auto_delete_file_wic&&) = delete;
+            auto_delete_file_wic& operator=(const auto_delete_file_wic&&) = delete;
 
             ~auto_delete_file_wic()
             {

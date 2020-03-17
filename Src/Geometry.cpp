@@ -16,9 +16,9 @@ using namespace DirectX;
 
 namespace
 {
-    const float SQRT2 = 1.41421356237309504880f;
-    const float SQRT3 = 1.73205080756887729352f;
-    const float SQRT6 = 2.44948974278317809820f;
+    constexpr float SQRT2 = 1.41421356237309504880f;
+    constexpr float SQRT3 = 1.73205080756887729352f;
+    constexpr float SQRT6 = 2.44948974278317809820f;
 
     inline void CheckIndexOverflow(size_t value)
     {
@@ -544,7 +544,7 @@ void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indi
 namespace
 {
     // Helper computes a point on a unit circle, aligned to the x/z plane and centered on the origin.
-    inline XMVECTOR GetCircleVector(size_t i, size_t tessellation)
+    inline XMVECTOR GetCircleVector(size_t i, size_t tessellation) noexcept
     {
         float angle = i * XM_2PI / tessellation;
         float dx, dz;
@@ -555,7 +555,7 @@ namespace
         return v;
     }
 
-    inline XMVECTOR GetCircleTangent(size_t i, size_t tessellation)
+    inline XMVECTOR GetCircleTangent(size_t i, size_t tessellation) noexcept
     {
         float angle = (i * XM_2PI / tessellation) + XM_PIDIV2;
         float dx, dz;
@@ -1132,7 +1132,7 @@ namespace
     void XM_CALLCONV TessellatePatch(VertexCollection& vertices, IndexCollection& indices, TeapotPatch const& patch, size_t tessellation, FXMVECTOR scale, bool isMirrored)
     {
         // Look up the 16 control points for this patch.
-        XMVECTOR controlPoints[16];
+        XMVECTOR controlPoints[16] = {};
 
         for (int i = 0; i < 16; i++)
         {

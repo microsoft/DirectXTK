@@ -19,7 +19,7 @@ using Microsoft::WRL::ComPtr;
 
 namespace
 {
-    const float c_XboxOneThumbDeadZone = .24f;  // Recommended Xbox One controller deadzone
+    constexpr float c_XboxOneThumbDeadZone = .24f;  // Recommended Xbox One controller deadzone
 
     float ApplyLinearDeadZone(float value, float maxValue, float deadZoneSize) noexcept
     {
@@ -134,6 +134,12 @@ public:
 
         ScanGamePads();
     }
+
+    Impl(Impl&&) = default;
+    Impl& operator= (Impl&&) = default;
+
+    Impl(Impl const&) = delete;
+    Impl& operator= (Impl const&) = delete;
 
     ~Impl()
     {

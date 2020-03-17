@@ -37,6 +37,12 @@ public:
         mEngine->RegisterNotify(this, false);
     }
 
+    Impl(Impl&&) = default;
+    Impl& operator= (Impl&&) = default;
+
+    Impl(Impl const&) = delete;
+    Impl& operator= (Impl const&) = delete;
+
     ~Impl() override
     {
         if (!mInstances.empty())

@@ -32,6 +32,12 @@ namespace
             }
         }
 
+        EngineCallback(EngineCallback&&) = delete;
+        EngineCallback& operator= (EngineCallback&&) = delete;
+
+        EngineCallback(EngineCallback const&) = delete;
+        EngineCallback& operator= (EngineCallback const&) = delete;
+
         virtual ~EngineCallback()
         {
         }
@@ -62,6 +68,12 @@ namespace
             }
         }
 
+        VoiceCallback(const VoiceCallback&) = delete;
+        VoiceCallback& operator=(const VoiceCallback&) = delete;
+
+        VoiceCallback(VoiceCallback&&) = delete;
+        VoiceCallback& operator=(VoiceCallback&&) = delete;
+
         virtual ~VoiceCallback()
         {
         }
@@ -75,7 +87,7 @@ namespace
         {
             if (context)
             {
-                auto inotify = reinterpret_cast<IVoiceNotify*>(context);
+                auto inotify = static_cast<IVoiceNotify*>(context);
                 inotify->OnBufferEnd();
                 SetEvent(mBufferEnd.get());
             }
@@ -694,7 +706,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
     //
     // Setup 3D audio
     //
-    const float SPEEDOFSOUND = X3DAUDIO_SPEED_OF_SOUND;
+    constexpr float SPEEDOFSOUND = X3DAUDIO_SPEED_OF_SOUND;
 
 #if defined(USING_XAUDIO2_8) || defined(USING_XAUDIO2_9)
     hr = X3DAudioInitialize(masterChannelMask, SPEEDOFSOUND, mX3DAudio);
@@ -980,7 +992,7 @@ void AudioEngine::Impl::AllocateVoice(
         return;
 
 #ifndef NDEBUG
-    float maxFrequencyRatio = XAudio2SemitonesToFrequencyRatio(12);
+    const float maxFrequencyRatio = XAudio2SemitonesToFrequencyRatio(12);
     assert(maxFrequencyRatio <= XAUDIO2_DEFAULT_FREQ_RATIO);
 #endif
 
@@ -1125,7 +1137,7 @@ void AudioEngine::Impl::AllocateVoice(
         HRESULT hr;
         if (flags & SoundEffectInstance_Use3D)
         {
-            XAUDIO2_SEND_DESCRIPTOR sendDescriptors[2];
+            XAUDIO2_SEND_DESCRIPTOR sendDescriptors[2] = {};
             sendDescriptors[0].Flags = sendDescriptors[1].Flags = (flags & SoundEffectInstance_ReverbUseFilters)
                 ? XAUDIO2_SEND_USEFILTER : 0u;
             sendDescriptors[0].pOutputVoice = mMasterVoice;

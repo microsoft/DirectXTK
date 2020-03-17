@@ -96,8 +96,8 @@ namespace DirectX
         IVoiceNotify(const IVoiceNotify&) = delete;
         IVoiceNotify& operator=(const IVoiceNotify&) = delete;
 
-        IVoiceNotify(IVoiceNotify&&) = delete;
-        IVoiceNotify& operator=(IVoiceNotify&&) = delete;
+        IVoiceNotify(IVoiceNotify&&) = default;
+        IVoiceNotify& operator=(IVoiceNotify&&) = default;
 
         virtual void __cdecl OnBufferEnd() = 0;
             // Notfication that a voice buffer has finished

@@ -84,6 +84,12 @@ namespace DirectX
         {
         }
 
+        SoundEffectInstanceBase(SoundEffectInstanceBase&&) = default;
+        SoundEffectInstanceBase& operator= (SoundEffectInstanceBase&&) = default;
+
+        SoundEffectInstanceBase(SoundEffectInstanceBase const&) = delete;
+        SoundEffectInstanceBase& operator= (SoundEffectInstanceBase const&) = delete;
+
         ~SoundEffectInstanceBase()
         {
             assert(voice == nullptr);
@@ -116,7 +122,7 @@ namespace DirectX
             engine->AllocateVoice(wfx, mFlags, false, &voice);
         }
 
-        void DestroyVoice()
+        void DestroyVoice() noexcept
         {
             if (voice)
             {

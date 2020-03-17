@@ -81,6 +81,12 @@ namespace DirectX
                 mResourceMap(resourceMap)
             { }
 
+            WrappedData(WrappedData&&) = default;
+            WrappedData& operator= (WrappedData&&) = default;
+
+            WrappedData(WrappedData const&) = delete;
+            WrappedData& operator= (WrappedData const&) = delete;
+
             ~WrappedData()
             {
                 std::lock_guard<std::mutex> lock(mResourceMap->mutex);

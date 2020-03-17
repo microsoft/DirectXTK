@@ -50,6 +50,12 @@ public:
         mEngine->RegisterNotify(this, false);
     }
 
+    Impl(Impl&&) = default;
+    Impl& operator= (Impl&&) = default;
+
+    Impl(Impl const&) = delete;
+    Impl& operator= (Impl const&) = delete;
+
     ~Impl() override
     {
         if (!mInstances.empty())
@@ -90,7 +96,7 @@ public:
                    #if defined(USING_XAUDIO2_7_DIRECTX) || defined(USING_XAUDIO2_9)
                        _In_reads_opt_(seekCount) const uint32_t* seekTable, size_t seekCount,
                    #endif
-                       uint32_t loopStart, uint32_t loopLength);
+                       uint32_t loopStart, uint32_t loopLength) noexcept;
 
     void Play(float volume, float pitch, float pan);
 
@@ -171,7 +177,7 @@ HRESULT SoundEffect::Impl::Initialize(AudioEngine* engine, std::unique_ptr<uint8
                                   #if defined(USING_XAUDIO2_7_DIRECTX) || defined(USING_XAUDIO2_9)
                                       const uint32_t* seekTable, size_t seekCount,
                                   #endif
-                                      uint32_t loopStart, uint32_t loopLength)
+                                      uint32_t loopStart, uint32_t loopLength) noexcept
 {
     if (!engine || !IsValid(wfx) || !startAudio || !audioBytes || !wavData)
         return E_INVALIDARG;
@@ -242,7 +248,9 @@ HRESULT SoundEffect::Impl::Initialize(AudioEngine* engine, std::unique_ptr<uint8
             memcpy(mXMAMemory, startAudio, audioBytes);
             mStartAudio = reinterpret_cast<const uint8_t*>(mXMAMemory);
 
-            mWavData.reset(new uint8_t[sizeof(XMA2WAVEFORMATEX) + (seekCount * sizeof(uint32_t))]);
+            mWavData.reset(new (std::nothrow) uint8_t[sizeof(XMA2WAVEFORMATEX) + (seekCount * sizeof(uint32_t))]);
+            if (!mWaveData)
+                return E_OUTOFMEMORY;
 
             memcpy(mWavData.get(), wfx, sizeof(XMA2WAVEFORMATEX));
             mWaveFormat = reinterpret_cast<WAVEFORMATEX*>(mWavData.get());

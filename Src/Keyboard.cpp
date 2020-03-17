@@ -88,6 +88,12 @@ public:
         s_keyboard = this;
     }
 
+    Impl(Impl&&) = default;
+    Impl& operator= (Impl&&) = default;
+
+    Impl(Impl const&) = delete;
+    Impl& operator= (Impl const&) = delete;
+
     ~Impl()
     {
         s_keyboard = nullptr;

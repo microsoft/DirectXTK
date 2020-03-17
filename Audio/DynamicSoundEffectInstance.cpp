@@ -69,6 +69,12 @@ public:
         mBufferNeeded = bufferNeeded;
     }
 
+    Impl(Impl&&) = default;
+    Impl& operator= (Impl&&) = default;
+
+    Impl(Impl const&) = delete;
+    Impl& operator= (Impl const&) = delete;
+
     ~Impl() override
     {
         mBase.DestroyVoice();

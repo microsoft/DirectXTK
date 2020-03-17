@@ -52,6 +52,12 @@ public:
         mBase.Initialize(engine, mWaveBank->GetFormat(index, wfx, sizeof(buff)), flags);
     }
 
+    Impl(Impl&&) = default;
+    Impl& operator= (Impl&&) = default;
+
+    Impl(Impl const&) = delete;
+    Impl& operator= (Impl const&) = delete;
+
     ~Impl() override
     {
         mBase.DestroyVoice();

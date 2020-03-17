@@ -228,6 +228,12 @@ public:
         s_graphicsMemory = this;
     }
 
+    Impl(Impl&&) = default;
+    Impl& operator= (Impl&&) = default;
+
+    Impl(Impl const&) = delete;
+    Impl& operator= (Impl const&) = delete;
+
     ~Impl()
     {
         s_graphicsMemory = nullptr;

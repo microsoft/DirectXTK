@@ -20,7 +20,7 @@ namespace Bezier
     // Performs a cubic bezier interpolation between four control points,
     // returning the value at the specified time (t ranges 0 to 1).
     template<typename T>
-    inline T CubicInterpolate(T const& p1, T const& p2, T const& p3, T const& p4, float t)
+    inline T CubicInterpolate(T const& p1, T const& p2, T const& p3, T const& p4, float t) noexcept
     {
         return p1 * (1 - t) * (1 - t) * (1 - t) +
             p2 * 3 * t * (1 - t) * (1 - t) +
@@ -29,7 +29,7 @@ namespace Bezier
     }
 
      template<>
-     inline DirectX::XMVECTOR CubicInterpolate(DirectX::XMVECTOR const& p1, DirectX::XMVECTOR const& p2, DirectX::XMVECTOR const& p3, DirectX::XMVECTOR const& p4, float t)
+     inline DirectX::XMVECTOR CubicInterpolate(DirectX::XMVECTOR const& p1, DirectX::XMVECTOR const& p2, DirectX::XMVECTOR const& p3, DirectX::XMVECTOR const& p4, float t) noexcept
     {
         using namespace DirectX;
 
@@ -49,7 +49,7 @@ namespace Bezier
 
     // Computes the tangent of a cubic bezier curve at the specified time.
     template<typename T>
-    inline T CubicTangent(T const& p1, T const& p2, T const& p3, T const& p4, float t)
+    inline T CubicTangent(T const& p1, T const& p2, T const& p3, T const& p4, float t) noexcept
     {
         using DirectX::operator*;
         using DirectX::operator+;
@@ -61,7 +61,7 @@ namespace Bezier
     }
 
     template<>
-    inline DirectX::XMVECTOR CubicTangent(DirectX::XMVECTOR const& p1, DirectX::XMVECTOR const& p2, DirectX::XMVECTOR const& p3, DirectX::XMVECTOR const& p4, float t)
+    inline DirectX::XMVECTOR CubicTangent(DirectX::XMVECTOR const& p1, DirectX::XMVECTOR const& p2, DirectX::XMVECTOR const& p3, DirectX::XMVECTOR const& p4, float t) noexcept
     {
         using namespace DirectX;
 

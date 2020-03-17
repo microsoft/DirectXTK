@@ -25,14 +25,14 @@ namespace
 {
 #pragma pack(push, 1)
 
-    static const size_t DVD_SECTOR_SIZE = 2048;
-    static const size_t DVD_BLOCK_SIZE = DVD_SECTOR_SIZE * 16;
+    constexpr size_t DVD_SECTOR_SIZE = 2048;
+    constexpr size_t DVD_BLOCK_SIZE = DVD_SECTOR_SIZE * 16;
 
-    static const size_t ALIGNMENT_MIN = 4;
-    static const size_t ALIGNMENT_DVD = DVD_SECTOR_SIZE;
+    constexpr size_t ALIGNMENT_MIN = 4;
+    constexpr size_t ALIGNMENT_DVD = DVD_SECTOR_SIZE;
 
-    static const size_t MAX_DATA_SEGMENT_SIZE = 0xFFFFFFFF;
-    static const size_t MAX_COMPACT_DATA_SEGMENT_SIZE = 0x001FFFFF;
+    constexpr size_t MAX_DATA_SEGMENT_SIZE = 0xFFFFFFFF;
+    constexpr size_t MAX_COMPACT_DATA_SEGMENT_SIZE = 0x001FFFFF;
 
     struct REGION
     {
@@ -435,9 +435,15 @@ public:
     {
     }
 
+    Impl(Impl&&) = default;
+    Impl& operator= (Impl&&) = default;
+
+    Impl(Impl const&) = delete;
+    Impl& operator= (Impl const&) = delete;
+
     ~Impl() { Close(); }
 
-    HRESULT Open(_In_z_ const wchar_t* szFileName) noexcept;
+    HRESULT Open(_In_z_ const wchar_t* szFileName) noexcept(false);
     void Close() noexcept;
 
     HRESULT GetFormat(_In_ uint32_t index, _Out_writes_bytes_(maxsize) WAVEFORMATEX* pFormat, _In_ size_t maxsize) const noexcept;
@@ -491,7 +497,7 @@ public:
 
 
 _Use_decl_annotations_
-HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept
+HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
 {
     Close();
     Clear();
@@ -837,7 +843,7 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept
     else
     {
         // If in-memory, kick off read of wave data
-        void *dest;
+        void* dest = nullptr;
 
     #if defined(_XBOX_ONE) && defined(_TITLE)
         bool xma = false;

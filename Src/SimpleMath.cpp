@@ -83,7 +83,7 @@ static_assert(offsetof(DirectX::SimpleMath::Viewport, maxDepth) == offsetof(D3D1
 
 RECT DirectX::SimpleMath::Viewport::ComputeDisplayArea(DXGI_SCALING scaling, UINT backBufferWidth, UINT backBufferHeight, int outputWidth, int outputHeight) noexcept
 {
-    RECT rct;
+    RECT rct = {};
 
     switch (int(scaling))
     {

@@ -185,7 +185,7 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
 
                 if (wfadpcm->wSamplesPerBlock != nPcmFramesPerBlock)
                 {
-                    DebugTrace("ERROR: Wave format ADPCM %u-channel with nBlockAlign = %u must have wSamplesPerBlock = %u (%u)\n",
+                    DebugTrace("ERROR: Wave format ADPCM %u-channel with nBlockAlign = %u must have wSamplesPerBlock = %d (%u)\n",
                                wfx->nChannels, wfx->nBlockAlign, nPcmFramesPerBlock, wfadpcm->wSamplesPerBlock);
                     return false;
                 }

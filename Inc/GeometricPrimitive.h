@@ -24,6 +24,9 @@ namespace DirectX
     class GeometricPrimitive
     {
     public:
+        GeometricPrimitive(GeometricPrimitive&&) = default;
+        GeometricPrimitive& operator= (GeometricPrimitive&&) = default;
+
         GeometricPrimitive(GeometricPrimitive const&) = delete;
         GeometricPrimitive& operator= (GeometricPrimitive const&) = delete;
 
