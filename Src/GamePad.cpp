@@ -1142,10 +1142,12 @@ public:
 
     void Suspend() noexcept
     {
-    #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
+    #if (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
+        // XInput focus is handled automatically on Windows 10
+    #elif (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
         XInputEnable(FALSE);
     #else
-            // For XInput 9.1.0, we have to emulate the behavior of XInputEnable( FALSE )
+        // For XInput 9.1.0, we have to emulate the behavior of XInputEnable( FALSE )
         if (!mSuspended)
         {
             for (size_t j = 0; j < XUSER_MAX_COUNT; ++j)
@@ -1165,10 +1167,12 @@ public:
 
     void Resume() noexcept
     {
-    #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
+    #if (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
+        // XInput focus is handled automatically on Windows 10
+    #elif (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
         XInputEnable(TRUE);
     #else
-            // For XInput 9.1.0, we have to emulate the behavior of XInputEnable( TRUE )
+        // For XInput 9.1.0, we have to emulate the behavior of XInputEnable( TRUE )
         if (mSuspended)
         {
             ULONGLONG time = GetTickCount64();
