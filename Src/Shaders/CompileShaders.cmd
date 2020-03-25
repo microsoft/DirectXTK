@@ -30,11 +30,11 @@ goto continue
 
 :continuepc
 
+set PCDXC="%WindowsSdkVerBinPath%\x86\fxc.exe"
+if exist %PCFXC% goto continue
 set PCFXC="%WindowsSdkBinPath%%WindowsSDKVersion%\x86\fxc.exe"
 if exist %PCFXC% goto continue
 set PCFXC="%WindowsSdkDir%bin\%WindowsSDKVersion%\x86\fxc.exe"
-if exist %PCFXC% goto continue
-set PCFXC="%WindowsSdkDir%bin\x86\fxc.exe"
 if exist %PCFXC% goto continue
 
 set PCFXC=fxc.exe
