@@ -275,7 +275,7 @@ namespace DirectX
         void __cdecl AllocateVoice(_In_ const WAVEFORMATEX* wfx,
             SOUND_EFFECT_INSTANCE_FLAGS flags, bool oneshot, _Outptr_result_maybenull_ IXAudio2SourceVoice** voice);
 
-        void __cdecl DestroyVoice(_In_ IXAudio2SourceVoice* voice);
+        void __cdecl DestroyVoice(_In_ IXAudio2SourceVoice* voice) noexcept;
             // Should only be called for instance voices, not one-shots
 
         void __cdecl RegisterNotify(_In_ IVoiceNotify* notify, bool usesUpdate);

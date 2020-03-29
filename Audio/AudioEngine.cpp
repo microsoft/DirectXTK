@@ -19,6 +19,10 @@ using Microsoft::WRL::ComPtr;
 
 //#define VERBOSE_TRACE
 
+#ifdef VERBOSE_TRACE
+#pragma message("NOTE: Verbose tracing enabled")
+#endif
+
 namespace
 {
     struct EngineCallback : public IXAudio2EngineCallback
@@ -32,15 +36,13 @@ namespace
             }
         }
 
-        EngineCallback(EngineCallback&&) = delete;
-        EngineCallback& operator= (EngineCallback&&) = delete;
+        EngineCallback(EngineCallback&&) = default;
+        EngineCallback& operator= (EngineCallback&&) = default;
 
         EngineCallback(EngineCallback const&) = delete;
         EngineCallback& operator= (EngineCallback const&) = delete;
 
-        virtual ~EngineCallback()
-        {
-        }
+        virtual ~EngineCallback() = default;
 
         STDMETHOD_(void, OnProcessingPassStart) () override {}
         STDMETHOD_(void, OnProcessingPassEnd)() override {}
@@ -68,11 +70,11 @@ namespace
             }
         }
 
+        VoiceCallback(VoiceCallback&&) = default;
+        VoiceCallback& operator=(VoiceCallback&&) = default;
+
         VoiceCallback(const VoiceCallback&) = delete;
         VoiceCallback& operator=(const VoiceCallback&) = delete;
-
-        VoiceCallback(VoiceCallback&&) = delete;
-        VoiceCallback& operator=(VoiceCallback&&) = delete;
 
         virtual ~VoiceCallback()
         {
@@ -290,7 +292,15 @@ public:
             mDLL = nullptr;
         }
     }
+#else
+    ~Impl() = default;
 #endif
+
+    Impl(Impl&&) = default;
+    Impl& operator= (Impl&&) = default;
+
+    Impl(Impl const&) = delete;
+    Impl& operator= (Impl const&) = delete;
 
     HRESULT Initialize(AUDIO_ENGINE_FLAGS flags,
         _In_opt_ const WAVEFORMATEX* wfx,
@@ -316,7 +326,7 @@ public:
     void AllocateVoice(_In_ const WAVEFORMATEX* wfx,
         SOUND_EFFECT_INSTANCE_FLAGS flags, bool oneshot,
         _Outptr_result_maybenull_ IXAudio2SourceVoice** voice);
-    void DestroyVoice(_In_ IXAudio2SourceVoice* voice);
+    void DestroyVoice(_In_ IXAudio2SourceVoice* voice) noexcept;
 
     void RegisterNotify(_In_ IVoiceNotify* notify, bool usesUpdate);
     void UnregisterNotify(_In_ IVoiceNotify* notify, bool oneshots, bool usesUpdate);
@@ -822,9 +832,9 @@ bool AudioEngine::Impl::Update()
         return false;
 
     HANDLE events[2] = { mEngineCallback.mCriticalError.get(), mVoiceCallback.mBufferEnd.get() };
-    DWORD result = WaitForMultipleObjectsEx(2, events, FALSE, 0, FALSE);
-    switch (result)
+    switch (WaitForMultipleObjectsEx(_countof(events), events, FALSE, 0, FALSE))
     {
+        default:
         case WAIT_TIMEOUT:
             break;
 
@@ -1180,7 +1190,7 @@ void AudioEngine::Impl::AllocateVoice(
 }
 
 
-void AudioEngine::Impl::DestroyVoice(_In_ IXAudio2SourceVoice* voice)
+void AudioEngine::Impl::DestroyVoice(_In_ IXAudio2SourceVoice* voice) noexcept
 {
     if (!voice)
         return;
@@ -1191,7 +1201,7 @@ void AudioEngine::Impl::DestroyVoice(_In_ IXAudio2SourceVoice* voice)
         if (it->second == voice)
         {
             DebugTrace("ERROR: DestroyVoice should not be called for a one-shot voice\n");
-            throw std::exception("DestroyVoice");
+            return;
         }
     }
 
@@ -1200,7 +1210,7 @@ void AudioEngine::Impl::DestroyVoice(_In_ IXAudio2SourceVoice* voice)
         if (it->second == voice)
         {
             DebugTrace("ERROR: DestroyVoice should not be called for a one-shot voice; see TrimVoicePool\n");
-            throw std::exception("DestroyVoice");
+            return;
         }
     }
 #endif
@@ -1468,7 +1478,7 @@ WAVEFORMATEXTENSIBLE AudioEngine::GetOutputFormat() const noexcept
     wfx.Format.nSamplesPerSec = pImpl->masterRate;
     wfx.dwChannelMask = pImpl->masterChannelMask;
 
-    wfx.Format.nBlockAlign = WORD(wfx.Format.nChannels * wfx.Format.wBitsPerSample / 8);
+    wfx.Format.nBlockAlign = static_cast<WORD>(wfx.Format.nChannels * wfx.Format.wBitsPerSample / 8);
     wfx.Format.nAvgBytesPerSec = wfx.Format.nSamplesPerSec * wfx.Format.nBlockAlign;
 
     static const GUID s_pcm = { WAVE_FORMAT_PCM, 0x0000, 0x0010, { 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71 } };
@@ -1539,7 +1549,7 @@ void AudioEngine::AllocateVoice(
 }
 
 
-void AudioEngine::DestroyVoice(_In_ IXAudio2SourceVoice* voice)
+void AudioEngine::DestroyVoice(_In_ IXAudio2SourceVoice* voice) noexcept
 {
     pImpl->DestroyVoice(voice);
 }
