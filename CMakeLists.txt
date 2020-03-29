@@ -5,7 +5,7 @@
 #
 # http://go.microsoft.com/fwlink/?LinkId=248929
 
-cmake_minimum_required (VERSION 3.11)
+cmake_minimum_required (VERSION 3.16)
 
 project (DirectXTK LANGUAGES CXX)
 
@@ -133,6 +133,8 @@ endif()
 
 add_library(${PROJECT_NAME} STATIC ${LIBRARY_SOURCES} Src/Shaders/Compiled/SpriteEffect_SpriteVertexShader.inc)
 
+target_precompile_headers(${PROJECT_NAME} PRIVATE Src/pch.h)
+
 add_custom_command(
     OUTPUT "${CMAKE_SOURCE_DIR}/Src/Shaders/Compiled/SpriteEffect_SpriteVertexShader.inc"
     MAIN_DEPENDENCY "${CMAKE_SOURCE_DIR}/Src/Shaders/CompileShaders.cmd"
@@ -170,6 +172,8 @@ add_executable(xwbtool
     Audio/WAVFileReader.h)
 target_include_directories(xwbtool PRIVATE Audio Src)
 source_group(xwbtool REGULAR_EXPRESSION XWBTool/*.*)
+
+target_precompile_headers(xwbtool REUSE_FROM ${PROJECT_NAME})
 
 if(MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /fp:fast)
