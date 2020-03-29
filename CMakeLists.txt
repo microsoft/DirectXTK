@@ -173,8 +173,6 @@ add_executable(xwbtool
 target_include_directories(xwbtool PRIVATE Audio Src)
 source_group(xwbtool REGULAR_EXPRESSION XWBTool/*.*)
 
-target_precompile_headers(xwbtool REUSE_FROM ${PROJECT_NAME})
-
 if(MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /fp:fast)
     target_compile_options(xwbtool PRIVATE /fp:fast)
