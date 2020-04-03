@@ -6,6 +6,11 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### April 3, 2020
+* SpriteFont MeasureString / MeasureDrawBounds fixes for !ignoreWhitespace
+* Code review (constexpr / noexcept usage)
+* CMake updated for PCH usage with 3.16 or later
+
 ### February 24, 2020
 * *breaking change* ``Model::CreateFrom*`` changed to use ModelLoaderFlags instead of default bool parameters
 * DirectX Tool Kit for Audio updated to support XAudio2Redist NuGet
