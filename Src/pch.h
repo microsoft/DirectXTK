@@ -69,6 +69,7 @@
 #pragma clang diagnostic ignored "-Wswitch-enum"
 #pragma clang diagnostic ignored "-Wunknown-pragmas"
 #pragma clang diagnostic ignored "-Wunused-const-variable"
+#pragma clang diagnostic ignored "-Wunused-member-function"
 #endif
 
 #ifndef WIN32_LEAN_AND_MEAN
