@@ -777,6 +777,7 @@ enum OPTIONS
     OPT_STREAMING,
     OPT_OUTPUTFILE,
     OPT_OUTPUTHEADER,
+    OPT_TOLOWER,
     OPT_OVERWRITE,
     OPT_COMPACT,
     OPT_NOCOMPACT,
@@ -843,6 +844,7 @@ const SValue g_pOptions[] =
     { L"r",         OPT_RECURSIVE },
     { L"s",         OPT_STREAMING },
     { L"o",         OPT_OUTPUTFILE },
+    { L"l",         OPT_TOLOWER },
     { L"h",         OPT_OUTPUTHEADER },
     { L"y",         OPT_OVERWRITE },
     { L"c",         OPT_COMPACT },
@@ -971,6 +973,7 @@ namespace
         wprintf(L"                       otherwise an in-memory bank is created\n");
         wprintf(L"   -o <filename>       output filename\n");
         wprintf(L"   -h <h-filename>     output C/C++ header\n");
+        wprintf(L"   -l                  force output filename to lower case\n");
         wprintf(L"   -y                  overwrite existing output file (if any)\n");
         wprintf(L"   -c                  force creation of compact wavebank\n");
         wprintf(L"   -nc                 force creation of non-compact wavebank\n");
@@ -1213,6 +1216,16 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         }
 
         _wmakepath_s(szOutputFile, nullptr, nullptr, fname, L".xwb");
+    }
+
+    if (dwOptions & (1 << OPT_TOLOWER))
+    {
+        (void)_wcslwr_s(szOutputFile);
+
+        if (*szHeaderFile)
+        {
+            (void)_wcslwr_s(szHeaderFile);
+        }
     }
 
     if (~dwOptions & (1 << OPT_OVERWRITE))
