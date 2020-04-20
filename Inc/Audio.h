@@ -157,7 +157,7 @@ namespace DirectX
 
     inline SOUND_EFFECT_INSTANCE_FLAGS operator|(SOUND_EFFECT_INSTANCE_FLAGS a, SOUND_EFFECT_INSTANCE_FLAGS b) noexcept { return static_cast<SOUND_EFFECT_INSTANCE_FLAGS>(static_cast<int>(a) | static_cast<int>(b)); }
 
-    enum AUDIO_ENGINE_REVERB
+    enum AUDIO_ENGINE_REVERB : unsigned int
     {
         Reverb_Off,
         Reverb_Default,

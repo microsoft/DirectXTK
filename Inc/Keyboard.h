@@ -37,7 +37,7 @@ namespace DirectX
 
         virtual ~Keyboard();
 
-        enum Keys
+        enum Keys : unsigned char
         {
             None                = 0,
 
