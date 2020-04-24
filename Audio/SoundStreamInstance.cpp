@@ -24,6 +24,10 @@ using namespace DirectX;
 
 //#define VERBOSE_TRACE
 
+#ifdef VERBOSE_TRACE
+#pragma message("NOTE: Verbose tracing enabled")
+#endif
+
 namespace
 {
     const size_t DVD_SECTOR_SIZE = 2048;
@@ -35,9 +39,9 @@ namespace
         if (!wfx)
             return 0;
 
-        // TODO - for now, just a quick calculation
-        size_t buffer = wfx->nBlockAlign * wfx->nChannels * wfx->nSamplesPerSec * 2;
+        size_t buffer = wfx->nAvgBytesPerSec * 2;
         buffer = AlignUp(buffer, MEMORY_ALLOC_SIZE);
+        buffer = std::max<size_t>(65536u, buffer);
         return buffer;
     }
 
@@ -63,13 +67,16 @@ public:
         mIndex(index),
         mPlaying(false),
         mLooped(false),
+        mEndStream(false),
         mPackets{},
         mCurrentDiskReadBuffer(0),
         mCurrentPlayBuffer(0),
+        mStitchBytes(0),
         mCurrentPosition(0),
         mOffsetBytes(0),
         mLengthInBytes(0),
-        mPacketSize(0)
+        mPacketSize(0),
+        mTotalSize(0)
     {
         assert(engine != nullptr);
         engine->RegisterNotify(this, true);
@@ -84,7 +91,6 @@ public:
 
         mOffsetBytes = metadata.offsetBytes;
         mLengthInBytes = metadata.lengthBytes;
-        // TODO: loop points?
 
         mBufferEnd.reset(CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE));
         mBufferRead.reset(CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE));
@@ -98,12 +104,6 @@ public:
 #ifdef VERBOSE_TRACE
         DebugTrace("INFO (Streaming): packet size %zu, play length %zu\n", mPacketSize, mLengthInBytes);
 #endif
-
-        // TODO - PCM only for now...
-        if ((mPacketSize % wfx->nBlockAlign) != 0)
-        {
-            throw std::exception("ERROR: SoundStreamInstance requires block alignment matches packet size (PCM)");
-        }
 
         ThrowIfFailed(ReadBuffers());
     }
@@ -122,13 +122,19 @@ public:
 
         if (mBase.engine)
         {
-            mBase.engine->UnregisterNotify(this, false, false);
+            mBase.engine->UnregisterNotify(this, false, true);
             mBase.engine = nullptr;
         }
 
         memset(mPackets, 0, sizeof(mPackets));
         mPacketSize = 0;
     }
+
+    Impl(Impl&&) = default;
+    Impl& operator= (Impl&&) = default;
+
+    Impl(Impl const&) = delete;
+    Impl& operator= (Impl const&) = delete;
 
     void Play(bool loop)
     {
@@ -146,6 +152,7 @@ public:
             return;
 
         mLooped = loop;
+        mEndStream = false;
 
         ThrowIfFailed(PlayBuffers());
     }
@@ -234,6 +241,7 @@ public:
     uint32_t                        mIndex;
     bool                            mPlaying;
     bool                            mLooped;
+    bool                            mEndStream;
 
     ScopedHandle                    mBufferEnd;
     ScopedHandle                    mBufferRead;
@@ -278,7 +286,9 @@ public:
     {
         State       state;
         uint8_t*    buffer;
+        uint8_t*    stitchBuffer;
         uint32_t    valid;
+        uint32_t    startPosition;
         OVERLAPPED  request;
         BufferNotify notify;
     };
@@ -288,11 +298,13 @@ public:
 private:
     uint32_t                        mCurrentDiskReadBuffer;
     uint32_t                        mCurrentPlayBuffer;
+    uint32_t                        mStitchBytes;
     size_t                          mCurrentPosition;
     size_t                          mOffsetBytes;
     size_t                          mLengthInBytes;
 
     size_t                          mPacketSize;
+    size_t                          mTotalSize;
     std::unique_ptr<uint8_t[], virtual_deleter> mStreamBuffer;
 
     HRESULT AllocateStreamingBuffers(const WAVEFORMATEX* wfx) noexcept;
@@ -310,12 +322,26 @@ HRESULT SoundStreamInstance::Impl::AllocateStreamingBuffers(const WAVEFORMATEX* 
     if (!packetSize)
         return E_UNEXPECTED;
 
-    if (mPacketSize < packetSize)
+    uint64_t totalSize = uint64_t(packetSize) * uint64_t(MAX_BUFFER_COUNT);
+    if (totalSize > UINT32_MAX)
+        return HRESULT_FROM_WIN32(ERROR_ARITHMETIC_OVERFLOW);
+
+    mPacketSize = packetSize;
+    mStitchBytes = 0;
+
+    size_t stitchSize = 0;
+    if ((packetSize % wfx->nBlockAlign) != 0)
     {
-        uint64_t totalSize = uint64_t(packetSize) * uint64_t(MAX_BUFFER_COUNT);
+        mStitchBytes = wfx->nBlockAlign;
+
+        stitchSize = AlignUp<size_t>(wfx->nBlockAlign, DVD_SECTOR_SIZE);
+        totalSize += uint64_t(stitchSize) * uint64_t(MAX_BUFFER_COUNT);
         if (totalSize > UINT32_MAX)
             return HRESULT_FROM_WIN32(ERROR_ARITHMETIC_OVERFLOW);
+    }
 
+    if (mTotalSize < totalSize)
+    {
         mStreamBuffer.reset(reinterpret_cast<uint8_t*>(
             VirtualAlloc(nullptr, static_cast<SIZE_T>(totalSize), MEM_COMMIT, PAGE_READWRITE)
             ));
@@ -328,18 +354,29 @@ HRESULT SoundStreamInstance::Impl::AllocateStreamingBuffers(const WAVEFORMATEX* 
             OutputDebugStringA(buff);
 #endif
             mPacketSize = 0;
+            totalSize = 0;
             return E_OUTOFMEMORY;
         }
 
-        mPacketSize = packetSize;
+        mTotalSize = static_cast<size_t>(totalSize);
 
         uint8_t* ptr = mStreamBuffer.get();
         for (size_t j = 0; j < MAX_BUFFER_COUNT; ++j)
         {
             mPackets[j].buffer = ptr;
+            mPackets[j].stitchBuffer = nullptr;
             mPackets[j].request.hEvent = mBufferRead.get();
             mPackets[j].notify.Set(this, j);
             ptr += packetSize;
+        }
+
+        if (stitchSize > 0)
+        {
+            for (size_t j = 0; j < MAX_BUFFER_COUNT; ++j)
+            {
+                mPackets[j].stitchBuffer = ptr;
+                ptr += stitchSize;
+            }
         }
     }
 
@@ -352,7 +389,10 @@ HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
     if (mCurrentPosition >= mLengthInBytes)
     {
         if (!mLooped)
+        {
+            mEndStream = true;
             return S_FALSE;
+        }
 
 #ifdef VERBOSE_TRACE
         DebugTrace("INFO (Streaming): Loop restart\n");
@@ -373,6 +413,7 @@ HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
             {
                 auto cbValid = static_cast<uint32_t>(std::min(mPacketSize, mLengthInBytes - mCurrentPosition));
 
+                mPackets[entry].startPosition = static_cast<uint32_t>(mCurrentPosition);
                 mPackets[entry].request.Offset = static_cast<DWORD>(mOffsetBytes + mCurrentPosition);
                 mPackets[entry].valid = cbValid;
 
@@ -443,19 +484,68 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
         if (mPackets[mCurrentPlayBuffer].state != State::READY)
             break;
 
-        XAUDIO2_BUFFER buf = {};
-        buf.AudioBytes = mPackets[mCurrentPlayBuffer].valid;
-        buf.pAudioData = mPackets[mCurrentPlayBuffer].buffer;
-        if (buf.AudioBytes < mPacketSize)
+        const uint8_t* ptr = mPackets[mCurrentPlayBuffer].buffer;
+        uint32_t valid = mPackets[mCurrentPlayBuffer].valid;
+
+        bool endstream = false;
+        if (valid < mPacketSize)
         {
-            buf.Flags = XAUDIO2_END_OF_STREAM;
+            endstream = true;
 #ifdef VERBOSE_TRACE
             DebugTrace("INFO (Streaming): End of stream (%u of %zu bytes)\n", mPackets[mCurrentPlayBuffer].valid, mPacketSize);
 #endif
         }
-        buf.pContext = &mPackets[mCurrentPlayBuffer].notify;
 
-        ThrowIfFailed(mBase.voice->SubmitSourceBuffer(&buf));
+        uint32_t thisFrameStitch = 0;
+        if (mStitchBytes > 0)
+        {
+            uint32_t prevFrameStitch = (mPackets[mCurrentPlayBuffer].startPosition % mStitchBytes);
+
+            if (prevFrameStitch > 0)
+            {
+                auto buffer = mPackets[mCurrentPlayBuffer].stitchBuffer;
+
+                thisFrameStitch = mStitchBytes - prevFrameStitch;
+
+                uint32_t k = (mCurrentPlayBuffer + MAX_BUFFER_COUNT) % MAX_BUFFER_COUNT;
+                if (mPackets[k].state == State::READY || mPackets[k].state == State::PLAYING)
+                {
+                    auto prevBuffer = mPackets[k].buffer + mPackets[k].valid;
+
+                    memcpy(buffer, prevBuffer, prevFrameStitch);
+                    memcpy(buffer + prevFrameStitch, ptr, thisFrameStitch);
+
+                    XAUDIO2_BUFFER buf = {};
+                    buf.AudioBytes = mStitchBytes;
+                    buf.pAudioData = buffer;
+
+                    if (endstream && (valid <= thisFrameStitch))
+                    {
+                        buf.Flags = XAUDIO2_END_OF_STREAM;
+                        buf.pContext = &mPackets[mCurrentPlayBuffer].notify;
+                    }
+#ifdef VERBOSE_TRACE
+                    DebugTrace("INFO (Streaming): Stitch packet (%u + %u = %u)\n", prevFrameStitch, thisFrameStitch, mStitchBytes);
+#endif
+                    ThrowIfFailed(mBase.voice->SubmitSourceBuffer(&buf));
+                }
+
+                ptr += thisFrameStitch;
+            }
+
+            valid = (valid / mStitchBytes) * mStitchBytes;
+        }
+
+        if (mPackets[mCurrentPlayBuffer].valid > thisFrameStitch)
+        {
+            XAUDIO2_BUFFER buf = {};
+            buf.Flags = (endstream) ? XAUDIO2_END_OF_STREAM : 0;
+            buf.AudioBytes = valid;
+            buf.pAudioData = ptr;
+            buf.pContext = &mPackets[mCurrentPlayBuffer].notify;
+
+            ThrowIfFailed(mBase.voice->SubmitSourceBuffer(&buf));
+        }
 
         mPackets[mCurrentPlayBuffer].state = State::PLAYING;
         mCurrentPlayBuffer = (mCurrentPlayBuffer + 1) % MAX_BUFFER_COUNT;
@@ -527,7 +617,7 @@ void SoundStreamInstance::Play(bool loop)
 void SoundStreamInstance::Stop(bool immediate) noexcept
 {
     pImpl->mBase.Stop(immediate, pImpl->mLooped);
-    pImpl->mPlaying = false;
+    pImpl->mPlaying = !immediate;
 }
 
 
@@ -576,7 +666,12 @@ bool SoundStreamInstance::IsLooped() const noexcept
 
 SoundState SoundStreamInstance::GetState() noexcept
 {
-    return pImpl->mBase.GetState(false);
+    SoundState state = pImpl->mBase.GetState(pImpl->mEndStream);
+    if (state == STOPPED)
+    {
+        pImpl->mPlaying = false;
+    }
+    return state;
 }
 
 
