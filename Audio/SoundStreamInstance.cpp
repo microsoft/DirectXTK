@@ -297,6 +297,7 @@ public:
         uint8_t*    buffer;
         uint8_t*    stitchBuffer;
         uint32_t    valid;
+        uint32_t    audioBytes;
         uint32_t    startPosition;
         OVERLAPPED  request;
         BufferNotify notify;
@@ -422,9 +423,10 @@ HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
             {
                 auto cbValid = static_cast<uint32_t>(std::min(mPacketSize, mLengthInBytes - mCurrentPosition));
 
+                mPackets[entry].valid = cbValid;
+                mPackets[entry].audioBytes = 0;
                 mPackets[entry].startPosition = static_cast<uint32_t>(mCurrentPosition);
                 mPackets[entry].request.Offset = static_cast<DWORD>(mOffsetBytes + mCurrentPosition);
-                mPackets[entry].valid = cbValid;
 
                 if (!ReadFile(async, mPackets[entry].buffer, uint32_t(mPacketSize), nullptr, &mPackets[entry].request))
                 {
@@ -508,25 +510,31 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
         uint32_t thisFrameStitch = 0;
         if (mStitchBytes > 0)
         {
+            // Compute how many left-over bytes at the end of the previous packet (if any, they form the head of a partial block).
             uint32_t prevFrameStitch = (mPackets[mCurrentPlayBuffer].startPosition % mStitchBytes);
 
             if (prevFrameStitch > 0)
             {
                 auto buffer = mPackets[mCurrentPlayBuffer].stitchBuffer;
 
+                // Compute how many bytes at the start of our current packet are the tail of the partial block.
                 thisFrameStitch = mStitchBytes - prevFrameStitch;
 
                 uint32_t k = (mCurrentPlayBuffer + MAX_BUFFER_COUNT - 1) % MAX_BUFFER_COUNT;
                 if (mPackets[k].state == State::READY || mPackets[k].state == State::PLAYING)
                 {
+                    // Compute how many bytes at the start of the previous packet were the tail of the previous stitch block.
                     uint32_t prevFrameStitchOffset = (mPackets[k].startPosition % mStitchBytes);
                     prevFrameStitchOffset = (prevFrameStitchOffset > 0) ? (mStitchBytes - prevFrameStitchOffset) : 0u;
 
-                    auto prevBuffer = mPackets[k].buffer + prevFrameStitchOffset + mPackets[k].valid;
+                    // Point to the start of the partial block's head in the previous packet.
+                    auto prevBuffer = mPackets[k].buffer + prevFrameStitchOffset + mPackets[k].audioBytes;
 
+                    // Merge the the head partial block in the previous packet with the tail partial block at the start of our packet.
                     memcpy(buffer, prevBuffer, prevFrameStitch);
                     memcpy(buffer + prevFrameStitch, ptr, thisFrameStitch);
 
+                    // Submit stitch packet (only need to get notified if we aren't submitting another packet for this buffer).
                     XAUDIO2_BUFFER buf = {};
                     buf.AudioBytes = mStitchBytes;
                     buf.pAudioData = buffer;
@@ -545,13 +553,14 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
                 ptr += thisFrameStitch;
             }
 
+            // Compute valid audio bytes in our current packet.
             valid = ((valid - thisFrameStitch) / mStitchBytes) * mStitchBytes;
         }
 
-        if (mPackets[mCurrentPlayBuffer].valid > thisFrameStitch)
+        if (valid > 0)
         {
             // Record the audioBytes we actually submitted...
-            mPackets[mCurrentPlayBuffer].valid = valid;
+            mPackets[mCurrentPlayBuffer].audioBytes = valid;
 
             XAUDIO2_BUFFER buf = {};
             buf.Flags = (endstream) ? XAUDIO2_END_OF_STREAM : 0;
