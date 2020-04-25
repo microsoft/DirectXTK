@@ -516,10 +516,13 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
 
                 thisFrameStitch = mStitchBytes - prevFrameStitch;
 
-                uint32_t k = (mCurrentPlayBuffer + MAX_BUFFER_COUNT) % MAX_BUFFER_COUNT;
+                uint32_t k = (mCurrentPlayBuffer + MAX_BUFFER_COUNT - 1) % MAX_BUFFER_COUNT;
                 if (mPackets[k].state == State::READY || mPackets[k].state == State::PLAYING)
                 {
-                    auto prevBuffer = mPackets[k].buffer + mPackets[k].valid;
+                    uint32_t prevFrameStitchOffset = (mPackets[k].startPosition % mStitchBytes);
+                    prevFrameStitchOffset = (prevFrameStitchOffset > 0) ? (mStitchBytes - prevFrameStitchOffset) : 0u;
+
+                    auto prevBuffer = mPackets[k].buffer + prevFrameStitchOffset + mPackets[k].valid;
 
                     memcpy(buffer, prevBuffer, prevFrameStitch);
                     memcpy(buffer + prevFrameStitch, ptr, thisFrameStitch);
@@ -542,11 +545,14 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
                 ptr += thisFrameStitch;
             }
 
-            valid = (valid / mStitchBytes) * mStitchBytes;
+            valid = ((valid - thisFrameStitch) / mStitchBytes) * mStitchBytes;
         }
 
         if (mPackets[mCurrentPlayBuffer].valid > thisFrameStitch)
         {
+            // Record the audioBytes we actually submitted...
+            mPackets[mCurrentPlayBuffer].valid = valid;
+
             XAUDIO2_BUFFER buf = {};
             buf.Flags = (endstream) ? XAUDIO2_END_OF_STREAM : 0;
             buf.AudioBytes = valid;
