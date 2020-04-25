@@ -68,6 +68,7 @@ public:
         mPlaying(false),
         mLooped(false),
         mEndStream(false),
+        mPrefetch(false),
         mPackets{},
         mCurrentDiskReadBuffer(0),
         mCurrentPlayBuffer(0),
@@ -105,6 +106,7 @@ public:
         DebugTrace("INFO (Streaming): packet size %zu, play length %zu\n", mPacketSize, mLengthInBytes);
 #endif
 
+        mPrefetch = true;
         ThrowIfFailed(ReadBuffers());
     }
 
@@ -154,6 +156,11 @@ public:
         mLooped = loop;
         mEndStream = false;
 
+        if (!mPrefetch)
+        {
+            mCurrentPosition = 0;
+        }
+
         ThrowIfFailed(PlayBuffers());
     }
 
@@ -193,6 +200,7 @@ public:
             }
             DebugTrace("]\n");
 #endif
+            mPrefetch = false;
             ThrowIfFailed(PlayBuffers());
             break;
 
@@ -242,6 +250,7 @@ public:
     bool                            mPlaying;
     bool                            mLooped;
     bool                            mEndStream;
+    bool                            mPrefetch;
 
     ScopedHandle                    mBufferEnd;
     ScopedHandle                    mBufferRead;
