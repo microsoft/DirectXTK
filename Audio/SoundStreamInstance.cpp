@@ -613,13 +613,13 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
                 if (seekOffset > MAX_STREAMING_SEEK_PACKETS)
                 {
                     DebugTrace("ERROR: xWMA packet seek count exceeds %u\n", MAX_STREAMING_SEEK_PACKETS);
-                    throw std::exception("MAX_STREAMING_SEEK_PACKETS");
+                    return E_FAIL;
                 }
                 else if (seekOffset > 0)
                 {
-                    for (uint32_t j = 0; j < wmaBuf.PacketCount; ++j)
+                    for (uint32_t i = 0; i < wmaBuf.PacketCount; ++i)
                     {
-                        mSeekTableCopy[j] = mSeekTable[j + seekOffset] - mSeekTable[seekOffset - 1];
+                        mSeekTableCopy[i] = mSeekTable[i + seekOffset] - mSeekTable[seekOffset - 1];
                     }
 
                     wmaBuf.pDecodedPacketCumulativeBytes = mSeekTableCopy;
