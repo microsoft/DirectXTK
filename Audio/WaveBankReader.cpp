@@ -1113,7 +1113,7 @@ HRESULT WaveBankReader::Impl::GetWaveData(uint32_t index, const uint8_t** pData,
         DWORD dwOffset, dwLength;
         entry.ComputeLocations(dwOffset, dwLength, index, m_header, m_data, reinterpret_cast<const ENTRYCOMPACT*>(m_entries.get()));
 
-        if ((dwOffset + dwLength) > m_header.Segments[HEADER::SEGIDX_ENTRYWAVEDATA].dwLength)
+        if ((uint64_t(dwOffset) + uint64_t(dwLength)) > uint64_t(m_header.Segments[HEADER::SEGIDX_ENTRYWAVEDATA].dwLength))
         {
             return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
         }
@@ -1125,7 +1125,7 @@ HRESULT WaveBankReader::Impl::GetWaveData(uint32_t index, const uint8_t** pData,
     {
         auto& entry = reinterpret_cast<const ENTRY*>(m_entries.get())[index];
 
-        if ((entry.PlayRegion.dwOffset + entry.PlayRegion.dwLength) > m_header.Segments[HEADER::SEGIDX_ENTRYWAVEDATA].dwLength)
+        if ((uint64_t(entry.PlayRegion.dwOffset) + uint64_t(entry.PlayRegion.dwLength)) > uint64_t(m_header.Segments[HEADER::SEGIDX_ENTRYWAVEDATA].dwLength))
         {
             return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
         }
@@ -1213,6 +1213,15 @@ HRESULT WaveBankReader::Impl::GetMetadata(uint32_t index, Metadata& metadata) co
         metadata.loopLength = entry.LoopRegion.dwTotalSamples;
         metadata.offsetBytes = entry.PlayRegion.dwOffset;
         metadata.lengthBytes = entry.PlayRegion.dwLength;
+    }
+
+    if (m_data.dwFlags & BANKDATA::TYPE_STREAMING)
+    {
+        uint64_t offset = uint64_t(metadata.offsetBytes) + uint64_t(m_header.Segments[HEADER::SEGIDX_ENTRYWAVEDATA].dwOffset);
+        if (offset > UINT32_MAX)
+            return HRESULT_FROM_WIN32(ERROR_ARITHMETIC_OVERFLOW);
+
+        metadata.offsetBytes = static_cast<uint32_t>(offset);
     }
 
     return S_OK;

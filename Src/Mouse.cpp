@@ -283,15 +283,16 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
     if (!pImpl)
         return;
 
-    HANDLE evts[3];
-    evts[0] = pImpl->mScrollWheelValue.get();
-    evts[1] = pImpl->mAbsoluteMode.get();
-    evts[2] = pImpl->mRelativeMode.get();
-    switch (WaitForMultipleObjectsEx(_countof(evts), evts, FALSE, 0, FALSE))
+    HANDLE events[3] = { pImpl->mScrollWheelValue.get(), pImpl->mAbsoluteMode.get(), pImpl->mRelativeMode.get() };
+    switch (WaitForMultipleObjectsEx(_countof(events), events, FALSE, 0, FALSE))
     {
+        default:
+        case WAIT_TIMEOUT:
+            break;
+
         case WAIT_OBJECT_0:
             pImpl->mState.scrollWheelValue = 0;
-            ResetEvent(evts[0]);
+            ResetEvent(events[0]);
             break;
 
         case (WAIT_OBJECT_0 + 1):

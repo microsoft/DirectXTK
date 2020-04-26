@@ -370,4 +370,11 @@ namespace DirectX
         IXAudio2Voice*              mReverbVoice;
         X3DAUDIO_DSP_SETTINGS       mDSPSettings;
     };
+
+    struct WaveBankSeekData
+    {
+        uint32_t        seekCount;
+        const uint32_t* seekTable;
+        uint32_t        tag;
+    };
 }
