@@ -33,6 +33,7 @@ namespace
     const size_t DVD_SECTOR_SIZE = 2048;
     const size_t MEMORY_ALLOC_SIZE = 4096;
     const size_t MAX_BUFFER_COUNT = 3;
+    const size_t MAX_STREAMING_SEEK_PACKETS = 2048;
 
     size_t ComputeAsyncPacketSize(_In_ const WAVEFORMATEX* wfx)
     {
@@ -69,15 +70,19 @@ public:
         mLooped(false),
         mEndStream(false),
         mPrefetch(false),
+        mSitching(false),
         mPackets{},
         mCurrentDiskReadBuffer(0),
         mCurrentPlayBuffer(0),
-        mStitchBytes(0),
+        mBlockAlign(0),
         mCurrentPosition(0),
         mOffsetBytes(0),
         mLengthInBytes(0),
         mPacketSize(0),
-        mTotalSize(0)
+        mTotalSize(0),
+        mSeekCount(0),
+        mSeekTable(nullptr),
+        mSeekTableCopy{}
     {
         assert(engine != nullptr);
         engine->RegisterNotify(this, true);
@@ -87,11 +92,19 @@ public:
         assert(mWaveBank != nullptr);
         mBase.Initialize(engine, mWaveBank->GetFormat(index, wfx, sizeof(buff)), flags);
 
-        WaveBankReader::Metadata metadata;
+        WaveBankReader::Metadata metadata = {};
         (void)mWaveBank->GetPrivateData(index, &metadata, sizeof(metadata));
 
         mOffsetBytes = metadata.offsetBytes;
         mLengthInBytes = metadata.lengthBytes;
+
+        WaveBankSeekData seekData = {};
+        (void)mWaveBank->GetPrivateData(index, &seekData, sizeof(seekData));
+        if (seekData.tag == WAVE_FORMAT_WMAUDIO2 || seekData.tag == WAVE_FORMAT_WMAUDIO3)
+        {
+            mSeekCount = seekData.seekCount;
+            mSeekTable = seekData.seekTable;
+        }
 
         mBufferEnd.reset(CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE));
         mBufferRead.reset(CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE));
@@ -251,6 +264,7 @@ public:
     bool                            mLooped;
     bool                            mEndStream;
     bool                            mPrefetch;
+    bool                            mSitching;
 
     ScopedHandle                    mBufferEnd;
     ScopedHandle                    mBufferRead;
@@ -308,7 +322,7 @@ public:
 private:
     uint32_t                        mCurrentDiskReadBuffer;
     uint32_t                        mCurrentPlayBuffer;
-    uint32_t                        mStitchBytes;
+    uint32_t                        mBlockAlign;
     size_t                          mCurrentPosition;
     size_t                          mOffsetBytes;
     size_t                          mLengthInBytes;
@@ -316,6 +330,11 @@ private:
     size_t                          mPacketSize;
     size_t                          mTotalSize;
     std::unique_ptr<uint8_t[], virtual_deleter> mStreamBuffer;
+
+    uint32_t                        mSeekCount;
+    const uint32_t*                 mSeekTable;
+    uint32_t                        mSeekTableCopy[MAX_STREAMING_SEEK_PACKETS];
+
 
     HRESULT AllocateStreamingBuffers(const WAVEFORMATEX* wfx) noexcept;
     HRESULT ReadBuffers() noexcept;
@@ -337,12 +356,13 @@ HRESULT SoundStreamInstance::Impl::AllocateStreamingBuffers(const WAVEFORMATEX* 
         return HRESULT_FROM_WIN32(ERROR_ARITHMETIC_OVERFLOW);
 
     mPacketSize = packetSize;
-    mStitchBytes = 0;
+    mBlockAlign = wfx->nBlockAlign;
+    mSitching = false;
 
     size_t stitchSize = 0;
     if ((packetSize % wfx->nBlockAlign) != 0)
     {
-        mStitchBytes = wfx->nBlockAlign;
+        mSitching = true;;
 
         stitchSize = AlignUp<size_t>(wfx->nBlockAlign, DVD_SECTOR_SIZE);
         totalSize += uint64_t(stitchSize) * uint64_t(MAX_BUFFER_COUNT);
@@ -508,24 +528,24 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
         }
 
         uint32_t thisFrameStitch = 0;
-        if (mStitchBytes > 0)
+        if (mSitching)
         {
             // Compute how many left-over bytes at the end of the previous packet (if any, they form the head of a partial block).
-            uint32_t prevFrameStitch = (mPackets[mCurrentPlayBuffer].startPosition % mStitchBytes);
+            uint32_t prevFrameStitch = (mPackets[mCurrentPlayBuffer].startPosition % mBlockAlign);
 
             if (prevFrameStitch > 0)
             {
                 auto buffer = mPackets[mCurrentPlayBuffer].stitchBuffer;
 
                 // Compute how many bytes at the start of our current packet are the tail of the partial block.
-                thisFrameStitch = mStitchBytes - prevFrameStitch;
+                thisFrameStitch = mBlockAlign - prevFrameStitch;
 
                 uint32_t k = (mCurrentPlayBuffer + MAX_BUFFER_COUNT - 1) % MAX_BUFFER_COUNT;
                 if (mPackets[k].state == State::READY || mPackets[k].state == State::PLAYING)
                 {
                     // Compute how many bytes at the start of the previous packet were the tail of the previous stitch block.
-                    uint32_t prevFrameStitchOffset = (mPackets[k].startPosition % mStitchBytes);
-                    prevFrameStitchOffset = (prevFrameStitchOffset > 0) ? (mStitchBytes - prevFrameStitchOffset) : 0u;
+                    uint32_t prevFrameStitchOffset = (mPackets[k].startPosition % mBlockAlign);
+                    prevFrameStitchOffset = (prevFrameStitchOffset > 0) ? (mBlockAlign - prevFrameStitchOffset) : 0u;
 
                     // Point to the start of the partial block's head in the previous packet.
                     auto prevBuffer = mPackets[k].buffer + prevFrameStitchOffset + mPackets[k].audioBytes;
@@ -536,7 +556,7 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
 
                     // Submit stitch packet (only need to get notified if we aren't submitting another packet for this buffer).
                     XAUDIO2_BUFFER buf = {};
-                    buf.AudioBytes = mStitchBytes;
+                    buf.AudioBytes = mBlockAlign;
                     buf.pAudioData = buffer;
 
                     if (endstream && (valid <= thisFrameStitch))
@@ -545,16 +565,31 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
                         buf.pContext = &mPackets[mCurrentPlayBuffer].notify;
                     }
 #ifdef VERBOSE_TRACE
-                    DebugTrace("INFO (Streaming): Stitch packet (%u + %u = %u)\n", prevFrameStitch, thisFrameStitch, mStitchBytes);
+                    DebugTrace("INFO (Streaming): Stitch packet (%u + %u = %u)\n", prevFrameStitch, thisFrameStitch, mBlockAlign);
 #endif
-                    ThrowIfFailed(mBase.voice->SubmitSourceBuffer(&buf));
+                    if (mSeekCount > 0)
+                    {
+                        XAUDIO2_BUFFER_WMA wmaBuf = {};
+                        wmaBuf.pDecodedPacketCumulativeBytes = mSeekTableCopy;
+                        wmaBuf.PacketCount = 1;
+
+                        uint32_t seekOffset = (mPackets[k].startPosition + prevFrameStitchOffset + mPackets[k].audioBytes) / mBlockAlign;
+                        assert(seekOffset > 0);
+                        mSeekTableCopy[0] = mSeekTable[seekOffset] - mSeekTable[seekOffset - 1];
+
+                        ThrowIfFailed(mBase.voice->SubmitSourceBuffer(&buf, &wmaBuf));
+                    }
+                    else
+                    {
+                        ThrowIfFailed(mBase.voice->SubmitSourceBuffer(&buf));
+                    }
                 }
 
                 ptr += thisFrameStitch;
             }
 
             // Compute valid audio bytes in our current packet.
-            valid = ((valid - thisFrameStitch) / mStitchBytes) * mStitchBytes;
+            valid = ((valid - thisFrameStitch) / mBlockAlign) * mBlockAlign;
         }
 
         if (valid > 0)
@@ -568,7 +603,38 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
             buf.pAudioData = ptr;
             buf.pContext = &mPackets[mCurrentPlayBuffer].notify;
 
-            ThrowIfFailed(mBase.voice->SubmitSourceBuffer(&buf));
+            if (mSeekCount > 0)
+            {
+                XAUDIO2_BUFFER_WMA wmaBuf = {};
+
+                wmaBuf.PacketCount = valid / mBlockAlign;
+
+                uint32_t seekOffset = mPackets[mCurrentPlayBuffer].startPosition / mBlockAlign;
+                if (seekOffset > MAX_STREAMING_SEEK_PACKETS)
+                {
+                    DebugTrace("ERROR: xWMA packet seek count exceeds %u\n", MAX_STREAMING_SEEK_PACKETS);
+                    throw std::exception("MAX_STREAMING_SEEK_PACKETS");
+                }
+                else if (seekOffset > 0)
+                {
+                    for (uint32_t j = 0; j < wmaBuf.PacketCount; ++j)
+                    {
+                        mSeekTableCopy[j] = mSeekTable[j + seekOffset] - mSeekTable[seekOffset - 1];
+                    }
+
+                    wmaBuf.pDecodedPacketCumulativeBytes = mSeekTableCopy;
+                }
+                else
+                {
+                    wmaBuf.pDecodedPacketCumulativeBytes = mSeekTable;
+                }
+
+                ThrowIfFailed(mBase.voice->SubmitSourceBuffer(&buf, &wmaBuf));
+            }
+            else
+            {
+                ThrowIfFailed(mBase.voice->SubmitSourceBuffer(&buf));
+            }
         }
 
         mPackets[mCurrentPlayBuffer].state = State::PLAYING;

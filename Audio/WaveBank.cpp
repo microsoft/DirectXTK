@@ -595,9 +595,21 @@ bool WaveBank::GetPrivateData(unsigned int index, void* data, size_t datasize)
     if (!data)
         return false;
 
-    if (datasize != sizeof(WaveBankReader::Metadata))
-        return false;
+    switch (datasize)
+    {
+        case sizeof(WaveBankReader::Metadata):
+        {
+            auto ptr = reinterpret_cast<WaveBankReader::Metadata*>(data);
+            return SUCCEEDED(pImpl->mReader.GetMetadata(index, *ptr));
+        }
 
-    auto ptr = reinterpret_cast<WaveBankReader::Metadata*>(data);
-    return SUCCEEDED(pImpl->mReader.GetMetadata(index, *ptr));
+        case sizeof(WaveBankSeekData):
+        {
+            auto ptr = reinterpret_cast<WaveBankSeekData*>(data);
+            return SUCCEEDED(pImpl->mReader.GetSeekTable(index, &ptr->seekTable, ptr->seekCount, ptr->tag));
+        }
+
+        default:
+            return false;
+    }
 }
