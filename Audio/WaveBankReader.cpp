@@ -14,6 +14,7 @@
 #include "WaveBankReader.h"
 #include "Audio.h"
 #include "PlatformHelpers.h"
+#include "SoundCommon.h"
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
 #include <apu.h>
@@ -429,7 +430,7 @@ public:
         m_prepared(false),
         m_header{},
         m_data{}
-    #if defined(_XBOX_ONE) && defined(_TITLE)
+    #ifdef DIRECTX_ENABLE_XMA2
         , m_xmaMemory(nullptr)
     #endif
     {
@@ -466,7 +467,7 @@ public:
         m_seekData.reset();
         m_waveData.reset();
 
-    #if defined(_XBOX_ONE) && defined(_TITLE)
+    #ifdef DIRECTX_ENABLE_XMA2
         if (m_xmaMemory)
         {
             ApuFree(m_xmaMemory);
@@ -489,7 +490,7 @@ private:
     std::unique_ptr<uint8_t[]>          m_seekData;
     std::unique_ptr<uint8_t[]>          m_waveData;
 
-#if defined(_XBOX_ONE) && defined(_TITLE)
+#ifdef DIRECTX_ENABLE_XMA2
 public:
     void*                               m_xmaMemory;
 #endif
@@ -845,7 +846,7 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
         // If in-memory, kick off read of wave data
         void* dest = nullptr;
 
-    #if defined(_XBOX_ONE) && defined(_TITLE)
+    #ifdef DIRECTX_ENABLE_XMA2
         bool xma = false;
         if (m_data.dwFlags & BANKDATA::FLAGS_COMPACT)
         {
@@ -930,7 +931,7 @@ void WaveBankReader::Impl::Close() noexcept
     }
     m_event.reset();
 
-#if defined(_XBOX_ONE) && defined(_TITLE)
+#ifdef DIRECTX_ENABLE_XMA2
     if (m_xmaMemory)
     {
         ApuFree(m_xmaMemory);
@@ -989,7 +990,7 @@ HRESULT WaveBankReader::Impl::GetFormat(uint32_t index, WAVEFORMATEX* pFormat, s
             break;
 
         case MINIWAVEFORMAT::TAG_XMA: // XMA2 is supported by Xbox One
-        #if defined(_XBOX_ONE) && defined(_TITLE)
+        #ifdef DIRECTX_ENABLE_XMA2
             if (maxsize < sizeof(XMA2WAVEFORMATEX))
                 return HRESULT_FROM_WIN32(ERROR_MORE_DATA);
 
@@ -1087,7 +1088,7 @@ HRESULT WaveBankReader::Impl::GetWaveData(uint32_t index, const uint8_t** pData,
         return E_FAIL;
     }
 
-#if defined(_XBOX_ONE) && defined(_TITLE)
+#ifdef DIRECTX_ENABLE_XMA2
     const uint8_t* waveData = (m_xmaMemory) ? reinterpret_cast<uint8_t*>(m_xmaMemory) : m_waveData.get();
 #else
     const uint8_t* waveData = m_waveData.get();
@@ -1325,7 +1326,7 @@ bool WaveBankReader::IsStreamingBank() const noexcept
 }
 
 
-#if defined(_XBOX_ONE) && defined(_TITLE)
+#ifdef DIRECTX_ENABLE_XMA2
 bool WaveBankReader::HasXMA() const noexcept
 {
     return (pImpl->m_xmaMemory != nullptr);

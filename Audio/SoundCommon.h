@@ -13,6 +13,17 @@
 #include "Audio.h"
 #include "PlatformHelpers.h"
 
+#if defined(USING_XAUDIO2_7_DIRECTX) || defined(USING_XAUDIO2_9)
+#define DIRECTX_ENABLE_XWMA
+#endif
+
+#if defined(_XBOX_ONE) && defined(_TITLE)
+#define DIRECTX_ENABLE_XMA2
+#endif
+
+#if defined(DIRECTX_ENABLE_XWMA) || defined(DIRECTX_ENABLE_XMA2)
+#define DIRECTX_ENABLE_SEEK_TABLES
+#endif
 
 namespace DirectX
 {
@@ -55,10 +66,10 @@ namespace DirectX
     void CreateIntegerPCM(_Out_ WAVEFORMATEX* wfx, int sampleRate, int channels, int sampleBits) noexcept;
     void CreateFloatPCM(_Out_ WAVEFORMATEX* wfx, int sampleRate, int channels) noexcept;
     void CreateADPCM(_Out_writes_bytes_(wfxSize) WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int samplesPerBlock) noexcept(false);
-#if defined(USING_XAUDIO2_7_DIRECTX) || defined(USING_XAUDIO2_9)
+#ifdef DIRECTX_ENABLE_XWMA
     void CreateXWMA(_Out_ WAVEFORMATEX* wfx, int sampleRate, int channels, int blockAlign, int avgBytes, bool wma3) noexcept;
 #endif
-#if defined(_XBOX_ONE) && defined(_TITLE)
+#ifdef DIRECTX_ENABLE_XMA2
     void CreateXMA2(_Out_writes_bytes_(wfxSize) WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int bytesPerBlock, int blockCount, int samplesEncoded) noexcept(false);
 #endif
 

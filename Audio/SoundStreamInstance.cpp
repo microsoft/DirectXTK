@@ -33,7 +33,10 @@ namespace
     const size_t DVD_SECTOR_SIZE = 2048;
     const size_t MEMORY_ALLOC_SIZE = 4096;
     const size_t MAX_BUFFER_COUNT = 3;
+
+    #ifdef DIRECTX_ENABLE_SEEK_TABLES
     const size_t MAX_STREAMING_SEEK_PACKETS = 2048;
+    #endif
 
     size_t ComputeAsyncPacketSize(_In_ const WAVEFORMATEX* wfx)
     {
@@ -79,10 +82,12 @@ public:
         mOffsetBytes(0),
         mLengthInBytes(0),
         mPacketSize(0),
-        mTotalSize(0),
-        mSeekCount(0),
+        mTotalSize(0)
+#ifdef DIRECTX_ENABLE_SEEK_TABLES
+        , mSeekCount(0),
         mSeekTable(nullptr),
         mSeekTableCopy{}
+#endif
     {
         assert(engine != nullptr);
         engine->RegisterNotify(this, true);
@@ -98,6 +103,7 @@ public:
         mOffsetBytes = metadata.offsetBytes;
         mLengthInBytes = metadata.lengthBytes;
 
+        #ifdef DIRECTX_ENABLE_SEEK_TABLES
         WaveBankSeekData seekData = {};
         (void)mWaveBank->GetPrivateData(index, &seekData, sizeof(seekData));
         if (seekData.tag == WAVE_FORMAT_WMAUDIO2 || seekData.tag == WAVE_FORMAT_WMAUDIO3)
@@ -105,6 +111,7 @@ public:
             mSeekCount = seekData.seekCount;
             mSeekTable = seekData.seekTable;
         }
+        #endif
 
         mBufferEnd.reset(CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE));
         mBufferRead.reset(CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE));
@@ -141,7 +148,10 @@ public:
             mBase.engine = nullptr;
         }
 
-        memset(mPackets, 0, sizeof(mPackets));
+        for (size_t j = 0; j < MAX_BUFFER_COUNT; ++j)
+        {
+            mPackets[j] = {};
+        }
         mPacketSize = 0;
     }
 
@@ -283,7 +293,7 @@ public:
 
     struct BufferNotify : public IVoiceNotify
     {
-        void Set(SoundStreamInstance::Impl* parent, size_t index) noexcept(true) { mParent = parent; mIndex = index; };
+        void Set(SoundStreamInstance::Impl* parent, size_t index) noexcept(true) { mParent = parent; mIndex = index; }
 
         void __cdecl OnBufferEnd() override
         {
@@ -331,10 +341,11 @@ private:
     size_t                          mTotalSize;
     std::unique_ptr<uint8_t[], virtual_deleter> mStreamBuffer;
 
+#ifdef DIRECTX_ENABLE_SEEK_TABLES
     uint32_t                        mSeekCount;
     const uint32_t*                 mSeekTable;
     uint32_t                        mSeekTableCopy[MAX_STREAMING_SEEK_PACKETS];
-
+#endif
 
     HRESULT AllocateStreamingBuffers(const WAVEFORMATEX* wfx) noexcept;
     HRESULT ReadBuffers() noexcept;
@@ -362,7 +373,7 @@ HRESULT SoundStreamInstance::Impl::AllocateStreamingBuffers(const WAVEFORMATEX* 
     size_t stitchSize = 0;
     if ((packetSize % wfx->nBlockAlign) != 0)
     {
-        mSitching = true;;
+        mSitching = true;
 
         stitchSize = AlignUp<size_t>(wfx->nBlockAlign, DVD_SECTOR_SIZE);
         totalSize += uint64_t(stitchSize) * uint64_t(MAX_BUFFER_COUNT);
@@ -567,6 +578,7 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
 #ifdef VERBOSE_TRACE
                     DebugTrace("INFO (Streaming): Stitch packet (%u + %u = %u)\n", prevFrameStitch, thisFrameStitch, mBlockAlign);
 #endif
+                    #ifdef DIRECTX_ENABLE_XWMA
                     if (mSeekCount > 0)
                     {
                         XAUDIO2_BUFFER_WMA wmaBuf = {};
@@ -580,6 +592,7 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
                         ThrowIfFailed(mBase.voice->SubmitSourceBuffer(&buf, &wmaBuf));
                     }
                     else
+                    #endif // XWMA
                     {
                         ThrowIfFailed(mBase.voice->SubmitSourceBuffer(&buf));
                     }
@@ -603,6 +616,7 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
             buf.pAudioData = ptr;
             buf.pContext = &mPackets[mCurrentPlayBuffer].notify;
 
+            #ifdef DIRECTX_ENABLE_XWMA
             if (mSeekCount > 0)
             {
                 XAUDIO2_BUFFER_WMA wmaBuf = {};
@@ -632,6 +646,7 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
                 ThrowIfFailed(mBase.voice->SubmitSourceBuffer(&buf, &wmaBuf));
             }
             else
+            #endif // xWMA
             {
                 ThrowIfFailed(mBase.voice->SubmitSourceBuffer(&buf));
             }

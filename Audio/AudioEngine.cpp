@@ -163,7 +163,7 @@ namespace
                 unsigned int samplesPerBlock : 16;
             } adpcm;
 
-        #if defined(_XBOX_ONE) && defined(_TITLE)
+        #ifdef DIRECTX_ENABLE_XMA2
             struct
             {
                 unsigned int tag : 9;
@@ -222,7 +222,7 @@ namespace
                 }
                 break;
 
-            #if defined(_XBOX_ONE) && defined(_TITLE)
+            #ifdef DIRECTX_ENABLE_XMA2
             case WAVE_FORMAT_XMA2:
                 static_assert(WAVE_FORMAT_XMA2 < 0x1ff, "KeyGen tag is too small");
                 result.xma.tag = WAVE_FORMAT_XMA2;
@@ -1091,7 +1091,7 @@ void AudioEngine::Impl::AllocateVoice(
                         }
                         break;
 
-                    #if defined(_XBOX_ONE) && defined(_TITLE)
+                        #ifdef DIRECTX_ENABLE_XMA2
                         case WAVE_FORMAT_XMA2:
                             CreateXMA2(wfmt, sizeof(buff), defaultRate, wfx->nChannels, 65536, 2, 0);
                             break;

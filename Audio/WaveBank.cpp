@@ -117,7 +117,7 @@ public:
         {
             stats.audioBytes += mReader.BankAudioSize();
 
-        #if defined(_XBOX_ONE) && defined(_TITLE)
+        #ifdef DIRECTX_ENABLE_XMA2
             if (mReader.HasXMA())
                 stats.xmaAudioBytes += mReader.BankAudioSize();
         #endif
@@ -227,7 +227,7 @@ void WaveBank::Impl::Play(unsigned int index, float volume, float pitch, float p
     buffer.Flags = XAUDIO2_END_OF_STREAM;
     buffer.pContext = this;
 
-    #if defined(USING_XAUDIO2_7_DIRECTX) || defined(USING_XAUDIO2_9)
+    #ifdef DIRECTX_ENABLE_XWMA
 
     XAUDIO2_BUFFER_WMA wmaBuffer = {};
 
@@ -240,7 +240,7 @@ void WaveBank::Impl::Play(unsigned int index, float volume, float pitch, float p
         hr = voice->SubmitSourceBuffer(&buffer, &wmaBuffer);
     }
     else
-    #endif
+    #endif // xWMA
     {
         hr = voice->SubmitSourceBuffer(&buffer, nullptr);
     }
@@ -529,7 +529,7 @@ int WaveBank::Find(const char* name) const
 }
 
 
-#if defined(USING_XAUDIO2_7_DIRECTX) || defined(USING_XAUDIO2_9)
+#ifdef DIRECTX_ENABLE_XWMA
 
 _Use_decl_annotations_
 bool WaveBank::FillSubmitBuffer(unsigned int index, XAUDIO2_BUFFER& buffer, XAUDIO2_BUFFER_WMA& wmaBuffer) const

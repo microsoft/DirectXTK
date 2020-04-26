@@ -147,7 +147,7 @@ void SoundEffectInstance::Impl::Play(bool loop)
     // Submit audio data for STOPPED -> PLAYING state transition
     XAUDIO2_BUFFER buffer = {};
 
-#if defined(USING_XAUDIO2_7_DIRECTX) || defined(USING_XAUDIO2_9)
+#ifdef DIRECTX_ENABLE_XWMA
 
     bool iswma = false;
     XAUDIO2_BUFFER_WMA wmaBuffer = {};
@@ -189,7 +189,7 @@ void SoundEffectInstance::Impl::Play(bool loop)
     buffer.pContext = nullptr;
 
     HRESULT hr;
-#if defined(USING_XAUDIO2_7_DIRECTX) || defined(USING_XAUDIO2_9)
+    #ifdef DIRECTX_ENABLE_XWMA
     if (iswma)
     {
         hr = mBase.voice->SubmitSourceBuffer(&buffer, &wmaBuffer);

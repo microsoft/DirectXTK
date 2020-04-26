@@ -195,7 +195,7 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
         case WAVE_FORMAT_WMAUDIO2:
         case WAVE_FORMAT_WMAUDIO3:
 
-        #if defined(USING_XAUDIO2_7_DIRECTX) || defined(USING_XAUDIO2_9)
+        #ifdef DIRECTX_ENABLE_XWMA
 
             if (wfx->wBitsPerSample != 16)
             {
@@ -224,7 +224,7 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
 
         case 0x166 /* WAVE_FORMAT_XMA2 */:
 
-        #if defined(_XBOX_ONE) && defined(_TITLE)
+        #ifdef DIRECTX_ENABLE_XMA2
 
             static_assert(WAVE_FORMAT_XMA2 == 0x166, "Unrecognized XMA2 tag");
 
@@ -430,7 +430,7 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
                     case WAVE_FORMAT_WMAUDIO2:
                     case WAVE_FORMAT_WMAUDIO3:
 
-                    #if defined(USING_XAUDIO2_7_DIRECTX) || defined(USING_XAUDIO2_9)
+                    #ifdef DIRECTX_ENABLE_XWMA
 
                         if (wfx->wBitsPerSample != 16)
                         {
@@ -576,7 +576,7 @@ void DirectX::CreateADPCM(WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int
 }
 
 
-#if defined(USING_XAUDIO2_7_DIRECTX) || defined(USING_XAUDIO2_9)
+#ifdef DIRECTX_ENABLE_XWMA
 _Use_decl_annotations_
 void DirectX::CreateXWMA(WAVEFORMATEX* wfx, int sampleRate, int channels, int blockAlign, int avgBytes, bool wma3) noexcept
 {
@@ -593,7 +593,7 @@ void DirectX::CreateXWMA(WAVEFORMATEX* wfx, int sampleRate, int channels, int bl
 #endif
 
 
-#if defined(_XBOX_ONE) && defined(_TITLE)
+#ifdef DIRECTX_ENABLE_XMA2
 _Use_decl_annotations_
 void DirectX::CreateXMA2(WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int bytesPerBlock, int blockCount, int samplesEncoded) noexcept(false)
 {
