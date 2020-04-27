@@ -14,6 +14,11 @@
 #include "PlatformHelpers.h"
 #include "SoundCommon.h"
 
+#if defined(_XBOX_ONE) && defined(_TITLE)
+#include <apu.h>
+#include <shapexmacontext.h>
+#endif
+
 using namespace DirectX;
 
 #ifdef __clang__
@@ -38,12 +43,30 @@ namespace
     const size_t MAX_STREAMING_SEEK_PACKETS = 2048;
     #endif
 
-    size_t ComputeAsyncPacketSize(_In_ const WAVEFORMATEX* wfx)
+    #ifdef DIRECTX_ENABLE_XMA2
+    const size_t XMA2_64KBLOCKINBYTES = 65536;
+
+    struct apu_deleter { void operator()(void* p) noexcept { if (p) ApuFree(p); } };
+    #endif
+
+    size_t ComputeAsyncPacketSize(_In_ const WAVEFORMATEX* wfx, uint32_t tag)
     {
         if (!wfx)
             return 0;
 
         size_t buffer = wfx->nAvgBytesPerSec * 2;
+
+    #ifdef DIRECTX_ENABLE_XMA2
+        if (tag == WAVE_FORMAT_XMA2)
+        {
+            buffer = AlignUp(buffer, XMA2_64KBLOCKINBYTES);
+            buffer = std::max<size_t>(XMA2_64KBLOCKINBYTES, buffer);
+            return buffer;
+        }
+    #else
+        UNREFERENCED_PARAMETER(tag);
+    #endif
+
         buffer = AlignUp(buffer, MEMORY_ALLOC_SIZE);
         buffer = std::max<size_t>(65536u, buffer);
         return buffer;
@@ -83,11 +106,11 @@ public:
         mLengthInBytes(0),
         mPacketSize(0),
         mTotalSize(0)
-#ifdef DIRECTX_ENABLE_SEEK_TABLES
+    #ifdef DIRECTX_ENABLE_SEEK_TABLES
         , mSeekCount(0),
         mSeekTable(nullptr),
         mSeekTableCopy{}
-#endif
+    #endif
     {
         assert(engine != nullptr);
         engine->RegisterNotify(this, true);
@@ -347,6 +370,10 @@ private:
     uint32_t                        mSeekTableCopy[MAX_STREAMING_SEEK_PACKETS];
 #endif
 
+#ifdef DIRECTX_ENABLE_XMA2
+    std::unique_ptr<uint8_t[], apu_deleter> mXMAMemory;
+#endif
+
     HRESULT AllocateStreamingBuffers(const WAVEFORMATEX* wfx) noexcept;
     HRESULT ReadBuffers() noexcept;
     HRESULT PlayBuffers() noexcept;
@@ -358,7 +385,9 @@ HRESULT SoundStreamInstance::Impl::AllocateStreamingBuffers(const WAVEFORMATEX* 
     if (!wfx)
         return E_INVALIDARG;
 
-    size_t packetSize = ComputeAsyncPacketSize(wfx);
+    uint32_t tag = GetFormatTag(wfx);
+
+    size_t packetSize = ComputeAsyncPacketSize(wfx, tag);
     if (!packetSize)
         return E_UNEXPECTED;
 
@@ -383,21 +412,43 @@ HRESULT SoundStreamInstance::Impl::AllocateStreamingBuffers(const WAVEFORMATEX* 
 
     if (mTotalSize < totalSize)
     {
-        mStreamBuffer.reset(reinterpret_cast<uint8_t*>(
-            VirtualAlloc(nullptr, static_cast<SIZE_T>(totalSize), MEM_COMMIT, PAGE_READWRITE)
-            ));
-
-        if (!mStreamBuffer)
+        mStreamBuffer.reset();
+    #ifdef DIRECTX_ENABLE_XMA2
+        mXMAMemory.reset();
+        if (tag == WAVE_FORMAT_XMA2)
         {
-            DebugTrace("ERROR: Failed allocating %llu bytes for SoundStreamInstance\n", totalSize);
-            mPacketSize = 0;
-            totalSize = 0;
-            return E_OUTOFMEMORY;
+            void* xmaMemory = nullptr;
+            HRESULT hr = ApuAlloc(&xmaMemory, nullptr, static_cast<UINT32>(totalSize), SHAPE_XMA_INPUT_BUFFER_ALIGNMENT);
+            if (FAILED(hr))
+            {
+                DebugTrace("ERROR: ApuAlloc failed (%llu bytes). Did you allocate a large enough heap with ApuCreateHeap for all your XMA wave data?\n", totalSize);
+                return hr;
+            }
+            mXMAMemory.reset(static_cast<uint8_t*>(xmaMemory));
+        }
+        else
+    #endif
+        {
+            mStreamBuffer.reset(reinterpret_cast<uint8_t*>(
+                VirtualAlloc(nullptr, static_cast<SIZE_T>(totalSize), MEM_COMMIT, PAGE_READWRITE)
+                ));
+
+            if (!mStreamBuffer)
+            {
+                DebugTrace("ERROR: Failed allocating %llu bytes for SoundStreamInstance\n", totalSize);
+                mPacketSize = 0;
+                totalSize = 0;
+                return E_OUTOFMEMORY;
+            }
         }
 
         mTotalSize = static_cast<size_t>(totalSize);
 
+    #ifdef DIRECTX_ENABLE_XMA2
+        uint8_t* ptr = (tag == WAVE_FORMAT_XMA2) ? mXMAMemory.get() : mStreamBuffer.get();
+    #else
         uint8_t* ptr = mStreamBuffer.get();
+    #endif
         for (size_t j = 0; j < MAX_BUFFER_COUNT; ++j)
         {
             mPackets[j].buffer = ptr;
