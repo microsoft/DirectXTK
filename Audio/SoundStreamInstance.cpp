@@ -410,7 +410,11 @@ HRESULT SoundStreamInstance::Impl::AllocateStreamingBuffers(const WAVEFORMATEX* 
             return HRESULT_FROM_WIN32(ERROR_ARITHMETIC_OVERFLOW);
     }
 
+    #ifdef DIRECTX_ENABLE_XMA2
+    if ((mTotalSize < totalSize) || (tag == WAVE_FORMAT_XMA2 && !mXMAMemory) || (tag != WAVE_FORMAT_XMA2 && !mStreamBuffer))
+    #else
     if (mTotalSize < totalSize)
+    #endif
     {
         mStreamBuffer.reset();
     #ifdef DIRECTX_ENABLE_XMA2
