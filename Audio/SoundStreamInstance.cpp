@@ -389,11 +389,7 @@ HRESULT SoundStreamInstance::Impl::AllocateStreamingBuffers(const WAVEFORMATEX* 
 
         if (!mStreamBuffer)
         {
-#ifdef _DEBUG
-            char buff[64] = {};
-            sprintf_s(buff, "ERROR: Failed allocating %llu bytes for SoundStreamInstance\n", totalSize);
-            OutputDebugStringA(buff);
-#endif
+            DebugTrace("ERROR: Failed allocating %llu bytes for SoundStreamInstance\n", totalSize);
             mPacketSize = 0;
             totalSize = 0;
             return E_OUTOFMEMORY;
