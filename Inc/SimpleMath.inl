@@ -26,7 +26,7 @@ inline Vector2 Rectangle::Location() const noexcept
 
 inline Vector2 Rectangle::Center() const noexcept
 {
-    return Vector2(float(x) + float(width / 2.f), float(y) + float(height / 2.f));
+    return Vector2(float(x) + (float(width) / 2.f), float(y) + (float(height) / 2.f));
 }
 
 inline bool Rectangle::Contains(const Vector2& point) const noexcept

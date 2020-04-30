@@ -105,7 +105,7 @@ RECT DirectX::SimpleMath::Viewport::ComputeDisplayArea(DXGI_SCALING scaling, UIN
             // Horizontal fill
             float scaledWidth = float(outputWidth);
             float scaledHeight = float(outputWidth) / aspectRatio;
-            if (scaledHeight >= outputHeight)
+            if (scaledHeight >= float(outputHeight))
             {
                 // Do vertical fill
                 scaledWidth = float(outputHeight) * aspectRatio;

@@ -160,9 +160,9 @@ void DirectX::ComputeSphere(VertexCollection& vertices, IndexCollection& indices
     // Create rings of vertices at progressively higher latitudes.
     for (size_t i = 0; i <= verticalSegments; i++)
     {
-        float v = 1 - float(i) / verticalSegments;
+        float v = 1 - float(i) / float(verticalSegments);
 
-        float latitude = (i * XM_PI / verticalSegments) - XM_PIDIV2;
+        float latitude = (float(i) * XM_PI / float(verticalSegments)) - XM_PIDIV2;
         float dy, dxz;
 
         XMScalarSinCos(&dy, &dxz, latitude);
@@ -170,9 +170,9 @@ void DirectX::ComputeSphere(VertexCollection& vertices, IndexCollection& indices
         // Create a single ring of vertices at this latitude.
         for (size_t j = 0; j <= horizontalSegments; j++)
         {
-            float u = float(j) / horizontalSegments;
+            float u = float(j) / float(horizontalSegments);
 
-            float longitude = j * XM_2PI / horizontalSegments;
+            float longitude = float(j) * XM_2PI / float(horizontalSegments);
             float dx, dz;
 
             XMScalarSinCos(&dx, &dz, longitude);
@@ -381,8 +381,8 @@ void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indi
         XMStoreFloat3(&normalFloat3, normal);
 
         // calculate texture coordinates for this vertex
-        float longitude = atan2(normalFloat3.x, -normalFloat3.z);
-        float latitude = acos(normalFloat3.y);
+        float longitude = atan2f(normalFloat3.x, -normalFloat3.z);
+        float latitude = acosf(normalFloat3.y);
 
         float u = longitude / XM_2PI + 0.5f;
         float v = latitude / XM_PI;
@@ -546,7 +546,7 @@ namespace
     // Helper computes a point on a unit circle, aligned to the x/z plane and centered on the origin.
     inline XMVECTOR GetCircleVector(size_t i, size_t tessellation) noexcept
     {
-        float angle = i * XM_2PI / tessellation;
+        float angle = float(i) * XM_2PI / float(tessellation);
         float dx, dz;
 
         XMScalarSinCos(&dx, &dz, angle);
@@ -557,7 +557,7 @@ namespace
 
     inline XMVECTOR GetCircleTangent(size_t i, size_t tessellation) noexcept
     {
-        float angle = (i * XM_2PI / tessellation) + XM_PIDIV2;
+        float angle = (float(i) * XM_2PI / float(tessellation)) + XM_PIDIV2;
         float dx, dz;
 
         XMScalarSinCos(&dx, &dz, angle);
@@ -633,7 +633,7 @@ void DirectX::ComputeCylinder(VertexCollection& vertices, IndexCollection& indic
 
         XMVECTOR sideOffset = XMVectorScale(normal, radius);
 
-        float u = float(i) / tessellation;
+        float u = float(i) / float(tessellation);
 
         XMVECTOR textureCoordinate = XMLoadFloat(&u);
 
@@ -682,7 +682,7 @@ void DirectX::ComputeCone(VertexCollection& vertices, IndexCollection& indices, 
 
         XMVECTOR sideOffset = XMVectorScale(circlevec, radius);
 
-        float u = float(i) / tessellation;
+        float u = float(i) / float(tessellation);
 
         XMVECTOR textureCoordinate = XMLoadFloat(&u);
 
@@ -727,9 +727,9 @@ void DirectX::ComputeTorus(VertexCollection& vertices, IndexCollection& indices,
     // First we loop around the main ring of the torus.
     for (size_t i = 0; i <= tessellation; i++)
     {
-        float u = float(i) / tessellation;
+        float u = float(i) / float(tessellation);
 
-        float outerAngle = i * XM_2PI / tessellation - XM_PIDIV2;
+        float outerAngle = float(i) * XM_2PI / float(tessellation) - XM_PIDIV2;
 
         // Create a transform matrix that will align geometry to
         // slice perpendicularly though the current ring position.
@@ -738,9 +738,9 @@ void DirectX::ComputeTorus(VertexCollection& vertices, IndexCollection& indices,
         // Now we loop along the other axis, around the side of the tube.
         for (size_t j = 0; j <= tessellation; j++)
         {
-            float v = 1 - float(j) / tessellation;
+            float v = 1 - float(j) / float(tessellation);
 
-            float innerAngle = j * XM_2PI / tessellation + XM_PI;
+            float innerAngle = float(j) * XM_2PI / float(tessellation) + XM_PI;
             float dx, dy;
 
             XMScalarSinCos(&dy, &dx, innerAngle);

@@ -388,8 +388,8 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
                         const int width = GetSystemMetrics(SM_CXVIRTUALSCREEN);
                         const int height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
 
-                        int x = static_cast<int>((float(raw.data.mouse.lLastX) / 65535.0f) * width);
-                        int y = static_cast<int>((float(raw.data.mouse.lLastY) / 65535.0f) * height);
+                        int x = static_cast<int>((float(raw.data.mouse.lLastX) / 65535.0f) * float(width));
+                        int y = static_cast<int>((float(raw.data.mouse.lLastY) / 65535.0f) * float(height));
 
                         if (pImpl->mRelativeX == INT32_MAX)
                         {

@@ -227,7 +227,7 @@ void SpriteFont::Impl::ForEachGlyph(_In_z_ wchar_t const* text, TAction action, 
                 if (x < 0)
                     x = 0;
 
-                float advance = glyph->Subrect.right - glyph->Subrect.left + glyph->XAdvance;
+                float advance = float(glyph->Subrect.right) - float(glyph->Subrect.left) + glyph->XAdvance;
 
                 if (!ignoreWhitespace
                     || !iswspace(character)
@@ -439,16 +439,16 @@ RECT SpriteFont::MeasureDrawBounds(_In_z_ wchar_t const* text, XMFLOAT2 const& p
             float maxX = std::max(minX + advance, minX + w);
             float maxY = minY + h;
 
-            if (minX < result.left)
+            if (minX < float(result.left))
                 result.left = long(minX);
 
-            if (minY < result.top)
+            if (minY < float(result.top))
                 result.top = long(minY);
 
-            if (result.right < maxX)
+            if (float(result.right) < maxX)
                 result.right = long(maxX);
 
-            if (result.bottom < maxY)
+            if (float(result.bottom) < maxY)
                 result.bottom = long(maxY);
         }, ignoreWhitespace);
 

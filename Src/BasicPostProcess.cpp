@@ -387,7 +387,7 @@ void BasicPostProcess::Impl::GaussianBlur5x5(float multiplier)
             // create a kernel which approximates a 5x5 kernel using only 13
             // sample points instead of 25; this is necessary since 2.0 shaders
             // only support 16 texture grabs.
-            if (fabs(float(x)) + fabs(float(y)) > 2.0f)
+            if (fabsf(float(x)) + fabsf(float(y)) > 2.0f)
                 continue;
 
             // Get the unscaled Gaussian intensity for this offset
