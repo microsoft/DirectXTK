@@ -1748,7 +1748,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
 
             FileNameToIdentifier(wBankName, _MAX_FNAME);
 
-            fprintf_s(file, "#pragma once\n\nenum XACT_WAVEBANK_%ls\n{\n", wBankName);
+            fprintf_s(file, "#pragma once\n\nenum XACT_WAVEBANK_%ls : unsigned int\n{\n", wBankName);
 
             size_t windex = 0;
             for (auto it = waves.begin(); it != waves.end(); ++it, ++windex)
