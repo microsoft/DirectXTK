@@ -18,7 +18,6 @@
 
 namespace DirectX
 {
-
     namespace LoaderHelpers
     {
         //--------------------------------------------------------------------------------------
@@ -885,7 +884,7 @@ namespace DirectX
 
     #undef ISBITMASK
 
-            //--------------------------------------------------------------------------------------
+        //--------------------------------------------------------------------------------------
         inline DirectX::DDS_ALPHA_MODE GetAlphaMode(_In_ const DDS_HEADER* header) noexcept
         {
             if (header->ddspf.flags & DDS_FOURCC)
@@ -972,5 +971,19 @@ namespace DirectX
             Microsoft::WRL::ComPtr<IWICStream>& m_handle;
         };
 
+        inline uint32_t CountMips(uint32_t width, uint32_t height) noexcept
+        {
+            if (width == 0 || height == 0)
+                return 0;
+
+            uint32_t count = 1;
+            while (width > 1 || height > 1)
+            {
+                width >>= 1;
+                height >>= 1;
+                count++;
+            }
+            return count;
+        }
     }
 }
