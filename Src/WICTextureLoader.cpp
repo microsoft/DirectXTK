@@ -322,8 +322,13 @@ namespace
 
         assert(maxsize > 0);
 
-        UINT twidth, theight;
-        if (width > maxsize || height > maxsize)
+        UINT twidth = width;
+        UINT theight = height;
+        if (loadFlags & WIC_LOADER_FIT_POW2)
+        {
+            LoaderHelpers::FitPowerOf2(width, height, twidth, theight, maxsize);
+        }
+        else if (width > maxsize || height > maxsize)
         {
             float ar = static_cast<float>(height) / static_cast<float>(width);
             if (width > height)
@@ -338,10 +343,11 @@ namespace
             }
             assert(twidth <= maxsize && theight <= maxsize);
         }
-        else
+
+        if (loadFlags & WIC_LOADER_MAKE_SQUARE)
         {
-            twidth = width;
-            theight = height;
+            twidth = std::max<UINT>(twidth, theight);
+            theight = twidth;
         }
 
         // Determine format

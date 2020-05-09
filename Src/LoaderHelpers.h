@@ -985,5 +985,45 @@ namespace DirectX
             }
             return count;
         }
+
+        inline void FitPowerOf2(UINT origx, UINT origy, UINT& targetx, UINT& targety, size_t maxsize)
+        {
+            float origAR = float(origx) / float(origy);
+
+            if (origx > origy)
+            {
+                size_t x;
+                for (x = maxsize; x > 1; x >>= 1) { if (x <= targetx) break; }
+                targetx = UINT(x);
+
+                float bestScore = FLT_MAX;
+                for (size_t y = maxsize; y > 0; y >>= 1)
+                {
+                    float score = fabsf((float(x) / float(y)) - origAR);
+                    if (score < bestScore)
+                    {
+                        bestScore = score;
+                        targety = UINT(y);
+                    }
+                }
+            }
+            else
+            {
+                size_t y;
+                for (y = maxsize; y > 1; y >>= 1) { if (y <= targety) break; }
+                targety = UINT(y);
+
+                float bestScore = FLT_MAX;
+                for (size_t x = maxsize; x > 0; x >>= 1)
+                {
+                    float score = fabsf((float(x) / float(y)) - origAR);
+                    if (score < bestScore)
+                    {
+                        bestScore = score;
+                        targetx = UINT(x);
+                    }
+                }
+            }
+        }
     }
 }
