@@ -136,7 +136,7 @@ extern __declspec(selectany) const DDS_PIXELFORMAT DDSPF_A8R3G3B2 =
 extern __declspec(selectany) const DDS_PIXELFORMAT DDSPF_R3G3B2 =
     { sizeof(DDS_PIXELFORMAT), DDS_RGB, 0, 8, 0xe0, 0x1c, 0x03, 0 };
 
-extern __declspec(selectany) DDS_PIXELFORMAT DDSPF_A4L4 =
+extern __declspec(selectany) const DDS_PIXELFORMAT DDSPF_A4L4 =
     { sizeof(DDS_PIXELFORMAT), DDS_LUMINANCEA, 0, 8, 0x0f, 0, 0, 0xf0 };
 
 extern __declspec(selectany) const DDS_PIXELFORMAT DDSPF_L8 =
