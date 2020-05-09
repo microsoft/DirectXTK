@@ -27,6 +27,8 @@
 
 namespace DirectX
 {
+#ifndef DDS_ALPHA_MODE_DEFINED
+#define DDS_ALPHA_MODE_DEFINED
     enum DDS_ALPHA_MODE
     {
         DDS_ALPHA_MODE_UNKNOWN       = 0,
@@ -35,6 +37,7 @@ namespace DirectX
         DDS_ALPHA_MODE_OPAQUE        = 3,
         DDS_ALPHA_MODE_CUSTOM        = 4,
     };
+#endif
 
     // Standard version
     HRESULT __cdecl CreateDDSTextureFromMemory(
