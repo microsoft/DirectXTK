@@ -604,12 +604,19 @@ HRESULT DirectX::SaveWICTextureToFile(
     if (FAILED(hr))
         return hr;
 
+    uint64_t imageSize = uint64_t(mapped.RowPitch) * uint64_t(desc.Height);
+    if (imageSize > UINT32_MAX)
+    {
+        pContext->Unmap(pStaging.Get(), 0);
+        return HRESULT_FROM_WIN32(ERROR_ARITHMETIC_OVERFLOW);
+    }
+
     if (memcmp(&targetGuid, &pfGuid, sizeof(WICPixelFormatGUID)) != 0)
     {
         // Conversion required to write
         ComPtr<IWICBitmap> source;
         hr = pWIC->CreateBitmapFromMemory(desc.Width, desc.Height, pfGuid,
-            mapped.RowPitch, mapped.RowPitch * desc.Height,
+            mapped.RowPitch, static_cast<UINT>(imageSize),
             static_cast<BYTE*>(mapped.pData), source.GetAddressOf());
         if (FAILED(hr))
         {
@@ -629,6 +636,7 @@ HRESULT DirectX::SaveWICTextureToFile(
         hr = FC->CanConvert(pfGuid, targetGuid, &canConvert);
         if (FAILED(hr) || !canConvert)
         {
+            pContext->Unmap(pStaging.Get(), 0);
             return E_UNEXPECTED;
         }
 
@@ -641,21 +649,17 @@ HRESULT DirectX::SaveWICTextureToFile(
 
         WICRect rect = { 0, 0, static_cast<INT>(desc.Width), static_cast<INT>(desc.Height) };
         hr = frame->WriteSource(FC.Get(), &rect);
-        if (FAILED(hr))
-        {
-            pContext->Unmap(pStaging.Get(), 0);
-            return hr;
-        }
     }
     else
     {
         // No conversion required
-        hr = frame->WritePixels(desc.Height, mapped.RowPitch, mapped.RowPitch * desc.Height, static_cast<BYTE*>(mapped.pData));
-        if (FAILED(hr))
-            return hr;
+        hr = frame->WritePixels(desc.Height, mapped.RowPitch,  static_cast<UINT>(imageSize), static_cast<BYTE*>(mapped.pData));
     }
 
     pContext->Unmap(pStaging.Get(), 0);
+
+    if (FAILED(hr))
+        return hr;
 
     hr = frame->Commit();
     if (FAILED(hr))
