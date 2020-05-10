@@ -13,7 +13,7 @@
 #include "Audio.h"
 #include "PlatformHelpers.h"
 
-#if defined(USING_XAUDIO2_7_DIRECTX) || defined(USING_XAUDIO2_9)
+#ifdef USING_XAUDIO2_9
 #define DIRECTX_ENABLE_XWMA
 #endif
 
@@ -271,11 +271,7 @@ namespace DirectX
             if (autostop && voice && (state == PLAYING))
             {
                 XAUDIO2_VOICE_STATE xstate;
-            #if defined(USING_XAUDIO2_8) || defined(USING_XAUDIO2_9)
                 voice->GetState(&xstate, XAUDIO2_VOICE_NOSAMPLESPLAYED);
-            #else // USING_XAUDIO2_7_DIRECTX
-                voice->GetState(&xstate);
-            #endif
 
                 if (!xstate.BuffersQueued)
                 {
@@ -294,11 +290,7 @@ namespace DirectX
                 return 0;
 
             XAUDIO2_VOICE_STATE xstate;
-        #if defined(USING_XAUDIO2_8) || defined(USING_XAUDIO2_9)
             voice->GetState(&xstate, XAUDIO2_VOICE_NOSAMPLESPLAYED);
-        #else // USING_XAUDIO2_7_DIRECTX
-            voice->GetState(&xstate);
-        #endif
             return static_cast<int>(xstate.BuffersQueued);
         }
 
