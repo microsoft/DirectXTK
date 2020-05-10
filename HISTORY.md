@@ -6,6 +6,13 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### May 10, 2020
+* WICTextureLoader updated with new loader flags: ``FORCE_RGBA32``, ``FIT_POW2``, and ``MAKE_SQUARE``
+* SimpleMath no longer forces use of d3d11.h or d3d12.h (can be used with d3d9.h for example)
+* *DirectX Tool Kit for Audio* updated with [SoundStreamInstance](https://github.com/microsoft/DirectXTK/wiki/SoundStreamInstance) class for async I/O playback from XACT-style streaming wavebanks
+* Code cleanup
+* xwbtool: Updated with ``-l`` switch for case-sensitive file systems
+
 ### April 3, 2020
 * SpriteFont MeasureString / MeasureDrawBounds fixes for !ignoreWhitespace
 * Code review (constexpr / noexcept usage)
