@@ -25,16 +25,24 @@
 
 #include <cstdint>
 
-namespace Xbox
+#ifndef DDS_ALPHA_MODE_DEFINED
+#define DDS_ALPHA_MODE_DEFINED
+namespace DirectX
 {
     enum DDS_ALPHA_MODE
     {
-        DDS_ALPHA_MODE_UNKNOWN       = 0,
-        DDS_ALPHA_MODE_STRAIGHT      = 1,
+        DDS_ALPHA_MODE_UNKNOWN = 0,
+        DDS_ALPHA_MODE_STRAIGHT = 1,
         DDS_ALPHA_MODE_PREMULTIPLIED = 2,
-        DDS_ALPHA_MODE_OPAQUE        = 3,
-        DDS_ALPHA_MODE_CUSTOM        = 4,
+        DDS_ALPHA_MODE_OPAQUE = 3,
+        DDS_ALPHA_MODE_CUSTOM = 4,
     };
+}
+#endif
+
+namespace Xbox
+{
+    using DirectX::DDS_ALPHA_MODE;
 
     HRESULT __cdecl CreateDDSTextureFromMemory(
         _In_ ID3D11DeviceX* d3dDevice,
