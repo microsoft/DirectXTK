@@ -277,24 +277,10 @@ public:
         mEngineFlags(AudioEngine_Default),
         mCategory(AudioCategory_GameEffects),
         mVoiceInstances(0)
-    #ifdef USING_XAUDIO2_7_DIRECTX
-        , mDLL(nullptr)
-    #endif
     {
     }
 
-#ifdef USING_XAUDIO2_7_DIRECTX
-    ~Impl()
-    {
-        if (mDLL)
-        {
-            FreeLibrary(mDLL);
-            mDLL = nullptr;
-        }
-    }
-#else
     ~Impl() = default;
-#endif
 
     Impl(Impl&&) = default;
     Impl& operator= (Impl&&) = default;
@@ -366,10 +352,6 @@ private:
     size_t                              mVoiceInstances;
     VoiceCallback                       mVoiceCallback;
     EngineCallback                      mEngineCallback;
-
-#ifdef USING_XAUDIO2_7_DIRECTX
-    HMODULE                             mDLL;
-#endif
 };
 
 
@@ -418,41 +400,9 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
     //
     // Create XAudio2 engine
     //
-    UINT32 eflags = 0;
-#ifdef USING_XAUDIO2_7_DIRECTX
-    if (mEngineFlags & AudioEngine_Debug)
-    {
-        if (!mDLL)
-        {
-            mDLL = LoadLibraryEx(L"XAudioD2_7.DLL", nullptr, 0x00000800 /* LOAD_LIBRARY_SEARCH_SYSTEM32 */);
-            if (!mDLL)
-            {
-                DebugTrace("ERROR: XAudio 2.7 debug version not installed on system (install the DirectX SDK Developer Runtime)\n");
-                return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
-            }
-        }
-
-        eflags |= XAUDIO2_DEBUG_ENGINE;
-    }
-    else if (!mDLL)
-    {
-        mDLL = LoadLibraryEx(L"XAudio2_7.DLL", nullptr, 0x00000800 /* LOAD_LIBRARY_SEARCH_SYSTEM32 */);
-        if (!mDLL)
-        {
-            DebugTrace("ERROR: XAudio 2.7 not installed on system (install the DirectX End-user Runtimes (June 2010))\n");
-            return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
-        }
-    }
-#endif
-
-    HRESULT hr = XAudio2Create(xaudio2.ReleaseAndGetAddressOf(), eflags);
+    HRESULT hr = XAudio2Create(xaudio2.ReleaseAndGetAddressOf(), 0u);
     if (FAILED(hr))
-    {
-    #ifdef USING_XAUDIO2_7_DIRECTX
-        DebugTrace("ERROR: XAudio 2.7 not found (have you called CoInitialize?)\n");
-    #endif
         return hr;
-    }
 
     if (mEngineFlags & AudioEngine_Debug)
     {
@@ -462,16 +412,13 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
         xaudio2->SetDebugConfiguration(&debug, nullptr);
     #ifdef USING_XAUDIO2_9
         DebugTrace("INFO: XAudio 2.9 debugging enabled\n");
-    #elif defined(USING_XAUDIO2_8)
+    #else // USING_XAUDIO2_8
             // To see the trace output, you need to view ETW logs for this application:
             //    Go to Control Panel, Administrative Tools, Event Viewer.
             //    View->Show Analytic and Debug Logs.
             //    Applications and Services Logs / Microsoft / Windows / XAudio2. 
             //    Right click on Microsoft Windows XAudio2 debug logging, Properties, then Enable Logging, and hit OK 
         DebugTrace("INFO: XAudio 2.8 debugging enabled\n");
-    #else // USING_XAUDIO2_7_DIRECTX
-            // To see the trace output, see the debug output channel window
-        DebugTrace("INFO: XAudio 2.7 debugging enabled\n");
     #endif
     }
 
@@ -490,9 +437,6 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
     //
     // Create mastering voice for device
     //
-
-#if defined(USING_XAUDIO2_8) || defined(USING_XAUDIO2_9)
-
     hr = xaudio2->CreateMasteringVoice(&mMasterVoice,
         (wfx) ? wfx->nChannels : 0u /*XAUDIO2_DEFAULT_CHANNELS */,
         (wfx) ? wfx->nSamplesPerSec : 0u /* XAUDIO2_DEFAULT_SAMPLERATE */,
@@ -519,80 +463,6 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
     masterChannels = details.InputChannels;
     masterRate = details.InputSampleRate;
 
-#else // USING_XAUDIO2_7_DIRECTX
-
-    UINT32 count = 0;
-    hr = xaudio2->GetDeviceCount(&count);
-    if (FAILED(hr))
-    {
-        xaudio2.Reset();
-        return hr;
-    }
-
-    if (!count)
-    {
-        xaudio2.Reset();
-        return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
-    }
-
-    UINT32 devIndex = 0;
-    if (deviceId)
-    {
-        // Translate device ID back into device index
-        devIndex = UINT32(-1);
-        for (UINT32 j = 0; j < count; ++j)
-        {
-            XAUDIO2_DEVICE_DETAILS details;
-            hr = xaudio2->GetDeviceDetails(j, &details);
-            if (SUCCEEDED(hr))
-            {
-                if (wcsncmp(deviceId, details.DeviceID, 256) == 0)
-                {
-                    devIndex = j;
-                    masterChannelMask = details.OutputFormat.dwChannelMask;
-                    break;
-                }
-            }
-        }
-
-        if (devIndex == UINT32(-1))
-        {
-            xaudio2.Reset();
-            return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
-        }
-    }
-    else
-    {
-        // No search needed
-        XAUDIO2_DEVICE_DETAILS details;
-        hr = xaudio2->GetDeviceDetails(0, &details);
-        if (FAILED(hr))
-        {
-            xaudio2.Reset();
-            return hr;
-        }
-
-        masterChannelMask = details.OutputFormat.dwChannelMask;
-    }
-
-    hr = xaudio2->CreateMasteringVoice(&mMasterVoice,
-        (wfx) ? wfx->nChannels : XAUDIO2_DEFAULT_CHANNELS,
-                                       (wfx) ? wfx->nSamplesPerSec : XAUDIO2_DEFAULT_SAMPLERATE,
-                                       0, devIndex, nullptr);
-    if (FAILED(hr))
-    {
-        xaudio2.Reset();
-        return hr;
-    }
-
-    XAUDIO2_VOICE_DETAILS details;
-    mMasterVoice->GetVoiceDetails(&details);
-
-    masterChannels = details.InputChannels;
-    masterRate = details.InputSampleRate;
-
-#endif
-
     DebugTrace("INFO: mastering voice has %u channels, %u sample rate, %08X channel mask\n",
         masterChannels, masterRate, masterChannelMask);
 
@@ -616,11 +486,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
         params.Release = FXMASTERINGLIMITER_DEFAULT_RELEASE;
         params.Loudness = FXMASTERINGLIMITER_DEFAULT_LOUDNESS;
 
-    #if defined(USING_XAUDIO2_8) || defined(USING_XAUDIO2_9)
         hr = CreateFX(__uuidof(FXMasteringLimiter), mVolumeLimiter.ReleaseAndGetAddressOf(), &params, sizeof(params));
-    #else // USING_XAUDIO2_7_DIRECTX
-        hr = CreateFX(__uuidof(FXMasteringLimiter), mVolumeLimiter.ReleaseAndGetAddressOf());
-    #endif
         if (FAILED(hr))
         {
             SAFE_DESTROY_VOICE(mMasterVoice)
@@ -643,19 +509,6 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
             return hr;
         }
 
-    #ifdef USING_XAUDIO2_7_DIRECTX
-
-        hr = mMasterVoice->SetEffectParameters(0, &params, sizeof(params));
-        if (FAILED(hr))
-        {
-            SAFE_DESTROY_VOICE(mMasterVoice)
-            mVolumeLimiter.Reset();
-            xaudio2.Reset();
-            return hr;
-        }
-
-    #endif
-
         DebugTrace("INFO: Mastering volume limiter enabled\n");
     }
 
@@ -664,14 +517,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
     //
     if (mEngineFlags & AudioEngine_EnvironmentalReverb)
     {
-        UINT32 rflags = 0;
-    #ifdef USING_XAUDIO2_7_DIRECTX
-        if (mEngineFlags & AudioEngine_Debug)
-        {
-            rflags |= XAUDIO2FX_DEBUG;
-        }
-    #endif
-        hr = XAudio2CreateReverb(mReverbEffect.ReleaseAndGetAddressOf(), rflags);
+        hr = XAudio2CreateReverb(mReverbEffect.ReleaseAndGetAddressOf(), 0u);
         if (FAILED(hr))
         {
             SAFE_DESTROY_VOICE(mMasterVoice)
@@ -718,7 +564,6 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
     //
     constexpr float SPEEDOFSOUND = X3DAUDIO_SPEED_OF_SOUND;
 
-#if defined(USING_XAUDIO2_8) || defined(USING_XAUDIO2_9)
     hr = X3DAudioInitialize(masterChannelMask, SPEEDOFSOUND, mX3DAudio);
     if (FAILED(hr))
     {
@@ -729,9 +574,6 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
         xaudio2.Reset();
         return hr;
     }
-#else // USING_XAUDIO2_7_DIRECTX
-    X3DAudioInitialize(masterChannelMask, SPEEDOFSOUND, mX3DAudio);
-#endif
 
     //
     // Inform any notify objects we are ready to go again
@@ -851,11 +693,7 @@ bool AudioEngine::Impl::Update()
                 assert(it->second != nullptr);
 
                 XAUDIO2_VOICE_STATE xstate;
-            #if defined(USING_XAUDIO2_8) || defined(USING_XAUDIO2_9)
                 it->second->GetState(&xstate, XAUDIO2_VOICE_NOSAMPLESPLAYED);
-            #else // USING_XAUDIO2_7_DIRECTX
-                it->second->GetState(&xstate);
-            #endif
 
                 if (!xstate.BuffersQueued)
                 {
@@ -1248,11 +1086,7 @@ void AudioEngine::Impl::UnregisterNotify(_In_ IVoiceNotify* notify, bool usesOne
             assert(it->second != nullptr);
 
             XAUDIO2_VOICE_STATE state;
-        #if defined(USING_XAUDIO2_8) || defined(USING_XAUDIO2_9)
             it->second->GetState(&state, XAUDIO2_VOICE_NOSAMPLESPLAYED);
-        #else // USING_XAUDIO2_7_DIRECTX
-            it->second->GetState(&state);
-        #endif
 
             if (state.pCurrentBufferContext == notify)
             {
@@ -1784,43 +1618,9 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
             list.emplace_back(device);
         }
     }
-
 #endif
-
-#else // USING_XAUDIO2_7_DIRECTX
-
-    // Enumerating with XAudio 2.7
-    ComPtr<IXAudio2> pXAudio2;
-
-    HRESULT hr = XAudio2Create(pXAudio2.GetAddressOf());
-    if (FAILED(hr))
-    {
-        DebugTrace("ERROR: XAudio 2.7 not found (have you called CoInitialize?)\n");
-        throw std::exception("XAudio2Create");
-    }
-
-    UINT32 count = 0;
-    hr = pXAudio2->GetDeviceCount(&count);
-    ThrowIfFailed(hr);
-
-    if (!count)
-        return list;
-
-    list.reserve(count);
-
-    for (UINT32 j = 0; j < count; ++j)
-    {
-        XAUDIO2_DEVICE_DETAILS details;
-        hr = pXAudio2->GetDeviceDetails(j, &details);
-        if (SUCCEEDED(hr))
-        {
-            RendererDetail device;
-            device.deviceId = details.DeviceID;
-            device.description = details.DisplayName;
-            list.emplace_back(device);
-        }
-    }
-
+#else
+#error DirectX Tool Kit for Audio not supported on this platform
 #endif
 
     return list;

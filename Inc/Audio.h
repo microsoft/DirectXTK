@@ -29,11 +29,12 @@
 #define USING_XAUDIO2_9
 #elif (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
 #define USING_XAUDIO2_8
+#elif (_WIN32_WINNT >= 0x0601 /*_WIN32_WINNT_WIN7*/)
+#error Windows 7 SP1 requires the XAudio2Redist NuGet package https://aka.ms/xaudio2redist
 #else
-#define USING_XAUDIO2_7_DIRECTX
+#error DirectX Tool Kit for Audio not supported on this platform
 #endif
 
-#if defined(USING_XAUDIO2_8) || defined(USING_XAUDIO2_9)
 #include <xaudio2.h>
 #include <xaudio2fx.h>
 #include <x3daudio.h>
@@ -41,19 +42,6 @@
 
 #ifndef USING_XAUDIO2_REDIST
 #pragma comment(lib,"xaudio2.lib")
-#endif
-#else // USING_XAUDIO2_7_DIRECTX
-// Using XAudio 2.7 requires the DirectX SDK
-#include <C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\comdecl.h>
-#include <C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xaudio2.h>
-#include <C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xaudio2fx.h>
-#include <C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\xapofx.h>
-#pragma warning(push)
-#pragma warning( disable : 4005 )
-#include <C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\x3daudio.h>
-#pragma warning(pop)
-#pragma comment(lib,"x3daudio.lib")
-#pragma comment(lib,"xapofx.lib")
 #endif
 
 #include <DirectXMath.h>
@@ -353,7 +341,7 @@ namespace DirectX
 
         int __cdecl Find(_In_z_ const char* name) const;
 
-#if defined(USING_XAUDIO2_7_DIRECTX) || defined(USING_XAUDIO2_9)
+#ifdef USING_XAUDIO2_9
         bool __cdecl FillSubmitBuffer(unsigned int index, _Out_ XAUDIO2_BUFFER& buffer, _Out_ XAUDIO2_BUFFER_WMA& wmaBuffer) const;
 #else
         void __cdecl FillSubmitBuffer(unsigned int index, _Out_ XAUDIO2_BUFFER& buffer) const;
@@ -386,7 +374,7 @@ namespace DirectX
             _In_ const WAVEFORMATEX* wfx, _In_reads_bytes_(audioBytes) const uint8_t* startAudio, size_t audioBytes,
             uint32_t loopStart, uint32_t loopLength);
 
-#if defined(USING_XAUDIO2_7_DIRECTX) || defined(USING_XAUDIO2_9)
+#ifdef USING_XAUDIO2_9
 
         SoundEffect(_In_ AudioEngine* engine, _Inout_ std::unique_ptr<uint8_t[]>& wavData,
             _In_ const WAVEFORMATEX* wfx, _In_reads_bytes_(audioBytes) const uint8_t* startAudio, size_t audioBytes,
@@ -420,7 +408,7 @@ namespace DirectX
 
         const WAVEFORMATEX* __cdecl GetFormat() const noexcept;
 
-#if defined(USING_XAUDIO2_7_DIRECTX) || defined(USING_XAUDIO2_9)
+#ifdef USING_XAUDIO2_9
         bool __cdecl FillSubmitBuffer(_Out_ XAUDIO2_BUFFER& buffer, _Out_ XAUDIO2_BUFFER_WMA& wmaBuffer) const;
 #else
         void __cdecl FillSubmitBuffer(_Out_ XAUDIO2_BUFFER& buffer) const;
