@@ -180,6 +180,11 @@ if(MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /fp:fast)
     target_compile_options(xwbtool PRIVATE /fp:fast)
 
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.26)
+        target_compile_options(${PROJECT_NAME} PRIVATE /Zc:preprocessor /wd5104 /wd5105)
+        target_compile_options(xwbtool PRIVATE /Zc:preprocessor /wd5105)
+    endif()
+
     if (${CMAKE_SIZEOF_VOID_P} EQUAL "4")
         target_compile_options(${PROJECT_NAME} PRIVATE /arch:SSE2)
         target_compile_options(xwbtool PRIVATE /arch:SSE2)
