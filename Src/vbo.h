@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <cstdint>
 
 namespace VBO
 {

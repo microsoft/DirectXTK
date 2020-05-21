@@ -29,7 +29,7 @@ namespace DirectX
 {
 #ifndef DDS_ALPHA_MODE_DEFINED
 #define DDS_ALPHA_MODE_DEFINED
-    enum DDS_ALPHA_MODE
+    enum DDS_ALPHA_MODE : uint32_t
     {
         DDS_ALPHA_MODE_UNKNOWN       = 0,
         DDS_ALPHA_MODE_STRAIGHT      = 1,

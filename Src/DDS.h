@@ -18,13 +18,14 @@
 
 #pragma once
 
+#include <cstdint>
 
 namespace DirectX
 {
 
 #pragma pack(push,1)
 
-const uint32_t DDS_MAGIC = 0x20534444; // "DDS "
+constexpr uint32_t DDS_MAGIC = 0x20534444; // "DDS "
 
 struct DDS_PIXELFORMAT
 {
@@ -207,7 +208,7 @@ extern __declspec(selectany) const DDS_PIXELFORMAT DDSPF_DX10 =
 #define DDS_FLAGS_VOLUME 0x00200000 // DDSCAPS2_VOLUME
 
 // Subset here matches D3D10_RESOURCE_DIMENSION and D3D11_RESOURCE_DIMENSION
-enum DDS_RESOURCE_DIMENSION
+enum DDS_RESOURCE_DIMENSION : uint32_t
 {
     DDS_DIMENSION_TEXTURE1D	= 2,
     DDS_DIMENSION_TEXTURE2D	= 3,
@@ -215,19 +216,19 @@ enum DDS_RESOURCE_DIMENSION
 };
 
 // Subset here matches D3D10_RESOURCE_MISC_FLAG and D3D11_RESOURCE_MISC_FLAG
-enum DDS_RESOURCE_MISC_FLAG
+enum DDS_RESOURCE_MISC_FLAG : uint32_t
 {
     DDS_RESOURCE_MISC_TEXTURECUBE = 0x4L,
 };
 
-enum DDS_MISC_FLAGS2
+enum DDS_MISC_FLAGS2 : uint32_t
 {
     DDS_MISC_FLAGS2_ALPHA_MODE_MASK = 0x7L,
 };
 
 #ifndef DDS_ALPHA_MODE_DEFINED
 #define DDS_ALPHA_MODE_DEFINED
-enum DDS_ALPHA_MODE
+enum DDS_ALPHA_MODE : uint32_t
 {
     DDS_ALPHA_MODE_UNKNOWN = 0,
     DDS_ALPHA_MODE_STRAIGHT = 1,
