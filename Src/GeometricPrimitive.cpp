@@ -87,14 +87,14 @@ GeometricPrimitive::Impl::SharedResources::SharedResources(_In_ ID3D11DeviceCont
     // Create input layouts.
     effect->SetTextureEnabled(true);
     ThrowIfFailed(
-        CreateInputLayoutFromEffect<GeometricPrimitive::VertexType>(device.Get(), effect.get(), &inputLayoutTextured)
+        CreateInputLayoutFromEffect<VertexType>(device.Get(), effect.get(), &inputLayoutTextured)
     );
 
     SetDebugObjectName(inputLayoutTextured.Get(), "DirectXTK:GeometricPrimitive");
 
     effect->SetTextureEnabled(false);
     ThrowIfFailed(
-        CreateInputLayoutFromEffect<GeometricPrimitive::VertexType>(device.Get(), effect.get(), &inputLayoutUntextured)
+        CreateInputLayoutFromEffect<VertexType>(device.Get(), effect.get(), &inputLayoutUntextured)
     );
 
     SetDebugObjectName(inputLayoutUntextured.Get(), "DirectXTK:GeometricPrimitive");
@@ -267,7 +267,7 @@ void GeometricPrimitive::Impl::CreateInputLayout(IEffect* effect, ID3D11InputLay
     deviceContext->GetDevice(&device);
 
     ThrowIfFailed(
-        CreateInputLayoutFromEffect<GeometricPrimitive::VertexType>(device.Get(), effect, inputLayout)
+        CreateInputLayoutFromEffect<VertexType>(device.Get(), effect, inputLayout)
     );
 
     assert(inputLayout != nullptr && *inputLayout != nullptr);

@@ -68,7 +68,7 @@ namespace
 {
     // Helper for creating a D3D vertex or index buffer.
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    void CreateDynamicBuffer(_In_ ID3D11DeviceX* device, size_t bufferSize, D3D11_BIND_FLAG bindFlag, _Out_ ID3D11Buffer** pBuffer)
+    void CreateDynamicBuffer(_In_ ID3D11DeviceX* device, size_t bufferSize, D3D11_BIND_FLAG bindFlag, _Outptr_ ID3D11Buffer** pBuffer)
     {
         D3D11_BUFFER_DESC desc = {};
 
@@ -84,7 +84,7 @@ namespace
         SetDebugObjectName(*pBuffer, "DirectXTK:PrimitiveBatch");
     }
 #else
-    void CreateDynamicBuffer(_In_ ID3D11Device* device, size_t bufferSize, D3D11_BIND_FLAG bindFlag, _Out_ ID3D11Buffer** pBuffer)
+    void CreateDynamicBuffer(_In_ ID3D11Device* device, size_t bufferSize, D3D11_BIND_FLAG bindFlag, _Outptr_ ID3D11Buffer** pBuffer)
     {
         D3D11_BUFFER_DESC desc = {};
 

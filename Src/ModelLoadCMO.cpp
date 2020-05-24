@@ -193,7 +193,7 @@ namespace
     };
 
     // Helper for creating a D3D input layout.
-    void CreateCMOInputLayout(_In_ ID3D11Device* device, IEffect* effect, _Out_ ID3D11InputLayout** pInputLayout, bool skinning)
+    void CreateCMOInputLayout(_In_ ID3D11Device* device, _In_ IEffect* effect, _Outptr_ ID3D11InputLayout** pInputLayout, bool skinning)
     {
         if (skinning)
         {

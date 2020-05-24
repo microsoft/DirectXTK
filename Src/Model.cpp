@@ -114,6 +114,11 @@ void ModelMeshPart::DrawInstanced(
 _Use_decl_annotations_
 void ModelMeshPart::CreateInputLayout(ID3D11Device* d3dDevice, IEffect* ieffect, ID3D11InputLayout** iinputLayout) const
 {
+    if (iinputLayout)
+    {
+        *iinputLayout = nullptr;
+    }
+
     if (!vbDecl || vbDecl->empty())
         throw std::exception("Model mesh part missing vertex buffer input elements data");
 
@@ -123,6 +128,9 @@ void ModelMeshPart::CreateInputLayout(ID3D11Device* d3dDevice, IEffect* ieffect,
     ThrowIfFailed(
         CreateInputLayoutFromEffect(d3dDevice, ieffect, vbDecl->data(), vbDecl->size(), iinputLayout)
     );
+
+    assert(iinputLayout != nullptr && *iinputLayout != nullptr);
+    _Analysis_assume_(iinputLayout != nullptr && *iinputLayout != nullptr);
 }
 
 

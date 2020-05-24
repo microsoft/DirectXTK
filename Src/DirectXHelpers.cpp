@@ -23,7 +23,13 @@ HRESULT DirectX::CreateInputLayoutFromEffect(
     size_t count,
     ID3D11InputLayout** pInputLayout) noexcept
 {
-    assert(pInputLayout != nullptr);
+    if (!pInputLayout)
+        return E_INVALIDARG;
+
+    *pInputLayout = nullptr;
+
+    if (!device || !effect || !desc || !count)
+        return E_INVALIDARG;
 
     void const* shaderByteCode;
     size_t byteCodeLength;

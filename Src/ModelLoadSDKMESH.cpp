@@ -679,7 +679,11 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
             }
 
             ComPtr<ID3D11InputLayout> il;
-            CreateInputLayoutFromEffect(d3dDevice, mat.effect.get(), vbDecls[mh.VertexBuffers[0]]->data(), vbDecls[mh.VertexBuffers[0]]->size(), &il);
+            ThrowIfFailed(
+                CreateInputLayoutFromEffect(d3dDevice, mat.effect.get(),
+                    vbDecls[mh.VertexBuffers[0]]->data(), vbDecls[mh.VertexBuffers[0]]->size(), il.GetAddressOf())
+            );
+
             SetDebugObjectName(il.Get(), "ModelSDKMESH");
 
             auto part = new ModelMeshPart();

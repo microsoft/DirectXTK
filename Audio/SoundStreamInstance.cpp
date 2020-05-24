@@ -316,6 +316,8 @@ public:
 
     struct BufferNotify : public IVoiceNotify
     {
+        BufferNotify() : mParent(nullptr), mIndex(0) {}
+
         void Set(SoundStreamInstance::Impl* parent, size_t index) noexcept(true) { mParent = parent; mIndex = index; }
 
         void __cdecl OnBufferEnd() override
@@ -348,6 +350,16 @@ public:
         uint32_t    startPosition;
         OVERLAPPED  request;
         BufferNotify notify;
+
+        Packets() :
+            state(State::FREE),
+            buffer(nullptr),
+            stitchBuffer(nullptr),
+            valid(0),
+            audioBytes(0),
+            startPosition(0),
+            request{},
+            notify{} {}
     };
 
     Packets                         mPackets[MAX_BUFFER_COUNT];

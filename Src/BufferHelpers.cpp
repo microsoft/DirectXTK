@@ -23,6 +23,14 @@ HRESULT DirectX::CreateStaticBuffer(
     D3D11_BIND_FLAG bindFlags,
     ID3D11Buffer** pBuffer) noexcept
 {
+    if (!pBuffer)
+        return E_INVALIDARG;
+
+    *pBuffer = nullptr;
+
+    if (!device || !ptr || !count || !stride)
+        return E_INVALIDARG;
+
     uint64_t bytes = uint64_t(count) * uint64_t(stride);
     if (bytes >= UINT32_MAX)
         return HRESULT_FROM_WIN32(ERROR_ARITHMETIC_OVERFLOW);
@@ -71,4 +79,7 @@ void Internal::ConstantBufferBase::CreateBuffer(
     );
 
 #endif
+
+    assert(pBuffer != nullptr && *pBuffer != nullptr);
+    _Analysis_assume_(pBuffer != nullptr && *pBuffer != nullptr);
 }

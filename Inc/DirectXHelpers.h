@@ -185,12 +185,12 @@ namespace DirectX
         _In_ IEffect* effect,
         _In_reads_(count) const D3D11_INPUT_ELEMENT_DESC* desc,
         size_t count,
-        _Outptr_ ID3D11InputLayout** pInputLayout) noexcept;
+        _COM_Outptr_ ID3D11InputLayout** pInputLayout) noexcept;
 
     template<typename T>
     HRESULT CreateInputLayoutFromEffect(_In_ ID3D11Device* device,
         _In_ IEffect* effect,
-        _Outptr_ ID3D11InputLayout** pInputLayout) noexcept
+        _COM_Outptr_ ID3D11InputLayout** pInputLayout) noexcept
     {
         return CreateInputLayoutFromEffect(device, effect, T::InputElements, T::InputElementCount, pInputLayout);
     }

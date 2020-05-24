@@ -29,14 +29,14 @@ namespace DirectX
         size_t count,
         size_t stride,
         D3D11_BIND_FLAG bindFlags,
-        _Outptr_ ID3D11Buffer** pBuffer) noexcept;
+        _COM_Outptr_ ID3D11Buffer** pBuffer) noexcept;
 
     template<typename T>
     HRESULT CreateStaticBuffer(_In_ ID3D11Device* device,
         _In_reads_(count) T const* data,
         size_t count,
         D3D11_BIND_FLAG bindFlags,
-        _Outptr_ ID3D11Buffer** pBuffer) noexcept
+        _COM_Outptr_ ID3D11Buffer** pBuffer) noexcept
     {
         return CreateStaticBuffer(device, data, count, sizeof(T), bindFlags, pBuffer);
     }
@@ -45,7 +45,7 @@ namespace DirectX
     HRESULT CreateStaticBuffer(_In_ ID3D11Device* device,
         T const& data,
         D3D11_BIND_FLAG bindFlags,
-        _Outptr_ ID3D11Buffer** pBuffer) noexcept
+        _COM_Outptr_ ID3D11Buffer** pBuffer) noexcept
     {
         return CreateStaticBuffer(device, data.data(), data.size(), sizeof(typename T::value_type), bindFlags, pBuffer);
     }
