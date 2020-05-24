@@ -10,6 +10,7 @@
 #include "pch.h"
 #include "DirectXHelpers.h"
 #include "Effects.h"
+#include "PlatformHelpers.h"
 
 
 using namespace DirectX;
@@ -27,7 +28,18 @@ HRESULT DirectX::CreateInputLayoutFromEffect(
     void const* shaderByteCode;
     size_t byteCodeLength;
 
-    effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
+    try
+    {
+        effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
+    }
+    catch (com_exception e)
+    {
+        return e.get_result();
+    }
+    catch (...)
+    {
+        return E_FAIL;
+    }
 
     return device->CreateInputLayout(
         desc, static_cast<UINT>(count),

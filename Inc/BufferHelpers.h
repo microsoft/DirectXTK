@@ -47,7 +47,7 @@ namespace DirectX
         D3D11_BIND_FLAG bindFlags,
         _Outptr_ ID3D11Buffer** pBuffer) noexcept
     {
-        return CreateStaticBuffer(device, data.data(), data.size(), sizeof(T::value_type), bindFlags, pBuffer);
+        return CreateStaticBuffer(device, data.data(), data.size(), sizeof(typename T::value_type), bindFlags, pBuffer);
     }
 
     // Strongly typed wrapper around a Direct3D constant buffer.
