@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Inc\BufferHelpers.h" />
     <ClInclude Include="Inc\CommonStates.h" />
     <ClInclude Include="Inc\DDSTextureLoader.h" />
     <ClInclude Include="Inc\DirectXHelpers.h" />
@@ -40,7 +41,6 @@
     <ClInclude Include="Inc\WICTextureLoader.h" />
     <ClInclude Include="Src\AlignedNew.h" />
     <ClInclude Include="Src\Bezier.h" />
-    <ClInclude Include="Src\ConstantBuffer.h" />
     <ClInclude Include="Src\BinaryReader.h" />
     <ClInclude Include="Src\DemandCreate.h" />
     <ClInclude Include="Src\EffectCommon.h" />
@@ -57,6 +57,7 @@
     <ClCompile Include="Src\AlphaTestEffect.cpp" />
     <ClCompile Include="Src\BasicEffect.cpp" />
     <ClCompile Include="Src\BasicPostProcess.cpp" />
+    <ClCompile Include="Src\BufferHelpers.cpp" />
     <ClCompile Include="Src\CommonStates.cpp" />
     <ClCompile Include="Src\DDSTextureLoader.cpp" />
     <ClCompile Include="Src\DebugEffect.cpp" />

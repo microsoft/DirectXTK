@@ -12,10 +12,11 @@
 #include <memory>
 
 #include "Effects.h"
-#include "PlatformHelpers.h"
-#include "ConstantBuffer.h"
-#include "SharedResourcePool.h"
 #include "AlignedNew.h"
+#include "BufferHelpers.h"
+#include "DirectXHelpers.h"
+#include "PlatformHelpers.h"
+#include "SharedResourcePool.h"
 
 
 // BasicEffect, SkinnedEffect, et al, have many things in common, but also significant
@@ -150,6 +151,7 @@ namespace DirectX
             mConstantBuffer(device),
             mDeviceResources(deviceResourcesPool.DemandCreate(device))
         {
+            SetDebugObjectName(mConstantBuffer.GetBuffer(), "Effect");
         }
 
 

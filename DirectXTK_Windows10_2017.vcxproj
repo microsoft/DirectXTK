@@ -39,6 +39,7 @@
     <ClInclude Include="Audio\WaveBankReader.h" />
     <ClInclude Include="Audio\WAVFileReader.h" />
     <ClInclude Include="Inc\Audio.h" />
+    <ClInclude Include="Inc\BufferHelpers.h" />
     <ClInclude Include="Inc\CommonStates.h" />
     <ClInclude Include="Inc\DDSTextureLoader.h" />
     <ClInclude Include="Inc\DirectXHelpers.h" />
@@ -60,7 +61,6 @@
     <ClInclude Include="Src\AlignedNew.h" />
     <ClInclude Include="Src\Bezier.h" />
     <ClInclude Include="Src\BinaryReader.h" />
-    <ClInclude Include="Src\ConstantBuffer.h" />
     <ClInclude Include="Src\DDS.h" />
     <ClInclude Include="Src\DemandCreate.h" />
     <ClInclude Include="Src\EffectCommon.h" />
@@ -424,6 +424,7 @@
     <ClCompile Include="Src\BasicEffect.cpp" />
     <ClCompile Include="Src\BasicPostProcess.cpp" />
     <ClCompile Include="Src\BinaryReader.cpp" />
+    <ClCompile Include="Src\BufferHelpers.cpp" />
     <ClCompile Include="Src\CommonStates.cpp" />
     <ClCompile Include="Src\DDSTextureLoader.cpp" />
     <ClCompile Include="Src\DebugEffect.cpp" />

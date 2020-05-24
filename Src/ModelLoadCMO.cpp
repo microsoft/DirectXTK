@@ -9,14 +9,13 @@
 
 #include "pch.h"
 #include "Model.h"
-
 #include "DDSTextureLoader.h"
+#include "DirectXHelpers.h"
 #include "Effects.h"
 #include "VertexTypes.h"
-
-#include "DirectXHelpers.h"
-#include "PlatformHelpers.h"
 #include "BinaryReader.h"
+#include "BufferHelpers.h"
+#include "PlatformHelpers.h"
 
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
@@ -195,29 +194,18 @@ namespace
     };
 
     // Helper for creating a D3D input layout.
-    void CreateInputLayout(_In_ ID3D11Device* device, IEffect* effect, _Out_ ID3D11InputLayout** pInputLayout, bool skinning)
+    void CreateCMOInputLayout(_In_ ID3D11Device* device, IEffect* effect, _Out_ ID3D11InputLayout** pInputLayout, bool skinning)
     {
-        void const* shaderByteCode;
-        size_t byteCodeLength;
-
-        effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
-
         if (skinning)
         {
             ThrowIfFailed(
-                device->CreateInputLayout(VertexPositionNormalTangentColorTextureSkinning::InputElements,
-                VertexPositionNormalTangentColorTextureSkinning::InputElementCount,
-                shaderByteCode, byteCodeLength,
-                pInputLayout)
+                CreateInputLayout<VertexPositionNormalTangentColorTextureSkinning>(device, effect, pInputLayout)
             );
         }
         else
         {
             ThrowIfFailed(
-                device->CreateInputLayout(VertexPositionNormalTangentColorTexture::InputElements,
-                VertexPositionNormalTangentColorTexture::InputElementCount,
-                shaderByteCode, byteCodeLength,
-                pInputLayout)
+                CreateInputLayout<VertexPositionNormalTangentColorTexture>(device, effect, pInputLayout)
             );
         }
 
@@ -473,8 +461,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
             desc.ByteWidth = static_cast<UINT>(ibBytes);
             desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
-            D3D11_SUBRESOURCE_DATA initData = {};
-            initData.pSysMem = indexes;
+            D3D11_SUBRESOURCE_DATA initData = { indexes, 0, 0 };
 
             ThrowIfFailed(
                 device->CreateBuffer(&desc, &initData, &ibs[j])
@@ -698,8 +685,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
             if (fxFactoryDGSL && !enableSkinning)
             {
                 // Can use CMO vertex data directly
-                D3D11_SUBRESOURCE_DATA initData = {};
-                initData.pSysMem = vbData[j].ptr;
+                D3D11_SUBRESOURCE_DATA initData = { vbData[j].ptr, 0, 0 };
 
                 ThrowIfFailed(
                     device->CreateBuffer(&desc, &initData, &vbs[j])
@@ -799,8 +785,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
                 }
 
                 // Create vertex buffer from temporary buffer
-                D3D11_SUBRESOURCE_DATA initData = {};
-                initData.pSysMem = temp.get();
+                D3D11_SUBRESOURCE_DATA initData = { temp.get(), 0, 0 };
 
                 ThrowIfFailed(
                     device->CreateBuffer(&desc, &initData, &vbs[j])
@@ -865,7 +850,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
                 m.effect = fxFactory.CreateEffect(info, nullptr);
             }
 
-            CreateInputLayout(device, m.effect.get(), &m.il, enableSkinning);
+            CreateCMOInputLayout(device, m.effect.get(), &m.il, enableSkinning);
         }
 
         // Build mesh parts

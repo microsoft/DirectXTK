@@ -68,7 +68,7 @@ namespace
 {
     // Helper for creating a D3D vertex or index buffer.
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    void CreateBuffer(_In_ ID3D11DeviceX* device, size_t bufferSize, D3D11_BIND_FLAG bindFlag, _Out_ ID3D11Buffer** pBuffer)
+    void CreateDynamicBuffer(_In_ ID3D11DeviceX* device, size_t bufferSize, D3D11_BIND_FLAG bindFlag, _Out_ ID3D11Buffer** pBuffer)
     {
         D3D11_BUFFER_DESC desc = {};
 
@@ -84,7 +84,7 @@ namespace
         SetDebugObjectName(*pBuffer, "DirectXTK:PrimitiveBatch");
     }
 #else
-    void CreateBuffer(_In_ ID3D11Device* device, size_t bufferSize, D3D11_BIND_FLAG bindFlag, _Out_ ID3D11Buffer** pBuffer)
+    void CreateDynamicBuffer(_In_ ID3D11Device* device, size_t bufferSize, D3D11_BIND_FLAG bindFlag, _Out_ ID3D11Buffer** pBuffer)
     {
         D3D11_BUFFER_DESC desc = {};
 
@@ -150,11 +150,11 @@ PrimitiveBatchBase::Impl::Impl(_In_ ID3D11DeviceContext* deviceContext, size_t m
     // If you only intend to draw non-indexed geometry, specify maxIndices = 0 to skip creating the index buffer.
     if (maxIndices > 0)
     {
-        CreateBuffer(deviceX.Get(), maxIndices * sizeof(uint16_t), D3D11_BIND_INDEX_BUFFER, &mIndexBuffer);
+        CreateDynamicBuffer(deviceX.Get(), maxIndices * sizeof(uint16_t), D3D11_BIND_INDEX_BUFFER, &mIndexBuffer);
     }
 
     // Create the vertex buffer.
-    CreateBuffer(deviceX.Get(), maxVertices * vertexSize, D3D11_BIND_VERTEX_BUFFER, &mVertexBuffer);
+    CreateDynamicBuffer(deviceX.Get(), maxVertices * vertexSize, D3D11_BIND_VERTEX_BUFFER, &mVertexBuffer);
 
     grfxMemoryIB = grfxMemoryVB = nullptr;
 #else
@@ -163,11 +163,11 @@ PrimitiveBatchBase::Impl::Impl(_In_ ID3D11DeviceContext* deviceContext, size_t m
     // If you only intend to draw non-indexed geometry, specify maxIndices = 0 to skip creating the index buffer.
     if (maxIndices > 0)
     {
-        CreateBuffer(device.Get(), maxIndices * sizeof(uint16_t), D3D11_BIND_INDEX_BUFFER, &mIndexBuffer);
+        CreateDynamicBuffer(device.Get(), maxIndices * sizeof(uint16_t), D3D11_BIND_INDEX_BUFFER, &mIndexBuffer);
     }
 
     // Create the vertex buffer.
-    CreateBuffer(device.Get(), maxVertices * vertexSize, D3D11_BIND_VERTEX_BUFFER, &mVertexBuffer);
+    CreateDynamicBuffer(device.Get(), maxVertices * vertexSize, D3D11_BIND_VERTEX_BUFFER, &mVertexBuffer);
 #endif
 }
 

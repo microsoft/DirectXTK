@@ -77,9 +77,6 @@
     <ClInclude Include="Inc\XboxDDSTextureLoader.h">
       <Filter>Inc</Filter>
     </ClInclude>
-    <ClInclude Include="Src\ConstantBuffer.h">
-      <Filter>Src</Filter>
-    </ClInclude>
     <ClInclude Include="Src\EffectCommon.h">
       <Filter>Src</Filter>
     </ClInclude>
@@ -135,6 +132,9 @@
       <Filter>Src\Shared</Filter>
     </ClInclude>
     <ClInclude Include="Inc\PostProcess.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\BufferHelpers.h">
       <Filter>Inc</Filter>
     </ClInclude>
   </ItemGroup>
@@ -279,6 +279,9 @@
     </ClCompile>
     <ClCompile Include="Audio\SoundStreamInstance.cpp">
       <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\BufferHelpers.cpp">
+      <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -9,13 +9,12 @@
 
 #include "pch.h"
 #include "Model.h"
-
+#include "BufferHelpers.h"
+#include "DirectXHelpers.h"
 #include "Effects.h"
 #include "VertexTypes.h"
-
-#include "DirectXHelpers.h"
-#include "PlatformHelpers.h"
 #include "BinaryReader.h"
+#include "PlatformHelpers.h"
 
 #include "vbo.h"
 
@@ -110,8 +109,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromVBO(
         desc.ByteWidth = static_cast<UINT>(vertSize);
         desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
-        D3D11_SUBRESOURCE_DATA initData = {};
-        initData.pSysMem = verts;
+        D3D11_SUBRESOURCE_DATA initData = { verts, 0, 0 };
 
         ThrowIfFailed(
             device->CreateBuffer(&desc, &initData, vb.GetAddressOf())
@@ -128,8 +126,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromVBO(
         desc.ByteWidth = static_cast<UINT>(indexSize);
         desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
-        D3D11_SUBRESOURCE_DATA initData = {};
-        initData.pSysMem = indices;
+        D3D11_SUBRESOURCE_DATA initData = { indices, 0, 0 };
 
         ThrowIfFailed(
             device->CreateBuffer(&desc, &initData, ib.GetAddressOf())
@@ -149,20 +146,12 @@ std::unique_ptr<Model> DirectX::Model::CreateFromVBO(
     }
 
     ComPtr<ID3D11InputLayout> il;
-    {
-        void const* shaderByteCode;
-        size_t byteCodeLength;
 
-        ieffect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
+    ThrowIfFailed(
+        CreateInputLayout<VertexPositionNormalTexture>(device, ieffect.get(), il.GetAddressOf())
+    );
 
-        ThrowIfFailed(
-            device->CreateInputLayout(VertexPositionNormalTexture::InputElements,
-            VertexPositionNormalTexture::InputElementCount,
-            shaderByteCode, byteCodeLength,
-            il.GetAddressOf()));
-
-        SetDebugObjectName(il.Get(), "ModelVBO");
-    }
+    SetDebugObjectName(il.Get(), "ModelVBO");
 
     auto part = new ModelMeshPart();
     part->indexCount = header->numIndices;
