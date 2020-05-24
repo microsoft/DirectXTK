@@ -38,7 +38,7 @@ namespace DirectX
         D3D11_BIND_FLAG bindFlags,
         _Outptr_ ID3D11Buffer** pBuffer) noexcept
     {
-        return CreateStaticBuffer(device, count, data.size(), sizeof(T), bindFlags, pBuffer);
+        return CreateStaticBuffer(device, data, count, sizeof(T), bindFlags, pBuffer);
     }
 
     template<typename T>
