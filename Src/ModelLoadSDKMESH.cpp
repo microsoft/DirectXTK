@@ -9,7 +9,6 @@
 
 #include "pch.h"
 #include "Model.h"
-#include "BufferHelpers.h"
 #include "DirectXHelpers.h"
 #include "Effects.h"
 #include "VertexTypes.h"
@@ -680,7 +679,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
             }
 
             ComPtr<ID3D11InputLayout> il;
-            CreateInputLayout(d3dDevice, mat.effect.get(), vbDecls[mh.VertexBuffers[0]]->data(), vbDecls[mh.VertexBuffers[0]]->size(), &il);
+            CreateInputLayoutFromEffect(d3dDevice, mat.effect.get(), vbDecls[mh.VertexBuffers[0]]->data(), vbDecls[mh.VertexBuffers[0]]->size(), &il);
             SetDebugObjectName(il.Get(), "ModelSDKMESH");
 
             auto part = new ModelMeshPart();

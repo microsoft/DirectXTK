@@ -9,7 +9,6 @@
 
 #include "pch.h"
 #include "Model.h"
-#include "BufferHelpers.h"
 #include "CommonStates.h"
 #include "DirectXHelpers.h"
 #include "Effects.h"
@@ -122,7 +121,7 @@ void ModelMeshPart::CreateInputLayout(ID3D11Device* d3dDevice, IEffect* ieffect,
         throw std::exception("Model mesh part input layout size is too large for DirectX 11");
 
     ThrowIfFailed(
-        DirectX::CreateInputLayout(d3dDevice, ieffect, vbDecl->data(), vbDecl->size(), iinputLayout)
+        CreateInputLayoutFromEffect(d3dDevice, ieffect, vbDecl->data(), vbDecl->size(), iinputLayout)
     );
 }
 
@@ -143,7 +142,7 @@ void ModelMeshPart::ModifyEffect(ID3D11Device* d3dDevice, std::shared_ptr<IEffec
     assert(d3dDevice != nullptr);
 
     ThrowIfFailed(
-        DirectX::CreateInputLayout(d3dDevice, effect.get(), vbDecl->data(), vbDecl->size(), inputLayout.ReleaseAndGetAddressOf())
+        CreateInputLayoutFromEffect(d3dDevice, effect.get(), vbDecl->data(), vbDecl->size(), inputLayout.ReleaseAndGetAddressOf())
     );
 }
 

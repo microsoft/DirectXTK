@@ -63,6 +63,7 @@
     <ClCompile Include="Src\DebugEffect.cpp" />
     <ClCompile Include="Src\DGSLEffect.cpp" />
     <ClCompile Include="Src\DGSLEffectFactory.cpp" />
+    <ClCompile Include="Src\DirectXHelpers.cpp" />
     <ClCompile Include="Src\DualPostProcess.cpp" />
     <ClCompile Include="Src\DualTextureEffect.cpp" />
     <ClCompile Include="Src\BinaryReader.cpp" />

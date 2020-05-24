@@ -9,7 +9,6 @@
 
 #include "pch.h"
 #include "BufferHelpers.h"
-#include "Effects.h"
 #include "PlatformHelpers.h"
 
 
@@ -36,28 +35,6 @@ HRESULT DirectX::CreateStaticBuffer(
     D3D11_SUBRESOURCE_DATA initData = { ptr, 0, 0 };
 
     return device->CreateBuffer(&bufferDesc, &initData, pBuffer);
-}
-
-
-_Use_decl_annotations_
-HRESULT DirectX::CreateInputLayout(
-    ID3D11Device* device,
-    IEffect* effect,
-    const D3D11_INPUT_ELEMENT_DESC* desc,
-    size_t count,
-    ID3D11InputLayout** pInputLayout) noexcept
-{
-    assert(pInputLayout != nullptr);
-
-    void const* shaderByteCode;
-    size_t byteCodeLength;
-
-    effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
-
-    return device->CreateInputLayout(
-        desc, static_cast<UINT>(count),
-        shaderByteCode, byteCodeLength,
-        pInputLayout);
 }
 
 

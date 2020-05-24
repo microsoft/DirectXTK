@@ -9,7 +9,6 @@
 
 #include "pch.h"
 #include "Model.h"
-#include "BufferHelpers.h"
 #include "DirectXHelpers.h"
 #include "Effects.h"
 #include "VertexTypes.h"
@@ -148,7 +147,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromVBO(
     ComPtr<ID3D11InputLayout> il;
 
     ThrowIfFailed(
-        CreateInputLayout<VertexPositionNormalTexture>(device, ieffect.get(), il.GetAddressOf())
+        CreateInputLayoutFromEffect<VertexPositionNormalTexture>(device, ieffect.get(), il.GetAddressOf())
     );
 
     SetDebugObjectName(il.Get(), "ModelVBO");

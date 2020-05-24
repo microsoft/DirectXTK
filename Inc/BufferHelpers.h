@@ -18,11 +18,11 @@
 
 #include <assert.h>
 
+#include <wrl\client.h>
+
 
 namespace DirectX
 {
-    class IEffect;
-
     // Helpers for creating initialized Direct3D resources.
     HRESULT __cdecl CreateStaticBuffer(_In_ ID3D11Device* device,
         _In_reads_bytes_(count* stride) const void* ptr,
@@ -48,21 +48,6 @@ namespace DirectX
         _Outptr_ ID3D11Buffer** pBuffer) noexcept
     {
         return CreateStaticBuffer(device, data.data(), data.size(), sizeof(T::value_type), bindFlags, pBuffer);
-    }
-
-    // Helper for creating a Direct3D input layout.
-    HRESULT __cdecl CreateInputLayout(_In_ ID3D11Device* device,
-        _In_ IEffect* effect,
-        _In_reads_(count) const D3D11_INPUT_ELEMENT_DESC* desc,
-        size_t count,
-        _Outptr_ ID3D11InputLayout** pInputLayout) noexcept;
-
-    template<typename T>
-    HRESULT CreateInputLayout(_In_ ID3D11Device* device,
-        _In_ IEffect* effect,
-        _Outptr_ ID3D11InputLayout** pInputLayout) noexcept
-    {
-        return CreateInputLayout(device, effect, T::InputElements, T::InputElementCount, pInputLayout);
     }
 
     // Strongly typed wrapper around a Direct3D constant buffer.

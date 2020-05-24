@@ -14,7 +14,6 @@
 #include "Effects.h"
 #include "VertexTypes.h"
 #include "BinaryReader.h"
-#include "BufferHelpers.h"
 #include "PlatformHelpers.h"
 
 using namespace DirectX;
@@ -199,13 +198,13 @@ namespace
         if (skinning)
         {
             ThrowIfFailed(
-                CreateInputLayout<VertexPositionNormalTangentColorTextureSkinning>(device, effect, pInputLayout)
+                CreateInputLayoutFromEffect<VertexPositionNormalTangentColorTextureSkinning>(device, effect, pInputLayout)
             );
         }
         else
         {
             ThrowIfFailed(
-                CreateInputLayout<VertexPositionNormalTangentColorTexture>(device, effect, pInputLayout)
+                CreateInputLayoutFromEffect<VertexPositionNormalTangentColorTexture>(device, effect, pInputLayout)
             );
         }
 

@@ -284,6 +284,9 @@
     <ClCompile Include="Src\BufferHelpers.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="Src\DirectXHelpers.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Src\Shaders\CompileShaders.cmd">
