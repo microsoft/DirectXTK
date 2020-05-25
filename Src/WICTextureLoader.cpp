@@ -639,7 +639,7 @@ namespace
 
         if (autogen)
         {
-            desc.BindFlags = bindFlags | D3D11_BIND_RENDER_TARGET;
+            desc.BindFlags = bindFlags | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
             desc.MiscFlags = miscFlags | D3D11_RESOURCE_MISC_GENERATE_MIPS;
         }
         else

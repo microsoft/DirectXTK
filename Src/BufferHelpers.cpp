@@ -50,7 +50,7 @@ HRESULT DirectX::CreateStaticBuffer(
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_
-HRESULT DirectX::CreateStaticTexture(
+HRESULT DirectX::CreateTextureFromMemory(
     ID3D11Device* device,
     size_t width,
     DXGI_FORMAT format,
@@ -108,7 +108,7 @@ HRESULT DirectX::CreateStaticTexture(
 }
 
 _Use_decl_annotations_
-HRESULT DirectX::CreateStaticTexture(
+HRESULT DirectX::CreateTextureFromMemory(
     ID3D11Device* device,
     size_t width,
     size_t height,
@@ -172,7 +172,7 @@ HRESULT DirectX::CreateStaticTexture(
 
 
 _Use_decl_annotations_
-HRESULT DirectX::CreateStaticTexture(
+HRESULT DirectX::CreateTextureFromMemory(
 #if defined(_XBOX_ONE) && defined(_TITLE)
     _In_ ID3D11DeviceX* device,
     _In_ ID3D11DeviceContextX* d3dContext,
@@ -185,8 +185,7 @@ HRESULT DirectX::CreateStaticTexture(
     DXGI_FORMAT format,
     const D3D11_SUBRESOURCE_DATA& initData,
     ID3D11Texture2D** texture,
-    ID3D11ShaderResourceView** textureView,
-    D3D11_BIND_FLAG bindFlags)
+    ID3D11ShaderResourceView** textureView)
 {
     if (texture)
     {
@@ -218,7 +217,7 @@ HRESULT DirectX::CreateStaticTexture(
     desc.Format = format;
     desc.SampleDesc.Count = 1;
     desc.Usage = D3D11_USAGE_DEFAULT;
-    desc.BindFlags = bindFlags;
+    desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 
     UINT fmtSupport = 0;
     if (SUCCEEDED(device->CheckFormatSupport(format, &fmtSupport)) && (fmtSupport & D3D11_FORMAT_SUPPORT_MIP_AUTOGEN))
@@ -247,6 +246,7 @@ HRESULT DirectX::CreateStaticTexture(
             ComPtr<ID3D11Texture2D> staging;
             desc.MipLevels = 1;
             desc.Usage = D3D11_USAGE_STAGING;
+            desc.BindFlags = 0;
             desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
             hr = device->CreateTexture2D(&desc, &initData, staging.GetAddressOf());
             if (FAILED(hr))
@@ -275,7 +275,7 @@ HRESULT DirectX::CreateStaticTexture(
 }
 
 _Use_decl_annotations_
-HRESULT DirectX::CreateStaticTexture(
+HRESULT DirectX::CreateTextureFromMemory(
     ID3D11Device* device,
     size_t width, size_t height, size_t depth,
     DXGI_FORMAT format,

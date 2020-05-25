@@ -51,7 +51,7 @@ namespace DirectX
     }
 
     // Helpers for creating texture from memory arrays.
-    HRESULT __cdecl CreateStaticTexture(_In_ ID3D11Device* device,
+    HRESULT __cdecl CreateTextureFromMemory(_In_ ID3D11Device* device,
         size_t width,
         DXGI_FORMAT format,
         const D3D11_SUBRESOURCE_DATA& initData,
@@ -59,7 +59,7 @@ namespace DirectX
         _COM_Outptr_opt_ ID3D11ShaderResourceView** textureView,
         D3D11_BIND_FLAG bindFlags = D3D11_BIND_SHADER_RESOURCE);
 
-    HRESULT __cdecl CreateStaticTexture(_In_ ID3D11Device* device,
+    HRESULT __cdecl CreateTextureFromMemory(_In_ ID3D11Device* device,
         size_t width, size_t height,
         DXGI_FORMAT format,
         const D3D11_SUBRESOURCE_DATA& initData,
@@ -67,7 +67,7 @@ namespace DirectX
         _COM_Outptr_opt_ ID3D11ShaderResourceView** textureView,
         D3D11_BIND_FLAG bindFlags = D3D11_BIND_SHADER_RESOURCE);
 
-    HRESULT __cdecl CreateStaticTexture(
+    HRESULT __cdecl CreateTextureFromMemory(
 #if defined(_XBOX_ONE) && defined(_TITLE)
         _In_ ID3D11DeviceX* d3dDeviceX,
         _In_ ID3D11DeviceContextX* d3dContextX,
@@ -79,10 +79,9 @@ namespace DirectX
         DXGI_FORMAT format,
         const D3D11_SUBRESOURCE_DATA& initData,
         _COM_Outptr_opt_ ID3D11Texture2D** texture,
-        _COM_Outptr_opt_ ID3D11ShaderResourceView** textureView,
-        D3D11_BIND_FLAG bindFlags = D3D11_BIND_SHADER_RESOURCE);
+        _COM_Outptr_opt_ ID3D11ShaderResourceView** textureView);
 
-    HRESULT __cdecl CreateStaticTexture(_In_ ID3D11Device* device,
+    HRESULT __cdecl CreateTextureFromMemory(_In_ ID3D11Device* device,
         size_t width, size_t height, size_t depth,
         DXGI_FORMAT format,
         const D3D11_SUBRESOURCE_DATA& initData,
