@@ -23,7 +23,7 @@
 
 namespace DirectX
 {
-    // Helpers for creating initialized Direct3D resources.
+    // Helpers for creating initialized Direct3D buffer resources.
     HRESULT __cdecl CreateStaticBuffer(_In_ ID3D11Device* device,
         _In_reads_bytes_(count* stride) const void* ptr,
         size_t count,
@@ -49,6 +49,46 @@ namespace DirectX
     {
         return CreateStaticBuffer(device, data.data(), data.size(), sizeof(typename T::value_type), bindFlags, pBuffer);
     }
+
+    // Helpers for creating texture from memory arrays.
+    HRESULT __cdecl CreateStaticTexture(_In_ ID3D11Device* device,
+        size_t width,
+        DXGI_FORMAT format,
+        const D3D11_SUBRESOURCE_DATA& initData,
+        _COM_Outptr_opt_ ID3D11Texture1D** texture,
+        _COM_Outptr_opt_ ID3D11ShaderResourceView** textureView,
+        D3D11_BIND_FLAG bindFlags = D3D11_BIND_SHADER_RESOURCE);
+
+    HRESULT __cdecl CreateStaticTexture(_In_ ID3D11Device* device,
+        size_t width, size_t height,
+        DXGI_FORMAT format,
+        const D3D11_SUBRESOURCE_DATA& initData,
+        _COM_Outptr_opt_ ID3D11Texture2D** texture,
+        _COM_Outptr_opt_ ID3D11ShaderResourceView** textureView,
+        D3D11_BIND_FLAG bindFlags = D3D11_BIND_SHADER_RESOURCE);
+
+    HRESULT __cdecl CreateStaticTexture(
+#if defined(_XBOX_ONE) && defined(_TITLE)
+        _In_ ID3D11DeviceX* d3dDeviceX,
+        _In_ ID3D11DeviceContextX* d3dContextX,
+#else
+        _In_ ID3D11Device* device,
+        _In_ ID3D11DeviceContext* d3dContext,
+#endif
+        size_t width, size_t height,
+        DXGI_FORMAT format,
+        const D3D11_SUBRESOURCE_DATA& initData,
+        _COM_Outptr_opt_ ID3D11Texture2D** texture,
+        _COM_Outptr_opt_ ID3D11ShaderResourceView** textureView,
+        D3D11_BIND_FLAG bindFlags = D3D11_BIND_SHADER_RESOURCE);
+
+    HRESULT __cdecl CreateStaticTexture(_In_ ID3D11Device* device,
+        size_t width, size_t height, size_t depth,
+        DXGI_FORMAT format,
+        const D3D11_SUBRESOURCE_DATA& initData,
+        _COM_Outptr_opt_ ID3D11Texture3D** texture,
+        _COM_Outptr_opt_ ID3D11ShaderResourceView** textureView,
+        D3D11_BIND_FLAG bindFlags = D3D11_BIND_SHADER_RESOURCE);
 
     // Strongly typed wrapper around a Direct3D constant buffer.
     namespace Internal

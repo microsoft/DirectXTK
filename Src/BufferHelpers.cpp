@@ -13,7 +13,9 @@
 
 
 using namespace DirectX;
+using Microsoft::WRL::ComPtr;
 
+//--------------------------------------------------------------------------------------
 _Use_decl_annotations_
 HRESULT DirectX::CreateStaticBuffer(
     ID3D11Device* device,
@@ -46,6 +48,297 @@ HRESULT DirectX::CreateStaticBuffer(
 }
 
 
+//--------------------------------------------------------------------------------------
+_Use_decl_annotations_
+HRESULT DirectX::CreateStaticTexture(
+    ID3D11Device* device,
+    size_t width,
+    DXGI_FORMAT format,
+    const D3D11_SUBRESOURCE_DATA& initData,
+    ID3D11Texture1D** texture,
+    ID3D11ShaderResourceView** textureView,
+    D3D11_BIND_FLAG bindFlags)
+{
+    if (texture)
+    {
+        *texture = nullptr;
+    }
+    if (textureView)
+    {
+        *textureView = nullptr;
+    }
+
+    if (!device || !width || !initData.pSysMem)
+        return E_INVALIDARG;
+
+    if (!texture && !textureView)
+        return E_INVALIDARG;
+
+    if (width > D3D11_REQ_TEXTURE1D_U_DIMENSION || width > UINT32_MAX)
+    {
+        DebugTrace("ERROR: Resource dimensions too large for DirectX 11 (1D: size %zu)\n", width);
+        return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
+    }
+
+    D3D11_TEXTURE1D_DESC desc = {};
+    desc.Width = static_cast<UINT>(width);
+    desc.MipLevels = desc.ArraySize = 1;
+    desc.Format = format;
+    desc.Usage = D3D11_USAGE_DEFAULT;
+    desc.BindFlags = bindFlags;
+
+    ComPtr<ID3D11Texture1D> tex;
+    HRESULT hr = device->CreateTexture1D(&desc, &initData, tex.GetAddressOf());
+    if (SUCCEEDED(hr))
+    {
+        if (textureView)
+        {
+            hr = device->CreateShaderResourceView(tex.Get(), nullptr, textureView);
+            if (FAILED(hr))
+                return hr;
+        }
+
+        if (texture)
+        {
+            *texture = tex.Detach();
+        }
+    }
+
+    return hr;
+}
+
+_Use_decl_annotations_
+HRESULT DirectX::CreateStaticTexture(
+    ID3D11Device* device,
+    size_t width,
+    size_t height,
+    DXGI_FORMAT format,
+    const D3D11_SUBRESOURCE_DATA& initData,
+    ID3D11Texture2D** texture,
+    ID3D11ShaderResourceView** textureView,
+    D3D11_BIND_FLAG bindFlags)
+{
+    if (texture)
+    {
+        *texture = nullptr;
+    }
+    if (textureView)
+    {
+        *textureView = nullptr;
+    }
+
+    if (!device || !width || !height
+        || !initData.pSysMem || !initData.SysMemPitch)
+        return E_INVALIDARG;
+
+    if (!texture && !textureView)
+        return E_INVALIDARG;
+
+    if ((width > D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION) || (width > UINT32_MAX)
+        || (height > D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION) || (height > UINT32_MAX))
+    {
+        DebugTrace("ERROR: Resource dimensions too large for DirectX 11 (2D: size %zu by %zu)\n", width, height);
+        return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
+    }
+
+    D3D11_TEXTURE2D_DESC desc = {};
+    desc.Width = static_cast<UINT>(width);
+    desc.Height = static_cast<UINT>(height);
+    desc.MipLevels = desc.ArraySize = 1;
+    desc.Format = format;
+    desc.SampleDesc.Count = 1;
+    desc.Usage = D3D11_USAGE_DEFAULT;
+    desc.BindFlags = bindFlags;
+
+    ComPtr<ID3D11Texture2D> tex;
+    HRESULT hr = device->CreateTexture2D(&desc, &initData, tex.GetAddressOf());
+    if (SUCCEEDED(hr))
+    {
+        if (textureView)
+        {
+            hr = device->CreateShaderResourceView(tex.Get(), nullptr, textureView);
+            if (FAILED(hr))
+                return hr;
+        }
+
+        if (texture)
+        {
+            *texture = tex.Detach();
+        }
+    }
+
+    return hr;
+}
+
+
+_Use_decl_annotations_
+HRESULT DirectX::CreateStaticTexture(
+#if defined(_XBOX_ONE) && defined(_TITLE)
+    _In_ ID3D11DeviceX* device,
+    _In_ ID3D11DeviceContextX* d3dContext,
+#else
+    _In_ ID3D11Device* device,
+    _In_ ID3D11DeviceContext* d3dContext,
+#endif
+    size_t width,
+    size_t height,
+    DXGI_FORMAT format,
+    const D3D11_SUBRESOURCE_DATA& initData,
+    ID3D11Texture2D** texture,
+    ID3D11ShaderResourceView** textureView,
+    D3D11_BIND_FLAG bindFlags)
+{
+    if (texture)
+    {
+        *texture = nullptr;
+    }
+    if (textureView)
+    {
+        *textureView = nullptr;
+    }
+
+    if (!device || !d3dContext || !width || !height
+        || !initData.pSysMem || !initData.SysMemPitch)
+        return E_INVALIDARG;
+
+    if (!texture && !textureView)
+        return E_INVALIDARG;
+
+    if ((width > D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION) || (width > UINT32_MAX)
+        || (height > D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION) || (height > UINT32_MAX))
+    {
+        DebugTrace("ERROR: Resource dimensions too large for DirectX 11 (2D: size %zu by %zu)\n", width, height);
+        return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
+    }
+
+    D3D11_TEXTURE2D_DESC desc = {};
+    desc.Width = static_cast<UINT>(width);
+    desc.Height = static_cast<UINT>(height);
+    desc.ArraySize = 1;
+    desc.Format = format;
+    desc.SampleDesc.Count = 1;
+    desc.Usage = D3D11_USAGE_DEFAULT;
+    desc.BindFlags = bindFlags;
+
+    UINT fmtSupport = 0;
+    if (SUCCEEDED(device->CheckFormatSupport(format, &fmtSupport)) && (fmtSupport & D3D11_FORMAT_SUPPORT_MIP_AUTOGEN))
+    {
+        desc.BindFlags |= D3D11_BIND_RENDER_TARGET;
+        desc.MiscFlags |= D3D11_RESOURCE_MISC_GENERATE_MIPS;
+    }
+    else
+    {
+        // Autogen not supported.
+        desc.MipLevels = 1;
+    }
+
+    ComPtr<ID3D11Texture2D> tex;
+    HRESULT hr = device->CreateTexture2D(&desc, nullptr, tex.GetAddressOf());
+    if (SUCCEEDED(hr))
+    {
+        ComPtr<ID3D11ShaderResourceView> srv;
+        hr = device->CreateShaderResourceView(tex.Get(), nullptr, srv.GetAddressOf());
+        if (FAILED(hr))
+            return hr;
+
+        if (desc.MipLevels != 1)
+        {
+#if defined(_XBOX_ONE) && defined(_TITLE)
+            ComPtr<ID3D11Texture2D> staging;
+            desc.MipLevels = 1;
+            desc.Usage = D3D11_USAGE_STAGING;
+            desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+            hr = device->CreateTexture2D(&desc, &initData, staging.GetAddressOf());
+            if (FAILED(hr))
+                return hr;
+
+            d3dContext->CopySubresourceRegion(tex.Get(), 0, 0, 0, 0, staging.Get(), 0, nullptr);
+            UINT64 copyFence = d3dContext->InsertFence(0);
+            while (d3dDevice->IsFencePending(copyFence)) { SwitchToThread(); }
+#else
+            d3dContext->UpdateSubresource(tex.Get(), 0, nullptr, initData.pSysMem, initData.SysMemPitch, 0);
+#endif
+            d3dContext->GenerateMips(srv.Get());
+        }
+
+        if (texture)
+        {
+            *texture = tex.Detach();
+        }
+        if (textureView)
+        {
+            *textureView = srv.Detach();
+        }
+    }
+
+    return hr;
+}
+
+_Use_decl_annotations_
+HRESULT DirectX::CreateStaticTexture(
+    ID3D11Device* device,
+    size_t width, size_t height, size_t depth,
+    DXGI_FORMAT format,
+    const D3D11_SUBRESOURCE_DATA& initData,
+    ID3D11Texture3D** texture,
+    ID3D11ShaderResourceView** textureView,
+    D3D11_BIND_FLAG bindFlags)
+{
+    if (texture)
+    {
+        *texture = nullptr;
+    }
+    if (textureView)
+    {
+        *textureView = nullptr;
+    }
+
+    if (!device || !width || !height || !depth
+        || !initData.pSysMem || !initData.SysMemPitch || !initData.SysMemSlicePitch)
+        return E_INVALIDARG;
+
+    if (!texture && !textureView)
+        return E_INVALIDARG;
+
+    if ((width > D3D11_REQ_TEXTURE3D_U_V_OR_W_DIMENSION) || (width > UINT32_MAX)
+        || (height > D3D11_REQ_TEXTURE3D_U_V_OR_W_DIMENSION) || (height > UINT32_MAX)
+        || (depth > D3D11_REQ_TEXTURE3D_U_V_OR_W_DIMENSION) || (depth > UINT32_MAX))
+    {
+        DebugTrace("ERROR: Resource dimensions too large for DirectX 11 (3D: size %zu by %zu by %zu)\n", width, height, depth);
+        return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
+    }
+
+    D3D11_TEXTURE3D_DESC desc = {};
+    desc.Width = static_cast<UINT>(width);
+    desc.Height = static_cast<UINT>(height);
+    desc.Depth = static_cast<UINT>(depth);
+    desc.MipLevels = 1;
+    desc.Format = format;
+    desc.Usage = D3D11_USAGE_DEFAULT;
+    desc.BindFlags = bindFlags;
+
+    ComPtr<ID3D11Texture3D> tex;
+    HRESULT hr = device->CreateTexture3D(&desc, &initData, tex.GetAddressOf());
+    if (SUCCEEDED(hr))
+    {
+        if (textureView)
+        {
+            hr = device->CreateShaderResourceView(tex.Get(), nullptr, textureView);
+            if (FAILED(hr))
+                return hr;
+        }
+
+        if (texture)
+        {
+            *texture = tex.Detach();
+        }
+    }
+
+    return hr;
+}
+
+
+//--------------------------------------------------------------------------------------
 _Use_decl_annotations_
 void Internal::ConstantBufferBase::CreateBuffer(
     ID3D11Device* device,
