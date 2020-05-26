@@ -610,7 +610,7 @@ namespace
                 resDim, width, height, depth, 0, arraySize,
                 format,
                 usage,
-                bindFlags | D3D11_BIND_RENDER_TARGET,
+                bindFlags | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET,
                 cpuAccessFlags,
                 miscFlags | D3D11_RESOURCE_MISC_GENERATE_MIPS, forceSRGB,
                 isCubeMap,

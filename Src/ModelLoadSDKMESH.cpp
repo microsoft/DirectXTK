@@ -9,14 +9,11 @@
 
 #include "pch.h"
 #include "Model.h"
-
+#include "DirectXHelpers.h"
 #include "Effects.h"
 #include "VertexTypes.h"
-
-#include "DirectXHelpers.h"
-#include "PlatformHelpers.h"
 #include "BinaryReader.h"
-
+#include "PlatformHelpers.h"
 #include "SDKMesh.h"
 
 using namespace DirectX;
@@ -364,27 +361,6 @@ namespace
 
         return flags;
     }
-
-    // Helper for creating a D3D input layout.
-    void CreateInputLayout(_In_ ID3D11Device* device, _In_ IEffect* effect, std::vector<D3D11_INPUT_ELEMENT_DESC>& inputDesc, _Out_ ID3D11InputLayout** pInputLayout)
-    {
-        void const* shaderByteCode;
-        size_t byteCodeLength;
-
-        effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
-
-        ThrowIfFailed(
-            device->CreateInputLayout(inputDesc.data(),
-            static_cast<UINT>(inputDesc.size()),
-            shaderByteCode, byteCodeLength,
-            pInputLayout)
-        );
-
-        assert(pInputLayout != nullptr && *pInputLayout != nullptr);
-        _Analysis_assume_(pInputLayout != nullptr && *pInputLayout != nullptr);
-
-        SetDebugObjectName(*pInputLayout, "ModelSDKMESH");
-    }
 }
 
 
@@ -542,8 +518,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
         desc.ByteWidth = static_cast<UINT>(vh.SizeBytes);
         desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
-        D3D11_SUBRESOURCE_DATA initData = {};
-        initData.pSysMem = verts;
+        D3D11_SUBRESOURCE_DATA initData = { verts, 0, 0 };
 
         ThrowIfFailed(
             d3dDevice->CreateBuffer(&desc, &initData, &vbs[j])
@@ -589,8 +564,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
         desc.ByteWidth = static_cast<UINT>(ih.SizeBytes);
         desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
-        D3D11_SUBRESOURCE_DATA initData = {};
-        initData.pSysMem = indices;
+        D3D11_SUBRESOURCE_DATA initData = { indices, 0, 0 };
 
         ThrowIfFailed(
             d3dDevice->CreateBuffer(&desc, &initData, &ibs[j])
@@ -705,7 +679,12 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
             }
 
             ComPtr<ID3D11InputLayout> il;
-            CreateInputLayout(d3dDevice, mat.effect.get(), *vbDecls[mh.VertexBuffers[0]].get(), &il);
+            ThrowIfFailed(
+                CreateInputLayoutFromEffect(d3dDevice, mat.effect.get(),
+                    vbDecls[mh.VertexBuffers[0]]->data(), vbDecls[mh.VertexBuffers[0]]->size(), il.GetAddressOf())
+            );
+
+            SetDebugObjectName(il.Get(), "ModelSDKMESH");
 
             auto part = new ModelMeshPart();
             part->isAlpha = mat.alpha;

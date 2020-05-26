@@ -38,6 +38,8 @@ namespace DirectX
             return s_str;
         }
 
+        HRESULT get_result() const noexcept { return result; }
+
     private:
         HRESULT result;
     };

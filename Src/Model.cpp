@@ -9,7 +9,6 @@
 
 #include "pch.h"
 #include "Model.h"
-
 #include "CommonStates.h"
 #include "DirectXHelpers.h"
 #include "Effects.h"
@@ -115,25 +114,19 @@ void ModelMeshPart::DrawInstanced(
 _Use_decl_annotations_
 void ModelMeshPart::CreateInputLayout(ID3D11Device* d3dDevice, IEffect* ieffect, ID3D11InputLayout** iinputLayout) const
 {
+    if (iinputLayout)
+    {
+        *iinputLayout = nullptr;
+    }
+
     if (!vbDecl || vbDecl->empty())
         throw std::exception("Model mesh part missing vertex buffer input elements data");
 
     if (vbDecl->size() > D3D11_IA_VERTEX_INPUT_STRUCTURE_ELEMENT_COUNT)
         throw std::exception("Model mesh part input layout size is too large for DirectX 11");
 
-    void const* shaderByteCode;
-    size_t byteCodeLength;
-
-    assert(ieffect != nullptr);
-    ieffect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
-
-    assert(d3dDevice != nullptr);
-
     ThrowIfFailed(
-        d3dDevice->CreateInputLayout(vbDecl->data(),
-        static_cast<UINT>(vbDecl->size()),
-        shaderByteCode, byteCodeLength,
-        iinputLayout)
+        CreateInputLayoutFromEffect(d3dDevice, ieffect, vbDecl->data(), vbDecl->size(), iinputLayout)
     );
 
     assert(iinputLayout != nullptr && *iinputLayout != nullptr);
@@ -154,18 +147,10 @@ void ModelMeshPart::ModifyEffect(ID3D11Device* d3dDevice, std::shared_ptr<IEffec
     this->effect = ieffect;
     this->isAlpha = isalpha;
 
-    void const* shaderByteCode;
-    size_t byteCodeLength;
-
-    effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
-
     assert(d3dDevice != nullptr);
 
     ThrowIfFailed(
-        d3dDevice->CreateInputLayout(vbDecl->data(),
-        static_cast<UINT>(vbDecl->size()),
-        shaderByteCode, byteCodeLength,
-        &inputLayout)
+        CreateInputLayoutFromEffect(d3dDevice, effect.get(), vbDecl->data(), vbDecl->size(), inputLayout.ReleaseAndGetAddressOf())
     );
 }
 

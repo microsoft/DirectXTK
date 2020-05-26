@@ -68,11 +68,11 @@ namespace
 {
     // Helper for creating a D3D vertex or index buffer.
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    void CreateBuffer(_In_ ID3D11DeviceX* device, size_t bufferSize, D3D11_BIND_FLAG bindFlag, _Out_ ID3D11Buffer** pBuffer)
+    void CreateDynamicBuffer(_In_ ID3D11DeviceX* device, uint32_t bufferSize, D3D11_BIND_FLAG bindFlag, _Outptr_ ID3D11Buffer** pBuffer)
     {
         D3D11_BUFFER_DESC desc = {};
 
-        desc.ByteWidth = static_cast<UINT>(bufferSize);
+        desc.ByteWidth = bufferSize;
         desc.BindFlags = bindFlag;
         desc.Usage = D3D11_USAGE_DEFAULT;
         desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
@@ -84,11 +84,11 @@ namespace
         SetDebugObjectName(*pBuffer, "DirectXTK:PrimitiveBatch");
     }
 #else
-    void CreateBuffer(_In_ ID3D11Device* device, size_t bufferSize, D3D11_BIND_FLAG bindFlag, _Out_ ID3D11Buffer** pBuffer)
+    void CreateDynamicBuffer(_In_ ID3D11Device* device, uint32_t bufferSize, D3D11_BIND_FLAG bindFlag, _Outptr_ ID3D11Buffer** pBuffer)
     {
         D3D11_BUFFER_DESC desc = {};
 
-        desc.ByteWidth = static_cast<UINT>(bufferSize);
+        desc.ByteWidth = bufferSize;
         desc.BindFlags = bindFlag;
         desc.Usage = D3D11_USAGE_DYNAMIC;
         desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
@@ -135,10 +135,14 @@ PrimitiveBatchBase::Impl::Impl(_In_ ID3D11DeviceContext* deviceContext, size_t m
     if (vertexSize > D3D11_REQ_MULTI_ELEMENT_STRUCTURE_SIZE_IN_BYTES)
         throw std::exception("Vertex size is too large for DirectX 11");
 
-    if ((uint64_t(maxIndices) * sizeof(uint16_t)) > uint64_t(D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u))
+    uint64_t ibBytes = uint64_t(maxIndices) * sizeof(uint16_t);
+    if (ibBytes > uint64_t(D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u)
+        || ibBytes > UINT32_MAX)
         throw std::exception("IB too large for DirectX 11");
 
-    if ((uint64_t(maxVertices) * uint64_t(vertexSize)) > uint64_t(D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u))
+    uint64_t vbBytes = uint64_t(maxVertices) * uint64_t(vertexSize);
+    if (vbBytes > uint64_t(D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u)
+        || vbBytes > UINT32_MAX)
         throw std::exception("VB too large for DirectX 11");
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
@@ -150,11 +154,11 @@ PrimitiveBatchBase::Impl::Impl(_In_ ID3D11DeviceContext* deviceContext, size_t m
     // If you only intend to draw non-indexed geometry, specify maxIndices = 0 to skip creating the index buffer.
     if (maxIndices > 0)
     {
-        CreateBuffer(deviceX.Get(), maxIndices * sizeof(uint16_t), D3D11_BIND_INDEX_BUFFER, &mIndexBuffer);
+        CreateDynamicBuffer(deviceX.Get(), static_cast<uint32_t>(ibBytes), D3D11_BIND_INDEX_BUFFER, &mIndexBuffer);
     }
 
     // Create the vertex buffer.
-    CreateBuffer(deviceX.Get(), maxVertices * vertexSize, D3D11_BIND_VERTEX_BUFFER, &mVertexBuffer);
+    CreateDynamicBuffer(deviceX.Get(), static_cast<uint32_t>(vbBytes), D3D11_BIND_VERTEX_BUFFER, &mVertexBuffer);
 
     grfxMemoryIB = grfxMemoryVB = nullptr;
 #else
@@ -163,11 +167,11 @@ PrimitiveBatchBase::Impl::Impl(_In_ ID3D11DeviceContext* deviceContext, size_t m
     // If you only intend to draw non-indexed geometry, specify maxIndices = 0 to skip creating the index buffer.
     if (maxIndices > 0)
     {
-        CreateBuffer(device.Get(), maxIndices * sizeof(uint16_t), D3D11_BIND_INDEX_BUFFER, &mIndexBuffer);
+        CreateDynamicBuffer(device.Get(), static_cast<uint32_t>(ibBytes), D3D11_BIND_INDEX_BUFFER, &mIndexBuffer);
     }
 
     // Create the vertex buffer.
-    CreateBuffer(device.Get(), maxVertices * vertexSize, D3D11_BIND_VERTEX_BUFFER, &mVertexBuffer);
+    CreateDynamicBuffer(device.Get(), static_cast<uint32_t>(vbBytes), D3D11_BIND_VERTEX_BUFFER, &mVertexBuffer);
 #endif
 }
 

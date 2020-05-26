@@ -12,7 +12,7 @@
 
 #include "AlignedNew.h"
 #include "CommonStates.h"
-#include "ConstantBuffer.h"
+#include "BufferHelpers.h"
 #include "DemandCreate.h"
 #include "DirectXHelpers.h"
 #include "SharedResourcePool.h"
@@ -178,6 +178,8 @@ DualPostProcess::Impl::Impl(_In_ ID3D11Device* device)
     {
         throw std::exception("DualPostProcess requires Feature Level 10.0 or later");
     }
+
+    SetDebugObjectName(mConstantBuffer.GetBuffer(), "DualPostProcess");
 }
 
 

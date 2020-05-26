@@ -639,7 +639,7 @@ namespace
 
         if (autogen)
         {
-            desc.BindFlags = bindFlags | D3D11_BIND_RENDER_TARGET;
+            desc.BindFlags = bindFlags | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
             desc.MiscFlags = miscFlags | D3D11_RESOURCE_MISC_GENERATE_MIPS;
         }
         else
@@ -648,10 +648,7 @@ namespace
             desc.MiscFlags = miscFlags;
         }
 
-        D3D11_SUBRESOURCE_DATA initData;
-        initData.pSysMem = temp.get();
-        initData.SysMemPitch = static_cast<UINT>(rowPitch);
-        initData.SysMemSlicePitch = static_cast<UINT>(imageSize);
+        D3D11_SUBRESOURCE_DATA initData = { temp.get(), static_cast<UINT>(rowPitch), static_cast<UINT>(imageSize) };
 
         ID3D11Texture2D* tex = nullptr;
         hr = d3dDevice->CreateTexture2D(&desc, (autogen) ? nullptr : &initData, &tex);

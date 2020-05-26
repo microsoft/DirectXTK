@@ -21,6 +21,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/CMake")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/CMake")
 
 set(LIBRARY_SOURCES
+    Inc/BufferHelpers.h
     Inc/CommonStates.h
     Inc/DDSTextureLoader.h
     Inc/DirectXHelpers.h
@@ -47,14 +48,15 @@ set(LIBRARY_SOURCES
     Src/Bezier.h
     Src/BinaryReader.cpp
     Src/BinaryReader.h
+    Src/BufferHelpers.cpp
     Src/CommonStates.cpp
-    Src/ConstantBuffer.h
     Src/dds.h
     Src/DDSTextureLoader.cpp
     Src/DebugEffect.cpp
     Src/DemandCreate.h
     Src/DGSLEffect.cpp
     Src/DGSLEffectFactory.cpp
+    Src/DirectXHelpers.cpp
     Src/DualPostProcess.cpp
     Src/DualTextureEffect.cpp
     Src/EffectCommon.cpp

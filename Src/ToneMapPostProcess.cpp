@@ -9,12 +9,11 @@
 
 #include "pch.h"
 #include "PostProcess.h"
-
-#include "AlignedNew.h"
+#include "BufferHelpers.h"
 #include "CommonStates.h"
-#include "ConstantBuffer.h"
-#include "DemandCreate.h"
 #include "DirectXHelpers.h"
+#include "AlignedNew.h"
+#include "DemandCreate.h"
 #include "SharedResourcePool.h"
 
 using namespace DirectX;
@@ -266,6 +265,8 @@ ToneMapPostProcess::Impl::Impl(_In_ ID3D11Device* device)
     {
         throw std::exception("ToneMapPostProcess requires Feature Level 10.0 or later");
     }
+
+    SetDebugObjectName(mConstantBuffer.GetBuffer(), "ToneMapPostProcess");
 }
 
 
