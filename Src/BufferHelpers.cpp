@@ -33,12 +33,19 @@ HRESULT DirectX::CreateStaticBuffer(
     if (!device || !ptr || !count || !stride)
         return E_INVALIDARG;
 
-    uint64_t bytes = uint64_t(count) * uint64_t(stride);
-    if (bytes >= UINT32_MAX)
-        return HRESULT_FROM_WIN32(ERROR_ARITHMETIC_OVERFLOW);
+    uint64_t sizeInbytes = uint64_t(count) * uint64_t(stride);
+
+    static constexpr uint64_t c_maxBytes = D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u;
+    static_assert(c_maxBytes <= UINT32_MAX, "Exceeded integer limits");
+
+    if (sizeInbytes > c_maxBytes)
+    {
+        DebugTrace("ERROR: Resource size too large for DirectX 11 (size %llu)\n", sizeInbytes);
+        return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
+    }
 
     D3D11_BUFFER_DESC bufferDesc = {};
-    bufferDesc.ByteWidth = static_cast<UINT>(bytes);
+    bufferDesc.ByteWidth = static_cast<UINT>(sizeInbytes);
     bufferDesc.BindFlags = bindFlags;
     bufferDesc.Usage = D3D11_USAGE_DEFAULT;
 
@@ -74,7 +81,9 @@ HRESULT DirectX::CreateTextureFromMemory(
     if (!texture && !textureView)
         return E_INVALIDARG;
 
-    if (width > D3D11_REQ_TEXTURE1D_U_DIMENSION || width > UINT32_MAX)
+    static_assert(D3D11_REQ_TEXTURE1D_U_DIMENSION <= UINT32_MAX, "Exceeded integer limits");
+
+    if (width > D3D11_REQ_TEXTURE1D_U_DIMENSION)
     {
         DebugTrace("ERROR: Resource dimensions too large for DirectX 11 (1D: size %zu)\n", width);
         return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
@@ -134,8 +143,10 @@ HRESULT DirectX::CreateTextureFromMemory(
     if (!texture && !textureView)
         return E_INVALIDARG;
 
-    if ((width > D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION) || (width > UINT32_MAX)
-        || (height > D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION) || (height > UINT32_MAX))
+    static_assert(D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION <= UINT32_MAX, "Exceeded integer limits");
+
+    if ((width > D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION)
+        || (height > D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION))
     {
         DebugTrace("ERROR: Resource dimensions too large for DirectX 11 (2D: size %zu by %zu)\n", width, height);
         return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
@@ -203,8 +214,10 @@ HRESULT DirectX::CreateTextureFromMemory(
     if (!texture && !textureView)
         return E_INVALIDARG;
 
-    if ((width > D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION) || (width > UINT32_MAX)
-        || (height > D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION) || (height > UINT32_MAX))
+    static_assert(D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION <= UINT32_MAX, "Exceeded integer limits");
+
+    if ((width > D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION)
+        || (height > D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION))
     {
         DebugTrace("ERROR: Resource dimensions too large for DirectX 11 (2D: size %zu by %zu)\n", width, height);
         return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
@@ -300,9 +313,11 @@ HRESULT DirectX::CreateTextureFromMemory(
     if (!texture && !textureView)
         return E_INVALIDARG;
 
-    if ((width > D3D11_REQ_TEXTURE3D_U_V_OR_W_DIMENSION) || (width > UINT32_MAX)
-        || (height > D3D11_REQ_TEXTURE3D_U_V_OR_W_DIMENSION) || (height > UINT32_MAX)
-        || (depth > D3D11_REQ_TEXTURE3D_U_V_OR_W_DIMENSION) || (depth > UINT32_MAX))
+    static_assert(D3D11_REQ_TEXTURE3D_U_V_OR_W_DIMENSION <= UINT32_MAX, "Exceeded integer limits");
+
+    if ((width > D3D11_REQ_TEXTURE3D_U_V_OR_W_DIMENSION)
+        || (height > D3D11_REQ_TEXTURE3D_U_V_OR_W_DIMENSION)
+        || (depth > D3D11_REQ_TEXTURE3D_U_V_OR_W_DIMENSION))
     {
         DebugTrace("ERROR: Resource dimensions too large for DirectX 11 (3D: size %zu by %zu by %zu)\n", width, height, depth);
         return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
