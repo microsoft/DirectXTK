@@ -146,22 +146,6 @@ void GeometricPrimitive::Impl::Initialize(ID3D11DeviceContext* deviceContext, co
     if (indices.size() > UINT32_MAX)
         throw std::exception("Too many indices");
 
-#ifdef _DEBUG
-    uint64_t sizeInBytes = uint64_t(vertices.size()) * sizeof(VertexType);
-    if (sizeInBytes > uint64_t(D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u)
-        || sizeInBytes > UINT32_MAX)
-    {
-        DebugTrace("WARNING: GeometricPrimitive VB size (%llu) exceeds required minimum for Direct3D 11 Hardware\n", sizeInBytes);
-    }
-
-    sizeInBytes = uint64_t(indices.size()) * sizeof(uint16_t);
-    if (sizeInBytes > uint64_t(D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u)
-        || sizeInBytes > UINT32_MAX)
-    {
-        DebugTrace("WARNING: GeometricPrimitive IB size (%llu) exceeds required minimum for Direct3D Hardware\n", sizeInBytes);
-    }
-#endif
-
     mResources = sharedResourcesPool.DemandCreate(deviceContext);
 
     ComPtr<ID3D11Device> device;
