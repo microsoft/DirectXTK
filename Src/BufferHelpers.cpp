@@ -246,7 +246,7 @@ HRESULT DirectX::CreateTextureFromMemory(
             ComPtr<ID3D11Texture2D> staging;
             desc.MipLevels = 1;
             desc.Usage = D3D11_USAGE_STAGING;
-            desc.BindFlags = 0;
+            desc.BindFlags = desc.MiscFlags = 0;
             desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
             hr = device->CreateTexture2D(&desc, &initData, staging.GetAddressOf());
             if (FAILED(hr))
@@ -254,7 +254,7 @@ HRESULT DirectX::CreateTextureFromMemory(
 
             d3dContext->CopySubresourceRegion(tex.Get(), 0, 0, 0, 0, staging.Get(), 0, nullptr);
             UINT64 copyFence = d3dContext->InsertFence(0);
-            while (d3dDevice->IsFencePending(copyFence)) { SwitchToThread(); }
+            while (device->IsFencePending(copyFence)) { SwitchToThread(); }
 #else
             d3dContext->UpdateSubresource(tex.Get(), 0, nullptr, initData.pSysMem, initData.SysMemPitch, 0);
 #endif
