@@ -57,7 +57,7 @@ namespace DirectX
         const D3D11_SUBRESOURCE_DATA& initData,
         _COM_Outptr_opt_ ID3D11Texture1D** texture,
         _COM_Outptr_opt_ ID3D11ShaderResourceView** textureView,
-        D3D11_BIND_FLAG bindFlags = D3D11_BIND_SHADER_RESOURCE);
+        D3D11_BIND_FLAG bindFlags = D3D11_BIND_SHADER_RESOURCE) noexcept;
 
     HRESULT __cdecl CreateTextureFromMemory(_In_ ID3D11Device* device,
         size_t width, size_t height,
@@ -65,7 +65,7 @@ namespace DirectX
         const D3D11_SUBRESOURCE_DATA& initData,
         _COM_Outptr_opt_ ID3D11Texture2D** texture,
         _COM_Outptr_opt_ ID3D11ShaderResourceView** textureView,
-        D3D11_BIND_FLAG bindFlags = D3D11_BIND_SHADER_RESOURCE);
+        D3D11_BIND_FLAG bindFlags = D3D11_BIND_SHADER_RESOURCE) noexcept;
 
     HRESULT __cdecl CreateTextureFromMemory(
 #if defined(_XBOX_ONE) && defined(_TITLE)
@@ -79,7 +79,7 @@ namespace DirectX
         DXGI_FORMAT format,
         const D3D11_SUBRESOURCE_DATA& initData,
         _COM_Outptr_opt_ ID3D11Texture2D** texture,
-        _COM_Outptr_opt_ ID3D11ShaderResourceView** textureView);
+        _COM_Outptr_opt_ ID3D11ShaderResourceView** textureView) noexcept;
 
     HRESULT __cdecl CreateTextureFromMemory(_In_ ID3D11Device* device,
         size_t width, size_t height, size_t depth,
@@ -87,7 +87,7 @@ namespace DirectX
         const D3D11_SUBRESOURCE_DATA& initData,
         _COM_Outptr_opt_ ID3D11Texture3D** texture,
         _COM_Outptr_opt_ ID3D11ShaderResourceView** textureView,
-        D3D11_BIND_FLAG bindFlags = D3D11_BIND_SHADER_RESOURCE);
+        D3D11_BIND_FLAG bindFlags = D3D11_BIND_SHADER_RESOURCE) noexcept;
 
     // Strongly typed wrapper around a Direct3D constant buffer.
     namespace Internal

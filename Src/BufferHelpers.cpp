@@ -64,7 +64,7 @@ HRESULT DirectX::CreateTextureFromMemory(
     const D3D11_SUBRESOURCE_DATA& initData,
     ID3D11Texture1D** texture,
     ID3D11ShaderResourceView** textureView,
-    D3D11_BIND_FLAG bindFlags)
+    D3D11_BIND_FLAG bindFlags) noexcept
 {
     if (texture)
     {
@@ -125,7 +125,7 @@ HRESULT DirectX::CreateTextureFromMemory(
     const D3D11_SUBRESOURCE_DATA& initData,
     ID3D11Texture2D** texture,
     ID3D11ShaderResourceView** textureView,
-    D3D11_BIND_FLAG bindFlags)
+    D3D11_BIND_FLAG bindFlags) noexcept
 {
     if (texture)
     {
@@ -196,7 +196,7 @@ HRESULT DirectX::CreateTextureFromMemory(
     DXGI_FORMAT format,
     const D3D11_SUBRESOURCE_DATA& initData,
     ID3D11Texture2D** texture,
-    ID3D11ShaderResourceView** textureView)
+    ID3D11ShaderResourceView** textureView) noexcept
 {
     if (texture)
     {
@@ -295,7 +295,7 @@ HRESULT DirectX::CreateTextureFromMemory(
     const D3D11_SUBRESOURCE_DATA& initData,
     ID3D11Texture3D** texture,
     ID3D11ShaderResourceView** textureView,
-    D3D11_BIND_FLAG bindFlags)
+    D3D11_BIND_FLAG bindFlags) noexcept
 {
     if (texture)
     {
