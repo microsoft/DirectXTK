@@ -821,7 +821,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
                 info.emissiveTexture = m.texture[3].empty() ? nullptr : m.texture[3].c_str();
                 info.pixelShader = m.pixelShader.c_str();
 
-                const int offset = DGSLEffectFactory::DGSLEffectInfo::BaseTextureOffset;
+                constexpr int offset = DGSLEffectFactory::DGSLEffectInfo::BaseTextureOffset;
                 for (int i = 0; i < (DGSLEffect::MaxTextures - offset); ++i)
                 {
                     info.textures[i] = m.texture[i + offset].empty() ? nullptr : m.texture[i + offset].c_str();

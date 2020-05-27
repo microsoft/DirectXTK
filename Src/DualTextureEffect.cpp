@@ -31,9 +31,9 @@ struct DualTextureEffectTraits
 {
     using ConstantBufferType = DualTextureEffectConstants;
 
-    static const int VertexShaderCount = 4;
-    static const int PixelShaderCount = 2;
-    static const int ShaderPermutationCount = 4;
+    static constexpr int VertexShaderCount = 4;
+    static constexpr int PixelShaderCount = 2;
+    static constexpr int ShaderPermutationCount = 4;
 };
 
 

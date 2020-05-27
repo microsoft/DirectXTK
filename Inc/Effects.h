@@ -88,7 +88,7 @@ namespace DirectX
 
         virtual void __cdecl EnableDefaultLighting() = 0;
 
-        static const int MaxDirectionalLights = 3;
+        static constexpr int MaxDirectionalLights = 3;
 
     protected:
         IEffectLights() = default;
@@ -133,7 +133,7 @@ namespace DirectX
         virtual void __cdecl SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, size_t count) = 0;
         virtual void __cdecl ResetBoneTransforms() = 0;
 
-        static const int MaxBones = 72;
+        static constexpr int MaxBones = 72;
 
     protected:
         IEffectSkinning() = default;
@@ -510,7 +510,7 @@ namespace DirectX
 
         void __cdecl EnableDefaultLighting() override;
 
-        static const int MaxDirectionalLights = 4;
+        static constexpr int MaxDirectionalLights = 4;
 
         // Vertex color setting.
         void __cdecl SetVertexColorEnabled(bool value);
@@ -520,7 +520,7 @@ namespace DirectX
         void __cdecl SetTexture(_In_opt_ ID3D11ShaderResourceView* value);
         void __cdecl SetTexture(int whichTexture, _In_opt_ ID3D11ShaderResourceView* value);
 
-        static const int MaxTextures = 8;
+        static constexpr int MaxTextures = 8;
 
         // Animation setting.
         void __cdecl SetWeightsPerVertex(int value) override;
@@ -893,7 +893,7 @@ namespace DirectX
         // DGSL methods.
         struct DGSLEffectInfo : public EffectInfo
         {
-            static const int BaseTextureOffset = 4;
+            static constexpr int BaseTextureOffset = 4;
 
             const wchar_t* textures[DGSLEffect::MaxTextures - BaseTextureOffset];
             const wchar_t* pixelShader;

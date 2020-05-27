@@ -51,9 +51,9 @@ namespace DirectX
         virtual ~GamePad();
 
     #if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/) || defined(_XBOX_ONE)
-        static const int MAX_PLAYER_COUNT = 8;
+        static constexpr int MAX_PLAYER_COUNT = 8;
     #else
-        static const int MAX_PLAYER_COUNT = 4;
+        static constexpr int MAX_PLAYER_COUNT = 4;
     #endif
 
         enum DeadZone

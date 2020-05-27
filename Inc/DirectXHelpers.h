@@ -62,9 +62,9 @@ namespace DirectX
     public:
         MapGuard(_In_ ID3D11DeviceContext* context,
             _In_ ID3D11Resource *resource,
-            _In_ UINT subresource,
+            _In_ unsigned int subresource,
             _In_ D3D11_MAP mapType,
-            _In_ UINT mapFlags) noexcept(false)
+            _In_ unsigned int mapFlags) noexcept(false)
             : mContext(context), mResource(resource), mSubresource(subresource)
         {
             HRESULT hr = mContext->Map(resource, subresource, mapType, mapFlags, this);
@@ -106,7 +106,7 @@ namespace DirectX
     private:
         ID3D11DeviceContext*    mContext;
         ID3D11Resource*         mResource;
-        UINT                    mSubresource;
+        unsigned int            mSubresource;
     };
 
 

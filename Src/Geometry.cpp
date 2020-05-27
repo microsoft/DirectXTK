@@ -74,7 +74,7 @@ void DirectX::ComputeBox(VertexCollection& vertices, IndexCollection& indices, c
     indices.clear();
 
     // A box has six faces, each one pointing in a different direction.
-    const int FaceCount = 6;
+    constexpr int FaceCount = 6;
 
     static const XMVECTORF32 faceNormals[FaceCount] =
     {

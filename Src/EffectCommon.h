@@ -30,14 +30,14 @@ namespace DirectX
     // Bitfield tracks which derived parameter values need to be recomputed.
     namespace EffectDirtyFlags
     {
-        const int ConstantBuffer        = 0x01;
-        const int WorldViewProj         = 0x02;
-        const int WorldInverseTranspose = 0x04;
-        const int EyePosition           = 0x08;
-        const int MaterialColor         = 0x10;
-        const int FogVector             = 0x20;
-        const int FogEnable             = 0x40;
-        const int AlphaTest             = 0x80;
+        constexpr int ConstantBuffer        = 0x01;
+        constexpr int WorldViewProj         = 0x02;
+        constexpr int WorldInverseTranspose = 0x04;
+        constexpr int EyePosition           = 0x08;
+        constexpr int MaterialColor         = 0x10;
+        constexpr int FogVector             = 0x20;
+        constexpr int FogEnable             = 0x40;
+        constexpr int AlphaTest             = 0x80;
     }
 
 
@@ -85,7 +85,7 @@ namespace DirectX
     {
         EffectLights() noexcept;
 
-        static const int MaxDirectionalLights = IEffectLights::MaxDirectionalLights;
+        static constexpr int MaxDirectionalLights = IEffectLights::MaxDirectionalLights;
 
 
         // Fields.

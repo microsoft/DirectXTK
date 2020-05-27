@@ -19,106 +19,106 @@
 
 namespace DirectX
 {
-
-namespace EffectDirtyFlags
-{
-    const int ConstantBufferMaterial    = 0x10000;
-    const int ConstantBufferLight       = 0x20000;
-    const int ConstantBufferObject      = 0x40000;
-    const int ConstantBufferMisc        = 0x80000;
-    const int ConstantBufferBones       = 0x100000;
-}
-
+    namespace EffectDirtyFlags
+    {
+        constexpr int ConstantBufferMaterial = 0x10000;
+        constexpr int ConstantBufferLight = 0x20000;
+        constexpr int ConstantBufferObject = 0x40000;
+        constexpr int ConstantBufferMisc = 0x80000;
+        constexpr int ConstantBufferBones = 0x100000;
+    }
 }
 
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
-// Constant buffer layout. Must match the shader!
+namespace
+{
+    // Constant buffer layout. Must match the shader!
 #pragma pack(push,1)
 
 // Slot 0
-struct MaterialConstants
-{
-    XMVECTOR    Ambient;
-    XMVECTOR    Diffuse;
-    XMVECTOR    Specular;
-    XMVECTOR    Emissive;
-    float       SpecularPower;
-    float       Padding0;
-    float       Padding1;
-    float       Padding2;
-};
+    struct MaterialConstants
+    {
+        XMVECTOR    Ambient;
+        XMVECTOR    Diffuse;
+        XMVECTOR    Specular;
+        XMVECTOR    Emissive;
+        float       SpecularPower;
+        float       Padding0;
+        float       Padding1;
+        float       Padding2;
+    };
 
-// Slot 1
-struct LightConstants
-{
-    XMVECTOR    Ambient;
-    XMVECTOR    LightColor[DGSLEffect::MaxDirectionalLights];
-    XMVECTOR    LightAttenuation[DGSLEffect::MaxDirectionalLights];
-    XMVECTOR    LightDirection[DGSLEffect::MaxDirectionalLights];
-    XMVECTOR    LightSpecularIntensity[DGSLEffect::MaxDirectionalLights];
-    UINT        IsPointLight[DGSLEffect::MaxDirectionalLights];
-    UINT        ActiveLights;
-    float       Padding0;
-    float       Padding1;
-    float       Padding2;
-};
+    // Slot 1
+    struct LightConstants
+    {
+        XMVECTOR    Ambient;
+        XMVECTOR    LightColor[DGSLEffect::MaxDirectionalLights];
+        XMVECTOR    LightAttenuation[DGSLEffect::MaxDirectionalLights];
+        XMVECTOR    LightDirection[DGSLEffect::MaxDirectionalLights];
+        XMVECTOR    LightSpecularIntensity[DGSLEffect::MaxDirectionalLights];
+        UINT        IsPointLight[DGSLEffect::MaxDirectionalLights];
+        UINT        ActiveLights;
+        float       Padding0;
+        float       Padding1;
+        float       Padding2;
+    };
 
-// Note - DGSL does not appear to make use of LightAttenuation or IsPointLight. Not sure if it uses ActiveLights either.
+    // Note - DGSL does not appear to make use of LightAttenuation or IsPointLight. Not sure if it uses ActiveLights either.
 
-// Slot 2
-struct ObjectConstants
-{
-    XMMATRIX    LocalToWorld4x4;
-    XMMATRIX    LocalToProjected4x4;
-    XMMATRIX    WorldToLocal4x4;
-    XMMATRIX    WorldToView4x4;
-    XMMATRIX    UvTransform4x4;
-    XMVECTOR    EyePosition;
-};
+    // Slot 2
+    struct ObjectConstants
+    {
+        XMMATRIX    LocalToWorld4x4;
+        XMMATRIX    LocalToProjected4x4;
+        XMMATRIX    WorldToLocal4x4;
+        XMMATRIX    WorldToView4x4;
+        XMMATRIX    UvTransform4x4;
+        XMVECTOR    EyePosition;
+    };
 
-// Slot 3
-struct MiscConstants
-{
-    float ViewportWidth;
-    float ViewportHeight;
-    float Time;
-    float Padding1;
-};
+    // Slot 3
+    struct MiscConstants
+    {
+        float ViewportWidth;
+        float ViewportHeight;
+        float Time;
+        float Padding1;
+    };
 
-// Slot 4
-struct BoneConstants
-{
-    XMVECTOR Bones[DGSLEffect::MaxBones][3];
-};
+    // Slot 4
+    struct BoneConstants
+    {
+        XMVECTOR Bones[DGSLEffect::MaxBones][3];
+    };
 
 #pragma pack(pop)
 
-static_assert((sizeof(MaterialConstants) % 16) == 0, "CB size not padded correctly");
-static_assert((sizeof(LightConstants) % 16) == 0, "CB size not padded correctly");
-static_assert((sizeof(ObjectConstants) % 16) == 0, "CB size not padded correctly");
-static_assert((sizeof(MiscConstants) % 16) == 0, "CB size not padded correctly");
-static_assert((sizeof(BoneConstants) % 16) == 0, "CB size not padded correctly");
+    static_assert((sizeof(MaterialConstants) % 16) == 0, "CB size not padded correctly");
+    static_assert((sizeof(LightConstants) % 16) == 0, "CB size not padded correctly");
+    static_assert((sizeof(ObjectConstants) % 16) == 0, "CB size not padded correctly");
+    static_assert((sizeof(MiscConstants) % 16) == 0, "CB size not padded correctly");
+    static_assert((sizeof(BoneConstants) % 16) == 0, "CB size not padded correctly");
 
-__declspec(align(16)) struct DGSLEffectConstants
-{
-    MaterialConstants   material;
-    LightConstants      light;
-    ObjectConstants     object;
-    MiscConstants       misc;
-    BoneConstants       bones;
-};
+    __declspec(align(16)) struct DGSLEffectConstants
+    {
+        MaterialConstants   material;
+        LightConstants      light;
+        ObjectConstants     object;
+        MiscConstants       misc;
+        BoneConstants       bones;
+    };
 
-struct DGSLEffectTraits
-{
-    static const int VertexShaderCount = 8;
-    static const int PixelShaderCount = 12;
+    struct DGSLEffectTraits
+    {
+        static constexpr int VertexShaderCount = 8;
+        static constexpr int PixelShaderCount = 12;
 
-    static const ShaderBytecode VertexShaderBytecode[VertexShaderCount];
-    static const ShaderBytecode PixelShaderBytecode[PixelShaderCount];
-};
-
+        static const ShaderBytecode VertexShaderBytecode[VertexShaderCount];
+        static const ShaderBytecode PixelShaderBytecode[PixelShaderCount];
+    };
+}
 
 // Include the precompiled shader code.
 namespace

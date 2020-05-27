@@ -46,9 +46,9 @@ struct EnvironmentMapEffectTraits
 {
     using ConstantBufferType = EnvironmentMapEffectConstants;
 
-    static const int VertexShaderCount = 10;
-    static const int PixelShaderCount = 8;
-    static const int ShaderPermutationCount = 40;
+    static constexpr int VertexShaderCount = 10;
+    static constexpr int PixelShaderCount = 8;
+    static constexpr int ShaderPermutationCount = 40;
 };
 
 

@@ -42,7 +42,7 @@ namespace DirectX
 
         XMFLOAT3 position;
 
-        static const int InputElementCount = 1;
+        static constexpr unsigned int InputElementCount = 1;
         static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
     };
 
@@ -72,7 +72,7 @@ namespace DirectX
         XMFLOAT3 position;
         XMFLOAT4 color;
 
-        static const int InputElementCount = 2;
+        static constexpr unsigned int InputElementCount = 2;
         static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
     };
 
@@ -102,7 +102,7 @@ namespace DirectX
         XMFLOAT3 position;
         XMFLOAT2 textureCoordinate;
 
-        static const int InputElementCount = 2;
+        static constexpr unsigned int InputElementCount = 2;
         static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
     };
 
@@ -141,7 +141,7 @@ namespace DirectX
         XMFLOAT2 textureCoordinate0;
         XMFLOAT2 textureCoordinate1;
 
-        static const int InputElementCount = 3;
+        static constexpr unsigned int InputElementCount = 3;
         static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
     };
 
@@ -171,7 +171,7 @@ namespace DirectX
         XMFLOAT3 position;
         XMFLOAT3 normal;
 
-        static const int InputElementCount = 2;
+        static constexpr unsigned int InputElementCount = 2;
         static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
     };
 
@@ -204,7 +204,7 @@ namespace DirectX
         XMFLOAT4 color;
         XMFLOAT2 textureCoordinate;
 
-        static const int InputElementCount = 3;
+        static constexpr unsigned int InputElementCount = 3;
         static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
     };
 
@@ -237,7 +237,7 @@ namespace DirectX
         XMFLOAT3 normal;
         XMFLOAT4 color;
 
-        static const int InputElementCount = 3;
+        static constexpr unsigned int InputElementCount = 3;
         static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
     };
 
@@ -270,7 +270,7 @@ namespace DirectX
         XMFLOAT3 normal;
         XMFLOAT2 textureCoordinate;
 
-        static const int InputElementCount = 3;
+        static constexpr unsigned int InputElementCount = 3;
         static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
     };
 
@@ -310,7 +310,7 @@ namespace DirectX
         XMFLOAT4 color;
         XMFLOAT2 textureCoordinate;
 
-        static const int InputElementCount = 4;
+        static constexpr unsigned int InputElementCount = 4;
         static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
     };
 
@@ -395,7 +395,7 @@ namespace DirectX
         void __cdecl SetColor(XMFLOAT4 const& icolor) noexcept { SetColor(XMLoadFloat4(&icolor)); }
         void XM_CALLCONV SetColor(FXMVECTOR icolor) noexcept;
 
-        static const int InputElementCount = 5;
+        static constexpr unsigned int InputElementCount = 5;
         static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
     };
 
@@ -484,7 +484,7 @@ namespace DirectX
         void __cdecl SetBlendWeights(XMFLOAT4 const& iweights) noexcept { SetBlendWeights(XMLoadFloat4(&iweights)); }
         void XM_CALLCONV SetBlendWeights(FXMVECTOR iweights) noexcept;
 
-        static const int InputElementCount = 7;
+        static constexpr unsigned int InputElementCount = 7;
         static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
     };
 }

@@ -44,10 +44,10 @@ struct PBREffectTraits
 {
     using ConstantBufferType = PBREffectConstants;
 
-    static const int VertexShaderCount = 4;
-    static const int PixelShaderCount = 5;
-    static const int ShaderPermutationCount = 10;
-    static const int RootSignatureCount = 1;
+    static constexpr int VertexShaderCount = 4;
+    static constexpr int PixelShaderCount = 5;
+    static constexpr int ShaderPermutationCount = 10;
+    static constexpr int RootSignatureCount = 1;
 };
 
 

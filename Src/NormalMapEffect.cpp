@@ -42,9 +42,9 @@ struct NormalMapEffectTraits
 {
     using ConstantBufferType = NormalMapEffectConstants;
 
-    static const int VertexShaderCount = 4;
-    static const int PixelShaderCount = 4;
-    static const int ShaderPermutationCount = 16;
+    static constexpr int VertexShaderCount = 4;
+    static constexpr int PixelShaderCount = 4;
+    static constexpr int ShaderPermutationCount = 16;
 };
 
 
