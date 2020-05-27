@@ -157,7 +157,7 @@ namespace DirectX
 
     // Helpers for aligning values by a power of 2
     template<typename T>
-    constexpr inline T AlignDown(T size, size_t alignment) noexcept
+    inline T AlignDown(T size, size_t alignment) noexcept
     {
         if (alignment > 0)
         {
@@ -169,7 +169,7 @@ namespace DirectX
     }
 
     template<typename T>
-    constexpr inline T AlignUp(T size, size_t alignment) noexcept
+    inline T AlignUp(T size, size_t alignment) noexcept
     {
         if (alignment > 0)
         {
