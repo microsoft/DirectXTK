@@ -21,6 +21,7 @@ These components are designed to work without requiring any content from the leg
   + Public Header Files (in the DirectX C++ namespace):
 
     * Audio.h - low-level audio API using XAudio2 (DirectXTK for Audio public header)
+    * BufferHelpers.h - C++ helpers for creating D3D resources from CPU data
     * CommonStates.h - factory providing commonly used D3D state objects
     * DDSTextureLoader.h - light-weight DDS file texture loader
     * DirectXHelpers.h - misc C++ helpers for D3D programming
