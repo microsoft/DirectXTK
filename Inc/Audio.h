@@ -132,8 +132,6 @@ namespace DirectX
         AudioEngine_DisableVoiceReuse   = 0x40000,
     };
 
-    inline AUDIO_ENGINE_FLAGS operator|(AUDIO_ENGINE_FLAGS a, AUDIO_ENGINE_FLAGS b) noexcept { return static_cast<AUDIO_ENGINE_FLAGS>( static_cast<int>(a) | static_cast<int>(b) ); }
-
     enum SOUND_EFFECT_INSTANCE_FLAGS : uint32_t
     {
         SoundEffectInstance_Default             = 0x0,
@@ -144,8 +142,6 @@ namespace DirectX
 
         SoundEffectInstance_UseRedirectLFE      = 0x10000,
     };
-
-    inline SOUND_EFFECT_INSTANCE_FLAGS operator|(SOUND_EFFECT_INSTANCE_FLAGS a, SOUND_EFFECT_INSTANCE_FLAGS b) noexcept { return static_cast<SOUND_EFFECT_INSTANCE_FLAGS>(static_cast<int>(a) | static_cast<int>(b)); }
 
     enum AUDIO_ENGINE_REVERB : unsigned int
     {
@@ -738,4 +734,16 @@ namespace DirectX
 
         std::unique_ptr<Impl> pImpl;
     };
+
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-dynamic-exception-spec"
+#endif
+
+    DEFINE_ENUM_FLAG_OPERATORS(AUDIO_ENGINE_FLAGS);
+    DEFINE_ENUM_FLAG_OPERATORS(SOUND_EFFECT_INSTANCE_FLAGS);
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 }

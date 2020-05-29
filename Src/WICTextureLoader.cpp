@@ -842,7 +842,7 @@ HRESULT DirectX::CreateWICTextureFromMemoryEx(
     unsigned int bindFlags,
     unsigned int cpuAccessFlags,
     unsigned int miscFlags,
-    unsigned int loadFlags,
+    WIC_LOADER_FLAGS loadFlags,
     ID3D11Resource** texture,
     ID3D11ShaderResourceView** textureView) noexcept
 {
@@ -937,7 +937,7 @@ _Use_decl_annotations_
         unsigned int bindFlags,
         unsigned int cpuAccessFlags,
         unsigned int miscFlags,
-        unsigned int loadFlags,
+        WIC_LOADER_FLAGS loadFlags,
         ID3D11Resource** texture,
         ID3D11ShaderResourceView** textureView) noexcept
 {
@@ -1065,7 +1065,7 @@ HRESULT DirectX::CreateWICTextureFromFileEx(
     unsigned int bindFlags,
     unsigned int cpuAccessFlags,
     unsigned int miscFlags,
-    unsigned int loadFlags,
+    WIC_LOADER_FLAGS loadFlags,
     ID3D11Resource** texture,
     ID3D11ShaderResourceView** textureView) noexcept
 {
@@ -1141,7 +1141,7 @@ _Use_decl_annotations_
         unsigned int bindFlags,
         unsigned int cpuAccessFlags,
         unsigned int miscFlags,
-        unsigned int loadFlags,
+        WIC_LOADER_FLAGS loadFlags,
         ID3D11Resource** texture,
         ID3D11ShaderResourceView** textureView) noexcept
 {

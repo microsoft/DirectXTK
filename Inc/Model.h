@@ -47,8 +47,6 @@ namespace DirectX
         ModelLoader_AllowLargeModels    = 0x8,
     };
 
-    inline ModelLoaderFlags operator|(ModelLoaderFlags a, ModelLoaderFlags b) noexcept { return static_cast<ModelLoaderFlags>(static_cast<int>(a) | static_cast<int>(b)); }
-
     //----------------------------------------------------------------------------------
     // Each mesh part is a submesh with a single effect
     class ModelMeshPart
@@ -209,4 +207,15 @@ namespace DirectX
     private:
         std::set<IEffect*>  mEffectCache;
     };
+
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-dynamic-exception-spec"
+#endif
+
+    DEFINE_ENUM_FLAG_OPERATORS(ModelLoaderFlags);
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 }

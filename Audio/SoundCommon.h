@@ -116,7 +116,7 @@ namespace DirectX
             if (eng->GetChannelMask() & SPEAKER_LOW_FREQUENCY)
                 mFlags = flags | SoundEffectInstance_UseRedirectLFE;
             else
-                mFlags = static_cast<SOUND_EFFECT_INSTANCE_FLAGS>(static_cast<unsigned int>(flags) & ~static_cast<unsigned int>(SoundEffectInstance_UseRedirectLFE));
+                mFlags = flags & ~SoundEffectInstance_UseRedirectLFE;
 
             memset(&mDSPSettings, 0, sizeof(X3DAUDIO_DSP_SETTINGS));
             assert(wfx != nullptr);
@@ -315,7 +315,7 @@ namespace DirectX
             if (engine->GetChannelMask() & SPEAKER_LOW_FREQUENCY)
                 mFlags = mFlags | SoundEffectInstance_UseRedirectLFE;
             else
-                mFlags = static_cast<SOUND_EFFECT_INSTANCE_FLAGS>(static_cast<unsigned int>(mFlags) & ~static_cast<unsigned int>(SoundEffectInstance_UseRedirectLFE));
+                mFlags = mFlags & ~SoundEffectInstance_UseRedirectLFE;
 
             mDSPSettings.DstChannelCount = engine->GetOutputChannels();
         }
