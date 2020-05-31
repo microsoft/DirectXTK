@@ -22,7 +22,7 @@ HRESULT DirectX::CreateStaticBuffer(
     const void* ptr,
     size_t count,
     size_t stride,
-    D3D11_BIND_FLAG bindFlags,
+    unsigned int bindFlags,
     ID3D11Buffer** pBuffer) noexcept
 {
     if (!pBuffer)
@@ -64,7 +64,7 @@ HRESULT DirectX::CreateTextureFromMemory(
     const D3D11_SUBRESOURCE_DATA& initData,
     ID3D11Texture1D** texture,
     ID3D11ShaderResourceView** textureView,
-    D3D11_BIND_FLAG bindFlags) noexcept
+    unsigned int bindFlags) noexcept
 {
     if (texture)
     {
@@ -125,7 +125,7 @@ HRESULT DirectX::CreateTextureFromMemory(
     const D3D11_SUBRESOURCE_DATA& initData,
     ID3D11Texture2D** texture,
     ID3D11ShaderResourceView** textureView,
-    D3D11_BIND_FLAG bindFlags) noexcept
+    unsigned int bindFlags) noexcept
 {
     if (texture)
     {
@@ -295,7 +295,7 @@ HRESULT DirectX::CreateTextureFromMemory(
     const D3D11_SUBRESOURCE_DATA& initData,
     ID3D11Texture3D** texture,
     ID3D11ShaderResourceView** textureView,
-    D3D11_BIND_FLAG bindFlags) noexcept
+    unsigned int bindFlags) noexcept
 {
     if (texture)
     {

@@ -28,14 +28,14 @@ namespace DirectX
         _In_reads_bytes_(count* stride) const void* ptr,
         size_t count,
         size_t stride,
-        D3D11_BIND_FLAG bindFlags,
+        unsigned int bindFlags,
         _COM_Outptr_ ID3D11Buffer** pBuffer) noexcept;
 
     template<typename T>
     HRESULT CreateStaticBuffer(_In_ ID3D11Device* device,
         _In_reads_(count) T const* data,
         size_t count,
-        D3D11_BIND_FLAG bindFlags,
+        unsigned int bindFlags,
         _COM_Outptr_ ID3D11Buffer** pBuffer) noexcept
     {
         return CreateStaticBuffer(device, data, count, sizeof(T), bindFlags, pBuffer);
@@ -44,7 +44,7 @@ namespace DirectX
     template<typename T>
     HRESULT CreateStaticBuffer(_In_ ID3D11Device* device,
         T const& data,
-        D3D11_BIND_FLAG bindFlags,
+        unsigned int bindFlags,
         _COM_Outptr_ ID3D11Buffer** pBuffer) noexcept
     {
         return CreateStaticBuffer(device, data.data(), data.size(), sizeof(typename T::value_type), bindFlags, pBuffer);
@@ -57,7 +57,7 @@ namespace DirectX
         const D3D11_SUBRESOURCE_DATA& initData,
         _COM_Outptr_opt_ ID3D11Texture1D** texture,
         _COM_Outptr_opt_ ID3D11ShaderResourceView** textureView,
-        D3D11_BIND_FLAG bindFlags = D3D11_BIND_SHADER_RESOURCE) noexcept;
+        unsigned int bindFlags = D3D11_BIND_SHADER_RESOURCE) noexcept;
 
     HRESULT __cdecl CreateTextureFromMemory(_In_ ID3D11Device* device,
         size_t width, size_t height,
@@ -65,7 +65,7 @@ namespace DirectX
         const D3D11_SUBRESOURCE_DATA& initData,
         _COM_Outptr_opt_ ID3D11Texture2D** texture,
         _COM_Outptr_opt_ ID3D11ShaderResourceView** textureView,
-        D3D11_BIND_FLAG bindFlags = D3D11_BIND_SHADER_RESOURCE) noexcept;
+        unsigned int bindFlags = D3D11_BIND_SHADER_RESOURCE) noexcept;
 
     HRESULT __cdecl CreateTextureFromMemory(
 #if defined(_XBOX_ONE) && defined(_TITLE)
@@ -87,7 +87,7 @@ namespace DirectX
         const D3D11_SUBRESOURCE_DATA& initData,
         _COM_Outptr_opt_ ID3D11Texture3D** texture,
         _COM_Outptr_opt_ ID3D11ShaderResourceView** textureView,
-        D3D11_BIND_FLAG bindFlags = D3D11_BIND_SHADER_RESOURCE) noexcept;
+        unsigned int bindFlags = D3D11_BIND_SHADER_RESOURCE) noexcept;
 
     // Strongly typed wrapper around a Direct3D constant buffer.
     namespace Internal
