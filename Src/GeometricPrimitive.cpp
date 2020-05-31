@@ -28,9 +28,16 @@ public:
 
     void Initialize(_In_ ID3D11DeviceContext* deviceContext, const VertexCollection& vertices, const IndexCollection& indices);
 
-    void XM_CALLCONV Draw(FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection, FXMVECTOR color, _In_opt_ ID3D11ShaderResourceView* texture, bool wireframe, std::function<void()>& setCustomState) const;
+    void XM_CALLCONV Draw(FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection,
+        FXMVECTOR color,
+        _In_opt_ ID3D11ShaderResourceView* texture,
+        bool wireframe,
+        std::function<void()>& setCustomState) const;
 
-    void Draw(_In_ IEffect* effect, _In_ ID3D11InputLayout* inputLayout, bool alpha, bool wireframe, std::function<void()>& setCustomState) const;
+    void Draw(_In_ IEffect* effect,
+        _In_ ID3D11InputLayout* inputLayout,
+        bool alpha, bool wireframe,
+        std::function<void()>& setCustomState) const;
 
     void CreateInputLayout(_In_ IEffect* effect, _Outptr_ ID3D11InputLayout** inputLayout) const;
 

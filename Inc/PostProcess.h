@@ -35,7 +35,8 @@ namespace DirectX
         IPostProcess(IPostProcess&&) = delete;
         IPostProcess& operator=(IPostProcess&&) = delete;
 
-        virtual void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext, _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) = 0;
+        virtual void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext,
+            _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) = 0;
 
     protected:
         IPostProcess() = default;
@@ -70,7 +71,9 @@ namespace DirectX
         ~BasicPostProcess() override;
 
         // IPostProcess methods.
-        void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext, _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) override;
+        void __cdecl Process(
+            _In_ ID3D11DeviceContext* deviceContext,
+            _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) override;
 
         // Shader control
         void __cdecl SetEffect(Effect fx);
@@ -117,7 +120,8 @@ namespace DirectX
         ~DualPostProcess() override;
 
         // IPostProcess methods.
-        void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext, _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) override;
+        void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext,
+            _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) override;
 
         // Shader control
         void __cdecl SetEffect(Effect fx);
@@ -174,7 +178,8 @@ namespace DirectX
         ~ToneMapPostProcess() override;
 
         // IPostProcess methods.
-        void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext, _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) override;
+        void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext,
+            _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) override;
 
         // Shader control
         void __cdecl SetOperator(Operator op);

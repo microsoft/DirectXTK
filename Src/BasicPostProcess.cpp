@@ -217,7 +217,9 @@ BasicPostProcess::Impl::Impl(_In_ ID3D11Device* device)
 
 
 // Sets our state onto the D3D device.
-void BasicPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, std::function<void __cdecl()>& setCustomState)
+void BasicPostProcess::Impl::Process(
+    _In_ ID3D11DeviceContext* deviceContext,
+    std::function<void __cdecl()>& setCustomState)
 {
     // Set the texture.
     ID3D11ShaderResourceView* textures[1] = { texture.Get() };
@@ -496,7 +498,9 @@ BasicPostProcess::~BasicPostProcess()
 
 
 // IPostProcess methods.
-void BasicPostProcess::Process(_In_ ID3D11DeviceContext* deviceContext, _In_opt_ std::function<void __cdecl()> setCustomState)
+void BasicPostProcess::Process(
+    _In_ ID3D11DeviceContext* deviceContext,
+    _In_opt_ std::function<void __cdecl()> setCustomState)
 {
     pImpl->Process(deviceContext, setCustomState);
 }

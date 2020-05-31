@@ -56,8 +56,13 @@ namespace DirectX
         virtual ~SpriteBatch();
 
         // Begin/End a batch of sprite drawing operations.
-        void XM_CALLCONV Begin(SpriteSortMode sortMode = SpriteSortMode_Deferred, _In_opt_ ID3D11BlendState* blendState = nullptr, _In_opt_ ID3D11SamplerState* samplerState = nullptr, _In_opt_ ID3D11DepthStencilState* depthStencilState = nullptr, _In_opt_ ID3D11RasterizerState* rasterizerState = nullptr,
-                               _In_opt_ std::function<void __cdecl()> setCustomShaders = nullptr, FXMMATRIX transformMatrix = MatrixIdentity);
+        void XM_CALLCONV Begin(SpriteSortMode sortMode = SpriteSortMode_Deferred,
+            _In_opt_ ID3D11BlendState* blendState = nullptr,
+            _In_opt_ ID3D11SamplerState* samplerState = nullptr,
+            _In_opt_ ID3D11DepthStencilState* depthStencilState = nullptr,
+            _In_opt_ ID3D11RasterizerState* rasterizerState = nullptr,
+            _In_opt_ std::function<void __cdecl()> setCustomShaders = nullptr,
+            FXMMATRIX transformMatrix = MatrixIdentity);
         void __cdecl End();
 
         // Draw overloads specifying position, origin and scale as XMFLOAT2.
