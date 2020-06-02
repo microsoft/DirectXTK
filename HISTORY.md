@@ -6,20 +6,30 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### June 1, 2020
+* Added BufferHelpers header with functions **CreateStaticBuffer** / **CreateTextureFromMemory**, and the **ConstantBuffer** helper class
+* Added **IsPowerOf2** and **CreateInputLayoutFromEffect** helpers to DirectXHelpers
+* Converted to typed enum bitmask flags (see release notes for details on this potential *breaking change*)
+  + ``AUDIO_ENGINE_FLAGS``, ``ModelLoaderFlags``, ``SOUND_EFFECT_INSTANCE_FLAGS``, and ``WIC_LOADER_FLAGS``
+* WICTextureLoader for ``PNG`` codec now checks ``gAMA`` chunk to determine colorspace if the ``sRGB`` chunk is not found for legacy sRGB detection.
+* ``WIC_LOADER_SRGB_DEFAULT`` flag added when loading image via WIC without explicit colorspace metadata
+* Retired XAudio 2.7 for *DirectX Tool Kit for Audio*. Use XAudio 2.9, XAudio 2.8, or XAudio2Redist instead.
+* CMake project updates
+
 ### May 10, 2020
 * WICTextureLoader updated with new loader flags: ``FORCE_RGBA32``, ``FIT_POW2``, and ``MAKE_SQUARE``
 * SimpleMath no longer forces use of d3d11.h or d3d12.h (can be used with d3d9.h for example)
-* *DirectX Tool Kit for Audio* updated with [SoundStreamInstance](https://github.com/microsoft/DirectXTK/wiki/SoundStreamInstance) class for async I/O playback from XACT-style streaming wavebanks
+* *DirectX Tool Kit for Audio* updated with **SoundStreamInstance** class for async I/O playback from XACT-style streaming wavebanks
 * Code cleanup
 * xwbtool: Updated with ``-l`` switch for case-sensitive file systems
 
 ### April 3, 2020
-* SpriteFont MeasureString / MeasureDrawBounds fixes for !ignoreWhitespace
-* Code review (constexpr / noexcept usage)
+* SpriteFont **MeasureString** / **MeasureDrawBounds** fixes for !ignoreWhitespace
+* Code review (``constexpr`` / ``noexcept`` usage)
 * CMake updated for PCH usage with 3.16 or later
 
 ### February 24, 2020
-* *breaking change* ``Model::CreateFrom*`` changed to use ModelLoaderFlags instead of default bool parameters
+* *breaking change* **Model::CreateFromxxx** changed to use ModelLoaderFlags instead of default bool parameters
 * DirectX Tool Kit for Audio updated to support XAudio2Redist NuGet
 * Added ``ignoreWhitespace`` defaulted parameter to SpriteFont Measure methods
 * Fixed encoding issue with Utilities.fxh
@@ -34,7 +44,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 * Code cleaup
 
 ### October 17, 2019
-* Added optional ``forceSRGB`` parameter to SaveWICTextureToFile
+* Added optional ``forceSRGB`` parameter to **SaveWICTextureToFile**
 * GamePad updated to report VID/PID (when supported)
 * Minor code cleanup
 
@@ -56,15 +66,15 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 ### April 26, 2019
 * Added VS 2019 desktop projects
 * Fixed guards w.r.t. to windows.h usage in Keyboard/Mouse headers
-* Added C++/WinRT SetWindow helper to Keyboard/Mouse
+* Added C++/WinRT **SetWindow** helper to Keyboard/Mouse
 * Code cleanup for texture loaders
 * Officially dropped Windows Vista support
 
 ### February 7, 2019
-* Model now supports loading SDKMESH v2 models
-* PBREffectFactory added to support PBR materials
+* Model now supports loading _SDKMESH v2_ models
+* **PBREffectFactory** added to support PBR materials
 * PBREffect and NormalMapEffect shaders updated to support ``BC5_UNORM`` compressed normal maps
-* SpriteFont: DrawString overloads for UTF-8 chars in addition to UTF-16LE wide chars
+* SpriteFont: **DrawString** overloads for UTF-8 chars in addition to UTF-16LE wide chars
 
 ### November 16, 2018
 * VS 2017 updated for Windows 10 October 2018 Update SDK (17763)
@@ -86,7 +96,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 * Code cleanup
 
 ### July 3, 2018
-* ModelMeshPart DrawInstanced method added
+* ModelMeshPart **DrawInstanced** method added
 * Code and project cleanup
 
 ### May 31, 2018
@@ -102,10 +112,10 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 * ``AlignUp``, ``AlignDown`` template functions in DirectXHelpers.h
 * Mouse support for cursor visibility
 * SimpleMath and VertexTypes updated with default copy and move ctors
-* SimpleMath updates to use constexpr
-* EffectFactory updated with ``GetDevice`` method
+* SimpleMath updates to use ``constexpr``
+* EffectFactory updated with **GetDevice** method
 * PostProcess updated with 'big triangle' optimization
-* Fix for CMO handling of skinning vertex data
+* Fix for ``CMO`` handling of skinning vertex data
 * Code and project file cleanup
 * xwbtool: Fixed Windows 7 compatibility issue
 
@@ -115,11 +125,11 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 * Code cleanup
 
 ### December 13, 2017
-* PBREffect and DebugEffect added
-* NormalMapEffect no longer requires or uses explicit vertex tangents
-* *breaking change* NormalMapEffect::SetBiasedVertexNormalsAndTangents renamed to SetBiasedVertexNormals
+* **PBREffect** and **DebugEffect** added
+* **NormalMapEffect** no longer requires or uses explicit vertex tangents
+* *breaking change* NormalMapEffect::SetBiasedVertexNormalsAndTangents renamed to **SetBiasedVertexNormals**
 * PBREffect, DebugEffect, & NormalMapEffect all require Direct3D hardware feature level 10.0 or better
-* ``VertexType`` typedef added to GeometricPrimitive as alias for VertexPositionNormalTexture
+* **VertexType** typedef added to GeometricPrimitive as alias for VertexPositionNormalTexture
 * Updated for VS 2017 15.5 update warnings
 * Code cleanup
 
@@ -129,9 +139,9 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ### September 22, 2017
 * Updated for VS 2017 15.3 update ``/permissive-`` changes
-* ScreenGrab updated to use non-sRGB metadata for PNG
-* Mouse use of WM_INPUT updated for Remote Desktop scenarios
-* Fix for CMO load issue when no materials are defined
+* **ScreenGrab** updated to use non-sRGB metadata for PNG
+* Mouse use of ``WM_INPUT`` updated for Remote Desktop scenarios
+* Fix for ``CMO`` load issue when no materials are defined
 * xwbtool: added ``-flist`` option
 
 ### July 28, 2017
@@ -139,7 +149,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 * Code cleanup
 
 ### June 21, 2017
-* Post-processing support
+* Post-processing support with the **BasicPostProcess**, **DualPostProcess**, and **ToneMapPostProcess** classes
 * SDKMESH loader fix when loading legacy files with all zero materials
 * DirectXTK for Audio: Minor fixes for environmental audio
 * Minor code cleanup
@@ -147,29 +157,29 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 ### April 24, 2017
 * VS 2017 project updates
 * Regenerated shaders using Windows 10 Creators Update SDK (15063)
-* Fixed NormalMapEffect shader selection for specular texture usage
-* Fixed AudioEngine enumeration when using Single Threaded Apartment (STA)
-* Fixed bug with GamePad (Windows.Gaming.Input) when no user bound
+* Fixed **NormalMapEffect** shader selection for specular texture usage
+* Fixed **AudioEngine** enumeration when using Single Threaded Apartment (STA)
+* Fixed bug with **GamePad** (Windows.Gaming.Input) when no user bound
 
 ### April 7, 2017
 * VS 2017 updated for Windows Creators Update SDK (15063)
 * XboxDDSTextureLoader updates
 
 ### February 10, 2017
-* GamePad now supports special value of ``-1`` for 'most recently connected controller'
+* **GamePad** now supports special value of ``-1`` for 'most recently connected controller'
 * WIC format 40bppCMYKAlpha should be converted to RGBA8 rather than RGBA16
 * DDS support for L8A8 with bitcount 8 rather than 16
 * Minor code cleanup
 
 ### December 5, 2016
-* Mouse and Keyboard classes updated with ``IsConnected`` method
+* Mouse and Keyboard classes updated with **IsConnected** method
 * Windows10 project ``/ZW`` switch removed to support use in C++/WinRT projection apps
 * VS 2017 RC projects added
 * Minor code cleanup
 
 ### October 6, 2016
 * SDKMESH loader and BasicEffects support for compressed vertex normals with biasing
-* WICTextureLoader Ex bool forceSRGB parameter is now a ``WIC_LOADER`` flag
+* WICTextureLoader Ex bool forceSRGB parameter is now a **WIC_LOADER_FLAGS** flag
 * Minor code cleanup
 
 ### September 15, 2016
@@ -178,7 +188,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ### September 1, 2016
 * Added ``forceSRGB`` optional parameter to SpriteFont ctor
-* EffectFactory method EnableForceSRGB added
+* EffectFactory method **EnableForceSRGB** added
 * DGSLEffect now defaults to diffuse/alpha of 1
 * Removed problematic ABI::Windows::Foundation::Rect interop for SimpleMath
 * Minor code cleanup
@@ -194,36 +204,36 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 * Specular falloff lighting computation fix in shaders
 
 ### July 18, 2016
-* NormalMapEffect for normal-map with optional specular map rendering
-* EnvironmentMapEffect now supports per-pixel lighting
-* Effects updated with SetMatrices and SetColorAndAlpha methods
+* **NormalMapEffect** for normal-map with optional specular map rendering
+* **EnvironmentMapEffect** now supports per-pixel lighting
+* Effects updated with **SetMatrices** and **SetColorAndAlpha** methods
 * SimpleMath: improved interop with DirectXMath constants
 * Minor code cleanup
 
 ### June 30, 2016
-* ``MeasureDrawString`` added to SpriteFont; bad fix to MeasureString reverted
+* **MeasureDrawString** added to SpriteFont; bad fix to MeasureString reverted
 * GamePad tracker updated to track emulated buttons (i.e. leftStickUp)
-* EffectFactory SetDirectory now checks current working directory (CWD) as well
+* EffectFactory **SetDirectory** now checks current working directory (CWD) as well
 * *breaking change* must include <d3d11.h> before including <SimpleMath.h>
 * Code refactor for sharing some files with DirectX 12 version
 * Minor code cleanup
 
 ### May 31, 2016
-* Added ``VertexPosition`` and ``VertexPositionDualTexture`` to VertexTypes
+* Added **VertexPosition** and **VertexPositionDualTexture** to VertexTypes
 * Xbox One platform fix for PrimitiveBatch
 * CompileShader script updated to build external pdbs
 * Code cleanup
 
 ### April 26, 2016
-* Added Rectangle class to SimpleMath
+* Added **Rectangle** class to SimpleMath
 * Fix for SDKMESH loader when loading models with 'extra' texture coordinate sets
-* Made SimpleMath's Viewport ComputeTitleSafeArea less conservative
-* Added view/menu alises to GamePad::ButtonStateTracker for Xbox One Controller naming
+* Made SimpleMath's Viewport **ComputeTitleSafeArea** less conservative
+* Added view/menu aliases to GamePad::ButtonStateTracker for Xbox One Controller naming
 * Retired Windows phone 8.0 projects and obsolete adapter code
 * Minor code and project file cleanup
 
 ### February 23, 2016
-* Fixed width computation bug in SpriteFont::MeasureString
+* Fixed width computation bug in **SpriteFont::MeasureString**
 * Fix to clean up partial or zero-length image files on failed write
 * Fix to WaveBankReader for UWP platform
 * Retired VS 2012 projects
@@ -232,24 +242,24 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ### January 5, 2016
 * Xbox One platform updates
-* *breaking change* Need to add use of GraphicsMemory class to Xbox One titles
+* *breaking change* Need to add use of **GraphicsMemory** class to Xbox One titles
 * Minor code cleanup
 
 ### November 30, 2015
 * SimpleMath improvements including Viewport class
-* Fixed bug with Keyboard for OpenBracket and later VK codes
-* Fixed bug with Mouse that reset the scrollwheel on app activate
-* MakeSpriteFont updated with ``/FastPack`` and ``/FeatureLevel`` switches
+* Fixed bug with **Keyboard** for ``OpenBracket`` and later VK codes
+* Fixed bug with **Mouse** that reset the scrollwheel on app activate
+* ``MakeSpriteFont`` updated with ``/FastPack`` and ``/FeatureLevel`` switches
 * Updated for VS 2015 Update 1 and Windows 10 SDK (10586)
 
 ### October 30, 2015
 * DirectXTK for Audio 3D updates
 * *breaking change* emitters/listeners now use RH coordinates by default
-* GeometricPrimitive support for custom geometry
+* **GeometricPrimitive** support for custom geometry
 * SimpleMath Matrix class improvements
 * DDS support for legacy bumpmap formats (V8U8, Q8W8V8U8, V16U16)
 * Mouse fix for WinRT implementation with multiple buttons pressed
-* Wireframe CommonStates no longer does backface culling
+* Wireframe **CommonStates** no longer does backface culling
 * Xbox One platform updates
 * Minor code cleanup
 
@@ -257,35 +267,35 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 * Xbox One platform updates
 
 ### July 29, 2015
-* Added CreateBox method to GeometricPrimitive
-* Added ``invertn`` optional parameter to CreateSphere
+* Added **CreateBox** method to GeometricPrimitive
+* Added ``invertn`` optional parameter to **CreateSphere**
 * Updates for Keyboard, Mouse class
 * Fixed bug when loading older SDKMESH models
 * Updated for VS 2015 and Windows 10 SDK RTM
 * Retired VS 2010 and Windows Store 8.0 projects
 
 ### July 1, 2015
-* Added Keyboard, Mouse class
+* Added **Keyboard**, **Mouse** class
 * Support for loading pre-lit models with SDKMESH
-* GamePad implemented using ``Windows.Gaming.Input`` for Windows 10
+* **GamePad** implemented using ``Windows.Gaming.Input`` for Windows 10
 * DirectXTK for Audio updates for xWMA support with XAudio 2.9
-* Added ``FindGlyph`` and ``GetSpriteSheet`` methods to SpriteFont
+* Added **FindGlyph** and **GetSpriteSheet** methods to SpriteFont
 
 ### March 27, 2015
 * Added projects for Windows apps Technical Preview
-* GamePad temporarily uses 'null' device for universal Windows applicaton platform
+* GamePad temporarily uses 'null' device for universal Windows application platform
 
 ### February 25, 2015
 * DirectXTK for Audio updates
-* *breaking change* pitch now defined as -1 to 1 with 0 as the default
-* One-shot Play method with volume, pitch, and pan
-* ``GetMasterVolume``/``SetMasterVolume`` method for AudioEngine
-* Fix for compact wavebank validation
-* Improved voice cleanup and shutdown
+  + *breaking change* pitch now defined as -1 to 1 with 0 as the default
+  + One-shot Play method with volume, pitch, and pan
+  + **GetMasterVolume** / **SetMasterVolume** method for AudioEngine
+  + Fix for compact wavebank validation
+  + Improved voice cleanup and shutdown
 * Minor code cleanup and C++11 ``=default``/``=delete`` usage
 
 ### January 26, 2015
-* GamePad class: emulate XInputEnable behavior for XInput 9.1.0
+* GamePad class: emulate ``XInputEnable`` behavior for XInput 9.1.0
 * DirectXTK for Audio fix for Stop followed by Play doing a proper restart
 * DirectXTK for Audio fix when using XAudio 2.7 on a system with no audio device
 * Updates for Xbox One platform support
@@ -299,15 +309,15 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 * Minor code cleanup
 
 ### October 28, 2014
-* Model support for loading from VBO files
+* Model support for loading from ``VBO`` files
 * Model render now sets samplers on slots 0,1 by default for dual-texture effects
 * Updates for Xbox One platform support
 * Minor code cleanup
 
 ### September 5, 2014
-* GamePad class: gamepad controller helper using XInput on Windows, IGamepad for Xbox One
+* **GamePad** class: gamepad controller helper using XInput on Windows, IGamepad for Xbox One
 * SimpleMath updates; Matrix billboard methods; *breaking change*: Matrix::Identity() -> Matrix::Identity
-* SpriteBatch new optional SetViewport method
+* SpriteBatch new optional **SetViewport** method
 * SpriteFont fix for white-space character rendering optimization
 * DDSTextureLoader fix for auto-gen mipmaps for volume textures
 * Explicit calling-convention annotation for public headers
@@ -322,7 +332,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 * Windows phone 8.1 platform support
 
 ### February 24, 2014
-* DirectXHelper: new utility header with ``MapGuard`` and public version of ``SetDebugObjectName`` template
+* DirectXHelper: new utility header with **MapGuard** and public version of **SetDebugObjectName** template
 * DDSTextureLoader: Optional support for auto-gen mipmaps
 * DDSTextureLoader/ScreenGrab: support for Direct3D 11 video formats including legacy "YUY2" DDS files
 * GeometricPrimtive: Handedness fix for tetrahedron, octahedron, dodecahedron, and icosahedron
@@ -331,41 +341,41 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ### January 24, 2014
 * DirectXTK for Audio updated with voice management and optional mastering volume limiter
-* Added orientation rotation support to SpriteBatch
+* Added orientation rotation support to **SpriteBatch**
 * Fixed a resource leak with ``GetDefaultTexture`` used by some Effects
 * Code cleanup (removed ``DXGI_1_2_FORMATS`` control define; d2d1.h workaround not needed; ScopedObject typedef removed)
 
 ### December 24, 2013
-* DirectXTK for Audio
+* Added **DirectX Tool Kit for Audio** using XAudio2
 * Xbox One platform support
-* MakeSpriteFont tool updated with more progress feedback when capturing large fonts
-* Minor updates for .SDKMESH Model loader
-* Fixed bug in .CMO Model loader when handling multiple textures
+* ``MakeSpriteFont`` tool updated with more progress feedback when capturing large fonts
+* Minor updates for ``SDKMESH`` Model loader
+* Fixed bug in ``CMO`` Model loader when handling multiple textures
 * Improved debugging output
 
 ### October 28, 2013
 * Updated for Visual Studio 2013 and Windows 8.1 SDK RTM
-* Added DGSLEffect, DGSLEffectFactory, VertexPositionNormalTangentColorTexture, and VertexPositionNormalTangentColorTextureSkinning
+* Added **DGSLEffect**, **DGSLEffectFactory**, **VertexPositionNormalTangentColorTexture**, and **VertexPositionNormalTangentColorTextureSkinning**
 * Model loading and effect factories support loading skinned models
-* MakeSpriteFont now has a smooth vs. sharp antialiasing option: /sharp
-* Model loading from CMOs now handles UV transforms for texture coordinates
-* A number of small fixes for EffectFactory
+* ``MakeSpriteFont`` now has a smooth vs. sharp antialiasing option: /sharp
+* Model loading from ``CMOs`` now handles UV transforms for texture coordinates
+* A number of small fixes for **EffectFactory**
 * Minor code and project cleanup
 * Added ``NO_D3D11_DEBUG_NAME`` compilation define to control population of Direct3D debug layer names for debug builds
 
 ### July 1, 2013
 * VS 2013 Preview projects added and updates for DirectXMath 3.05 ``__vectorcall``
-* Added use of sRGB WIC metadata for JPEG, PNG, and TIFF
+* Added use of sRGB WIC metadata for ``JPEG``, ``PNG``, and ``TIFF``
 * SaveToWIC functions updated with new optional setCustomProps parameter and error check with optional targetFormat
 
 ### May 30, 2013
-* Added more GeometricPrimitives: Cone, Tetrahedron, Octahedron, Dodecahedron, Icosahedron
+* Added more **GeometricPrimitives**: Cone, Tetrahedron, Octahedron, Dodecahedron, Icosahedron
 * Updated to support loading new metadata from DDS files (if present)
 * Fixed bug with loading of WIC 32bpp RGBE format images
 * Fixed bug when skipping mipmaps in a 1D or 2D array texture DDS file
 
 ### February 22, 2013
-* Added SimpleMath header
+* Added **SimpleMath** header
 * Fixed bug that prevented properly overriding EffectFactory::CreateTexture
 * Fixed forceSRGB logic in DDSTextureLoader and WICTextureLoader
 * Break circular reference chains when using SpriteBatch with a setCustomShaders lambda
@@ -374,15 +384,15 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 * Added ``WIC_USE_FACTORY_PROXY`` build option (uses WindowsCodecs.dll entrypoint rather than CoCreateInstance)
 
 ### January 25, 2013
-* GeometricPrimitive support for left-handed coordinates and drawing with custom effects
+* **GeometricPrimitive** support for left-handed coordinates and drawing with custom effects
 * Model, ModelMesh, and ModelMeshPart added with loading of rigid non-animating models from .CMO and .SDKMESH files
 * EffectFactory helper class added
 
 ### December 11, 2012
-* Ex versions of DDSTextureLoader and WICTextureLoader
-* Removed use of ATL's CComPtr in favor of WRL's ComPtr for all platforms to support VS Express editions
+* Ex versions of **DDSTextureLoader** and **WICTextureLoader**
+* Removed use of ATL's ``CComPtr`` in favor of WRL's ``ComPtr`` for all platforms to support VS Express editions
 * Updated VS 2010 project for official 'property sheet' integration for Windows 8.0 SDK
-* Minor fix to CommonStates for Feature Level 9.1
+* Minor fix to **CommonStates** for Feature Level 9.1
 * Tweaked AlphaTestEffect.cpp to work around ARM NEON compiler codegen bug
 * Added dxguid.lib as a default library for Debug builds to resolve GUID link issues
 
@@ -394,12 +404,12 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 * Added project files for Windows phone 8
 
 ### October 12, 2012
-* Added PrimitiveBatch for drawing user primitives
+* Added **PrimitiveBatch** for drawing user primitives
 * Debug object names for all D3D resources (for PIX and debug layer leak reporting)
 
 ### October 2, 2012
-* Added ScreenGrab module
-* Added CreateGeoSphere for drawing a geodesic sphere
+* Added **ScreenGrab** module
+* Added **CreateGeoSphere** for drawing a geodesic sphere
 * Put DDSTextureLoader and WICTextureLoader into the DirectX C++ namespace
 
 ### September 7, 2012
@@ -414,7 +424,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 * Minor fix for DDSTextureLoader's retry fallback that can happen with 10level9 feature levels
 
 ### May 2, 2012
-* Added SpriteFont implementation and the MakeSpriteFont utility
+* Added **SpriteFont** implementation and the MakeSpriteFont utility
 
 ### March 29, 2012
 * WICTextureLoader updated with Windows 8 WIC native pixel formats
