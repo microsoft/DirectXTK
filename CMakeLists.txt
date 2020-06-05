@@ -12,6 +12,8 @@ project (DirectXTK LANGUAGES CXX)
 option(BUILD_XAUDIO_WIN10 "Build for XAudio 2.9" OFF)
 option(BUILD_XAUDIO_WIN8 "Build for XAudio 2.8" ON)
 
+option(ENABLE_CODE_ANALYSIS "Use Static Code Analysis on build" OFF)
+
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -117,7 +119,7 @@ set(SHADER_SOURCES
     Src/Shaders/ToneMap.fx
     Src/Shaders/Utilities.fxh)
 
-if((BUILD_XAUDIO_WIN10 MATCHES ON) OR (BUILD_XAUDIO_WIN8 MATCHES ON))
+if((BUILD_XAUDIO_WIN10) OR (BUILD_XAUDIO_WIN8))
     set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
         Inc/Audio.h
         Audio/AudioEngine.cpp
@@ -156,7 +158,7 @@ source_group(Src REGULAR_EXPRESSION Src/*.*)
 target_include_directories(${PROJECT_NAME} PUBLIC Inc)
 target_include_directories(${PROJECT_NAME} PRIVATE Src)
 
-if((BUILD_XAUDIO_WIN10 MATCHES ON) OR (BUILD_XAUDIO_WIN8 MATCHES ON))
+if((BUILD_XAUDIO_WIN10) OR (BUILD_XAUDIO_WIN8))
     target_include_directories(${PROJECT_NAME} PRIVATE Audio)
 endif()
 
@@ -181,6 +183,11 @@ source_group(xwbtool REGULAR_EXPRESSION XWBTool/*.*)
 if(MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /fp:fast)
     target_compile_options(xwbtool PRIVATE /fp:fast)
+
+   if(ENABLE_CODE_ANALYSIS)
+      target_compile_options(${PROJECT_NAME} PRIVATE /analyze)
+      target_compile_options(xwbtool PRIVATE /analyze)
+   endif()
 
     if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.26)
         target_compile_options(${PROJECT_NAME} PRIVATE /Zc:preprocessor /wd5104 /wd5105)
@@ -214,9 +221,9 @@ if(WIN32)
     target_compile_definitions(${PROJECT_NAME} PRIVATE _UNICODE UNICODE)
     target_compile_definitions(xwbtool PRIVATE _UNICODE UNICODE _WIN32_WINNT=0x0601)
 
-    if(BUILD_XAUDIO_WIN10 MATCHES ON)
+    if(BUILD_XAUDIO_WIN10)
         target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0A00)
-    elseif(BUILD_XAUDIO_WIN8 MATCHES ON)
+    elseif(BUILD_XAUDIO_WIN8)
         target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0602)
     else()
         target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0601)
