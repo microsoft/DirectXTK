@@ -689,7 +689,7 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
                 uint32_t seekOffset = mPackets[mCurrentPlayBuffer].startPosition / mBlockAlign;
                 if (seekOffset > MAX_STREAMING_SEEK_PACKETS)
                 {
-                    DebugTrace("ERROR: xWMA packet seek count exceeds %u\n", MAX_STREAMING_SEEK_PACKETS);
+                    DebugTrace("ERROR: xWMA packet seek count exceeds %zu\n", MAX_STREAMING_SEEK_PACKETS);
                     return E_FAIL;
                 }
                 else if (seekOffset > 0)
