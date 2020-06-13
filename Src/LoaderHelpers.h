@@ -97,10 +97,23 @@ namespace DirectX
                 case DXGI_FORMAT_AYUV:
                 case DXGI_FORMAT_Y410:
                 case DXGI_FORMAT_YUY2:
+#if defined(_XBOX_ONE) && defined(_TITLE)
+                case DXGI_FORMAT_R10G10B10_7E3_A2_FLOAT:
+                case DXGI_FORMAT_R10G10B10_6E4_A2_FLOAT:
+                case DXGI_FORMAT_R10G10B10_SNORM_A2_UNORM:
+#endif
                     return 32;
 
                 case DXGI_FORMAT_P010:
                 case DXGI_FORMAT_P016:
+#if (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
+                case DXGI_FORMAT_V408:
+#endif
+#if defined(_XBOX_ONE) && defined(_TITLE)
+                case DXGI_FORMAT_D16_UNORM_S8_UINT:
+                case DXGI_FORMAT_R16_UNORM_X8_TYPELESS:
+                case DXGI_FORMAT_X16_TYPELESS_G8_UINT:
+#endif
                     return 24;
 
                 case DXGI_FORMAT_R8G8_TYPELESS:
@@ -119,6 +132,10 @@ namespace DirectX
                 case DXGI_FORMAT_B5G5R5A1_UNORM:
                 case DXGI_FORMAT_A8P8:
                 case DXGI_FORMAT_B4G4R4A4_UNORM:
+#if (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
+                case DXGI_FORMAT_P208:
+                case DXGI_FORMAT_V208:
+#endif
                     return 16;
 
                 case DXGI_FORMAT_NV12:
@@ -132,22 +149,6 @@ namespace DirectX
                 case DXGI_FORMAT_R8_SNORM:
                 case DXGI_FORMAT_R8_SINT:
                 case DXGI_FORMAT_A8_UNORM:
-                case DXGI_FORMAT_AI44:
-                case DXGI_FORMAT_IA44:
-                case DXGI_FORMAT_P8:
-                    return 8;
-
-                case DXGI_FORMAT_R1_UNORM:
-                    return 1;
-
-                case DXGI_FORMAT_BC1_TYPELESS:
-                case DXGI_FORMAT_BC1_UNORM:
-                case DXGI_FORMAT_BC1_UNORM_SRGB:
-                case DXGI_FORMAT_BC4_TYPELESS:
-                case DXGI_FORMAT_BC4_UNORM:
-                case DXGI_FORMAT_BC4_SNORM:
-                    return 4;
-
                 case DXGI_FORMAT_BC2_TYPELESS:
                 case DXGI_FORMAT_BC2_UNORM:
                 case DXGI_FORMAT_BC2_UNORM_SRGB:
@@ -163,35 +164,24 @@ namespace DirectX
                 case DXGI_FORMAT_BC7_TYPELESS:
                 case DXGI_FORMAT_BC7_UNORM:
                 case DXGI_FORMAT_BC7_UNORM_SRGB:
-                    return 8;
-
-            #if (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
-
-                case DXGI_FORMAT_V408:
-                    return 24;
-
-                case DXGI_FORMAT_P208:
-                case DXGI_FORMAT_V208:
-                    return 16;
-
-            #endif // (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
-
-            #if defined(_XBOX_ONE) && defined(_TITLE)
-
-                case DXGI_FORMAT_R10G10B10_7E3_A2_FLOAT:
-                case DXGI_FORMAT_R10G10B10_6E4_A2_FLOAT:
-                case DXGI_FORMAT_R10G10B10_SNORM_A2_UNORM:
-                    return 32;
-
-                case DXGI_FORMAT_D16_UNORM_S8_UINT:
-                case DXGI_FORMAT_R16_UNORM_X8_TYPELESS:
-                case DXGI_FORMAT_X16_TYPELESS_G8_UINT:
-                    return 24;
-
+                case DXGI_FORMAT_AI44:
+                case DXGI_FORMAT_IA44:
+                case DXGI_FORMAT_P8:
+#if defined(_XBOX_ONE) && defined(_TITLE)
                 case DXGI_FORMAT_R4G4_UNORM:
+#endif
                     return 8;
 
-            #endif // _XBOX_ONE && _TITLE
+                case DXGI_FORMAT_R1_UNORM:
+                    return 1;
+
+                case DXGI_FORMAT_BC1_TYPELESS:
+                case DXGI_FORMAT_BC1_UNORM:
+                case DXGI_FORMAT_BC1_UNORM_SRGB:
+                case DXGI_FORMAT_BC4_TYPELESS:
+                case DXGI_FORMAT_BC4_UNORM:
+                case DXGI_FORMAT_BC4_SNORM:
+                    return 4;
 
                 case DXGI_FORMAT_UNKNOWN:
                 case DXGI_FORMAT_FORCE_UINT:
