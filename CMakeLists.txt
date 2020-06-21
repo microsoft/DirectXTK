@@ -143,12 +143,12 @@ if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.16")
 endif()
 
 add_custom_command(
-    OUTPUT "${CMAKE_SOURCE_DIR}/Src/Shaders/Compiled/SpriteEffect_SpriteVertexShader.inc"
-    MAIN_DEPENDENCY "${CMAKE_SOURCE_DIR}/Src/Shaders/CompileShaders.cmd"
+    OUTPUT "${PROJECT_SOURCE_DIR}/Src/Shaders/Compiled/SpriteEffect_SpriteVertexShader.inc"
+    MAIN_DEPENDENCY "${PROJECT_SOURCE_DIR}/Src/Shaders/CompileShaders.cmd"
     DEPENDS ${SHADER_SOURCES}
     COMMENT "Generating HLSL shaders..."
     COMMAND "CompileShaders.cmd"
-    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/Src/Shaders"
+    WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/Src/Shaders"
     USES_TERMINAL)
 
 source_group(Audio REGULAR_EXPRESSION Audio/*.*)
