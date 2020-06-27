@@ -54,7 +54,7 @@ namespace
         if (!wfx)
             return 0;
 
-        size_t buffer = wfx->nAvgBytesPerSec * 2;
+        size_t buffer = size_t(wfx->nAvgBytesPerSec) * 2u;
 
     #ifdef DIRECTX_ENABLE_XMA2
         if (tag == WAVE_FORMAT_XMA2)
@@ -510,7 +510,7 @@ HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
     uint32_t readBuffer = mCurrentDiskReadBuffer;
     for (uint32_t j = 0; j < MAX_BUFFER_COUNT; ++j)
     {
-        uint32_t entry = (j + readBuffer) % MAX_BUFFER_COUNT;
+        uint32_t entry = (j + readBuffer) % uint32_t(MAX_BUFFER_COUNT);
         if (mPackets[entry].state == State::FREE)
         {
             if (mCurrentPosition < mLengthInBytes)
@@ -533,7 +533,7 @@ HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
 
                 mCurrentPosition += cbValid;
 
-                mCurrentDiskReadBuffer = (entry + 1) % MAX_BUFFER_COUNT;
+                mCurrentDiskReadBuffer = (entry + 1) % uint32_t(MAX_BUFFER_COUNT);
 
                 mPackets[entry].state = State::PENDING;
 
@@ -716,7 +716,7 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
         }
 
         mPackets[mCurrentPlayBuffer].state = State::PLAYING;
-        mCurrentPlayBuffer = (mCurrentPlayBuffer + 1) % MAX_BUFFER_COUNT;
+        mCurrentPlayBuffer = (mCurrentPlayBuffer + 1) % uint32_t(MAX_BUFFER_COUNT);
     }
 
     return S_OK;
