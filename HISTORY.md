@@ -6,6 +6,12 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### July 2, 2020
+* Improved SpriteFont drawing performance in Debug builds
+* Regenerated shaders using Windows 10 May 2020 Update SDK (19041)
+* Code cleanup for some new VC++ 16.7 warnings and static code analysis
+* CMake updates
+
 ### June 1, 2020
 * Added BufferHelpers header with functions **CreateStaticBuffer** / **CreateTextureFromMemory**, and the **ConstantBuffer** helper class
 * Added **IsPowerOf2** and **CreateInputLayoutFromEffect** helpers to DirectXHelpers

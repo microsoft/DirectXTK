@@ -30,7 +30,7 @@ SpriteBatch - simple &amp; efficient 2D sprite rendering
 SpriteFont - bitmap based text rendering
 VertexTypes - structures for commonly used vertex data formats
 WICTextureLoader - WIC-based image file texture loader</description>
-        <releaseNotes>Matches the June 1, 2020 release on GitHub.</releaseNotes>
+        <releaseNotes>Matches the July 2, 2020 release on GitHub.</releaseNotes>
         <projectUrl>http://go.microsoft.com/fwlink/?LinkId=248929</projectUrl>
         <icon>images\icon.jpg</icon>
         <license type="expression">MIT</license>
