@@ -678,7 +678,7 @@ void EnvironmentMapEffect::SetMode(EnvironmentMapEffect::Mapping mapping)
 {
     if (static_cast<int>(mapping) < 0 || static_cast<int>(mapping) >= EnvironmentMapEffectTraits::MappingCount)
     {
-        throw std::invalid_argument("Unsupported mode");
+        throw std::invalid_argument("Unsupported mapping");
     }
 
     if (mapping == Mapping_DualParabola)
