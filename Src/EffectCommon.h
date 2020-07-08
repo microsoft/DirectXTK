@@ -130,6 +130,7 @@ namespace DirectX
         ID3D11VertexShader* DemandCreateVertexShader(_Inout_ Microsoft::WRL::ComPtr<ID3D11VertexShader>& vertexShader, ShaderBytecode const& bytecode);
         ID3D11PixelShader * DemandCreatePixelShader (_Inout_ Microsoft::WRL::ComPtr<ID3D11PixelShader> & pixelShader,  ShaderBytecode const& bytecode);
         ID3D11ShaderResourceView* GetDefaultTexture();
+        D3D_FEATURE_LEVEL GetDeviceFeatureLevel() const;
 
     protected:
         Microsoft::WRL::ComPtr<ID3D11Device> mDevice;
@@ -222,8 +223,9 @@ namespace DirectX
         }
 
 
-        // Helper returns the default texture.
+        // Helpers
         ID3D11ShaderResourceView* GetDefaultTexture() { return mDeviceResources->GetDefaultTexture(); }
+        D3D_FEATURE_LEVEL GetDeviceFeatureLevel() const { return mDeviceResources->GetDeviceFeatureLevel(); };
 
 
     protected:
@@ -275,9 +277,9 @@ namespace DirectX
             }
 
 
-            // Gets or lazily creates the default texture
+            // Helpers
             ID3D11ShaderResourceView* GetDefaultTexture() { return EffectDeviceResources::GetDefaultTexture(); }
-
+            D3D_FEATURE_LEVEL GetDeviceFeatureLevel() const { return EffectDeviceResources::GetDeviceFeatureLevel(); };
 
         private:
             Microsoft::WRL::ComPtr<ID3D11VertexShader> mVertexShaders[Traits::VertexShaderCount];

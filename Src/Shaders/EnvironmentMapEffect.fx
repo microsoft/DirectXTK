@@ -5,8 +5,10 @@
 // http://create.msdn.com/en-US/education/catalog/sample/stock_effects
 
 
-Texture2D<float4>   Texture        : register(t0);
-TextureCube<float4> EnvironmentMap : register(t1);
+Texture2D<float4>   Texture             : register(t0);
+TextureCube<float4> EnvironmentMap      : register(t1);
+Texture2D<float4>   SphereMap           : register(t1);
+Texture2DArray<float4> DualParabolaMap  : register(t1);
 
 sampler Sampler       : register(s0);
 sampler EnvMapSampler : register(s1);
@@ -81,6 +83,8 @@ VSOutputTxEnvMap ComputeEnvMapVSOutput(VSInputNmTx vin, float3 normal, uniform b
 }
 
 
+// Cubic environment mapping
+// Greene, "Environment Mapping and Other Applications of World Projections", IEEE Computer Graphics and Applications. 1986.
 float4 ComputeEnvMapPSOutput(PSInputPixelLightingTx pin, uniform bool useFresnel)
 {
     float4 color = Texture.Sample(Sampler, pin.TexCoord) * pin.Diffuse;
@@ -95,6 +99,70 @@ float4 ComputeEnvMapPSOutput(PSInputPixelLightingTx pin, uniform bool useFresnel
     float3 envcoord = reflect(-eyeVector, worldNormal);
 
     float4 envmap = EnvironmentMap.Sample(EnvMapSampler, envcoord) * color.a;
+
+    float3 amount;
+    if (useFresnel)
+        amount = ComputeFresnelFactor(eyeVector, worldNormal);
+    else
+        amount = EnvironmentMapAmount;
+
+    color.rgb = lerp(color.rgb, envmap.rgb, amount.rgb);
+    color.rgb += EnvironmentMapSpecular * envmap.a;
+
+    return color;
+}
+
+
+// Spherical environment mapping
+// Blinn & Newell, "Texture and Reflection in Computer Generated Images", Communications of the ACM. 1976.
+float4 ComputeEnvMapSpherePSOutput(PSInputPixelLightingTx pin, uniform bool useFresnel)
+{
+    float4 color = Texture.Sample(Sampler, pin.TexCoord) * pin.Diffuse;
+
+    float3 eyeVector = normalize(EyePosition - pin.PositionWS.xyz);
+    float3 worldNormal = normalize(pin.NormalWS);
+
+    ColorPair lightResult = ComputeLights(eyeVector, worldNormal, 3);
+
+    color.rgb *= lightResult.Diffuse;
+
+    float3 r = reflect(-eyeVector, worldNormal);
+    float m = 2.0 * sqrt(r.x*r.x + r.y*r.y + (r.z + 1.0)*(r.z + 1.0));
+    float2 envcoord = float2(r.x / m + 0.5, r.y / m + 0.5);
+
+    float4 envmap = SphereMap.Sample(EnvMapSampler, envcoord) * color.a;
+
+    float3 amount;
+    if (useFresnel)
+        amount = ComputeFresnelFactor(eyeVector, worldNormal);
+    else
+        amount = EnvironmentMapAmount;
+
+    color.rgb = lerp(color.rgb, envmap.rgb, amount.rgb);
+    color.rgb += EnvironmentMapSpecular * envmap.a;
+
+    return color;
+}
+
+
+// Dual-parabola environment mapping
+// Heidrich & Seidel, "View-independent Environment Maps", Eurographics Workshop on Graphics Hardware, 1998.
+float4 ComputeEnvMapDualParabolaPSOutput(PSInputPixelLightingTx pin, uniform bool useFresnel)
+{
+    float4 color = Texture.Sample(Sampler, pin.TexCoord) * pin.Diffuse;
+
+    float3 eyeVector = normalize(EyePosition - pin.PositionWS.xyz);
+    float3 worldNormal = normalize(pin.NormalWS);
+
+    ColorPair lightResult = ComputeLights(eyeVector, worldNormal, 3);
+
+    color.rgb *= lightResult.Diffuse;
+
+    float3 r = reflect(-eyeVector, worldNormal);
+    float m = 2.0 * (1.0 + abs(r.z));
+    float3 envcoord = float3(r.x / m + 0.5, r.y / m + 0.5, (r.z > 0) ? 0 : 1);
+
+    float4 envmap = DualParabolaMap.Sample(EnvMapSampler, envcoord) * color.a;
 
     float3 amount;
     if (useFresnel)
@@ -179,6 +247,11 @@ VSOutputPixelLightingTx VSEnvMapPixelLighting(VSInputNmTx vin)
     return vout;
 }
 
+VSOutputPixelLightingTx VSEnvMapPixelLightingSM4(VSInputNmTx vin)
+{
+    return VSEnvMapPixelLighting(vin);
+}
+
 VSOutputPixelLightingTx VSEnvMapPixelLightingBn(VSInputNmTx vin)
 {
     VSOutputPixelLightingTx vout;
@@ -194,8 +267,13 @@ VSOutputPixelLightingTx VSEnvMapPixelLightingBn(VSInputNmTx vin)
     return vout;
 }
 
+VSOutputPixelLightingTx VSEnvMapPixelLightingBnSM4(VSInputNmTx vin)
+{
+    return VSEnvMapPixelLightingBn(vin);
+}
 
-// Pixel shader: basic.
+
+// Pixel shader (cube mapping): basic.
 float4 PSEnvMap(PSInputTxEnvMap pin) : SV_Target0
 {
     float4 color = Texture.Sample(Sampler, pin.TexCoord) * pin.Diffuse;
@@ -209,7 +287,7 @@ float4 PSEnvMap(PSInputTxEnvMap pin) : SV_Target0
 }
 
 
-// Pixel shader: no fog.
+// Pixel shader (cube mapping): no fog.
 float4 PSEnvMapNoFog(PSInputTxEnvMap pin) : SV_Target0
 {
     float4 color = Texture.Sample(Sampler, pin.TexCoord) * pin.Diffuse;
@@ -221,7 +299,7 @@ float4 PSEnvMapNoFog(PSInputTxEnvMap pin) : SV_Target0
 }
 
 
-// Pixel shader: specular.
+// Pixel shader (cube mapping): specular.
 float4 PSEnvMapSpecular(PSInputTxEnvMap pin) : SV_Target0
 {
     float4 color = Texture.Sample(Sampler, pin.TexCoord) * pin.Diffuse;
@@ -236,7 +314,7 @@ float4 PSEnvMapSpecular(PSInputTxEnvMap pin) : SV_Target0
 }
 
 
-// Pixel shader: specular, no fog.
+// Pixel shader (cube mapping): specular, no fog.
 float4 PSEnvMapSpecularNoFog(PSInputTxEnvMap pin) : SV_Target0
 {
     float4 color = Texture.Sample(Sampler, pin.TexCoord) * pin.Diffuse;
@@ -249,7 +327,7 @@ float4 PSEnvMapSpecularNoFog(PSInputTxEnvMap pin) : SV_Target0
 }
 
 
-// Pixel shader: pixel lighting.
+// Pixel shader (cube mapping): pixel lighting.
 float4 PSEnvMapPixelLighting(PSInputPixelLightingTx pin) : SV_Target0
 {
     float4 color = ComputeEnvMapPSOutput(pin, false);
@@ -260,7 +338,7 @@ float4 PSEnvMapPixelLighting(PSInputPixelLightingTx pin) : SV_Target0
 }
 
 
-// Pixel shader: pixel lighting + no fog.
+// Pixel shader (cube mapping): pixel lighting + no fog.
 float4 PSEnvMapPixelLightingNoFog(PSInputPixelLightingTx pin) : SV_Target0
 {
     float4 color = ComputeEnvMapPSOutput(pin, false);
@@ -269,7 +347,7 @@ float4 PSEnvMapPixelLightingNoFog(PSInputPixelLightingTx pin) : SV_Target0
 }
 
 
-// Pixel shader: pixel lighting + fresnel
+// Pixel shader (cube mapping): pixel lighting + fresnel
 float4 PSEnvMapPixelLightingFresnel(PSInputPixelLightingTx pin) : SV_Target0
 {
     float4 color = ComputeEnvMapPSOutput(pin, true);
@@ -280,10 +358,90 @@ float4 PSEnvMapPixelLightingFresnel(PSInputPixelLightingTx pin) : SV_Target0
 }
 
 
-// Pixel shader: pixel lighting + fresnel + no fog.
+// Pixel shader (cube mapping): pixel lighting + fresnel + no fog.
 float4 PSEnvMapPixelLightingFresnelNoFog(PSInputPixelLightingTx pin) : SV_Target0
 {
     float4 color = ComputeEnvMapPSOutput(pin, true);
+
+    return color;
+}
+
+
+// Pixel shader (sphere mapping): pixel lighting.
+float4 PSEnvMapSpherePixelLighting(PSInputPixelLightingTx pin) : SV_Target0
+{
+    float4 color = ComputeEnvMapSpherePSOutput(pin, false);
+
+    ApplyFog(color, pin.PositionWS.w);
+
+    return color;
+}
+
+
+// Pixel shader (sphere mapping): pixel lighting + no fog.
+float4 PSEnvMapSpherePixelLightingNoFog(PSInputPixelLightingTx pin) : SV_Target0
+{
+    float4 color = ComputeEnvMapSpherePSOutput(pin, false);
+
+    return color;
+}
+
+
+// Pixel shader (sphere mapping): pixel lighting + fresnel
+float4 PSEnvMapSpherePixelLightingFresnel(PSInputPixelLightingTx pin) : SV_Target0
+{
+    float4 color = ComputeEnvMapSpherePSOutput(pin, true);
+
+    ApplyFog(color, pin.PositionWS.w);
+
+    return color;
+}
+
+
+// Pixel shader (sphere mapping): pixel lighting + fresnel + no fog.
+float4 PSEnvMapSpherePixelLightingFresnelNoFog(PSInputPixelLightingTx pin) : SV_Target0
+{
+    float4 color = ComputeEnvMapSpherePSOutput(pin, true);
+
+    return color;
+}
+
+
+// Pixel shader (dual parabola mapping): pixel lighting.
+float4 PSEnvMapDualParabolaPixelLighting(PSInputPixelLightingTx pin) : SV_Target0
+{
+    float4 color = ComputeEnvMapDualParabolaPSOutput(pin, false);
+
+    ApplyFog(color, pin.PositionWS.w);
+
+    return color;
+}
+
+
+// Pixel shader (dual parabola mapping): pixel lighting + no fog.
+float4 PSEnvMapDualParabolaPixelLightingNoFog(PSInputPixelLightingTx pin) : SV_Target0
+{
+    float4 color = ComputeEnvMapDualParabolaPSOutput(pin, false);
+
+    return color;
+}
+
+
+// Pixel shader (dual parabola mapping): pixel lighting + fresnel
+float4 PSEnvMapDualParabolaPixelLightingFresnel(PSInputPixelLightingTx pin) : SV_Target0
+{
+    float4 color = ComputeEnvMapDualParabolaPSOutput(pin, true);
+
+    ApplyFog(color, pin.PositionWS.w);
+
+    return color;
+}
+
+
+// Pixel shader (dual parabola mapping): pixel lighting + fresnel + no fog.
+float4 PSEnvMapDualParabolaPixelLightingFresnelNoFog(PSInputPixelLightingTx pin) : SV_Target0
+{
+    float4 color = ComputeEnvMapDualParabolaPSOutput(pin, true);
 
     return color;
 }

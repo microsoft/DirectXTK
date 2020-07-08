@@ -450,3 +450,9 @@ ID3D11ShaderResourceView* EffectDeviceResources::GetDefaultTexture()
         return hr;
     });
 }
+
+// Gets device feature level
+D3D_FEATURE_LEVEL EffectDeviceResources::GetDeviceFeatureLevel() const
+{
+    return mDevice->GetFeatureLevel();
+}

@@ -118,6 +118,8 @@ call :CompileShader%1 EnvironmentMapEffect vs VSEnvMapOneLightFresnel
 call :CompileShader%1 EnvironmentMapEffect vs VSEnvMapOneLightFresnelBn
 call :CompileShader%1 EnvironmentMapEffect vs VSEnvMapPixelLighting
 call :CompileShader%1 EnvironmentMapEffect vs VSEnvMapPixelLightingBn
+call :CompileShaderSM4%1 EnvironmentMapEffect vs VSEnvMapPixelLightingSM4
+call :CompileShaderSM4%1 EnvironmentMapEffect vs VSEnvMapPixelLightingBnSM4
 
 call :CompileShader%1 EnvironmentMapEffect ps PSEnvMap
 call :CompileShader%1 EnvironmentMapEffect ps PSEnvMapNoFog
@@ -127,6 +129,16 @@ call :CompileShader%1 EnvironmentMapEffect ps PSEnvMapPixelLighting
 call :CompileShader%1 EnvironmentMapEffect ps PSEnvMapPixelLightingNoFog
 call :CompileShader%1 EnvironmentMapEffect ps PSEnvMapPixelLightingFresnel
 call :CompileShader%1 EnvironmentMapEffect ps PSEnvMapPixelLightingFresnelNoFog
+
+call :CompileShader%1 EnvironmentMapEffect ps PSEnvMapSpherePixelLighting
+call :CompileShader%1 EnvironmentMapEffect ps PSEnvMapSpherePixelLightingNoFog
+call :CompileShader%1 EnvironmentMapEffect ps PSEnvMapSpherePixelLightingFresnel
+call :CompileShader%1 EnvironmentMapEffect ps PSEnvMapSpherePixelLightingFresnelNoFog
+
+call :CompileShaderSM4%1 EnvironmentMapEffect ps PSEnvMapDualParabolaPixelLighting
+call :CompileShaderSM4%1 EnvironmentMapEffect ps PSEnvMapDualParabolaPixelLightingNoFog
+call :CompileShaderSM4%1 EnvironmentMapEffect ps PSEnvMapDualParabolaPixelLightingFresnel
+call :CompileShaderSM4%1 EnvironmentMapEffect ps PSEnvMapDualParabolaPixelLightingFresnelNoFog
 
 call :CompileShader%1 SkinnedEffect vs VSSkinnedVertexLightingOneBone
 call :CompileShader%1 SkinnedEffect vs VSSkinnedVertexLightingOneBoneBn

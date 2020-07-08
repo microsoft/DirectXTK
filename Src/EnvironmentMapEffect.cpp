@@ -46,9 +46,11 @@ struct EnvironmentMapEffectTraits
 {
     using ConstantBufferType = EnvironmentMapEffectConstants;
 
-    static constexpr int VertexShaderCount = 10;
-    static constexpr int PixelShaderCount = 8;
-    static constexpr int ShaderPermutationCount = 40;
+    static constexpr int VertexShaderCount = 12;
+    static constexpr int PixelShaderCount = 16;
+    static constexpr int ShaderPermutationCount = 56;
+
+    static constexpr int MappingCount = 3;
 };
 
 
@@ -62,6 +64,8 @@ public:
     bool fresnelEnabled;
     bool specularEnabled;
     bool biasedVertexNormals;
+    EnvironmentMapEffect::Mapping mapping;
+    bool shaderModel4;
 
     EffectLights lights;
 
@@ -97,18 +101,30 @@ namespace
     #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_PSEnvMapPixelLightingNoFog.inc"
     #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_PSEnvMapPixelLightingFresnel.inc"
     #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_PSEnvMapPixelLightingFresnelNoFog.inc"
+
+    #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_PSEnvMapSpherePixelLighting.inc"
+    #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_PSEnvMapSpherePixelLightingNoFog.inc"
+    #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_PSEnvMapSpherePixelLightingFresnel.inc"
+    #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_PSEnvMapSpherePixelLightingFresnelNoFog.inc"
+
+    #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_PSEnvMapDualParabolaPixelLighting.inc"
+    #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_PSEnvMapDualParabolaPixelLightingNoFog.inc"
+    #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_PSEnvMapDualParabolaPixelLightingFresnel.inc"
+    #include "Shaders/Compiled/XboxOneEnvironmentMapEffect_PSEnvMapDualParabolaPixelLightingFresnelNoFog.inc"
 #else
     #include "Shaders/Compiled/EnvironmentMapEffect_VSEnvMap.inc"
     #include "Shaders/Compiled/EnvironmentMapEffect_VSEnvMapFresnel.inc"
     #include "Shaders/Compiled/EnvironmentMapEffect_VSEnvMapOneLight.inc"
     #include "Shaders/Compiled/EnvironmentMapEffect_VSEnvMapOneLightFresnel.inc"
     #include "Shaders/Compiled/EnvironmentMapEffect_VSEnvMapPixelLighting.inc"
+    #include "Shaders/Compiled/EnvironmentMapEffect_VSEnvMapPixelLightingSM4.inc"
 
     #include "Shaders/Compiled/EnvironmentMapEffect_VSEnvMapBn.inc"
     #include "Shaders/Compiled/EnvironmentMapEffect_VSEnvMapFresnelBn.inc"
     #include "Shaders/Compiled/EnvironmentMapEffect_VSEnvMapOneLightBn.inc"
     #include "Shaders/Compiled/EnvironmentMapEffect_VSEnvMapOneLightFresnelBn.inc"
     #include "Shaders/Compiled/EnvironmentMapEffect_VSEnvMapPixelLightingBn.inc"
+    #include "Shaders/Compiled/EnvironmentMapEffect_VSEnvMapPixelLightingBnSM4.inc"
 
     #include "Shaders/Compiled/EnvironmentMapEffect_PSEnvMap.inc"
     #include "Shaders/Compiled/EnvironmentMapEffect_PSEnvMapNoFog.inc"
@@ -118,6 +134,16 @@ namespace
     #include "Shaders/Compiled/EnvironmentMapEffect_PSEnvMapPixelLightingNoFog.inc"
     #include "Shaders/Compiled/EnvironmentMapEffect_PSEnvMapPixelLightingFresnel.inc"
     #include "Shaders/Compiled/EnvironmentMapEffect_PSEnvMapPixelLightingFresnelNoFog.inc"
+
+    #include "Shaders/Compiled/EnvironmentMapEffect_PSEnvMapSpherePixelLighting.inc"
+    #include "Shaders/Compiled/EnvironmentMapEffect_PSEnvMapSpherePixelLightingNoFog.inc"
+    #include "Shaders/Compiled/EnvironmentMapEffect_PSEnvMapSpherePixelLightingFresnel.inc"
+    #include "Shaders/Compiled/EnvironmentMapEffect_PSEnvMapSpherePixelLightingFresnelNoFog.inc"
+
+    #include "Shaders/Compiled/EnvironmentMapEffect_PSEnvMapDualParabolaPixelLighting.inc"
+    #include "Shaders/Compiled/EnvironmentMapEffect_PSEnvMapDualParabolaPixelLightingNoFog.inc"
+    #include "Shaders/Compiled/EnvironmentMapEffect_PSEnvMapDualParabolaPixelLightingFresnel.inc"
+    #include "Shaders/Compiled/EnvironmentMapEffect_PSEnvMapDualParabolaPixelLightingFresnelNoFog.inc"
 #endif
 }
 
@@ -125,17 +151,25 @@ namespace
 template<>
 const ShaderBytecode EffectBase<EnvironmentMapEffectTraits>::VertexShaderBytecode[] =
 {
-    { EnvironmentMapEffect_VSEnvMap,                  sizeof(EnvironmentMapEffect_VSEnvMap)                  },
-    { EnvironmentMapEffect_VSEnvMapFresnel,           sizeof(EnvironmentMapEffect_VSEnvMapFresnel)           },
-    { EnvironmentMapEffect_VSEnvMapOneLight,          sizeof(EnvironmentMapEffect_VSEnvMapOneLight)          },
-    { EnvironmentMapEffect_VSEnvMapOneLightFresnel,   sizeof(EnvironmentMapEffect_VSEnvMapOneLightFresnel)   },
-    { EnvironmentMapEffect_VSEnvMapPixelLighting,     sizeof(EnvironmentMapEffect_VSEnvMapPixelLighting)     },
+    { EnvironmentMapEffect_VSEnvMap,                   sizeof(EnvironmentMapEffect_VSEnvMap)                   },
+    { EnvironmentMapEffect_VSEnvMapFresnel,            sizeof(EnvironmentMapEffect_VSEnvMapFresnel)            },
+    { EnvironmentMapEffect_VSEnvMapOneLight,           sizeof(EnvironmentMapEffect_VSEnvMapOneLight)           },
+    { EnvironmentMapEffect_VSEnvMapOneLightFresnel,    sizeof(EnvironmentMapEffect_VSEnvMapOneLightFresnel)    },
+    { EnvironmentMapEffect_VSEnvMapPixelLighting,      sizeof(EnvironmentMapEffect_VSEnvMapPixelLighting)      },
 
-    { EnvironmentMapEffect_VSEnvMapBn,                sizeof(EnvironmentMapEffect_VSEnvMapBn)                },
-    { EnvironmentMapEffect_VSEnvMapFresnelBn,         sizeof(EnvironmentMapEffect_VSEnvMapFresnelBn)         },
-    { EnvironmentMapEffect_VSEnvMapOneLightBn,        sizeof(EnvironmentMapEffect_VSEnvMapOneLightBn)        },
-    { EnvironmentMapEffect_VSEnvMapOneLightFresnelBn, sizeof(EnvironmentMapEffect_VSEnvMapOneLightFresnelBn) },
-    { EnvironmentMapEffect_VSEnvMapPixelLightingBn,   sizeof(EnvironmentMapEffect_VSEnvMapPixelLightingBn)   },
+    { EnvironmentMapEffect_VSEnvMapBn,                 sizeof(EnvironmentMapEffect_VSEnvMapBn)                 },
+    { EnvironmentMapEffect_VSEnvMapFresnelBn,          sizeof(EnvironmentMapEffect_VSEnvMapFresnelBn)          },
+    { EnvironmentMapEffect_VSEnvMapOneLightBn,         sizeof(EnvironmentMapEffect_VSEnvMapOneLightBn)         },
+    { EnvironmentMapEffect_VSEnvMapOneLightFresnelBn,  sizeof(EnvironmentMapEffect_VSEnvMapOneLightFresnelBn)  },
+    { EnvironmentMapEffect_VSEnvMapPixelLightingBn,    sizeof(EnvironmentMapEffect_VSEnvMapPixelLightingBn)    },
+
+#if defined(_XBOX_ONE) && defined(_TITLE)
+    { EnvironmentMapEffect_VSEnvMapPixelLighting,      sizeof(EnvironmentMapEffect_VSEnvMapPixelLighting)      },
+    { EnvironmentMapEffect_VSEnvMapPixelLightingBn,    sizeof(EnvironmentMapEffect_VSEnvMapPixelLightingBn)    },
+#else
+    { EnvironmentMapEffect_VSEnvMapPixelLightingSM4,   sizeof(EnvironmentMapEffect_VSEnvMapPixelLightingSM4)   },
+    { EnvironmentMapEffect_VSEnvMapPixelLightingBnSM4, sizeof(EnvironmentMapEffect_VSEnvMapPixelLightingBnSM4) },
+#endif
 };
 
 
@@ -187,6 +221,26 @@ const int EffectBase<EnvironmentMapEffectTraits>::VertexShaderIndices[] =
     9,      // pixel lighting (biased vertex normals), no fog
     9,      // pixel lighting (biased vertex normals), fresnel
     9,      // pixel lighting (biased vertex normals), fresnel, no fog
+
+    4,      // spheremap pixel lighting
+    4,      // spheremap pixel lighting, no fog
+    4,      // spheremap pixel lighting, fresnel
+    4,      // spheremap pixel lighting, fresnel, no fog
+
+    9,      // spheremap pixel lighting (biased vertex normals)
+    9,      // spheremap pixel lighting (biased vertex normals), no fog
+    9,      // spheremap pixel lighting (biased vertex normals), fresnel
+    9,      // spheremap pixel lighting (biased vertex normals), fresnel, no fog
+
+    10,     // dual-parabola pixel lighting
+    10,     // dual-parabola pixel lighting, no fog
+    10,     // dual-parabola pixel lighting, fresnel
+    10,     // dual-parabola pixel lighting, fresnel, no fog
+
+    11,     // dual-parabola pixel lighting (biased vertex normals)
+    11,     // dual-parabola pixel lighting (biased vertex normals), no fog
+    11,     // dual-parabola pixel lighting (biased vertex normals), fresnel
+    11,     // dual-parabola pixel lighting (biased vertex normals), fresnel, no fog
 };
 
 
@@ -201,6 +255,16 @@ const ShaderBytecode EffectBase<EnvironmentMapEffectTraits>::PixelShaderBytecode
     { EnvironmentMapEffect_PSEnvMapPixelLightingNoFog,        sizeof(EnvironmentMapEffect_PSEnvMapPixelLightingNoFog)        },
     { EnvironmentMapEffect_PSEnvMapPixelLightingFresnel,      sizeof(EnvironmentMapEffect_PSEnvMapPixelLightingFresnel)      },
     { EnvironmentMapEffect_PSEnvMapPixelLightingFresnelNoFog, sizeof(EnvironmentMapEffect_PSEnvMapPixelLightingFresnelNoFog) },
+
+    { EnvironmentMapEffect_PSEnvMapSpherePixelLighting,             sizeof(EnvironmentMapEffect_PSEnvMapSpherePixelLighting) },
+    { EnvironmentMapEffect_PSEnvMapSpherePixelLightingNoFog,        sizeof(EnvironmentMapEffect_PSEnvMapSpherePixelLightingNoFog) },
+    { EnvironmentMapEffect_PSEnvMapSpherePixelLightingFresnel,      sizeof(EnvironmentMapEffect_PSEnvMapSpherePixelLightingFresnel) },
+    { EnvironmentMapEffect_PSEnvMapSpherePixelLightingFresnelNoFog, sizeof(EnvironmentMapEffect_PSEnvMapSpherePixelLightingFresnelNoFog) },
+
+    { EnvironmentMapEffect_PSEnvMapDualParabolaPixelLighting,             sizeof(EnvironmentMapEffect_PSEnvMapDualParabolaPixelLighting) },
+    { EnvironmentMapEffect_PSEnvMapDualParabolaPixelLightingNoFog,        sizeof(EnvironmentMapEffect_PSEnvMapDualParabolaPixelLightingNoFog) },
+    { EnvironmentMapEffect_PSEnvMapDualParabolaPixelLightingFresnel,      sizeof(EnvironmentMapEffect_PSEnvMapDualParabolaPixelLightingFresnel) },
+    { EnvironmentMapEffect_PSEnvMapDualParabolaPixelLightingFresnelNoFog, sizeof(EnvironmentMapEffect_PSEnvMapDualParabolaPixelLightingFresnelNoFog) },
 };
 
 
@@ -252,6 +316,26 @@ const int EffectBase<EnvironmentMapEffectTraits>::PixelShaderIndices[] =
     5,      // per pixel lighting (biased vertex normals), no fog
     6,      // per pixel lighting (biased vertex normals), fresnel
     7,      // per pixel lighting (biased vertex normals), fresnel, no fog
+
+    8,      // spheremap pixel lighting
+    9,      // spheremap pixel lighting, no fog
+    10,     // spheremap pixel lighting, fresnel
+    11,     // spheremap pixel lighting, fresnel, no fog
+
+    8,      // spheremap pixel lighting (biased vertex normals)
+    9,      // spheremap pixel lighting (biased vertex normals), no fog
+    10,     // spheremap pixel lighting (biased vertex normals), fresnel
+    11,     // spheremap pixel lighting (biased vertex normals), fresnel, no fog
+
+    12,     // dual-parabola pixel lighting
+    13,     // dual-parabola pixel lighting, no fog
+    14,     // dual-parabola pixel lighting, fresnel
+    15,     // dual-parabola pixel lighting, fresnel, no fog
+
+    12,     // dual-parabola pixel lighting (biased vertex normals)
+    13,     // dual-parabola pixel lighting (biased vertex normals), no fog
+    14,     // dual-parabola pixel lighting (biased vertex normals), fresnel
+    15,     // dual-parabola pixel lighting (biased vertex normals), fresnel, no fog
 };
 
 
@@ -266,7 +350,8 @@ EnvironmentMapEffect::Impl::Impl(_In_ ID3D11Device* device)
     preferPerPixelLighting(false),
     fresnelEnabled(true),
     specularEnabled(false),
-    biasedVertexNormals(false)
+    biasedVertexNormals(false),
+    mapping(Mapping_Cube)
 {
     static_assert(_countof(EffectBase<EnvironmentMapEffectTraits>::VertexShaderIndices) == EnvironmentMapEffectTraits::ShaderPermutationCount, "array/max mismatch");
     static_assert(_countof(EffectBase<EnvironmentMapEffectTraits>::VertexShaderBytecode) == EnvironmentMapEffectTraits::VertexShaderCount, "array/max mismatch");
@@ -298,29 +383,50 @@ int EnvironmentMapEffect::Impl::GetCurrentShaderPermutation() const noexcept
         permutation += 2;
     }
 
-    if (preferPerPixelLighting)
+    if (mapping == Mapping_Sphere)
     {
-        permutation += 16;
-    }
-    else
-    {
-        // Support specular?
-        if (specularEnabled)
+        permutation += 40;
+
+        if (biasedVertexNormals)
         {
             permutation += 4;
         }
+    }
+    else if (mapping == Mapping_DualParabola)
+    {
+        permutation += 48;
 
-        // Use the only-bother-with-the-first-light shader optimization?
-        if (!lights.lightEnabled[1] && !lights.lightEnabled[2])
+        if (biasedVertexNormals)
         {
-            permutation += 8;
+            permutation += 4;
         }
     }
-
-    if (biasedVertexNormals)
+    else // Mapping_Cube
     {
-        // Compressed normals need to be scaled and biased in the vertex shader.
-        permutation += 20;
+        if (preferPerPixelLighting)
+        {
+            permutation += 16;
+        }
+        else
+        {
+            // Support specular?
+            if (specularEnabled)
+            {
+                permutation += 4;
+            }
+
+            // Use the only-bother-with-the-first-light shader optimization?
+            if (!lights.lightEnabled[1] && !lights.lightEnabled[2])
+            {
+                permutation += 8;
+            }
+        }
+
+        if (biasedVertexNormals)
+        {
+            // Compressed normals need to be scaled and biased in the vertex shader.
+            permutation += 20;
+        }
     }
 
     return permutation;
@@ -568,6 +674,25 @@ void EnvironmentMapEffect::SetEnvironmentMap(_In_opt_ ID3D11ShaderResourceView* 
 
 
 // Additional settings.
+void EnvironmentMapEffect::SetMode(EnvironmentMapEffect::Mapping mapping)
+{
+    if (static_cast<int>(mapping) < 0 || static_cast<int>(mapping) >= EnvironmentMapEffectTraits::MappingCount)
+    {
+        throw std::invalid_argument("Unsupported mode");
+    }
+
+    if (mapping == Mapping_DualParabola)
+    {
+        if (pImpl->GetDeviceFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
+        {
+            throw std::exception("Dual Parabola requires Feature Level 10.0 or later");
+        }
+    }
+
+    pImpl->mapping = mapping;
+}
+
+
 void EnvironmentMapEffect::SetEnvironmentMapAmount(float value)
 {
     pImpl->constants.environmentMapAmount = value;
