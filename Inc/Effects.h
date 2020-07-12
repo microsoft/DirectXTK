@@ -319,6 +319,13 @@ namespace DirectX
     class EnvironmentMapEffect : public IEffect, public IEffectMatrices, public IEffectLights, public IEffectFog
     {
     public:
+        enum Mapping
+        {
+            Mapping_Cube = 0,       // Cubic environment map
+            Mapping_Sphere,         // Spherical environment map
+            Mapping_DualParabola,   // Dual-parabola environment map (requires Feature Level 10.0)
+        };
+
         explicit EnvironmentMapEffect(_In_ ID3D11Device* device);
         EnvironmentMapEffect(EnvironmentMapEffect&& moveFrom) noexcept;
         EnvironmentMapEffect& operator= (EnvironmentMapEffect&& moveFrom) noexcept;
@@ -363,9 +370,10 @@ namespace DirectX
 
         // Texture setting.
         void __cdecl SetTexture(_In_opt_ ID3D11ShaderResourceView* value);
+        void __cdecl SetEnvironmentMap(_In_opt_ ID3D11ShaderResourceView* value);
 
         // Environment map settings.
-        void __cdecl SetEnvironmentMap(_In_opt_ ID3D11ShaderResourceView* value);
+        void __cdecl SetMode(Mapping mapping);
         void __cdecl SetEnvironmentMapAmount(float value);
         void XM_CALLCONV SetEnvironmentMapSpecular(FXMVECTOR value);
         void __cdecl SetFresnelFactor(float value);

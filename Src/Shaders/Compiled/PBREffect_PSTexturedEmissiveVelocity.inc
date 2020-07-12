@@ -155,7 +155,7 @@ mul r0.x, r1.x, cb0[23].w
 mul r0.y, r1.y, cb0[24].x
 add r0.xyz, r0.xyzx, -v4.xyzx
 ushr r1.xyz, r0.xyzx, l(31)
-mul r0.xyz, r0.xyzx, l(0.000031, 0.000031, 0.007812, 0.000000)
+mul r0.xyz, r0.xyzx, l(0.000031, 0.000031, 0.007813, 0.000000)
 min r0.xyz, |r0.xyzx|, l(0.007809, 0.007809, 0.007809, 0.000000)
 and r2.xyzw, r0.xxxy, l(0x007fffff, 0x7fffffff, 0x7f800000, 0x007fffff)
 iadd r3.xy, r2.xwxx, l(0x00800000, 0x00800000, 0, 0)
