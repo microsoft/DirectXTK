@@ -16,7 +16,7 @@
 #include "PlatformHelpers.h"
 #include "SoundCommon.h"
 
-#if defined(_XBOX_ONE) && defined(_TITLE)
+#if (defined(_XBOX_ONE) && defined(_TITLE)) || defined(_GAMING_XBOX)
 #include <apu.h>
 #include <shapexmacontext.h>
 #endif

@@ -44,7 +44,7 @@ namespace DirectX
         bool HasNames() const noexcept;
         bool IsStreamingBank() const noexcept;
 
-    #if defined(_XBOX_ONE) && defined(_TITLE)
+    #if (defined(_XBOX_ONE) && defined(_TITLE)) || defined(_GAMING_XBOX)
         bool HasXMA() const noexcept;
     #endif
 

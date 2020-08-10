@@ -1426,10 +1426,12 @@ X3DAUDIO_HANDLE& AudioEngine::Get3DHandle() const noexcept
 
 
 // Static methods.
-#ifdef _XBOX_ONE
+#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)
+#include <mmdeviceapi.h>
+#elif defined(_XBOX_ONE)
 #include <Windows.Media.Devices.h>
 #include <wrl.h>
-#elif defined(USING_XAUDIO2_REDIST)
+#elif defined(USING_XAUDIO2_REDIST) || defined(_GAMING_DESKTOP)
 #include <mmdeviceapi.h>
 #include <functiondiscoverykeys_devpkey.h>
 #elif (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
@@ -1445,7 +1447,31 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
 {
     std::vector<RendererDetail> list;
 
-#ifdef _XBOX_ONE
+#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)
+
+    ComPtr<IMMDeviceEnumerator> devEnum;
+    HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(devEnum.GetAddressOf()));
+    ThrowIfFailed(hr);
+
+    ComPtr<IMMDeviceCollection> devices;
+    hr = devEnum->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &devices);
+    ThrowIfFailed(hr);
+
+    ComPtr<IMMDevice> endpoint;
+    ThrowIfFailed(devices->Item(0, endpoint.GetAddressOf()));
+
+    LPWSTR id = nullptr;
+    ThrowIfFailed(endpoint->GetId(&id));
+
+    RendererDetail device;
+    device.deviceId = id;
+    device.description = L"Default";
+
+    CoTaskMemFree(id);
+
+    list.emplace_back(device);
+
+#elif defined(_XBOX_ONE)
 
     using namespace Microsoft::WRL;
     using namespace Microsoft::WRL::Wrappers;
@@ -1465,7 +1491,7 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
     device.description = L"Default";
     list.emplace_back(device);
 
-#elif defined(USING_XAUDIO2_REDIST)
+#elif defined(USING_XAUDIO2_REDIST) || defined(_GAMING_DESKTOP)
 
     ComPtr<IMMDeviceEnumerator> devEnum;
     HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(devEnum.GetAddressOf()));

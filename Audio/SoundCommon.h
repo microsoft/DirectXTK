@@ -17,7 +17,7 @@
 #define DIRECTX_ENABLE_XWMA
 #endif
 
-#if defined(_XBOX_ONE) && defined(_TITLE)
+#if (defined(_XBOX_ONE) && defined(_TITLE)) || defined(_GAMING_XBOX)
 #define DIRECTX_ENABLE_XMA2
 #endif
 

@@ -16,7 +16,7 @@
 #include <mmreg.h>
 #include <Audioclient.h>
 
-#if defined(_XBOX_ONE) && defined(_TITLE)
+#if (defined(_XBOX_ONE) && defined(_TITLE)) || defined(_GAMING_XBOX)
 #include <xma2defs.h>
 #pragma comment(lib,"acphal.lib")
 #endif
@@ -65,12 +65,12 @@ namespace DirectX
         size_t  playingOneShots;        // Number of one-shot sounds currently playing
         size_t  playingInstances;       // Number of sound effect instances currently playing
         size_t  allocatedInstances;     // Number of SoundEffectInstance allocated
-        size_t  allocatedVoices;        // Number of XAudio2 voices allocated (standard, 3D, one-shots, and idle one-shots) 
+        size_t  allocatedVoices;        // Number of XAudio2 voices allocated (standard, 3D, one-shots, and idle one-shots)
         size_t  allocatedVoices3d;      // Number of XAudio2 voices allocated for 3D
         size_t  allocatedVoicesOneShot; // Number of XAudio2 voices allocated for one-shot sounds
         size_t  allocatedVoicesIdle;    // Number of XAudio2 voices allocated for one-shot sounds but not currently in use
         size_t  audioBytes;             // Total wave data (in bytes) in SoundEffects and in-memory WaveBanks
-#if defined(_XBOX_ONE) && defined(_TITLE)
+#if (defined(_XBOX_ONE) && defined(_TITLE)) || defined(_GAMING_XBOX)
         size_t  xmaAudioBytes;          // Total wave data (in bytes) in SoundEffects and in-memory WaveBanks allocated with ApuAlloc
 #endif
         size_t  streamingBytes;         // Total size of streaming buffers (in bytes) in streaming WaveBanks
