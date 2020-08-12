@@ -98,12 +98,17 @@ namespace DirectX
         bool __cdecl IsConnected() const;
 
         // Cursor visibility
-        bool __cdecl IsVisible() const;
+        bool __cdecl IsVisible() const noexcept;
         void __cdecl SetVisible(bool visible);
 
-    #if (!defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)) && defined(WM_USER)
+    #ifdef WM_USER
+    #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
         void __cdecl SetWindow(HWND window);
         static void __cdecl ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam);
+    #elif (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)
+        static void __cdecl ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam);
+        static void __cdecl SetResolution(bool use4k);
+    #endif
     #endif
 
     #if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)) || (defined(_XBOX_ONE) && defined(_TITLE) && (_XDK_VER >= 0x42D907D1))

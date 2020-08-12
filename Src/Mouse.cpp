@@ -17,7 +17,383 @@ using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
 
-#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
+#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)
+
+#include <GameInput.h>
+
+//======================================================================================
+// Win32 + GameInput implementation
+//======================================================================================
+
+//
+// Call this static function from your Window Message Procedure
+//
+// LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+// {
+//     switch (message)
+//     {
+//     case WM_ACTIVATEAPP:
+//     case WM_MOUSEMOVE:
+//     case WM_LBUTTONDOWN:
+//     case WM_LBUTTONUP:
+//     case WM_RBUTTONDOWN:
+//     case WM_RBUTTONUP:
+//     case WM_MBUTTONDOWN:
+//     case WM_MBUTTONUP:
+//     case WM_MOUSEWHEEL:
+//     case WM_XBUTTONDOWN:
+//     case WM_XBUTTONUP:
+//         Mouse::ProcessMessage(message, wParam, lParam);
+//         break;
+//
+//     }
+// }
+//
+
+class Mouse::Impl
+{
+public:
+    explicit Impl(Mouse* owner) noexcept(false) :
+        mState{},
+        mOwner(owner),
+        mIs4k(false),
+        mConnected(0),
+        mDeviceToken(0),
+        mMode(MODE_ABSOLUTE),
+        mScrollWheelCurrent(0),
+        mRelativeX(INT64_MAX),
+        mRelativeY(INT64_MAX),
+        mRelativeWheelY(INT64_MAX)
+    {
+        if (s_mouse)
+        {
+            throw std::exception("Mouse is a singleton");
+        }
+
+        s_mouse = this;
+
+        ThrowIfFailed(GameInputCreate(mGameInput.GetAddressOf()));
+
+        ThrowIfFailed(mGameInput->RegisterDeviceCallback(
+            nullptr,
+            GameInputKindMouse,
+            GameInputDeviceConnected,
+            GameInputBlockingEnumeration,
+            this,
+            OnGameInputDevice,
+            &mDeviceToken));
+
+        mScrollWheelValue.reset(CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE));
+        if (!mScrollWheelValue)
+        {
+            throw std::exception("CreateEventEx");
+        }
+    }
+
+    Impl(Impl&&) = default;
+    Impl& operator= (Impl&&) = default;
+
+    Impl(Impl const&) = delete;
+    Impl& operator= (Impl const&) = delete;
+
+    ~Impl()
+    {
+        if (mDeviceToken)
+        {
+            if (mGameInput)
+            {
+                HRESULT hr = mGameInput->UnregisterCallback(mDeviceToken, UINT64_MAX);
+                if (FAILED(hr))
+                {
+                    DebugTrace("ERROR: GameInput::UnregisterCallback [mouse] failed (%08X)", static_cast<unsigned int>(hr));
+                }
+            }
+
+            mDeviceToken = 0;
+        }
+
+        s_mouse = nullptr;
+    }
+
+    void GetState(State& state) const
+    {
+        memcpy(&state, &mState, sizeof(State));
+        state.positionMode = mMode;
+
+        DWORD result = WaitForSingleObjectEx(mScrollWheelValue.get(), 0, FALSE);
+        if (result == WAIT_FAILED)
+            throw std::exception("WaitForSingleObjectEx");
+
+        if (result == WAIT_OBJECT_0)
+        {
+            mScrollWheelCurrent = 0;
+        }
+
+        if (state.positionMode == MODE_RELATIVE)
+        {
+            state.x = state.y = 0;
+
+            ComPtr<IGameInputReading> reading;
+            if (SUCCEEDED(mGameInput->GetCurrentReading(GameInputKindMouse, nullptr, reading.GetAddressOf())))
+            {
+                GameInputMouseState mouse;
+                if (reading->GetMouseState(&mouse))
+                {
+                    state.leftButton = (mouse.buttons & GameInputMouseLeftButton) != 0;
+                    state.middleButton = (mouse.buttons & GameInputMouseMiddleButton) != 0;
+                    state.rightButton = (mouse.buttons & GameInputMouseRightButton) != 0;
+                    state.xButton1 = (mouse.buttons & GameInputMouseButton4) != 0;
+                    state.xButton2 = (mouse.buttons & GameInputMouseButton5) != 0;
+
+                    if (mRelativeX != INT64_MAX)
+                    {
+                        state.x = static_cast<int>(mouse.positionX - mRelativeX);
+                        state.y = static_cast<int>(mouse.positionY - mRelativeY);
+                        int scrollDelta = static_cast<int>(mouse.wheelY - mRelativeWheelY);
+                        mScrollWheelCurrent += scrollDelta;
+                    }
+
+                    mRelativeX = mouse.positionX;
+                    mRelativeY = mouse.positionY;
+                    mRelativeWheelY = mouse.wheelY;
+                }
+            }
+        }
+
+        state.scrollWheelValue = mScrollWheelCurrent;
+    }
+
+    void ResetScrollWheelValue() noexcept
+    {
+        SetEvent(mScrollWheelValue.get());
+    }
+
+    void SetMode(Mode mode)
+    {
+        if (mMode == mode)
+            return;
+
+        mMode = mode;
+        mRelativeX = INT64_MAX;
+        mRelativeY = INT64_MAX;
+        mRelativeWheelY = INT64_MAX;
+
+        ShowCursor((mode == MODE_ABSOLUTE) ? TRUE : FALSE);
+    }
+
+    bool IsConnected() const noexcept
+    {
+        return mConnected > 0;
+    }
+
+    bool IsVisible() const noexcept
+    {
+        if (mMode == MODE_RELATIVE)
+            return false;
+
+        CURSORINFO info = { sizeof(CURSORINFO), 0, nullptr, {} };
+        if (!GetCursorInfo(&info))
+            return false;
+
+        return (info.flags & CURSOR_SHOWING) != 0;
+    }
+
+    void SetVisible(bool visible)
+    {
+        if (mMode == MODE_RELATIVE)
+            return;
+
+        CURSORINFO info = { sizeof(CURSORINFO), 0, nullptr, {} };
+        if (!GetCursorInfo(&info))
+        {
+            throw std::exception("GetCursorInfo");
+        }
+
+        bool isvisible = (info.flags & CURSOR_SHOWING) != 0;
+        if (isvisible != visible)
+        {
+            ShowCursor(visible);
+        }
+    }
+
+    State           mState;
+    Mouse*          mOwner;
+    bool            mIs4k;
+    uint32_t        mConnected;
+
+    static Mouse::Impl* s_mouse;
+
+private:
+    ComPtr<IGameInput>      mGameInput;
+    GameInputCallbackToken  mDeviceToken;
+
+    Mode                    mMode;
+    ScopedHandle            mScrollWheelValue;
+
+    mutable int             mScrollWheelCurrent;
+    mutable int64_t         mRelativeX;
+    mutable int64_t         mRelativeY;
+    mutable int64_t         mRelativeWheelY;
+
+    friend void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam);
+
+    static void CALLBACK OnGameInputDevice(
+        _In_ GameInputCallbackToken,
+        _In_ void * context,
+        _In_ IGameInputDevice *,
+        _In_ uint64_t,
+        _In_ GameInputDeviceStatus currentStatus,
+        _In_ GameInputDeviceStatus) noexcept
+    {
+        auto impl = reinterpret_cast<Mouse::Impl*>(context);
+
+        if (currentStatus & GameInputDeviceConnected)
+        {
+            ++impl->mConnected;
+        }
+        else if (impl->mConnected > 0)
+        {
+            --impl->mConnected;
+        }
+    }
+};
+
+
+Mouse::Impl* Mouse::Impl::s_mouse = nullptr;
+
+
+void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
+{
+    auto pImpl = Impl::s_mouse;
+
+    if (!pImpl)
+        return;
+
+    DWORD result = WaitForSingleObjectEx(pImpl->mScrollWheelValue.get(), 0, FALSE);
+    if (result == WAIT_FAILED)
+        throw std::exception("WaitForSingleObjectEx");
+
+    if (result == WAIT_OBJECT_0)
+    {
+        pImpl->mScrollWheelCurrent = 0;
+    }
+
+    switch (message)
+    {
+    case WM_ACTIVATEAPP:
+        if (wParam)
+        {
+            if (pImpl->mMode == MODE_RELATIVE)
+            {
+                pImpl->mRelativeX = INT64_MAX;
+                pImpl->mRelativeY = INT64_MAX;
+
+                ShowCursor(FALSE);
+            }
+        }
+        else
+        {
+            memset(&pImpl->mState, 0, sizeof(State));
+        }
+        return;
+
+    case WM_MOUSEMOVE:
+        break;
+
+    case WM_LBUTTONDOWN:
+        pImpl->mState.leftButton = true;
+        break;
+
+    case WM_LBUTTONUP:
+        pImpl->mState.leftButton = false;
+        break;
+
+    case WM_RBUTTONDOWN:
+        pImpl->mState.rightButton = true;
+        break;
+
+    case WM_RBUTTONUP:
+        pImpl->mState.rightButton = false;
+        break;
+
+    case WM_MBUTTONDOWN:
+        pImpl->mState.middleButton = true;
+        break;
+
+    case WM_MBUTTONUP:
+        pImpl->mState.middleButton = false;
+        break;
+
+    case WM_MOUSEWHEEL:
+        if (pImpl->mMode == MODE_ABSOLUTE)
+        {
+            pImpl->mScrollWheelCurrent += GET_WHEEL_DELTA_WPARAM(wParam);
+        }
+        return;
+
+    case WM_XBUTTONDOWN:
+        switch (GET_XBUTTON_WPARAM(wParam))
+        {
+        case XBUTTON1:
+            pImpl->mState.xButton1 = true;
+            break;
+
+        case XBUTTON2:
+            pImpl->mState.xButton2 = true;
+            break;
+        }
+        break;
+
+    case WM_XBUTTONUP:
+        switch (GET_XBUTTON_WPARAM(wParam))
+        {
+        case XBUTTON1:
+            pImpl->mState.xButton1 = false;
+            break;
+
+        case XBUTTON2:
+            pImpl->mState.xButton2 = false;
+            break;
+        }
+        break;
+
+    default:
+        // Not a mouse message, so exit
+        return;
+    }
+
+    if (pImpl->mMode == MODE_ABSOLUTE)
+    {
+        // All mouse messages provide a new pointer position
+        int xPos = static_cast<short>(LOWORD(lParam)); // GET_X_LPARAM(lParam);
+        int yPos = static_cast<short>(HIWORD(lParam)); // GET_Y_LPARAM(lParam);
+
+        if (pImpl->mIs4k)
+        {
+            pImpl->mState.x = static_cast<int>(xPos) * 2;
+            pImpl->mState.y = static_cast<int>(yPos) * 2;
+        }
+        else
+        {
+            pImpl->mState.x = static_cast<int>(xPos);
+            pImpl->mState.y = static_cast<int>(yPos);
+        }
+    }
+}
+
+
+void Mouse::SetResolution(bool use4k)
+{
+    auto pImpl = Impl::s_mouse;
+
+    if (!pImpl)
+        return;
+
+    pImpl->mIs4k = use4k;
+}
+
+
+#elif !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
 
 //======================================================================================
 // Win32 desktop implementation
@@ -57,7 +433,7 @@ using Microsoft::WRL::ComPtr;
 class Mouse::Impl
 {
 public:
-    Impl(Mouse* owner) :
+    explicit Impl(Mouse* owner) noexcept(false) :
         mState{},
         mOwner(owner),
         mWindow(nullptr),
@@ -162,16 +538,14 @@ public:
         return GetSystemMetrics(SM_MOUSEPRESENT) != 0;
     }
 
-    bool IsVisible() const
+    bool IsVisible() const noexcept
     {
         if (mMode == MODE_RELATIVE)
             return false;
 
         CURSORINFO info = { sizeof(CURSORINFO), 0, nullptr, {} };
         if (!GetCursorInfo(&info))
-        {
-            throw std::exception("GetCursorInfo");
-        }
+            return false;
 
         return (info.flags & CURSOR_SHOWING) != 0;
     }
@@ -496,7 +870,7 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 class Mouse::Impl
 {
 public:
-    Impl(Mouse* owner) :
+    explicit Impl(Mouse* owner) noexcept(false) :
         mOwner(owner)
     {
         if (s_mouse)
@@ -530,7 +904,7 @@ public:
         return false;
     }
 
-    bool IsVisible() const
+    bool IsVisible() const noexcept
     {
         return false;
     }
@@ -561,7 +935,7 @@ Mouse::Impl* Mouse::Impl::s_mouse = nullptr;
 // {
 //     m_mouse->SetWindow(window);
 // }
-// 
+//
 // void App::OnDpiChanged(DisplayInformation^ sender, Object^ args)
 // {
 //     m_mouse->SetDpi(sender->LogicalDpi);
@@ -573,7 +947,7 @@ Mouse::Impl* Mouse::Impl::s_mouse = nullptr;
 class Mouse::Impl
 {
 public:
-    Impl(Mouse* owner) :
+    explicit Impl(Mouse* owner) noexcept(false) :
         mState{},
         mOwner(owner),
         mDPI(96.f),
@@ -717,14 +1091,14 @@ public:
         return false;
     }
 
-    bool IsVisible() const
+    bool IsVisible() const noexcept
     {
         if (mMode == MODE_RELATIVE)
             return false;
 
         ComPtr<ABI::Windows::UI::Core::ICoreCursor> cursor;
-        HRESULT hr = mWindow->get_PointerCursor(cursor.GetAddressOf());
-        ThrowIfFailed(hr);
+        if (FAILED(mWindow->get_PointerCursor(cursor.GetAddressOf())))
+            return false;
 
         return cursor != 0;
     }
@@ -1076,7 +1450,7 @@ bool Mouse::IsConnected() const
     return pImpl->IsConnected();
 }
 
-bool Mouse::IsVisible() const
+bool Mouse::IsVisible() const noexcept
 {
     return pImpl->IsVisible();
 }

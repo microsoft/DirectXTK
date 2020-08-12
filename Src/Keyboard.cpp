@@ -18,9 +18,13 @@ using Microsoft::WRL::ComPtr;
 
 static_assert(sizeof(Keyboard::State) == (256 / 8), "Size mismatch for State");
 
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Wunused-function"
+#endif
+
 namespace
 {
-    void KeyDown(int key, Keyboard::State& state) noexcept
+    inline void KeyDown(int key, Keyboard::State& state) noexcept
     {
         if (key < 0 || key > 0xfe)
             return;
@@ -31,7 +35,7 @@ namespace
         ptr[(key >> 5)] |= bf;
     }
 
-    void KeyUp(int key, Keyboard::State& state) noexcept
+    inline void KeyUp(int key, Keyboard::State& state) noexcept
     {
         if (key < 0 || key > 0xfe)
             return;
@@ -44,7 +48,131 @@ namespace
 }
 
 
-#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
+#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)
+
+#include <GameInput.h>
+
+//======================================================================================
+// GameInput
+//======================================================================================
+
+class Keyboard::Impl
+{
+public:
+    Impl(Keyboard* owner) :
+        mOwner(owner),
+        mConnected(0),
+        mDeviceToken(0),
+        mKeyState{}
+    {
+        if (s_keyboard)
+        {
+            throw std::exception("Keyboard is a singleton");
+        }
+
+        s_keyboard = this;
+
+        ThrowIfFailed(GameInputCreate(mGameInput.GetAddressOf()));
+
+        ThrowIfFailed(mGameInput->RegisterDeviceCallback(
+            nullptr,
+            GameInputKindKeyboard,
+            GameInputDeviceConnected,
+            GameInputBlockingEnumeration,
+            this,
+            OnGameInputDevice,
+            &mDeviceToken));
+    }
+
+    Impl(Impl&&) = default;
+    Impl& operator= (Impl&&) = default;
+
+    Impl(Impl const&) = delete;
+    Impl& operator= (Impl const&) = delete;
+
+    ~Impl()
+    {
+        if (mDeviceToken)
+        {
+            if (mGameInput)
+            {
+                HRESULT hr = mGameInput->UnregisterCallback(mDeviceToken, UINT64_MAX);
+                if (FAILED(hr))
+                {
+                    DebugTrace("ERROR: GameInput::UnregisterCallback [keyboard] failed (%08X)", static_cast<unsigned int>(hr));
+                }
+            }
+
+            mDeviceToken = 0;
+        }
+
+        s_keyboard = nullptr;
+    }
+
+    void GetState(State& state) const
+    {
+        state = {};
+
+        ComPtr<IGameInputReading> reading;
+        if (SUCCEEDED(mGameInput->GetCurrentReading(GameInputKindKeyboard, nullptr, reading.GetAddressOf())))
+        {
+            uint32_t readCount = reading->GetKeyState(c_MaxSimultaneousKeys, mKeyState);
+            for (size_t j = 0; j < readCount; ++j)
+            {
+                int vk = static_cast<int>(mKeyState[j].virtualKey);
+                KeyDown(vk, state);
+            }
+        }
+    }
+
+    void Reset() noexcept
+    {
+    }
+
+    bool IsConnected() const
+    {
+        return mConnected > 0;
+    }
+
+    Keyboard*       mOwner;
+    uint32_t        mConnected;
+
+    static Keyboard::Impl* s_keyboard;
+
+private:
+    static constexpr size_t     c_MaxSimultaneousKeys = 16;
+
+    ComPtr<IGameInput>          mGameInput;
+    GameInputCallbackToken      mDeviceToken;
+
+    mutable GameInputKeyState   mKeyState[c_MaxSimultaneousKeys];
+
+    static void CALLBACK OnGameInputDevice(
+        _In_ GameInputCallbackToken,
+        _In_ void * context,
+        _In_ IGameInputDevice *,
+        _In_ uint64_t,
+        _In_ GameInputDeviceStatus currentStatus,
+        _In_ GameInputDeviceStatus) noexcept
+    {
+        auto impl = reinterpret_cast<Keyboard::Impl*>(context);
+
+        if (currentStatus & GameInputDeviceConnected)
+        {
+            ++impl->mConnected;
+        }
+        else if (impl->mConnected > 0)
+        {
+            --impl->mConnected;
+        }
+    }
+};
+
+
+Keyboard::Impl* Keyboard::Impl::s_keyboard = nullptr;
+
+
+#elif !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
 
 //======================================================================================
 // Win32 desktop implementation
@@ -185,6 +313,7 @@ void Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
         KeyUp(vk, pImpl->mState);
     }
 }
+
 
 #else
 

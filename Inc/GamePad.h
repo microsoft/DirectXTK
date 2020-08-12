@@ -10,7 +10,7 @@
 
 #pragma once
 
-#if (_WIN32_WINNT < 0x0A00 /*_WIN32_WINNT_WIN10*/)
+#if (_WIN32_WINNT < 0x0A00 /*_WIN32_WINNT_WIN10*/) || defined(_GAMING_DESKTOP)
 #ifndef _XBOX_ONE
 #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP)
 #if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/ )
@@ -22,10 +22,14 @@
 #endif
 #endif
 
+#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)
+interface IGameInputDevice;
+#endif
+
 #include <cstdint>
 #include <memory>
 
-#if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/)
+#if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/) && !defined(_GAMING_DESKTOP)
 #pragma comment(lib,"runtimeobject.lib")
 #include <string>
 #endif
@@ -50,7 +54,7 @@ namespace DirectX
 
         virtual ~GamePad();
 
-    #if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/) || defined(_XBOX_ONE)
+    #if ((_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/) && !defined(_GAMING_DESKTOP)) || defined(_XBOX_ONE)
         static constexpr int MAX_PLAYER_COUNT = 8;
     #else
         static constexpr int MAX_PLAYER_COUNT = 4;
@@ -173,7 +177,9 @@ namespace DirectX
 
             bool                connected;
             Type                gamepadType;
-        #if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/)
+        #if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)
+            APP_LOCAL_DEVICE_ID id;
+        #elif (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/) && !defined(_GAMING_DESKTOP)
             std::wstring        id;
         #else
             uint64_t            id;
@@ -264,8 +270,15 @@ namespace DirectX
         void __cdecl Suspend() noexcept;
         void __cdecl Resume() noexcept;
 
-    #if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/ ) || defined(_XBOX_ONE)
+    #if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)
+        void __cdecl RegisterEvents(void* ctrlChanged) noexcept;
+    #elif ((_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/ ) && !defined(_GAMING_DESKTOP)) || defined(_XBOX_ONE)
         void __cdecl RegisterEvents(void* ctrlChanged, void* userChanged) noexcept;
+    #endif
+
+    #if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)
+        // Underlying device access
+        void __cdecl GetDevice(int player, _Outptr_ IGameInputDevice** device) noexcept;
     #endif
 
         // Singleton
