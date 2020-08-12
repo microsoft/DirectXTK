@@ -10,7 +10,7 @@
 
 #pragma once
 
-#if !defined(_XBOX_ONE) || !defined(_TITLE)
+#if !(defined(_XBOX_ONE) && defined(_TITLE)) && !defined(_GAMING_XBOX)
 #include <dxgi1_2.h>
 #endif
 

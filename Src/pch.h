@@ -94,7 +94,9 @@
 #define _WIN32_WINNT_WIN10 0x0A00
 #endif
 
-#if defined(_XBOX_ONE) && defined(_TITLE)
+#ifdef _GAMING_XBOX
+#error This version of DirectX Tool Kit not supported for GDK
+#elif defined(_XBOX_ONE) && defined(_TITLE)
 #include <d3d11_x.h>
 #else
 #include <d3d11_1.h>

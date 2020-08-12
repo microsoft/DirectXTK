@@ -97,7 +97,7 @@ namespace DirectX
                 case DXGI_FORMAT_AYUV:
                 case DXGI_FORMAT_Y410:
                 case DXGI_FORMAT_YUY2:
-#if defined(_XBOX_ONE) && defined(_TITLE)
+#if (defined(_XBOX_ONE) && defined(_TITLE)) || defined(_GAMING_XBOX)
                 case DXGI_FORMAT_R10G10B10_7E3_A2_FLOAT:
                 case DXGI_FORMAT_R10G10B10_6E4_A2_FLOAT:
                 case DXGI_FORMAT_R10G10B10_SNORM_A2_UNORM:
@@ -109,7 +109,7 @@ namespace DirectX
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
                 case DXGI_FORMAT_V408:
 #endif
-#if defined(_XBOX_ONE) && defined(_TITLE)
+#if (defined(_XBOX_ONE) && defined(_TITLE)) || defined(_GAMING_XBOX)
                 case DXGI_FORMAT_D16_UNORM_S8_UINT:
                 case DXGI_FORMAT_R16_UNORM_X8_TYPELESS:
                 case DXGI_FORMAT_X16_TYPELESS_G8_UINT:
@@ -167,7 +167,7 @@ namespace DirectX
                 case DXGI_FORMAT_AI44:
                 case DXGI_FORMAT_IA44:
                 case DXGI_FORMAT_P8:
-#if defined(_XBOX_ONE) && defined(_TITLE)
+#if (defined(_XBOX_ONE) && defined(_TITLE)) || defined(_GAMING_XBOX)
                 case DXGI_FORMAT_R4G4_UNORM:
 #endif
                     return 8;
@@ -543,7 +543,7 @@ namespace DirectX
                 bpe = 4;
                 break;
 
-        #if defined(_XBOX_ONE) && defined(_TITLE)
+        #if (defined(_XBOX_ONE) && defined(_TITLE)) || defined(_GAMING_XBOX)
 
             case DXGI_FORMAT_D16_UNORM_S8_UINT:
             case DXGI_FORMAT_R16_UNORM_X8_TYPELESS:
