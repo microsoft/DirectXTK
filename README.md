@@ -70,10 +70,6 @@ For the latest version of DirectXTK, bug reports, etc. please visit the project 
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
-## Xbox One
-
-Developers using the Xbox One XDK need to generate the ``Src\Shaders\Compiled\XboxOne*.inc`` files to build the library as they are not included in the distribution package. They are built by running the script in ``Src\Shaders`` - ``CompileShaders xbox`` from the *Xbox One XDK Developer Command Prompt*. They are XDK version-specific. While they will continue to work if outdated, a mismatch will cause runtime compilation overhead that would otherwise be avoided.
-
 ## Release Notes
 
 * Starting with the June 2020 release, this library makes use of typed enum bitmask flags per the recommendation of the _C++ Standard_ section *17.5.2.1.3 Bitmask types*. This may have *breaking change* impacts to client code:
