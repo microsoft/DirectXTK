@@ -178,6 +178,7 @@ add_executable(xwbtool
     Audio/WAVFileReader.cpp
     Audio/WAVFileReader.h)
 target_include_directories(xwbtool PRIVATE Audio Src)
+target_link_libraries(xwbtool version.lib)
 source_group(xwbtool REGULAR_EXPRESSION XWBTool/*.*)
 
 if(MSVC)

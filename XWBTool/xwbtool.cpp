@@ -954,7 +954,33 @@ namespace
 
     void PrintLogo()
     {
-        wprintf(L"Microsoft (R) XACT-style Wave Bank Tool \n");
+        wchar_t version[32] = {};
+
+        wchar_t appName[_MAX_PATH] = {};
+        if (GetModuleFileNameW(nullptr, appName, _countof(appName)))
+        {
+            DWORD size = GetFileVersionInfoSizeW(appName, nullptr);
+            if (size > 0)
+            {
+                auto verInfo = std::make_unique<uint8_t[]>(size);
+                if (GetFileVersionInfoW(appName, 0, size, verInfo.get()))
+                {
+                    LPVOID lpstr = nullptr;
+                    UINT strLen = 0;
+                    if (VerQueryValueW(verInfo.get(), L"\\StringFileInfo\\040904B0\\ProductVersion", &lpstr, &strLen))
+                    {
+                        wcsncpy_s(version, reinterpret_cast<const wchar_t*>(lpstr), strLen);
+                    }
+                }
+            }
+        }
+
+        if (!*version)
+        {
+            wcscpy_s(version, L"MISSING");
+        }
+
+        wprintf(L"Microsoft (R) XACT-style Wave Bank Tool [DirectXTK] Version %ls\n", version);
         wprintf(L"Copyright (C) Microsoft Corp. All rights reserved.\n");
 #ifdef _DEBUG
         wprintf(L"*** Debug build ***\n");
