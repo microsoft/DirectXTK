@@ -6,6 +6,11 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### August 15, 2020
+* EnvironmentMapEffect now supports cubemaps, spherical, and dual-parabola environment maps
+* Code review and project updates
+* Added GDK projects
+
 ### July 2, 2020
 * Improved SpriteFont drawing performance in Debug builds
 * Regenerated shaders using Windows 10 May 2020 Update SDK (19041)
