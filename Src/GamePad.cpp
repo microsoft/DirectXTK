@@ -144,61 +144,71 @@ public:
 
     void GetState(int player, _Out_ State& state, DeadZone deadZoneMode)
     {
-        if (player == -1)
-            player = mMostRecentGamepad;
+        memset(&state, 0, sizeof(State));
+
+        IGameInputDevice* device = nullptr;
 
         if (player >= 0 && player < MAX_PLAYER_COUNT)
         {
-            IGameInputDevice* device = mInputDevices[player].Get();
-            if (device)
-            {
-                ComPtr<IGameInputReading> reading;
-                if (SUCCEEDED(mGameInput->GetCurrentReading(GameInputKindGamepad, device, reading.GetAddressOf())))
-                {
-                    GameInputGamepadState pad;
-                    if (reading->GetGamepadState(&pad))
-                    {
-                        state.connected = true;
-                        state.packet = reading->GetSequenceNumber(GameInputKindGamepad);
-
-                        state.buttons.a = (pad.buttons & GameInputGamepadA) != 0;
-                        state.buttons.b = (pad.buttons & GameInputGamepadB) != 0;
-                        state.buttons.x = (pad.buttons & GameInputGamepadX) != 0;
-                        state.buttons.y = (pad.buttons & GameInputGamepadY) != 0;
-                        state.buttons.leftStick = (pad.buttons & GameInputGamepadLeftThumbstick) != 0;
-                        state.buttons.rightStick = (pad.buttons & GameInputGamepadRightThumbstick) != 0;
-                        state.buttons.leftShoulder = (pad.buttons & GameInputGamepadLeftShoulder) != 0;
-                        state.buttons.rightShoulder = (pad.buttons & GameInputGamepadRightShoulder) != 0;
-                        state.buttons.view = (pad.buttons & GameInputGamepadView) != 0;
-                        state.buttons.menu = (pad.buttons & GameInputGamepadMenu) != 0;
-
-                        state.dpad.up = (pad.buttons & GameInputGamepadDPadUp) != 0;
-                        state.dpad.down = (pad.buttons & GameInputGamepadDPadDown) != 0;
-                        state.dpad.right = (pad.buttons & GameInputGamepadDPadRight) != 0;
-                        state.dpad.left = (pad.buttons & GameInputGamepadDPadLeft) != 0;
-
-                        ApplyStickDeadZone(pad.leftThumbstickX, pad.leftThumbstickY,
-                            deadZoneMode, 1.f, c_XboxOneThumbDeadZone,
-                            state.thumbSticks.leftX, state.thumbSticks.leftY);
-
-                        ApplyStickDeadZone(pad.rightThumbstickX, pad.rightThumbstickY,
-                            deadZoneMode, 1.f, c_XboxOneThumbDeadZone,
-                            state.thumbSticks.rightX, state.thumbSticks.rightY);
-
-                        state.triggers.left = pad.leftTrigger;
-                        state.triggers.right = pad.rightTrigger;
-                        return;
-                    }
-                }
-            }
+            device = mInputDevices[player].Get();
+            if (!device)
+                return;
+        }
+        else if (player == c_MostRecent)
+        {
+            player = mMostRecentGamepad;
+            assert(player >= 0 && player < MAX_PLAYER_COUNT);
+            device = mInputDevices[player].Get();
+            if (!device)
+                return;
+        }
+        else if (player != c_MergedInput)
+        {
+            return;
         }
 
-        memset(&state, 0, sizeof(State));
+        ComPtr<IGameInputReading> reading;
+        if (SUCCEEDED(mGameInput->GetCurrentReading(GameInputKindGamepad, device, reading.GetAddressOf())))
+        {
+            GameInputGamepadState pad;
+            if (reading->GetGamepadState(&pad))
+            {
+                state.connected = true;
+                state.packet = reading->GetSequenceNumber(GameInputKindGamepad);
+
+                state.buttons.a = (pad.buttons & GameInputGamepadA) != 0;
+                state.buttons.b = (pad.buttons & GameInputGamepadB) != 0;
+                state.buttons.x = (pad.buttons & GameInputGamepadX) != 0;
+                state.buttons.y = (pad.buttons & GameInputGamepadY) != 0;
+                state.buttons.leftStick = (pad.buttons & GameInputGamepadLeftThumbstick) != 0;
+                state.buttons.rightStick = (pad.buttons & GameInputGamepadRightThumbstick) != 0;
+                state.buttons.leftShoulder = (pad.buttons & GameInputGamepadLeftShoulder) != 0;
+                state.buttons.rightShoulder = (pad.buttons & GameInputGamepadRightShoulder) != 0;
+                state.buttons.view = (pad.buttons & GameInputGamepadView) != 0;
+                state.buttons.menu = (pad.buttons & GameInputGamepadMenu) != 0;
+
+                state.dpad.up = (pad.buttons & GameInputGamepadDPadUp) != 0;
+                state.dpad.down = (pad.buttons & GameInputGamepadDPadDown) != 0;
+                state.dpad.right = (pad.buttons & GameInputGamepadDPadRight) != 0;
+                state.dpad.left = (pad.buttons & GameInputGamepadDPadLeft) != 0;
+
+                ApplyStickDeadZone(pad.leftThumbstickX, pad.leftThumbstickY,
+                    deadZoneMode, 1.f, c_XboxOneThumbDeadZone,
+                    state.thumbSticks.leftX, state.thumbSticks.leftY);
+
+                ApplyStickDeadZone(pad.rightThumbstickX, pad.rightThumbstickY,
+                    deadZoneMode, 1.f, c_XboxOneThumbDeadZone,
+                    state.thumbSticks.rightX, state.thumbSticks.rightY);
+
+                state.triggers.left = pad.leftTrigger;
+                state.triggers.right = pad.rightTrigger;
+            }
+        }
     }
 
     void GetCapabilities(int player, _Out_ Capabilities& caps)
     {
-        if (player == -1)
+        if (player == c_MostRecent)
             player = mMostRecentGamepad;
 
         if (player >= 0 && player < MAX_PLAYER_COUNT)
@@ -228,7 +238,7 @@ public:
 
     bool SetVibration(int player, float leftMotor, float rightMotor, float leftTrigger, float rightTrigger) noexcept
     {
-        if (player == -1)
+        if (player == c_MostRecent)
             player = mMostRecentGamepad;
 
         if (player >= 0 && player < MAX_PLAYER_COUNT)
@@ -284,7 +294,7 @@ public:
         if (!device)
             return;
 
-        if (player == -1)
+        if (player == c_MostRecent)
             player = mMostRecentGamepad;
 
         *device = nullptr;
@@ -478,7 +488,7 @@ public:
             ScanGamePads();
         }
 
-        if (player == -1)
+        if (player == c_MostRecent)
             player = mMostRecentGamepad;
 
         if ((player >= 0) && (player < MAX_PLAYER_COUNT))
@@ -543,7 +553,7 @@ public:
             ScanGamePads();
         }
 
-        if (player == -1)
+        if (player == c_MostRecent)
             player = mMostRecentGamepad;
 
         if ((player >= 0) && (player < MAX_PLAYER_COUNT))
@@ -602,7 +612,7 @@ public:
     {
         using namespace ABI::Windows::Gaming::Input;
 
-        if (player == -1)
+        if (player == c_MostRecent)
             player = mMostRecentGamepad;
 
         if ((player >= 0) && (player < MAX_PLAYER_COUNT))
@@ -947,7 +957,7 @@ public:
             ScanGamePads();
         }
 
-        if (player == -1)
+        if (player == c_MostRecent)
             player = mMostRecentGamepad;
 
         if ((player >= 0) && (player < MAX_PLAYER_COUNT))
@@ -1009,7 +1019,7 @@ public:
             ScanGamePads();
         }
 
-        if (player == -1)
+        if (player == c_MostRecent)
             player = mMostRecentGamepad;
 
         if ((player >= 0) && (player < MAX_PLAYER_COUNT))
@@ -1073,7 +1083,7 @@ public:
     {
         using namespace ABI::Windows::Xbox::Input;
 
-        if (player == -1)
+        if (player == c_MostRecent)
             player = mMostRecentGamepad;
 
         if ((player >= 0) && (player < MAX_PLAYER_COUNT))
@@ -1257,7 +1267,7 @@ public:
 
     void GetState(int player, _Out_ State& state, DeadZone deadZoneMode)
     {
-        if (player == -1)
+        if (player == c_MostRecent)
             player = GetMostRecent();
 
         ULONGLONG time = GetTickCount64();
@@ -1334,7 +1344,7 @@ public:
 
     void GetCapabilities(int player, _Out_ Capabilities& caps)
     {
-        if (player == -1)
+        if (player == c_MostRecent)
             player = GetMostRecent();
 
         ULONGLONG time = GetTickCount64();
@@ -1391,7 +1401,7 @@ public:
 
     bool SetVibration(int player, float leftMotor, float rightMotor, float leftTrigger, float rightTrigger) noexcept
     {
-        if (player == -1)
+        if (player == c_MostRecent)
             player = GetMostRecent();
 
         ULONGLONG time = GetTickCount64();

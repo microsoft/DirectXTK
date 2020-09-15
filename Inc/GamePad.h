@@ -60,6 +60,12 @@ namespace DirectX
         static constexpr int MAX_PLAYER_COUNT = 4;
     #endif
 
+        static constexpr int c_MostRecent = -1;
+
+    #if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)
+        static constexpr int c_MergedInput = -2;
+    #endif
+
         enum DeadZone
         {
             DEAD_ZONE_INDEPENDENT_AXES = 0,
