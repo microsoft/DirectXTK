@@ -42,11 +42,11 @@ namespace
     //-------------------------------------------------------------------------------------
     struct WICTranslate
     {
-        GUID                wic;
+        const GUID&         wic;
         DXGI_FORMAT         format;
     };
 
-    const WICTranslate g_WICFormats[] =
+    constexpr WICTranslate g_WICFormats[] =
     {
         { GUID_WICPixelFormat128bppRGBAFloat,       DXGI_FORMAT_R32G32B32A32_FLOAT },
 
@@ -76,11 +76,11 @@ namespace
     //-------------------------------------------------------------------------------------
     struct WICConvert
     {
-        GUID        source;
-        GUID        target;
+        const GUID& source;
+        const GUID& target;
     };
 
-    const WICConvert g_WICConvert [] =
+    constexpr WICConvert g_WICConvert [] =
     {
         // Note target GUID in this conversion table must be one of those directly supported formats (above).
 
