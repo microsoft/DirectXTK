@@ -400,7 +400,7 @@ namespace
                         {
                             // Return 'forward' loop
                             *pLoopStart = loops[j].start;
-                            *pLoopLength = loops[j].end + loops[j].start + 1;
+                            *pLoopLength = loops[j].end - loops[j].start + 1;
                             return S_OK;
                         }
                     }
