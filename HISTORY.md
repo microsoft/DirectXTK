@@ -6,6 +6,12 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### September 30, 2020
+* GamePad class updated with ``c_MostRecent`` constant for ``-1`` player index special behavior
+* Fixed bug in WICTextureLoader that resulted in ``WINCODEC_ERR_INSUFFICIENTBUFFER`` for some resize requests
+* Fixed ``.wav`` file reading of MIDILoop chunk
+* Minor code cleanup
+
 ### August 15, 2020
 * EnvironmentMapEffect now supports cubemaps, spherical, and dual-parabola environment maps
 * Code review and project updates
