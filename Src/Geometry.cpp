@@ -372,7 +372,7 @@ void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indi
     vertices.reserve(vertexPositions.size());
     for (auto it = vertexPositions.begin(); it != vertexPositions.end(); ++it)
     {
-        auto vertexValue = *it;
+        const auto& vertexValue = *it;
 
         auto normal = XMVector3Normalize(XMLoadFloat3(&vertexValue));
         auto pos = XMVectorScale(normal, radius);
@@ -472,7 +472,7 @@ void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indi
     // poles, but reduce stretching.
     auto fixPole = [&](size_t poleIndex)
     {
-        auto poleVertex = vertices[poleIndex];
+        const auto& poleVertex = vertices[poleIndex];
         bool overwrittenPoleVertex = false; // overwriting the original pole vertex saves us one vertex
 
         for (size_t i = 0; i < indices.size(); i += 3)

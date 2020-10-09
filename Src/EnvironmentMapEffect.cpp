@@ -65,7 +65,6 @@ public:
     bool specularEnabled;
     bool biasedVertexNormals;
     EnvironmentMapEffect::Mapping mapping;
-    bool shaderModel4;
 
     EffectLights lights;
 
