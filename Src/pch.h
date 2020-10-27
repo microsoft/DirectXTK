@@ -65,6 +65,7 @@
 #pragma clang diagnostic ignored "-Wgnu-anonymous-struct"
 #pragma clang diagnostic ignored "-Wlanguage-extension-token"
 #pragma clang diagnostic ignored "-Wmissing-variable-declarations"
+#pragma clang diagnostic ignored "-Wmicrosoft-include"
 #pragma clang diagnostic ignored "-Wnested-anon-types"
 #pragma clang diagnostic ignored "-Wreserved-id-macro"
 #pragma clang diagnostic ignored "-Wswitch-enum"
@@ -92,6 +93,10 @@
 
 #ifndef _WIN32_WINNT_WIN10
 #define _WIN32_WINNT_WIN10 0x0A00
+#endif
+
+#ifndef WINAPI_FAMILY_GAMES
+#define WINAPI_FAMILY_GAMES 6
 #endif
 
 #ifdef _GAMING_XBOX
