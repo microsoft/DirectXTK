@@ -284,7 +284,8 @@ namespace DirectX
 
     #if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)
         // Underlying device access
-        void __cdecl GetDevice(int player, _Outptr_ IGameInputDevice** device) noexcept;
+        _Success_(return != false)
+        bool __cdecl GetDevice(int player, _Outptr_ IGameInputDevice** device) noexcept;
     #endif
 
         // Singleton

@@ -129,10 +129,9 @@ public:
         {
             if (mGameInput)
             {
-                HRESULT hr = mGameInput->UnregisterCallback(mDeviceToken, UINT64_MAX);
-                if (FAILED(hr))
+                if (!mGameInput->UnregisterCallback(mDeviceToken, UINT64_MAX))
                 {
-                    DebugTrace("ERROR: GameInput::UnregisterCallback [gamepad] failed (%08X)", static_cast<unsigned int>(hr));
+                    DebugTrace("ERROR: GameInput::UnregisterCallback [gamepad] failed");
                 }
             }
 
@@ -289,10 +288,11 @@ public:
         }
     }
 
-    void GetDevice(int player, _Outptr_ IGameInputDevice** device) noexcept
+    _Success_(return != false)
+    bool GetDevice(int player, _Outptr_ IGameInputDevice** device) noexcept
     {
         if (!device)
-            return;
+            return false;
 
         if (player == c_MostRecent)
             player = mMostRecentGamepad;
@@ -306,8 +306,11 @@ public:
             {
                 dev->AddRef();
                 *device = dev;
+                return true;
             }
         }
+
+        return false;
     }
 
     GamePad*    mOwner;
@@ -1648,9 +1651,9 @@ void GamePad::RegisterEvents(HANDLE ctrlChanged) noexcept
     pImpl->mCtrlChanged = (!ctrlChanged) ? INVALID_HANDLE_VALUE : ctrlChanged;
 }
 
-void GamePad::GetDevice(int player, _Outptr_ IGameInputDevice** device) noexcept
+bool GamePad::GetDevice(int player, _Outptr_ IGameInputDevice** device) noexcept
 {
-    pImpl->GetDevice(player, device);
+    return pImpl->GetDevice(player, device);
 }
 #elif ((_WIN32_WINNT >= _WIN32_WINNT_WIN10) && !defined(_GAMING_DESKTOP)) || defined(_XBOX_ONE)
 void GamePad::RegisterEvents(HANDLE ctrlChanged, HANDLE userChanged) noexcept

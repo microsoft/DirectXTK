@@ -102,10 +102,9 @@ public:
         {
             if (mGameInput)
             {
-                HRESULT hr = mGameInput->UnregisterCallback(mDeviceToken, UINT64_MAX);
-                if (FAILED(hr))
+                if (!mGameInput->UnregisterCallback(mDeviceToken, UINT64_MAX))
                 {
-                    DebugTrace("ERROR: GameInput::UnregisterCallback [mouse] failed (%08X)", static_cast<unsigned int>(hr));
+                    DebugTrace("ERROR: GameInput::UnregisterCallback [mouse] failed");
                 }
             }
 
