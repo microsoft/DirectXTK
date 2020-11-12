@@ -6,6 +6,12 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### November 11, 2020
+* Fixed ``/analyze`` warnings in GameInput usage
+* Fixed *DirectX Tool Kit for Audio* use of XAudio 2.8 for Windows 8 w/ Windows 10 SDK
+* Minor code and project cleanup
+* *DirectX Tool Kit for Audio* updated for XAudio2Redist 1.2.4
+
 ### September 30, 2020
 * GamePad class updated with ``c_MostRecent`` constant for ``-1`` player index special behavior
 * Fixed bug in WICTextureLoader that resulted in ``WINCODEC_ERR_INSUFFICIENTBUFFER`` for some resize requests
@@ -15,12 +21,14 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 ### August 15, 2020
 * EnvironmentMapEffect now supports cubemaps, spherical, and dual-parabola environment maps
 * Code review and project updates
+* *DirectX Tool Kit for Audio* updated for XAudio2Redist 1.2.3
 
 ### July 2, 2020
 * Improved SpriteFont drawing performance in Debug builds
 * Regenerated shaders using Windows 10 May 2020 Update SDK (19041)
 * Code cleanup for some new VC++ 16.7 warnings and static code analysis
 * CMake updates
+* *DirectX Tool Kit for Audio* updated for XAudio2Redist 1.2.2
 
 ### June 1, 2020
 * Added BufferHelpers header with functions **CreateStaticBuffer** / **CreateTextureFromMemory**, and the **ConstantBuffer** helper class
