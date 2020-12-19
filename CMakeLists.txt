@@ -11,6 +11,8 @@ project (DirectXTK
   HOMEPAGE_URL "https://go.microsoft.com/fwlink/?LinkId=248929"
   LANGUAGES CXX)
 
+option(BUILD_TOOLS "Build XWBTool" ON)
+
 # TODO: How to build for XAudio2Redist with cmake?
 option(BUILD_XAUDIO_WIN10 "Build for XAudio 2.9" OFF)
 option(BUILD_XAUDIO_WIN8 "Build for XAudio 2.8" ON)
@@ -219,31 +221,41 @@ install(
   DESTINATION cmake/)
 
 #--- Command-line tools
-add_executable(xwbtool
+if(BUILD_TOOLS)
+  add_executable(xwbtool
     xwbtool/xwbtool.cpp
     Audio/WAVFileReader.cpp
     Audio/WAVFileReader.h)
-target_include_directories(xwbtool PRIVATE Audio Src)
-target_link_libraries(xwbtool version.lib)
-source_group(xwbtool REGULAR_EXPRESSION XWBTool/*.*)
+  target_include_directories(xwbtool PRIVATE Audio Src)
+  target_link_libraries(xwbtool version.lib)
+  source_group(xwbtool REGULAR_EXPRESSION XWBTool/*.*)
+endif()
 
 if(MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /fp:fast)
-    target_compile_options(xwbtool PRIVATE /fp:fast)
+    if(BUILD_TOOLS)
+      target_compile_options(xwbtool PRIVATE /fp:fast)
+    endif()
 
    if(ENABLE_CODE_ANALYSIS)
       target_compile_options(${PROJECT_NAME} PRIVATE /analyze)
-      target_compile_options(xwbtool PRIVATE /analyze)
+      if(BUILD_TOOLS)
+        target_compile_options(xwbtool PRIVATE /analyze)
+      endif()
    endif()
 
     if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.26)
         target_compile_options(${PROJECT_NAME} PRIVATE /Zc:preprocessor /wd5104 /wd5105)
-        target_compile_options(xwbtool PRIVATE /Zc:preprocessor /wd5104 /wd5105)
+        if(BUILD_TOOLS)
+          target_compile_options(xwbtool PRIVATE /Zc:preprocessor /wd5104 /wd5105)
+        endif()
     endif()
 
     if (${CMAKE_SIZEOF_VOID_P} EQUAL "4")
         target_compile_options(${PROJECT_NAME} PRIVATE /arch:SSE2)
-        target_compile_options(xwbtool PRIVATE /arch:SSE2)
+        if(BUILD_TOOLS)
+          target_compile_options(xwbtool PRIVATE /arch:SSE2)
+        endif()
     endif()
 endif()
 
@@ -251,22 +263,30 @@ if ( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
     set(WarningsLib "-Wpedantic" "-Wextra")
     target_compile_options(${PROJECT_NAME} PRIVATE ${WarningsLib})
 
-    set(WarningsEXE ${WarningsLib} "-Wno-c++98-compat" "-Wno-c++98-compat-pedantic"
+    if(BUILD_TOOLS)
+      set(WarningsEXE ${WarningsLib} "-Wno-c++98-compat" "-Wno-c++98-compat-pedantic"
         "-Wno-double-promotion" "-Wno-exit-time-destructors" "-Wno-gnu-anonymous-struct"
         "-Wno-missing-prototypes" "-Wno-nested-anon-types" "-Wno-unused-const-variable")
-    target_compile_options(xwbtool PRIVATE ${WarningsEXE})
+      target_compile_options(xwbtool PRIVATE ${WarningsEXE})
+    endif()
 endif()
 if ( CMAKE_CXX_COMPILER_ID MATCHES "MSVC" )
     target_compile_options(${PROJECT_NAME} PRIVATE /permissive- /JMC- /Zc:__cplusplus)
-    target_compile_options(xwbtool PRIVATE /permissive- /Zc:__cplusplus)
 
-    set(WarningsEXE "/wd4365" "/wd4710" "/wd4820" "/wd5039" "/wd5045")
-    target_compile_options(xwbtool PRIVATE ${WarningsEXE})
+    if(BUILD_TOOLS)
+      target_compile_options(xwbtool PRIVATE /permissive- /Zc:__cplusplus)
+
+      set(WarningsEXE "/wd4365" "/wd4710" "/wd4820" "/wd5039" "/wd5045")
+      target_compile_options(xwbtool PRIVATE ${WarningsEXE})
+    endif()
 endif()
 
 if(WIN32)
     target_compile_definitions(${PROJECT_NAME} PRIVATE _UNICODE UNICODE)
-    target_compile_definitions(xwbtool PRIVATE _UNICODE UNICODE _WIN32_WINNT=0x0601)
+
+    if(BUILD_TOOLS)
+      target_compile_definitions(xwbtool PRIVATE _UNICODE UNICODE _WIN32_WINNT=0x0601)
+    endif()
 
     if(BUILD_XAUDIO_WIN10)
         target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0A00)
@@ -277,4 +297,6 @@ if(WIN32)
     endif()
 endif()
 
-set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT xwbtool)
+if(BUILD_TOOLS)
+  set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT xwbtool)
+endif()
