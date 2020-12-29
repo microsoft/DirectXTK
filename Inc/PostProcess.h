@@ -15,9 +15,10 @@
 #include <d3d11_1.h>
 #endif
 
-#include <DirectXMath.h>
 #include <memory>
 #include <functional>
+
+#include <DirectXMath.h>
 
 
 namespace DirectX

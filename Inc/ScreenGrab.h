@@ -1,4 +1,3 @@
-
 //--------------------------------------------------------------------------------------
 // File: ScreenGrab.h
 //
@@ -24,8 +23,9 @@
 #include <d3d11_1.h>
 #endif
 
-#include <OCIdl.h>
 #include <functional>
+
+#include <OCIdl.h>
 
 #pragma comment(lib,"uuid.lib")
 

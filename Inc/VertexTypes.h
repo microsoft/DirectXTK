@@ -15,6 +15,8 @@
 #include <d3d11_1.h>
 #endif
 
+#include <cstdint>
+
 #include <DirectXMath.h>
 
 

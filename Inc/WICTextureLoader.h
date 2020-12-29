@@ -29,6 +29,7 @@
 #include <d3d11_1.h>
 #endif
 
+#include <cstddef>
 #include <cstdint>
 
 #pragma comment(lib,"uuid.lib")

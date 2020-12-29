@@ -23,6 +23,7 @@
 
 #include <d3d11_x.h>
 
+#include <cstddef>
 #include <cstdint>
 
 #ifndef DDS_ALPHA_MODE_DEFINED
@@ -51,7 +52,7 @@ namespace Xbox
         _Outptr_opt_ ID3D11Resource** texture,
         _Outptr_opt_ ID3D11ShaderResourceView** textureView,
         _Outptr_ void** grfxMemory,
-        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr, 
+        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr,
         _In_ bool forceSRGB = false) noexcept;
 
     HRESULT __cdecl CreateDDSTextureFromFile( _In_ ID3D11DeviceX* d3dDevice,

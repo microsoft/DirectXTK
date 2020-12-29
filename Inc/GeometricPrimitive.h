@@ -11,10 +11,12 @@
 
 #include "VertexTypes.h"
 
-#include <DirectXColors.h>
+#include <cstddef>
 #include <functional>
 #include <memory>
 #include <vector>
+
+#include <DirectXColors.h>
 
 
 namespace DirectX
