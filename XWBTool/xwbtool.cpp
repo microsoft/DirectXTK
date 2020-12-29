@@ -28,14 +28,15 @@
 
 #include <Windows.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-
 #include <algorithm>
+#include <cassert>
+#include <cstddef>
+#include <cstdio>
+#include <cstdlib>
 #include <fstream>
 #include <list>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "WAVFileReader.h"
