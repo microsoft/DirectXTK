@@ -12,6 +12,13 @@
 
 #pragma once
 
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <memory>
+#include <string>
+#include <vector>
+
 #include <objbase.h>
 #include <mmreg.h>
 #include <Audioclient.h>
@@ -50,13 +57,6 @@
 #endif
 
 #include <DirectXMath.h>
-
-
-#include <cstdint>
-#include <functional>
-#include <memory>
-#include <string>
-#include <vector>
 
 
 namespace DirectX

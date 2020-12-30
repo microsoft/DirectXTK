@@ -170,7 +170,7 @@ if((BUILD_XAUDIO_WIN10) OR (BUILD_XAUDIO_WIN8))
 endif()
 
 if(MSVC)
-    # Use max Warning Level 
+    # Use max Warning Level
     string(REPLACE "/W3 " "/Wall " CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
     string(REPLACE "/W3 " "/Wall " CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
     string(REPLACE "/W3 " "/Wall " CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})

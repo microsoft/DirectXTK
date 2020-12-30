@@ -16,9 +16,7 @@
 #include <dxgiformat.h>
 #endif
 
-#include <DirectXMath.h>
-#include <DirectXCollision.h>
-
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <functional>
@@ -27,6 +25,9 @@
 #include <vector>
 
 #include <wrl\client.h>
+
+#include <DirectXMath.h>
+#include <DirectXCollision.h>
 
 
 namespace DirectX

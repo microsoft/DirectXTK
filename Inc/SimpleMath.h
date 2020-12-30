@@ -14,10 +14,10 @@
 #include <dxgi1_2.h>
 #endif
 
+#include <cassert>
+#include <cstddef>
+#include <cstring>
 #include <functional>
-
-#include <assert.h>
-#include <memory.h>
 
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
@@ -403,7 +403,7 @@ namespace DirectX
 
             static void Barycentric(const Vector4& v1, const Vector4& v2, const Vector4& v3, float f, float g, Vector4& result) noexcept;
             static Vector4 Barycentric(const Vector4& v1, const Vector4& v2, const Vector4& v3, float f, float g) noexcept;
-             
+
             static void CatmullRom(const Vector4& v1, const Vector4& v2, const Vector4& v3, const Vector4& v4, float t, Vector4& result) noexcept;
             static Vector4 CatmullRom(const Vector4& v1, const Vector4& v2, const Vector4& v3, const Vector4& v4, float t) noexcept;
 

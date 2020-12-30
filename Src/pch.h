@@ -107,16 +107,13 @@
 #include <d3d11_1.h>
 #endif
 
-#define _XM_NO_XMVECTOR_OVERLOADS_
-
-#include <DirectXMath.h>
-#include <DirectXPackedVector.h>
-#include <DirectXCollision.h>
-
 #include <algorithm>
 #include <array>
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <cstdlib>
+#include <cstring>
 #include <exception>
 #include <list>
 #include <map>
@@ -134,6 +131,12 @@
 #pragma warning(pop)
 
 #include <malloc.h>
+
+#define _XM_NO_XMVECTOR_OVERLOADS_
+
+#include <DirectXMath.h>
+#include <DirectXPackedVector.h>
+#include <DirectXCollision.h>
 
 #pragma warning(push)
 #pragma warning(disable : 4467 5038 5204 5220)

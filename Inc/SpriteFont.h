@@ -11,6 +11,8 @@
 
 #include "SpriteBatch.h"
 
+#include <cstddef>
+
 
 namespace DirectX
 {
