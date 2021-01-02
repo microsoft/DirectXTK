@@ -92,7 +92,7 @@ namespace
         { PostProcess_PSBloomBlur,              sizeof(PostProcess_PSBloomBlur) },
     };
 
-    static_assert(_countof(pixelShaders) == BasicPostProcess::Effect_Max, "array/max mismatch");
+    static_assert(static_cast<unsigned int>(std::size(pixelShaders)) == BasicPostProcess::Effect_Max, "array/max mismatch");
 
     // Factory for lazily instantiating shaders.
     class DeviceResources

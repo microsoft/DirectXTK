@@ -68,7 +68,7 @@ namespace
         { PostProcess_PSBloomCombine,       sizeof(PostProcess_PSBloomCombine) },
     };
 
-    static_assert(_countof(pixelShaders) == DualPostProcess::Effect_Max, "array/max mismatch");
+    static_assert(static_cast<unsigned int>(std::size(pixelShaders)) == DualPostProcess::Effect_Max, "array/max mismatch");
 
     // Factory for lazily instantiating shaders.
     class DeviceResources

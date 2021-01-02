@@ -799,7 +799,7 @@ void DirectX::ComputeTetrahedron(VertexCollection& vertices, IndexCollection& in
         1, 3, 2,
     };
 
-    for (size_t j = 0; j < _countof(faces); j += 3)
+    for (size_t j = 0; j < std::size(faces); j += 3)
     {
         uint32_t v0 = faces[j];
         uint32_t v1 = faces[j + 1];
@@ -865,7 +865,7 @@ void DirectX::ComputeOctahedron(VertexCollection& vertices, IndexCollection& ind
         5, 0, 3
     };
 
-    for (size_t j = 0; j < _countof(faces); j += 3)
+    for (size_t j = 0; j < std::size(faces); j += 3)
     {
         uint32_t v0 = faces[j];
         uint32_t v1 = faces[j + 1];
@@ -979,7 +979,7 @@ void DirectX::ComputeDodecahedron(VertexCollection& vertices, IndexCollection& i
     };
 
     size_t t = 0;
-    for (size_t j = 0; j < _countof(faces); j += 5, ++t)
+    for (size_t j = 0; j < std::size(faces); j += 5, ++t)
     {
         uint32_t v0 = faces[j];
         uint32_t v1 = faces[j + 1];
@@ -1083,7 +1083,7 @@ void DirectX::ComputeIcosahedron(VertexCollection& vertices, IndexCollection& in
         11, 7, 5
     };
 
-    for (size_t j = 0; j < _countof(faces); j += 3)
+    for (size_t j = 0; j < std::size(faces); j += 3)
     {
         uint32_t v0 = faces[j];
         uint32_t v1 = faces[j + 1];
@@ -1170,7 +1170,7 @@ void DirectX::ComputeTeapot(VertexCollection& vertices, IndexCollection& indices
     XMVECTOR scaleNegateZ = XMVectorMultiply(scaleVector, g_XMNegateZ);
     XMVECTOR scaleNegateXZ = XMVectorMultiply(scaleVector, XMVectorMultiply(g_XMNegateX, g_XMNegateZ));
 
-    for (size_t i = 0; i < _countof(TeapotPatches); i++)
+    for (size_t i = 0; i < std::size(TeapotPatches); i++)
     {
         TeapotPatch const& patch = TeapotPatches[i];
 

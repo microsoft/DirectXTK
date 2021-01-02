@@ -175,10 +175,10 @@ PBREffect::Impl::Impl(_In_ ID3D11Device* device)
         throw std::exception("PBREffect requires Feature Level 10.0 or later");
     }
 
-    static_assert(_countof(EffectBase<PBREffectTraits>::VertexShaderIndices) == PBREffectTraits::ShaderPermutationCount, "array/max mismatch");
-    static_assert(_countof(EffectBase<PBREffectTraits>::VertexShaderBytecode) == PBREffectTraits::VertexShaderCount, "array/max mismatch");
-    static_assert(_countof(EffectBase<PBREffectTraits>::PixelShaderBytecode) == PBREffectTraits::PixelShaderCount, "array/max mismatch");
-    static_assert(_countof(EffectBase<PBREffectTraits>::PixelShaderIndices) == PBREffectTraits::ShaderPermutationCount, "array/max mismatch");
+    static_assert(static_cast<int>(std::size(EffectBase<PBREffectTraits>::VertexShaderIndices)) == PBREffectTraits::ShaderPermutationCount, "array/max mismatch");
+    static_assert(static_cast<int>(std::size(EffectBase<PBREffectTraits>::VertexShaderBytecode)) == PBREffectTraits::VertexShaderCount, "array/max mismatch");
+    static_assert(static_cast<int>(std::size(EffectBase<PBREffectTraits>::PixelShaderBytecode)) == PBREffectTraits::PixelShaderCount, "array/max mismatch");
+    static_assert(static_cast<int>(std::size(EffectBase<PBREffectTraits>::PixelShaderIndices)) == PBREffectTraits::ShaderPermutationCount, "array/max mismatch");
 
     // Lighting
     static const XMVECTORF32 defaultLightDirection = { { { 0, -1, 0, 0 } } };
@@ -270,7 +270,7 @@ void PBREffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
             albedoTexture.Get(), normalTexture.Get(), rmaTexture.Get(),
             emissiveTexture.Get(),
             radianceTexture.Get(), irradianceTexture.Get() };
-        deviceContext->PSSetShaderResources(0, _countof(textures), textures);
+        deviceContext->PSSetShaderResources(0, static_cast<UINT>(std::size(textures)), textures);
     }
     else
     {
@@ -278,7 +278,7 @@ void PBREffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
             nullptr, nullptr, nullptr,
             nullptr,
             radianceTexture.Get(), irradianceTexture.Get() };
-        deviceContext->PSSetShaderResources(0, _countof(textures), textures);
+        deviceContext->PSSetShaderResources(0, static_cast<UINT>(std::size(textures)), textures);
     }
 
     // Set shaders and constant buffers.

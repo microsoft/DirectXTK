@@ -320,7 +320,7 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateDGSLEffect(DGSLEffectFac
         effect->SetTextureEnabled(true);
     }
 
-    for (size_t j = 0; j < _countof(info.textures); ++j)
+    for (size_t j = 0; j < std::size(info.textures); ++j)
     {
         if (info.textures[j] && *info.textures[j])
         {

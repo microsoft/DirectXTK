@@ -115,6 +115,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <exception>
+#include <iterator>
 #include <list>
 #include <map>
 #include <memory>

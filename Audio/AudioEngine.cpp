@@ -248,7 +248,7 @@ namespace
     }
 }
 
-static_assert(_countof(gReverbPresets) == Reverb_MAX, "AUDIO_ENGINE_REVERB enum mismatch");
+static_assert(static_cast<unsigned int>(std::size(gReverbPresets)) == Reverb_MAX, "AUDIO_ENGINE_REVERB enum mismatch");
 
 
 //======================================================================================
@@ -674,7 +674,7 @@ bool AudioEngine::Impl::Update()
         return false;
 
     HANDLE events[2] = { mEngineCallback.mCriticalError.get(), mVoiceCallback.mBufferEnd.get() };
-    switch (WaitForMultipleObjectsEx(_countof(events), events, FALSE, 0, FALSE))
+    switch (WaitForMultipleObjectsEx(static_cast<DWORD>(std::size(events)), events, FALSE, 0, FALSE))
     {
         default:
         case WAIT_TIMEOUT:

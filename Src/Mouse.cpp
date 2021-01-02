@@ -657,7 +657,7 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
         return;
 
     HANDLE events[3] = { pImpl->mScrollWheelValue.get(), pImpl->mAbsoluteMode.get(), pImpl->mRelativeMode.get() };
-    switch (WaitForMultipleObjectsEx(_countof(events), events, FALSE, 0, FALSE))
+    switch (WaitForMultipleObjectsEx(static_cast<DWORD>(std::size(events)), events, FALSE, 0, FALSE))
     {
         default:
         case WAIT_TIMEOUT:
