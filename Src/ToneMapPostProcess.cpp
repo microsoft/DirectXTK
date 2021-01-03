@@ -34,7 +34,7 @@ namespace
 #endif
 
     // Constant buffer layout. Must match the shader!
-    __declspec(align(16)) struct ToneMapConstants
+    XM_ALIGNED_STRUCT(16) ToneMapConstants
     {
         // linearExposure is .x
         // paperWhiteNits is .y

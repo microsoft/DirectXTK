@@ -139,6 +139,10 @@
 #include <DirectXPackedVector.h>
 #include <DirectXCollision.h>
 
+#if (DIRECTX_MATH_VERSION < 315)
+#define XM_ALIGNED_STRUCT(x) __declspec(align(x)) struct
+#endif
+
 #pragma warning(push)
 #pragma warning(disable : 4467 5038 5204 5220)
 #include <wrl.h>

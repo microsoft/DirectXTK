@@ -90,7 +90,7 @@ namespace DirectX
 
     private:
         // Private implementation.
-        class Impl;
+        struct Impl;
 
         std::unique_ptr<Impl> pImpl;
 

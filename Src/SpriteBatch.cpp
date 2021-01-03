@@ -59,7 +59,7 @@ namespace
 
 
 // Internal SpriteBatch implementation class.
-__declspec(align(16)) class SpriteBatch::Impl : public AlignedNew<SpriteBatch::Impl>
+XM_ALIGNED_STRUCT(16) SpriteBatch::Impl : public AlignedNew<SpriteBatch::Impl>
 {
 public:
     Impl(_In_ ID3D11DeviceContext* deviceContext);
@@ -82,7 +82,7 @@ public:
 
 
     // Info about a single sprite that is waiting to be drawn.
-    __declspec(align(16)) struct SpriteInfo : public AlignedNew<SpriteInfo>
+    XM_ALIGNED_STRUCT(16) SpriteInfo : public AlignedNew<SpriteInfo>
     {
         XMFLOAT4A source;
         XMFLOAT4A destination;

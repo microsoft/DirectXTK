@@ -101,7 +101,7 @@ namespace
     static_assert((sizeof(MiscConstants) % 16) == 0, "CB size not padded correctly");
     static_assert((sizeof(BoneConstants) % 16) == 0, "CB size not padded correctly");
 
-    __declspec(align(16)) struct DGSLEffectConstants
+    XM_ALIGNED_STRUCT(16) DGSLEffectConstants
     {
         MaterialConstants   material;
         LightConstants      light;

@@ -21,7 +21,7 @@ namespace DirectX
     //
     // Example usage:
     //
-    //      __declspec(align(16)) struct MyAlignedType : public AlignedNew<MyAlignedType>
+    //      XM_ALIGNED_STRUCT(16) MyAlignedType : public AlignedNew<MyAlignedType>
 
     template<typename TDerived>
     struct AlignedNew
