@@ -19,7 +19,7 @@ option(BUILD_XAUDIO_WIN8 "Build for XAudio 2.8" ON)
 
 option(ENABLE_CODE_ANALYSIS "Use Static Code Analysis on build" OFF)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -28,7 +28,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/CMake")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/CMake")
 
 #--- Library
-set(LIBRARY_SOURCES
+set(LIBRARY_HEADERS
     Inc/BufferHelpers.h
     Inc/CommonStates.h
     Inc/DDSTextureLoader.h
@@ -48,7 +48,9 @@ set(LIBRARY_SOURCES
     Inc/SpriteBatch.h
     Inc/SpriteFont.h
     Inc/VertexTypes.h
-    Inc/WICTextureLoader.h
+    Inc/WICTextureLoader.h)
+
+set(LIBRARY_SOURCES
     Src/AlignedNew.h
     Src/AlphaTestEffect.cpp
     Src/BasicEffect.cpp
@@ -126,8 +128,10 @@ set(SHADER_SOURCES
     Src/Shaders/Utilities.fxh)
 
 if((BUILD_XAUDIO_WIN10) OR (BUILD_XAUDIO_WIN8))
+    set(LIBRARY_HEADERS ${LIBRARY_HEADERS}
+        Inc/Audio.h)
+
     set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
-        Inc/Audio.h
         Audio/AudioEngine.cpp
         Audio/DynamicSoundEffectInstance.cpp
         Audio/SoundCommon.cpp
@@ -142,11 +146,8 @@ if((BUILD_XAUDIO_WIN10) OR (BUILD_XAUDIO_WIN8))
         Audio/WAVFileReader.h)
 endif()
 
-add_library(${PROJECT_NAME} STATIC ${LIBRARY_SOURCES} Src/Shaders/Compiled/SpriteEffect_SpriteVertexShader.inc)
-
-if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.16")
-    target_precompile_headers(${PROJECT_NAME} PRIVATE Src/pch.h)
-endif()
+set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
+    Src/Shaders/Compiled/SpriteEffect_SpriteVertexShader.inc)
 
 add_custom_command(
     OUTPUT "${PROJECT_SOURCE_DIR}/Src/Shaders/Compiled/SpriteEffect_SpriteVertexShader.inc"
@@ -156,6 +157,12 @@ add_custom_command(
     COMMAND "CompileShaders.cmd"
     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/Src/Shaders"
     USES_TERMINAL)
+
+add_library(${PROJECT_NAME} STATIC ${LIBRARY_SOURCES} ${LIBRARY_HEADERS})
+
+if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.16")
+    target_precompile_headers(${PROJECT_NAME} PRIVATE Src/pch.h)
+endif()
 
 source_group(Audio REGULAR_EXPRESSION Audio/*.*)
 source_group(Inc REGULAR_EXPRESSION Inc/*.*)
@@ -205,19 +212,10 @@ install(EXPORT ${PROJECT_NAME}-targets
   NAMESPACE Microsoft::
   DESTINATION cmake/)
 
-if((BUILD_XAUDIO_WIN10) OR (BUILD_XAUDIO_WIN8))
-  install(DIRECTORY Inc/
-    DESTINATION include/${PROJECT_NAME}
-    PATTERN "XboxDDSTextureLoader.h" EXCLUDE)
-else()
-  install(DIRECTORY Inc/
-    DESTINATION include/${PROJECT_NAME}
-    PATTERN "Audio.h" EXCLUDE
-    PATTERN "XboxDDSTextureLoader.h" EXCLUDE)
-endif()
+install(FILES ${LIBRARY_HEADERS}
+    DESTINATION include/${PROJECT_NAME})
 
-install(
-  FILES
+install(FILES
     ${PROJECT_BINARY_DIR}/cmake/${PACKAGE_NAME}-config.cmake
     ${PROJECT_BINARY_DIR}/cmake/${PACKAGE_NAME}-config-version.cmake
   DESTINATION cmake/)
