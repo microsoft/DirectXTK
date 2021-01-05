@@ -32,7 +32,7 @@ namespace
             mCriticalError.reset(CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE));
             if (!mCriticalError)
             {
-                throw std::system_error(std::error_code(GetLastError(), std::system_category()), "CreateEventEx");
+                throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "CreateEventEx");
             }
         }
 
@@ -66,7 +66,7 @@ namespace
             mBufferEnd.reset(CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE));
             if (!mBufferEnd)
             {
-                throw std::system_error(std::error_code(GetLastError(), std::system_category()), "CreateEventEx");
+                throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "CreateEventEx");
             }
         }
 
@@ -723,7 +723,7 @@ bool AudioEngine::Impl::Update()
             break;
 
         case WAIT_FAILED:
-            throw std::system_error(std::error_code(GetLastError(), std::system_category()), "WaitForMultipleObjectsEx");
+            throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "WaitForMultipleObjectsEx");
     }
 
     //

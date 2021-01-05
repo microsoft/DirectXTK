@@ -86,7 +86,7 @@ public:
         mScrollWheelValue.reset(CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE));
         if (!mScrollWheelValue)
         {
-            throw std::system_error(std::error_code(GetLastError(), std::system_category()), "CreateEventEx");
+            throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "CreateEventEx");
         }
     }
 
@@ -121,7 +121,7 @@ public:
 
         DWORD result = WaitForSingleObjectEx(mScrollWheelValue.get(), 0, FALSE);
         if (result == WAIT_FAILED)
-            throw std::system_error(std::error_code(GetLastError(), std::system_category()), "WaitForSingleObjectEx");
+            throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "WaitForSingleObjectEx");
 
         if (result == WAIT_OBJECT_0)
         {
@@ -205,7 +205,7 @@ public:
         CURSORINFO info = { sizeof(CURSORINFO), 0, nullptr, {} };
         if (!GetCursorInfo(&info))
         {
-            throw std::system_error(std::error_code(GetLastError(), std::system_category()), "GetCursorInfo");
+            throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "GetCursorInfo");
         }
 
         bool isvisible = (info.flags & CURSOR_SHOWING) != 0;
@@ -270,7 +270,7 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 
     DWORD result = WaitForSingleObjectEx(pImpl->mScrollWheelValue.get(), 0, FALSE);
     if (result == WAIT_FAILED)
-        throw std::system_error(std::error_code(GetLastError(), std::system_category()), "WaitForSingleObjectEx");
+        throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "WaitForSingleObjectEx");
 
     if (result == WAIT_OBJECT_0)
     {
@@ -459,7 +459,7 @@ public:
             || !mAbsoluteMode
             || !mRelativeMode)
         {
-            throw std::system_error(std::error_code(GetLastError(), std::system_category()), "CreateEventEx");
+            throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "CreateEventEx");
         }
     }
 
@@ -481,7 +481,7 @@ public:
 
         DWORD result = WaitForSingleObjectEx(mScrollWheelValue.get(), 0, FALSE);
         if (result == WAIT_FAILED)
-            throw std::system_error(std::error_code(GetLastError(), std::system_category()), "WaitForSingleObjectEx");
+            throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "WaitForSingleObjectEx");
 
         if (result == WAIT_OBJECT_0)
         {
@@ -493,7 +493,7 @@ public:
             result = WaitForSingleObjectEx(mRelativeRead.get(), 0, FALSE);
 
             if (result == WAIT_FAILED)
-                throw std::system_error(std::error_code(GetLastError(), std::system_category()), "WaitForSingleObjectEx");
+                throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "WaitForSingleObjectEx");
 
             if (result == WAIT_OBJECT_0)
             {
@@ -528,7 +528,7 @@ public:
         tme.dwHoverTime = 1;
         if (!TrackMouseEvent(&tme))
         {
-            throw std::system_error(std::error_code(GetLastError(), std::system_category()), "TrackMouseEvent");
+            throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "TrackMouseEvent");
         }
     }
 
@@ -557,7 +557,7 @@ public:
         CURSORINFO info = { sizeof(CURSORINFO), 0, nullptr, {} };
         if (!GetCursorInfo(&info))
         {
-            throw std::system_error(std::error_code(GetLastError(), std::system_category()), "GetCursorInfo");
+            throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "GetCursorInfo");
         }
 
         bool isvisible = (info.flags & CURSOR_SHOWING) != 0;
@@ -581,7 +581,7 @@ public:
         Rid.hwndTarget = window;
         if (!RegisterRawInputDevices(&Rid, 1, sizeof(RAWINPUTDEVICE)))
         {
-            throw std::system_error(std::error_code(GetLastError(), std::system_category()), "RegisterRawInputDevices");
+            throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "RegisterRawInputDevices");
         }
 
         mWindow = window;
@@ -705,7 +705,7 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
         break;
 
         case WAIT_FAILED:
-            throw std::system_error(std::error_code(GetLastError(), std::system_category()), "WaitForMultipleObjectsEx");
+            throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "WaitForMultipleObjectsEx");
     }
 
     switch (message)
@@ -969,7 +969,7 @@ public:
         if (!mScrollWheelValue
             || !mRelativeRead)
         {
-            throw std::system_error(std::error_code(GetLastError(), std::system_category()), "CreateEventEx");
+            throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "CreateEventEx");
         }
     }
 
@@ -986,7 +986,7 @@ public:
 
         DWORD result = WaitForSingleObjectEx(mScrollWheelValue.get(), 0, FALSE);
         if (result == WAIT_FAILED)
-            throw std::system_error(std::error_code(GetLastError(), std::system_category()), "WaitForSingleObjectEx");
+            throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "WaitForSingleObjectEx");
 
         if (result == WAIT_OBJECT_0)
         {
@@ -998,7 +998,7 @@ public:
             result = WaitForSingleObjectEx(mRelativeRead.get(), 0, FALSE);
 
             if (result == WAIT_FAILED)
-                throw std::system_error(std::error_code(GetLastError(), std::system_category()), "WaitForSingleObjectEx");
+                throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "WaitForSingleObjectEx");
 
             if (result == WAIT_OBJECT_0)
             {

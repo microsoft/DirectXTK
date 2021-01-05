@@ -356,7 +356,7 @@ const wchar_t* SpriteFont::Impl::ConvertUTF8(_In_z_ const char *text) noexcept(f
     if (!result)
     {
         DebugTrace("ERROR: MultiByteToWideChar failed with error %u.\n", GetLastError());
-        throw std::system_error(std::error_code(GetLastError(), std::system_category()), "MultiByteToWideChar");
+        throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "MultiByteToWideChar");
     }
 
     return utfBuffer.get();

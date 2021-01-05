@@ -266,7 +266,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
     ModelLoaderFlags flags)
 {
     if (!InitOnceExecuteOnce(&g_InitOnce, InitializeDecl, nullptr, nullptr))
-        throw std::system_error(std::error_code(GetLastError(), std::system_category()), "InitOnceExecuteOnce");
+        throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "InitOnceExecuteOnce");
 
     if (!device || !meshData)
         throw std::invalid_argument("Device and meshData cannot be null");

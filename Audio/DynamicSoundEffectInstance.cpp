@@ -58,7 +58,7 @@ public:
         mBufferEvent.reset(CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE));
         if (!mBufferEvent)
         {
-            throw std::system_error(std::error_code(GetLastError(), std::system_category()), "CreateEventEx");
+            throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "CreateEventEx");
         }
 
         CreateIntegerPCM(&mWaveFormat, sampleRate, channels, sampleBits);
@@ -226,7 +226,7 @@ void DynamicSoundEffectInstance::Impl::OnUpdate()
             break;
 
         case WAIT_FAILED:
-            throw std::system_error(std::error_code(GetLastError(), std::system_category()), "WaitForSingleObjectEx");
+            throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "WaitForSingleObjectEx");
     }
 }
 

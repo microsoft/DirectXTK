@@ -383,7 +383,7 @@ void DGSLEffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceCon
             if (!GetFileAttributesExW(fullName, GetFileExInfoStandard, &fileAttr))
             {
                 DebugTrace("ERROR: DGSLEffectFactory could not find texture file '%ls'\n", name);
-                throw std::system_error(std::error_code(GetLastError(), std::system_category()), "DGSLEffectFactory::CreateTexture");
+                throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "DGSLEffectFactory::CreateTexture");
             }
         }
 
@@ -471,7 +471,7 @@ void DGSLEffectFactory::Impl::CreatePixelShader(const wchar_t* name, ID3D11Pixel
             if (!GetFileAttributesExW(fullName, GetFileExInfoStandard, &fileAttr))
             {
                 DebugTrace("ERROR: DGSLEffectFactory could not find shader file '%ls'\n", name);
-                throw std::system_error(std::error_code(GetLastError(), std::system_category()), "DGSLEffectFactory::CreatePixelShader");
+                throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "DGSLEffectFactory::CreatePixelShader");
             }
         }
 

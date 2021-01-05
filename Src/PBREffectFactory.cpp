@@ -155,7 +155,7 @@ void PBREffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceCont
             if (!GetFileAttributesExW(fullName, GetFileExInfoStandard, &fileAttr))
             {
                 DebugTrace("ERROR: PBREffectFactory could not find texture file '%ls'\n", name);
-                throw std::system_error(std::error_code(GetLastError(), std::system_category()), "PBREffectFactory::CreateTexture");
+                throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "PBREffectFactory::CreateTexture");
             }
         }
 
