@@ -60,7 +60,7 @@ set(LIBRARY_SOURCES
     Src/BinaryReader.h
     Src/BufferHelpers.cpp
     Src/CommonStates.cpp
-    Src/DDS.h
+    Src/dds.h
     Src/DDSTextureLoader.cpp
     Src/DebugEffect.cpp
     Src/DemandCreate.h
