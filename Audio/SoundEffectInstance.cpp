@@ -215,7 +215,7 @@ void SoundEffectInstance::Impl::Play(bool loop)
             wfx->wFormatTag, wfx->nChannels, wfx->wBitsPerSample, wfx->nSamplesPerSec, length);
     #endif
         mBase.Stop(true, mLooped);
-        throw std::exception("SubmitSourceBuffer");
+        throw std::runtime_error("SubmitSourceBuffer");
     }
 }
 

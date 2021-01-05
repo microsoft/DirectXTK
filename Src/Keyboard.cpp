@@ -67,7 +67,7 @@ public:
     {
         if (s_keyboard)
         {
-            throw std::exception("Keyboard is a singleton");
+            throw std::logic_error("Keyboard is a singleton");
         }
 
         s_keyboard = this;
@@ -209,7 +209,7 @@ public:
     {
         if (s_keyboard)
         {
-            throw std::exception("Keyboard is a singleton");
+            throw std::logic_error("Keyboard is a singleton");
         }
 
         s_keyboard = this;
@@ -342,7 +342,7 @@ public:
     {
         if (s_keyboard)
         {
-            throw std::exception("Keyboard is a singleton");
+            throw std::logic_error("Keyboard is a singleton");
         }
 
         s_keyboard = this;
@@ -603,7 +603,7 @@ bool Keyboard::IsConnected() const
 Keyboard& Keyboard::Get()
 {
     if (!Impl::s_keyboard || !Impl::s_keyboard->mOwner)
-        throw std::exception("Keyboard is a singleton");
+        throw std::logic_error("Keyboard singleton not created");
 
     return *Impl::s_keyboard->mOwner;
 }

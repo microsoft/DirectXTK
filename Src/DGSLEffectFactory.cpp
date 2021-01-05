@@ -77,7 +77,7 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateEffect(DGSLEffectFactory
 {
     if (info.enableDualTexture)
     {
-        throw std::exception("DGSLEffect does not support multiple texcoords");
+        throw std::runtime_error("DGSLEffect does not support multiple texcoords");
     }
 
     if (mSharing && info.name && *info.name)
@@ -355,7 +355,7 @@ _Use_decl_annotations_
 void DGSLEffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView)
 {
     if (!name || !textureView)
-        throw std::exception("invalid arguments");
+        throw std::invalid_argument("name and textureView parameters can't be null");
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
     UNREFERENCED_PARAMETER(deviceContext);
@@ -383,7 +383,7 @@ void DGSLEffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceCon
             if (!GetFileAttributesExW(fullName, GetFileExInfoStandard, &fileAttr))
             {
                 DebugTrace("ERROR: DGSLEffectFactory could not find texture file '%ls'\n", name);
-                throw std::exception("CreateTexture");
+                throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "DGSLEffectFactory::CreateTexture");
             }
         }
 
@@ -400,7 +400,7 @@ void DGSLEffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceCon
             {
                 DebugTrace("ERROR: CreateDDSTextureFromFile failed (%08X) for '%ls'\n",
                     static_cast<unsigned int>(hr), fullName);
-                throw std::exception("CreateDDSTextureFromFile");
+                throw std::runtime_error("DGSLEffectFactory::CreateDDSTextureFromFile");
             }
         }
     #if !defined(_XBOX_ONE) || !defined(_TITLE)
@@ -415,7 +415,7 @@ void DGSLEffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceCon
             {
                 DebugTrace("ERROR: CreateWICTextureFromFile failed (%08X) for '%ls'\n",
                     static_cast<unsigned int>(hr), fullName);
-                throw std::exception("CreateWICTextureFromFile");
+                throw std::runtime_error("DGSLEffectFactory::CreateWICTextureFromFile");
             }
         }
     #endif
@@ -429,7 +429,7 @@ void DGSLEffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceCon
             {
                 DebugTrace("ERROR: CreateWICTextureFromFile failed (%08X) for '%ls'\n",
                     static_cast<unsigned int>(hr), fullName);
-                throw std::exception("CreateWICTextureFromFile");
+                throw std::runtime_error("DGSLEffectFactory::CreateWICTextureFromFile");
             }
         }
 
@@ -447,7 +447,7 @@ _Use_decl_annotations_
 void DGSLEffectFactory::Impl::CreatePixelShader(const wchar_t* name, ID3D11PixelShader** pixelShader)
 {
     if (!name || !pixelShader)
-        throw std::exception("invalid arguments");
+        throw std::invalid_argument("name and pixelShader parameters can't be null");
 
     auto it = mShaderCache.find(name);
 
@@ -471,7 +471,7 @@ void DGSLEffectFactory::Impl::CreatePixelShader(const wchar_t* name, ID3D11Pixel
             if (!GetFileAttributesExW(fullName, GetFileExInfoStandard, &fileAttr))
             {
                 DebugTrace("ERROR: DGSLEffectFactory could not find shader file '%ls'\n", name);
-                throw std::exception("CreatePixelShader");
+                throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "DGSLEffectFactory::CreatePixelShader");
             }
         }
 
@@ -482,7 +482,7 @@ void DGSLEffectFactory::Impl::CreatePixelShader(const wchar_t* name, ID3D11Pixel
         {
             DebugTrace("ERROR: CreatePixelShader failed (%08X) to load shader file '%ls'\n",
                 static_cast<unsigned int>(hr), fullName);
-            throw std::exception("CreatePixelShader");
+            throw std::runtime_error("DGSLEffectFactory::CreatePixelShader");
         }
 
         ThrowIfFailed(

@@ -571,7 +571,7 @@ void EnvironmentMapEffect::SetLightingEnabled(bool value)
 {
     if (!value)
     {
-        throw std::exception("EnvironmentMapEffect does not support turning off lighting");
+        throw std::invalid_argument("EnvironmentMapEffect does not support turning off lighting");
     }
 }
 
@@ -684,7 +684,7 @@ void EnvironmentMapEffect::SetMode(EnvironmentMapEffect::Mapping mapping)
     {
         if (pImpl->GetDeviceFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
         {
-            throw std::exception("Dual Parabola requires Feature Level 10.0 or later");
+            throw std::runtime_error("Dual Parabola requires Feature Level 10.0 or later");
         }
     }
 

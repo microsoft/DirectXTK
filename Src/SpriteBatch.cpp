@@ -393,7 +393,7 @@ void XM_CALLCONV SpriteBatch::Impl::Begin(SpriteSortMode sortMode,
     FXMMATRIX transformMatrix)
 {
     if (mInBeginEndPair)
-        throw std::exception("Cannot nest Begin calls on a single SpriteBatch");
+        throw std::logic_error("Cannot nest Begin calls on a single SpriteBatch");
 
     mSortMode = sortMode;
     mBlendState = blendState;
@@ -407,7 +407,7 @@ void XM_CALLCONV SpriteBatch::Impl::Begin(SpriteSortMode sortMode,
     {
         // If we are in immediate mode, set device state ready for drawing.
         if (mContextResources->inImmediateMode)
-            throw std::exception("Only one SpriteBatch at a time can use SpriteSortMode_Immediate");
+            throw std::logic_error("Only one SpriteBatch at a time can use SpriteSortMode_Immediate");
 
         PrepareForRendering();
 
@@ -422,7 +422,7 @@ void XM_CALLCONV SpriteBatch::Impl::Begin(SpriteSortMode sortMode,
 void SpriteBatch::Impl::End()
 {
     if (!mInBeginEndPair)
-        throw std::exception("Begin must be called before End");
+        throw std::logic_error("Begin must be called before End");
 
     if (mSortMode == SpriteSortMode_Immediate)
     {
@@ -433,7 +433,7 @@ void SpriteBatch::Impl::End()
     {
         // Draw the queued sprites now.
         if (mContextResources->inImmediateMode)
-            throw std::exception("Cannot end one SpriteBatch while another is using SpriteSortMode_Immediate");
+            throw std::logic_error("Cannot end one SpriteBatch while another is using SpriteSortMode_Immediate");
 
         PrepareForRendering();
         FlushBatch();
@@ -457,10 +457,10 @@ void XM_CALLCONV SpriteBatch::Impl::Draw(ID3D11ShaderResourceView* texture,
     unsigned int flags)
 {
     if (!texture)
-        throw std::exception("Texture cannot be null");
+        throw std::invalid_argument("Texture cannot be null");
 
     if (!mInBeginEndPair)
-        throw std::exception("Begin must be called before Draw");
+        throw std::logic_error("Begin must be called before Draw");
 
     // Get a pointer to the output sprite.
     if (mSpriteQueueCount >= mSpriteQueueArraySize)
@@ -934,7 +934,7 @@ XMVECTOR SpriteBatch::Impl::GetTextureSize(_In_ ID3D11ShaderResourceView* textur
     
     if (FAILED(resource.As(&texture2D)))
     {
-        throw std::exception("SpriteBatch can only draw Texture2D resources");
+        throw std::invalid_argument("SpriteBatch can only draw Texture2D resources");
     }
 
     // Query the texture size.
@@ -961,7 +961,7 @@ XMMATRIX SpriteBatch::Impl::GetViewportTransform(_In_ ID3D11DeviceContext* devic
         deviceContext->RSGetViewports(&viewportCount, &mViewPort);
 
         if (viewportCount != 1)
-            throw std::exception("No viewport is set");
+            throw std::runtime_error("No viewport is set");
     }
 
     // Compute the matrix.

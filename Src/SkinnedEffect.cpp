@@ -499,7 +499,7 @@ void SkinnedEffect::SetLightingEnabled(bool value)
 {
     if (!value)
     {
-        throw std::exception("SkinnedEffect does not support turning off lighting");
+        throw std::invalid_argument("SkinnedEffect does not support turning off lighting");
     }
 }
 
@@ -599,7 +599,7 @@ void SkinnedEffect::SetWeightsPerVertex(int value)
         (value != 2) &&
         (value != 4))
     {
-        throw std::out_of_range("WeightsPerVertex must be 1, 2, or 4");
+        throw std::invalid_argument("WeightsPerVertex must be 1, 2, or 4");
     }
 
     pImpl->weightsPerVertex = value;
@@ -609,7 +609,7 @@ void SkinnedEffect::SetWeightsPerVertex(int value)
 void SkinnedEffect::SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, size_t count)
 {
     if (count > MaxBones)
-        throw std::out_of_range("count parameter out of range");
+        throw std::invalid_argument("count parameter exceeds MaxBones");
 
     auto boneConstant = pImpl->constants.bones;
 

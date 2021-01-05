@@ -181,7 +181,7 @@ NormalMapEffect::Impl::Impl(_In_ ID3D11Device* device)
 {
     if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
     {
-        throw std::exception("NormalMapEffect requires Feature Level 10.0 or later");
+        throw std::runtime_error("NormalMapEffect requires Feature Level 10.0 or later");
     }
 
     static_assert(static_cast<int>(std::size(EffectBase<NormalMapEffectTraits>::VertexShaderIndices)) == NormalMapEffectTraits::ShaderPermutationCount, "array/max mismatch");
@@ -388,7 +388,7 @@ void NormalMapEffect::SetLightingEnabled(bool value)
 {
     if (!value)
     {
-        throw std::exception("NormalMapEffect does not support turning off lighting");
+        throw std::invalid_argument("NormalMapEffect does not support turning off lighting");
     }
 }
 

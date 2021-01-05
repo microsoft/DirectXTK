@@ -32,7 +32,7 @@ namespace
             mCriticalError.reset(CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE));
             if (!mCriticalError)
             {
-                throw std::exception("CreateEvent");
+                throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "CreateEventEx");
             }
         }
 
@@ -66,7 +66,7 @@ namespace
             mBufferEnd.reset(CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE));
             if (!mBufferEnd)
             {
-                throw std::exception("CreateEvent");
+                throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "CreateEventEx");
             }
         }
 
@@ -723,7 +723,7 @@ bool AudioEngine::Impl::Update()
             break;
 
         case WAIT_FAILED:
-            throw std::exception("WaitForMultipleObjects");
+            throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "WaitForMultipleObjectsEx");
     }
 
     //
@@ -827,12 +827,12 @@ void AudioEngine::Impl::AllocateVoice(
     IXAudio2SourceVoice** voice)
 {
     if (!wfx)
-        throw std::exception("Wave format is required\n");
+        throw std::invalid_argument("Wave format is required\n");
 
     // No need to call IsValid on wfx because CreateSourceVoice will do that
 
     if (!voice)
-        throw std::exception("Voice pointer must be non-null");
+        throw std::invalid_argument("Voice pointer must be non-null");
 
     *voice = nullptr;
 
@@ -852,7 +852,7 @@ void AudioEngine::Impl::AllocateVoice(
             DebugTrace((flags & SoundEffectInstance_NoSetPitch)
                        ? "ERROR: One-shot voices must support pitch-shifting for voice reuse\n"
                        : "ERROR: One-use voices cannot use 3D positional audio\n");
-            throw std::exception("Invalid flags for one-shot voice");
+            throw std::invalid_argument("Invalid flags for one-shot voice");
         }
 
     #ifdef VERBOSE_TRACE
@@ -947,7 +947,7 @@ void AudioEngine::Impl::AllocateVoice(
                     if (FAILED(hr))
                     {
                         DebugTrace("ERROR: CreateSourceVoice (reuse) failed with error %08X\n", static_cast<unsigned int>(hr));
-                        throw std::exception("CreateSourceVoice");
+                        throw std::runtime_error("CreateSourceVoice");
                     }
                 }
 
@@ -956,7 +956,7 @@ void AudioEngine::Impl::AllocateVoice(
                 if (FAILED(hr))
                 {
                     DebugTrace("ERROR: SetSourceSampleRate failed with error %08X\n", static_cast<unsigned int>(hr));
-                    throw std::exception("SetSourceSampleRate");
+                    throw std::runtime_error("SetSourceSampleRate");
                 }
             }
         }
@@ -977,7 +977,7 @@ void AudioEngine::Impl::AllocateVoice(
         {
             DebugTrace("ERROR: Too many instance voices (%zu >= %zu); see TrimVoicePool\n",
                 mVoiceInstances + 1, maxVoiceInstances);
-            throw std::exception("Too many instance voices");
+            throw std::runtime_error("Too many instance voices");
         }
 
         UINT32 vflags = (flags & SoundEffectInstance_NoSetPitch) ? XAUDIO2_VOICE_NOPITCH : 0u;
@@ -1012,7 +1012,7 @@ void AudioEngine::Impl::AllocateVoice(
         if (FAILED(hr))
         {
             DebugTrace("ERROR: CreateSourceVoice failed with error %08X\n", static_cast<unsigned int>(hr));
-            throw std::exception("CreateSourceVoice");
+            throw std::runtime_error("CreateSourceVoice");
         }
         else if (!oneshot)
         {
@@ -1131,7 +1131,7 @@ AudioEngine::AudioEngine(
             if (flags & AudioEngine_ThrowOnNoAudioHW)
             {
                 DebugTrace("ERROR: AudioEngine found no default audio device\n");
-                throw std::exception("AudioEngineNoAudioHW");
+                throw std::runtime_error("AudioEngineNoAudioHW");
             }
             else
             {
@@ -1143,7 +1143,7 @@ AudioEngine::AudioEngine(
             DebugTrace("ERROR: AudioEngine failed (%08X) to initialize using device [%ls]\n",
                 static_cast<unsigned int>(hr),
                 (deviceId) ? deviceId : L"default");
-            throw std::exception("AudioEngine");
+            throw std::runtime_error("AudioEngine");
         }
     }
 }
@@ -1198,7 +1198,7 @@ bool AudioEngine::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceId)
             if (pImpl->mEngineFlags & AudioEngine_ThrowOnNoAudioHW)
             {
                 DebugTrace("ERROR: AudioEngine found no default audio device on Reset\n");
-                throw std::exception("AudioEngineNoAudioHW");
+                throw std::runtime_error("AudioEngineNoAudioHW");
             }
             else
             {
@@ -1210,7 +1210,7 @@ bool AudioEngine::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceId)
         {
             DebugTrace("ERROR: AudioEngine failed (%08X) to Reset using device [%ls]\n",
                 static_cast<unsigned int>(hr), (deviceId) ? deviceId : L"default");
-            throw std::exception("AudioEngine::Reset");
+            throw std::runtime_error("AudioEngine::Reset");
         }
     }
 
@@ -1262,7 +1262,7 @@ void AudioEngine::SetMasterVolume(float volume)
 void AudioEngine::SetReverb(AUDIO_ENGINE_REVERB reverb)
 {
     if (reverb >= Reverb_MAX)
-        throw std::out_of_range("AudioEngine::SetReverb");
+        throw std::invalid_argument("reverb parameter is invalid");
 
     if (reverb == Reverb_Off)
     {
@@ -1350,7 +1350,7 @@ bool AudioEngine::IsCriticalError() const noexcept
 void AudioEngine::SetDefaultSampleRate(int sampleRate)
 {
     if ((sampleRate < XAUDIO2_MIN_SAMPLE_RATE) || (sampleRate > XAUDIO2_MAX_SAMPLE_RATE))
-        throw std::exception("Default sample rate is out of range");
+        throw std::out_of_range("Default sample rate is out of range");
 
     pImpl->defaultRate = sampleRate;
 }
@@ -1552,7 +1552,7 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
     while (operation->Status == Windows::Foundation::AsyncStatus::Started) { Sleep(100); }
     if (operation->Status != Windows::Foundation::AsyncStatus::Completed)
     {
-        throw std::exception("FindAllAsync");
+        throw std::runtime_error("FindAllAsync");
     }
 
     DeviceInformationCollection^ devices = operation->GetResults();
@@ -1607,7 +1607,7 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
 
     if (status != ABI::Windows::Foundation::AsyncStatus::Completed)
     {
-        throw std::exception("FindAllAsyncDeviceClass");
+        throw std::runtime_error("FindAllAsyncDeviceClass");
     }
 
     ComPtr<IVectorView<DeviceInformation*>> devices;

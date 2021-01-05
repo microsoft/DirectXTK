@@ -209,7 +209,7 @@ BasicPostProcess::Impl::Impl(_In_ ID3D11Device* device)
 {
     if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
     {
-        throw std::exception("BasicPostProcess requires Feature Level 10.0 or later");
+        throw std::runtime_error("BasicPostProcess requires Feature Level 10.0 or later");
     }
 
     SetDebugObjectName(mConstantBuffer.GetBuffer(), "BasicPostProcess");
@@ -318,7 +318,7 @@ void BasicPostProcess::Impl::DownScale2x2()
 
     if (!texWidth || !texHeight)
     {
-        throw std::exception("Call SetSourceTexture before setting post-process effect");
+        throw std::logic_error("Call SetSourceTexture before setting post-process effect");
     }
 
     float tu = 1.0f / float(texWidth);
@@ -345,7 +345,7 @@ void BasicPostProcess::Impl::DownScale4x4()
 
     if (!texWidth || !texHeight)
     {
-        throw std::exception("Call SetSourceTexture before setting post-process effect");
+        throw std::logic_error("Call SetSourceTexture before setting post-process effect");
     }
 
     float tu = 1.0f / float(texWidth);
@@ -373,7 +373,7 @@ void BasicPostProcess::Impl::GaussianBlur5x5(float multiplier)
 
     if (!texWidth || !texHeight)
     {
-        throw std::exception("Call SetSourceTexture before setting post-process effect");
+        throw std::logic_error("Call SetSourceTexture before setting post-process effect");
     }
 
     float tu = 1.0f / float(texWidth);
@@ -429,7 +429,7 @@ void  BasicPostProcess::Impl::Bloom(bool horizontal, float size, float brightnes
 
     if (!texWidth || !texHeight)
     {
-        throw std::exception("Call SetSourceTexture before setting post-process effect");
+        throw std::logic_error("Call SetSourceTexture before setting post-process effect");
     }
 
     float tu = 0.f;
@@ -510,7 +510,7 @@ void BasicPostProcess::Process(
 void BasicPostProcess::SetEffect(Effect fx)
 {
     if (fx >= Effect_Max)
-        throw std::out_of_range("Effect not defined");
+        throw std::invalid_argument("Effect not defined");
 
     pImpl->fx = fx;
 
@@ -573,7 +573,7 @@ void BasicPostProcess::SetSourceTexture(_In_opt_ ID3D11ShaderResourceView* value
         case D3D11_RESOURCE_DIMENSION_BUFFER:
         case D3D11_RESOURCE_DIMENSION_TEXTURE3D:
         default:
-            throw std::exception("Unsupported texture type");
+            throw std::invalid_argument("Unsupported texture type");
         }
     }
     else

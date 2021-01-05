@@ -266,10 +266,10 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
     ModelLoaderFlags flags)
 {
     if (!InitOnceExecuteOnce(&g_InitOnce, InitializeDecl, nullptr, nullptr))
-        throw std::exception("One-time initialization failed");
+        throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "InitOnceExecuteOnce");
 
     if (!device || !meshData)
-        throw std::exception("Device and meshData cannot be null");
+        throw std::invalid_argument("Device and meshData cannot be null");
 
     auto fxFactoryDGSL = dynamic_cast<DGSLEffectFactory*>(&fxFactory);
 
@@ -277,10 +277,10 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
     auto nMesh = reinterpret_cast<const UINT*>(meshData);
     size_t usedSize = sizeof(UINT);
     if (dataSize < usedSize)
-        throw std::exception("End of file");
+        throw std::runtime_error("End of file");
 
     if (!*nMesh)
-        throw std::exception("No meshes found");
+        throw std::runtime_error("No meshes found");
 
     auto model = std::make_unique<Model>();
 
@@ -290,13 +290,13 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
         auto nName = reinterpret_cast<const UINT*>(meshData + usedSize);
         usedSize += sizeof(UINT);
         if (dataSize < usedSize)
-            throw std::exception("End of file");
+            throw std::runtime_error("End of file");
 
         auto meshName = reinterpret_cast<const wchar_t*>(meshData + usedSize);
 
         usedSize += sizeof(wchar_t)*(*nName);
         if (dataSize < usedSize)
-            throw std::exception("End of file");
+            throw std::runtime_error("End of file");
 
         auto mesh = std::make_shared<ModelMesh>();
         mesh->name.assign(meshName, *nName);
@@ -307,7 +307,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
         auto nMats = reinterpret_cast<const UINT*>(meshData + usedSize);
         usedSize += sizeof(UINT);
         if (dataSize < usedSize)
-            throw std::exception("End of file");
+            throw std::runtime_error("End of file");
 
         std::vector<MaterialRecordCMO> materials;
         materials.reserve(*nMats);
@@ -319,13 +319,13 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
             nName = reinterpret_cast<const UINT*>(meshData + usedSize);
             usedSize += sizeof(UINT);
             if (dataSize < usedSize)
-                throw std::exception("End of file");
+                throw std::runtime_error("End of file");
 
             auto matName = reinterpret_cast<const wchar_t*>(meshData + usedSize);
 
             usedSize += sizeof(wchar_t)*(*nName);
             if (dataSize < usedSize)
-                throw std::exception("End of file");
+                throw std::runtime_error("End of file");
 
             m.name.assign(matName, *nName);
 
@@ -333,7 +333,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
             auto matSetting = reinterpret_cast<const VSD3DStarter::Material*>(meshData + usedSize);
             usedSize += sizeof(VSD3DStarter::Material);
             if (dataSize < usedSize)
-                throw std::exception("End of file");
+                throw std::runtime_error("End of file");
 
             m.pMaterial = matSetting;
 
@@ -341,13 +341,13 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
             nName = reinterpret_cast<const UINT*>(meshData + usedSize);
             usedSize += sizeof(UINT);
             if (dataSize < usedSize)
-                throw std::exception("End of file");
+                throw std::runtime_error("End of file");
 
             auto psName = reinterpret_cast<const wchar_t*>(meshData + usedSize);
 
             usedSize += sizeof(wchar_t)*(*nName);
             if (dataSize < usedSize)
-                throw std::exception("End of file");
+                throw std::runtime_error("End of file");
 
             m.pixelShader.assign(psName, *nName);
 
@@ -356,13 +356,13 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
                 nName = reinterpret_cast<const UINT*>(meshData + usedSize);
                 usedSize += sizeof(UINT);
                 if (dataSize < usedSize)
-                    throw std::exception("End of file");
+                    throw std::runtime_error("End of file");
 
                 auto txtName = reinterpret_cast<const wchar_t*>(meshData + usedSize);
 
                 usedSize += sizeof(wchar_t)*(*nName);
                 if (dataSize < usedSize)
-                    throw std::exception("End of file");
+                    throw std::runtime_error("End of file");
 
                 m.texture[t].assign(txtName, *nName);
             }
@@ -385,30 +385,30 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
         const BYTE* bSkeleton = meshData + usedSize;
         usedSize += sizeof(BYTE);
         if (dataSize < usedSize)
-            throw std::exception("End of file");
+            throw std::runtime_error("End of file");
 
         // Submeshes
         auto nSubmesh = reinterpret_cast<const UINT*>(meshData + usedSize);
         usedSize += sizeof(UINT);
         if (dataSize < usedSize)
-            throw std::exception("End of file");
+            throw std::runtime_error("End of file");
 
         if (!*nSubmesh)
-            throw std::exception("No submeshes found\n");
+            throw std::runtime_error("No submeshes found\n");
 
         auto subMesh = reinterpret_cast<const VSD3DStarter::SubMesh*>(meshData + usedSize);
         usedSize += sizeof(VSD3DStarter::SubMesh) * (*nSubmesh);
         if (dataSize < usedSize)
-            throw std::exception("End of file");
+            throw std::runtime_error("End of file");
 
         // Index buffers
         auto nIBs = reinterpret_cast<const UINT*>(meshData + usedSize);
         usedSize += sizeof(UINT);
         if (dataSize < usedSize)
-            throw std::exception("End of file");
+            throw std::runtime_error("End of file");
 
         if (!*nIBs)
-            throw std::exception("No index buffers found\n");
+            throw std::runtime_error("No index buffers found\n");
 
         struct IBData
         {
@@ -427,20 +427,20 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
             auto nIndexes = reinterpret_cast<const UINT*>(meshData + usedSize);
             usedSize += sizeof(UINT);
             if (dataSize < usedSize)
-                throw std::exception("End of file");
+                throw std::runtime_error("End of file");
 
             if (!*nIndexes)
-                throw std::exception("Empty index buffer found\n");
+                throw std::runtime_error("Empty index buffer found\n");
 
             uint64_t sizeInBytes = uint64_t(*(nIndexes)) * sizeof(USHORT);
 
             if (sizeInBytes > UINT32_MAX)
-                throw std::exception("IB too large");
+                throw std::runtime_error("IB too large");
 
             if (!(flags & ModelLoader_AllowLargeModels))
             {
                 if (sizeInBytes > (D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u))
-                    throw std::exception("IB too large for DirectX 11");
+                    throw std::runtime_error("IB too large for DirectX 11");
             }
 
             auto ibBytes = static_cast<size_t>(sizeInBytes);
@@ -448,7 +448,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
             auto indexes = reinterpret_cast<const USHORT*>(meshData + usedSize);
             usedSize += ibBytes;
             if (dataSize < usedSize)
-                throw std::exception("End of file");
+                throw std::runtime_error("End of file");
 
             IBData ib;
             ib.nIndices = *nIndexes;
@@ -476,10 +476,10 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
         auto nVBs = reinterpret_cast<const UINT*>(meshData + usedSize);
         usedSize += sizeof(UINT);
         if (dataSize < usedSize)
-            throw std::exception("End of file");
+            throw std::runtime_error("End of file");
 
         if (!*nVBs)
-            throw std::exception("No vertex buffers found\n");
+            throw std::runtime_error("No vertex buffers found\n");
 
         struct VBData
         {
@@ -495,17 +495,17 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
             auto nVerts = reinterpret_cast<const UINT*>(meshData + usedSize);
             usedSize += sizeof(UINT);
             if (dataSize < usedSize)
-                throw std::exception("End of file");
+                throw std::runtime_error("End of file");
 
             if (!*nVerts)
-                throw std::exception("Empty vertex buffer found\n");
+                throw std::runtime_error("Empty vertex buffer found\n");
 
             size_t vbBytes = sizeof(VertexPositionNormalTangentColorTexture) * (*(nVerts));
 
             auto verts = reinterpret_cast<const VertexPositionNormalTangentColorTexture*>(meshData + usedSize);
             usedSize += vbBytes;
             if (dataSize < usedSize)
-                throw std::exception("End of file");
+                throw std::runtime_error("End of file");
 
             VBData vb;
             vb.nVerts = *nVerts;
@@ -520,32 +520,32 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
         auto nSkinVBs = reinterpret_cast<const UINT*>(meshData + usedSize);
         usedSize += sizeof(UINT);
         if (dataSize < usedSize)
-            throw std::exception("End of file");
+            throw std::runtime_error("End of file");
 
         if (*nSkinVBs)
         {
             if (*nSkinVBs != *nVBs)
-                throw std::exception("Number of VBs not equal to number of skin VBs");
+                throw std::runtime_error("Number of VBs not equal to number of skin VBs");
 
             for (UINT j = 0; j < *nSkinVBs; ++j)
             {
                 auto nVerts = reinterpret_cast<const UINT*>(meshData + usedSize);
                 usedSize += sizeof(UINT);
                 if (dataSize < usedSize)
-                    throw std::exception("End of file");
+                    throw std::runtime_error("End of file");
 
                 if (!*nVerts)
-                    throw std::exception("Empty skinning vertex buffer found\n");
+                    throw std::runtime_error("Empty skinning vertex buffer found\n");
 
                 if (vbData[j].nVerts != *nVerts)
-                    throw std::exception("Mismatched number of verts for skin VBs");
+                    throw std::runtime_error("Mismatched number of verts for skin VBs");
 
                 size_t vbBytes = sizeof(VSD3DStarter::SkinningVertex) * (*(nVerts));
 
                 auto verts = reinterpret_cast<const VSD3DStarter::SkinningVertex*>(meshData + usedSize);
                 usedSize += vbBytes;
                 if (dataSize < usedSize)
-                    throw std::exception("End of file");
+                    throw std::runtime_error("End of file");
 
                 vbData[j].skinPtr = verts;
             }
@@ -555,7 +555,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
         auto extents = reinterpret_cast<const VSD3DStarter::MeshExtents*>(meshData + usedSize);
         usedSize += sizeof(VSD3DStarter::MeshExtents);
         if (dataSize < usedSize)
-            throw std::exception("End of file");
+            throw std::runtime_error("End of file");
 
         mesh->boundingSphere.Center.x = extents->CenterX;
         mesh->boundingSphere.Center.y = extents->CenterY;
@@ -574,10 +574,10 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
             auto nBones = reinterpret_cast<const UINT*>(meshData + usedSize);
             usedSize += sizeof(UINT);
             if (dataSize < usedSize)
-                throw std::exception("End of file");
+                throw std::runtime_error("End of file");
 
             if (!*nBones)
-                throw std::exception("Animation bone data is missing\n");
+                throw std::runtime_error("Animation bone data is missing\n");
 
             for (UINT j = 0; j < *nBones; ++j)
             {
@@ -585,13 +585,13 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
                 nName = reinterpret_cast<const UINT*>(meshData + usedSize);
                 usedSize += sizeof(UINT);
                 if (dataSize < usedSize)
-                    throw std::exception("End of file");
+                    throw std::runtime_error("End of file");
 
                 auto boneName = reinterpret_cast<const wchar_t*>(meshData + usedSize);
 
                 usedSize += sizeof(wchar_t)*(*nName);
                 if (dataSize < usedSize)
-                    throw std::exception("End of file");
+                    throw std::runtime_error("End of file");
 
                 // TODO - What to do with bone name?
                 boneName;
@@ -600,7 +600,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
                 auto bones = reinterpret_cast<const VSD3DStarter::Bone*>(meshData + usedSize);
                 usedSize += sizeof(VSD3DStarter::Bone);
                 if (dataSize < usedSize)
-                    throw std::exception("End of file");
+                    throw std::runtime_error("End of file");
 
                 // TODO - What to do with bone data?
                 bones;
@@ -610,7 +610,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
             auto nClips = reinterpret_cast<const UINT*>(meshData + usedSize);
             usedSize += sizeof(UINT);
             if (dataSize < usedSize)
-                throw std::exception("End of file");
+                throw std::runtime_error("End of file");
 
             for (UINT j = 0; j < *nClips; ++j)
             {
@@ -618,13 +618,13 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
                 nName = reinterpret_cast<const UINT*>(meshData + usedSize);
                 usedSize += sizeof(UINT);
                 if (dataSize < usedSize)
-                    throw std::exception("End of file");
+                    throw std::runtime_error("End of file");
 
                 auto clipName = reinterpret_cast<const wchar_t*>(meshData + usedSize);
 
                 usedSize += sizeof(wchar_t)*(*nName);
                 if (dataSize < usedSize)
-                    throw std::exception("End of file");
+                    throw std::runtime_error("End of file");
 
                 // TODO - What to do with clip name?
                 clipName;
@@ -632,15 +632,15 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
                 auto clip = reinterpret_cast<const VSD3DStarter::Clip*>(meshData + usedSize);
                 usedSize += sizeof(VSD3DStarter::Clip);
                 if (dataSize < usedSize)
-                    throw std::exception("End of file");
+                    throw std::runtime_error("End of file");
 
                 if (!clip->keys)
-                    throw std::exception("Keyframes missing in clip");
+                    throw std::runtime_error("Keyframes missing in clip");
 
                 auto keys = reinterpret_cast<const VSD3DStarter::Keyframe*>(meshData + usedSize);
                 usedSize += sizeof(VSD3DStarter::Keyframe) * clip->keys;
                 if (dataSize < usedSize)
-                    throw std::exception("End of file");
+                    throw std::runtime_error("End of file");
 
                 // TODO - What to do with keys and clip->StartTime, clip->EndTime?
                 keys;
@@ -666,12 +666,12 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
             uint64_t sizeInBytes = uint64_t(stride) * uint64_t(nVerts);
 
             if (sizeInBytes > UINT32_MAX)
-                throw std::exception("VB too large");
+                throw std::runtime_error("VB too large");
 
             if (!(flags & ModelLoader_AllowLargeModels))
             {
                 if (sizeInBytes > uint64_t(D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u))
-                    throw std::exception("VB too large for DirectX 11");
+                    throw std::runtime_error("VB too large for DirectX 11");
             }
 
             size_t bytes = static_cast<size_t>(sizeInBytes);
@@ -737,7 +737,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
 
                         if ((sm.IndexBufferIndex >= *nIBs)
                             || (sm.MaterialIndex >= materials.size()))
-                            throw std::exception("Invalid submesh found\n");
+                            throw std::out_of_range("Invalid submesh found\n");
 
                         XMMATRIX uvTransform = XMLoadFloat4x4(&materials[sm.MaterialIndex].pMaterial->UVTransform);
 
@@ -750,7 +750,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
                             size_t v = ib[q];
 
                             if (v >= nVerts)
-                                throw std::exception("Invalid index found\n");
+                                throw std::out_of_range("Invalid index found\n");
 
                             auto verts = reinterpret_cast<VertexPositionNormalTangentColorTexture*>(temp.get() + (v * stride));
                             if (visited[v] == UINT(-1))
@@ -860,7 +860,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
             if ((sm.IndexBufferIndex >= *nIBs)
                 || (sm.VertexBufferIndex >= *nVBs)
                 || (sm.MaterialIndex >= materials.size()))
-                throw std::exception("Invalid submesh found\n");
+                throw std::out_of_range("Invalid submesh found\n");
 
             auto& mat = materials[sm.MaterialIndex];
 
@@ -903,7 +903,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
     {
         DebugTrace("ERROR: CreateFromCMO failed (%08X) loading '%ls'\n",
             static_cast<unsigned int>(hr), szFileName);
-        throw std::exception("CreateFromCMO");
+        throw std::runtime_error("CreateFromCMO");
     }
 
     auto model = CreateFromCMO(device, data.get(), dataSize, fxFactory, flags);

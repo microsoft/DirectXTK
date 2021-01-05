@@ -176,7 +176,7 @@ DualPostProcess::Impl::Impl(_In_ ID3D11Device* device)
 {
     if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
     {
-        throw std::exception("DualPostProcess requires Feature Level 10.0 or later");
+        throw std::runtime_error("DualPostProcess requires Feature Level 10.0 or later");
     }
 
     SetDebugObjectName(mConstantBuffer.GetBuffer(), "DualPostProcess");
@@ -308,7 +308,7 @@ void DualPostProcess::Process(
 void DualPostProcess::SetEffect(Effect fx)
 {
     if (fx >= Effect_Max)
-        throw std::out_of_range("Effect not defined");
+        throw std::invalid_argument("Effect not defined");
 
     pImpl->fx = fx;
     pImpl->SetDirtyFlag();

@@ -130,20 +130,20 @@ PrimitiveBatchBase::Impl::Impl(_In_ ID3D11DeviceContext* deviceContext, size_t m
     deviceContext->GetDevice(&device);
 
     if (!maxVertices)
-        throw std::exception("maxVertices must be greater than 0");
+        throw std::invalid_argument("maxVertices must be greater than 0");
 
     if (vertexSize > D3D11_REQ_MULTI_ELEMENT_STRUCTURE_SIZE_IN_BYTES)
-        throw std::exception("Vertex size is too large for DirectX 11");
+        throw std::invalid_argument("Vertex size is too large for DirectX 11");
 
     uint64_t ibBytes = uint64_t(maxIndices) * sizeof(uint16_t);
     if (ibBytes > uint64_t(D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u)
         || ibBytes > UINT32_MAX)
-        throw std::exception("IB too large for DirectX 11");
+        throw std::invalid_argument("IB too large for DirectX 11");
 
     uint64_t vbBytes = uint64_t(maxVertices) * uint64_t(vertexSize);
     if (vbBytes > uint64_t(D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u)
         || vbBytes > UINT32_MAX)
-        throw std::exception("VB too large for DirectX 11");
+        throw std::invalid_argument("VB too large for DirectX 11");
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
     ThrowIfFailed(deviceContext->QueryInterface(IID_GRAPHICS_PPV_ARGS(mDeviceContext.GetAddressOf())));
@@ -180,7 +180,7 @@ PrimitiveBatchBase::Impl::Impl(_In_ ID3D11DeviceContext* deviceContext, size_t m
 void PrimitiveBatchBase::Impl::Begin()
 {
     if (mInBeginEndPair)
-        throw std::exception("Cannot nest Begin calls");
+        throw std::logic_error("Cannot nest Begin calls");
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
     mDeviceContext->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
@@ -214,7 +214,7 @@ void PrimitiveBatchBase::Impl::Begin()
 void PrimitiveBatchBase::Impl::End()
 {
     if (!mInBeginEndPair)
-        throw std::exception("Begin must be called before End");
+        throw std::logic_error("Begin must be called before End");
 
     FlushBatch();
 
@@ -266,16 +266,16 @@ _Use_decl_annotations_
 void PrimitiveBatchBase::Impl::Draw(D3D11_PRIMITIVE_TOPOLOGY topology, bool isIndexed, uint16_t const* indices, size_t indexCount, size_t vertexCount, void** pMappedVertices)
 {
     if (isIndexed && !indices)
-        throw std::exception("Indices cannot be null");
+        throw std::invalid_argument("Indices cannot be null");
 
     if (indexCount >= mMaxIndices)
-        throw std::exception("Too many indices");
+        throw std::out_of_range("Too many indices");
 
     if (vertexCount >= mMaxVertices)
-        throw std::exception("Too many vertices");
+        throw std::out_of_range("Too many vertices");
 
     if (!mInBeginEndPair)
-        throw std::exception("Begin must be called before Draw");
+        throw std::logic_error("Begin must be called before Draw");
 
     // Can we merge this primitive in with an existing batch, or must we flush first?
     bool wrapIndexBuffer = (mCurrentIndex + indexCount > mMaxIndices);
