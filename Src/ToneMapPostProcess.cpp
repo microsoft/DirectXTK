@@ -391,7 +391,7 @@ void ToneMapPostProcess::Process(
 void ToneMapPostProcess::SetOperator(Operator op)
 {
     if (op >= Operator_Max)
-        throw std::out_of_range("Tonemap operator not defined");
+        throw std::invalid_argument("Tonemap operator not defined");
 
     pImpl->op = op;
 }
@@ -400,7 +400,7 @@ void ToneMapPostProcess::SetOperator(Operator op)
 void ToneMapPostProcess::SetTransferFunction(TransferFunction func)
 {
     if (func >= TransferFunction_Max)
-        throw std::out_of_range("Electro-optical transfer function not defined");
+        throw std::invalid_argument("Electro-optical transfer function not defined");
 
     pImpl->func = func;
 }
