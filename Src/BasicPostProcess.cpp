@@ -318,7 +318,7 @@ void BasicPostProcess::Impl::DownScale2x2()
 
     if (!texWidth || !texHeight)
     {
-        throw std::runtime_error("Call SetSourceTexture before setting post-process effect");
+        throw std::logic_error("Call SetSourceTexture before setting post-process effect");
     }
 
     float tu = 1.0f / float(texWidth);
@@ -345,7 +345,7 @@ void BasicPostProcess::Impl::DownScale4x4()
 
     if (!texWidth || !texHeight)
     {
-        throw std::runtime_error("Call SetSourceTexture before setting post-process effect");
+        throw std::logic_error("Call SetSourceTexture before setting post-process effect");
     }
 
     float tu = 1.0f / float(texWidth);
@@ -373,7 +373,7 @@ void BasicPostProcess::Impl::GaussianBlur5x5(float multiplier)
 
     if (!texWidth || !texHeight)
     {
-        throw std::runtime_error("Call SetSourceTexture before setting post-process effect");
+        throw std::logic_error("Call SetSourceTexture before setting post-process effect");
     }
 
     float tu = 1.0f / float(texWidth);
@@ -429,7 +429,7 @@ void  BasicPostProcess::Impl::Bloom(bool horizontal, float size, float brightnes
 
     if (!texWidth || !texHeight)
     {
-        throw std::runtime_error("Call SetSourceTexture before setting post-process effect");
+        throw std::logic_error("Call SetSourceTexture before setting post-process effect");
     }
 
     float tu = 0.f;

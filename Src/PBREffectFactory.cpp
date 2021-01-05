@@ -172,7 +172,7 @@ void PBREffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceCont
             {
                 DebugTrace("ERROR: CreateDDSTextureFromFile failed (%08X) for '%ls'\n",
                     static_cast<unsigned int>(hr), fullName);
-                throw std::runtime_error("CreateDDSTextureFromFile");
+                throw std::runtime_error("PBREffectFactory::CreateDDSTextureFromFile");
             }
         }
     #if !defined(_XBOX_ONE) || !defined(_TITLE)
@@ -187,7 +187,7 @@ void PBREffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceCont
             {
                 DebugTrace("ERROR: CreateWICTextureFromFile failed (%08X) for '%ls'\n",
                     static_cast<unsigned int>(hr), fullName);
-                throw std::runtime_error("CreateWICTextureFromFile");
+                throw std::runtime_error("PBREffectFactory::CreateWICTextureFromFile");
             }
         }
     #endif
@@ -201,7 +201,7 @@ void PBREffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceCont
             {
                 DebugTrace("ERROR: CreateWICTextureFromFile failed (%08X) for '%ls'\n",
                     static_cast<unsigned int>(hr), fullName);
-                throw std::runtime_error("CreateWICTextureFromFile");
+                throw std::runtime_error("PBREffectFactory::CreateWICTextureFromFile");
             }
         }
 

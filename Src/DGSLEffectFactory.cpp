@@ -400,7 +400,7 @@ void DGSLEffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceCon
             {
                 DebugTrace("ERROR: CreateDDSTextureFromFile failed (%08X) for '%ls'\n",
                     static_cast<unsigned int>(hr), fullName);
-                throw std::runtime_error("CreateDDSTextureFromFile");
+                throw std::runtime_error("DGSLEffectFactory::CreateDDSTextureFromFile");
             }
         }
     #if !defined(_XBOX_ONE) || !defined(_TITLE)
@@ -415,7 +415,7 @@ void DGSLEffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceCon
             {
                 DebugTrace("ERROR: CreateWICTextureFromFile failed (%08X) for '%ls'\n",
                     static_cast<unsigned int>(hr), fullName);
-                throw std::runtime_error("CreateWICTextureFromFile");
+                throw std::runtime_error("DGSLEffectFactory::CreateWICTextureFromFile");
             }
         }
     #endif
@@ -429,7 +429,7 @@ void DGSLEffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceCon
             {
                 DebugTrace("ERROR: CreateWICTextureFromFile failed (%08X) for '%ls'\n",
                     static_cast<unsigned int>(hr), fullName);
-                throw std::runtime_error("CreateWICTextureFromFile");
+                throw std::runtime_error("DGSLEffectFactory::CreateWICTextureFromFile");
             }
         }
 
@@ -482,7 +482,7 @@ void DGSLEffectFactory::Impl::CreatePixelShader(const wchar_t* name, ID3D11Pixel
         {
             DebugTrace("ERROR: CreatePixelShader failed (%08X) to load shader file '%ls'\n",
                 static_cast<unsigned int>(hr), fullName);
-            throw std::runtime_error("CreatePixelShader");
+            throw std::runtime_error("DGSLEffectFactory::CreatePixelShader");
         }
 
         ThrowIfFailed(

@@ -402,7 +402,7 @@ void EffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext
             {
                 DebugTrace("ERROR: CreateDDSTextureFromFile failed (%08X) for '%ls'\n",
                     static_cast<unsigned int>(hr), fullName);
-                throw std::runtime_error("CreateDDSTextureFromFile");
+                throw std::runtime_error("EffectFactory::CreateDDSTextureFromFile");
             }
         }
     #if !defined(_XBOX_ONE) || !defined(_TITLE)
@@ -417,7 +417,7 @@ void EffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext
             {
                 DebugTrace("ERROR: CreateWICTextureFromFile failed (%08X) for '%ls'\n",
                     static_cast<unsigned int>(hr), fullName);
-                throw std::runtime_error("CreateWICTextureFromFile");
+                throw std::runtime_error("EffectFactory::CreateWICTextureFromFile");
             }
         }
     #endif
@@ -431,7 +431,7 @@ void EffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext
             {
                 DebugTrace("ERROR: CreateWICTextureFromFile failed (%08X) for '%ls'\n",
                     static_cast<unsigned int>(hr), fullName);
-                throw std::runtime_error("CreateWICTextureFromFile");
+                throw std::runtime_error("EffectFactory::CreateWICTextureFromFile");
             }
         }
 
