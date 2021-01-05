@@ -1350,7 +1350,7 @@ bool AudioEngine::IsCriticalError() const noexcept
 void AudioEngine::SetDefaultSampleRate(int sampleRate)
 {
     if ((sampleRate < XAUDIO2_MIN_SAMPLE_RATE) || (sampleRate > XAUDIO2_MAX_SAMPLE_RATE))
-        throw std::invalid_argument("Default sample rate is out of range");
+        throw std::out_of_range("Default sample rate is out of range");
 
     pImpl->defaultRate = sampleRate;
 }
