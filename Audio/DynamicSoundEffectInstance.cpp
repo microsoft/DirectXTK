@@ -41,7 +41,7 @@ public:
         if (!channels || (channels > 8))
         {
             DebugTrace("DynamicSoundEffectInstance channels must be in range 1...8\n");
-            throw std::invalid_argument("DynamicSoundEffectInstance");
+            throw std::out_of_range("DynamicSoundEffectInstance channel count out of range");
         }
 
         switch (sampleBits)
@@ -52,7 +52,7 @@ public:
 
             default:
                 DebugTrace("DynamicSoundEffectInstance sampleBits must be 8-bit or 16-bit\n");
-                throw std::invalid_argument("DynamicSoundEffectInstance");
+                throw std::invalid_argument("DynamicSoundEffectInstance supports 8 or 16 bit");
         }
 
         mBufferEvent.reset(CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE));

@@ -1262,7 +1262,7 @@ void AudioEngine::SetMasterVolume(float volume)
 void AudioEngine::SetReverb(AUDIO_ENGINE_REVERB reverb)
 {
     if (reverb >= Reverb_MAX)
-        throw std::invalid_argument("AudioEngine::SetReverb");
+        throw std::invalid_argument("reverb parameter is invalid");
 
     if (reverb == Reverb_Off)
     {

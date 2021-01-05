@@ -148,10 +148,10 @@ _Use_decl_annotations_
 void GeometricPrimitive::Impl::Initialize(ID3D11DeviceContext* deviceContext, const VertexCollection& vertices, const IndexCollection& indices)
 {
     if (vertices.size() >= USHRT_MAX)
-        throw std::invalid_argument("Too many vertices for 16-bit index buffer");
+        throw std::out_of_range("Too many vertices for 16-bit index buffer");
 
     if (indices.size() > UINT32_MAX)
-        throw std::invalid_argument("Too many indices");
+        throw std::out_of_range("Too many indices");
 
     mResources = sharedResourcesPool.DemandCreate(deviceContext);
 
@@ -754,7 +754,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCustom(
 
     size_t nVerts = vertices.size();
     if (nVerts >= USHRT_MAX)
-        throw std::invalid_argument("Too many vertices for 16-bit index buffer");
+        throw std::out_of_range("Too many vertices for 16-bit index buffer");
 
     for (auto it = indices.cbegin(); it != indices.cend(); ++it)
     {

@@ -355,7 +355,7 @@ _Use_decl_annotations_
 void DGSLEffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView)
 {
     if (!name || !textureView)
-        throw std::invalid_argument("DGSLEffectFactory");
+        throw std::invalid_argument("name and textureView parameters can't be null");
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
     UNREFERENCED_PARAMETER(deviceContext);
@@ -447,7 +447,7 @@ _Use_decl_annotations_
 void DGSLEffectFactory::Impl::CreatePixelShader(const wchar_t* name, ID3D11PixelShader** pixelShader)
 {
     if (!name || !pixelShader)
-        throw std::invalid_argument("DGSLEffectFactory");
+        throw std::invalid_argument("name and pixelShader parameters can't be null");
 
     auto it = mShaderCache.find(name);
 

@@ -269,10 +269,10 @@ void PrimitiveBatchBase::Impl::Draw(D3D11_PRIMITIVE_TOPOLOGY topology, bool isIn
         throw std::invalid_argument("Indices cannot be null");
 
     if (indexCount >= mMaxIndices)
-        throw std::invalid_argument("Too many indices");
+        throw std::out_of_range("Too many indices");
 
     if (vertexCount >= mMaxVertices)
-        throw std::invalid_argument("Too many vertices");
+        throw std::out_of_range("Too many vertices");
 
     if (!mInBeginEndPair)
         throw std::logic_error("Begin must be called before Draw");
