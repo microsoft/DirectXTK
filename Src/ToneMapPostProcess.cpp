@@ -263,7 +263,7 @@ ToneMapPostProcess::Impl::Impl(_In_ ID3D11Device* device)
 {
     if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
     {
-        throw std::exception("ToneMapPostProcess requires Feature Level 10.0 or later");
+        throw std::runtime_error("ToneMapPostProcess requires Feature Level 10.0 or later");
     }
 
     SetDebugObjectName(mConstantBuffer.GetBuffer(), "ToneMapPostProcess");

@@ -499,7 +499,7 @@ void SkinnedEffect::SetLightingEnabled(bool value)
 {
     if (!value)
     {
-        throw std::exception("SkinnedEffect does not support turning off lighting");
+        throw std::invalid_argument("SkinnedEffect does not support turning off lighting");
     }
 }
 

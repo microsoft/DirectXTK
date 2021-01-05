@@ -58,7 +58,7 @@ public:
         mBufferEvent.reset(CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE));
         if (!mBufferEvent)
         {
-            throw std::exception("CreateEvent");
+            throw std::system_error(std::error_code(GetLastError(), std::system_category()), "CreateEventEx");
         }
 
         CreateIntegerPCM(&mWaveFormat, sampleRate, channels, sampleBits);
@@ -177,7 +177,7 @@ _Use_decl_annotations_
 void DynamicSoundEffectInstance::Impl::SubmitBuffer(const uint8_t* pAudioData, uint32_t offset, size_t audioBytes)
 {
     if (!pAudioData || !audioBytes)
-        throw std::exception("Invalid audio data buffer");
+        throw std::invalid_argument("Invalid audio data buffer");
 
     if (audioBytes > UINT32_MAX)
         throw std::out_of_range("SubmitBuffer");
@@ -204,7 +204,7 @@ void DynamicSoundEffectInstance::Impl::SubmitBuffer(const uint8_t* pAudioData, u
         DebugTrace("\tFormat Tag %u, %u channels, %u-bit, %u Hz, %zu bytes [%u offset)\n",
             mWaveFormat.wFormatTag, mWaveFormat.nChannels, mWaveFormat.wBitsPerSample, mWaveFormat.nSamplesPerSec, audioBytes, offset);
     #endif
-        throw std::exception("SubmitSourceBuffer");
+        throw std::runtime_error("SubmitSourceBuffer");
     }
 }
 
@@ -226,7 +226,7 @@ void DynamicSoundEffectInstance::Impl::OnUpdate()
             break;
 
         case WAIT_FAILED:
-            throw std::exception("WaitForSingleObjectEx");
+            throw std::system_error(std::error_code(GetLastError(), std::system_category()), "WaitForSingleObjectEx");
     }
 }
 

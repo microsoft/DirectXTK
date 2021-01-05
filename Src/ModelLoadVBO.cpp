@@ -53,51 +53,51 @@ std::unique_ptr<Model> DirectX::Model::CreateFromVBO(
     ModelLoaderFlags flags)
 {
     if (!InitOnceExecuteOnce(&g_InitOnce, InitializeDecl, nullptr, nullptr))
-        throw std::exception("One-time initialization failed");
+        throw std::system_error(std::error_code(GetLastError(), std::system_category()), "InitOnceExecuteOnce");
 
     if (!device || !meshData)
-        throw std::exception("Device and meshData cannot be null");
+        throw std::invalid_argument("Device and meshData cannot be null");
 
     // File Header
     if (dataSize < sizeof(VBO::header_t))
-        throw std::exception("End of file");
+        throw std::runtime_error("End of file");
     auto header = reinterpret_cast<const VBO::header_t*>(meshData);
 
     if (!header->numVertices || !header->numIndices)
-        throw std::exception("No vertices or indices found");
+        throw std::runtime_error("No vertices or indices found");
 
     uint64_t sizeInBytes = uint64_t(header->numVertices) * sizeof(VertexPositionNormalTexture);
 
     if (sizeInBytes > UINT32_MAX)
-        throw std::exception("VB too large");
+        throw std::runtime_error("VB too large");
 
     if (!(flags & ModelLoader_AllowLargeModels))
     {
         if (sizeInBytes > uint64_t(D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u))
-            throw std::exception("VB too large for DirectX 11");
+            throw std::runtime_error("VB too large for DirectX 11");
     }
 
     auto vertSize = static_cast<size_t>(sizeInBytes);
 
     if (dataSize < (vertSize + sizeof(VBO::header_t)))
-        throw std::exception("End of file");
+        throw std::runtime_error("End of file");
     auto verts = reinterpret_cast<const VertexPositionNormalTexture*>(meshData + sizeof(VBO::header_t));
 
     sizeInBytes = uint64_t(header->numIndices) * sizeof(uint16_t);
 
     if (sizeInBytes > UINT32_MAX)
-        throw std::exception("IB too large");
+        throw std::runtime_error("IB too large");
 
     if (!(flags & ModelLoader_AllowLargeModels))
     {
         if (sizeInBytes > uint64_t(D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u))
-            throw std::exception("IB too large for DirectX 11");
+            throw std::runtime_error("IB too large for DirectX 11");
     }
 
     auto indexSize = static_cast<size_t>(sizeInBytes);
 
     if (dataSize < (sizeof(VBO::header_t) + vertSize + indexSize))
-        throw std::exception("End of file");
+        throw std::runtime_error("End of file");
     auto indices = reinterpret_cast<const uint16_t*>(meshData + sizeof(VBO::header_t) + vertSize);
 
     // Create vertex buffer
@@ -191,7 +191,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromVBO(
     {
         DebugTrace("ERROR: CreateFromVBO failed (%08X) loading '%ls'\n",
             static_cast<unsigned int>(hr), szFileName);
-        throw std::exception("CreateFromVBO");
+        throw std::runtime_error("CreateFromVBO");
     }
 
     auto model = CreateFromVBO(device, data.get(), dataSize, ieffect, flags);

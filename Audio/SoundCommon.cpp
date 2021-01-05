@@ -717,7 +717,7 @@ void SoundEffectInstanceBase::Apply3D(const AudioListener& listener, const Audio
     if (!(mFlags & SoundEffectInstance_Use3D))
     {
         DebugTrace("ERROR: Apply3D called for an instance created without SoundEffectInstance_Use3D set\n");
-        throw std::exception("Apply3D");
+        throw std::runtime_error("Apply3D");
     }
 
     DWORD dwCalcFlags = X3DAUDIO_CALCULATE_MATRIX | X3DAUDIO_CALCULATE_DOPPLER | X3DAUDIO_CALCULATE_LPF_DIRECT;

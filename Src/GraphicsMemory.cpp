@@ -32,7 +32,7 @@ public:
     {
         if (s_graphicsMemory)
         {
-            throw std::exception("GraphicsMemory is a singleton");
+            throw std::logic_error("GraphicsMemory is a singleton");
         }
 
         s_graphicsMemory = this;
@@ -113,7 +113,7 @@ public:
                                        MEM_LARGE_PAGES | MEM_GRAPHICS | MEM_RESERVE | MEM_COMMIT,
                                        PAGE_WRITECOMBINE | PAGE_READWRITE | PAGE_GPU_READONLY);
             if (!mGrfxMemory)
-                throw  std::bad_alloc();
+                throw std::bad_alloc();
         }
 
         size_t mPageSize;
@@ -222,7 +222,7 @@ public:
     {
         if (s_graphicsMemory)
         {
-            throw std::exception("GraphicsMemory is a singleton");
+            throw std::logic_error("GraphicsMemory is a singleton");
         }
 
         s_graphicsMemory = this;
@@ -321,7 +321,7 @@ void GraphicsMemory::Commit()
 GraphicsMemory& GraphicsMemory::Get()
 {
     if (!Impl::s_graphicsMemory || !Impl::s_graphicsMemory->mOwner)
-        throw std::exception("GraphicsMemory singleton not created");
+        throw std::logic_error("GraphicsMemory singleton not created");
 
     return *Impl::s_graphicsMemory->mOwner;
 }

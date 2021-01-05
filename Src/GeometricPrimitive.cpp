@@ -148,10 +148,10 @@ _Use_decl_annotations_
 void GeometricPrimitive::Impl::Initialize(ID3D11DeviceContext* deviceContext, const VertexCollection& vertices, const IndexCollection& indices)
 {
     if (vertices.size() >= USHRT_MAX)
-        throw std::exception("Too many vertices for 16-bit index buffer");
+        throw std::invalid_argument("Too many vertices for 16-bit index buffer");
 
     if (indices.size() > UINT32_MAX)
-        throw std::exception("Too many indices");
+        throw std::invalid_argument("Too many indices");
 
     mResources = sharedResourcesPool.DemandCreate(deviceContext);
 
@@ -747,20 +747,20 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCustom(
 {
     // Extra validation
     if (vertices.empty() || indices.empty())
-        throw std::exception("Requires both vertices and indices");
+        throw std::invalid_argument("Requires both vertices and indices");
 
     if (indices.size() % 3)
-        throw std::exception("Expected triangular faces");
+        throw std::invalid_argument("Expected triangular faces");
 
     size_t nVerts = vertices.size();
     if (nVerts >= USHRT_MAX)
-        throw std::exception("Too many vertices for 16-bit index buffer");
+        throw std::invalid_argument("Too many vertices for 16-bit index buffer");
 
     for (auto it = indices.cbegin(); it != indices.cend(); ++it)
     {
         if (*it >= nVerts)
         {
-            throw std::exception("Index not in vertices list");
+            throw std::out_of_range("Index not in vertices list");
         }
     }
 

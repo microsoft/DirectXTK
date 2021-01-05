@@ -259,7 +259,7 @@ void AlphaTestEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
                 break;
 
             default:
-                throw std::exception("Unknown alpha test function");
+                throw std::runtime_error("Unknown alpha test function");
         }
 
         // x = compareTo, y = threshold, zw = resultSelector.

@@ -140,7 +140,7 @@ public:
         mBufferRead.reset(CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE));
         if (!mBufferEnd || !mBufferRead)
         {
-            throw std::exception("CreateEvent");
+            throw std::system_error(std::error_code(GetLastError(), std::system_category()), "CreateEventEx");
         }
 
         ThrowIfFailed(AllocateStreamingBuffers(wfx));
@@ -263,7 +263,7 @@ public:
             break;
 
         case WAIT_FAILED:
-            throw std::exception("WaitForMultipleObjects");
+            throw std::system_error(std::error_code(GetLastError(), std::system_category()), "WaitForMultipleObjectsEx");
         }
     }
 

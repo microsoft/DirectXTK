@@ -162,7 +162,7 @@ void WaveBank::Impl::Play(unsigned int index, float volume, float pitch, float p
     if (mStreaming)
     {
         DebugTrace("ERROR: One-shots can only be created from an in-memory wave bank\n");
-        throw std::exception("WaveBank::Play");
+        throw std::runtime_error("WaveBank::Play");
     }
 
     if (index >= mReader.Count())
@@ -249,7 +249,7 @@ void WaveBank::Impl::Play(unsigned int index, float volume, float pitch, float p
         DebugTrace("ERROR: WaveBank failed (%08X) when submitting buffer:\n", static_cast<unsigned int>(hr));
         DebugTrace("\tFormat Tag %u, %u channels, %u-bit, %u Hz, %u bytes\n",
             wfx->wFormatTag, wfx->nChannels, wfx->wBitsPerSample, wfx->nSamplesPerSec, metadata.lengthBytes);
-        throw std::exception("SubmitSourceBuffer");
+        throw std::runtime_error("SubmitSourceBuffer");
     }
 
     InterlockedIncrement(&mOneShots);
@@ -270,7 +270,7 @@ WaveBank::WaveBank(AudioEngine* engine, const wchar_t* wbFileName)
     {
         DebugTrace("ERROR: WaveBank failed (%08X) to intialize from .xwb file \"%ls\"\n",
             static_cast<unsigned int>(hr), wbFileName);
-        throw std::exception("WaveBank");
+        throw std::runtime_error("WaveBank");
     }
 
     DebugTrace("INFO: WaveBank \"%hs\" with %u entries loaded from .xwb file \"%ls\"\n",
@@ -346,7 +346,7 @@ std::unique_ptr<SoundEffectInstance> WaveBank::CreateInstance(unsigned int index
     if (pImpl->mStreaming)
     {
         DebugTrace("ERROR: SoundEffectInstances can only be created from an in-memory wave bank\n");
-        throw std::exception("WaveBank::CreateInstance");
+        throw std::runtime_error("WaveBank::CreateInstance");
     }
 
     if (index >= wb.Count())
@@ -389,7 +389,7 @@ std::unique_ptr<SoundStreamInstance> WaveBank::CreateStreamInstance(unsigned int
     if (!pImpl->mStreaming)
     {
         DebugTrace("ERROR: SoundStreamInstances can only be created from a streaming wave bank\n");
-        throw std::exception("WaveBank::CreateStreamInstance");
+        throw std::runtime_error("WaveBank::CreateStreamInstance");
     }
 
     if (index >= wb.Count())

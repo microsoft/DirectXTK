@@ -172,7 +172,7 @@ PBREffect::Impl::Impl(_In_ ID3D11Device* device)
 {
     if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
     {
-        throw std::exception("PBREffect requires Feature Level 10.0 or later");
+        throw std::runtime_error("PBREffect requires Feature Level 10.0 or later");
     }
 
     static_assert(static_cast<int>(std::size(EffectBase<PBREffectTraits>::VertexShaderIndices)) == PBREffectTraits::ShaderPermutationCount, "array/max mismatch");
@@ -366,7 +366,7 @@ void PBREffect::SetLightingEnabled(bool value)
 {
     if (!value)
     {
-        throw std::exception("PBREffect does not support turning off lighting");
+        throw std::invalid_argument("PBREffect does not support turning off lighting");
     }
 }
 

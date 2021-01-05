@@ -48,7 +48,7 @@ namespace DirectX
                 throw std::overflow_error("ReadArray");
 
             if (newPos > mEnd)
-                throw std::exception("End of file");
+                throw std::runtime_error("End of file");
 
             auto result = reinterpret_cast<T const*>(mPos);
 

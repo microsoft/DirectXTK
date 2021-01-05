@@ -357,7 +357,7 @@ _Use_decl_annotations_
 void EffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView)
 {
     if (!name || !textureView)
-        throw std::exception("invalid arguments");
+        throw std::invalid_argument("EffectFactory");
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
     UNREFERENCED_PARAMETER(deviceContext);
@@ -385,7 +385,7 @@ void EffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext
             if (!GetFileAttributesExW(fullName, GetFileExInfoStandard, &fileAttr))
             {
                 DebugTrace("ERROR: EffectFactory could not find texture file '%ls'\n", name);
-                throw std::exception("CreateTexture");
+                throw std::system_error(std::error_code(GetLastError(), std::system_category()), "EffectFactory::CreateTexture");
             }
         }
 
@@ -402,7 +402,7 @@ void EffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext
             {
                 DebugTrace("ERROR: CreateDDSTextureFromFile failed (%08X) for '%ls'\n",
                     static_cast<unsigned int>(hr), fullName);
-                throw std::exception("CreateDDSTextureFromFile");
+                throw std::runtime_error("CreateDDSTextureFromFile");
             }
         }
     #if !defined(_XBOX_ONE) || !defined(_TITLE)
@@ -417,7 +417,7 @@ void EffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext
             {
                 DebugTrace("ERROR: CreateWICTextureFromFile failed (%08X) for '%ls'\n",
                     static_cast<unsigned int>(hr), fullName);
-                throw std::exception("CreateWICTextureFromFile");
+                throw std::runtime_error("CreateWICTextureFromFile");
             }
         }
     #endif
@@ -431,7 +431,7 @@ void EffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext
             {
                 DebugTrace("ERROR: CreateWICTextureFromFile failed (%08X) for '%ls'\n",
                     static_cast<unsigned int>(hr), fullName);
-                throw std::exception("CreateWICTextureFromFile");
+                throw std::runtime_error("CreateWICTextureFromFile");
             }
         }
 

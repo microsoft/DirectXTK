@@ -352,7 +352,7 @@ namespace
         }
 
         if (!posfound)
-            throw std::exception("SV_Position is required");
+            throw std::runtime_error("SV_Position is required");
 
         if (texcoords == 2)
         {
@@ -377,74 +377,74 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
     ModelLoaderFlags flags)
 {
     if (!d3dDevice || !meshData)
-        throw std::exception("Device and meshData cannot be null");
+        throw std::invalid_argument("Device and meshData cannot be null");
 
     uint64_t dataSize = idataSize;
 
     // File Headers
     if (dataSize < sizeof(DXUT::SDKMESH_HEADER))
-        throw std::exception("End of file");
+        throw std::runtime_error("End of file");
     auto header = reinterpret_cast<const DXUT::SDKMESH_HEADER*>(meshData);
 
     size_t headerSize = sizeof(DXUT::SDKMESH_HEADER)
         + header->NumVertexBuffers * sizeof(DXUT::SDKMESH_VERTEX_BUFFER_HEADER)
         + header->NumIndexBuffers * sizeof(DXUT::SDKMESH_INDEX_BUFFER_HEADER);
     if (header->HeaderSize != headerSize)
-        throw std::exception("Not a valid SDKMESH file");
+        throw std::runtime_error("Not a valid SDKMESH file");
 
     if (dataSize < header->HeaderSize)
-        throw std::exception("End of file");
+        throw std::runtime_error("End of file");
 
     if (header->Version != DXUT::SDKMESH_FILE_VERSION && header->Version != DXUT::SDKMESH_FILE_VERSION_V2)
-        throw std::exception("Not a supported SDKMESH version");
+        throw std::runtime_error("Not a supported SDKMESH version");
 
     if (header->IsBigEndian)
-        throw std::exception("Loading BigEndian SDKMESH files not supported");
+        throw std::runtime_error("Loading BigEndian SDKMESH files not supported");
 
     if (!header->NumMeshes)
-        throw std::exception("No meshes found");
+        throw std::runtime_error("No meshes found");
 
     if (!header->NumVertexBuffers)
-        throw std::exception("No vertex buffers found");
+        throw std::runtime_error("No vertex buffers found");
 
     if (!header->NumIndexBuffers)
-        throw std::exception("No index buffers found");
+        throw std::runtime_error("No index buffers found");
 
     if (!header->NumTotalSubsets)
-        throw std::exception("No subsets found");
+        throw std::runtime_error("No subsets found");
 
     if (!header->NumMaterials)
-        throw std::exception("No materials found");
+        throw std::runtime_error("No materials found");
 
     // Sub-headers
     if (dataSize < header->VertexStreamHeadersOffset
         || (dataSize < (header->VertexStreamHeadersOffset + uint64_t(header->NumVertexBuffers) * sizeof(DXUT::SDKMESH_VERTEX_BUFFER_HEADER))))
-        throw std::exception("End of file");
+        throw std::runtime_error("End of file");
     auto vbArray = reinterpret_cast<const DXUT::SDKMESH_VERTEX_BUFFER_HEADER*>(meshData + header->VertexStreamHeadersOffset);
 
     if (dataSize < header->IndexStreamHeadersOffset
         || (dataSize < (header->IndexStreamHeadersOffset + uint64_t(header->NumIndexBuffers) * sizeof(DXUT::SDKMESH_INDEX_BUFFER_HEADER))))
-        throw std::exception("End of file");
+        throw std::runtime_error("End of file");
     auto ibArray = reinterpret_cast<const DXUT::SDKMESH_INDEX_BUFFER_HEADER*>(meshData + header->IndexStreamHeadersOffset);
 
     if (dataSize < header->MeshDataOffset
         || (dataSize < (header->MeshDataOffset + uint64_t(header->NumMeshes) * sizeof(DXUT::SDKMESH_MESH))))
-        throw std::exception("End of file");
+        throw std::runtime_error("End of file");
     auto meshArray = reinterpret_cast<const DXUT::SDKMESH_MESH*>(meshData + header->MeshDataOffset);
 
     if (dataSize < header->SubsetDataOffset
         || (dataSize < (header->SubsetDataOffset + uint64_t(header->NumTotalSubsets) * sizeof(DXUT::SDKMESH_SUBSET))))
-        throw std::exception("End of file");
+        throw std::runtime_error("End of file");
     auto subsetArray = reinterpret_cast<const DXUT::SDKMESH_SUBSET*>(meshData + header->SubsetDataOffset);
 
     if (dataSize < header->FrameDataOffset
         || (dataSize < (header->FrameDataOffset + uint64_t(header->NumFrames) * sizeof(DXUT::SDKMESH_FRAME))))
-        throw std::exception("End of file");
+        throw std::runtime_error("End of file");
     // TODO - auto frameArray = reinterpret_cast<const DXUT::SDKMESH_FRAME*>( meshData + header->FrameDataOffset );
 
     if (dataSize < header->MaterialDataOffset
         || (dataSize < (header->MaterialDataOffset + uint64_t(header->NumMaterials) * sizeof(DXUT::SDKMESH_MATERIAL))))
-        throw std::exception("End of file");
+        throw std::runtime_error("End of file");
 
     const DXUT::SDKMESH_MATERIAL* materialArray = nullptr;
     const DXUT::SDKMESH_MATERIAL_V2* materialArray_v2 = nullptr;
@@ -461,7 +461,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
     uint64_t bufferDataOffset = header->HeaderSize + header->NonBufferDataSize;
     if ((dataSize < bufferDataOffset)
         || (dataSize < bufferDataOffset + header->BufferDataSize))
-        throw std::exception("End of file");
+        throw std::runtime_error("End of file");
     const uint8_t* bufferData = meshData + bufferDataOffset;
 
     // Create vertex buffers
@@ -480,17 +480,17 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
         auto& vh = vbArray[j];
 
         if (vh.SizeBytes > UINT32_MAX)
-            throw std::exception("VB too large");
+            throw std::runtime_error("VB too large");
 
         if (!(flags & ModelLoader_AllowLargeModels))
         {
             if (vh.SizeBytes > (D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u))
-                throw std::exception("VB too large for DirectX 11");
+                throw std::runtime_error("VB too large for DirectX 11");
         }
 
         if (dataSize < vh.DataOffset
             || (dataSize < vh.DataOffset + vh.SizeBytes))
-            throw std::exception("End of file");
+            throw std::runtime_error("End of file");
 
         vbDecls[j] = std::make_shared<std::vector<D3D11_INPUT_ELEMENT_DESC>>();
         unsigned int ilflags = GetInputLayoutDesc(vh.Decl, *vbDecls[j].get());
@@ -542,20 +542,20 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
         auto& ih = ibArray[j];
 
         if (ih.SizeBytes > UINT32_MAX)
-            throw std::exception("IB too large");
+            throw std::runtime_error("IB too large");
 
         if (!(flags & ModelLoader_AllowLargeModels))
         {
             if (ih.SizeBytes > (D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u))
-                throw std::exception("IB too large for DirectX 11");
+                throw std::runtime_error("IB too large for DirectX 11");
         }
 
         if (dataSize < ih.DataOffset
             || (dataSize < ih.DataOffset + ih.SizeBytes))
-            throw std::exception("End of file");
+            throw std::runtime_error("End of file");
 
         if (ih.IndexType != DXUT::IT_16BIT && ih.IndexType != DXUT::IT_32BIT)
-            throw std::exception("Invalid index buffer type found");
+            throw std::runtime_error("Invalid index buffer type found");
 
         auto indices = bufferData + (ih.DataOffset - bufferDataOffset);
 
@@ -588,13 +588,13 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
             || !mh.NumVertexBuffers
             || mh.IndexBuffer >= header->NumIndexBuffers
             || mh.VertexBuffers[0] >= header->NumVertexBuffers)
-            throw std::exception("Invalid mesh found");
+            throw std::out_of_range("Invalid mesh found");
 
         // mh.NumVertexBuffers is sometimes not what you'd expect, so we skip validating it
 
         if (dataSize < mh.SubsetOffset
             || (dataSize < mh.SubsetOffset + uint64_t(mh.NumSubsets) * sizeof(UINT)))
-            throw std::exception("End of file");
+            throw std::runtime_error("End of file");
 
         auto subsets = reinterpret_cast<const UINT*>(meshData + mh.SubsetOffset);
 
@@ -602,7 +602,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
         {
             if (dataSize < mh.FrameInfluenceOffset
                 || (dataSize < mh.FrameInfluenceOffset + uint64_t(mh.NumFrameInfluences) * sizeof(UINT)))
-                throw std::exception("End of file");
+                throw std::runtime_error("End of file");
 
             // TODO - auto influences = reinterpret_cast<const UINT*>( meshData + mh.FrameInfluenceOffset );
         }
@@ -625,7 +625,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
         {
             auto sIndex = subsets[j];
             if (sIndex >= header->NumTotalSubsets)
-                throw std::exception("Invalid mesh found");
+                throw std::out_of_range("Invalid mesh found");
 
             auto& subset = subsetArray[sIndex];
 
@@ -644,14 +644,14 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
 
                 case DXUT::PT_QUAD_PATCH_LIST:
                 case DXUT::PT_TRIANGLE_PATCH_LIST:
-                    throw std::exception("Direct3D9 era tessellation not supported");
+                    throw std::runtime_error("Direct3D9 era tessellation not supported");
 
                 default:
-                    throw std::exception("Unknown primitive type");
+                    throw std::runtime_error("Unknown primitive type");
             }
 
             if (subset.MaterialID >= header->NumMaterials)
-                throw std::exception("Invalid mesh found");
+                throw std::out_of_range("Invalid mesh found");
 
             auto& mat = materials[subset.MaterialID];
 
@@ -726,7 +726,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
     {
         DebugTrace("ERROR: CreateFromSDKMESH failed (%08X) loading '%ls'\n",
             static_cast<unsigned int>(hr), szFileName);
-        throw std::exception("CreateFromSDKMESH");
+        throw std::runtime_error("CreateFromSDKMESH");
     }
 
     auto model = CreateFromSDKMESH(device, data.get(), dataSize, fxFactory, flags);

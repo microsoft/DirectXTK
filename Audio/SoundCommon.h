@@ -248,7 +248,7 @@ namespace DirectX
             if ((mFlags & SoundEffectInstance_NoSetPitch) && pitch != 0.f)
             {
                 DebugTrace("ERROR: Sound effect instance was created with the NoSetPitch flag\n");
-                throw std::exception("SetPitch");
+                throw std::runtime_error("SetPitch");
             }
 
             mPitch = pitch;

@@ -24,7 +24,7 @@ namespace
     {
         // Use >=, not > comparison, because some D3D level 9_x hardware does not support 0xFFFF index values.
         if (value >= USHRT_MAX)
-            throw std::exception("Index value out of range: cannot tesselate primitive so finely");
+            throw std::out_of_range("Index value out of range: cannot tesselate primitive so finely");
     }
 
 
@@ -150,7 +150,7 @@ void DirectX::ComputeSphere(VertexCollection& vertices, IndexCollection& indices
     indices.clear();
 
     if (tessellation < 3)
-        throw std::out_of_range("tesselation parameter out of range");
+        throw std::invalid_argument("tesselation parameter out of range");
 
     size_t verticalSegments = tessellation;
     size_t horizontalSegments = tessellation * 2;
@@ -617,7 +617,7 @@ void DirectX::ComputeCylinder(VertexCollection& vertices, IndexCollection& indic
     indices.clear();
 
     if (tessellation < 3)
-        throw std::out_of_range("tesselation parameter out of range");
+        throw std::invalid_argument("tesselation parameter out of range");
 
     height /= 2;
 
@@ -666,7 +666,7 @@ void DirectX::ComputeCone(VertexCollection& vertices, IndexCollection& indices, 
     indices.clear();
 
     if (tessellation < 3)
-        throw std::out_of_range("tesselation parameter out of range");
+        throw std::invalid_argument("tesselation parameter out of range");
 
     height /= 2;
 
@@ -720,7 +720,7 @@ void DirectX::ComputeTorus(VertexCollection& vertices, IndexCollection& indices,
     indices.clear();
 
     if (tessellation < 3)
-        throw std::out_of_range("tesselation parameter out of range");
+        throw std::invalid_argument("tesselation parameter out of range");
 
     size_t stride = tessellation + 1;
 
@@ -1162,7 +1162,7 @@ void DirectX::ComputeTeapot(VertexCollection& vertices, IndexCollection& indices
     indices.clear();
 
     if (tessellation < 1)
-        throw std::out_of_range("tesselation parameter out of range");
+        throw std::invalid_argument("tesselation parameter out of range");
 
     XMVECTOR scaleVector = XMVectorReplicate(size);
 
