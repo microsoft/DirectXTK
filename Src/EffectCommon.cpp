@@ -340,7 +340,7 @@ void EffectLights::ValidateLightIndex(int whichLight)
 {
     if (whichLight < 0 || whichLight >= MaxDirectionalLights)
     {
-        throw std::invalid_argument("whichLight parameter out of range");
+        throw std::invalid_argument("whichLight parameter invalid");
     }
 }
 

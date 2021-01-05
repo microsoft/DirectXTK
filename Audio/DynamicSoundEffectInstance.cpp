@@ -35,7 +35,7 @@ public:
             || (sampleRate > XAUDIO2_MAX_SAMPLE_RATE))
         {
             DebugTrace("DynamicSoundEffectInstance sampleRate must be in range %u...%u\n", XAUDIO2_MIN_SAMPLE_RATE, XAUDIO2_MAX_SAMPLE_RATE);
-            throw std::invalid_argument("DynamicSoundEffectInstance");
+            throw std::out_of_range("DynamicSoundEffectInstance");
         }
 
         if (!channels || (channels > 8))

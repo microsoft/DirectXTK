@@ -150,7 +150,7 @@ void DirectX::ComputeSphere(VertexCollection& vertices, IndexCollection& indices
     indices.clear();
 
     if (tessellation < 3)
-        throw std::invalid_argument("tesselation parameter out of range");
+        throw std::invalid_argument("tesselation parameter must be at least 3");
 
     size_t verticalSegments = tessellation;
     size_t horizontalSegments = tessellation * 2;
@@ -617,7 +617,7 @@ void DirectX::ComputeCylinder(VertexCollection& vertices, IndexCollection& indic
     indices.clear();
 
     if (tessellation < 3)
-        throw std::invalid_argument("tesselation parameter out of range");
+        throw std::invalid_argument("tesselation parameter must be at least 3");
 
     height /= 2;
 
@@ -666,7 +666,7 @@ void DirectX::ComputeCone(VertexCollection& vertices, IndexCollection& indices, 
     indices.clear();
 
     if (tessellation < 3)
-        throw std::invalid_argument("tesselation parameter out of range");
+        throw std::invalid_argument("tesselation parameter must be at least 3");
 
     height /= 2;
 
@@ -720,7 +720,7 @@ void DirectX::ComputeTorus(VertexCollection& vertices, IndexCollection& indices,
     indices.clear();
 
     if (tessellation < 3)
-        throw std::invalid_argument("tesselation parameter out of range");
+        throw std::invalid_argument("tesselation parameter must be at least 3");
 
     size_t stride = tessellation + 1;
 
@@ -1162,7 +1162,7 @@ void DirectX::ComputeTeapot(VertexCollection& vertices, IndexCollection& indices
     indices.clear();
 
     if (tessellation < 1)
-        throw std::invalid_argument("tesselation parameter out of range");
+        throw std::invalid_argument("tesselation parameter must be non-zero");
 
     XMVECTOR scaleVector = XMVectorReplicate(size);
 

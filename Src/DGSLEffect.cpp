@@ -773,7 +773,7 @@ void XM_CALLCONV DGSLEffect::SetAmbientLightColor(FXMVECTOR value)
 void DGSLEffect::SetLightEnabled(int whichLight, bool value)
 {
     if (whichLight < 0 || whichLight >= MaxDirectionalLights)
-        throw std::invalid_argument("whichLight parameter out of range");
+        throw std::invalid_argument("whichLight parameter invalid");
 
     if (pImpl->lightEnabled[whichLight] == value)
         return;
@@ -801,7 +801,7 @@ void DGSLEffect::SetLightEnabled(int whichLight, bool value)
 void XM_CALLCONV DGSLEffect::SetLightDirection(int whichLight, FXMVECTOR value)
 {
     if (whichLight < 0 || whichLight >= MaxDirectionalLights)
-        throw std::invalid_argument("whichLight parameter out of range");
+        throw std::invalid_argument("whichLight parameter invalid");
 
     // DGSL effects lights do not negate the direction like BasicEffect
     pImpl->constants.light.LightDirection[whichLight] = XMVectorNegate(value);
@@ -813,7 +813,7 @@ void XM_CALLCONV DGSLEffect::SetLightDirection(int whichLight, FXMVECTOR value)
 void XM_CALLCONV DGSLEffect::SetLightDiffuseColor(int whichLight, FXMVECTOR value)
 {
     if (whichLight < 0 || whichLight >= MaxDirectionalLights)
-        throw std::invalid_argument("whichLight parameter out of range");
+        throw std::invalid_argument("whichLight parameter invalid");
 
     pImpl->lightDiffuseColor[whichLight] = value;
 
@@ -829,7 +829,7 @@ void XM_CALLCONV DGSLEffect::SetLightDiffuseColor(int whichLight, FXMVECTOR valu
 void XM_CALLCONV DGSLEffect::SetLightSpecularColor(int whichLight, FXMVECTOR value)
 {
     if (whichLight < 0 || whichLight >= MaxDirectionalLights)
-        throw std::invalid_argument("whichLight parameter out of range");
+        throw std::invalid_argument("whichLight parameter invalid");
 
     pImpl->lightSpecularColor[whichLight] = value;
 
@@ -870,7 +870,7 @@ void DGSLEffect::SetTexture(_In_opt_ ID3D11ShaderResourceView* value)
 void DGSLEffect::SetTexture(int whichTexture, _In_opt_ ID3D11ShaderResourceView* value)
 {
     if (whichTexture < 0 || whichTexture >= MaxTextures)
-        throw std::invalid_argument("whichTexture parameter out of range");
+        throw std::invalid_argument("whichTexture parameter invalid");
 
     pImpl->textures[whichTexture] = value;
 }
@@ -902,7 +902,7 @@ void DGSLEffect::SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, size
         throw std::runtime_error("Skinning not enabled for this effect");
 
     if (count > MaxBones)
-        throw std::invalid_argument("count parameter out of range");
+        throw std::invalid_argument("count parameter exceeds MaxBones");
 
     auto boneConstant = pImpl->constants.bones.Bones;
 
