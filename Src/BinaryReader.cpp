@@ -44,8 +44,16 @@ BinaryReader::BinaryReader(_In_reads_bytes_(dataSize) uint8_t const* dataBlob, s
 
 
 // Reads from the filesystem into memory.
-HRESULT BinaryReader::ReadEntireFile(_In_z_ wchar_t const* fileName, _Inout_ std::unique_ptr<uint8_t[]>& data, _Out_ size_t* dataSize)
+HRESULT BinaryReader::ReadEntireFile(
+    _In_z_ wchar_t const* fileName,
+    _Inout_ std::unique_ptr<uint8_t[]>& data,
+    _Out_ size_t* dataSize)
 {
+    if (!fileName || !dataSize)
+        return E_INVALIDARG;
+
+    *dataSize = 0;
+
     // Open the file.
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
     ScopedHandle hFile(safe_handle(CreateFile2(fileName, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING, nullptr)));

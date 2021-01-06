@@ -22,14 +22,20 @@ namespace DirectX
         T* result = comPtr.Get();
 
         // Double-checked lock pattern.
+#ifdef _MSC_VER
         MemoryBarrier();
+#elif defined(__GNUC__)
+        __sync_synchronize();
+#else
+#error Unknown memory barrier syntax
+#endif
 
         if (!result)
         {
             std::lock_guard<std::mutex> lock(mutex);
 
             result = comPtr.Get();
-        
+
             if (!result)
             {
                 // Create the new object.
@@ -37,7 +43,11 @@ namespace DirectX
                     createFunc(&result)
                 );
 
+#ifdef _MSC_VER
                 MemoryBarrier();
+#elif defined(__GNUC__)
+                __sync_synchronize();
+#endif
 
                 comPtr.Attach(result);
             }

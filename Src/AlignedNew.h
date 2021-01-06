@@ -11,6 +11,8 @@
 #pragma once
 
 #include <malloc.h>
+
+#include <cstddef>
 #include <exception>
 
 
@@ -29,9 +31,10 @@ namespace DirectX
         // Allocate aligned memory.
         static void* operator new (size_t size)
         {
-            const size_t alignment = __alignof(TDerived);
+            const size_t alignment = alignof(TDerived);
 
             static_assert(alignment > 8, "AlignedNew is only useful for types with > 8 byte alignment. Did you forget a __declspec(align) on TDerived?");
+            static_assert(((alignment - 1) & alignment) == 0, "AlignedNew only works with power of two alignment");
 
             void* ptr = _aligned_malloc(size, alignment);
 
