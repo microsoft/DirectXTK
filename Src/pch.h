@@ -114,6 +114,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <cwchar>
 #include <exception>
 #include <iterator>
 #include <list>

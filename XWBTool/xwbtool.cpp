@@ -33,6 +33,7 @@
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
+#include <cwchar>
 #include <fstream>
 #include <iterator>
 #include <list>
