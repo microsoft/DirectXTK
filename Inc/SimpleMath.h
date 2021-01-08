@@ -10,7 +10,7 @@
 
 #pragma once
 
-#if !(defined(_XBOX_ONE) && defined(_TITLE)) && !defined(_GAMING_XBOX)
+#if (defined(WIN32) || defined(WINAPI_FAMILY)) && !(defined(_XBOX_ONE) && defined(_TITLE)) && !defined(_GAMING_XBOX)
 #include <dxgi1_2.h>
 #endif
 
@@ -474,7 +474,7 @@ namespace DirectX
                              r1.x, r1.y, r1.z, r1.w,
                              r2.x, r2.y, r2.z, r2.w,
                              r3.x, r3.y, r3.z, r3.w) {}
-            Matrix(const XMFLOAT4X4& M) noexcept { memcpy_s(this, sizeof(float) * 16, &M, sizeof(XMFLOAT4X4)); }
+            Matrix(const XMFLOAT4X4& M) noexcept { memcpy(this, &M, sizeof(XMFLOAT4X4)); }
             Matrix(const XMFLOAT3X3& M) noexcept;
             Matrix(const XMFLOAT4X3& M) noexcept;
 
@@ -927,7 +927,9 @@ namespace DirectX
             void Unproject(const Vector3& p, const Matrix& proj, const Matrix& view, const Matrix& world, Vector3& result) const noexcept;
 
             // Static methods
+#if defined(__dxgi1_2_h__) || defined(__d3d11_x_h__) || defined(__d3d12_x_h__) || defined(__XBOX_D3D12_X__)
             static RECT __cdecl ComputeDisplayArea(DXGI_SCALING scaling, UINT backBufferWidth, UINT backBufferHeight, int outputWidth, int outputHeight) noexcept;
+#endif
             static RECT __cdecl ComputeTitleSafeArea(UINT backBufferWidth, UINT backBufferHeight) noexcept;
         };
 

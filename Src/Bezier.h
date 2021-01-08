@@ -51,9 +51,6 @@ namespace Bezier
     template<typename T>
     inline T CubicTangent(T const& p1, T const& p2, T const& p3, T const& p4, float t) noexcept
     {
-        using DirectX::operator*;
-        using DirectX::operator+;
-
         return p1 * (-1 + 2 * t - t * t) +
             p2 * (1 - 4 * t + 3 * t * t) +
             p3 * (2 * t - 3 * t * t) +

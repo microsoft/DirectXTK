@@ -15,23 +15,23 @@ using namespace DirectX;
 
 // Constant buffer layout. Must match the shader!
 struct PBREffectConstants
-{    
+{
     XMVECTOR eyePosition;
     XMMATRIX world;
     XMVECTOR worldInverseTranspose[3];
     XMMATRIX worldViewProj;
     XMMATRIX prevWorldViewProj; // for velocity generation
 
-    XMVECTOR lightDirection[IEffectLights::MaxDirectionalLights];           
+    XMVECTOR lightDirection[IEffectLights::MaxDirectionalLights];
     XMVECTOR lightDiffuseColor[IEffectLights::MaxDirectionalLights];
-    
+
     // PBR Parameters
     XMVECTOR Albedo;
     float    Metallic;
     float    Roughness;
     int      numRadianceMipLevels;
 
-    // Size of render target 
+    // Size of render target
     float   targetWidth;
     float   targetHeight;
 };
@@ -90,7 +90,7 @@ namespace
     #include "Shaders/Compiled/XboxOnePBREffect_PSTexturedEmissive.inc"
     #include "Shaders/Compiled/XboxOnePBREffect_PSTexturedVelocity.inc"
     #include "Shaders/Compiled/XboxOnePBREffect_PSTexturedEmissiveVelocity.inc"
-#else    
+#else
     #include "Shaders/Compiled/PBREffect_VSConstant.inc"
     #include "Shaders/Compiled/PBREffect_VSConstantVelocity.inc"
     #include "Shaders/Compiled/PBREffect_VSConstantBn.inc"
@@ -235,7 +235,7 @@ void PBREffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
     constants.prevWorldViewProj = constants.worldViewProj;
 
     // Compute derived parameter values.
-    matrices.SetConstants(dirtyFlags, constants.worldViewProj);        
+    matrices.SetConstants(dirtyFlags, constants.worldViewProj);
 
     // World inverse transpose matrix.
     if (dirtyFlags & EffectDirtyFlags::WorldInverseTranspose)
