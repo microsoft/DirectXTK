@@ -389,10 +389,11 @@ void EffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext
             }
         }
 
-        wchar_t ext[_MAX_EXT];
+        wchar_t ext[_MAX_EXT] = {};
         _wsplitpath_s(name, nullptr, 0, nullptr, 0, nullptr, 0, ext, _MAX_EXT);
+        bool isdds = _wcsicmp(ext, L".dds") == 0;
 
-        if (_wcsicmp(ext, L".dds") == 0)
+        if (isdds)
         {
             HRESULT hr = CreateDDSTextureFromFileEx(
                 mDevice.Get(), fullName, 0,
