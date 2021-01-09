@@ -899,7 +899,7 @@ namespace
                     wchar_t dir[_MAX_DIR] = {};
                     _wsplitpath_s(path, drive, _MAX_DRIVE, dir, _MAX_DIR, nullptr, 0, nullptr, 0);
 
-                    SConversion conv;
+                    SConversion conv = {};
                     _wmakepath_s(conv.szSrc, drive, dir, findData.cFileName, nullptr);
                     files.push_back(conv);
                 }
@@ -1188,7 +1188,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
                     }
                     else
                     {
-                        SConversion conv;
+                        SConversion conv = {};
                         wcscpy_s(conv.szSrc, MAX_PATH, fname);
                         conversion.push_back(conv);
                     }
@@ -1212,7 +1212,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         }
         else
         {
-            SConversion conv;
+            SConversion conv = {};
             wcscpy_s(conv.szSrc, MAX_PATH, pArg);
 
             conversion.push_back(conv);
@@ -1234,8 +1234,8 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     {
         auto pConv = conversion.begin();
 
-        wchar_t ext[_MAX_EXT];
-        wchar_t fname[_MAX_FNAME];
+        wchar_t ext[_MAX_EXT] = {};
+        wchar_t fname[_MAX_FNAME] = {};
         _wsplitpath_s(pConv->szSrc, nullptr, 0, nullptr, 0, fname, _MAX_FNAME, ext, _MAX_EXT);
 
         if (_wcsicmp(ext, L".xwb") == 0)
@@ -1286,8 +1286,8 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     size_t index = 0;
     for (auto pConv = conversion.begin(); pConv != conversion.end(); ++pConv, ++index)
     {
-        wchar_t ext[_MAX_EXT];
-        wchar_t fname[_MAX_FNAME];
+        wchar_t ext[_MAX_EXT] = {};
+        wchar_t fname[_MAX_FNAME] = {};
         _wsplitpath_s(pConv->szSrc, nullptr, 0, nullptr, 0, fname, _MAX_FNAME, ext, _MAX_EXT);
 
         // Load source image
@@ -1486,7 +1486,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
             auto cit = conversion.cbegin();
             advance(cit, it->conv);
 
-            wchar_t wEntryName[_MAX_FNAME];
+            wchar_t wEntryName[_MAX_FNAME] = {};
             _wsplitpath_s(cit->szSrc, nullptr, 0, nullptr, 0, wEntryName, _MAX_FNAME, nullptr, 0);
 
             int result = WideCharToMultiByte(CP_UTF8, WC_NO_BEST_FIT_CHARS, wEntryName, -1, &entryNames[count * ENTRYNAME_LENGTH], ENTRYNAME_LENGTH, nullptr, nullptr);
@@ -1557,7 +1557,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     }
 
     {
-        wchar_t wBankName[_MAX_FNAME];
+        wchar_t wBankName[_MAX_FNAME] = {};
         _wsplitpath_s(szOutputFile, nullptr, 0, nullptr, 0, wBankName, _MAX_FNAME, nullptr, 0);
 
         int result = WideCharToMultiByte(CP_UTF8, WC_NO_BEST_FIT_CHARS, wBankName, -1, data.szBankName, BANKDATA::BANKNAME_LENGTH, nullptr, nullptr);
@@ -1772,7 +1772,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         FILE* file = nullptr;
         if (!_wfopen_s(&file, szHeaderFile, L"wt"))
         {
-            wchar_t wBankName[_MAX_FNAME];
+            wchar_t wBankName[_MAX_FNAME] = {};
             _wsplitpath_s(szOutputFile, nullptr, 0, nullptr, 0, wBankName, _MAX_FNAME, nullptr, 0);
 
             FileNameToIdentifier(wBankName, _MAX_FNAME);
@@ -1785,7 +1785,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
                 auto cit = conversion.cbegin();
                 advance(cit, it->conv);
 
-                wchar_t wEntryName[_MAX_FNAME];
+                wchar_t wEntryName[_MAX_FNAME] = {};
                 _wsplitpath_s(cit->szSrc, nullptr, 0, nullptr, 0, wEntryName, _MAX_FNAME, nullptr, 0);
 
                 FileNameToIdentifier(wEntryName, _MAX_FNAME);
