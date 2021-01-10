@@ -6,6 +6,10 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### January 9, 2021
+* Code review for improved conformance
+* CMake updated to support package install
+
 ### November 11, 2020
 * Fixed ``/analyze`` warnings in GameInput usage
 * Fixed *DirectX Tool Kit for Audio* use of XAudio 2.8 for Windows 8 w/ Windows 10 SDK

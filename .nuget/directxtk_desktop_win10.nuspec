@@ -30,7 +30,7 @@ SpriteBatch - simple &amp; efficient 2D sprite rendering
 SpriteFont - bitmap based text rendering
 VertexTypes - structures for commonly used vertex data formats
 WICTextureLoader - WIC-based image file texture loader</description>
-        <releaseNotes>Matches the November 11, 2020 release on GitHub.
+        <releaseNotes>Matches the January 9, 2021 release on GitHub.
 
 DirectX Tool Kit for Audio in this package uses XAudio 2.9 which requires Windows 10.</releaseNotes>
         <projectUrl>http://go.microsoft.com/fwlink/?LinkId=248929</projectUrl>
@@ -68,6 +68,6 @@ DirectX Tool Kit for Audio in this package uses XAudio 2.9 which requires Window
         <file src=".nuget/directxtk_desktop_win10.targets" target="build\native" />
 
         <file src=".nuget/icon.jpg" target="images\" />
-      
+
     </files>
 </package>

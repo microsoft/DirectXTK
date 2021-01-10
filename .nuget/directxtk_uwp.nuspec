@@ -16,12 +16,12 @@ CommonStates - factory providing commonly used D3D state objects
 DirectXHelpers - misc C++ helpers for D3D programming
 DDSTextureLoader - light-weight DDS file texture loader
 Effects - set of built-in shaders for common rendering tasks
-GamePad - gamepad controller helper using XInput 
+GamePad - gamepad controller helper using XInput
 GeometricPrimitive - draws basic shapes such as cubes and spheres
 GraphicsMemory - helper for managing dynamic graphics memory allocation
-Keyboard - keyboard state tracking helper 
+Keyboard - keyboard state tracking helper
 Model - draws meshes loaded from .CMO, .SDKMESH, or .VBO files
-Mouse - mouse helper 
+Mouse - mouse helper
 PostProcess - set of built-in shaders for common post-processing operations
 PrimitiveBatch - simple and efficient way to draw user primitives
 ScreenGrab - light-weight screen shot saver
@@ -30,7 +30,7 @@ SpriteBatch - simple &amp; efficient 2D sprite rendering
 SpriteFont - bitmap based text rendering
 VertexTypes - structures for commonly used vertex data formats
 WICTextureLoader - WIC-based image file texture loader</description>
-        <releaseNotes>Matches the November 11, 2020 release on GitHub.</releaseNotes>
+        <releaseNotes>Matches the January 9, 2021 release on GitHub.</releaseNotes>
         <projectUrl>http://go.microsoft.com/fwlink/?LinkId=248929</projectUrl>
         <icon>images\icon.jpg</icon>
         <license type="expression">MIT</license>
@@ -56,7 +56,7 @@ WICTextureLoader - WIC-based image file texture loader</description>
 
         <file target="native\lib\ARM64\Release" src="Bin\Windows10_2017\ARM64\Release\*.lib" />
         <file target="native\lib\ARM64\Release" src="Bin\Windows10_2017\ARM64\Release\*.pdb" />
-      
+
         <file target="native\lib\Win32\Debug" src="Bin\Windows10_2017\Win32\Debug\*.lib" />
         <file target="native\lib\Win32\Debug" src="Bin\Windows10_2017\Win32\Debug\*.pdb" />
 
@@ -72,6 +72,6 @@ WICTextureLoader - WIC-based image file texture loader</description>
         <file src=".nuget/directxtk_uwp.targets" target="build\native" />
 
         <file src=".nuget/icon.jpg" target="images\" />
-      
+
     </files>
 </package>
