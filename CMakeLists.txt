@@ -221,7 +221,7 @@ install(FILES
   DESTINATION cmake/)
 
 #--- Command-line tools
-if(BUILD_TOOLS)
+if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
   add_executable(xwbtool
     xwbtool/xwbtool.cpp
     Audio/WAVFileReader.cpp
@@ -233,27 +233,27 @@ endif()
 
 if(MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /fp:fast)
-    if(BUILD_TOOLS)
+    if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
       target_compile_options(xwbtool PRIVATE /fp:fast)
     endif()
 
    if(ENABLE_CODE_ANALYSIS)
       target_compile_options(${PROJECT_NAME} PRIVATE /analyze)
-      if(BUILD_TOOLS)
+      if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
         target_compile_options(xwbtool PRIVATE /analyze)
       endif()
    endif()
 
     if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.26)
         target_compile_options(${PROJECT_NAME} PRIVATE /Zc:preprocessor /wd5104 /wd5105)
-        if(BUILD_TOOLS)
+        if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
           target_compile_options(xwbtool PRIVATE /Zc:preprocessor /wd5104 /wd5105)
         endif()
     endif()
 
-    if (${CMAKE_SIZEOF_VOID_P} EQUAL "4")
+    if (${CMAKE_SIZEOF_VOID_P} EQUAL "4" AND (NOT ${CMAKE_VS_PLATFORM_NAME} MATCHES "arm"))
         target_compile_options(${PROJECT_NAME} PRIVATE /arch:SSE2)
-        if(BUILD_TOOLS)
+        if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
           target_compile_options(xwbtool PRIVATE /arch:SSE2)
         endif()
     endif()
@@ -263,7 +263,7 @@ if ( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
     set(WarningsLib "-Wpedantic" "-Wextra")
     target_compile_options(${PROJECT_NAME} PRIVATE ${WarningsLib})
 
-    if(BUILD_TOOLS)
+    if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
       set(WarningsEXE ${WarningsLib} "-Wno-c++98-compat" "-Wno-c++98-compat-pedantic"
         "-Wno-double-promotion" "-Wno-exit-time-destructors" "-Wno-gnu-anonymous-struct"
         "-Wno-missing-prototypes" "-Wno-nested-anon-types" "-Wno-unused-const-variable")
@@ -273,10 +273,10 @@ endif()
 if ( CMAKE_CXX_COMPILER_ID MATCHES "MSVC" )
     target_compile_options(${PROJECT_NAME} PRIVATE /permissive- /JMC- /Zc:__cplusplus)
 
-    if(BUILD_TOOLS)
+    if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
       target_compile_options(xwbtool PRIVATE /permissive- /Zc:__cplusplus)
 
-      set(WarningsEXE "/wd4365" "/wd4710" "/wd4820" "/wd5039" "/wd5045")
+      set(WarningsEXE "/wd4365" "/wd4514" "/wd4625" "/wd4626" "/wd4627" "/wd4710" "/wd4820" "/wd5026" "/wd5027" "/wd5039" "/wd5045")
       target_compile_options(xwbtool PRIVATE ${WarningsEXE})
     endif()
 endif()
@@ -284,7 +284,7 @@ endif()
 if(WIN32)
     target_compile_definitions(${PROJECT_NAME} PRIVATE _UNICODE UNICODE)
 
-    if(BUILD_TOOLS)
+    if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
       target_compile_definitions(xwbtool PRIVATE _UNICODE UNICODE _WIN32_WINNT=0x0601)
     endif()
 
@@ -297,6 +297,6 @@ if(WIN32)
     endif()
 endif()
 
-if(BUILD_TOOLS)
+if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
   set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT xwbtool)
 endif()
