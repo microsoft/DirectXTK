@@ -120,6 +120,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <new>
 #include <set>
 #include <stdexcept>
 #include <string>
