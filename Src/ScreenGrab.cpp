@@ -186,9 +186,11 @@ HRESULT DirectX::SaveDDSTextureToFile(
 
     // Create file
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
-    ScopedHandle hFile(safe_handle(CreateFile2(fileName, GENERIC_WRITE | DELETE, 0, CREATE_ALWAYS, nullptr)));
+    ScopedHandle hFile(safe_handle(CreateFile2(fileName,
+        GENERIC_WRITE | DELETE, 0, CREATE_ALWAYS, nullptr)));
 #else
-    ScopedHandle hFile(safe_handle(CreateFileW(fileName, GENERIC_WRITE | DELETE, 0, nullptr, CREATE_ALWAYS, 0, nullptr)));
+    ScopedHandle hFile(safe_handle(CreateFileW(fileName,
+        GENERIC_WRITE | DELETE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr)));
 #endif
     if (!hFile)
         return HRESULT_FROM_WIN32(GetLastError());
