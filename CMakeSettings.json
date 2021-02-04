@@ -70,7 +70,21 @@
       "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
       "inheritEnvironments": [ "msvc_arm64_x64" ],
-      "variables": []
+      "variables": [],
+      "cmakeToolchain": "D:\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake"
+    },
+    {
+      "name": "arm64-Clang-Debug",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "clang_cl_arm64_x64" ],
+      "variables": [],
+      "cmakeToolchain": "D:\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake"
     }
   ]
 }

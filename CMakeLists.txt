@@ -187,6 +187,12 @@ if(MSVC)
     # Library needs /EHsc (Enable C++ exceptions)
 endif()
 
+if (VCPKG_TOOLCHAIN)
+    message("INFO: Using VCPKG for DirectXMath.")
+    find_package(directxmath CONFIG REQUIRED)
+    target_link_libraries(${PROJECT_NAME} PRIVATE Microsoft::DirectXMath)
+endif()
+
 #--- Package
 include(CMakePackageConfigHelpers)
 
@@ -229,6 +235,10 @@ if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
   target_include_directories(xwbtool PRIVATE Audio Src)
   target_link_libraries(xwbtool version.lib)
   source_group(xwbtool REGULAR_EXPRESSION XWBTool/*.*)
+
+  if (VCPKG_TOOLCHAIN)
+    target_link_libraries(xwbtool Microsoft::DirectXMath)
+  endif()
 endif()
 
 if(MSVC)
