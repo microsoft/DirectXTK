@@ -7,7 +7,7 @@
 // The meshconvert sample tool for DirectXMesh can produce this file type
 // http://go.microsoft.com/fwlink/?LinkID=324981
 //
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 //
 // http://go.microsoft.com/fwlink/?LinkId=248929

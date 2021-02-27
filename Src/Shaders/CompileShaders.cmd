@@ -1,5 +1,5 @@
 @echo off
-rem Copyright (c) Microsoft Corporation. All rights reserved.
+rem Copyright (c) Microsoft Corporation.
 rem Licensed under the MIT License.
 
 setlocal

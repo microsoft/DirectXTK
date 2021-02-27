@@ -37,7 +37,7 @@ DirectX Tool Kit for Audio in this package uses XAudio2Redist NuGet package to s
         <icon>images\icon.jpg</icon>
         <license type="expression">MIT</license>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+        <copyright>© Microsoft Corporation.</copyright>
         <tags>DirectX DirectXTK native nativepackage</tags>
         <dependencies>
             <dependency id="Microsoft.XAudio2.Redist" version="1.2.4" />

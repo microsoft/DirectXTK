@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 //
 // http://go.microsoft.com/fwlink/?LinkId=248929
@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft Corporation")]
 [assembly: AssemblyProduct("DirectX Tool Kit")]
-[assembly: AssemblyCopyright("Copyright (c) Microsoft Corporation. All rights reserved")]
+[assembly: AssemblyCopyright("Copyright (c) Microsoft Corporation.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]

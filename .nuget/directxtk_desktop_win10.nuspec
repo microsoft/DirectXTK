@@ -37,7 +37,7 @@ DirectX Tool Kit for Audio in this package uses XAudio 2.9 which requires Window
         <icon>images\icon.jpg</icon>
         <license type="expression">MIT</license>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+        <copyright>© Microsoft Corporation.</copyright>
         <tags>DirectX DirectXTK native nativepackage</tags>
     </metadata>
 
