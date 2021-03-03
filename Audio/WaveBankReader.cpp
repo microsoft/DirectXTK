@@ -17,6 +17,10 @@
 #include "SoundCommon.h"
 
 #if (defined(_XBOX_ONE) && defined(_TITLE)) || defined(_GAMING_XBOX)
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Wnonportable-system-include-path"
+#endif
+
 #include <apu.h>
 #include <shapexmacontext.h>
 #endif
