@@ -63,7 +63,6 @@
 #ifndef WAVE_FORMAT_XMA2
 #define WAVE_FORMAT_XMA2 0x166
 
-#pragma pack(push,1)
 struct XMA2WAVEFORMATEX
 {
     WAVEFORMATEX wfx;
@@ -89,7 +88,6 @@ struct XMA2WAVEFORMATEX
     BYTE  EncoderVersion;    // Version of XMA encoder that generated the file
     WORD  BlockCount;        // XMA blocks in file (and entries in its seek table)
 };
-#pragma pack(pop)
 #endif
 
 static_assert(sizeof(XMA2WAVEFORMATEX) == 52, "Mismatch of XMA2 type");
