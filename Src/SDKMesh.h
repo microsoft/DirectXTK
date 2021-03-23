@@ -150,7 +150,7 @@ namespace DXUT
     enum FRAME_TRANSFORM_TYPE
     {
         FTT_RELATIVE = 0,
-        FTT_ABSOLUTE,		//This is not currently used but is here to support absolute transformations in the future
+        FTT_ABSOLUTE, // This is not currently used but is here to support absolute transformations in the future
     };
 
     //--------------------------------------------------------------------------------------
@@ -244,7 +244,7 @@ namespace DXUT
         uint32_t ChildFrame;
         uint32_t SiblingFrame;
         DirectX::XMFLOAT4X4 Matrix;
-        uint32_t AnimationDataIndex;		//Used to index which set of keyframes transforms this frame
+        uint32_t AnimationDataIndex; //Used to index which set of keyframes transforms this frame
     };
 
     struct SDKMESH_MATERIAL
