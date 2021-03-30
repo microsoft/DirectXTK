@@ -712,6 +712,11 @@ namespace DirectX
                             return DXGI_FORMAT_B4G4R4A4_UNORM;
                         }
 
+                        if (ISBITMASK(0x00ff, 0, 0, 0xff00))
+                        {
+                            return DXGI_FORMAT_R8G8_UNORM; // NVTT versions 1.x wrote this as RGB instead of LUMINANCE
+                        }
+
                         // No DXGI format maps to ISBITMASK(0x0f00,0x00f0,0x000f,0) aka D3DFMT_X4R4G4B4
 
                         // No 3:3:2, 3:3:2:8, or paletted DXGI formats aka D3DFMT_A8R3G3B2, D3DFMT_R3G3B2, D3DFMT_P8, D3DFMT_A8P8, etc.
