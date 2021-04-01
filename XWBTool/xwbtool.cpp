@@ -1009,6 +1009,36 @@ namespace
         wprintf(L"   -flist <filename>   use text file with a list of input files (one per line)\n");
     }
 
+    const wchar_t* GetErrorDesc(HRESULT hr)
+    {
+        static wchar_t desc[1024] = {};
+
+        LPWSTR errorText = nullptr;
+
+        DWORD result = FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr,
+            static_cast<DWORD>(hr),
+            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPWSTR>(&errorText), 0, nullptr);
+
+        *desc = 0;
+
+        if (result > 0 && errorText)
+        {
+            swprintf_s(desc, L": %ls", errorText);
+
+            size_t len = wcslen(desc);
+            if (len >= 2)
+            {
+                desc[len - 2] = 0;
+                desc[len - 1] = 0;
+            }
+
+            if (errorText)
+                LocalFree(errorText);
+        }
+
+        return desc;
+    }
+
     const char* GetFormatTagName(WORD wFormatTag)
     {
         switch (wFormatTag)
@@ -1302,7 +1332,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         HRESULT hr = DirectX::LoadWAVAudioFromFileEx(pConv->szSrc, waveData, wave.data);
         if (FAILED(hr))
         {
-            wprintf(L"\nERROR: Failed to load file (%08X)\n", static_cast<unsigned int>(hr));
+            wprintf(L"\nERROR: Failed to load file (%08X%ls)\n", static_cast<unsigned int>(hr), GetErrorDesc(hr));
             return 1;
         }
 
