@@ -6,6 +6,11 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### April 6, 2021
+* DDSTextureLoader reader updated to accept nVidia Texture Tool v1 single-channel and dual-channel files marked as RGB instead of LUMINANCE
+* Minor code and project cleanup
+* xwbtool: Updated with  descriptions for HRESULT failure codes
+
 ### January 9, 2021
 * Code review for improved conformance
 * CMake updated to support package install
