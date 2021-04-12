@@ -505,7 +505,11 @@ uint32_t DirectX::GetDefaultChannelMask(int channels) noexcept
 
 
 _Use_decl_annotations_
-void DirectX::CreateIntegerPCM(WAVEFORMATEX* wfx, int sampleRate, int channels, int sampleBits) noexcept
+void DirectX::CreateIntegerPCM(
+    WAVEFORMATEX* wfx,
+    int sampleRate,
+    int channels,
+    int sampleBits) noexcept
 {
     int blockAlign = channels * sampleBits / 8;
 
@@ -522,7 +526,10 @@ void DirectX::CreateIntegerPCM(WAVEFORMATEX* wfx, int sampleRate, int channels, 
 
 
 _Use_decl_annotations_
-void DirectX::CreateFloatPCM(WAVEFORMATEX* wfx, int sampleRate, int channels) noexcept
+void DirectX::CreateFloatPCM(
+    WAVEFORMATEX* wfx,
+    int sampleRate,
+    int channels) noexcept
 {
     int blockAlign = channels * 4;
 
@@ -539,7 +546,12 @@ void DirectX::CreateFloatPCM(WAVEFORMATEX* wfx, int sampleRate, int channels) no
 
 
 _Use_decl_annotations_
-void DirectX::CreateADPCM(WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int samplesPerBlock) noexcept(false)
+void DirectX::CreateADPCM(
+    WAVEFORMATEX* wfx,
+    size_t wfxSize,
+    int sampleRate,
+    int channels,
+    int samplesPerBlock) noexcept(false)
 {
     if (wfxSize < (sizeof(WAVEFORMATEX) + 32 /*MSADPCM_FORMAT_EXTRA_BYTES*/))
     {
@@ -578,7 +590,13 @@ void DirectX::CreateADPCM(WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int
 
 #ifdef DIRECTX_ENABLE_XWMA
 _Use_decl_annotations_
-void DirectX::CreateXWMA(WAVEFORMATEX* wfx, int sampleRate, int channels, int blockAlign, int avgBytes, bool wma3) noexcept
+void DirectX::CreateXWMA(
+    WAVEFORMATEX* wfx,
+    int sampleRate,
+    int channels,
+    int blockAlign,
+    int avgBytes,
+    bool wma3) noexcept
 {
     wfx->wFormatTag = static_cast<WORD>((wma3) ? WAVE_FORMAT_WMAUDIO3 : WAVE_FORMAT_WMAUDIO2);
     wfx->nChannels = static_cast<WORD>(channels);
@@ -595,7 +613,14 @@ void DirectX::CreateXWMA(WAVEFORMATEX* wfx, int sampleRate, int channels, int bl
 
 #ifdef DIRECTX_ENABLE_XMA2
 _Use_decl_annotations_
-void DirectX::CreateXMA2(WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int bytesPerBlock, int blockCount, int samplesEncoded) noexcept(false)
+void DirectX::CreateXMA2(
+    WAVEFORMATEX* wfx,
+    size_t wfxSize,
+    int sampleRate,
+    int channels,
+    int bytesPerBlock,
+    int blockCount,
+    int samplesEncoded) noexcept(false)
 {
     if (wfxSize < sizeof(XMA2WAVEFORMATEX))
     {
@@ -848,14 +873,14 @@ namespace
     };
 }
 
-void AudioEmitter::EnableDefaultMultiChannel(int channels, float radius)
+void AudioEmitter::EnableDefaultMultiChannel(unsigned int channels, float radius)
 {
-    if (channels < 1 || channels > XAUDIO2_MAX_AUDIO_CHANNELS)
+    if (channels > XAUDIO2_MAX_AUDIO_CHANNELS)
         throw std::invalid_argument("Invalid channel count");
 
-    ChannelCount = static_cast<UINT32>(channels);
+    ChannelCount = channels;
     ChannelRadius = radius;
-    pChannelAzimuths = (channels > 1) ? EmitterAzimuths : nullptr;
+    pChannelAzimuths = EmitterAzimuths;
 
     if (channels <= 8)
     {

@@ -600,7 +600,7 @@ namespace DirectX
             }
         }
 
-        void __cdecl EnableDefaultMultiChannel(int channels, float radius = 1.f);
+        void __cdecl EnableDefaultMultiChannel(unsigned int channels, float radius = 1.f);
     };
 
 
