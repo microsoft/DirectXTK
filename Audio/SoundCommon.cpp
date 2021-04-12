@@ -796,3 +796,73 @@ void SoundEffectInstanceBase::Apply3D(const AudioListener& listener, const Audio
 }
 
 
+//======================================================================================
+// AudioEmitter helper
+//======================================================================================
+
+namespace
+{
+    // **Note these constants came from xact3d3.h in the legacy DirectX SDK**
+    //
+    // Supported speaker positions, represented as azimuth angles.
+    //
+    // Here's a picture of the azimuth angles for the 8 cardinal points,
+    // seen from above.  The emitter's base position is at the origin 0.
+    //
+    //           FRONT
+    //             | 0  <-- azimuth
+    //             |
+    //    7pi/4 \  |  / pi/4
+    //           \ | /
+    // LEFT       \|/      RIGHT
+    // 3pi/2-------0-------pi/2
+    //            /|\
+    //           / | \
+    //    5pi/4 /  |  \ 3pi/4
+    //             |
+    //             | pi
+    //           BACK
+    //
+
+    constexpr float LEFT_AZIMUTH = 3 * X3DAUDIO_PI / 2;
+    constexpr float RIGHT_AZIMUTH = X3DAUDIO_PI / 2;
+    constexpr float FRONT_LEFT_AZIMUTH = 7 * X3DAUDIO_PI / 4;
+    constexpr float FRONT_RIGHT_AZIMUTH = X3DAUDIO_PI / 4;
+    constexpr float FRONT_CENTER_AZIMUTH = 0.0f;
+    constexpr float LOW_FREQUENCY_AZIMUTH = X3DAUDIO_2PI;
+    constexpr float BACK_LEFT_AZIMUTH = 5 * X3DAUDIO_PI / 4;
+    constexpr float BACK_RIGHT_AZIMUTH = 3 * X3DAUDIO_PI / 4;
+    constexpr float BACK_CENTER_AZIMUTH = X3DAUDIO_PI;
+
+    constexpr float c_channelAzimuths[9][8] =
+    {
+        /* 0 */   { 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f },
+        /* 1 */   { 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f },
+        /* 2 */   { FRONT_LEFT_AZIMUTH, FRONT_RIGHT_AZIMUTH, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f },
+        /* 2.1 */ { FRONT_LEFT_AZIMUTH, FRONT_RIGHT_AZIMUTH, LOW_FREQUENCY_AZIMUTH, 0.f, 0.f, 0.f, 0.f, 0.f },
+        /* 4.0 */ { FRONT_LEFT_AZIMUTH, FRONT_RIGHT_AZIMUTH, BACK_LEFT_AZIMUTH, BACK_RIGHT_AZIMUTH, 0.f, 0.f, 0.f, 0.f },
+        /* 4.1 */ { FRONT_LEFT_AZIMUTH, FRONT_RIGHT_AZIMUTH, LOW_FREQUENCY_AZIMUTH, BACK_LEFT_AZIMUTH, BACK_RIGHT_AZIMUTH, 0.f, 0.f, 0.f },
+        /* 5.1 */ { FRONT_LEFT_AZIMUTH, FRONT_RIGHT_AZIMUTH, FRONT_CENTER_AZIMUTH, LOW_FREQUENCY_AZIMUTH, BACK_LEFT_AZIMUTH, BACK_RIGHT_AZIMUTH, 0.f, 0.f },
+        /* 6.1 */ { FRONT_LEFT_AZIMUTH, FRONT_RIGHT_AZIMUTH, FRONT_CENTER_AZIMUTH, LOW_FREQUENCY_AZIMUTH, BACK_LEFT_AZIMUTH, BACK_RIGHT_AZIMUTH, BACK_CENTER_AZIMUTH, 0.f },
+        /* 7.1 */ { FRONT_LEFT_AZIMUTH, FRONT_RIGHT_AZIMUTH, FRONT_CENTER_AZIMUTH, LOW_FREQUENCY_AZIMUTH, BACK_LEFT_AZIMUTH, BACK_RIGHT_AZIMUTH, LEFT_AZIMUTH, RIGHT_AZIMUTH }
+    };
+}
+
+void AudioEmitter::EnableDefaultMultiChannel(int channels, float radius)
+{
+    if (channels < 1 || channels > XAUDIO2_MAX_AUDIO_CHANNELS)
+        throw std::invalid_argument("Invalid channel count");
+
+    ChannelCount = static_cast<UINT32>(channels);
+    ChannelRadius = radius;
+    pChannelAzimuths = (channels > 1) ? EmitterAzimuths : nullptr;
+
+    if (channels <= 8)
+    {
+        memcpy(EmitterAzimuths, &c_channelAzimuths[channels][0], sizeof(float) * 8);
+    }
+    else
+    {
+        memset(EmitterAzimuths, 0, sizeof(float) * size_t(channels));
+    }
+}

@@ -599,6 +599,8 @@ namespace DirectX
                 XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&Position), newPos);
             }
         }
+
+        void __cdecl EnableDefaultMultiChannel(int channels, float radius = 1.f);
     };
 
 
