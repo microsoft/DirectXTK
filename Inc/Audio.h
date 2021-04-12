@@ -599,6 +599,8 @@ namespace DirectX
                 XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&Position), newPos);
             }
         }
+
+        void __cdecl EnableDefaultMultiChannel(unsigned int channels, float radius = 1.f);
     };
 
 
@@ -623,11 +625,13 @@ namespace DirectX
         void __cdecl SetPitch(float pitch);
         void __cdecl SetPan(float pan);
 
-        void __cdecl Apply3D(const AudioListener& listener, const AudioEmitter& emitter, bool rhcoords = true);
+        void __cdecl Apply3D(const X3DAUDIO_LISTENER& listener, const X3DAUDIO_EMITTER& emitter, bool rhcoords = true);
 
         bool __cdecl IsLooped() const noexcept;
 
         SoundState __cdecl GetState() noexcept;
+
+        unsigned int __cdecl GetChannelCount() const noexcept;
 
         IVoiceNotify* __cdecl GetVoiceNotify() const noexcept;
 
@@ -667,11 +671,13 @@ namespace DirectX
         void __cdecl SetPitch(float pitch);
         void __cdecl SetPan(float pan);
 
-        void __cdecl Apply3D(const AudioListener& listener, const AudioEmitter& emitter, bool rhcoords = true);
+        void __cdecl Apply3D(const X3DAUDIO_LISTENER& listener, const X3DAUDIO_EMITTER& emitter, bool rhcoords = true);
 
         bool __cdecl IsLooped() const noexcept;
 
         SoundState __cdecl GetState() noexcept;
+
+        unsigned int __cdecl GetChannelCount() const noexcept;
 
         IVoiceNotify* __cdecl GetVoiceNotify() const noexcept;
 
@@ -713,7 +719,7 @@ namespace DirectX
         void __cdecl SetPitch(float pitch);
         void __cdecl SetPan(float pan);
 
-        void __cdecl Apply3D(const AudioListener& listener, const AudioEmitter& emitter, bool rhcoords = true);
+        void __cdecl Apply3D(const X3DAUDIO_LISTENER& listener, const X3DAUDIO_EMITTER& emitter, bool rhcoords = true);
 
         void __cdecl SubmitBuffer(_In_reads_bytes_(audioBytes) const uint8_t* pAudioData, size_t audioBytes);
         void __cdecl SubmitBuffer(_In_reads_bytes_(audioBytes) const uint8_t* pAudioData, uint32_t offset, size_t audioBytes);
@@ -732,6 +738,8 @@ namespace DirectX
         int __cdecl GetPendingBufferCount() const noexcept;
 
         const WAVEFORMATEX* __cdecl GetFormat() const noexcept;
+
+        unsigned int __cdecl GetChannelCount() const noexcept;
 
     private:
         // Private implementation.

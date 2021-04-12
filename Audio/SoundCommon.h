@@ -63,14 +63,19 @@ namespace DirectX
 
 
     // Helpers for creating various wave format structures
-    void CreateIntegerPCM(_Out_ WAVEFORMATEX* wfx, int sampleRate, int channels, int sampleBits) noexcept;
-    void CreateFloatPCM(_Out_ WAVEFORMATEX* wfx, int sampleRate, int channels) noexcept;
-    void CreateADPCM(_Out_writes_bytes_(wfxSize) WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int samplesPerBlock) noexcept(false);
+    void CreateIntegerPCM(_Out_ WAVEFORMATEX* wfx,
+        int sampleRate, int channels, int sampleBits) noexcept;
+    void CreateFloatPCM(_Out_ WAVEFORMATEX* wfx,
+        int sampleRate, int channels) noexcept;
+    void CreateADPCM(_Out_writes_bytes_(wfxSize) WAVEFORMATEX* wfx, size_t wfxSize,
+        int sampleRate, int channels, int samplesPerBlock) noexcept(false);
 #ifdef DIRECTX_ENABLE_XWMA
-    void CreateXWMA(_Out_ WAVEFORMATEX* wfx, int sampleRate, int channels, int blockAlign, int avgBytes, bool wma3) noexcept;
+    void CreateXWMA(_Out_ WAVEFORMATEX* wfx,
+        int sampleRate, int channels, int blockAlign, int avgBytes, bool wma3) noexcept;
 #endif
 #ifdef DIRECTX_ENABLE_XMA2
-    void CreateXMA2(_Out_writes_bytes_(wfxSize) WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int bytesPerBlock, int blockCount, int samplesEncoded) noexcept(false);
+    void CreateXMA2(_Out_writes_bytes_(wfxSize) WAVEFORMATEX* wfx, size_t wfxSize,
+        int sampleRate, int channels, int bytesPerBlock, int blockCount, int samplesEncoded) noexcept(false);
 #endif
 
     // Helper for computing pan volume matrix
@@ -208,7 +213,7 @@ namespace DirectX
             }
         }
 
-        void Pause() noexcept 
+        void Pause() noexcept
         {
             if (voice && state == PLAYING)
             {
@@ -264,7 +269,7 @@ namespace DirectX
 
         void SetPan(float pan);
 
-        void Apply3D(const AudioListener& listener, const AudioEmitter& emitter, bool rhcoords);
+        void Apply3D(const X3DAUDIO_LISTENER& listener, const X3DAUDIO_EMITTER& emitter, bool rhcoords);
 
         SoundState GetState(bool autostop) noexcept
         {
@@ -292,6 +297,11 @@ namespace DirectX
             XAUDIO2_VOICE_STATE xstate;
             voice->GetState(&xstate, XAUDIO2_VOICE_NOSAMPLESPLAYED);
             return static_cast<int>(xstate.BuffersQueued);
+        }
+
+        unsigned int GetChannelCount() const noexcept
+        {
+            return mDSPSettings.SrcChannelCount;
         }
 
         void OnCriticalError() noexcept

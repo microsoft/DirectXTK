@@ -317,7 +317,7 @@ void DynamicSoundEffectInstance::SetPan(float pan)
 }
 
 
-void DynamicSoundEffectInstance::Apply3D(const AudioListener& listener, const AudioEmitter& emitter, bool rhcoords)
+void DynamicSoundEffectInstance::Apply3D(const X3DAUDIO_LISTENER& listener, const X3DAUDIO_EMITTER& emitter, bool rhcoords)
 {
     pImpl->mBase.Apply3D(listener, emitter, rhcoords);
 }
@@ -378,6 +378,12 @@ size_t DynamicSoundEffectInstance::GetSampleSizeInBytes(uint64_t duration) const
 int DynamicSoundEffectInstance::GetPendingBufferCount() const noexcept
 {
     return pImpl->mBase.GetPendingBufferCount();
+}
+
+
+unsigned int DynamicSoundEffectInstance::GetChannelCount() const noexcept
+{
+    return pImpl->mBase.GetChannelCount();
 }
 
 
