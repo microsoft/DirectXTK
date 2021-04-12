@@ -316,7 +316,7 @@ void SoundEffectInstance::SetPan(float pan)
 }
 
 
-void SoundEffectInstance::Apply3D(const AudioListener& listener, const AudioEmitter& emitter, bool rhcoords)
+void SoundEffectInstance::Apply3D(const X3DAUDIO_LISTENER& listener, const X3DAUDIO_EMITTER& emitter, bool rhcoords)
 {
     pImpl->mBase.Apply3D(listener, emitter, rhcoords);
 }
@@ -332,6 +332,12 @@ bool SoundEffectInstance::IsLooped() const noexcept
 SoundState SoundEffectInstance::GetState() noexcept
 {
     return pImpl->mBase.GetState(true);
+}
+
+
+unsigned int SoundEffectInstance::GetChannelCount() const noexcept
+{
+    return pImpl->mBase.GetChannelCount();
 }
 
 

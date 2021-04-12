@@ -709,7 +709,7 @@ void SoundEffectInstanceBase::SetPan(float pan)
 }
 
 
-void SoundEffectInstanceBase::Apply3D(const AudioListener& listener, const AudioEmitter& emitter, bool rhcoords)
+void SoundEffectInstanceBase::Apply3D(const X3DAUDIO_LISTENER& listener, const X3DAUDIO_EMITTER& emitter, bool rhcoords)
 {
     if (!voice)
         return;

@@ -823,7 +823,7 @@ void SoundStreamInstance::SetPan(float pan)
 }
 
 
-void SoundStreamInstance::Apply3D(const AudioListener& listener, const AudioEmitter& emitter, bool rhcoords)
+void SoundStreamInstance::Apply3D(const X3DAUDIO_LISTENER& listener, const X3DAUDIO_EMITTER& emitter, bool rhcoords)
 {
     pImpl->mBase.Apply3D(listener, emitter, rhcoords);
 }
@@ -844,6 +844,12 @@ SoundState SoundStreamInstance::GetState() noexcept
         pImpl->mPlaying = false;
     }
     return state;
+}
+
+
+unsigned int SoundStreamInstance::GetChannelCount() const noexcept
+{
+    return pImpl->mBase.GetChannelCount();
 }
 
 

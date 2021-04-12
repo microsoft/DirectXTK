@@ -264,7 +264,7 @@ namespace DirectX
 
         void SetPan(float pan);
 
-        void Apply3D(const AudioListener& listener, const AudioEmitter& emitter, bool rhcoords);
+        void Apply3D(const X3DAUDIO_LISTENER& listener, const X3DAUDIO_EMITTER& emitter, bool rhcoords);
 
         SoundState GetState(bool autostop) noexcept
         {
@@ -292,6 +292,11 @@ namespace DirectX
             XAUDIO2_VOICE_STATE xstate;
             voice->GetState(&xstate, XAUDIO2_VOICE_NOSAMPLESPLAYED);
             return static_cast<int>(xstate.BuffersQueued);
+        }
+
+        unsigned int GetChannelCount() const noexcept
+        {
+            return mDSPSettings.SrcChannelCount;
         }
 
         void OnCriticalError() noexcept
