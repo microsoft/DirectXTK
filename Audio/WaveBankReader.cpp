@@ -155,7 +155,7 @@ namespace
 
                 case TAG_WMA:
                 {
-                    static const uint32_t aWMABlockAlign[] =
+                    static const uint32_t aWMABlockAlign[17] =
                     {
                         929,
                         1487,
@@ -177,7 +177,7 @@ namespace
                     };
 
                     uint32_t dwBlockAlignIndex = wBlockAlign & 0x1F;
-                    if (dwBlockAlignIndex < std::size(aWMABlockAlign))
+                    if (dwBlockAlignIndex < 17)
                         return aWMABlockAlign[dwBlockAlignIndex];
                 }
                 break;
@@ -205,7 +205,7 @@ namespace
 
                 case TAG_WMA:
                 {
-                    static const uint32_t aWMAAvgBytesPerSec[] =
+                    static const uint32_t aWMAAvgBytesPerSec[7] =
                     {
                         12000,
                         24000,
@@ -218,7 +218,7 @@ namespace
                     // bitrate = entry * 8
 
                     uint32_t dwBytesPerSecIndex = wBlockAlign >> 5;
-                    if (dwBytesPerSecIndex < std::size(aWMAAvgBytesPerSec))
+                    if (dwBytesPerSecIndex < 7)
                         return aWMAAvgBytesPerSec[dwBytesPerSecIndex];
                 }
                 break;
