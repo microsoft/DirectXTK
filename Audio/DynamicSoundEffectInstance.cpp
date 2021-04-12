@@ -387,7 +387,6 @@ unsigned int DynamicSoundEffectInstance::GetChannelCount() const noexcept
 }
 
 
-
 const WAVEFORMATEX* DynamicSoundEffectInstance::GetFormat() const noexcept
 {
     return pImpl->GetFormat();
