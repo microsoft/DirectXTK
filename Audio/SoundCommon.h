@@ -213,7 +213,7 @@ namespace DirectX
             }
         }
 
-        void Pause() noexcept 
+        void Pause() noexcept
         {
             if (voice && state == PLAYING)
             {
