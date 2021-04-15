@@ -25,7 +25,11 @@
 
 #include <functional>
 
+#ifdef NTDDI_WIN10_FE
+#include <ocidl.h>
+#else
 #include <OCIdl.h>
+#endif
 
 #pragma comment(lib,"uuid.lib")
 
