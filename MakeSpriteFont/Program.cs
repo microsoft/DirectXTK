@@ -76,9 +76,9 @@ namespace MakeSpriteFont
                 bitmap = GlyphPacker.ArrangeGlyphsFast(glyphs);
             }
             else if (options.TetrisPack)
-			{
+            {
                 bitmap = GlyphPacker.ArrangeGlyphsTetris(glyphs);
-			}
+            }
             else
             {
                 bitmap = GlyphPacker.ArrangeGlyphs(glyphs);
