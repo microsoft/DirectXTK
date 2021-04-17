@@ -56,9 +56,9 @@ namespace MakeSpriteFont
 
                     if (count == 500)
                     {
-                        if (!options.FastPack)
+                        if (!options.FastPack && !options.TetrisPack)
                         {
-                            Console.WriteLine("WARNING: capturing a large font. This may take a long time to complete and could result in too large a texture. Consider using /FastPack.");
+                            Console.WriteLine("WARNING: capturing a large font. This may take a long time to complete and could result in too large a texture. Consider using /FastPack or /TetrisPack.");
                         }
                         Console.Write(".");
                     }

@@ -89,7 +89,11 @@ namespace MakeSpriteFont
         public FeatureLevel FeatureLevel = FeatureLevel.FL9_1;
 
 
-        // For large fonts, the default tightest pack is too slow
+        // For large fonts, the default tightest pack is too slow.
         public bool FastPack = false;
+
+
+        // For medium-sized fonts, a compromise between file size and packing time.
+        public bool TetrisPack = false;
     }
 }

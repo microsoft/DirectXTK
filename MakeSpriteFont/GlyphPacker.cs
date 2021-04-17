@@ -69,6 +69,78 @@ namespace MakeSpriteFont
             return CopyGlyphsToOutput(glyphs, outputWidth, outputHeight);
         }
 
+        public static Bitmap ArrangeGlyphsTetris(Glyph[] sourceGlyphs)
+        {
+            // Build up a list of all the glyphs needing to be arranged.
+            List<ArrangedGlyph> glyphs = new List<ArrangedGlyph>();
+
+            int largestHeight = 1;
+
+            for (int i = 0; i < sourceGlyphs.Length; i++)
+            {
+                ArrangedGlyph glyph = new ArrangedGlyph();
+
+                glyph.Source = sourceGlyphs[i];
+
+                // Leave a one pixel border around every glyph in the output bitmap.
+                glyph.Width = sourceGlyphs[i].Subrect.Width + 2;
+                glyph.Height = sourceGlyphs[i].Subrect.Height + 2;
+
+                if (glyph.Height > largestHeight)
+                    largestHeight = glyph.Height;
+
+                glyphs.Add(glyph);
+            }
+
+            // Sort so the largest glyphs get arranged first.
+            glyphs.Sort(CompareGlyphSizes);
+
+            // Work out how big the output bitmap should be.
+            int outputWidth = GuessOutputWidth(sourceGlyphs);
+            int outputHeight = 0;
+
+            // Choose positions for each glyph, one at a time.
+            int minY = 0;
+            int minYWidth = 1;
+            int minYHeight = 1;
+            for (int i = 0; i < glyphs.Count; i++)
+            {
+                if (i != 0)
+                {
+                    if ((i % 500) == 0)
+                    {
+                        Console.Write(".");
+                    }
+
+                    if (glyphs[i].Width != minYWidth || glyphs[i].Height != minYHeight)
+                    {
+                        minY = 0;
+                        minYWidth = glyphs[i].Width;
+                        minYHeight = glyphs[i].Height;
+                    }
+                }
+
+                PositionGlyph(glyphs, i, outputWidth, minY);
+
+                outputHeight = Math.Max(outputHeight, glyphs[i].Y + glyphs[i].Height);
+
+                while (IsLineFilled(glyphs, minY, outputWidth - minYWidth, minYHeight))
+                {
+                    minY++;
+                }
+            }
+
+            if (glyphs.Count >= 500)
+            {
+                Console.WriteLine();
+            }
+
+            // Create the merged output bitmap.
+            outputHeight = MakeValidTextureSize(outputHeight, false);
+
+            return CopyGlyphsToOutput(glyphs, outputWidth, outputHeight);
+        }
+
         public static Bitmap ArrangeGlyphs(Glyph[] sourceGlyphs)
         {
             // Build up a list of all the glyphs needing to be arranged.
@@ -97,7 +169,7 @@ namespace MakeSpriteFont
             // Choose positions for each glyph, one at a time.
             for (int i = 0; i < glyphs.Count; i++)
             {
-                if (i > 0 && (i % 500) == 0)
+                if (i != 0 && (i % 500) == 0)
                 {
                     Console.Write(".");
                 }
@@ -194,6 +266,36 @@ namespace MakeSpriteFont
             }
         }
 
+        static void PositionGlyph(List<ArrangedGlyph> glyphs, int index, int outputWidth, int minY)
+        {
+            int x = 0;
+            int y = minY;
+
+            while (true)
+            {
+                // Is this position free for us to use?
+                int intersects = FindIntersectingGlyph(glyphs, index, x, y, minY);
+
+                if (intersects < 0)
+                {
+                    glyphs[index].X = x;
+                    glyphs[index].Y = y;
+
+                    return;
+                }
+
+                // Skip past the existing glyph that we collided with.
+                x = glyphs[intersects].X + glyphs[intersects].Width;
+
+                // If we ran out of room to move to the right, try the next line down instead.
+                if (x + glyphs[index].Width > outputWidth)
+                {
+                    x = 0;
+                    y++;
+                }
+            }
+        }
+
 
         // Checks if a proposed glyph position collides with anything that we already arranged.
         static int FindIntersectingGlyph(List<ArrangedGlyph> glyphs, int index, int x, int y)
@@ -203,22 +305,65 @@ namespace MakeSpriteFont
 
             for (int i = 0; i < index; i++)
             {
-                if (glyphs[i].X >= x + w)
-                    continue;
-
                 if (glyphs[i].X + glyphs[i].Width <= x)
                     continue;
 
-                if (glyphs[i].Y >= y + h)
+                if (glyphs[i].Y + glyphs[i].Height  <= y)
                     continue;
 
-                if (glyphs[i].Y + glyphs[i].Height <= y)
+                if (glyphs[i].X >= x + w)
+                    continue;
+
+                if (glyphs[i].Y >= y + h)
                     continue;
 
                 return i;
             }
 
             return -1;
+        }
+
+        static int FindIntersectingGlyph(List<ArrangedGlyph> glyphs, int index, int x, int y, int minY)
+        {
+            int w = glyphs[index].Width;
+            int h = glyphs[index].Height;
+
+            for (int i = 0; i < index; i++)
+            {
+                if (glyphs[i].X + glyphs[i].Width <= x)
+                    continue;
+
+                int maxY = glyphs[i].Y + glyphs[i].Height;
+                if (maxY <= minY || maxY <= y)
+                    continue;
+
+                if (glyphs[i].X >= x + w)
+                    continue;
+
+                if (glyphs[i].Y >= y + h)
+                    continue;
+
+                return i;
+            }
+
+            return -1;
+        }
+
+
+        static bool IsLineFilled(List<ArrangedGlyph> glyphs, int y, int width, int height)
+        {
+            for (int i = 0; i < glyphs.Count; i++)
+            {
+                if (glyphs[i].Y >= y + height)
+                    continue;
+
+                if (glyphs[i].Y + glyphs[i].Height <= y)
+                    continue;
+
+                width -= glyphs[i].Width;
+            }
+
+            return width <= 0;
         }
 
 

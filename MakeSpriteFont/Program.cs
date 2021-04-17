@@ -23,6 +23,13 @@ namespace MakeSpriteFont
             if (!parser.ParseCommandLine(args))
                 return 1;
 
+            // Ensure arguments are logical.
+            if(options.FastPack && options.TetrisPack)
+            {
+                Console.Error.WriteLine("/FastPack and /TetrisPack are mutually exclusive.");
+                return 1;
+            }
+
             try
             {
                 // Convert the font.
@@ -68,6 +75,10 @@ namespace MakeSpriteFont
             {
                 bitmap = GlyphPacker.ArrangeGlyphsFast(glyphs);
             }
+            else if (options.TetrisPack)
+			{
+                bitmap = GlyphPacker.ArrangeGlyphsTetris(glyphs);
+			}
             else
             {
                 bitmap = GlyphPacker.ArrangeGlyphs(glyphs);
