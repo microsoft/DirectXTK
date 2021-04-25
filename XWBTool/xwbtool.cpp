@@ -772,7 +772,7 @@ namespace
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
-enum OPTIONS
+enum OPTIONS : uint32_t
 {
     OPT_RECURSIVE = 1,
     OPT_STREAMING,
@@ -788,7 +788,7 @@ enum OPTIONS
     OPT_MAX
 };
 
-static_assert(OPT_MAX <= 32, "dwOptions is a DWORD bitfield");
+static_assert(OPT_MAX <= 32, "dwOptions is a unsigned int bitfield");
 
 struct SConversion
 {
@@ -797,8 +797,8 @@ struct SConversion
 
 struct SValue
 {
-    LPCWSTR pName;
-    DWORD dwValue;
+    const wchar_t*  name;
+    uint32_t        value;
 };
 
 struct WaveFile
@@ -866,12 +866,12 @@ namespace
 #pragma prefast(disable : 26018, "Only used with static internal arrays")
 #endif
 
-    DWORD LookupByName(const wchar_t *pName, const SValue *pArray)
+    uint32_t LookupByName(const wchar_t *pName, const SValue *pArray)
     {
-        while (pArray->pName)
+        while (pArray->name)
         {
-            if (!_wcsicmp(pName, pArray->pName))
-                return pArray->dwValue;
+            if (!_wcsicmp(pName, pArray->name))
+                return pArray->value;
 
             pArray++;
         }
@@ -1112,7 +1112,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     ScopedHandle hFile;
 
     // Process command line
-    DWORD dwOptions = 0;
+    uint32_t dwOptions = 0;
     std::list<SConversion> conversion;
 
     for (int iArg = 1; iArg < argc; iArg++)
@@ -1129,7 +1129,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
             if (*pValue)
                 *pValue++ = 0;
 
-            DWORD dwOption = LookupByName(pArg, g_pOptions);
+            uint32_t dwOption = LookupByName(pArg, g_pOptions);
 
             if (!dwOption || (dwOptions & (1 << dwOption)))
             {
