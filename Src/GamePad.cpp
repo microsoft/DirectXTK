@@ -1651,6 +1651,7 @@ void GamePad::RegisterEvents(HANDLE ctrlChanged) noexcept
     pImpl->mCtrlChanged = (!ctrlChanged) ? INVALID_HANDLE_VALUE : ctrlChanged;
 }
 
+_Success_(return != false)
 bool GamePad::GetDevice(int player, _Outptr_ IGameInputDevice** device) noexcept
 {
     return pImpl->GetDevice(player, device);
