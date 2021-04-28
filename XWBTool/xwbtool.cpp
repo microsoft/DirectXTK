@@ -37,6 +37,7 @@
 #include <fstream>
 #include <iterator>
 #include <list>
+#include <locale>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -1109,7 +1110,8 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     wchar_t szOutputFile[MAX_PATH] = {};
     wchar_t szHeaderFile[MAX_PATH] = {};
 
-    ScopedHandle hFile;
+    // Set locale for output since GetErrorDesc can get localized strings.
+    std::locale::global(std::locale(""));
 
     // Process command line
     uint32_t dwOptions = 0;
@@ -1535,7 +1537,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     wprintf(L"writing %ls%ls wavebank %ls w/ %zu entries\n", (compact) ? L"compact " : L"", (dwOptions & (1 << OPT_STREAMING)) ? L"streaming" : L"in-memory", szOutputFile, waves.size());
     fflush(stdout);
 
-    hFile.reset(safe_handle(CreateFileW(szOutputFile, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr)));
+    ScopedHandle hFile(safe_handle(CreateFileW(szOutputFile, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr)));
     if (!hFile)
     {
         wprintf(L"ERROR: Failed opening output file %ls, %lu\n", szOutputFile, GetLastError());
