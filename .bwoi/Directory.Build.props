@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <ExtractedFolder Condition="'$(ExtractedFolder)'==''">C:\xtracted\</ExtractedFolder>
+    <ExtractedFolder Condition="!HasTrailingSlash('$(ExtractedFolder)')">$(ExtractedFolder)\</ExtractedFolder>
+  </PropertyGroup>
+
+  <Import Condition="'$(WSDKEnableBWOI)' == 'true'"
+          Project="$(ExtractedFolder)SDK\Microsoft.Windows.SDK.cpp\build\Microsoft.Windows.SDK.cpp.props" />
+
+  <Import Condition="'$(WSDKEnableBWOI)' == 'true' and $(Platform.Contains('x64'))"
+          Project="$(ExtractedFolder)SDK\Microsoft.Windows.SDK.cpp.x64\build\native\Microsoft.Windows.SDK.cpp.x64.props" />
+
+  <Import Condition="'$(WSDKEnableBWOI)' == 'true' and '$(Platform)' == 'Win32'"
+          Project="$(ExtractedFolder)SDK\Microsoft.Windows.SDK.cpp.x86\build\native\Microsoft.Windows.SDK.cpp.x86.props" />
+
+  <Import Condition="'$(WSDKEnableBWOI)' == 'true' and '$(Platform)' == 'ARM'"
+          Project="$(ExtractedFolder)SDK\Microsoft.Windows.SDK.cpp.arm\build\native\Microsoft.Windows.SDK.cpp.arm.props" />
+
+  <Import Condition="'$(WSDKEnableBWOI)' == 'true' and '$(Platform)' == 'ARM64'"
+          Project="$(ExtractedFolder)SDK\Microsoft.Windows.SDK.cpp.arm64\build\native\Microsoft.Windows.SDK.cpp.arm64.props" />
+
+</Project>
