@@ -670,13 +670,13 @@ bool DirectX::ComputePan(float pan, unsigned int channels, float* matrix) noexce
     if (channels == 1)
     {
         // Mono panning
-        float left = (pan >= 0) ? (1.f - pan) : 1.f;
+        float left = 1.f - pan;
         left = std::min<float>(1.f, left);
-        left = std::max<float>(-1.f, left);
+        left = std::max<float>(0.f, left);
 
-        float right = (pan <= 0) ? (-pan - 1.f) : 1.f;
+        float right = pan + 1.f;
         right = std::min<float>(1.f, right);
-        right = std::max<float>(-1.f, right);
+        right = std::max<float>(0.f, right);
 
         matrix[0] = left;
         matrix[1] = right;
