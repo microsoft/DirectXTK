@@ -13,9 +13,9 @@ project (DirectXTK
 
 option(BUILD_TOOLS "Build XWBTool" ON)
 
-# TODO: How to build for XAudio2Redist with cmake?
 option(BUILD_XAUDIO_WIN10 "Build for XAudio 2.9" OFF)
 option(BUILD_XAUDIO_WIN8 "Build for XAudio 2.8" ON)
+option(BUILD_XAUDIO_WIN7 "Build for XAudio2Redist" OFF)
 
 option(ENABLE_CODE_ANALYSIS "Use Static Code Analysis on build" OFF)
 
@@ -127,7 +127,7 @@ set(SHADER_SOURCES
     Src/Shaders/ToneMap.fx
     Src/Shaders/Utilities.fxh)
 
-if((BUILD_XAUDIO_WIN10) OR (BUILD_XAUDIO_WIN8))
+if((BUILD_XAUDIO_WIN10) OR (BUILD_XAUDIO_WIN8) OR (BUILD_XAUDIO_WIN7))
     set(LIBRARY_HEADERS ${LIBRARY_HEADERS}
         Inc/Audio.h)
 
@@ -172,7 +172,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Inc>
   $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
 
-if((BUILD_XAUDIO_WIN10) OR (BUILD_XAUDIO_WIN8))
+if((BUILD_XAUDIO_WIN10) OR (BUILD_XAUDIO_WIN8) OR (BUILD_XAUDIO_WIN7))
     target_include_directories(${PROJECT_NAME} PRIVATE Src Audio)
 endif()
 
@@ -191,6 +191,17 @@ if (VCPKG_TOOLCHAIN)
     message("INFO: Using VCPKG for DirectXMath.")
     find_package(directxmath CONFIG REQUIRED)
     target_link_libraries(${PROJECT_NAME} PRIVATE Microsoft::DirectXMath)
+elseif(BUILD_XAUDIO_WIN7)
+    message(FATAL_ERROR "VCPKG is required to use XAudio2Redist for DirectX Tool Kit for Audio on Windows 7")
+endif()
+
+if (BUILD_XAUDIO_WIN7)
+    message("INFO: Using XAudio2Redist for DirectX Tool Kit for Audio on Windows 7.")
+    if (NOT EXISTS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include/xaudio2redist")
+        message(FATAL_ERROR "VCPKG port 'xaudio2redist' required for DirectX Tool Kit for Audio on Windows 7")
+    endif()
+    target_include_directories(${PROJECT_NAME} PRIVATE ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include/xaudio2redist)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE USING_XAUDIO2_REDIST)
 endif()
 
 #--- Package
