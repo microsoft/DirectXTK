@@ -6,6 +6,16 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### June 9, 2021
+* DirectX Tool Kit for Audio updates:
+  * Fixed mono source panning
+  * Added ``EnableDefaultMultiChannel`` helper to AudioEmitter for multi-channel source setup
+  * Added ``GetChannelCount`` accessor to SoundEffectInstance and SoundStreamInstance
+  * ``Apply3D`` can now use X3DAUDIO_LISTENER and X3DAUDIO_EMITTER directly or the library helper structs.
+* xwbtool: improved ``-flist`` switch to support wildcards and file exclusions
+* CMake updated to support building with XAudio2Redist
+* Minor code review
+
 ### April 6, 2021
 * DDSTextureLoader reader updated to accept nVidia Texture Tool v1 single-channel and dual-channel files marked as RGB instead of LUMINANCE
 * Minor code and project cleanup

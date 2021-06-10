@@ -3,7 +3,7 @@
 
 cmake_minimum_required (VERSION 3.11)
 
-set(DIRECTXTK_VERSION 1.7.6)
+set(DIRECTXTK_VERSION 1.7.7)
 
 project (DirectXTK
   VERSION ${DIRECTXTK_VERSION}
