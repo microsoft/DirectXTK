@@ -1008,7 +1008,7 @@ namespace DirectX
             return count;
         }
 
-        inline void FitPowerOf2(UINT origx, UINT origy, UINT& targetx, UINT& targety, size_t maxsize)
+        inline void FitPowerOf2(UINT origx, UINT origy, _Inout_ UINT& targetx, _Inout_ UINT& targety, size_t maxsize)
         {
             float origAR = float(origx) / float(origy);
 
