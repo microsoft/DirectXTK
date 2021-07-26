@@ -452,9 +452,9 @@ void ToneMapPostProcess::SetColorRotation(ColorPrimaryRotation value)
 
     switch (value)
     {
-    case DCI_P3:         memcpy(&pImpl->constants.colorRotation, c_fromP3to2020, c_rotationSize); break;
-    case DisplayP3:      memcpy(&pImpl->constants.colorRotation, c_from709toDisplayP3, c_rotationSize); break;
-    default:             memcpy(&pImpl->constants.colorRotation, c_from709to2020, c_rotationSize); break;
+    case DCI_P3:         memcpy(pImpl->constants.colorRotation, c_fromP3to2020, c_rotationSize); break;
+    case DisplayP3:      memcpy(pImpl->constants.colorRotation, c_from709toDisplayP3, c_rotationSize); break;
+    default:             memcpy(pImpl->constants.colorRotation, c_from709to2020, c_rotationSize); break;
     }
 
     pImpl->SetDirtyFlag();
