@@ -169,6 +169,14 @@ namespace DirectX
             TransferFunction_Max
         };
 
+        // Color Rotation Transform for HDR10
+        enum ColorPrimaryRotation : unsigned int
+        {
+            Default,            // Rec.709 to Rec.2020
+            DCI_P3,             // DCI-P3 to Rec.2020
+            DisplayP3,          // Rec.709 to Display-P3
+        };
+
         explicit ToneMapPostProcess(_In_ ID3D11Device* device);
         ToneMapPostProcess(ToneMapPostProcess&& moveFrom) noexcept;
         ToneMapPostProcess& operator= (ToneMapPostProcess&& moveFrom) noexcept;
@@ -195,11 +203,15 @@ namespace DirectX
         // Properties
         void __cdecl SetHDRSourceTexture(_In_opt_ ID3D11ShaderResourceView* value);
 
+        // Sets the Color Rotation Transform for HDR10 signal output
+        void __cdecl SetColorRotation(ColorPrimaryRotation value);
+        void XM_CALLCONV SetColorRotation(FXMMATRIX value);
+
         // Sets exposure value for LDR tonemap operators
-        void SetExposure(float exposureValue);
+        void __cdecl SetExposure(float exposureValue);
 
         // Sets ST.2084 parameter for how bright white should be in nits
-        void SetST2084Parameter(float paperWhiteNits);
+        void __cdecl SetST2084Parameter(float paperWhiteNits);
 
     private:
         // Private implementation.

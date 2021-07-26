@@ -39,9 +39,32 @@ namespace
         // linearExposure is .x
         // paperWhiteNits is .y
         XMVECTOR parameters;
+        XMVECTOR colorRotation[3];
     };
 
     static_assert((sizeof(ToneMapConstants) % 16) == 0, "CB size not padded correctly");
+
+    // Built-in color rotation matricies (pretransposed)
+    constexpr float c_from709to2020[12] = // Rec.709 color primaries into Rec.2020
+    {
+          0.6274040f, 0.3292820f, 0.0433136f, 0.f,
+          0.0690970f, 0.9195400f, 0.0113612f, 0.f,
+          0.0163916f, 0.0880132f, 0.8955950f, 0.f,
+    };
+
+    constexpr float c_fromP3to2020[12] = // DCI-P3 color primaries into Rec.2020
+    {
+           0.753845f,  0.198593f,  0.047562f, 0.f,
+          0.0457456f,  0.941777f, 0.0124772f, 0.f,
+        -0.00121055f, 0.0176041f,  0.983607f, 0.f,
+    };
+
+    constexpr float c_from709toDisplayP3[12] = // DCI-P3 with a D65 white point
+    {
+        0.822461969f, 0.1775380f,        0.f, 0.f,
+        0.033194199f, 0.9668058f,        0.f, 0.f,
+        0.017082631f, 0.0723974f, 0.9105199f, 0.f,
+    };
 }
 
 // Include the precompiled shader code.
@@ -418,6 +441,31 @@ void ToneMapPostProcess::SetMRTOutput(bool value)
 void ToneMapPostProcess::SetHDRSourceTexture(_In_opt_ ID3D11ShaderResourceView* value)
 {
     pImpl->hdrTexture = value;
+}
+
+
+void ToneMapPostProcess::SetColorRotation(ColorPrimaryRotation value)
+{
+    constexpr size_t c_rotationSize = sizeof(float) * 12;
+
+    switch (value)
+    {
+    case DCI_P3:         memcpy(&pImpl->constants.colorRotation, c_fromP3to2020, c_rotationSize); break;
+    case DisplayP3:      memcpy(&pImpl->constants.colorRotation, c_from709toDisplayP3, c_rotationSize); break;
+    default:             memcpy(&pImpl->constants.colorRotation, c_from709to2020, c_rotationSize); break;
+    }
+
+    pImpl->SetDirtyFlag();
+}
+
+
+void ToneMapPostProcess::SetColorRotation(FXMMATRIX value)
+{
+    XMMATRIX transpose = XMMatrixTranspose(value);
+    pImpl->constants.colorRotation[0] = transpose.r[0];
+    pImpl->constants.colorRotation[1] = transpose.r[1];
+    pImpl->constants.colorRotation[2] = transpose.r[2];
+    pImpl->SetDirtyFlag();
 }
 
 

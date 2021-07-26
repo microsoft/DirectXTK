@@ -9,8 +9,9 @@ sampler Sampler : register(s0);
 
 cbuffer Parameters : register(b0)
 {
-    float linearExposure : packoffset(c0.x);
-    float paperWhiteNits : packoffset(c0.y);
+    float linearExposure    : packoffset(c0.x);
+    float paperWhiteNits    : packoffset(c0.y);
+    float4x3 colorRotation  : packoffset(c1);
 };
 
 
@@ -116,7 +117,7 @@ float4 PSACESFilmic_SRGB(VSInputTx pin) : SV_Target0
 float3 HDR10(float3 color)
 {
     // Rotate from Rec.709 to Rec.2020 primaries
-    float3 rgb = mul(from709to2020, color);
+    float3 rgb = mul((float3x3)colorRotation, color);
 
     // ST.2084 spec defines max nits as 10,000 nits
     float3 normalized = rgb * paperWhiteNits / 10000.f;
