@@ -289,6 +289,8 @@ ToneMapPostProcess::Impl::Impl(_In_ ID3D11Device* device)
         throw std::runtime_error("ToneMapPostProcess requires Feature Level 10.0 or later");
     }
 
+    memcpy(constants.colorRotation, c_from709to2020, sizeof(float) * 12);
+
     SetDebugObjectName(mConstantBuffer.GetBuffer(), "ToneMapPostProcess");
 }
 
