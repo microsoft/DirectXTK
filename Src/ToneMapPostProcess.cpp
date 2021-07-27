@@ -44,22 +44,24 @@ namespace
 
     static_assert((sizeof(ToneMapConstants) % 16) == 0, "CB size not padded correctly");
 
-    // Built-in color rotation matrices
-    constexpr float c_from709to2020[12] = // Rec.709 color primaries into Rec.2020
+    // HDTV to UHDTV (Rec.709 color primaries into Rec.2020)
+    constexpr float c_from709to2020[12] =
     {
           0.6274040f, 0.3292820f, 0.0433136f, 0.f,
           0.0690970f, 0.9195400f, 0.0113612f, 0.f,
           0.0163916f, 0.0880132f, 0.8955950f, 0.f,
     };
 
-    constexpr float c_fromDisplayP3to2020[12] = // DCI-P3-D65 color primaries into Rec.2020
+    // DCI-P3-D65 https://en.wikipedia.org/wiki/DCI-P3 to UHDTV (DCI-P3-D65 color primaries into Rec.2020)
+    constexpr float c_fromP3D65to2020[12] =
     {
            0.753845f,  0.198593f,  0.047562f, 0.f,
           0.0457456f,  0.941777f, 0.0124772f, 0.f,
         -0.00121055f, 0.0176041f,  0.983607f, 0.f,
     };
 
-    constexpr float c_from709toDisplayP3[12] = // Rec.709 color primaries into DCI-P3-D65
+    // HDTV to DCI-P3-D65 (a.k.a. Display P3 or P3D65)
+    constexpr float c_from709toP3D65[12] =
     {
         0.822461969f, 0.1775380f,        0.f, 0.f,
         0.033194199f, 0.9668058f,        0.f, 0.f,
@@ -289,7 +291,7 @@ ToneMapPostProcess::Impl::Impl(_In_ ID3D11Device* device)
         throw std::runtime_error("ToneMapPostProcess requires Feature Level 10.0 or later");
     }
 
-    memcpy(constants.colorRotation, c_from709to2020, sizeof(float) * 12);
+    memcpy(constants.colorRotation, c_from709to2020, std::size(c_from709to2020));
 
     SetDebugObjectName(mConstantBuffer.GetBuffer(), "ToneMapPostProcess");
 }
@@ -448,13 +450,11 @@ void ToneMapPostProcess::SetHDRSourceTexture(_In_opt_ ID3D11ShaderResourceView* 
 
 void ToneMapPostProcess::SetColorRotation(ColorPrimaryRotation value)
 {
-    constexpr size_t c_rotationSize = sizeof(float) * 12;
-
     switch (value)
     {
-    case DCI_P3_D65:        memcpy(pImpl->constants.colorRotation, c_fromDisplayP3to2020, c_rotationSize); break;
-    case DisplayP3Output:   memcpy(pImpl->constants.colorRotation, c_from709toDisplayP3, c_rotationSize); break;
-    default:                memcpy(pImpl->constants.colorRotation, c_from709to2020, c_rotationSize); break;
+    case DCI_P3_D65_to_UHDTV:   memcpy(pImpl->constants.colorRotation, c_fromP3D65to2020, std::size(c_fromP3D65to2020)); break;
+    case HDTV_to_DCI_P3_D65:    memcpy(pImpl->constants.colorRotation, c_from709toP3D65, std::size(c_from709toP3D65)); break;
+    default:                    memcpy(pImpl->constants.colorRotation, c_from709to2020, std::size(c_from709to2020)); break;
     }
 
     pImpl->SetDirtyFlag();
