@@ -291,7 +291,7 @@ ToneMapPostProcess::Impl::Impl(_In_ ID3D11Device* device)
         throw std::runtime_error("ToneMapPostProcess requires Feature Level 10.0 or later");
     }
 
-    memcpy(constants.colorRotation, c_from709to2020, std::size(c_from709to2020));
+    memcpy(constants.colorRotation, c_from709to2020, sizeof(c_from709to2020));
 
     SetDebugObjectName(mConstantBuffer.GetBuffer(), "ToneMapPostProcess");
 }
@@ -452,9 +452,9 @@ void ToneMapPostProcess::SetColorRotation(ColorPrimaryRotation value)
 {
     switch (value)
     {
-    case DCI_P3_D65_to_UHDTV:   memcpy(pImpl->constants.colorRotation, c_fromP3D65to2020, std::size(c_fromP3D65to2020)); break;
-    case HDTV_to_DCI_P3_D65:    memcpy(pImpl->constants.colorRotation, c_from709toP3D65, std::size(c_from709toP3D65)); break;
-    default:                    memcpy(pImpl->constants.colorRotation, c_from709to2020, std::size(c_from709to2020)); break;
+    case DCI_P3_D65_to_UHDTV:   memcpy(pImpl->constants.colorRotation, c_fromP3D65to2020, sizeof(c_fromP3D65to2020)); break;
+    case HDTV_to_DCI_P3_D65:    memcpy(pImpl->constants.colorRotation, c_from709toP3D65, sizeof(c_from709toP3D65)); break;
+    default:                    memcpy(pImpl->constants.colorRotation, c_from709to2020, sizeof(c_from709to2020)); break;
     }
 
     pImpl->SetDirtyFlag();
