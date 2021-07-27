@@ -172,9 +172,9 @@ namespace DirectX
         // Color Rotation Transform for HDR10
         enum ColorPrimaryRotation : unsigned int
         {
-            Default,            // Rec.709 to Rec.2020
-            DCI_P3,             // DCI-P3 to Rec.2020
-            DisplayP3,          // Rec.709 to Display-P3
+            RGB_HD,             // Rec.709 to Rec.2020 (the default)
+            DCI_P3_D65,         // DCI-P3-D65 (a.k.a Display-P3) to Rec.2020
+            DisplayP3Output,    // Rec.709 to DCI-P3-D65 (a.k.a Display-P3)
         };
 
         explicit ToneMapPostProcess(_In_ ID3D11Device* device);

@@ -22,15 +22,15 @@ using Microsoft::WRL::ComPtr;
 
 namespace
 {
-    const constexpr int Dirty_ConstantBuffer  = 0x01;
-    const constexpr int Dirty_Parameters      = 0x02;
+    constexpr int Dirty_ConstantBuffer  = 0x01;
+    constexpr int Dirty_Parameters      = 0x02;
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    const constexpr int PixelShaderCount = 15;
-    const constexpr int ShaderPermutationCount = 24;
+    constexpr int PixelShaderCount = 15;
+    constexpr int ShaderPermutationCount = 24;
 #else
-    const constexpr int PixelShaderCount = 9;
-    const constexpr int ShaderPermutationCount = 12;
+    constexpr int PixelShaderCount = 9;
+    constexpr int ShaderPermutationCount = 12;
 #endif
 
     // Constant buffer layout. Must match the shader!
@@ -44,7 +44,7 @@ namespace
 
     static_assert((sizeof(ToneMapConstants) % 16) == 0, "CB size not padded correctly");
 
-    // Built-in color rotation matricies (pretransposed)
+    // Built-in color rotation matrices
     constexpr float c_from709to2020[12] = // Rec.709 color primaries into Rec.2020
     {
           0.6274040f, 0.3292820f, 0.0433136f, 0.f,
@@ -52,14 +52,14 @@ namespace
           0.0163916f, 0.0880132f, 0.8955950f, 0.f,
     };
 
-    constexpr float c_fromP3to2020[12] = // DCI-P3 color primaries into Rec.2020
+    constexpr float c_fromDisplayP3to2020[12] = // DCI-P3-D65 color primaries into Rec.2020
     {
            0.753845f,  0.198593f,  0.047562f, 0.f,
           0.0457456f,  0.941777f, 0.0124772f, 0.f,
         -0.00121055f, 0.0176041f,  0.983607f, 0.f,
     };
 
-    constexpr float c_from709toDisplayP3[12] = // DCI-P3 with a D65 white point
+    constexpr float c_from709toDisplayP3[12] = // Rec.709 color primaries into DCI-P3-D65
     {
         0.822461969f, 0.1775380f,        0.f, 0.f,
         0.033194199f, 0.9668058f,        0.f, 0.f,
@@ -452,9 +452,9 @@ void ToneMapPostProcess::SetColorRotation(ColorPrimaryRotation value)
 
     switch (value)
     {
-    case DCI_P3:         memcpy(pImpl->constants.colorRotation, c_fromP3to2020, c_rotationSize); break;
-    case DisplayP3:      memcpy(pImpl->constants.colorRotation, c_from709toDisplayP3, c_rotationSize); break;
-    default:             memcpy(pImpl->constants.colorRotation, c_from709to2020, c_rotationSize); break;
+    case DCI_P3_D65:        memcpy(pImpl->constants.colorRotation, c_fromDisplayP3to2020, c_rotationSize); break;
+    case DisplayP3Output:   memcpy(pImpl->constants.colorRotation, c_from709toDisplayP3, c_rotationSize); break;
+    default:                memcpy(pImpl->constants.colorRotation, c_from709to2020, c_rotationSize); break;
     }
 
     pImpl->SetDirtyFlag();
