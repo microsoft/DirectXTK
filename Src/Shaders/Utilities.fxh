@@ -102,3 +102,22 @@ float3 ToneMapACESFilmic(float3 x)
     float e = 0.14f;
     return saturate((x*(a*x+b))/(x*(c*x+d)+e));
 }
+
+
+// Instancing
+struct CommonInstancing
+{
+    float4 Position;
+    float3 Normal;
+};
+
+
+CommonInstancing ComputeCommonInstancing(float4 position, float3 normal, float4x3 itransform)
+{
+    CommonInstancing vout;
+
+    vout.Position = float4(mul(position, itransform), position.w);
+    vout.Normal = mul(normal, (float3x3)itransform);
+
+    return vout;
+}

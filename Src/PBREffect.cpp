@@ -44,9 +44,9 @@ struct PBREffectTraits
 {
     using ConstantBufferType = PBREffectConstants;
 
-    static constexpr int VertexShaderCount = 4;
+    static constexpr int VertexShaderCount = 6;
     static constexpr int PixelShaderCount = 5;
-    static constexpr int ShaderPermutationCount = 10;
+    static constexpr int ShaderPermutationCount = 16;
     static constexpr int RootSignatureCount = 1;
 };
 
@@ -67,6 +67,7 @@ public:
 
     bool biasedVertexNormals;
     bool velocityEnabled;
+    bool instancing;
 
     XMVECTOR lightColor[MaxDirectionalLights];
 
@@ -81,8 +82,12 @@ namespace
 {
 #if defined(_XBOX_ONE) && defined(_TITLE)
     #include "Shaders/Compiled/XboxOnePBREffect_VSConstant.inc"
-    #include "Shaders/Compiled/XboxOnePBREffect_VSConstantVelocity.inc"
     #include "Shaders/Compiled/XboxOnePBREffect_VSConstantBn.inc"
+
+    #include "Shaders/Compiled/XboxOnePBREffect_VSConstantInst.inc"
+    #include "Shaders/Compiled/XboxOnePBREffect_VSConstantBnInst.inc"
+
+    #include "Shaders/Compiled/XboxOnePBREffect_VSConstantVelocity.inc"
     #include "Shaders/Compiled/XboxOnePBREffect_VSConstantVelocityBn.inc"
 
     #include "Shaders/Compiled/XboxOnePBREffect_PSConstant.inc"
@@ -92,8 +97,12 @@ namespace
     #include "Shaders/Compiled/XboxOnePBREffect_PSTexturedEmissiveVelocity.inc"
 #else
     #include "Shaders/Compiled/PBREffect_VSConstant.inc"
-    #include "Shaders/Compiled/PBREffect_VSConstantVelocity.inc"
     #include "Shaders/Compiled/PBREffect_VSConstantBn.inc"
+
+    #include "Shaders/Compiled/PBREffect_VSConstantInst.inc"
+    #include "Shaders/Compiled/PBREffect_VSConstantBnInst.inc"
+
+    #include "Shaders/Compiled/PBREffect_VSConstantVelocity.inc"
     #include "Shaders/Compiled/PBREffect_VSConstantVelocityBn.inc"
 
     #include "Shaders/Compiled/PBREffect_PSConstant.inc"
@@ -108,10 +117,12 @@ namespace
 template<>
 const ShaderBytecode EffectBase<PBREffectTraits>::VertexShaderBytecode[] =
 {
-    { PBREffect_VSConstant, sizeof(PBREffect_VSConstant) },
-    { PBREffect_VSConstantVelocity, sizeof(PBREffect_VSConstantVelocity) },
-    { PBREffect_VSConstantBn, sizeof(PBREffect_VSConstantBn) },
+    { PBREffect_VSConstant,           sizeof(PBREffect_VSConstant)           },
+    { PBREffect_VSConstantVelocity,   sizeof(PBREffect_VSConstantVelocity)   },
+    { PBREffect_VSConstantBn,         sizeof(PBREffect_VSConstantBn)         },
     { PBREffect_VSConstantVelocityBn, sizeof(PBREffect_VSConstantVelocityBn) },
+    { PBREffect_VSConstantInst,       sizeof(PBREffect_VSConstantInst)       },
+    { PBREffect_VSConstantBnInst,     sizeof(PBREffect_VSConstantBnInst)     },
 };
 
 
@@ -123,23 +134,29 @@ const int EffectBase<PBREffectTraits>::VertexShaderIndices[] =
     0,      // textured + emissive
     1,      // textured + velocity
     1,      // textured + emissive + velocity
+    4,      // instancing + constant
+    4,      // instancing + textured
+    4,      // instancing + textured + emissive
 
     2,      // constant (biased vertex normals)
     2,      // textured (biased vertex normals)
     2,      // textured + emissive (biased vertex normals)
     3,      // textured + velocity (biased vertex normals)
     3,      // textured + emissive + velocity (biasoed vertex normals)
+    5,      // instancing + constant (biased vertex normals)
+    5,      // instancing + textured (biased vertex normals)
+    5,      // instancing + textured + emissive (biased vertex normals)
 };
 
 
 template<>
 const ShaderBytecode EffectBase<PBREffectTraits>::PixelShaderBytecode[] =
 {
-    { PBREffect_PSConstant, sizeof(PBREffect_PSConstant) },
-    { PBREffect_PSTextured, sizeof(PBREffect_PSTextured) },
-    { PBREffect_PSTexturedEmissive, sizeof(PBREffect_PSTexturedEmissive) },
-    { PBREffect_PSTexturedVelocity, sizeof(PBREffect_PSTexturedVelocity) },
-    { PBREffect_PSTexturedEmissiveVelocity, sizeof(PBREffect_PSTexturedEmissiveVelocity) }
+    { PBREffect_PSConstant,                 sizeof(PBREffect_PSConstant)                 },
+    { PBREffect_PSTextured,                 sizeof(PBREffect_PSTextured)                 },
+    { PBREffect_PSTexturedEmissive,         sizeof(PBREffect_PSTexturedEmissive)         },
+    { PBREffect_PSTexturedVelocity,         sizeof(PBREffect_PSTexturedVelocity)         },
+    { PBREffect_PSTexturedEmissiveVelocity, sizeof(PBREffect_PSTexturedEmissiveVelocity) },
 };
 
 
@@ -151,12 +168,18 @@ const int EffectBase<PBREffectTraits>::PixelShaderIndices[] =
     2,      // textured + emissive
     3,      // textured + velocity
     4,      // textured + emissive + velocity
+    0,      // instancing + constant
+    1,      // instancing + textured
+    2,      // instancing + textured + emissive
 
     0,      // constant (biased vertex normals)
     1,      // textured (biased vertex normals)
     2,      // textured + emissive (biased vertex normals)
     3,      // textured + velocity (biased vertex normals)
     4,      // textured + emissive + velocity (biased vertex normals)
+    0,      // instancing + constant (biased vertex normals)
+    1,      // instancing + textured (biased vertex normals)
+    2,      // instancing + textured + emissive (biased vertex normals)
 };
 
 // Global pool of per-device PBREffect resources. Required by EffectBase<>, but not used.
@@ -168,6 +191,7 @@ PBREffect::Impl::Impl(_In_ ID3D11Device* device)
     : EffectBase(device),
     biasedVertexNormals(false),
     velocityEnabled(false),
+    instancing(false),
     lightColor{}
 {
     if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
@@ -201,14 +225,19 @@ int PBREffect::Impl::GetCurrentShaderPermutation() const noexcept
 {
     int permutation = 0;
 
-    // Textured RMA vs. constant albedo/roughness/metalness?
-    if (velocityEnabled)
+    if (instancing)
+    {
+        // Vertex shader needs to use vertex matrix transform.
+        permutation = (albedoTexture) ? 6 : 5;
+    }
+    else if (velocityEnabled)
     {
         // Optional velocity buffer (implies textured RMA)?
         permutation = 3;
     }
     else if (albedoTexture)
     {
+        // Textured RMA vs. constant albedo/roughness/metalness?
         permutation = 1;
     }
 
@@ -221,7 +250,7 @@ int PBREffect::Impl::GetCurrentShaderPermutation() const noexcept
     if (biasedVertexNormals)
     {
         // Compressed normals need to be scaled and biased in the vertex shader.
-        permutation += 5;
+        permutation += 8;
     }
 
     return permutation;
@@ -513,6 +542,13 @@ void PBREffect::SetIBLTextures(
 void PBREffect::SetBiasedVertexNormals(bool value)
 {
     pImpl->biasedVertexNormals = value;
+}
+
+
+// Instancing settings.
+void PBREffect::SetInstancingEnabled(bool value)
+{
+    pImpl->instancing = value;
 }
 
 
