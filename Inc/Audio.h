@@ -44,7 +44,12 @@
 
 #include <xaudio2.h>
 #include <xaudio2fx.h>
+
+#pragma warning(push)
+#pragma warning(disable : 4619 4616 5246)
 #include <x3daudio.h>
+#pragma warning(pop)
+
 #include <xapofx.h>
 
 #ifndef USING_XAUDIO2_REDIST
