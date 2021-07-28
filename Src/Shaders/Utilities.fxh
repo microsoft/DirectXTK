@@ -68,15 +68,6 @@ float3 SRGBToLinearEst(float3 srgb)
 // https://en.wikipedia.org/wiki/High-dynamic-range_video#HDR10
 
 
-// Color rotation matrix to rotate Rec.709 color primaries into Rec.2020
-static const float3x3 from709to2020 =
-{
-    { 0.6274040f, 0.3292820f, 0.0433136f },
-    { 0.0690970f, 0.9195400f, 0.0113612f },
-    { 0.0163916f, 0.0880132f, 0.8955950f }
-};
-
-
 // Apply the ST.2084 curve to normalized linear values and outputs normalized non-linear values
 float3 LinearToST2084(float3 normalizedLinearValue)
 {
