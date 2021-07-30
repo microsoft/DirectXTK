@@ -61,10 +61,16 @@ namespace
 {
 #if defined(_XBOX_ONE) && defined(_TITLE)
     #include "Shaders/Compiled/XboxOneDebugEffect_VSDebug.inc"
+    #include "Shaders/Compiled/XboxOneDebugEffect_VSDebugInst.inc"
+
     #include "Shaders/Compiled/XboxOneDebugEffect_VSDebugVc.inc"
+    #include "Shaders/Compiled/XboxOneDebugEffect_VSDebugVcInst.inc"
 
     #include "Shaders/Compiled/XboxOneDebugEffect_VSDebugBn.inc"
+    #include "Shaders/Compiled/XboxOneDebugEffect_VSDebugBnInst.inc"
+
     #include "Shaders/Compiled/XboxOneDebugEffect_VSDebugVcBn.inc"
+    #include "Shaders/Compiled/XboxOneDebugEffect_VSDebugVcBnInst.inc"
 
     #include "Shaders/Compiled/XboxOneDebugEffect_PSHemiAmbient.inc"
     #include "Shaders/Compiled/XboxOneDebugEffect_PSRGBNormals.inc"
