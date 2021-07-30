@@ -33,9 +33,9 @@ namespace
     {
         using ConstantBufferType = DebugEffectConstants;
 
-        static constexpr int VertexShaderCount = 4;
+        static constexpr int VertexShaderCount = 8;
         static constexpr int PixelShaderCount = 4;
-        static constexpr int ShaderPermutationCount = 16;
+        static constexpr int ShaderPermutationCount = 32;
     };
 }
 
@@ -47,6 +47,7 @@ public:
 
     bool vertexColorEnabled;
     bool biasedVertexNormals;
+    bool instancing;
     DebugEffect::Mode debugMode;
 
     int GetCurrentShaderPermutation() const noexcept;
@@ -71,10 +72,16 @@ namespace
     #include "Shaders/Compiled/XboxOneDebugEffect_PSRGBBiTangents.inc"
 #else    
     #include "Shaders/Compiled/DebugEffect_VSDebug.inc"
+    #include "Shaders/Compiled/DebugEffect_VSDebugInst.inc"
+
     #include "Shaders/Compiled/DebugEffect_VSDebugVc.inc"
+    #include "Shaders/Compiled/DebugEffect_VSDebugVcInst.inc"
 
     #include "Shaders/Compiled/DebugEffect_VSDebugBn.inc"
+    #include "Shaders/Compiled/DebugEffect_VSDebugBnInst.inc"
+
     #include "Shaders/Compiled/DebugEffect_VSDebugVcBn.inc"
+    #include "Shaders/Compiled/DebugEffect_VSDebugVcBnInst.inc"
 
     #include "Shaders/Compiled/DebugEffect_PSHemiAmbient.inc"
     #include "Shaders/Compiled/DebugEffect_PSRGBNormals.inc"
@@ -87,11 +94,14 @@ namespace
 template<>
 const ShaderBytecode EffectBase<DebugEffectTraits>::VertexShaderBytecode[] =
 {    
-    { DebugEffect_VSDebug,      sizeof(DebugEffect_VSDebug)     },
-    { DebugEffect_VSDebugVc,    sizeof(DebugEffect_VSDebugVc)   },
-
-    { DebugEffect_VSDebugBn,    sizeof(DebugEffect_VSDebugBn)   },
-    { DebugEffect_VSDebugVcBn,  sizeof(DebugEffect_VSDebugVcBn) },
+    { DebugEffect_VSDebug,         sizeof(DebugEffect_VSDebug)         },
+    { DebugEffect_VSDebugVc,       sizeof(DebugEffect_VSDebugVc)       },
+    { DebugEffect_VSDebugBn,       sizeof(DebugEffect_VSDebugBn)       },
+    { DebugEffect_VSDebugVcBn,     sizeof(DebugEffect_VSDebugVcBn)     },
+    { DebugEffect_VSDebugInst,     sizeof(DebugEffect_VSDebugInst)     },
+    { DebugEffect_VSDebugVcInst,   sizeof(DebugEffect_VSDebugVcInst)   },
+    { DebugEffect_VSDebugBnInst,   sizeof(DebugEffect_VSDebugBnInst)   },
+    { DebugEffect_VSDebugVcBnInst, sizeof(DebugEffect_VSDebugVcBnInst) },
 };
 
 
@@ -117,15 +127,35 @@ const int EffectBase<DebugEffectTraits>::VertexShaderIndices[] =
     3,      // vertex color (biased vertex normal) + normals
     3,      // vertex color (biased vertex normal) + tangents
     3,      // vertex color (biased vertex normal) + bitangents
+
+    4,      // instancing
+    4,      // instancing + normals
+    4,      // instancing + tangents
+    4,      // instancing + bitangents
+
+    5,      // instancing + vertex color + default
+    5,      // instancing + vertex color + normals
+    5,      // instancing + vertex color + tangents
+    5,      // instancing + vertex color + bitangents
+
+    6,      // instancing (biased vertex normal)
+    6,      // instancing + normals (biased vertex normal)
+    6,      // instancing + tangents (biased vertex normal)
+    6,      // instancing + bitangents (biased vertex normal)
+
+    7,      // instancing + vertex color (biased vertex normal)
+    7,      // instancing + vertex color (biased vertex normal) + normals
+    7,      // instancing + vertex color (biased vertex normal) + tangents
+    7,      // instancing + vertex color (biased vertex normal) + bitangents
 };
 
 
 template<>
 const ShaderBytecode EffectBase<DebugEffectTraits>::PixelShaderBytecode[] =
 {
-    { DebugEffect_PSHemiAmbient,    sizeof(DebugEffect_PSHemiAmbient)          },
-    { DebugEffect_PSRGBNormals,     sizeof(DebugEffect_PSRGBNormals)     },
-    { DebugEffect_PSRGBTangents,    sizeof(DebugEffect_PSRGBTangents)    },
+    { DebugEffect_PSHemiAmbient,    sizeof(DebugEffect_PSHemiAmbient)   },
+    { DebugEffect_PSRGBNormals,     sizeof(DebugEffect_PSRGBNormals)    },
+    { DebugEffect_PSRGBTangents,    sizeof(DebugEffect_PSRGBTangents)   },
     { DebugEffect_PSRGBBiTangents,  sizeof(DebugEffect_PSRGBBiTangents) },
 };
 
@@ -152,6 +182,26 @@ const int EffectBase<DebugEffectTraits>::PixelShaderIndices[] =
     1,      // vertex color (biased vertex normal) + normals
     2,      // vertex color (biased vertex normal) + tangents
     3,      // vertex color (biased vertex normal) + bitangents
+
+    0,      // instancing
+    1,      // instancing + normals
+    2,      // instancing + tangents
+    3,      // instancing + bitangents
+
+    0,      // instancing + vertex color + default
+    1,      // instancing + vertex color + normals
+    2,      // instancing + vertex color + tangents
+    3,      // instancing + vertex color + bitangents
+
+    0,      // instancing (biased vertex normal)
+    1,      // instancing + normals (biased vertex normal)
+    2,      // instancing + tangents (biased vertex normal)
+    3,      // instancing + bitangents (biased vertex normal)
+
+    0,      // instancing + vertex color (biased vertex normal)
+    1,      // instancing + vertex color (biased vertex normal) + normals
+    2,      // instancing + vertex color (biased vertex normal) + tangents
+    3,      // instancing + vertex color (biased vertex normal) + bitangents
 };
 
 
@@ -165,6 +215,7 @@ DebugEffect::Impl::Impl(_In_ ID3D11Device* device)
     : EffectBase(device),
     vertexColorEnabled(false),
     biasedVertexNormals(false),
+    instancing(false),
     debugMode(DebugEffect::Mode_Default)
 {
     if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
@@ -198,6 +249,12 @@ int DebugEffect::Impl::GetCurrentShaderPermutation() const noexcept
     {
         // Compressed normals need to be scaled and biased in the vertex shader.
         permutation += 8;
+    }
+
+    if (instancing)
+    {
+        // Vertex shader needs to use vertex matrix transform.
+        permutation += 16;
     }
 
     return permutation;
@@ -347,4 +404,11 @@ void DebugEffect::SetVertexColorEnabled(bool value)
 void DebugEffect::SetBiasedVertexNormals(bool value)
 {
     pImpl->biasedVertexNormals = value;
+}
+
+
+// Instancing settings.
+void DebugEffect::SetInstancingEnabled(bool value)
+{
+    pImpl->instancing = value;
 }
