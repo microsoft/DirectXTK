@@ -93,8 +93,8 @@ public:
 
 
         // Combine values from the public SpriteEffects enum with these internal-only flags.
-        static const unsigned int SourceInTexels = 4;
-        static const unsigned int DestSizeInPixels = 8;
+        static constexpr unsigned int SourceInTexels = 4;
+        static constexpr unsigned int DestSizeInPixels = 8;
 
         static_assert((SpriteEffects_FlipBoth & (SourceInTexels | DestSizeInPixels)) == 0, "Flag bits must not overlap");
     };
