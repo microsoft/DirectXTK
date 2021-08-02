@@ -39,6 +39,13 @@ public:
         bool alpha, bool wireframe,
         std::function<void()>& setCustomState) const;
 
+    void DrawInstanced(_In_ IEffect* effect,
+        _In_ ID3D11InputLayout* inputLayout,
+        uint32_t instanceCount,
+        bool alpha, bool wireframe,
+        uint32_t startInstanceLocation,
+        std::function<void()>& setCustomState) const;
+
     void CreateInputLayout(_In_ IEffect* effect, _Outptr_ ID3D11InputLayout** inputLayout) const;
 
 private:
@@ -258,6 +265,52 @@ void GeometricPrimitive::Impl::Draw(
     deviceContext->DrawIndexed(mIndexCount, 0, 0);
 }
 
+_Use_decl_annotations_
+void GeometricPrimitive::Impl::DrawInstanced(
+    IEffect* effect,
+    ID3D11InputLayout* inputLayout,
+    uint32_t instanceCount,
+    bool alpha,
+    bool wireframe,
+    uint32_t startInstanceLocation,
+    std::function<void()>& setCustomState) const
+{
+    assert(mResources);
+    auto deviceContext = mResources->mDeviceContext.Get();
+    assert(deviceContext != nullptr);
+
+    // Set state objects.
+    mResources->PrepareForRendering(alpha, wireframe);
+
+    // Set input layout.
+    assert(inputLayout != nullptr);
+    deviceContext->IASetInputLayout(inputLayout);
+
+    // Activate our shaders, constant buffers, texture, etc.
+    assert(effect != nullptr);
+    effect->Apply(deviceContext);
+
+    // Set the vertex and index buffer.
+    auto vertexBuffer = mVertexBuffer.Get();
+    UINT vertexStride = sizeof(VertexType);
+    UINT vertexOffset = 0;
+
+    deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexStride, &vertexOffset);
+
+    deviceContext->IASetIndexBuffer(mIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
+
+    // Hook lets the caller replace our shaders or state settings with whatever else they see fit.
+    if (setCustomState)
+    {
+        setCustomState();
+    }
+
+    // Draw the primitive.
+    deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    deviceContext->DrawIndexedInstanced(mIndexCount, instanceCount, 0, 0, startInstanceLocation);
+}
+
 
 // Create input layout for drawing with a custom effect.
 _Use_decl_annotations_
@@ -325,6 +378,20 @@ void GeometricPrimitive::Draw(
     std::function<void()> setCustomState) const
 {
     pImpl->Draw(effect, inputLayout, alpha, wireframe, setCustomState);
+}
+
+
+_Use_decl_annotations_
+void GeometricPrimitive::DrawInstanced(
+    IEffect* effect,
+    ID3D11InputLayout* inputLayout,
+    uint32_t instanceCount,
+    bool alpha,
+    bool wireframe,
+    uint32_t startInstanceLocation,
+    std::function<void()> setCustomState) const
+{
+    pImpl->DrawInstanced(effect, inputLayout, instanceCount, alpha, wireframe, startInstanceLocation, setCustomState);
 }
 
 

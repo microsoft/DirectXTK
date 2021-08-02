@@ -170,14 +170,21 @@ call :CompileShaderSM4%1 NormalMapEffect vs VSNormalPixelLightingTxBn
 call :CompileShaderSM4%1 NormalMapEffect vs VSNormalPixelLightingTxVc
 call :CompileShaderSM4%1 NormalMapEffect vs VSNormalPixelLightingTxVcBn
 
+call :CompileShaderSM4%1 NormalMapEffect vs VSNormalPixelLightingTxInst
+call :CompileShaderSM4%1 NormalMapEffect vs VSNormalPixelLightingTxBnInst
+call :CompileShaderSM4%1 NormalMapEffect vs VSNormalPixelLightingTxVcInst
+call :CompileShaderSM4%1 NormalMapEffect vs VSNormalPixelLightingTxVcBnInst
+
 call :CompileShaderSM4%1 NormalMapEffect ps PSNormalPixelLightingTx
 call :CompileShaderSM4%1 NormalMapEffect ps PSNormalPixelLightingTxNoFog
 call :CompileShaderSM4%1 NormalMapEffect ps PSNormalPixelLightingTxNoSpec
 call :CompileShaderSM4%1 NormalMapEffect ps PSNormalPixelLightingTxNoFogSpec
 
 call :CompileShaderSM4%1 PBREffect vs VSConstant
+call :CompileShaderSM4%1 PBREffect vs VSConstantInst
 call :CompileShaderSM4%1 PBREffect vs VSConstantVelocity
 call :CompileShaderSM4%1 PBREffect vs VSConstantBn
+call :CompileShaderSM4%1 PBREffect vs VSConstantBnInst
 call :CompileShaderSM4%1 PBREffect vs VSConstantVelocityBn
 
 call :CompileShaderSM4%1 PBREffect ps PSConstant
@@ -190,6 +197,11 @@ call :CompileShaderSM4%1 DebugEffect vs VSDebug
 call :CompileShaderSM4%1 DebugEffect vs VSDebugBn
 call :CompileShaderSM4%1 DebugEffect vs VSDebugVc
 call :CompileShaderSM4%1 DebugEffect vs VSDebugVcBn
+
+call :CompileShaderSM4%1 DebugEffect vs VSDebugInst
+call :CompileShaderSM4%1 DebugEffect vs VSDebugBnInst
+call :CompileShaderSM4%1 DebugEffect vs VSDebugVcInst
+call :CompileShaderSM4%1 DebugEffect vs VSDebugVcBnInst
 
 call :CompileShaderSM4%1 DebugEffect ps PSHemiAmbient
 call :CompileShaderSM4%1 DebugEffect ps PSRGBNormals

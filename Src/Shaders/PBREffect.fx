@@ -62,6 +62,25 @@ VSOutputPixelLightingTx VSConstant(VSInputNmTx vin)
 }
 
 
+// Vertex shader: pbr + instancing
+VSOutputPixelLightingTx VSConstantInst(VSInputNmTxInst vin)
+{
+    VSOutputPixelLightingTx vout;
+
+    CommonInstancing inst = ComputeCommonInstancing(vin.Position, vin.Normal, vin.Transform);
+
+    CommonVSOutputPixelLighting cout = ComputeCommonVSOutputPixelLighting(inst.Position, inst.Normal);
+
+    vout.PositionPS = cout.Pos_ps;
+    vout.PositionWS = float4(cout.Pos_ws, 1);
+    vout.NormalWS = cout.Normal_ws;
+    vout.Diffuse = float4(ConstantAlbedo, Alpha);
+    vout.TexCoord = vin.TexCoord;
+
+    return vout;
+}
+
+
 // Vertex shader: pbr + velocity
 VSOut_Velocity VSConstantVelocity(VSInputNmTx vin)
 {
@@ -88,6 +107,27 @@ VSOutputPixelLightingTx VSConstantBn(VSInputNmTx vin)
     float3 normal = BiasX2(vin.Normal);
 
     CommonVSOutputPixelLighting cout = ComputeCommonVSOutputPixelLighting(vin.Position, normal);
+
+    vout.PositionPS = cout.Pos_ps;
+    vout.PositionWS = float4(cout.Pos_ws, 1);
+    vout.NormalWS = cout.Normal_ws;
+    vout.Diffuse = float4(ConstantAlbedo, Alpha);
+    vout.TexCoord = vin.TexCoord;
+
+    return vout;
+}
+
+
+// Vertex shader: pbr + instancing (biased normal)
+VSOutputPixelLightingTx VSConstantBnInst(VSInputNmTxInst vin)
+{
+    VSOutputPixelLightingTx vout;
+
+    float3 normal = BiasX2(vin.Normal);
+
+    CommonInstancing inst = ComputeCommonInstancing(vin.Position, normal, vin.Transform);
+
+    CommonVSOutputPixelLighting cout = ComputeCommonVSOutputPixelLighting(inst.Position, inst.Normal);
 
     vout.PositionPS = cout.Pos_ps;
     vout.PositionWS = float4(cout.Pos_ws, 1);

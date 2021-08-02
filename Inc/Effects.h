@@ -608,6 +608,9 @@ namespace DirectX
         // Normal compression settings.
         void __cdecl SetBiasedVertexNormals(bool value);
 
+        // Instancing settings.
+        void __cdecl SetInstancingEnabled(bool value);
+
     private:
         // Private implementation.
         class Impl;
@@ -677,6 +680,9 @@ namespace DirectX
         // Normal compression settings.
         void __cdecl SetBiasedVertexNormals(bool value);
 
+        // Instancing settings.
+        void __cdecl SetInstancingEnabled(bool value);
+
         // Velocity buffer settings.
         void __cdecl SetVelocityGeneration(bool value);
 
@@ -739,6 +745,9 @@ namespace DirectX
 
         // Normal compression settings.
         void __cdecl SetBiasedVertexNormals(bool value);
+
+        // Instancing settings.
+        void __cdecl SetInstancingEnabled(bool value);
 
     private:
         // Private implementation.
