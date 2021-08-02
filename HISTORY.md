@@ -6,6 +6,14 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### August 1, 2021
+* DebugEffect, NormalMapEffect, and PBREffect updated with instancing support
+* GeometricPrimitive updated with DrawInstanced method
+* ToneMapPostProcess updated with SetColorRotation method
+* Added VS 2022 Preview projects
+* MakeSpriteFont updated to use .NET 4.7.2
+* Minor code review
+
 ### June 9, 2021
 * DirectX Tool Kit for Audio updates:
   * Fixed mono source panning
