@@ -184,7 +184,7 @@ public:
             {
                 if (it.mGrfxMemory)
                 {
-                    VirtualFree(it->mGrfxMemory, 0, MEM_RELEASE);
+                    VirtualFree(it.mGrfxMemory, 0, MEM_RELEASE);
                     it.mGrfxMemory = nullptr;
                 }
             }
