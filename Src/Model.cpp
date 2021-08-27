@@ -234,9 +234,9 @@ void XM_CALLCONV ModelMesh::Draw(
 {
     assert(deviceContext != nullptr);
 
-    for (auto it = meshParts.cbegin(); it != meshParts.cend(); ++it)
+    for (const auto& it : meshParts)
     {
-        auto part = (*it).get();
+        auto part = it.get();
         assert(part != nullptr);
 
         if (part->isAlpha != alpha)
@@ -277,9 +277,9 @@ void XM_CALLCONV Model::Draw(
     assert(deviceContext != nullptr);
 
     // Draw opaque parts
-    for (auto it = meshes.cbegin(); it != meshes.cend(); ++it)
+    for (const auto& it : meshes)
     {
-        auto mesh = it->get();
+        auto mesh = it.get();
         assert(mesh != nullptr);
 
         mesh->PrepareForRendering(deviceContext, states, false, wireframe);
@@ -288,9 +288,9 @@ void XM_CALLCONV Model::Draw(
     }
 
     // Draw alpha parts
-    for (auto it = meshes.cbegin(); it != meshes.cend(); ++it)
+    for (const auto& it : meshes)
     {
-        auto mesh = it->get();
+        auto mesh = it.get();
         assert(mesh != nullptr);
 
         mesh->PrepareForRendering(deviceContext, states, true, wireframe);
@@ -305,23 +305,23 @@ void Model::UpdateEffects(_In_ std::function<void(IEffect*)> setEffect)
     if (mEffectCache.empty())
     {
         // This cache ensures we only set each effect once (could be shared)
-        for (auto mit = meshes.cbegin(); mit != meshes.cend(); ++mit)
+        for (const auto& mit : meshes)
         {
-            auto mesh = mit->get();
+            auto mesh = mit.get();
             assert(mesh != nullptr);
 
-            for (auto it = mesh->meshParts.cbegin(); it != mesh->meshParts.cend(); ++it)
+            for (const auto& it : mesh->meshParts)
             {
-                if ((*it)->effect)
-                    mEffectCache.insert((*it)->effect.get());
+                if (it->effect)
+                    mEffectCache.insert(it->effect.get());
             }
         }
     }
 
     assert(setEffect != nullptr);
 
-    for (auto it = mEffectCache.begin(); it != mEffectCache.end(); ++it)
+    for (const auto it : mEffectCache)
     {
-        setEffect(*it);
+        setEffect(it);
     }
 }

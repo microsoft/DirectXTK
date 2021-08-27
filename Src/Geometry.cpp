@@ -45,9 +45,9 @@ namespace
             std::swap(*it, *(it + 2));
         }
 
-        for (auto it = vertices.begin(); it != vertices.end(); ++it)
+        for (auto& it : vertices)
         {
-            it->textureCoordinate.x = (1.f - it->textureCoordinate.x);
+            it.textureCoordinate.x = (1.f - it.textureCoordinate.x);
         }
     }
 
@@ -55,11 +55,11 @@ namespace
     // Helper for inverting normals of geometric primitives for 'inside' vs. 'outside' viewing
     inline void InvertNormals(VertexCollection& vertices)
     {
-        for (auto it = vertices.begin(); it != vertices.end(); ++it)
+        for (auto& it : vertices)
         {
-            it->normal.x = -it->normal.x;
-            it->normal.y = -it->normal.y;
-            it->normal.z = -it->normal.z;
+            it.normal.x = -it.normal.x;
+            it.normal.y = -it.normal.y;
+            it.normal.z = -it.normal.z;
         }
     }
 }
@@ -370,11 +370,9 @@ void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indi
 
     // Now that we've completed subdivision, fill in the final vertex collection
     vertices.reserve(vertexPositions.size());
-    for (auto it = vertexPositions.begin(); it != vertexPositions.end(); ++it)
+    for (const auto& it : vertexPositions)
     {
-        const auto& vertexValue = *it;
-
-        auto normal = XMVector3Normalize(XMLoadFloat3(&vertexValue));
+        auto normal = XMVector3Normalize(XMLoadFloat3(&it));
         auto pos = XMVectorScale(normal, radius);
 
         XMFLOAT3 normalFloat3;

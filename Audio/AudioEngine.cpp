@@ -578,10 +578,10 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
     //
     // Inform any notify objects we are ready to go again
     //
-    for (auto it = mNotifyObjects.begin(); it != mNotifyObjects.end(); ++it)
+    for (auto it : mNotifyObjects)
     {
-        assert(*it != nullptr);
-        (*it)->OnReset();
+        assert(it != nullptr);
+        it->OnReset();
     }
 
     return S_OK;
@@ -590,23 +590,23 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
 
 void AudioEngine::Impl::SetSilentMode()
 {
-    for (auto it = mNotifyObjects.begin(); it != mNotifyObjects.end(); ++it)
+    for (auto it : mNotifyObjects)
     {
-        assert(*it != nullptr);
-        (*it)->OnCriticalError();
+        assert(it != nullptr);
+        it->OnCriticalError();
     }
 
-    for (auto it = mOneShots.begin(); it != mOneShots.end(); ++it)
+    for (auto it : mOneShots)
     {
-        assert(it->second != nullptr);
-        it->second->DestroyVoice();
+        assert(it.second != nullptr);
+        it.second->DestroyVoice();
     }
     mOneShots.clear();
 
-    for (auto it = mVoicePool.begin(); it != mVoicePool.end(); ++it)
+    for (auto it : mVoicePool)
     {
-        assert(it->second != nullptr);
-        it->second->DestroyVoice();
+        assert(it.second != nullptr);
+        it.second->DestroyVoice();
     }
     mVoicePool.clear();
 
@@ -623,10 +623,10 @@ void AudioEngine::Impl::SetSilentMode()
 
 void AudioEngine::Impl::Shutdown() noexcept
 {
-    for (auto it = mNotifyObjects.begin(); it != mNotifyObjects.end(); ++it)
+    for (auto it : mNotifyObjects)
     {
-        assert(*it != nullptr);
-        (*it)->OnDestroyEngine();
+        assert(it != nullptr);
+        it->OnDestroyEngine();
     }
 
     if (xaudio2)
@@ -635,17 +635,17 @@ void AudioEngine::Impl::Shutdown() noexcept
 
         xaudio2->StopEngine();
 
-        for (auto it = mOneShots.begin(); it != mOneShots.end(); ++it)
+        for (auto it : mOneShots)
         {
-            assert(it->second != nullptr);
-            it->second->DestroyVoice();
+            assert(it.second != nullptr);
+            it.second->DestroyVoice();
         }
         mOneShots.clear();
 
-        for (auto it = mVoicePool.begin(); it != mVoicePool.end(); ++it)
+        for (auto it : mVoicePool)
         {
-            assert(it->second != nullptr);
-            it->second->DestroyVoice();
+            assert(it.second != nullptr);
+            it.second->DestroyVoice();
         }
         mVoicePool.clear();
 
@@ -729,10 +729,10 @@ bool AudioEngine::Impl::Update()
     //
     // Inform any notify objects of updates
     //
-    for (auto it = mNotifyUpdates.begin(); it != mNotifyUpdates.end(); ++it)
+    for (auto it : mNotifyUpdates)
     {
-        assert(*it != nullptr);
-        (*it)->OnUpdate();
+        assert(it != nullptr);
+        it->OnUpdate();
     }
 
     return true;
@@ -790,10 +790,10 @@ AudioStatistics AudioEngine::Impl::GetStatistics() const
     stats.allocatedVoices = stats.allocatedVoicesOneShot = mOneShots.size() + mVoicePool.size();
     stats.allocatedVoicesIdle = mVoicePool.size();
 
-    for (auto it = mNotifyObjects.begin(); it != mNotifyObjects.end(); ++it)
+    for (const auto it : mNotifyObjects)
     {
-        assert(*it != nullptr);
-        (*it)->GatherStatistics(stats);
+        assert(it != nullptr);
+        it->GatherStatistics(stats);
     }
 
     assert(stats.allocatedVoices == (mOneShots.size() + mVoicePool.size() + mVoiceInstances));
@@ -804,16 +804,16 @@ AudioStatistics AudioEngine::Impl::GetStatistics() const
 
 void AudioEngine::Impl::TrimVoicePool()
 {
-    for (auto it = mNotifyObjects.begin(); it != mNotifyObjects.end(); ++it)
+    for (auto it : mNotifyObjects)
     {
-        assert(*it != nullptr);
-        (*it)->OnTrim();
+        assert(it != nullptr);
+        it->OnTrim();
     }
 
-    for (auto it = mVoicePool.begin(); it != mVoicePool.end(); ++it)
+    for (auto it : mVoicePool)
     {
-        assert(it->second != nullptr);
-        it->second->DestroyVoice();
+        assert(it.second != nullptr);
+        it.second->DestroyVoice();
     }
     mVoicePool.clear();
 }
@@ -1034,18 +1034,18 @@ void AudioEngine::Impl::DestroyVoice(_In_ IXAudio2SourceVoice* voice) noexcept
         return;
 
 #ifndef NDEBUG
-    for (auto it = mOneShots.cbegin(); it != mOneShots.cend(); ++it)
+    for (const auto it : mOneShots)
     {
-        if (it->second == voice)
+        if (it.second == voice)
         {
             DebugTrace("ERROR: DestroyVoice should not be called for a one-shot voice\n");
             return;
         }
     }
 
-    for (auto it = mVoicePool.cbegin(); it != mVoicePool.cend(); ++it)
+    for (const auto it : mVoicePool)
     {
-        if (it->second == voice)
+        if (it.second == voice)
         {
             DebugTrace("ERROR: DestroyVoice should not be called for a one-shot voice; see TrimVoicePool\n");
             return;
@@ -1081,17 +1081,17 @@ void AudioEngine::Impl::UnregisterNotify(_In_ IVoiceNotify* notify, bool usesOne
     {
         bool setevent = false;
 
-        for (auto it = mOneShots.begin(); it != mOneShots.end(); ++it)
+        for (auto it : mOneShots)
         {
-            assert(it->second != nullptr);
+            assert(it.second != nullptr);
 
             XAUDIO2_VOICE_STATE state;
-            it->second->GetState(&state, XAUDIO2_VOICE_NOSAMPLESPLAYED);
+            it.second->GetState(&state, XAUDIO2_VOICE_NOSAMPLESPLAYED);
 
             if (state.pCurrentBufferContext == notify)
             {
-                (void)it->second->Stop(0);
-                (void)it->second->FlushSourceBuffers();
+                (void)it.second->Stop(0);
+                (void)it.second->FlushSourceBuffers();
                 setevent = true;
             }
         }

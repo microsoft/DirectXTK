@@ -180,12 +180,12 @@ public:
 
         void Clear()
         {
-            for (auto it = mPages.begin(); it != mPages.end(); ++it)
+            for (auto& it : mPages)
             {
-                if (it->mGrfxMemory)
+                if (it.mGrfxMemory)
                 {
                     VirtualFree(it->mGrfxMemory, 0, MEM_RELEASE);
-                    it->mGrfxMemory = nullptr;
+                    it.mGrfxMemory = nullptr;
                 }
             }
 

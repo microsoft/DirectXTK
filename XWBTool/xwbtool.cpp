@@ -1797,7 +1797,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     header.Segments[HEADER::SEGIDX_ENTRYWAVEDATA].dwOffset = segmentOffset;
     header.Segments[HEADER::SEGIDX_ENTRYWAVEDATA].dwLength = uint32_t(waveOffset);
 
-    for (auto it = waves.begin(); it != waves.end(); ++it)
+    for (auto& it : waves)
     {
         if (SetFilePointer(hFile.get(), LONG(segmentOffset), nullptr, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
         {
@@ -1805,14 +1805,14 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
             return 1;
         }
 
-        if (!WriteFile(hFile.get(), it->data.startAudio, it->data.audioBytes, &bytesWritten, nullptr)
-            || bytesWritten != it->data.audioBytes)
+        if (!WriteFile(hFile.get(), it.data.startAudio, it.data.audioBytes, &bytesWritten, nullptr)
+            || bytesWritten != it.data.audioBytes)
         {
             wprintf(L"ERROR: Failed writing audio data to %ls, %lu\n", szOutputFile, GetLastError());
             return 1;
         }
 
-        DWORD alignedSize = BLOCKALIGNPAD(it->data.audioBytes, dwAlignment);
+        DWORD alignedSize = BLOCKALIGNPAD(it.data.audioBytes, dwAlignment);
 
         if ((uint64_t(segmentOffset) + alignedSize) > UINT32_MAX)
         {

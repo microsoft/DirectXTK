@@ -50,10 +50,10 @@ public:
             DebugTrace("WARNING: Destroying WaveBank \"%hs\" with %zu outstanding instances\n",
                 mReader.BankName(), mInstances.size());
 
-            for (auto it = mInstances.begin(); it != mInstances.end(); ++it)
+            for (auto it : mInstances)
             {
-                assert(*it != nullptr);
-                (*it)->OnDestroyParent();
+                assert(it != nullptr);
+                it->OnDestroyParent();
             }
 
             mInstances.clear();
