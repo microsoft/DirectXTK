@@ -596,14 +596,14 @@ void AudioEngine::Impl::SetSilentMode()
         it->OnCriticalError();
     }
 
-    for (auto it : mOneShots)
+    for (auto& it : mOneShots)
     {
         assert(it.second != nullptr);
         it.second->DestroyVoice();
     }
     mOneShots.clear();
 
-    for (auto it : mVoicePool)
+    for (auto& it : mVoicePool)
     {
         assert(it.second != nullptr);
         it.second->DestroyVoice();
@@ -635,14 +635,14 @@ void AudioEngine::Impl::Shutdown() noexcept
 
         xaudio2->StopEngine();
 
-        for (auto it : mOneShots)
+        for (auto& it : mOneShots)
         {
             assert(it.second != nullptr);
             it.second->DestroyVoice();
         }
         mOneShots.clear();
 
-        for (auto it : mVoicePool)
+        for (auto& it : mVoicePool)
         {
             assert(it.second != nullptr);
             it.second->DestroyVoice();
@@ -810,7 +810,7 @@ void AudioEngine::Impl::TrimVoicePool()
         it->OnTrim();
     }
 
-    for (auto it : mVoicePool)
+    for (auto& it : mVoicePool)
     {
         assert(it.second != nullptr);
         it.second->DestroyVoice();
@@ -1034,7 +1034,7 @@ void AudioEngine::Impl::DestroyVoice(_In_ IXAudio2SourceVoice* voice) noexcept
         return;
 
 #ifndef NDEBUG
-    for (const auto it : mOneShots)
+    for (const auto& it : mOneShots)
     {
         if (it.second == voice)
         {
@@ -1043,7 +1043,7 @@ void AudioEngine::Impl::DestroyVoice(_In_ IXAudio2SourceVoice* voice) noexcept
         }
     }
 
-    for (const auto it : mVoicePool)
+    for (const auto& it : mVoicePool)
     {
         if (it.second == voice)
         {
@@ -1081,7 +1081,7 @@ void AudioEngine::Impl::UnregisterNotify(_In_ IVoiceNotify* notify, bool usesOne
     {
         bool setevent = false;
 
-        for (auto it : mOneShots)
+        for (auto& it : mOneShots)
         {
             assert(it.second != nullptr);
 
