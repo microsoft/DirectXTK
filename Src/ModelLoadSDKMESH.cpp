@@ -156,8 +156,8 @@ namespace
         wchar_t matName[DXUT::MAX_MATERIAL_NAME] = {};
         ASCIIToWChar(matName, mh.Name);
 
-        wchar_t albetoTexture[DXUT::MAX_TEXTURE_NAME] = {};
-        ASCIIToWChar(albetoTexture, mh.AlbetoTexture);
+        wchar_t albedoTexture[DXUT::MAX_TEXTURE_NAME] = {};
+        ASCIIToWChar(albedoTexture, mh.AlbedoTexture);
 
         wchar_t normalName[DXUT::MAX_TEXTURE_NAME] = {};
         ASCIIToWChar(normalName, mh.NormalTexture);
@@ -177,7 +177,7 @@ namespace
         info.biasedVertexNormals = (flags & BIASED_VERTEX_NORMALS) != 0;
         info.alpha = (mh.Alpha == 0.f) ? 1.f : mh.Alpha;
 
-        info.diffuseTexture = albetoTexture;
+        info.diffuseTexture = albedoTexture;
         info.specularTexture = rmaName;
         info.normalTexture = normalName;
         info.emissiveTexture = emissiveName;

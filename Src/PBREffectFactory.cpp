@@ -79,10 +79,10 @@ std::shared_ptr<IEffect> PBREffectFactory::Impl::CreateEffect(IEffectFactory* fa
 
     effect->SetAlpha(info.alpha);
 
-    ComPtr<ID3D11ShaderResourceView> albetoSrv;
+    ComPtr<ID3D11ShaderResourceView> albedoSrv;
     if (info.diffuseTexture && *info.diffuseTexture)
     {
-        factory->CreateTexture(info.diffuseTexture, deviceContext, albetoSrv.GetAddressOf());
+        factory->CreateTexture(info.diffuseTexture, deviceContext, albedoSrv.GetAddressOf());
     }
 
     ComPtr<ID3D11ShaderResourceView> normalSrv;
@@ -98,7 +98,7 @@ std::shared_ptr<IEffect> PBREffectFactory::Impl::CreateEffect(IEffectFactory* fa
         factory->CreateTexture(info.specularTexture, deviceContext, rmaSrv.GetAddressOf());
     }
 
-    effect->SetSurfaceTextures(albetoSrv.Get(), normalSrv.Get(), rmaSrv.Get());
+    effect->SetSurfaceTextures(albedoSrv.Get(), normalSrv.Get(), rmaSrv.Get());
 
     if (info.emissiveTexture && *info.emissiveTexture)
     {

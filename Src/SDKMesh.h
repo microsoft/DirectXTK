@@ -279,7 +279,7 @@ namespace DXUT
 
         // PBR materials
         char    RMATexture[MAX_TEXTURE_NAME];
-        char    AlbetoTexture[MAX_TEXTURE_NAME];
+        char    AlbedoTexture[MAX_TEXTURE_NAME];
         char    NormalTexture[MAX_TEXTURE_NAME];
         char    EmissiveTexture[MAX_TEXTURE_NAME];
 
