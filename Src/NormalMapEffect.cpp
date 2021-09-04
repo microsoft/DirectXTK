@@ -306,12 +306,12 @@ void NormalMapEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
     // Set the textures
     ID3D11ShaderResourceView* textures[3] =
     {
-        texture.Get(),
+        (texture != 0) ? texture.Get() : GetDefaultTexture(),
         specularTexture.Get(),
-        normalTexture.Get()
+        (normalTexture != 0) ? normalTexture.Get() : GetDefaultNormalTexture()
     };
     deviceContext->PSSetShaderResources(0, 3, textures);
-    
+
     // Set shaders and constant buffers.
     ApplyShaders(deviceContext, GetCurrentShaderPermutation());
 }

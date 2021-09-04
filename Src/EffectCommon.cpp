@@ -451,6 +451,42 @@ ID3D11ShaderResourceView* EffectDeviceResources::GetDefaultTexture()
     });
 }
 
+ID3D11ShaderResourceView* EffectDeviceResources::GetDefaultNormalTexture()
+{
+    return DemandCreate(mDefaultNormalTexture, mMutex, [&](ID3D11ShaderResourceView** pResult) -> HRESULT
+        {
+            static const uint16_t s_pixel = 0x7f7f;
+
+            D3D11_SUBRESOURCE_DATA initData = { &s_pixel, sizeof(uint16_t), 0 };
+
+            D3D11_TEXTURE2D_DESC desc = {};
+            desc.Width = desc.Height = desc.MipLevels = desc.ArraySize = 1;
+            desc.Format = DXGI_FORMAT_R8G8_UNORM;
+            desc.SampleDesc.Count = 1;
+            desc.Usage = D3D11_USAGE_IMMUTABLE;
+            desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+
+            ComPtr<ID3D11Texture2D> tex;
+            HRESULT hr = mDevice->CreateTexture2D(&desc, &initData, tex.GetAddressOf());
+
+            if (SUCCEEDED(hr))
+            {
+                SetDebugObjectName(tex.Get(), "DirectXTK:Effect");
+
+                D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
+                SRVDesc.Format = DXGI_FORMAT_R8G8_UNORM;
+                SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+                SRVDesc.Texture2D.MipLevels = 1;
+
+                hr = mDevice->CreateShaderResourceView(tex.Get(), &SRVDesc, pResult);
+                if (SUCCEEDED(hr))
+                    SetDebugObjectName(*pResult, "DirectXTK:Effect");
+            }
+
+            return hr;
+        });
+}
+
 // Gets device feature level
 D3D_FEATURE_LEVEL EffectDeviceResources::GetDeviceFeatureLevel() const
 {
