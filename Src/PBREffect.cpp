@@ -260,6 +260,8 @@ int PBREffect::Impl::GetCurrentShaderPermutation() const noexcept
 // Sets our state onto the D3D device.
 void PBREffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
 {
+    assert(deviceContext != nullptr);
+
     // Store old wvp for velocity calculation in shader
     constants.prevWorldViewProj = constants.worldViewProj;
 
@@ -295,19 +297,23 @@ void PBREffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
     // Set the textures
     if (albedoTexture)
     {
-        ID3D11ShaderResourceView* textures[] = {
+        ID3D11ShaderResourceView* textures[6] =
+        {
             albedoTexture.Get(), normalTexture.Get(), rmaTexture.Get(),
             emissiveTexture.Get(),
-            radianceTexture.Get(), irradianceTexture.Get() };
-        deviceContext->PSSetShaderResources(0, static_cast<UINT>(std::size(textures)), textures);
+            radianceTexture.Get(), irradianceTexture.Get()
+        };
+        deviceContext->PSSetShaderResources(0, 6, textures);
     }
     else
     {
-        ID3D11ShaderResourceView* textures[] = {
+        ID3D11ShaderResourceView* textures[6] =
+        {
             nullptr, nullptr, nullptr,
             nullptr,
-            radianceTexture.Get(), irradianceTexture.Get() };
-        deviceContext->PSSetShaderResources(0, static_cast<UINT>(std::size(textures)), textures);
+            radianceTexture.Get(), irradianceTexture.Get()
+        };
+        deviceContext->PSSetShaderResources(0, 6, textures);
     }
 
     // Set shaders and constant buffers.

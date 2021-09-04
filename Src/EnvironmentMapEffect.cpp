@@ -435,6 +435,8 @@ int EnvironmentMapEffect::Impl::GetCurrentShaderPermutation() const noexcept
 // Sets our state onto the D3D device.
 void EnvironmentMapEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
 {
+    assert(deviceContext != nullptr);
+
     // Compute derived parameter values.
     matrices.SetConstants(dirtyFlags, constants.worldViewProj);
 

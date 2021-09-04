@@ -171,6 +171,7 @@ namespace DirectX
         // Client code needs this in order to create matching input layouts.
         void GetVertexShaderBytecode(int permutation, _Out_ void const** pShaderByteCode, _Out_ size_t* pByteCodeLength) noexcept
         {
+            assert(pShaderByteCode != nullptr && pByteCodeLength != nullptr);
             assert(permutation >= 0 && permutation < Traits::ShaderPermutationCount);
             _Analysis_assume_(permutation >= 0 && permutation < Traits::ShaderPermutationCount);
             int shaderIndex = VertexShaderIndices[permutation];

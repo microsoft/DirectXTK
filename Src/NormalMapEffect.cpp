@@ -294,6 +294,8 @@ int NormalMapEffect::Impl::GetCurrentShaderPermutation() const noexcept
 // Sets our state onto the D3D device.
 void NormalMapEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
 {
+    assert(deviceContext != nullptr);
+
     // Compute derived parameter values.
     matrices.SetConstants(dirtyFlags, constants.worldViewProj);
 
@@ -302,8 +304,13 @@ void NormalMapEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
     lights.SetConstants(dirtyFlags, matrices, constants.world, constants.worldInverseTranspose, constants.eyePosition, constants.diffuseColor, constants.emissiveColor, true);
 
     // Set the textures
-    ID3D11ShaderResourceView* textures[] = { texture.Get(), specularTexture.Get(), normalTexture.Get()};
-    deviceContext->PSSetShaderResources(0, static_cast<UINT>(std::size(textures)), textures);
+    ID3D11ShaderResourceView* textures[3] =
+    {
+        texture.Get(),
+        specularTexture.Get(),
+        normalTexture.Get()
+    };
+    deviceContext->PSSetShaderResources(0, 3, textures);
     
     // Set shaders and constant buffers.
     ApplyShaders(deviceContext, GetCurrentShaderPermutation());

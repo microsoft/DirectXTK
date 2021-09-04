@@ -336,6 +336,8 @@ int SkinnedEffect::Impl::GetCurrentShaderPermutation() const noexcept
 // Sets our state onto the D3D device.
 void SkinnedEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
 {
+    assert(deviceContext != nullptr);
+
     // Compute derived parameter values.
     matrices.SetConstants(dirtyFlags, constants.worldViewProj);
 
@@ -344,11 +346,12 @@ void SkinnedEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
     lights.SetConstants(dirtyFlags, matrices, constants.world, constants.worldInverseTranspose, constants.eyePosition, constants.diffuseColor, constants.emissiveColor, true);
 
     // Set the texture.
-    auto textures = texture.Get();
-    if (!textures)
-        textures = GetDefaultTexture();
+    ID3D11ShaderResourceView* textures[1] =
+    {
+        (texture != 0) ? texture.Get() : GetDefaultTexture()
+    };
 
-    deviceContext->PSSetShaderResources(0, 1, &textures);
+    deviceContext->PSSetShaderResources(0, 1, textures);
 
     // Set shaders and constant buffers.
     ApplyShaders(deviceContext, GetCurrentShaderPermutation());

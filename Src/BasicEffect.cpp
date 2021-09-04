@@ -455,6 +455,8 @@ int BasicEffect::Impl::GetCurrentShaderPermutation() const noexcept
 // Sets our state onto the D3D device.
 void BasicEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
 {
+    assert(deviceContext != nullptr);
+
     // Compute derived parameter values.
     matrices.SetConstants(dirtyFlags, constants.worldViewProj);
 
@@ -465,9 +467,7 @@ void BasicEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
     // Set the texture.
     if (textureEnabled)
     {
-        ID3D11ShaderResourceView* textures[1] = { texture.Get() };
-
-        deviceContext->PSSetShaderResources(0, 1, textures);
+        deviceContext->PSSetShaderResources(0, 1, texture.GetAddressOf());
     }
 
     // Set shaders and constant buffers.

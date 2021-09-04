@@ -353,6 +353,8 @@ SharedResourcePool<ID3D11Device*, DGSLEffect::Impl::DeviceResources> DGSLEffect:
 
 void DGSLEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
 {
+    assert(deviceContext != nullptr);
+
     auto vertexShader = mDeviceResources->GetVertexShader(GetCurrentVSPermutation());
     auto pixelShader = mPixelShader.Get();
     if (!pixelShader)
@@ -475,17 +477,24 @@ void DGSLEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
             dirtyFlags &= ~EffectDirtyFlags::ConstantBufferBones;
         }
 
-        ID3D11Buffer* buffers[5] = { mCBMaterial.GetBuffer(), mCBLight.GetBuffer(), mCBObject.GetBuffer(),
-                                     mCBMisc.GetBuffer(), mCBBone.GetBuffer() };
+        ID3D11Buffer* buffers[5] =
+        {
+            mCBMaterial.GetBuffer(), mCBLight.GetBuffer(), mCBObject.GetBuffer(),
+            mCBMisc.GetBuffer(), mCBBone.GetBuffer()
+        };
 
         deviceContext->VSSetConstantBuffers(0, 5, buffers);
         deviceContext->PSSetConstantBuffers(0, 4, buffers);
     }
     else
     {
-        ID3D11Buffer* buffers[4] = { mCBMaterial.GetBuffer(), mCBLight.GetBuffer(), mCBObject.GetBuffer(), mCBMisc.GetBuffer() };
+        ID3D11Buffer* buffers[5] =
+        {
+            mCBMaterial.GetBuffer(), mCBLight.GetBuffer(), mCBObject.GetBuffer(),
+            mCBMisc.GetBuffer(), nullptr
+        };
 
-        deviceContext->VSSetConstantBuffers(0, 4, buffers);
+        deviceContext->VSSetConstantBuffers(0, 5, buffers);
         deviceContext->PSSetConstantBuffers(0, 4, buffers);
     }
 #endif
@@ -493,8 +502,17 @@ void DGSLEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
     // Set the textures
     if (textureEnabled)
     {
-        ID3D11ShaderResourceView* txt[MaxTextures] = { textures[0].Get(), textures[1].Get(), textures[2].Get(), textures[3].Get(),
-                                                       textures[4].Get(), textures[5].Get(), textures[6].Get(), textures[7].Get() };
+        ID3D11ShaderResourceView* txt[MaxTextures] =
+        {
+            textures[0].Get(),
+            textures[1].Get(),
+            textures[2].Get(),
+            textures[3].Get(),
+            textures[4].Get(),
+            textures[5].Get(),
+            textures[6].Get(),
+            textures[7].Get()
+        };
         deviceContext->PSSetShaderResources(0, MaxTextures, txt);
     }
     else
@@ -507,8 +525,9 @@ void DGSLEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
 
 void DGSLEffect::Impl::GetVertexShaderBytecode(_Out_ void const** pShaderByteCode, _Out_ size_t* pByteCodeLength) noexcept
 {
-    int permutation = GetCurrentVSPermutation();
+    assert(pShaderByteCode != nullptr && pByteCodeLength != nullptr);
 
+    int permutation = GetCurrentVSPermutation();
     assert(permutation < DGSLEffectTraits::VertexShaderCount);
     _Analysis_assume_(permutation < DGSLEffectTraits::VertexShaderCount);
 
