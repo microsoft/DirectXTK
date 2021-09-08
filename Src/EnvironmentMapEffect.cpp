@@ -447,7 +447,7 @@ void EnvironmentMapEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
     // Set the textures.
     ID3D11ShaderResourceView* textures[2] =
     {
-        (texture != 0) ? texture.Get() : GetDefaultTexture(),
+        (texture) ? texture.Get() : GetDefaultTexture(),
         environmentMap.Get(),
     };
 
