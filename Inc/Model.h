@@ -48,6 +48,9 @@ namespace DirectX
         ModelLoader_PremultipledAlpha   = 0x2,
         ModelLoader_MaterialColorsSRGB  = 0x4,
         ModelLoader_AllowLargeModels    = 0x8,
+        ModelLoader_IncludeFrames       = 0x10,
+        ModelLoader_IncludeInfluences   = 0x20,
+        ModelLoader_IncludeSkeleton     = 0x30,
     };
 
     //----------------------------------------------------------------------------------
@@ -157,7 +160,11 @@ namespace DirectX
         using Collection = std::vector<std::shared_ptr<ModelMesh>>;
 
         // Setup states for drawing mesh
-        void __cdecl PrepareForRendering(_In_ ID3D11DeviceContext* deviceContext, const CommonStates& states, bool alpha = false, bool wireframe = false) const;
+        void __cdecl PrepareForRendering(
+            _In_ ID3D11DeviceContext* deviceContext,
+            const CommonStates& states,
+            bool alpha = false,
+            bool wireframe = false) const;
 
         // Draw the mesh
         void XM_CALLCONV Draw(
@@ -166,7 +173,7 @@ namespace DirectX
             bool alpha = false,
             _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
 
-        void XM_CALLCONV Draw(
+        void XM_CALLCONV DrawSkinned(
             _In_ ID3D11DeviceContext* deviceContext,
             size_t nbones, _In_reads_(nbones) const XMMATRIX* boneTransforms,
             CXMMATRIX view, CXMMATRIX projection,
@@ -192,7 +199,7 @@ namespace DirectX
 
         ModelMesh::Collection       meshes;
         ModelBone::Collection       bones;
-        ModelBone::TransformArray   boneTransforms;
+        ModelBone::TransformArray   boneMatrices;
         std::wstring                name;
 
         // Draw all the meshes in the model
@@ -203,12 +210,25 @@ namespace DirectX
             bool wireframe = false,
             _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
 
+        // Draw all the meshes using model bones.
         void XM_CALLCONV Draw(
             _In_ ID3D11DeviceContext* deviceContext,
             const CommonStates& states,
+            size_t nbones, _In_reads_opt_(nbones) const XMMATRIX* boneTransforms,
             CXMMATRIX view, CXMMATRIX projection,
             bool wireframe = false,
-           _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
+            _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
+
+        // Draw all the meshes using skinning.
+        void XM_CALLCONV DrawSkinned(
+            _In_ ID3D11DeviceContext* deviceContext,
+            const CommonStates& states,
+            size_t nbones, _In_reads_(nbones) const XMMATRIX* boneTransforms,
+            CXMMATRIX view, CXMMATRIX projection,
+            bool wireframe = false,
+            _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
+
+        // TODO - Helpers for working with bones/boneMatrices
 
         // Notify model that effects, parts list, or mesh list has changed
         void __cdecl Modified() noexcept { mEffectCache.clear(); }
@@ -251,11 +271,6 @@ namespace DirectX
             _In_z_ const wchar_t* szFileName,
             _In_opt_ std::shared_ptr<IEffect> ieffect = nullptr,
             ModelLoaderFlags flags = ModelLoader_Clockwise);
-
-        // Frame hierarchy model bone computation functions (if present)
-        void CopyAbsoluteBoneTransformsTo(size_t nbones, _Out_writes_(nbones) XMMATRIX* transform);
-        void CopyBoneTransformsFrom(size_t nbones, _In_reads_(nbones) const XMMATRIX* transform);
-        void CopyBoneTransformsTo(size_t nbones, _Out_writes_(nbones) XMMATRIX* transform);
 
     private:
         std::set<IEffect*>  mEffectCache;

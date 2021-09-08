@@ -20,11 +20,6 @@ using namespace DirectX;
 #error Model requires RTTI
 #endif
 
-namespace
-{
-    const XMMATRIX c_identity = { g_XMIdentityR0, g_XMIdentityR1, g_XMIdentityR2, g_XMIdentityR3 };
-}
-
 //--------------------------------------------------------------------------------------
 // ModelMeshPart
 //--------------------------------------------------------------------------------------
@@ -263,7 +258,7 @@ void XM_CALLCONV ModelMesh::Draw(
 
 
 _Use_decl_annotations_
-void XM_CALLCONV ModelMesh::Draw(
+void XM_CALLCONV ModelMesh::DrawSkinned(
     ID3D11DeviceContext* deviceContext,
     size_t nbones, _In_reads_(nbones) const XMMATRIX* boneTransforms,
     CXMMATRIX view,
@@ -296,19 +291,22 @@ void XM_CALLCONV ModelMesh::Draw(
             imatrices->SetProjection(projection);
         }
 
-        if (boneInfluences.empty())
+        auto iskinning = dynamic_cast<IEffectSkinning*>(part->effect.get());
+        if (iskinning)
         {
-            assert(boneIndex == ModelBone::c_Invalid || boneIndex < nbones);
-            imatrices->SetWorld(boneIndex == ModelBone::c_Invalid ? c_identity : boneTransforms[boneIndex]);
-        }
-        else
-        {
-            imatrices->SetWorld(c_identity);
-            auto iskinning = dynamic_cast<IEffectSkinning*>(part->effect.get());
-            if (iskinning)
+            if (boneInfluences.empty())
             {
-                // TODO - boneInfluences maps boneTransforms to bone indices
+                DebugTrace("Model is missing bone influences which are required for skinning\n");
+                throw std::runtime_error("Skinning a model requires bone influences");
             }
+
+            // TODO - boneInfluences maps boneTransforms to bone indices
+        }
+        else if (imatrices)
+        {
+            imatrices->SetWorld(
+                (boneIndex != ModelBone::c_Invalid && boneIndex < nbones)
+                ? boneTransforms[boneIndex] : boneTransforms[0]);
         }
 
         part->Draw(deviceContext, part->effect.get(), part->inputLayout.Get(), setCustomState);
@@ -365,18 +363,24 @@ _Use_decl_annotations_
 void XM_CALLCONV Model::Draw(
     ID3D11DeviceContext* deviceContext,
     const CommonStates& states,
+    size_t nbones,
+    const XMMATRIX* boneTransforms,
     CXMMATRIX view,
     CXMMATRIX projection,
     bool wireframe,
     std::function<void()> setCustomState) const
 {
     assert(deviceContext != nullptr);
-    assert(boneTransforms != nullptr);
 
-    if (bones.empty())
+    if (!nbones || !boneTransforms)
     {
-        DebugTrace("ERROR: Draw using bone transforms called on Model without any model bones defined\n");
-        throw std::exception("Model contains no bones");
+        if (bones.empty())
+        {
+            throw std::invalid_argument("Model contains no bones");
+        }
+
+        nbones = bones.size();
+        boneTransforms = boneMatrices.get();
     }
 
     // Draw opaque parts
@@ -387,7 +391,14 @@ void XM_CALLCONV Model::Draw(
 
         mesh->PrepareForRendering(deviceContext, states, false, wireframe);
 
-        mesh->Draw(deviceContext, bones.size(), boneTransforms.get(), view, projection, false, setCustomState);
+        if (mesh->boneIndex != ModelBone::c_Invalid && mesh->boneIndex < nbones)
+        {
+            mesh->Draw(deviceContext, boneTransforms[mesh->boneIndex], view, projection, false, setCustomState);
+        }
+        else
+        {
+            mesh->Draw(deviceContext, boneTransforms[0], view, projection, false, setCustomState);
+        }
     }
 
     // Draw alpha parts
@@ -398,7 +409,57 @@ void XM_CALLCONV Model::Draw(
 
         mesh->PrepareForRendering(deviceContext, states, true, wireframe);
 
-        mesh->Draw(deviceContext, bones.size(), boneTransforms.get(), view, projection, true, setCustomState);
+        if (mesh->boneIndex != ModelBone::c_Invalid && mesh->boneIndex < nbones)
+        {
+            mesh->Draw(deviceContext, boneTransforms[mesh->boneIndex], view, projection, true, setCustomState);
+        }
+        else
+        {
+            mesh->Draw(deviceContext, boneTransforms[0], view, projection, true, setCustomState);
+        }
+    }
+}
+
+
+_Use_decl_annotations_
+void XM_CALLCONV Model::DrawSkinned(
+    ID3D11DeviceContext* deviceContext,
+    const CommonStates& states,
+    size_t nbones,
+    const XMMATRIX* boneTransforms,
+    CXMMATRIX view,
+    CXMMATRIX projection,
+    bool wireframe,
+    std::function<void()> setCustomState) const
+{
+    assert(deviceContext != nullptr);
+    assert(boneTransforms != nullptr);
+
+    if (!nbones || !boneTransforms)
+    {
+        throw std::invalid_argument("Bone transforms array required");
+    }
+
+    // Draw opaque parts
+    for (auto it = meshes.cbegin(); it != meshes.cend(); ++it)
+    {
+        auto mesh = it->get();
+        assert(mesh != nullptr);
+
+        mesh->PrepareForRendering(deviceContext, states, false, wireframe);
+
+        mesh->DrawSkinned(deviceContext, nbones, boneTransforms, view, projection, false, setCustomState);
+    }
+
+    // Draw alpha parts
+    for (auto it = meshes.cbegin(); it != meshes.cend(); ++it)
+    {
+        auto mesh = it->get();
+        assert(mesh != nullptr);
+
+        mesh->PrepareForRendering(deviceContext, states, true, wireframe);
+
+        mesh->DrawSkinned(deviceContext, nbones, boneTransforms, view, projection, true, setCustomState);
     }
 }
 
@@ -427,66 +488,4 @@ void Model::UpdateEffects(_In_ std::function<void(IEffect*)> setEffect)
     {
         setEffect(it);
     }
-}
-
-
-_Use_decl_annotations_
-void Model::CopyAbsoluteBoneTransformsTo(size_t nbones, XMMATRIX* transform)
-{
-    assert(transform != nullptr);
-
-    if (bones.empty())
-    {
-        DebugTrace("ERROR: CopyAbsoluteBoneTransformsTo called on Model without any model bones defined\n");
-        throw std::exception("Model contains no bones");
-    }
-
-    if (nbones != bones.size())
-    {
-        DebugTrace("ERROR: Invalid size for bone transforms array (%zu != %zu)\n", nbones, bones.size());
-        throw std::invalid_argument("Bone transforms array size does't match Model bones");
-    }
-
-    // TODO -
-}
-
-
-_Use_decl_annotations_
-void Model::CopyBoneTransformsFrom(size_t nbones, const XMMATRIX* transform)
-{
-    assert(transform != nullptr);
-
-    if (bones.empty())
-    {
-        DebugTrace("ERROR: CopyBoneTransformsFrom called on Model without any model bones defined\n");
-        throw std::exception("Model contains no bones");
-    }
-
-    if (nbones != bones.size())
-    {
-        DebugTrace("ERROR: Invalid size for bone transforms array (%zu != %zu)\n", nbones, bones.size());
-        throw std::invalid_argument("Bone transforms array size does't match Model bones");
-    }
-
-    // TODO -
-}
-
-
-void Model::CopyBoneTransformsTo(size_t nbones, XMMATRIX* transform)
-{
-    assert(transform != nullptr);
-
-    if (bones.empty())
-    {
-        DebugTrace("ERROR: CopyBoneTransformsTo called on Model without any model bones defined\n");
-        throw std::exception("Model contains no bones");
-    }
-
-    if (nbones != bones.size())
-    {
-        DebugTrace("ERROR: Invalid size for bone transforms array (%zu != %zu)\n", nbones, bones.size());
-        throw std::invalid_argument("Bone transforms array size does't match Model bones");
-    }
-
-    // TODO -
 }
