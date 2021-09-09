@@ -348,7 +348,7 @@ void SkinnedEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
     // Set the texture.
     ID3D11ShaderResourceView* textures[1] =
     {
-        (texture != 0) ? texture.Get() : GetDefaultTexture()
+        (texture) ? texture.Get() : GetDefaultTexture()
     };
 
     deviceContext->PSSetShaderResources(0, 1, textures);
