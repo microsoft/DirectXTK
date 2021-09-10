@@ -173,10 +173,11 @@ namespace DirectX
             bool alpha = false,
             _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
 
+        // Draw the mesh using skinning
         void XM_CALLCONV DrawSkinned(
             _In_ ID3D11DeviceContext* deviceContext,
             size_t nbones, _In_reads_(nbones) const XMMATRIX* boneTransforms,
-            CXMMATRIX view, CXMMATRIX projection,
+            FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection,
             bool alpha = false,
             _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
     };
@@ -210,25 +211,29 @@ namespace DirectX
             bool wireframe = false,
             _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
 
-        // Draw all the meshes using model bones.
+        // Draw all the meshes using model bones
         void XM_CALLCONV Draw(
             _In_ ID3D11DeviceContext* deviceContext,
             const CommonStates& states,
-            size_t nbones, _In_reads_opt_(nbones) const XMMATRIX* boneTransforms,
-            CXMMATRIX view, CXMMATRIX projection,
+            size_t nbones, _In_reads_(nbones) const XMMATRIX* boneTransforms,
+            FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection,
             bool wireframe = false,
             _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
 
-        // Draw all the meshes using skinning.
+        // Draw all the meshes using skinning
         void XM_CALLCONV DrawSkinned(
             _In_ ID3D11DeviceContext* deviceContext,
             const CommonStates& states,
             size_t nbones, _In_reads_(nbones) const XMMATRIX* boneTransforms,
-            CXMMATRIX view, CXMMATRIX projection,
+            FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection,
             bool wireframe = false,
             _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
 
-        // TODO - Helpers for working with bones/boneMatrices
+        // Compute bone positions based on heirarchy using boneMatrices
+        void XM_CALLCONV CopyAbsoluteBoneTransformsTo(size_t nbones, _Out_writes_(nbones) XMMATRIX* boneTransforms);
+
+        // Set bone matrices to a new set of local tansforms
+        void CopyBoneTransformsFrom(size_t nbones, _In_reads_(nbones) const XMMATRIX* boneTransforms);
 
         // Notify model that effects, parts list, or mesh list has changed
         void __cdecl Modified() noexcept { mEffectCache.clear(); }
@@ -274,6 +279,9 @@ namespace DirectX
 
     private:
         std::set<IEffect*>  mEffectCache;
+
+        void XM_CALLCONV ComputeBones(uint32_t index, FXMMATRIX local,
+            size_t nbones, _Inout_updates_(nbones) XMMATRIX* boneTransforms, size_t& visited);
     };
 
 #ifdef __clang__
