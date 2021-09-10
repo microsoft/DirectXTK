@@ -306,7 +306,7 @@ void XM_CALLCONV ModelMesh::DrawSkinned(
                 if (!temp)
                 {
                     // Create temporary space on-demand
-                    temp.reset(static_cast<XMMATRIX*>(_aligned_malloc(sizeof(XMMATRIX) * IEffectSkinning::MaxBones, 16)));
+                    temp = ModelBone::MakeArray(IEffectSkinning::MaxBones);
                 }
 
                 size_t count = 0;
@@ -524,9 +524,7 @@ void Model::CopyBoneTransformsFrom(size_t nbones, const XMMATRIX* boneTransforms
 
     if (!boneMatrices)
     {
-        boneMatrices.reset(static_cast<XMMATRIX*>(_aligned_malloc(sizeof(XMMATRIX) * bones.size(), 16)));
-        if (!boneMatrices)
-            throw std::bad_alloc();
+        boneMatrices = ModelBone::MakeArray(bones.size());
     }
 
     memcpy(boneMatrices.get(), boneTransforms, bones.size() * sizeof(XMMATRIX));

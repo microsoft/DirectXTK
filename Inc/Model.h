@@ -64,6 +64,13 @@ namespace DirectX
             animIndex(c_Invalid)
         {}
 
+        ModelBone(uint32_t parent, uint32_t child, uint32_t sibling, uint32_t anim) noexcept :
+            parentIndex(parent),
+            childIndex(child),
+            siblingIndex(sibling),
+            animIndex(anim)
+        {}
+
         uint32_t            parentIndex;
         uint32_t            childIndex;
         uint32_t            siblingIndex;
@@ -77,6 +84,14 @@ namespace DirectX
         struct aligned_deleter { void operator()(void* p) noexcept { _aligned_free(p); } };
 
         using TransformArray = std::unique_ptr<XMMATRIX[], aligned_deleter>;
+
+        static TransformArray MakeArray(size_t count)
+        {
+            void* temp = _aligned_malloc(sizeof(XMMATRIX) * count, 16);
+            if (!temp)
+                throw std::bad_alloc();
+            return TransformArray(static_cast<XMMATRIX*>(temp));
+        }
     };
 
 

@@ -455,7 +455,10 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
             || (dataSize < (header->FrameDataOffset + uint64_t(header->NumFrames) * sizeof(DXUT::SDKMESH_FRAME))))
             throw std::exception("End of file");
 
-        frameArray = reinterpret_cast<const DXUT::SDKMESH_FRAME*>(meshData + header->FrameDataOffset);
+        if (flags & ModelLoader_IncludeFrames)
+        {
+            frameArray = reinterpret_cast<const DXUT::SDKMESH_FRAME*>(meshData + header->FrameDataOffset);
+        }
     }
 
     if (dataSize < header->MaterialDataOffset
@@ -621,7 +624,10 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
                 || (dataSize < mh.FrameInfluenceOffset + uint64_t(mh.NumFrameInfluences) * sizeof(UINT)))
                 throw std::runtime_error("End of file");
 
-            influences = reinterpret_cast<const UINT*>( meshData + mh.FrameInfluenceOffset );
+            if (flags & ModelLoader_IncludeInfluences)
+            {
+                influences = reinterpret_cast<const UINT*>(meshData + mh.FrameInfluenceOffset);
+            }
         }
 
         auto mesh = std::make_shared<ModelMesh>();
@@ -636,7 +642,11 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
         mesh->boundingBox.Extents = mh.BoundingBoxExtents;
         BoundingSphere::CreateFromBoundingBox(mesh->boundingSphere, mesh->boundingBox);
 
-        // TODO - influences go into boneInfluences
+        if (influences)
+        {
+            mesh->boneInfluences.resize(mh.NumFrameInfluences);
+            memcpy(mesh->boneInfluences.data(), influences, sizeof(UINT) * mh.NumFrameInfluences);
+        }
 
         // Create subsets
         mesh->meshParts.reserve(mh.NumSubsets);
@@ -728,7 +738,46 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
 
     if (frameArray)
     {
-        // TODO - frameArray go into model bones
+        static_assert(DXUT::INVALID_FRAME == ModelBone::c_Invalid, "ModelBone invalid type mismatch");
+        static_assert(DXUT::INVALID_ANIMATION_DATA == ModelBone::c_Invalid, "ModelBone invalid type mismatch");
+
+        std::vector<ModelBone> bones;
+        bones.reserve(header->NumFrames);
+        auto transforms = ModelBone::MakeArray(header->NumFrames);
+
+        for (uint32_t j = 0; j < header->NumFrames; ++j)
+        {
+            ModelBone bone(
+                frameArray[j].ParentFrame,
+                frameArray[j].ChildFrame,
+                frameArray[j].SiblingFrame,
+                frameArray[j].AnimationDataIndex);
+
+            wchar_t boneName[DXUT::MAX_FRAME_NAME] = {};
+            ASCIIToWChar(boneName, frameArray[j].Name);
+            bone.name = boneName;
+            bones.emplace_back(bone);
+
+            transforms[j] = XMLoadFloat4x4(&frameArray[j].Matrix);
+
+            uint32_t index = frameArray[j].Mesh;
+            if (index != DXUT::INVALID_MESH)
+            {
+                if (index >= model->meshes.size())
+                {
+                    throw std::out_of_range("Invalid mesh index found in frame data");
+                }
+
+                if (model->meshes[index]->boneIndex == ModelBone::c_Invalid)
+                {
+                    // Bind the first bone that links to a given mesh
+                    model->meshes[index]->boneIndex = j;
+                }
+            }
+        }
+
+        std::swap(model->bones, bones);
+        std::swap(model->boneMatrices, transforms);
     }
 
     return model;
