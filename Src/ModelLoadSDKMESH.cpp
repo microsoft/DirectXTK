@@ -741,7 +741,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
         static_assert(DXUT::INVALID_FRAME == ModelBone::c_Invalid, "ModelBone invalid type mismatch");
         static_assert(DXUT::INVALID_ANIMATION_DATA == ModelBone::c_Invalid, "ModelBone invalid type mismatch");
 
-        std::vector<ModelBone> bones;
+        ModelBone::Collection bones;
         bones.reserve(header->NumFrames);
         auto transforms = ModelBone::MakeArray(header->NumFrames);
 
