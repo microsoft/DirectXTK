@@ -260,7 +260,8 @@ void XM_CALLCONV ModelMesh::Draw(
 _Use_decl_annotations_
 void XM_CALLCONV ModelMesh::DrawSkinned(
     ID3D11DeviceContext* deviceContext,
-    size_t nbones, _In_reads_(nbones) const XMMATRIX* boneTransforms,
+    size_t nbones,
+    const XMMATRIX* boneTransforms,
     FXMMATRIX world,
     CXMMATRIX view,
     CXMMATRIX projection,
@@ -493,7 +494,7 @@ void Model::CopyAbsoluteBoneTransformsTo(size_t nbones, XMMATRIX* boneTransforms
 
     if (nbones < bones.size())
     {
-        throw std::invalid_argument("Bone transforms is too small");
+        throw std::invalid_argument("Bone transforms array is too small");
     }
 
     if (bones.empty() || !boneMatrices)
@@ -519,7 +520,12 @@ void Model::CopyBoneTransformsFrom(size_t nbones, const XMMATRIX* boneTransforms
 
     if (nbones < bones.size())
     {
-        throw std::invalid_argument("Bone transforms is too small");
+        throw std::invalid_argument("Bone transforms array is too small");
+    }
+
+    if (bones.empty())
+    {
+        throw std::runtime_error("Model is missing bones");
     }
 
     if (!boneMatrices)

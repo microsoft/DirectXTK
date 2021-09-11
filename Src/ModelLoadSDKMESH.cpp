@@ -455,7 +455,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
             || (dataSize < (header->FrameDataOffset + uint64_t(header->NumFrames) * sizeof(DXUT::SDKMESH_FRAME))))
             throw std::exception("End of file");
 
-        if (flags & ModelLoader_IncludeFrames)
+        if (flags & ModelLoader_IncludeBones)
         {
             frameArray = reinterpret_cast<const DXUT::SDKMESH_FRAME*>(meshData + header->FrameDataOffset);
         }
@@ -736,6 +736,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
         model->meshes.emplace_back(mesh);
     }
 
+    // Load model bones (if present and requested)
     if (frameArray)
     {
         static_assert(DXUT::INVALID_FRAME == ModelBone::c_Invalid, "ModelBone invalid type mismatch");

@@ -48,7 +48,7 @@ namespace DirectX
         ModelLoader_PremultipledAlpha   = 0x2,
         ModelLoader_MaterialColorsSRGB  = 0x4,
         ModelLoader_AllowLargeModels    = 0x8,
-        ModelLoader_IncludeFrames       = 0x10,
+        ModelLoader_IncludeBones        = 0x10,
         ModelLoader_IncludeInfluences   = 0x20,
         ModelLoader_IncludeSkeleton     = 0x30,
     };
@@ -247,7 +247,7 @@ namespace DirectX
         // Compute bone positions based on heirarchy using boneMatrices
         void XM_CALLCONV CopyAbsoluteBoneTransformsTo(size_t nbones, _Out_writes_(nbones) XMMATRIX* boneTransforms);
 
-        // Set bone matrices to a new set of local tansforms
+        // Set bone matrices to a set of local tansforms
         void CopyBoneTransformsFrom(size_t nbones, _In_reads_(nbones) const XMMATRIX* boneTransforms);
 
         // Notify model that effects, parts list, or mesh list has changed

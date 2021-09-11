@@ -566,8 +566,8 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
         XMVECTOR max = XMVectorSet(extents->MaxX, extents->MaxY, extents->MaxZ, 0.f);
         BoundingBox::CreateFromPoints(mesh->boundingBox, min, max);
 
-        // Animation data
-        if (*bSkeleton)
+        // Load model bones (if present and requested)
+        if (*bSkeleton && (flags & ModelLoader_IncludeBones))
         {
             // Bones
             auto nBones = reinterpret_cast<const UINT*>(meshData + usedSize);
@@ -577,6 +577,10 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
 
             if (!*nBones)
                 throw std::runtime_error("Animation bone data is missing\n");
+
+            ModelBone::Collection bones;
+            bones.resize(*nBones);
+            auto transforms = ModelBone::MakeArray(*nBones);
 
             for (UINT j = 0; j < *nBones; ++j)
             {
@@ -588,12 +592,11 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
 
                 auto boneName = reinterpret_cast<const wchar_t*>(meshData + usedSize);
 
-                usedSize += sizeof(wchar_t)*(*nName);
+                usedSize += sizeof(wchar_t) * (*nName);
                 if (dataSize < usedSize)
                     throw std::runtime_error("End of file");
 
-                // TODO - What to do with bone name?
-                boneName;
+                bones[j].name = boneName;
 
                 // Bone settings
                 auto cmobones = reinterpret_cast<const VSD3DStarter::Bone*>(meshData + usedSize);
@@ -601,10 +604,78 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
                 if (dataSize < usedSize)
                     throw std::runtime_error("End of file");
 
-                // TODO - What to do with bone data?
-                cmobones;
+                transforms[j] = XMLoadFloat4x4(&cmobones->LocalTransform);
+
+                if (cmobones->ParentIndex < 0)
+                {
+                    if (!j)
+                        continue;
+
+                    // Add as a sibling of the root bone
+                    uint32_t index = 0;
+                    for (size_t visited = 0;; ++visited)
+                    {
+                        if (visited >= *nBones)
+                            throw std::runtime_error("Skeleton bones form an invalid graph");
+
+                        uint32_t sibling = bones[index].siblingIndex;
+                        if (sibling == ModelBone::c_Invalid)
+                        {
+                            bones[index].siblingIndex = j;
+                            break;
+                        }
+
+                        if (sibling >= *nBones)
+                            throw std::runtime_error("Skeleton bones corrupt");
+
+                        index = sibling;
+                    }
+                }
+                else if (static_cast<uint32_t>(cmobones->ParentIndex) >= *nBones)
+                {
+                    throw std::runtime_error("Skeleton bones corrupt");
+                }
+                else
+                {
+                    if (!j)
+                        throw std::runtime_error("First bone must be root!");
+
+                    auto index = static_cast<uint32_t>(cmobones->ParentIndex);
+
+                    bones[j].parentIndex = index;
+
+                    // Add as the only child of the parent
+                    if (bones[index].childIndex == ModelBone::c_Invalid)
+                    {
+                        bones[index].childIndex = j;
+                    }
+                    else
+                    {
+                        // Otherwise add as a sibling of the parent's other children
+                        index = bones[index].childIndex;
+                        for (size_t visited = 0;; ++visited)
+                        {
+                            if (visited >= *nBones)
+                                throw std::runtime_error("Skeleton bones form an invalid graph");
+
+                            uint32_t sibling = bones[index].siblingIndex;
+                            if (sibling == ModelBone::c_Invalid)
+                            {
+                                bones[index].siblingIndex = j;
+                                break;
+                            }
+
+                            if (sibling >= *nBones)
+                                throw std::runtime_error("Skeleton bones corrupt");
+
+                            index = sibling;
+                        }
+                    }
+                }
             }
 
+            std::swap(model->bones, bones);
+            std::swap(model->boneMatrices, transforms);
 #if 0
             // Animation Clips
             auto nClips = reinterpret_cast<const UINT*>(meshData + usedSize);
