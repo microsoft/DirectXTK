@@ -624,7 +624,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
                 || (dataSize < mh.FrameInfluenceOffset + uint64_t(mh.NumFrameInfluences) * sizeof(UINT)))
                 throw std::runtime_error("End of file");
 
-            if (flags & ModelLoader_IncludeInfluences)
+            if (flags & ModelLoader_IncludeBones)
             {
                 influences = reinterpret_cast<const UINT*>(meshData + mh.FrameInfluenceOffset);
             }
