@@ -214,6 +214,7 @@ namespace DirectX
         ModelMesh::Collection       meshes;
         ModelBone::Collection       bones;
         ModelBone::TransformArray   boneMatrices;
+        ModelBone::TransformArray   invBindPoseMatrices;
         std::wstring                name;
 
         // Draw all the meshes in the model
@@ -273,12 +274,14 @@ namespace DirectX
             _In_ ID3D11Device* device,
             _In_reads_bytes_(dataSize) const uint8_t* meshData, size_t dataSize,
             _In_ IEffectFactory& fxFactory,
-            ModelLoaderFlags flags = ModelLoader_CounterClockwise);
+            ModelLoaderFlags flags = ModelLoader_CounterClockwise,
+            _Out_opt_ size_t* clipsOffset = nullptr);
         static std::unique_ptr<Model> __cdecl CreateFromCMO(
             _In_ ID3D11Device* device,
             _In_z_ const wchar_t* szFileName,
             _In_ IEffectFactory& fxFactory,
-            ModelLoaderFlags flags = ModelLoader_CounterClockwise);
+            ModelLoaderFlags flags = ModelLoader_CounterClockwise,
+            _Out_opt_ size_t* clipsOffset = nullptr);
 
         // Loads a model from a DirectX SDK .SDKMESH file
         static std::unique_ptr<Model> __cdecl CreateFromSDKMESH(

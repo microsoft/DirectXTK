@@ -263,8 +263,14 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
     ID3D11Device* device,
     const uint8_t* meshData, size_t dataSize,
     IEffectFactory& fxFactory,
-    ModelLoaderFlags flags)
+    ModelLoaderFlags flags,
+    size_t* clipsOffset)
 {
+    if (clipsOffset)
+    {
+        *clipsOffset = 0;
+    }
+
     if (!InitOnceExecuteOnce(&g_InitOnce, InitializeDecl, nullptr, nullptr))
         throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "InitOnceExecuteOnce");
 
@@ -581,6 +587,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
             ModelBone::Collection bones;
             bones.resize(*nBones);
             auto transforms = ModelBone::MakeArray(*nBones);
+            auto invTransforms = ModelBone::MakeArray(*nBones);
 
             for (UINT j = 0; j < *nBones; ++j)
             {
@@ -604,7 +611,8 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
                 if (dataSize < usedSize)
                     throw std::runtime_error("End of file");
 
-                transforms[j] = XMLoadFloat4x4(&cmobones->BindPos);
+                transforms[j] = XMLoadFloat4x4(&cmobones->LocalTransform);
+                invTransforms[j] = XMLoadFloat4x4(&cmobones->InvBindPos);
 
                 if (cmobones->ParentIndex < 0)
                 {
@@ -676,13 +684,24 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
 
             std::swap(model->bones, bones);
             std::swap(model->boneMatrices, transforms);
-#if 0
-            // Animation Clips
-            auto nClips = reinterpret_cast<const UINT*>(meshData + usedSize);
-            usedSize += sizeof(UINT);
-            if (dataSize < usedSize)
-                throw std::runtime_error("End of file");
+            std::swap(model->invBindPoseMatrices, invTransforms);
 
+            // Animation Clips
+            if (clipsOffset)
+            {
+                size_t offset = usedSize;
+
+                auto nClips = reinterpret_cast<const UINT*>(meshData + usedSize);
+                usedSize += sizeof(UINT);
+                if (dataSize < usedSize)
+                    throw std::runtime_error("End of file");
+
+                if (*nClips > 0)
+                {
+                    *clipsOffset = offset;
+                }
+            }
+#if 0
             for (UINT j = 0; j < *nClips; ++j)
             {
                 // Clip name
@@ -716,7 +735,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
                 // TODO - What to do with keys and clip->StartTime, clip->EndTime?
                 keys;
             }
-    #endif
+#endif
         }
 
         bool enableSkinning = (*nSkinVBs) != 0;
@@ -963,8 +982,14 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
     ID3D11Device* device,
     const wchar_t* szFileName,
     IEffectFactory& fxFactory,
-    ModelLoaderFlags flags)
+    ModelLoaderFlags flags,
+    size_t* clipsOffset)
 {
+    if (clipsOffset)
+    {
+        *clipsOffset = 0;
+    }
+
     size_t dataSize = 0;
     std::unique_ptr<uint8_t[]> data;
     HRESULT hr = BinaryReader::ReadEntireFile(szFileName, data, &dataSize);
@@ -975,7 +1000,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
         throw std::runtime_error("CreateFromCMO");
     }
 
-    auto model = CreateFromCMO(device, data.get(), dataSize, fxFactory, flags);
+    auto model = CreateFromCMO(device, data.get(), dataSize, fxFactory, flags, clipsOffset);
 
     model->name = szFileName;
 
