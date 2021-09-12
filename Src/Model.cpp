@@ -324,7 +324,7 @@ void XM_CALLCONV ModelMesh::DrawSkinned(
                         throw std::runtime_error("Invalid bone influence index");
                     }
 
-                    temp[count] = boneTransforms[it];
+                    temp[count - 1] = boneTransforms[it];
                 }
 
                 assert(count == boneInfluences.size());
@@ -485,7 +485,9 @@ void XM_CALLCONV Model::DrawSkinned(
 
 
 _Use_decl_annotations_
-void Model::CopyAbsoluteBoneTransformsTo(size_t nbones, XMMATRIX* boneTransforms)
+void Model::CopyAbsoluteBoneTransformsTo(
+    size_t nbones,
+    XMMATRIX* boneTransforms) const
 {
     if (!nbones || !boneTransforms)
     {
@@ -506,7 +508,75 @@ void Model::CopyAbsoluteBoneTransformsTo(size_t nbones, XMMATRIX* boneTransforms
 
     XMMATRIX id = XMMatrixIdentity();
     size_t visited = 0;
-    ComputeBones(0, id, bones.size(), boneTransforms, visited);
+    ComputeAbsolute(0, id, bones.size(), boneMatrices.get(), boneTransforms, visited);
+}
+
+
+_Use_decl_annotations_
+void Model::CopyAbsoluteBoneTransforms(
+    size_t nbones,
+    const XMMATRIX* inBoneTransforms,
+    XMMATRIX* outBoneTransforms) const
+{
+    if (!nbones || !inBoneTransforms || !outBoneTransforms)
+    {
+        throw std::invalid_argument("Bone transforms arrays required");
+    }
+
+    if (nbones < bones.size())
+    {
+        throw std::invalid_argument("Bone transforms arrays are too small");
+    }
+
+    if (bones.empty())
+    {
+        throw std::runtime_error("Model is missing bones");
+    }
+
+    memset(outBoneTransforms, 0, sizeof(XMMATRIX) * nbones);
+
+    XMMATRIX id = XMMatrixIdentity();
+    size_t visited = 0;
+    ComputeAbsolute(0, id, bones.size(), inBoneTransforms, outBoneTransforms, visited);
+}
+
+
+_Use_decl_annotations_
+void Model::ComputeAbsolute(
+    uint32_t index,
+    FXMMATRIX parent,
+    size_t nbones,
+    const XMMATRIX* inBoneTransforms,
+    XMMATRIX* outBoneTransforms,
+    size_t& visited) const
+{
+    if (index == ModelBone::c_Invalid || index >= nbones)
+        return;
+
+    assert(inBoneTransforms != nullptr && outBoneTransforms != nullptr);
+
+    ++visited;
+    if (visited > bones.size())
+    {
+        DebugTrace("ERROR: Model::CopyAbsoluteBoneTransformsTo encountered a cycle in the bones!\n");
+        throw std::runtime_error("Model bones form an invalid graph");
+    }
+
+    XMMATRIX local = inBoneTransforms[index];
+    local = XMMatrixMultiply(local, parent);
+    outBoneTransforms[index] = local;
+
+    if (bones[index].siblingIndex != ModelBone::c_Invalid)
+    {
+        ComputeAbsolute(bones[index].siblingIndex, parent, nbones,
+            inBoneTransforms, outBoneTransforms, visited);
+    }
+
+    if (bones[index].childIndex != ModelBone::c_Invalid)
+    {
+        ComputeAbsolute(bones[index].childIndex, local, nbones,
+            inBoneTransforms, outBoneTransforms, visited);
+    }
 }
 
 
@@ -538,38 +608,24 @@ void Model::CopyBoneTransformsFrom(size_t nbones, const XMMATRIX* boneTransforms
 
 
 _Use_decl_annotations_
-void Model::ComputeBones(
-    uint32_t index,
-    FXMMATRIX parent,
-    size_t nbones,
-    XMMATRIX* boneTransforms,
-    size_t& visited)
+void Model::CopyBoneTransformsTo(size_t nbones, XMMATRIX* boneTransforms) const
 {
-    if (index == ModelBone::c_Invalid || index >= nbones)
-        return;
-
-    assert(boneTransforms != nullptr);
-
-    ++visited;
-    if (visited > bones.size())
+    if (!nbones || !boneTransforms)
     {
-        DebugTrace("ERROR: Model::CopyAbsoluteBoneTransformsTo encountered a cycle in the bones!\n");
-        throw std::runtime_error("Model bones form an invalid graph");
+        throw std::invalid_argument("Bone transforms array required");
     }
 
-    XMMATRIX local = boneMatrices[index];
-    local = XMMatrixMultiply(local, parent);
-    boneTransforms[index] = local;
-
-    if (bones[index].siblingIndex != ModelBone::c_Invalid)
+    if (nbones < bones.size())
     {
-        ComputeBones(bones[index].siblingIndex, parent, nbones, boneTransforms, visited);
+        throw std::invalid_argument("Bone transforms array is too small");
     }
 
-    if (bones[index].childIndex != ModelBone::c_Invalid)
+    if (bones.empty())
     {
-        ComputeBones(bones[index].childIndex, local, nbones, boneTransforms, visited);
+        throw std::runtime_error("Model is missing bones");
     }
+
+    memcpy(boneTransforms, boneMatrices.get(), bones.size() * sizeof(XMMATRIX));
 }
 
 

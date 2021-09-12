@@ -604,7 +604,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
                 if (dataSize < usedSize)
                     throw std::runtime_error("End of file");
 
-                transforms[j] = XMLoadFloat4x4(&cmobones->LocalTransform);
+                transforms[j] = XMLoadFloat4x4(&cmobones->BindPos);
 
                 if (cmobones->ParentIndex < 0)
                 {

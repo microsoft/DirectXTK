@@ -242,11 +242,25 @@ namespace DirectX
             bool wireframe = false,
             _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
 
-        // Compute bone positions based on heirarchy using boneMatrices
-        void XM_CALLCONV CopyAbsoluteBoneTransformsTo(size_t nbones, _Out_writes_(nbones) XMMATRIX* boneTransforms);
+        // Compute bone positions based on heirarchy and transform matrices
+        void __cdecl CopyAbsoluteBoneTransformsTo(
+            size_t nbones,
+            _Out_writes_(nbones) XMMATRIX* boneTransforms) const;
 
-        // Set bone matrices to a set of local tansforms
-        void CopyBoneTransformsFrom(size_t nbones, _In_reads_(nbones) const XMMATRIX* boneTransforms);
+        void __cdecl CopyAbsoluteBoneTransforms(
+            size_t nbones,
+            _In_reads_(nbones) const XMMATRIX* inBoneTransforms,
+            _Out_writes_(nbones) XMMATRIX* outBoneTransforms) const;
+
+        // Set bone matrices to a set of relative tansforms
+        void __cdecl CopyBoneTransformsFrom(
+            size_t nbones,
+            _In_reads_(nbones) const XMMATRIX* boneTransforms);
+
+        // Copies the relative bone matrices to a transform array
+        void __cdecl CopyBoneTransformsTo(
+            size_t nbones,
+            _Out_writes_(nbones) XMMATRIX* boneTransforms) const;
 
         // Notify model that effects, parts list, or mesh list has changed
         void __cdecl Modified() noexcept { mEffectCache.clear(); }
@@ -293,8 +307,11 @@ namespace DirectX
     private:
         std::set<IEffect*>  mEffectCache;
 
-        void XM_CALLCONV ComputeBones(uint32_t index, FXMMATRIX local,
-            size_t nbones, _Inout_updates_(nbones) XMMATRIX* boneTransforms, size_t& visited);
+        void XM_CALLCONV ComputeAbsolute(uint32_t index,
+            FXMMATRIX local, size_t nbones,
+            _In_reads_(nbones) const XMMATRIX* inBoneTransforms,
+            _Inout_updates_(nbones) XMMATRIX* outBoneTransforms,
+            size_t& visited) const;
     };
 
 #ifdef __clang__
