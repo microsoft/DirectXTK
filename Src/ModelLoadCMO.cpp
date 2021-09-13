@@ -264,11 +264,11 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
     const uint8_t* meshData, size_t dataSize,
     IEffectFactory& fxFactory,
     ModelLoaderFlags flags,
-    size_t* clipsOffset)
+    size_t* animsOffset)
 {
-    if (clipsOffset)
+    if (animsOffset)
     {
-        *clipsOffset = 0;
+        *animsOffset = 0;
     }
 
     if (!InitOnceExecuteOnce(&g_InitOnce, InitializeDecl, nullptr, nullptr))
@@ -687,8 +687,10 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
             std::swap(model->invBindPoseMatrices, invTransforms);
 
             // Animation Clips
-            if (clipsOffset)
+            if (animsOffset)
             {
+                // Optional return for offset to start of animation clips in the CMO.
+
                 size_t offset = usedSize;
 
                 auto nClips = reinterpret_cast<const UINT*>(meshData + usedSize);
@@ -698,10 +700,11 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
 
                 if (*nClips > 0)
                 {
-                    *clipsOffset = offset;
+                    *animsOffset = offset;
                 }
             }
 #if 0
+            // TODO: Move this to another function.
             for (UINT j = 0; j < *nClips; ++j)
             {
                 // Clip name
@@ -983,11 +986,11 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
     const wchar_t* szFileName,
     IEffectFactory& fxFactory,
     ModelLoaderFlags flags,
-    size_t* clipsOffset)
+    size_t* animsOffset)
 {
-    if (clipsOffset)
+    if (animsOffset)
     {
-        *clipsOffset = 0;
+        *animsOffset = 0;
     }
 
     size_t dataSize = 0;
@@ -1000,7 +1003,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
         throw std::runtime_error("CreateFromCMO");
     }
 
-    auto model = CreateFromCMO(device, data.get(), dataSize, fxFactory, flags, clipsOffset);
+    auto model = CreateFromCMO(device, data.get(), dataSize, fxFactory, flags, animsOffset);
 
     model->name = szFileName;
 

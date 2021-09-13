@@ -41,6 +41,7 @@ ModelMeshPart::~ModelMeshPart()
 }
 
 
+// Draws using a custom override effect.
 _Use_decl_annotations_
 void ModelMeshPart::Draw(
     ID3D11DeviceContext* deviceContext,
@@ -74,6 +75,7 @@ void ModelMeshPart::Draw(
 }
 
 
+// Draws using a custom override effect w/ instancing.
 _Use_decl_annotations_
 void ModelMeshPart::DrawInstanced(
     ID3D11DeviceContext* deviceContext,
@@ -111,6 +113,7 @@ void ModelMeshPart::DrawInstanced(
 }
 
 
+// Creates input layout for use with custom override effects.
 _Use_decl_annotations_
 void ModelMeshPart::CreateInputLayout(ID3D11Device* d3dDevice, IEffect* ieffect, ID3D11InputLayout** iinputLayout) const
 {
@@ -134,6 +137,7 @@ void ModelMeshPart::CreateInputLayout(ID3D11Device* d3dDevice, IEffect* ieffect,
 }
 
 
+// Assigns a new effect and re-generates input layout.
 _Use_decl_annotations_
 void ModelMeshPart::ModifyEffect(ID3D11Device* d3dDevice, std::shared_ptr<IEffect>& ieffect, bool isalpha)
 {
@@ -172,6 +176,7 @@ ModelMesh::~ModelMesh()
 }
 
 
+// Set render state for mesh part rendering.
 _Use_decl_annotations_
 void ModelMesh::PrepareForRendering(
     ID3D11DeviceContext* deviceContext,
@@ -224,6 +229,7 @@ void ModelMesh::PrepareForRendering(
 }
 
 
+// Draw mesh given worldViewProjection matrices.
 _Use_decl_annotations_
 void XM_CALLCONV ModelMesh::Draw(
     ID3D11DeviceContext* deviceContext,
@@ -257,6 +263,7 @@ void XM_CALLCONV ModelMesh::Draw(
 }
 
 
+// Draw mesh using skinning given bone transform array.
 _Use_decl_annotations_
 void XM_CALLCONV ModelMesh::DrawSkinned(
     ID3D11DeviceContext* deviceContext,
@@ -355,6 +362,7 @@ Model::~Model()
 }
 
 
+// Draw all meshes in model given worldViewProjection matrices (ignores any model bones).
 _Use_decl_annotations_
 void XM_CALLCONV Model::Draw(
     ID3D11DeviceContext* deviceContext,
@@ -391,6 +399,7 @@ void XM_CALLCONV Model::Draw(
 }
 
 
+// Draw all meshes in model using rigid-body animation given bone transform array.
 _Use_decl_annotations_
 void XM_CALLCONV Model::Draw(
     ID3D11DeviceContext* deviceContext,
@@ -440,6 +449,7 @@ void XM_CALLCONV Model::Draw(
 }
 
 
+// Draw all meshes in model using skinning given bone transform array.
 _Use_decl_annotations_
 void XM_CALLCONV Model::DrawSkinned(
     ID3D11DeviceContext* deviceContext,
@@ -453,7 +463,6 @@ void XM_CALLCONV Model::DrawSkinned(
     std::function<void()> setCustomState) const
 {
     assert(deviceContext != nullptr);
-    assert(boneTransforms != nullptr);
 
     if (!nbones || !boneTransforms)
     {
@@ -484,6 +493,7 @@ void XM_CALLCONV Model::DrawSkinned(
 }
 
 
+// Compute using bone hierarchy from model bone matrices to an array.
 _Use_decl_annotations_
 void Model::CopyAbsoluteBoneTransformsTo(
     size_t nbones,
@@ -512,6 +522,7 @@ void Model::CopyAbsoluteBoneTransformsTo(
 }
 
 
+// Compute using bone hierarchy from one array to another array.
 _Use_decl_annotations_
 void Model::CopyAbsoluteBoneTransforms(
     size_t nbones,
@@ -541,6 +552,7 @@ void Model::CopyAbsoluteBoneTransforms(
 }
 
 
+// Private helper for computing hierarchical transforms using bones via recursion.
 _Use_decl_annotations_
 void Model::ComputeAbsolute(
     uint32_t index,
@@ -555,7 +567,7 @@ void Model::ComputeAbsolute(
 
     assert(inBoneTransforms != nullptr && outBoneTransforms != nullptr);
 
-    ++visited;
+    ++visited; // Cycle detection safety!
     if (visited > bones.size())
     {
         DebugTrace("ERROR: Model::CopyAbsoluteBoneTransformsTo encountered a cycle in the bones!\n");
@@ -580,6 +592,7 @@ void Model::ComputeAbsolute(
 }
 
 
+// Copy the model bone matrices from an array.
 _Use_decl_annotations_
 void Model::CopyBoneTransformsFrom(size_t nbones, const XMMATRIX* boneTransforms)
 {
@@ -607,6 +620,7 @@ void Model::CopyBoneTransformsFrom(size_t nbones, const XMMATRIX* boneTransforms
 }
 
 
+// Copy the model bone matrices to an array.
 _Use_decl_annotations_
 void Model::CopyBoneTransformsTo(size_t nbones, XMMATRIX* boneTransforms) const
 {
@@ -629,6 +643,7 @@ void Model::CopyBoneTransformsTo(size_t nbones, XMMATRIX* boneTransforms) const
 }
 
 
+// Iterate through unique effect instances.
 void Model::UpdateEffects(_In_ std::function<void(IEffect*)> setEffect)
 {
     if (mEffectCache.empty())

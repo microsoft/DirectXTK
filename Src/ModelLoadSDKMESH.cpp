@@ -494,7 +494,6 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
     materialFlags.resize(header->NumVertexBuffers);
 
     bool dec3nwarning = false;
-    bool skinInModel = false;
     for (UINT j = 0; j < header->NumVertexBuffers; ++j)
     {
         auto& vh = vbArray[j];
@@ -517,7 +516,6 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
 
         if (ilflags & SKINNING)
         {
-            skinInModel = true;
             ilflags &= ~static_cast<unsigned int>(DUAL_TEXTURE | NORMAL_MAPS);
         }
         if (ilflags & DUAL_TEXTURE)
@@ -781,26 +779,18 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
 
         std::swap(model->bones, bones);
 
-        if (skinInModel)
-        {
-            // Compute inverse bind pose matrices for the model
-            auto bindPose = ModelBone::MakeArray(header->NumFrames);
-            model->CopyAbsoluteBoneTransforms(header->NumFrames, transforms.get(), bindPose.get());
+        // Compute inverse bind pose matrices for the model
+        auto bindPose = ModelBone::MakeArray(header->NumFrames);
+        model->CopyAbsoluteBoneTransforms(header->NumFrames, transforms.get(), bindPose.get());
 
-            auto invBoneTransforms = ModelBone::MakeArray(header->NumFrames);
-            for (size_t j = 0; j < header->NumFrames; ++j)
-            {
-                invBoneTransforms[j] = XMMatrixInverse(nullptr, bindPose[j]);
-            }
-
-            std::swap(model->invBindPoseMatrices, invBoneTransforms);
-        }
-        else
+        auto invBoneTransforms = ModelBone::MakeArray(header->NumFrames);
+        for (size_t j = 0; j < header->NumFrames; ++j)
         {
-            // For non-skinned models, there are no invBindPoseMatrices matrices.
+            invBoneTransforms[j] = XMMatrixInverse(nullptr, bindPose[j]);
         }
 
         std::swap(model->boneMatrices, transforms);
+        std::swap(model->invBindPoseMatrices, invBoneTransforms);
     }
 
     return model;

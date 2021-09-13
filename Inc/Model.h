@@ -77,7 +77,7 @@ namespace DirectX
 
         using Collection = std::vector<ModelBone>;
 
-        static const uint32_t c_Invalid = uint32_t(-1);
+        static constexpr uint32_t c_Invalid = uint32_t(-1);
 
         struct aligned_deleter { void operator()(void* p) noexcept { _aligned_free(p); } };
 
@@ -275,13 +275,13 @@ namespace DirectX
             _In_reads_bytes_(dataSize) const uint8_t* meshData, size_t dataSize,
             _In_ IEffectFactory& fxFactory,
             ModelLoaderFlags flags = ModelLoader_CounterClockwise,
-            _Out_opt_ size_t* clipsOffset = nullptr);
+            _Out_opt_ size_t* animsOffset = nullptr);
         static std::unique_ptr<Model> __cdecl CreateFromCMO(
             _In_ ID3D11Device* device,
             _In_z_ const wchar_t* szFileName,
             _In_ IEffectFactory& fxFactory,
             ModelLoaderFlags flags = ModelLoader_CounterClockwise,
-            _Out_opt_ size_t* clipsOffset = nullptr);
+            _Out_opt_ size_t* animsOffset = nullptr);
 
         // Loads a model from a DirectX SDK .SDKMESH file
         static std::unique_ptr<Model> __cdecl CreateFromSDKMESH(
