@@ -206,8 +206,8 @@ namespace DirectX
         Model(Model&&) = default;
         Model& operator= (Model&&) = default;
 
-        Model(Model const&) = default;
-        Model& operator= (Model const&) = default;
+        Model(Model const& other);
+        Model& operator= (Model const& rhs);
 
         virtual ~Model();
 
