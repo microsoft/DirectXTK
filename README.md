@@ -82,6 +82,12 @@ For the latest version of DirectXTK, bug reports, etc. please visit the project 
 
 * The ``CompileShaders.cmd`` script must have Windows-style (CRLF) line-endings. If it is changed to Linux-style (LF) line-endings, it can fail to build all the required shaders.
 
+## Support
+
+For questions, consider using [Stack Overflow](https://stackoverflow.com/questions/tagged/directxtk) with the *directxtk* tag, or the [DirectX Discord Server](https://discord.gg/directx) in the *dx9-dx11-developers* channel.
+
+For bug reports and feature requests, please use GitHub [issues](https://github.com/microsoft/DirectXTK/issues) for this project.
+
 ## Contributing
 
 This project welcomes contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
@@ -93,3 +99,15 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 ## Trademarks
 
 This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft trademarks or logos is subject to and must follow [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general). Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship. Any use of third-party trademarks or logos are subject to those third-party's policies.
+
+## Credits
+
+The _DirectX Tool Kit_ is the work of Shawn Hargreaves and Chuck Walbourn, with contributions from Aaron Rodriguez Hernandez, and Dani Roman.
+
+Thanks to Adrian Tsai for the geodesic sphere implementation.
+
+Thanks to Garrett Serack for his help in creating the NuGet packages for DirectX Tool Kit.
+
+Thanks to Roberto Sonnino for his help with the ``CMO`` and DGSL rendering.
+
+Thanks to Pete Lewis and Justin Saunders for the normal-mapped and PBR shaders implementation.
