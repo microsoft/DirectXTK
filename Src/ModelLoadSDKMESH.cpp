@@ -194,7 +194,7 @@ namespace
 
     unsigned int GetInputLayoutDesc(
         _In_reads_(32) const DXUT::D3DVERTEXELEMENT9 decl[],
-        std::vector<D3D11_INPUT_ELEMENT_DESC>& inputDesc)
+        ModelMeshPart::InputLayoutList& inputDesc)
     {
         static const D3D11_INPUT_ELEMENT_DESC s_elements[] =
         {
@@ -479,7 +479,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
     std::vector<ComPtr<ID3D11Buffer>> vbs;
     vbs.resize(header->NumVertexBuffers);
 
-    std::vector<std::shared_ptr<std::vector<D3D11_INPUT_ELEMENT_DESC>>> vbDecls;
+    std::vector<std::shared_ptr<ModelMeshPart::InputLayoutList>> vbDecls;
     vbDecls.resize(header->NumVertexBuffers);
 
     std::vector<unsigned int> materialFlags;
@@ -503,7 +503,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
             || (dataSize < vh.DataOffset + vh.SizeBytes))
             throw std::runtime_error("End of file");
 
-        vbDecls[j] = std::make_shared<std::vector<D3D11_INPUT_ELEMENT_DESC>>();
+        vbDecls[j] = std::make_shared<ModelMeshPart::InputLayoutList>();
         unsigned int ilflags = GetInputLayoutDesc(vh.Decl, *vbDecls[j].get());
 
         if (ilflags & SKINNING)
