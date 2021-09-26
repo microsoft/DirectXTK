@@ -216,8 +216,8 @@ namespace
 
     // Shared VB input element description
     INIT_ONCE g_InitOnce = INIT_ONCE_STATIC_INIT;
-    std::shared_ptr<ModelMeshPart::InputLayoutList> g_vbdecl;
-    std::shared_ptr<ModelMeshPart::InputLayoutList> g_vbdeclSkinning;
+    std::shared_ptr<ModelMeshPart::InputLayoutCollection> g_vbdecl;
+    std::shared_ptr<ModelMeshPart::InputLayoutCollection> g_vbdeclSkinning;
 
     BOOL CALLBACK InitializeDecl(PINIT_ONCE initOnce, PVOID Parameter, PVOID *lpContext)
     {
@@ -225,11 +225,11 @@ namespace
         UNREFERENCED_PARAMETER(Parameter);
         UNREFERENCED_PARAMETER(lpContext);
 
-        g_vbdecl = std::make_shared<ModelMeshPart::InputLayoutList>(
+        g_vbdecl = std::make_shared<ModelMeshPart::InputLayoutCollection>(
             VertexPositionNormalTangentColorTexture::InputElements,
             VertexPositionNormalTangentColorTexture::InputElements + VertexPositionNormalTangentColorTexture::InputElementCount);
 
-        g_vbdeclSkinning = std::make_shared<ModelMeshPart::InputLayoutList>(
+        g_vbdeclSkinning = std::make_shared<ModelMeshPart::InputLayoutCollection>(
             VertexPositionNormalTangentColorTextureSkinning::InputElements,
             VertexPositionNormalTangentColorTextureSkinning::InputElements + VertexPositionNormalTangentColorTextureSkinning::InputElementCount);
         return TRUE;
