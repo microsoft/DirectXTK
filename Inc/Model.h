@@ -109,7 +109,7 @@ namespace DirectX
         virtual ~ModelMeshPart();
 
         using Collection = std::vector<std::unique_ptr<ModelMeshPart>>;
-        using InputLayoutList = std::vector<D3D11_INPUT_ELEMENT_DESC>;
+        using InputLayoutCollection = std::vector<D3D11_INPUT_ELEMENT_DESC>;
 
         uint32_t                                                indexCount;
         uint32_t                                                startIndex;
@@ -121,7 +121,7 @@ namespace DirectX
         Microsoft::WRL::ComPtr<ID3D11Buffer>                    indexBuffer;
         Microsoft::WRL::ComPtr<ID3D11Buffer>                    vertexBuffer;
         std::shared_ptr<IEffect>                                effect;
-        std::shared_ptr<InputLayoutList>                        vbDecl;
+        std::shared_ptr<InputLayoutCollection>                  vbDecl;
         bool                                                    isAlpha;
 
         // Draw mesh part with custom effect

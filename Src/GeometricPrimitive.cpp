@@ -425,8 +425,8 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCube(
 }
 
 void GeometricPrimitive::CreateCube(
-    std::vector<VertexType>& vertices,
-    std::vector<uint16_t>& indices,
+    VertexCollection& vertices,
+    IndexCollection& indices,
     float size,
     bool rhcoords)
 {
@@ -455,8 +455,8 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateBox(
 }
 
 void GeometricPrimitive::CreateBox(
-    std::vector<VertexType>& vertices,
-    std::vector<uint16_t>& indices,
+    VertexCollection& vertices,
+    IndexCollection& indices,
     const XMFLOAT3& size,
     bool rhcoords,
     bool invertn)
@@ -490,8 +490,8 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateSphere(
 }
 
 void GeometricPrimitive::CreateSphere(
-    std::vector<VertexType>& vertices,
-    std::vector<uint16_t>& indices,
+    VertexCollection& vertices,
+    IndexCollection& indices,
     float diameter,
     size_t tessellation,
     bool rhcoords,
@@ -525,8 +525,8 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateGeoSphere(
 }
 
 void GeometricPrimitive::CreateGeoSphere(
-    std::vector<VertexType>& vertices,
-    std::vector<uint16_t>& indices,
+    VertexCollection& vertices,
+    IndexCollection& indices,
     float diameter,
     size_t tessellation, bool rhcoords)
 {
@@ -560,8 +560,8 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCylinder(
 }
 
 void GeometricPrimitive::CreateCylinder(
-    std::vector<VertexType>& vertices,
-    std::vector<uint16_t>& indices,
+    VertexCollection& vertices,
+    IndexCollection& indices,
     float height,
     float diameter,
     size_t tessellation,
@@ -593,8 +593,8 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCone(
 }
 
 void GeometricPrimitive::CreateCone(
-    std::vector<VertexType>& vertices,
-    std::vector<uint16_t>& indices,
+    VertexCollection& vertices,
+    IndexCollection& indices,
     float diameter,
     float height,
     size_t tessellation,
@@ -629,8 +629,8 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateTorus(
 }
 
 void GeometricPrimitive::CreateTorus(
-    std::vector<VertexType>& vertices,
-    std::vector<uint16_t>& indices,
+    VertexCollection& vertices,
+    IndexCollection& indices,
     float diameter,
     float thickness,
     size_t tessellation,
@@ -663,8 +663,8 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateTetrahedron(
 }
 
 void GeometricPrimitive::CreateTetrahedron(
-    std::vector<VertexType>& vertices,
-    std::vector<uint16_t>& indices,
+    VertexCollection& vertices,
+    IndexCollection& indices,
     float size,
     bool rhcoords)
 {
@@ -695,8 +695,8 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateOctahedron(
 }
 
 void GeometricPrimitive::CreateOctahedron(
-    std::vector<VertexType>& vertices,
-    std::vector<uint16_t>& indices,
+    VertexCollection& vertices,
+    IndexCollection& indices,
     float size,
     bool rhcoords)
 {
@@ -727,8 +727,8 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateDodecahedron(
 }
 
 void GeometricPrimitive::CreateDodecahedron(
-    std::vector<VertexType>& vertices,
-    std::vector<uint16_t>& indices,
+    VertexCollection& vertices,
+    IndexCollection& indices,
     float size,
     bool rhcoords)
 {
@@ -759,8 +759,8 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateIcosahedron(
 }
 
 void GeometricPrimitive::CreateIcosahedron(
-    std::vector<VertexType>& vertices,
-    std::vector<uint16_t>& indices,
+    VertexCollection& vertices,
+    IndexCollection& indices,
     float size,
     bool rhcoords)
 {
@@ -792,8 +792,8 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateTeapot(
 }
 
 void GeometricPrimitive::CreateTeapot(
-    std::vector<VertexType>& vertices,
-    std::vector<uint16_t>& indices,
+    VertexCollection& vertices,
+    IndexCollection& indices,
     float size,
     size_t tessellation,
     bool rhcoords)
@@ -809,8 +809,8 @@ void GeometricPrimitive::CreateTeapot(
 _Use_decl_annotations_
 std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCustom(
     ID3D11DeviceContext* deviceContext,
-    const std::vector<VertexType>& vertices,
-    const std::vector<uint16_t>& indices)
+    const VertexCollection& vertices,
+    const IndexCollection& indices)
 {
     // Extra validation
     if (vertices.empty() || indices.empty())
