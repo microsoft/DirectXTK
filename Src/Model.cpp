@@ -263,6 +263,56 @@ void XM_CALLCONV ModelMesh::Draw(
 }
 
 
+// Draw the mesh using model bones.
+_Use_decl_annotations_
+void XM_CALLCONV ModelMesh::Draw(
+    ID3D11DeviceContext* deviceContext,
+    size_t nbones, const XMMATRIX* boneTransforms,
+    FXMMATRIX world,
+    CXMMATRIX view,
+    CXMMATRIX projection,
+    bool alpha,
+    std::function<void()> setCustomState) const
+{
+    assert(deviceContext != nullptr);
+
+    if (!nbones || !boneTransforms)
+    {
+        throw std::invalid_argument("Bone transforms array required");
+    }
+
+    XMMATRIX local;
+    if (boneIndex != ModelBone::c_Invalid && boneIndex < nbones)
+    {
+        local = XMMatrixMultiply(boneTransforms[boneIndex], world);
+    }
+    else
+    {
+        local = world;
+    }
+
+    for (const auto& it : meshParts)
+    {
+        auto part = it.get();
+        assert(part != nullptr);
+
+        if (part->isAlpha != alpha)
+        {
+            // Skip alpha parts when drawing opaque or skip opaque parts if drawing alpha
+            continue;
+        }
+
+        auto imatrices = dynamic_cast<IEffectMatrices*>(part->effect.get());
+        if (imatrices)
+        {
+            imatrices->SetMatrices(local, view, projection);
+        }
+
+        part->Draw(deviceContext, part->effect.get(), part->inputLayout.Get(), setCustomState);
+    }
+}
+
+
 // Draw mesh using skinning given bone transform array.
 _Use_decl_annotations_
 void XM_CALLCONV ModelMesh::DrawSkinned(
@@ -399,7 +449,7 @@ Model& Model::operator= (Model const& rhs)
 }
 
 
-// Draw all meshes in model given worldViewProjection matrices (ignores any model bones).
+// Draw all meshes in model given worldViewProjection matrices.
 _Use_decl_annotations_
 void XM_CALLCONV Model::Draw(
     ID3D11DeviceContext* deviceContext,
@@ -451,11 +501,6 @@ void XM_CALLCONV Model::Draw(
 {
     assert(deviceContext != nullptr);
 
-    if (!nbones || !boneTransforms)
-    {
-        throw std::invalid_argument("Bone transforms array required");
-    }
-
     // Draw opaque parts
     for (const auto& it : meshes)
     {
@@ -464,10 +509,7 @@ void XM_CALLCONV Model::Draw(
 
         mesh->PrepareForRendering(deviceContext, states, false, wireframe);
 
-        XMMATRIX bm = (mesh->boneIndex != ModelBone::c_Invalid && mesh->boneIndex < nbones)
-            ? boneTransforms[mesh->boneIndex] : XMMatrixIdentity();
-
-        mesh->Draw(deviceContext, XMMatrixMultiply(bm, world), view, projection, false, setCustomState);
+        mesh->Draw(deviceContext, nbones, boneTransforms, world, view, projection, false, setCustomState);
     }
 
     // Draw alpha parts
@@ -478,10 +520,7 @@ void XM_CALLCONV Model::Draw(
 
         mesh->PrepareForRendering(deviceContext, states, true, wireframe);
 
-        XMMATRIX bm = (mesh->boneIndex != ModelBone::c_Invalid && mesh->boneIndex < nbones)
-            ? boneTransforms[mesh->boneIndex] : XMMatrixIdentity();
-
-        mesh->Draw(deviceContext, XMMatrixMultiply(bm, world), view, projection, true, setCustomState);
+        mesh->Draw(deviceContext, nbones, boneTransforms, world, view, projection, true, setCustomState);
     }
 }
 
@@ -500,11 +539,6 @@ void XM_CALLCONV Model::DrawSkinned(
     std::function<void()> setCustomState) const
 {
     assert(deviceContext != nullptr);
-
-    if (!nbones || !boneTransforms)
-    {
-        throw std::invalid_argument("Bone transforms array required");
-    }
 
     // Draw opaque parts
     for (const auto& it : meshes)

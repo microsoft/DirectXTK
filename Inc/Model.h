@@ -187,6 +187,14 @@ namespace DirectX
             bool alpha = false,
             _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
 
+        // Draw the mesh using model bones
+        void XM_CALLCONV Draw(
+            _In_ ID3D11DeviceContext* deviceContext,
+            size_t nbones, _In_reads_(nbones) const XMMATRIX* boneTransforms,
+            FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection,
+            bool alpha = false,
+            _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
+
         // Draw the mesh using skinning
         void XM_CALLCONV DrawSkinned(
             _In_ ID3D11DeviceContext* deviceContext,
