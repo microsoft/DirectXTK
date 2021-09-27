@@ -104,6 +104,8 @@ This project may contain trademarks or logos for projects, products, or services
 
 The _DirectX Tool Kit_ is the work of Shawn Hargreaves and Chuck Walbourn, with contributions from Aaron Rodriguez Hernandez, and Dani Roman.
 
+Thanks to Shanon Drone for the SDKMESH file format.
+
 Thanks to Adrian Tsai for the geodesic sphere implementation.
 
 Thanks to Garrett Serack for his help in creating the NuGet packages for DirectX Tool Kit.
