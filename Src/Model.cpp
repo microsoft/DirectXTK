@@ -363,30 +363,30 @@ void XM_CALLCONV ModelMesh::DrawSkinned(
             {
                 if (!temp)
                 {
-                    // Create temporary space on-demand
+                    // Create the influence mapped bones on-demand.
                     temp = ModelBone::MakeArray(IEffectSkinning::MaxBones);
-                }
 
-                size_t count = 0;
-                for (auto it : boneInfluences)
-                {
-                    ++count;
-                    if (count > IEffectSkinning::MaxBones)
+                    size_t count = 0;
+                    for (auto it : boneInfluences)
                     {
-                        throw std::runtime_error("Too many bones for skinning");
+                        ++count;
+                        if (count > IEffectSkinning::MaxBones)
+                        {
+                            throw std::runtime_error("Too many bones for skinning");
+                        }
+
+                        if (it >= nbones)
+                        {
+                            throw std::runtime_error("Invalid bone influence index");
+                        }
+
+                        temp[count - 1] = boneTransforms[it];
                     }
 
-                    if (it >= nbones)
-                    {
-                        throw std::runtime_error("Invalid bone influence index");
-                    }
-
-                    temp[count - 1] = boneTransforms[it];
+                    assert(count == boneInfluences.size());
                 }
 
-                assert(count == boneInfluences.size());
-
-                iskinning->SetBoneTransforms(temp.get(), count);
+                iskinning->SetBoneTransforms(temp.get(), boneInfluences.size());
             }
         }
         else if (imatrices)
