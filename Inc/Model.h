@@ -58,21 +58,18 @@ namespace DirectX
         ModelBone() noexcept :
             parentIndex(c_Invalid),
             childIndex(c_Invalid),
-            siblingIndex(c_Invalid),
-            animIndex(c_Invalid)
+            siblingIndex(c_Invalid)
         {}
 
-        ModelBone(uint32_t parent, uint32_t child, uint32_t sibling, uint32_t anim) noexcept :
+        ModelBone(uint32_t parent, uint32_t child, uint32_t sibling) noexcept :
             parentIndex(parent),
             childIndex(child),
-            siblingIndex(sibling),
-            animIndex(anim)
+            siblingIndex(sibling)
         {}
 
         uint32_t            parentIndex;
         uint32_t            childIndex;
         uint32_t            siblingIndex;
-        uint32_t            animIndex;
         std::wstring        name;
 
         using Collection = std::vector<ModelBone>;

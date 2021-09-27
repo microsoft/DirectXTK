@@ -740,7 +740,6 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
     if (frameArray)
     {
         static_assert(DXUT::INVALID_FRAME == ModelBone::c_Invalid, "ModelBone invalid type mismatch");
-        static_assert(DXUT::INVALID_ANIMATION_DATA == ModelBone::c_Invalid, "ModelBone invalid type mismatch");
 
         ModelBone::Collection bones;
         bones.reserve(header->NumFrames);
@@ -751,8 +750,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
             ModelBone bone(
                 frameArray[j].ParentFrame,
                 frameArray[j].ChildFrame,
-                frameArray[j].SiblingFrame,
-                frameArray[j].AnimationDataIndex);
+                frameArray[j].SiblingFrame);
 
             wchar_t boneName[DXUT::MAX_FRAME_NAME] = {};
             ASCIIToWChar(boneName, frameArray[j].Name);
