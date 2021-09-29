@@ -703,42 +703,6 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
                     *animsOffset = offset;
                 }
             }
-#if 0
-            // TODO: Move this to another function.
-            for (size_t j = 0; j < *nClips; ++j)
-            {
-                // Clip name
-                nName = reinterpret_cast<const uint32_t*>(meshData + usedSize);
-                usedSize += sizeof(uint32_t);
-                if (dataSize < usedSize)
-                    throw std::runtime_error("End of file");
-
-                auto clipName = reinterpret_cast<const wchar_t*>(meshData + usedSize);
-
-                usedSize += sizeof(wchar_t)*(*nName);
-                if (dataSize < usedSize)
-                    throw std::runtime_error("End of file");
-
-                // TODO - What to do with clip name?
-                clipName;
-
-                auto clip = reinterpret_cast<const VSD3DStarter::Clip*>(meshData + usedSize);
-                usedSize += sizeof(VSD3DStarter::Clip);
-                if (dataSize < usedSize)
-                    throw std::runtime_error("End of file");
-
-                if (!clip->keys)
-                    throw std::runtime_error("Keyframes missing in clip");
-
-                auto keys = reinterpret_cast<const VSD3DStarter::Keyframe*>(meshData + usedSize);
-                usedSize += sizeof(VSD3DStarter::Keyframe) * clip->keys;
-                if (dataSize < usedSize)
-                    throw std::runtime_error("End of file");
-
-                // TODO - What to do with keys and clip->StartTime, clip->EndTime?
-                keys;
-            }
-#endif
         }
 
         bool enableSkinning = (*nSkinVBs) != 0;
