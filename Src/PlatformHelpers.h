@@ -75,8 +75,6 @@ namespace DirectX
     struct virtual_deleter { void operator()(void* p) noexcept { if (p) VirtualFree(p, 0, MEM_RELEASE); } };
 #endif
 
-    struct aligned_deleter { void operator()(void* p) noexcept { _aligned_free(p); } };
-
     struct handle_closer { void operator()(HANDLE h) noexcept { if (h) CloseHandle(h); } };
 
     using ScopedHandle = std::unique_ptr<void, handle_closer>;
