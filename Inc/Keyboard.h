@@ -29,8 +29,9 @@ namespace DirectX
     {
     public:
         Keyboard() noexcept(false);
-        Keyboard(Keyboard&& moveFrom) noexcept;
-        Keyboard& operator= (Keyboard&& moveFrom) noexcept;
+
+        Keyboard(Keyboard&&) noexcept;
+        Keyboard& operator= (Keyboard&&) noexcept;
 
         Keyboard(Keyboard const&) = delete;
         Keyboard& operator=(Keyboard const&) = delete;

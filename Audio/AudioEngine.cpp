@@ -1149,19 +1149,9 @@ AudioEngine::AudioEngine(
 }
 
 
-// Move constructor.
-AudioEngine::AudioEngine(AudioEngine&& moveFrom) noexcept
-    : pImpl(std::move(moveFrom.pImpl))
-{
-}
-
-
-// Move assignment.
-AudioEngine& AudioEngine::operator= (AudioEngine&& moveFrom) noexcept
-{
-    pImpl = std::move(moveFrom.pImpl);
-    return *this;
-}
+// Move ctor/operator.
+AudioEngine::AudioEngine(AudioEngine&&) noexcept = default;
+AudioEngine& AudioEngine::operator= (AudioEngine&&) noexcept = default;
 
 
 // Public destructor.

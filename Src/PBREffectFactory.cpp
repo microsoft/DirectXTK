@@ -233,21 +233,11 @@ PBREffectFactory::PBREffectFactory(_In_ ID3D11Device* device)
 {
 }
 
-PBREffectFactory::~PBREffectFactory()
-{
-}
 
+PBREffectFactory::PBREffectFactory(PBREffectFactory&&) noexcept = default;
+PBREffectFactory& PBREffectFactory::operator= (PBREffectFactory&&) noexcept = default;
+PBREffectFactory::~PBREffectFactory() noexcept = default;
 
-PBREffectFactory::PBREffectFactory(PBREffectFactory&& moveFrom) noexcept
-    : pImpl(std::move(moveFrom.pImpl))
-{
-}
-
-PBREffectFactory& PBREffectFactory::operator= (PBREffectFactory&& moveFrom) noexcept
-{
-    pImpl = std::move(moveFrom.pImpl);
-    return *this;
-}
 
 _Use_decl_annotations_
 std::shared_ptr<IEffect> PBREffectFactory::CreateEffect(const EffectInfo& info, ID3D11DeviceContext* deviceContext)

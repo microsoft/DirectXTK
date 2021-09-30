@@ -286,25 +286,9 @@ AlphaTestEffect::AlphaTestEffect(_In_ ID3D11Device* device)
 }
 
 
-// Move constructor.
-AlphaTestEffect::AlphaTestEffect(AlphaTestEffect&& moveFrom) noexcept
-    : pImpl(std::move(moveFrom.pImpl))
-{
-}
-
-
-// Move assignment.
-AlphaTestEffect& AlphaTestEffect::operator= (AlphaTestEffect&& moveFrom) noexcept
-{
-    pImpl = std::move(moveFrom.pImpl);
-    return *this;
-}
-
-
-// Public destructor.
-AlphaTestEffect::~AlphaTestEffect()
-{
-}
+AlphaTestEffect::AlphaTestEffect(AlphaTestEffect&&) noexcept = default;
+AlphaTestEffect& AlphaTestEffect::operator= (AlphaTestEffect&&) noexcept = default;
+AlphaTestEffect::~AlphaTestEffect() noexcept = default;
 
 
 // IEffect methods.

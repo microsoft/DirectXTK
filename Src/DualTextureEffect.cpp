@@ -188,25 +188,9 @@ DualTextureEffect::DualTextureEffect(_In_ ID3D11Device* device)
 }
 
 
-// Move constructor.
-DualTextureEffect::DualTextureEffect(DualTextureEffect&& moveFrom) noexcept
-  : pImpl(std::move(moveFrom.pImpl))
-{
-}
-
-
-// Move assignment.
-DualTextureEffect& DualTextureEffect::operator= (DualTextureEffect&& moveFrom) noexcept
-{
-    pImpl = std::move(moveFrom.pImpl);
-    return *this;
-}
-
-
-// Public destructor.
-DualTextureEffect::~DualTextureEffect()
-{
-}
+DualTextureEffect::DualTextureEffect(DualTextureEffect&&) noexcept = default;
+DualTextureEffect& DualTextureEffect::operator= (DualTextureEffect&&) noexcept = default;
+DualTextureEffect::~DualTextureEffect() noexcept = default;
 
 
 // IEffect methods.

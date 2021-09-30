@@ -252,25 +252,9 @@ DynamicSoundEffectInstance::DynamicSoundEffectInstance(
 }
 
 
-// Move constructor.
-DynamicSoundEffectInstance::DynamicSoundEffectInstance(DynamicSoundEffectInstance&& moveFrom) noexcept
-    : pImpl(std::move(moveFrom.pImpl))
-{
-}
-
-
-// Move assignment.
-DynamicSoundEffectInstance& DynamicSoundEffectInstance::operator= (DynamicSoundEffectInstance&& moveFrom) noexcept
-{
-    pImpl = std::move(moveFrom.pImpl);
-    return *this;
-}
-
-
-// Public destructor.
-DynamicSoundEffectInstance::~DynamicSoundEffectInstance()
-{
-}
+DynamicSoundEffectInstance::DynamicSoundEffectInstance(DynamicSoundEffectInstance&&) noexcept = default;
+DynamicSoundEffectInstance& DynamicSoundEffectInstance::operator= (DynamicSoundEffectInstance&&) noexcept = default;
+DynamicSoundEffectInstance::~DynamicSoundEffectInstance() = default;
 
 
 // Public methods.

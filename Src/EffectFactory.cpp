@@ -466,21 +466,11 @@ EffectFactory::EffectFactory(_In_ ID3D11Device* device)
 {
 }
 
-EffectFactory::~EffectFactory()
-{
-}
 
+EffectFactory::EffectFactory(EffectFactory&&) noexcept = default;
+EffectFactory& EffectFactory::operator= (EffectFactory&&) noexcept = default;
+EffectFactory::~EffectFactory() noexcept = default;
 
-EffectFactory::EffectFactory(EffectFactory&& moveFrom) noexcept
-    : pImpl(std::move(moveFrom.pImpl))
-{
-}
-
-EffectFactory& EffectFactory::operator= (EffectFactory&& moveFrom) noexcept
-{
-    pImpl = std::move(moveFrom.pImpl);
-    return *this;
-}
 
 _Use_decl_annotations_
 std::shared_ptr<IEffect> EffectFactory::CreateEffect(const EffectInfo& info, ID3D11DeviceContext* deviceContext)

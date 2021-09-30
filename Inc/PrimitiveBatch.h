@@ -31,8 +31,9 @@ namespace DirectX
         {
         protected:
             PrimitiveBatchBase(_In_ ID3D11DeviceContext* deviceContext, size_t maxIndices, size_t maxVertices, size_t vertexSize);
-            PrimitiveBatchBase(PrimitiveBatchBase&& moveFrom) noexcept;
-            PrimitiveBatchBase& operator= (PrimitiveBatchBase&& moveFrom) noexcept;
+
+            PrimitiveBatchBase(PrimitiveBatchBase&&) noexcept;
+            PrimitiveBatchBase& operator= (PrimitiveBatchBase&&) noexcept;
 
             PrimitiveBatchBase(PrimitiveBatchBase const&) = delete;
             PrimitiveBatchBase& operator= (PrimitiveBatchBase const&) = delete;
@@ -68,15 +69,8 @@ namespace DirectX
             : PrimitiveBatchBase(deviceContext, maxIndices, maxVertices, sizeof(TVertex))
         { }
 
-        PrimitiveBatch(PrimitiveBatch&& moveFrom) noexcept
-            : PrimitiveBatchBase(std::move(moveFrom))
-        { }
-
-        PrimitiveBatch& operator= (PrimitiveBatch&& moveFrom) noexcept
-        {
-            PrimitiveBatchBase::operator=(std::move(moveFrom));
-            return *this;
-        }
+        PrimitiveBatch(PrimitiveBatch&&) = default;
+        PrimitiveBatch& operator= (PrimitiveBatch&&) = default;
 
         PrimitiveBatch(PrimitiveBatch const&) = delete;
         PrimitiveBatch& operator= (PrimitiveBatch const&) = delete;

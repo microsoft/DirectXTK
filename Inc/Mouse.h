@@ -28,8 +28,9 @@ namespace DirectX
     {
     public:
         Mouse() noexcept(false);
-        Mouse(Mouse&& moveFrom) noexcept;
-        Mouse& operator= (Mouse&& moveFrom) noexcept;
+
+        Mouse(Mouse&&) noexcept;
+        Mouse& operator= (Mouse&&) noexcept;
 
         Mouse(Mouse const&) = delete;
         Mouse& operator=(Mouse const&) = delete;

@@ -365,25 +365,9 @@ SkinnedEffect::SkinnedEffect(_In_ ID3D11Device* device)
 }
 
 
-// Move constructor.
-SkinnedEffect::SkinnedEffect(SkinnedEffect&& moveFrom) noexcept
-  : pImpl(std::move(moveFrom.pImpl))
-{
-}
-
-
-// Move assignment.
-SkinnedEffect& SkinnedEffect::operator= (SkinnedEffect&& moveFrom) noexcept
-{
-    pImpl = std::move(moveFrom.pImpl);
-    return *this;
-}
-
-
-// Public destructor.
-SkinnedEffect::~SkinnedEffect()
-{
-}
+SkinnedEffect::SkinnedEffect(SkinnedEffect&&) noexcept = default;
+SkinnedEffect& SkinnedEffect::operator= (SkinnedEffect&&) noexcept = default;
+SkinnedEffect::~SkinnedEffect() noexcept = default;
 
 
 // IEffect methods.

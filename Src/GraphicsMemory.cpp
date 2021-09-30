@@ -228,8 +228,8 @@ public:
         s_graphicsMemory = this;
     }
 
-    Impl(Impl&&) = default;
-    Impl& operator= (Impl&&) = default;
+    Impl(Impl&&) noexcept = default;
+    Impl& operator= (Impl&&) noexcept = default;
 
     Impl(Impl const&) = delete;
     Impl& operator= (Impl const&) = delete;
@@ -301,9 +301,7 @@ GraphicsMemory& GraphicsMemory::operator= (GraphicsMemory&& moveFrom) noexcept
 
 
 // Public destructor.
-GraphicsMemory::~GraphicsMemory()
-{
-}
+GraphicsMemory::~GraphicsMemory() noexcept = default;
 
 
 void* GraphicsMemory::Allocate(_In_opt_ ID3D11DeviceContext* context, size_t size, int alignment)
