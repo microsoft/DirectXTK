@@ -9,7 +9,6 @@
 
 #include "pch.h"
 #include "Model.h"
-#include "DDSTextureLoader.h"
 #include "DirectXHelpers.h"
 #include "Effects.h"
 #include "VertexTypes.h"
@@ -21,9 +20,11 @@ using Microsoft::WRL::ComPtr;
 
 
 //--------------------------------------------------------------------------------------
-// .CMO files are built by Visual Studio 2012 and an example renderer is provided
-// in the VS Direct3D Starter Kit
-// http://aka.ms/vs3dkitwin
+// .CMO files are built by Visual Studio's MeshContentTask and an example renderer was
+// provided in the VS Direct3D Starter Kit
+// https://devblogs.microsoft.com/cppblog/developing-an-app-with-the-visual-studio-3d-starter-kit-part-1-of-3/
+// https://devblogs.microsoft.com/cppblog/developing-an-app-with-the-visual-studio-3d-starter-kit-part-2-of-3/
+// https://devblogs.microsoft.com/cppblog/developing-an-app-with-the-visual-studio-3d-starter-kit-part-3-of-3/
 //--------------------------------------------------------------------------------------
 
 namespace VSD3DStarter
@@ -131,7 +132,7 @@ namespace VSD3DStarter
 
     struct Bone
     {
-        INT ParentIndex;
+        int32_t ParentIndex;
         DirectX::XMFLOAT4X4 InvBindPos;
         DirectX::XMFLOAT4X4 BindPos;
         DirectX::XMFLOAT4X4 LocalTransform;
@@ -388,8 +389,8 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
         }
 
         // Skeletal data?
-        const BYTE* bSkeleton = meshData + usedSize;
-        usedSize += sizeof(BYTE);
+        const uint8_t* bSkeleton = meshData + usedSize;
+        usedSize += sizeof(uint8_t);
         if (dataSize < usedSize)
             throw std::runtime_error("End of file");
 
@@ -419,7 +420,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
         struct IBData
         {
             size_t          nIndices;
-            const USHORT*   ptr;
+            const uint16_t* ptr;
         };
 
         std::vector<IBData> ibData;
@@ -438,7 +439,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
             if (!*nIndexes)
                 throw std::runtime_error("Empty index buffer found\n");
 
-            uint64_t sizeInBytes = uint64_t(*(nIndexes)) * sizeof(USHORT);
+            const uint64_t sizeInBytes = uint64_t(*(nIndexes)) * sizeof(uint16_t);
 
             if (sizeInBytes > UINT32_MAX)
                 throw std::runtime_error("IB too large");
@@ -451,7 +452,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
 
             auto ibBytes = static_cast<size_t>(sizeInBytes);
 
-            auto indexes = reinterpret_cast<const USHORT*>(meshData + usedSize);
+            auto indexes = reinterpret_cast<const uint16_t*>(meshData + usedSize);
             usedSize += ibBytes;
             if (dataSize < usedSize)
                 throw std::runtime_error("End of file");
@@ -506,7 +507,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
             if (!*nVerts)
                 throw std::runtime_error("Empty vertex buffer found\n");
 
-            size_t vbBytes = sizeof(VertexPositionNormalTangentColorTexture) * (*(nVerts));
+            const size_t vbBytes = sizeof(VertexPositionNormalTangentColorTexture) * (*(nVerts));
 
             auto verts = reinterpret_cast<const VertexPositionNormalTangentColorTexture*>(meshData + usedSize);
             usedSize += vbBytes;
@@ -546,7 +547,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
                 if (vbData[j].nVerts != *nVerts)
                     throw std::runtime_error("Mismatched number of verts for skin VBs");
 
-                size_t vbBytes = sizeof(VSD3DStarter::SkinningVertex) * (*(nVerts));
+                const size_t vbBytes = sizeof(VSD3DStarter::SkinningVertex) * (*(nVerts));
 
                 auto verts = reinterpret_cast<const VSD3DStarter::SkinningVertex*>(meshData + usedSize);
                 usedSize += vbBytes;
@@ -716,9 +717,9 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
 
         for (size_t j = 0; j < *nVBs; ++j)
         {
-            size_t nVerts = vbData[j].nVerts;
+            const size_t nVerts = vbData[j].nVerts;
 
-            uint64_t sizeInBytes = uint64_t(stride) * uint64_t(nVerts);
+            const uint64_t sizeInBytes = uint64_t(stride) * uint64_t(nVerts);
 
             if (sizeInBytes > UINT32_MAX)
                 throw std::runtime_error("VB too large");
@@ -729,7 +730,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
                     throw std::runtime_error("VB too large for DirectX 11");
             }
 
-            size_t bytes = static_cast<size_t>(sizeInBytes);
+            const size_t bytes = static_cast<size_t>(sizeInBytes);
 
             D3D11_BUFFER_DESC desc = {};
             desc.Usage = D3D11_USAGE_DEFAULT;
@@ -798,7 +799,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
 
                         auto ib = ibData[sm.IndexBufferIndex].ptr;
 
-                        size_t count = ibData[sm.IndexBufferIndex].nIndices;
+                        const size_t count = ibData[sm.IndexBufferIndex].nIndices;
 
                         for (size_t q = 0; q < count; ++q)
                         {
