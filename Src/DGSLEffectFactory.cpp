@@ -525,7 +525,7 @@ DGSLEffectFactory::DGSLEffectFactory(_In_ ID3D11Device* device)
 
 DGSLEffectFactory::DGSLEffectFactory(DGSLEffectFactory&&) noexcept = default;
 DGSLEffectFactory& DGSLEffectFactory::operator= (DGSLEffectFactory&&) noexcept = default;
-DGSLEffectFactory::~DGSLEffectFactory() noexcept = default;
+DGSLEffectFactory::~DGSLEffectFactory() = default;
 
 
 // IEffectFactory methods

@@ -276,7 +276,7 @@ DualPostProcess::DualPostProcess(_In_ ID3D11Device* device)
 
 DualPostProcess::DualPostProcess(DualPostProcess&&) noexcept = default;
 DualPostProcess& DualPostProcess::operator= (DualPostProcess&&) noexcept = default;
-DualPostProcess::~DualPostProcess() noexcept = default;
+DualPostProcess::~DualPostProcess() = default;
 
 
 // IPostProcess methods.

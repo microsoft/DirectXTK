@@ -117,8 +117,8 @@ public:
             &mDeviceToken));
     }
 
-    Impl(Impl&&) noexcept = default;
-    Impl& operator= (Impl&&) noexcept = default;
+    Impl(Impl&&) = default;
+    Impl& operator= (Impl&&) = default;
 
     Impl(Impl const&) = delete;
     Impl& operator= (Impl const&) = delete;
@@ -441,8 +441,8 @@ public:
         ScanGamePads();
     }
 
-    Impl(Impl&&) noexcept = default;
-    Impl& operator= (Impl&&) noexcept = default;
+    Impl(Impl&&) = default;
+    Impl& operator= (Impl&&) = default;
 
     Impl(Impl const&) = delete;
     Impl& operator= (Impl const&) = delete;
@@ -1606,7 +1606,7 @@ GamePad& GamePad::operator= (GamePad&& moveFrom) noexcept
 
 
 // Public destructor.
-GamePad::~GamePad() noexcept = default;
+GamePad::~GamePad() = default;
 
 
 GamePad::State GamePad::GetState(int player, DeadZone deadZoneMode)

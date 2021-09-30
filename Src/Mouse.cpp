@@ -90,8 +90,8 @@ public:
         }
     }
 
-    Impl(Impl&&) noexcept = default;
-    Impl& operator= (Impl&&) noexcept = default;
+    Impl(Impl&&) = default;
+    Impl& operator= (Impl&&) = default;
 
     Impl(Impl const&) = delete;
     Impl& operator= (Impl const&) = delete;
@@ -463,8 +463,8 @@ public:
         }
     }
 
-    Impl(Impl&&) noexcept = default;
-    Impl& operator= (Impl&&) noexcept = default;
+    Impl(Impl&&) = default;
+    Impl& operator= (Impl&&) = default;
 
     Impl(Impl const&) = delete;
     Impl& operator= (Impl const&) = delete;
@@ -1419,7 +1419,7 @@ Mouse& Mouse::operator= (Mouse&& moveFrom) noexcept
 
 
 // Public destructor.
-Mouse::~Mouse() noexcept = default;
+Mouse::~Mouse() = default;
 
 
 Mouse::State Mouse::GetState() const

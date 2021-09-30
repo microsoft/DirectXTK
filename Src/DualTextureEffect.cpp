@@ -190,7 +190,7 @@ DualTextureEffect::DualTextureEffect(_In_ ID3D11Device* device)
 
 DualTextureEffect::DualTextureEffect(DualTextureEffect&&) noexcept = default;
 DualTextureEffect& DualTextureEffect::operator= (DualTextureEffect&&) noexcept = default;
-DualTextureEffect::~DualTextureEffect() noexcept = default;
+DualTextureEffect::~DualTextureEffect() = default;
 
 
 // IEffect methods.

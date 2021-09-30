@@ -484,7 +484,7 @@ BasicEffect::BasicEffect(_In_ ID3D11Device* device)
 
 BasicEffect::BasicEffect(BasicEffect&&) noexcept = default;
 BasicEffect& BasicEffect::operator= (BasicEffect&&) noexcept = default;
-BasicEffect::~BasicEffect() noexcept = default;
+BasicEffect::~BasicEffect() = default;
 
 
 // IEffect methods.

@@ -467,7 +467,7 @@ EnvironmentMapEffect::EnvironmentMapEffect(_In_ ID3D11Device* device)
 
 EnvironmentMapEffect::EnvironmentMapEffect(EnvironmentMapEffect&&) noexcept = default;
 EnvironmentMapEffect& EnvironmentMapEffect::operator= (EnvironmentMapEffect&&) noexcept = default;
-EnvironmentMapEffect::~EnvironmentMapEffect() noexcept = default;
+EnvironmentMapEffect::~EnvironmentMapEffect() = default;
 
 
 // IEffect methods.

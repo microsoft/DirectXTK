@@ -288,7 +288,7 @@ AlphaTestEffect::AlphaTestEffect(_In_ ID3D11Device* device)
 
 AlphaTestEffect::AlphaTestEffect(AlphaTestEffect&&) noexcept = default;
 AlphaTestEffect& AlphaTestEffect::operator= (AlphaTestEffect&&) noexcept = default;
-AlphaTestEffect::~AlphaTestEffect() noexcept = default;
+AlphaTestEffect::~AlphaTestEffect() = default;
 
 
 // IEffect methods.

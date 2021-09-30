@@ -592,7 +592,7 @@ DGSLEffect::DGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pi
 
 DGSLEffect::DGSLEffect(DGSLEffect&&) noexcept = default;
 DGSLEffect& DGSLEffect::operator= (DGSLEffect&&) noexcept = default;
-DGSLEffect::~DGSLEffect() noexcept = default;
+DGSLEffect::~DGSLEffect() = default;
 
 
 // IEffect methods.

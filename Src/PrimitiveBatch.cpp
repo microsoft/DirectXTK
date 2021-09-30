@@ -427,7 +427,7 @@ PrimitiveBatchBase::PrimitiveBatchBase(_In_ ID3D11DeviceContext* deviceContext, 
 
 PrimitiveBatchBase::PrimitiveBatchBase(PrimitiveBatchBase&&) noexcept = default;
 PrimitiveBatchBase& PrimitiveBatchBase::operator= (PrimitiveBatchBase&&) noexcept = default;
-PrimitiveBatchBase::~PrimitiveBatchBase() noexcept = default;
+PrimitiveBatchBase::~PrimitiveBatchBase() = default;
 
 
 // Begin a primitive batch.

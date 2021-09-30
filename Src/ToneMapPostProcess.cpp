@@ -386,7 +386,7 @@ ToneMapPostProcess::ToneMapPostProcess(_In_ ID3D11Device* device)
 
 ToneMapPostProcess::ToneMapPostProcess(ToneMapPostProcess&&) noexcept = default;
 ToneMapPostProcess& ToneMapPostProcess::operator= (ToneMapPostProcess&&) noexcept = default;
-ToneMapPostProcess::~ToneMapPostProcess() noexcept = default;
+ToneMapPostProcess::~ToneMapPostProcess() = default;
 
 
 // IPostProcess methods.

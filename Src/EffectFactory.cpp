@@ -469,7 +469,7 @@ EffectFactory::EffectFactory(_In_ ID3D11Device* device)
 
 EffectFactory::EffectFactory(EffectFactory&&) noexcept = default;
 EffectFactory& EffectFactory::operator= (EffectFactory&&) noexcept = default;
-EffectFactory::~EffectFactory() noexcept = default;
+EffectFactory::~EffectFactory() = default;
 
 
 _Use_decl_annotations_

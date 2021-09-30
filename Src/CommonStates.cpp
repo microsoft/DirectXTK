@@ -173,7 +173,7 @@ CommonStates::CommonStates(_In_ ID3D11Device* device)
 
 CommonStates::CommonStates(CommonStates&&) noexcept = default;
 CommonStates& CommonStates::operator= (CommonStates&&) noexcept = default;
-CommonStates::~CommonStates() noexcept = default;
+CommonStates::~CommonStates() = default;
 
 
 //--------------------------------------------------------------------------------------

@@ -329,7 +329,7 @@ PBREffect::PBREffect(_In_ ID3D11Device* device)
 
 PBREffect::PBREffect(PBREffect&&) noexcept = default;
 PBREffect& PBREffect::operator= (PBREffect&&) noexcept = default;
-PBREffect::~PBREffect() noexcept = default;
+PBREffect::~PBREffect() = default;
 
 
 // IEffect methods.

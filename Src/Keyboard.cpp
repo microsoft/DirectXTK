@@ -84,8 +84,8 @@ public:
             &mDeviceToken));
     }
 
-    Impl(Impl&&) noexcept = default;
-    Impl& operator= (Impl&&) noexcept = default;
+    Impl(Impl&&) = default;
+    Impl& operator= (Impl&&) = default;
 
     Impl(Impl const&) = delete;
     Impl& operator= (Impl const&) = delete;
@@ -215,8 +215,8 @@ public:
         s_keyboard = this;
     }
 
-    Impl(Impl&&) noexcept = default;
-    Impl& operator= (Impl&&) noexcept = default;
+    Impl(Impl&&) = default;
+    Impl& operator= (Impl&&) = default;
 
     Impl(Impl const&) = delete;
     Impl& operator= (Impl const&) = delete;
@@ -576,7 +576,7 @@ Keyboard& Keyboard::operator= (Keyboard&& moveFrom) noexcept
 
 
 // Public destructor.
-Keyboard::~Keyboard() noexcept = default;
+Keyboard::~Keyboard() = default;
 
 
 Keyboard::State Keyboard::GetState() const

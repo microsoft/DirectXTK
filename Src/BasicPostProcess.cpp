@@ -478,7 +478,7 @@ BasicPostProcess::BasicPostProcess(_In_ ID3D11Device* device)
 
 BasicPostProcess::BasicPostProcess(BasicPostProcess&&) noexcept = default;
 BasicPostProcess& BasicPostProcess::operator= (BasicPostProcess&&) noexcept = default;
-BasicPostProcess::~BasicPostProcess() noexcept = default;
+BasicPostProcess::~BasicPostProcess() = default;
 
 
 // IPostProcess methods.

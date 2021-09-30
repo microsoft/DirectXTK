@@ -367,7 +367,7 @@ SkinnedEffect::SkinnedEffect(_In_ ID3D11Device* device)
 
 SkinnedEffect::SkinnedEffect(SkinnedEffect&&) noexcept = default;
 SkinnedEffect& SkinnedEffect::operator= (SkinnedEffect&&) noexcept = default;
-SkinnedEffect::~SkinnedEffect() noexcept = default;
+SkinnedEffect::~SkinnedEffect() = default;
 
 
 // IEffect methods.

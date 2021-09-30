@@ -236,7 +236,7 @@ PBREffectFactory::PBREffectFactory(_In_ ID3D11Device* device)
 
 PBREffectFactory::PBREffectFactory(PBREffectFactory&&) noexcept = default;
 PBREffectFactory& PBREffectFactory::operator= (PBREffectFactory&&) noexcept = default;
-PBREffectFactory::~PBREffectFactory() noexcept = default;
+PBREffectFactory::~PBREffectFactory() = default;
 
 
 _Use_decl_annotations_

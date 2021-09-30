@@ -1018,7 +1018,7 @@ SpriteBatch::SpriteBatch(_In_ ID3D11DeviceContext* deviceContext)
 
 SpriteBatch::SpriteBatch(SpriteBatch&&) noexcept = default;
 SpriteBatch& SpriteBatch::operator= (SpriteBatch&&) noexcept = default;
-SpriteBatch::~SpriteBatch() noexcept = default;
+SpriteBatch::~SpriteBatch() = default;
 
 
 _Use_decl_annotations_

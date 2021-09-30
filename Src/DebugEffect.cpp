@@ -304,7 +304,7 @@ DebugEffect::DebugEffect(_In_ ID3D11Device* device)
 
 DebugEffect::DebugEffect(DebugEffect&&) noexcept = default;
 DebugEffect& DebugEffect::operator= (DebugEffect&&) noexcept = default;
-DebugEffect::~DebugEffect() noexcept = default;
+DebugEffect::~DebugEffect() = default;
 
 
 // IEffect methods.

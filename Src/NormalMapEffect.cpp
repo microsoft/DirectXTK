@@ -326,7 +326,7 @@ NormalMapEffect::NormalMapEffect(_In_ ID3D11Device* device)
 
 NormalMapEffect::NormalMapEffect(NormalMapEffect&&) noexcept = default;
 NormalMapEffect& NormalMapEffect::operator= (NormalMapEffect&&) noexcept = default;
-NormalMapEffect::~NormalMapEffect() noexcept = default;
+NormalMapEffect::~NormalMapEffect() = default;
 
 
 // IEffect methods.

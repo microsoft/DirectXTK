@@ -393,7 +393,7 @@ SpriteFont::SpriteFont(ID3D11ShaderResourceView* texture, Glyph const* glyphs, s
 
 SpriteFont::SpriteFont(SpriteFont&&) noexcept = default;
 SpriteFont& SpriteFont::operator= (SpriteFont&&) noexcept = default;
-SpriteFont::~SpriteFont() noexcept = default;
+SpriteFont::~SpriteFont() = default;
 
 
 // Wide-character / UTF-16LE
