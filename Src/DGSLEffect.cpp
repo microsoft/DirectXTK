@@ -333,7 +333,6 @@ private:
 
         // Gets or lazily creates the default texture
         ID3D11ShaderResourceView* GetDefaultTexture() { return EffectDeviceResources::GetDefaultTexture(); }
-        ID3D11ShaderResourceView* GetDefaultNormalTexture() { return EffectDeviceResources::GetDefaultNormalTexture(); }
 
 
     private:
