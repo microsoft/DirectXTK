@@ -207,8 +207,8 @@ namespace DirectX
             _In_opt_z_ const wchar_t* deviceId = nullptr,
             AUDIO_STREAM_CATEGORY category = AudioCategory_GameEffects) noexcept(false);
 
-        AudioEngine(AudioEngine&& moveFrom) noexcept;
-        AudioEngine& operator= (AudioEngine&& moveFrom) noexcept;
+        AudioEngine(AudioEngine&&) noexcept;
+        AudioEngine& operator= (AudioEngine&&) noexcept;
 
         AudioEngine(AudioEngine const&) = delete;
         AudioEngine& operator= (AudioEngine const&) = delete;
@@ -306,8 +306,8 @@ namespace DirectX
     public:
         WaveBank(_In_ AudioEngine* engine, _In_z_ const wchar_t* wbFileName);
 
-        WaveBank(WaveBank&& moveFrom) noexcept;
-        WaveBank& operator= (WaveBank&& moveFrom) noexcept;
+        WaveBank(WaveBank&&) noexcept;
+        WaveBank& operator= (WaveBank&&) noexcept;
 
         WaveBank(WaveBank const&) = delete;
         WaveBank& operator= (WaveBank const&) = delete;
@@ -388,8 +388,8 @@ namespace DirectX
 
 #endif
 
-        SoundEffect(SoundEffect&& moveFrom) noexcept;
-        SoundEffect& operator= (SoundEffect&& moveFrom) noexcept;
+        SoundEffect(SoundEffect&&) noexcept;
+        SoundEffect& operator= (SoundEffect&&) noexcept;
 
         SoundEffect(SoundEffect const&) = delete;
         SoundEffect& operator= (SoundEffect const&) = delete;
@@ -613,8 +613,8 @@ namespace DirectX
     class SoundEffectInstance
     {
     public:
-        SoundEffectInstance(SoundEffectInstance&& moveFrom) noexcept;
-        SoundEffectInstance& operator= (SoundEffectInstance&& moveFrom) noexcept;
+        SoundEffectInstance(SoundEffectInstance&&) noexcept;
+        SoundEffectInstance& operator= (SoundEffectInstance&&) noexcept;
 
         SoundEffectInstance(SoundEffectInstance const&) = delete;
         SoundEffectInstance& operator= (SoundEffectInstance const&) = delete;
@@ -659,8 +659,8 @@ namespace DirectX
     class SoundStreamInstance
     {
     public:
-        SoundStreamInstance(SoundStreamInstance&& moveFrom) noexcept;
-        SoundStreamInstance& operator= (SoundStreamInstance&& moveFrom) noexcept;
+        SoundStreamInstance(SoundStreamInstance&&) noexcept;
+        SoundStreamInstance& operator= (SoundStreamInstance&&) noexcept;
 
         SoundStreamInstance(SoundStreamInstance const&) = delete;
         SoundStreamInstance& operator= (SoundStreamInstance const&) = delete;
@@ -707,8 +707,9 @@ namespace DirectX
             _In_opt_ std::function<void __cdecl(DynamicSoundEffectInstance*)> bufferNeeded,
             int sampleRate, int channels, int sampleBits = 16,
             SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default);
-        DynamicSoundEffectInstance(DynamicSoundEffectInstance&& moveFrom) noexcept;
-        DynamicSoundEffectInstance& operator= (DynamicSoundEffectInstance&& moveFrom) noexcept;
+
+        DynamicSoundEffectInstance(DynamicSoundEffectInstance&&) noexcept;
+        DynamicSoundEffectInstance& operator= (DynamicSoundEffectInstance&&) noexcept;
 
         DynamicSoundEffectInstance(DynamicSoundEffectInstance const&) = delete;
         DynamicSoundEffectInstance& operator= (DynamicSoundEffectInstance const&) = delete;

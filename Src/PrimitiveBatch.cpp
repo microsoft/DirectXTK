@@ -425,39 +425,26 @@ PrimitiveBatchBase::PrimitiveBatchBase(_In_ ID3D11DeviceContext* deviceContext, 
 }
 
 
-// Move constructor.
-PrimitiveBatchBase::PrimitiveBatchBase(PrimitiveBatchBase&& moveFrom) noexcept
-  : pImpl(std::move(moveFrom.pImpl))
-{
-}
+PrimitiveBatchBase::PrimitiveBatchBase(PrimitiveBatchBase&&) noexcept = default;
+PrimitiveBatchBase& PrimitiveBatchBase::operator= (PrimitiveBatchBase&&) noexcept = default;
+PrimitiveBatchBase::~PrimitiveBatchBase() = default;
 
 
-// Move assignment.
-PrimitiveBatchBase& PrimitiveBatchBase::operator= (PrimitiveBatchBase&& moveFrom) noexcept
-{
-    pImpl = std::move(moveFrom.pImpl);
-    return *this;
-}
-
-
-// Public destructor.
-PrimitiveBatchBase::~PrimitiveBatchBase()
-{
-}
-
-
+// Begin a primitive batch.
 void PrimitiveBatchBase::Begin()
 {
     pImpl->Begin();
 }
 
 
+// End/draw a primitive batch.
 void PrimitiveBatchBase::End()
 {
     pImpl->End();
 }
 
 
+// Custom draw method.
 _Use_decl_annotations_
 void PrimitiveBatchBase::Draw(D3D11_PRIMITIVE_TOPOLOGY topology, bool isIndexed, uint16_t const* indices, size_t indexCount, size_t vertexCount, void** pMappedVertices)
 {

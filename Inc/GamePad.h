@@ -46,8 +46,9 @@ namespace DirectX
     {
     public:
         GamePad() noexcept(false);
-        GamePad(GamePad&& moveFrom) noexcept;
-        GamePad& operator= (GamePad&& moveFrom) noexcept;
+
+        GamePad(GamePad&&) noexcept;
+        GamePad& operator= (GamePad&&) noexcept;
 
         GamePad(GamePad const&) = delete;
         GamePad& operator=(GamePad const&) = delete;

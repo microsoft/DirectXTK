@@ -1419,9 +1419,7 @@ Mouse& Mouse::operator= (Mouse&& moveFrom) noexcept
 
 
 // Public destructor.
-Mouse::~Mouse()
-{
-}
+Mouse::~Mouse() = default;
 
 
 Mouse::State Mouse::GetState() const

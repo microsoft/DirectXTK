@@ -1606,9 +1606,7 @@ GamePad& GamePad::operator= (GamePad&& moveFrom) noexcept
 
 
 // Public destructor.
-GamePad::~GamePad()
-{
-}
+GamePad::~GamePad() = default;
 
 
 GamePad::State GamePad::GetState(int player, DeadZone deadZoneMode)

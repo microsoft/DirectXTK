@@ -576,9 +576,7 @@ Keyboard& Keyboard::operator= (Keyboard&& moveFrom) noexcept
 
 
 // Public destructor.
-Keyboard::~Keyboard()
-{
-}
+Keyboard::~Keyboard() = default;
 
 
 Keyboard::State Keyboard::GetState() const

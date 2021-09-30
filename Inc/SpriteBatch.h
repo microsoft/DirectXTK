@@ -49,8 +49,9 @@ namespace DirectX
     {
     public:
         explicit SpriteBatch(_In_ ID3D11DeviceContext* deviceContext);
-        SpriteBatch(SpriteBatch&& moveFrom) noexcept;
-        SpriteBatch& operator= (SpriteBatch&& moveFrom) noexcept;
+
+        SpriteBatch(SpriteBatch&&) noexcept;
+        SpriteBatch& operator= (SpriteBatch&&) noexcept;
 
         SpriteBatch(SpriteBatch const&) = delete;
         SpriteBatch& operator= (SpriteBatch const&) = delete;

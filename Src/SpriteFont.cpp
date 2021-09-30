@@ -391,25 +391,9 @@ SpriteFont::SpriteFont(ID3D11ShaderResourceView* texture, Glyph const* glyphs, s
 }
 
 
-// Move constructor.
-SpriteFont::SpriteFont(SpriteFont&& moveFrom) noexcept
-    : pImpl(std::move(moveFrom.pImpl))
-{
-}
-
-
-// Move assignment.
-SpriteFont& SpriteFont::operator= (SpriteFont&& moveFrom) noexcept
-{
-    pImpl = std::move(moveFrom.pImpl);
-    return *this;
-}
-
-
-// Public destructor.
-SpriteFont::~SpriteFont()
-{
-}
+SpriteFont::SpriteFont(SpriteFont&&) noexcept = default;
+SpriteFont& SpriteFont::operator= (SpriteFont&&) noexcept = default;
+SpriteFont::~SpriteFont() = default;
 
 
 // Wide-character / UTF-16LE

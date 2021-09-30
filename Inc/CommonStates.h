@@ -24,8 +24,9 @@ namespace DirectX
     {
     public:
         explicit CommonStates(_In_ ID3D11Device* device);
-        CommonStates(CommonStates&& moveFrom) noexcept;
-        CommonStates& operator= (CommonStates&& moveFrom) noexcept;
+
+        CommonStates(CommonStates&&) noexcept;
+        CommonStates& operator= (CommonStates&&) noexcept;
 
         CommonStates(CommonStates const&) = delete;
         CommonStates& operator= (CommonStates const&) = delete;

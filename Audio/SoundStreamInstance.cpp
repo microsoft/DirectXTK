@@ -749,19 +749,9 @@ SoundStreamInstance::SoundStreamInstance(AudioEngine* engine, WaveBank* waveBank
 }
 
 
-// Move constructor.
-SoundStreamInstance::SoundStreamInstance(SoundStreamInstance&& moveFrom) noexcept
-    : pImpl(std::move(moveFrom.pImpl))
-{
-}
-
-
-// Move assignment.
-SoundStreamInstance& SoundStreamInstance::operator= (SoundStreamInstance&& moveFrom) noexcept
-{
-    pImpl = std::move(moveFrom.pImpl);
-    return *this;
-}
+// Move ctor/operator.
+SoundStreamInstance::SoundStreamInstance(SoundStreamInstance&&) noexcept = default;
+SoundStreamInstance& SoundStreamInstance::operator= (SoundStreamInstance&&) noexcept = default;
 
 
 // Public destructor.

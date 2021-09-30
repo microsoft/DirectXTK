@@ -522,21 +522,10 @@ DGSLEffectFactory::DGSLEffectFactory(_In_ ID3D11Device* device)
 {
 }
 
-DGSLEffectFactory::~DGSLEffectFactory()
-{
-}
 
-
-DGSLEffectFactory::DGSLEffectFactory(DGSLEffectFactory&& moveFrom) noexcept
-    : pImpl(std::move(moveFrom.pImpl))
-{
-}
-
-DGSLEffectFactory& DGSLEffectFactory::operator= (DGSLEffectFactory&& moveFrom) noexcept
-{
-    pImpl = std::move(moveFrom.pImpl);
-    return *this;
-}
+DGSLEffectFactory::DGSLEffectFactory(DGSLEffectFactory&&) noexcept = default;
+DGSLEffectFactory& DGSLEffectFactory::operator= (DGSLEffectFactory&&) noexcept = default;
+DGSLEffectFactory::~DGSLEffectFactory() = default;
 
 
 // IEffectFactory methods

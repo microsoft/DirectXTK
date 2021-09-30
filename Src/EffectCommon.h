@@ -157,6 +157,11 @@ namespace DirectX
             SetDebugObjectName(mConstantBuffer.GetBuffer(), "Effect");
         }
 
+        EffectBase(EffectBase&&) = default;
+        EffectBase& operator= (EffectBase&&) = default;
+
+        EffectBase(EffectBase const&) = delete;
+        EffectBase& operator= (EffectBase const&) = delete;
 
         // Fields.
         typename Traits::ConstantBufferType constants;
