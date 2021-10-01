@@ -6,6 +6,14 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### September 30, 2021
+* Added ModelBone support for transformation hierarchies
+  * Rigid-body & skinned animation Draw support added to Model
+* Added type aliases ``ModelMeshPart::InputLayoutCollection``, ``GeometricPrimitive::VertexCollection`` and ``IndexCollection``.
+* EnvironmentMapEffect and NormalMapEffect will now use default diffuse/normal textures if none are set
+* VS 2017 projects updated to require the Windows 10 SDK (19401)
+* Code review updates
+
 ### August 1, 2021
 * DebugEffect, NormalMapEffect, and PBREffect updated with instancing support
 * GeometricPrimitive updated with DrawInstanced method
