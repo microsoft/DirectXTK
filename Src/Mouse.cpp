@@ -56,7 +56,7 @@ public:
     explicit Impl(Mouse* owner) noexcept(false) :
         mState{},
         mOwner(owner),
-        mIs4k(false),
+        mScale(1.f),
         mConnected(0),
         mDeviceToken(0),
         mMode(MODE_ABSOLUTE),
@@ -217,7 +217,7 @@ public:
 
     State           mState;
     Mouse*          mOwner;
-    bool            mIs4k;
+    float           mScale;
     uint32_t        mConnected;
 
     static Mouse::Impl* s_mouse;
@@ -367,28 +367,20 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
         int xPos = static_cast<short>(LOWORD(lParam)); // GET_X_LPARAM(lParam);
         int yPos = static_cast<short>(HIWORD(lParam)); // GET_Y_LPARAM(lParam);
 
-        if (pImpl->mIs4k)
-        {
-            pImpl->mState.x = static_cast<int>(xPos) * 2;
-            pImpl->mState.y = static_cast<int>(yPos) * 2;
-        }
-        else
-        {
-            pImpl->mState.x = static_cast<int>(xPos);
-            pImpl->mState.y = static_cast<int>(yPos);
-        }
+        pImpl->mState.x = static_cast<int>(static_cast<float>(xPos) * pImpl->mScale);
+        pImpl->mState.y = static_cast<int>(static_cast<float>(yPos) * pImpl->mScale);
     }
 }
 
 
-void Mouse::SetResolution(bool use4k)
+void Mouse::SetResolution(float scale)
 {
     auto pImpl = Impl::s_mouse;
 
     if (!pImpl)
         return;
 
-    pImpl->mIs4k = use4k;
+    pImpl->mScale = scale;
 }
 
 
