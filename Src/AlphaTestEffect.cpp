@@ -61,25 +61,25 @@ public:
 namespace
 {
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    #include "Shaders/Compiled/XboxOneAlphaTestEffect_VSAlphaTest.inc"
-    #include "Shaders/Compiled/XboxOneAlphaTestEffect_VSAlphaTestNoFog.inc"
-    #include "Shaders/Compiled/XboxOneAlphaTestEffect_VSAlphaTestVc.inc"
-    #include "Shaders/Compiled/XboxOneAlphaTestEffect_VSAlphaTestVcNoFog.inc"
+    #include "XboxOneAlphaTestEffect_VSAlphaTest.inc"
+    #include "XboxOneAlphaTestEffect_VSAlphaTestNoFog.inc"
+    #include "XboxOneAlphaTestEffect_VSAlphaTestVc.inc"
+    #include "XboxOneAlphaTestEffect_VSAlphaTestVcNoFog.inc"
 
-    #include "Shaders/Compiled/XboxOneAlphaTestEffect_PSAlphaTestLtGt.inc"
-    #include "Shaders/Compiled/XboxOneAlphaTestEffect_PSAlphaTestLtGtNoFog.inc"
-    #include "Shaders/Compiled/XboxOneAlphaTestEffect_PSAlphaTestEqNe.inc"
-    #include "Shaders/Compiled/XboxOneAlphaTestEffect_PSAlphaTestEqNeNoFog.inc"
+    #include "XboxOneAlphaTestEffect_PSAlphaTestLtGt.inc"
+    #include "XboxOneAlphaTestEffect_PSAlphaTestLtGtNoFog.inc"
+    #include "XboxOneAlphaTestEffect_PSAlphaTestEqNe.inc"
+    #include "XboxOneAlphaTestEffect_PSAlphaTestEqNeNoFog.inc"
 #else
-    #include "Shaders/Compiled/AlphaTestEffect_VSAlphaTest.inc"
-    #include "Shaders/Compiled/AlphaTestEffect_VSAlphaTestNoFog.inc"
-    #include "Shaders/Compiled/AlphaTestEffect_VSAlphaTestVc.inc"
-    #include "Shaders/Compiled/AlphaTestEffect_VSAlphaTestVcNoFog.inc"
+    #include "AlphaTestEffect_VSAlphaTest.inc"
+    #include "AlphaTestEffect_VSAlphaTestNoFog.inc"
+    #include "AlphaTestEffect_VSAlphaTestVc.inc"
+    #include "AlphaTestEffect_VSAlphaTestVcNoFog.inc"
 
-    #include "Shaders/Compiled/AlphaTestEffect_PSAlphaTestLtGt.inc"
-    #include "Shaders/Compiled/AlphaTestEffect_PSAlphaTestLtGtNoFog.inc"
-    #include "Shaders/Compiled/AlphaTestEffect_PSAlphaTestEqNe.inc"
-    #include "Shaders/Compiled/AlphaTestEffect_PSAlphaTestEqNeNoFog.inc"
+    #include "AlphaTestEffect_PSAlphaTestLtGt.inc"
+    #include "AlphaTestEffect_PSAlphaTestLtGtNoFog.inc"
+    #include "AlphaTestEffect_PSAlphaTestEqNe.inc"
+    #include "AlphaTestEffect_PSAlphaTestEqNeNoFog.inc"
 #endif
 }
 

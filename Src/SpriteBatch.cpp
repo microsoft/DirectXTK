@@ -24,11 +24,11 @@ namespace
 {
     // Include the precompiled shader code.
     #if defined(_XBOX_ONE) && defined(_TITLE)
-    #include "Shaders/Compiled/XboxOneSpriteEffect_SpriteVertexShader.inc"
-    #include "Shaders/Compiled/XboxOneSpriteEffect_SpritePixelShader.inc"
+    #include "XboxOneSpriteEffect_SpriteVertexShader.inc"
+    #include "XboxOneSpriteEffect_SpritePixelShader.inc"
     #else
-    #include "Shaders/Compiled/SpriteEffect_SpriteVertexShader.inc"
-    #include "Shaders/Compiled/SpriteEffect_SpritePixelShader.inc"
+    #include "SpriteEffect_SpriteVertexShader.inc"
+    #include "SpriteEffect_SpritePixelShader.inc"
     #endif
 
 

@@ -160,6 +160,8 @@ add_custom_command(
 
 add_library(${PROJECT_NAME} STATIC ${LIBRARY_SOURCES} ${LIBRARY_HEADERS})
 
+target_include_directories(${PROJECT_NAME} PRIVATE Src/Shaders/Compiled)
+
 if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.16")
     target_precompile_headers(${PROJECT_NAME} PRIVATE Src/pch.h)
 endif()

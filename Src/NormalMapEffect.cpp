@@ -73,39 +73,39 @@ public:
 namespace
 {
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    #include "Shaders/Compiled/XboxOneNormalMapEffect_VSNormalPixelLightingTx.inc"
-    #include "Shaders/Compiled/XboxOneNormalMapEffect_VSNormalPixelLightingTxInst.inc"
+    #include "XboxOneNormalMapEffect_VSNormalPixelLightingTx.inc"
+    #include "XboxOneNormalMapEffect_VSNormalPixelLightingTxInst.inc"
 
-    #include "Shaders/Compiled/XboxOneNormalMapEffect_VSNormalPixelLightingTxVc.inc"
-    #include "Shaders/Compiled/XboxOneNormalMapEffect_VSNormalPixelLightingTxVcInst.inc"
+    #include "XboxOneNormalMapEffect_VSNormalPixelLightingTxVc.inc"
+    #include "XboxOneNormalMapEffect_VSNormalPixelLightingTxVcInst.inc"
 
-    #include "Shaders/Compiled/XboxOneNormalMapEffect_VSNormalPixelLightingTxBn.inc"
-    #include "Shaders/Compiled/XboxOneNormalMapEffect_VSNormalPixelLightingTxBnInst.inc"
+    #include "XboxOneNormalMapEffect_VSNormalPixelLightingTxBn.inc"
+    #include "XboxOneNormalMapEffect_VSNormalPixelLightingTxBnInst.inc"
 
-    #include "Shaders/Compiled/XboxOneNormalMapEffect_VSNormalPixelLightingTxVcBn.inc"
-    #include "Shaders/Compiled/XboxOneNormalMapEffect_VSNormalPixelLightingTxVcBnInst.inc"
+    #include "XboxOneNormalMapEffect_VSNormalPixelLightingTxVcBn.inc"
+    #include "XboxOneNormalMapEffect_VSNormalPixelLightingTxVcBnInst.inc"
 
-    #include "Shaders/Compiled/XboxOneNormalMapEffect_PSNormalPixelLightingTx.inc"
-    #include "Shaders/Compiled/XboxOneNormalMapEffect_PSNormalPixelLightingTxNoFog.inc"
-    #include "Shaders/Compiled/XboxOneNormalMapEffect_PSNormalPixelLightingTxNoSpec.inc"
-    #include "Shaders/Compiled/XboxOneNormalMapEffect_PSNormalPixelLightingTxNoFogSpec.inc"
+    #include "XboxOneNormalMapEffect_PSNormalPixelLightingTx.inc"
+    #include "XboxOneNormalMapEffect_PSNormalPixelLightingTxNoFog.inc"
+    #include "XboxOneNormalMapEffect_PSNormalPixelLightingTxNoSpec.inc"
+    #include "XboxOneNormalMapEffect_PSNormalPixelLightingTxNoFogSpec.inc"
 #else    
-    #include "Shaders/Compiled/NormalMapEffect_VSNormalPixelLightingTx.inc"
-    #include "Shaders/Compiled/NormalMapEffect_VSNormalPixelLightingTxInst.inc"
+    #include "NormalMapEffect_VSNormalPixelLightingTx.inc"
+    #include "NormalMapEffect_VSNormalPixelLightingTxInst.inc"
 
-    #include "Shaders/Compiled/NormalMapEffect_VSNormalPixelLightingTxVc.inc"
-    #include "Shaders/Compiled/NormalMapEffect_VSNormalPixelLightingTxVcInst.inc"
+    #include "NormalMapEffect_VSNormalPixelLightingTxVc.inc"
+    #include "NormalMapEffect_VSNormalPixelLightingTxVcInst.inc"
 
-    #include "Shaders/Compiled/NormalMapEffect_VSNormalPixelLightingTxBn.inc"
-    #include "Shaders/Compiled/NormalMapEffect_VSNormalPixelLightingTxBnInst.inc"
+    #include "NormalMapEffect_VSNormalPixelLightingTxBn.inc"
+    #include "NormalMapEffect_VSNormalPixelLightingTxBnInst.inc"
 
-    #include "Shaders/Compiled/NormalMapEffect_VSNormalPixelLightingTxVcBn.inc"
-    #include "Shaders/Compiled/NormalMapEffect_VSNormalPixelLightingTxVcBnInst.inc"
+    #include "NormalMapEffect_VSNormalPixelLightingTxVcBn.inc"
+    #include "NormalMapEffect_VSNormalPixelLightingTxVcBnInst.inc"
 
-    #include "Shaders/Compiled/NormalMapEffect_PSNormalPixelLightingTx.inc"
-    #include "Shaders/Compiled/NormalMapEffect_PSNormalPixelLightingTxNoFog.inc"
-    #include "Shaders/Compiled/NormalMapEffect_PSNormalPixelLightingTxNoSpec.inc"
-    #include "Shaders/Compiled/NormalMapEffect_PSNormalPixelLightingTxNoFogSpec.inc"
+    #include "NormalMapEffect_PSNormalPixelLightingTx.inc"
+    #include "NormalMapEffect_PSNormalPixelLightingTxNoFog.inc"
+    #include "NormalMapEffect_PSNormalPixelLightingTxNoSpec.inc"
+    #include "NormalMapEffect_PSNormalPixelLightingTxNoFogSpec.inc"
 #endif
 }
 
