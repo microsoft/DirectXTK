@@ -146,21 +146,25 @@ if((BUILD_XAUDIO_WIN10) OR (BUILD_XAUDIO_WIN8) OR (BUILD_XAUDIO_WIN7))
         Audio/WAVFileReader.h)
 endif()
 
+set(COMPILED_SHADERS ${CMAKE_CURRENT_BINARY_DIR}/Shaders/Compiled)
+file(MAKE_DIRECTORY ${COMPILED_SHADERS})
+
 set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
-    Src/Shaders/Compiled/SpriteEffect_SpriteVertexShader.inc)
+    ${COMPILED_SHADERS}/SpriteEffect_SpriteVertexShader.inc)
 
 add_custom_command(
-    OUTPUT "${PROJECT_SOURCE_DIR}/Src/Shaders/Compiled/SpriteEffect_SpriteVertexShader.inc"
+    OUTPUT "${COMPILED_SHADERS}/SpriteEffect_SpriteVertexShader.inc"
     MAIN_DEPENDENCY "${PROJECT_SOURCE_DIR}/Src/Shaders/CompileShaders.cmd"
     DEPENDS ${SHADER_SOURCES}
     COMMENT "Generating HLSL shaders..."
-    COMMAND "CompileShaders.cmd"
+    COMMAND set CompileShadersOutput=${COMPILED_SHADERS}
+    COMMAND CompileShaders.cmd
     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/Src/Shaders"
     USES_TERMINAL)
 
 add_library(${PROJECT_NAME} STATIC ${LIBRARY_SOURCES} ${LIBRARY_HEADERS})
 
-target_include_directories(${PROJECT_NAME} PRIVATE Src/Shaders/Compiled)
+target_include_directories(${PROJECT_NAME} PRIVATE ${COMPILED_SHADERS})
 
 if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.16")
     target_precompile_headers(${PROJECT_NAME} PRIVATE Src/pch.h)
