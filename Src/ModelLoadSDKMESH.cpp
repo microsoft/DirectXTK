@@ -500,6 +500,11 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
         vbDecls[j] = std::make_shared<ModelMeshPart::InputLayoutCollection>();
         unsigned int ilflags = GetInputLayoutDesc(vh.Decl, *vbDecls[j].get());
 
+        if (flags & ModelLoader_DisableSkinning)
+        {
+            ilflags &= ~static_cast<unsigned int>(SKINNING);
+        }
+
         if (ilflags & SKINNING)
         {
             ilflags &= ~static_cast<unsigned int>(DUAL_TEXTURE);
