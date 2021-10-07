@@ -91,18 +91,9 @@ namespace
             flags &= ~static_cast<unsigned int>(DUAL_TEXTURE);
         }
 
-        if (flags & NORMAL_MAPS)
+        if (mh.NormalTexture[0])
         {
-            if (!mh.NormalTexture[0])
-            {
-                flags &= ~static_cast<unsigned int>(NORMAL_MAPS);
-                *normalName = 0;
-            }
-        }
-        else if (mh.NormalTexture[0])
-        {
-            DebugTrace("WARNING: Material '%s' has a normal map, but vertex buffer is missing tangents\n", mh.Name);
-            *normalName = 0;
+            flags |= NORMAL_MAPS;
         }
 
         EffectFactory::EffectInfo info;
@@ -275,11 +266,6 @@ namespace
 
                 if (unk)
                     break;
-
-                if (decl[index].Usage == D3DDECLUSAGE_TANGENT)
-                {
-                    flags |= NORMAL_MAPS;
-                }
 
                 inputDesc.push_back(desc);
             }
@@ -516,13 +502,8 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
 
         if (ilflags & SKINNING)
         {
-            ilflags &= ~static_cast<unsigned int>(DUAL_TEXTURE | NORMAL_MAPS);
+            ilflags &= ~static_cast<unsigned int>(DUAL_TEXTURE);
         }
-        if (ilflags & DUAL_TEXTURE)
-        {
-            ilflags &= ~static_cast<unsigned int>(NORMAL_MAPS);
-        }
-
         if (ilflags & USES_OBSOLETE_DEC3N)
         {
             dec3nwarning = true;
