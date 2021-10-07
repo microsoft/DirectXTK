@@ -472,7 +472,8 @@ namespace DirectX
     class DGSLEffect : public IEffect, public IEffectMatrices, public IEffectLights
     {
     public:
-        explicit DGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader = nullptr);
+        explicit DGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader = nullptr) :
+            DGSLEffect(device, pixelShader, false) {}
 
         DGSLEffect(DGSLEffect&&) noexcept;
         DGSLEffect& operator= (DGSLEffect&&) noexcept;
@@ -538,6 +539,8 @@ namespace DirectX
 
         std::unique_ptr<Impl> pImpl;
 
+        DGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader, bool skinningEnabled);
+
         // Unsupported interface methods.
         void __cdecl SetPerPixelLighting(bool value) override;
     };
@@ -545,7 +548,8 @@ namespace DirectX
     class SkinnedDGSLEffect : public DGSLEffect, public IEffectSkinning
     {
     public:
-        explicit SkinnedDGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader = nullptr);
+        explicit SkinnedDGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader = nullptr) :
+            DGSLEffect(device, pixelShader, true) {}
 
         // Animation setting.
         void __cdecl SetWeightsPerVertex(int value) override;
@@ -558,7 +562,8 @@ namespace DirectX
     class NormalMapEffect : public IEffect, public IEffectMatrices, public IEffectLights, public IEffectFog
     {
     public:
-        explicit NormalMapEffect(_In_ ID3D11Device* device);
+        explicit NormalMapEffect(_In_ ID3D11Device* device) :
+            NormalMapEffect(device, false) {}
 
         NormalMapEffect(NormalMapEffect&&) noexcept;
         NormalMapEffect& operator= (NormalMapEffect&&) noexcept;
@@ -618,15 +623,29 @@ namespace DirectX
         // Instancing settings.
         void __cdecl SetInstancingEnabled(bool value);
 
-    private:
+    protected:
         // Private implementation.
         class Impl;
 
         std::unique_ptr<Impl> pImpl;
 
+        NormalMapEffect(_In_ ID3D11Device* device, bool skinningEnabled);
+
         // Unsupported interface methods.
         void __cdecl SetLightingEnabled(bool value) override;
         void __cdecl SetPerPixelLighting(bool value) override;
+    };
+
+    class SkinnedNormalMapEffect : public NormalMapEffect, public IEffectSkinning
+    {
+    public:
+        explicit SkinnedNormalMapEffect(_In_ ID3D11Device* device) :
+            NormalMapEffect(device, true) {}
+
+        // Animation settings.
+        void __cdecl SetWeightsPerVertex(int value) override;
+        void __cdecl SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, size_t count) override;
+        void __cdecl ResetBoneTransforms() override;
     };
 
     //----------------------------------------------------------------------------------

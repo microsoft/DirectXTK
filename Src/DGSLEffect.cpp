@@ -588,13 +588,11 @@ int DGSLEffect::Impl::GetCurrentPSPermutation() const noexcept
 //--------------------------------------------------------------------------------------
 // DGSLEffect
 //--------------------------------------------------------------------------------------
-
-DGSLEffect::DGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader)
+DGSLEffect::DGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader, bool skinningEnabled)
     : pImpl(std::make_unique<Impl>(device, pixelShader))
 {
-    pImpl->Initialize(device, false);
+    pImpl->Initialize(device, skinningEnabled);
 }
-
 
 DGSLEffect::DGSLEffect(DGSLEffect&&) noexcept = default;
 DGSLEffect& DGSLEffect::operator= (DGSLEffect&&) noexcept = default;
@@ -891,12 +889,6 @@ void DGSLEffect::SetTexture(int whichTexture, _In_opt_ ID3D11ShaderResourceView*
 //--------------------------------------------------------------------------------------
 // SkinnedDGSLEffect
 //--------------------------------------------------------------------------------------
-
-SkinnedDGSLEffect::SkinnedDGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader) :
-    DGSLEffect(device, pixelShader)
-{
-    pImpl->Initialize(device, true);
-}
 
 // Animation settings.
 void SkinnedDGSLEffect::SetWeightsPerVertex(int value)

@@ -18,6 +18,44 @@
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
+namespace
+{
+    template<typename T>
+    void SetMaterialProperties(T* effect, const EffectFactory::EffectInfo& info)
+    {
+        effect->EnableDefaultLighting();
+
+        effect->SetAlpha(info.alpha);
+
+        // Most DirectX Tool Kit effects do not have an ambient material color.
+
+        XMVECTOR color = XMLoadFloat3(&info.diffuseColor);
+        effect->SetDiffuseColor(color);
+
+        if (info.specularColor.x != 0 || info.specularColor.y != 0 || info.specularColor.z != 0)
+        {
+            color = XMLoadFloat3(&info.specularColor);
+            effect->SetSpecularColor(color);
+            effect->SetSpecularPower(info.specularPower);
+        }
+        else
+        {
+            effect->DisableSpecular();
+        }
+
+        if (info.emissiveColor.x != 0 || info.emissiveColor.y != 0 || info.emissiveColor.z != 0)
+        {
+            color = XMLoadFloat3(&info.emissiveColor);
+            effect->SetEmissiveColor(color);
+        }
+
+        if (info.biasedVertexNormals)
+        {
+            effect->SetBiasedVertexNormals(true);
+        }
+    }
+}
+
 // Internal EffectFactory implementation class. Only one of these helpers is allocated
 // per D3D device, even if there are multiple public facing EffectFactory instances.
 class EffectFactory::Impl
@@ -29,7 +67,12 @@ public:
         mSharing(true),
         mUseNormalMapEffect(true),
         mForceSRGB(false)
-    {}
+    {
+        if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
+        {
+            mUseNormalMapEffect = false;
+        }
+    }
 
     std::shared_ptr<IEffect> CreateEffect(_In_ IEffectFactory* factory, _In_ const IEffectFactory::EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext);
     void CreateTexture(_In_z_ const wchar_t* texture, _In_opt_ ID3D11DeviceContext* deviceContext, _Outptr_ ID3D11ShaderResourceView** textureView);
@@ -53,6 +96,7 @@ private:
     EffectCache  mEffectCacheSkinning;
     EffectCache  mEffectCacheDualTexture;
     EffectCache  mEffectNormalMap;
+    EffectCache  mEffectNormalMapSkinned;
     TextureCache mTextureCache;
 
     bool mSharing;
@@ -72,66 +116,92 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
 {
     if (info.enableSkinning)
     {
-        // SkinnedEffect
-        if (mSharing && info.name && *info.name)
+        if (info.enableNormalMaps && mUseNormalMapEffect)
         {
-            auto it = mEffectCacheSkinning.find(info.name);
-            if (mSharing && it != mEffectCacheSkinning.end())
+            // SkinnedNormalMapEffect
+            if (mSharing && info.name && *info.name)
             {
-                return it->second;
+                auto it = mEffectNormalMapSkinned.find(info.name);
+                if (mSharing && it != mEffectNormalMapSkinned.end())
+                {
+                    return it->second;
+                }
             }
-        }
 
-        auto effect = std::make_shared<SkinnedEffect>(mDevice.Get());
+            auto effect = std::make_shared<SkinnedNormalMapEffect>(mDevice.Get());
 
-        effect->EnableDefaultLighting();
+            SetMaterialProperties(effect.get(), info);
 
-        effect->SetAlpha(info.alpha);
+            if (info.diffuseTexture && *info.diffuseTexture)
+            {
+                ComPtr<ID3D11ShaderResourceView> srv;
 
-        // Skinned Effect does not have an ambient material color, or per-vertex color support
+                factory->CreateTexture(info.diffuseTexture, deviceContext, srv.GetAddressOf());
 
-        XMVECTOR color = XMLoadFloat3(&info.diffuseColor);
-        effect->SetDiffuseColor(color);
+                effect->SetTexture(srv.Get());
+            }
 
-        if (info.specularColor.x != 0 || info.specularColor.y != 0 || info.specularColor.z != 0)
-        {
-            color = XMLoadFloat3(&info.specularColor);
-            effect->SetSpecularColor(color);
-            effect->SetSpecularPower(info.specularPower);
+            if (info.specularTexture && *info.specularTexture)
+            {
+                ComPtr<ID3D11ShaderResourceView> srv;
+
+                factory->CreateTexture(info.specularTexture, deviceContext, srv.GetAddressOf());
+
+                effect->SetSpecularTexture(srv.Get());
+            }
+
+            if (info.normalTexture && *info.normalTexture)
+            {
+                ComPtr<ID3D11ShaderResourceView> srv;
+
+                factory->CreateTexture(info.normalTexture, deviceContext, srv.GetAddressOf());
+
+                effect->SetNormalTexture(srv.Get());
+            }
+
+            if (mSharing && info.name && *info.name)
+            {
+                std::lock_guard<std::mutex> lock(mutex);
+                EffectCache::value_type v(info.name, effect);
+                mEffectNormalMapSkinned.insert(v);
+            }
+
+            return std::move(effect);
         }
         else
         {
-            effect->DisableSpecular();
+            // SkinnedEffect
+            if (mSharing && info.name && *info.name)
+            {
+                auto it = mEffectCacheSkinning.find(info.name);
+                if (mSharing && it != mEffectCacheSkinning.end())
+                {
+                    return it->second;
+                }
+            }
+
+            auto effect = std::make_shared<SkinnedEffect>(mDevice.Get());
+
+            SetMaterialProperties(effect.get(), info);
+
+            if (info.diffuseTexture && *info.diffuseTexture)
+            {
+                ComPtr<ID3D11ShaderResourceView> srv;
+
+                factory->CreateTexture(info.diffuseTexture, deviceContext, srv.GetAddressOf());
+
+                effect->SetTexture(srv.Get());
+            }
+
+            if (mSharing && info.name && *info.name)
+            {
+                std::lock_guard<std::mutex> lock(mutex);
+                EffectCache::value_type v(info.name, effect);
+                mEffectCacheSkinning.insert(v);
+            }
+
+            return std::move(effect);
         }
-
-        if (info.emissiveColor.x != 0 || info.emissiveColor.y != 0 || info.emissiveColor.z != 0)
-        {
-            color = XMLoadFloat3(&info.emissiveColor);
-            effect->SetEmissiveColor(color);
-        }
-
-        if (info.diffuseTexture && *info.diffuseTexture)
-        {
-            ComPtr<ID3D11ShaderResourceView> srv;
-
-            factory->CreateTexture(info.diffuseTexture, deviceContext, srv.GetAddressOf());
-
-            effect->SetTexture(srv.Get());
-        }
-
-        if (info.biasedVertexNormals)
-        {
-            effect->SetBiasedVertexNormals(true);
-        }
-
-        if (mSharing && info.name && *info.name)
-        {
-            std::lock_guard<std::mutex> lock(mutex);
-            EffectCache::value_type v(info.name, effect);
-            mEffectCacheSkinning.insert(v);
-        }
-
-        return std::move(effect);
     }
     else if (info.enableDualTexture)
     {
@@ -209,35 +279,11 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
 
         auto effect = std::make_shared<NormalMapEffect>(mDevice.Get());
 
-        effect->EnableDefaultLighting();
-
-        effect->SetAlpha(info.alpha);
+        SetMaterialProperties(effect.get(), info);
 
         if (info.perVertexColor)
         {
             effect->SetVertexColorEnabled(true);
-        }
-
-        // NormalMap Effect does not have an ambient material color
-
-        XMVECTOR color = XMLoadFloat3(&info.diffuseColor);
-        effect->SetDiffuseColor(color);
-
-        if (info.specularColor.x != 0 || info.specularColor.y != 0 || info.specularColor.z != 0)
-        {
-            color = XMLoadFloat3(&info.specularColor);
-            effect->SetSpecularColor(color);
-            effect->SetSpecularPower(info.specularPower);
-        }
-        else
-        {
-            effect->DisableSpecular();
-        }
-
-        if (info.emissiveColor.x != 0 || info.emissiveColor.y != 0 || info.emissiveColor.z != 0)
-        {
-            color = XMLoadFloat3(&info.emissiveColor);
-            effect->SetEmissiveColor(color);
         }
 
         if (info.diffuseTexture && *info.diffuseTexture)
@@ -267,11 +313,6 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
             effect->SetNormalTexture(srv.Get());
         }
 
-        if (info.biasedVertexNormals)
-        {
-            effect->SetBiasedVertexNormals(true);
-        }
-
         if (mSharing && info.name && *info.name)
         {
             std::lock_guard<std::mutex> lock(mutex);
@@ -295,36 +336,13 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
 
         auto effect = std::make_shared<BasicEffect>(mDevice.Get());
 
-        effect->EnableDefaultLighting();
         effect->SetLightingEnabled(true);
 
-        effect->SetAlpha(info.alpha);
+        SetMaterialProperties(effect.get(), info);
 
         if (info.perVertexColor)
         {
             effect->SetVertexColorEnabled(true);
-        }
-
-        // Basic Effect does not have an ambient material color
-
-        XMVECTOR color = XMLoadFloat3(&info.diffuseColor);
-        effect->SetDiffuseColor(color);
-
-        if (info.specularColor.x != 0 || info.specularColor.y != 0 || info.specularColor.z != 0)
-        {
-            color = XMLoadFloat3(&info.specularColor);
-            effect->SetSpecularColor(color);
-            effect->SetSpecularPower(info.specularPower);
-        }
-        else
-        {
-            effect->DisableSpecular();
-        }
-
-        if (info.emissiveColor.x != 0 || info.emissiveColor.y != 0 || info.emissiveColor.z != 0)
-        {
-            color = XMLoadFloat3(&info.emissiveColor);
-            effect->SetEmissiveColor(color);
         }
 
         if (info.diffuseTexture && *info.diffuseTexture)
@@ -335,11 +353,6 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
 
             effect->SetTexture(srv.Get());
             effect->SetTextureEnabled(true);
-        }
-
-        if (info.biasedVertexNormals)
-        {
-            effect->SetBiasedVertexNormals(true);
         }
 
         if (mSharing && info.name && *info.name)
@@ -452,6 +465,7 @@ void EffectFactory::Impl::ReleaseCache()
     mEffectCacheSkinning.clear();
     mEffectCacheDualTexture.clear();
     mEffectNormalMap.clear();
+    mEffectNormalMapSkinned.clear();
     mTextureCache.clear();
 }
 
