@@ -42,15 +42,15 @@ namespace
 namespace
 {
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    #include "Shaders/Compiled/XboxOnePostProcess_VSQuad.inc"
+    #include "XboxOnePostProcess_VSQuad.inc"
 
-    #include "Shaders/Compiled/XboxOnePostProcess_PSMerge.inc"
-    #include "Shaders/Compiled/XboxOnePostProcess_PSBloomCombine.inc"
+    #include "XboxOnePostProcess_PSMerge.inc"
+    #include "XboxOnePostProcess_PSBloomCombine.inc"
 #else
-    #include "Shaders/Compiled/PostProcess_VSQuad.inc"
+    #include "PostProcess_VSQuad.inc"
 
-    #include "Shaders/Compiled/PostProcess_PSMerge.inc"
-    #include "Shaders/Compiled/PostProcess_PSBloomCombine.inc"
+    #include "PostProcess_PSMerge.inc"
+    #include "PostProcess_PSBloomCombine.inc"
 #endif
 }
 

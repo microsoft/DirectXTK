@@ -59,21 +59,21 @@ public:
 namespace
 {
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    #include "Shaders/Compiled/XboxOneDualTextureEffect_VSDualTexture.inc"
-    #include "Shaders/Compiled/XboxOneDualTextureEffect_VSDualTextureNoFog.inc"
-    #include "Shaders/Compiled/XboxOneDualTextureEffect_VSDualTextureVc.inc"
-    #include "Shaders/Compiled/XboxOneDualTextureEffect_VSDualTextureVcNoFog.inc"
+    #include "XboxOneDualTextureEffect_VSDualTexture.inc"
+    #include "XboxOneDualTextureEffect_VSDualTextureNoFog.inc"
+    #include "XboxOneDualTextureEffect_VSDualTextureVc.inc"
+    #include "XboxOneDualTextureEffect_VSDualTextureVcNoFog.inc"
 
-    #include "Shaders/Compiled/XboxOneDualTextureEffect_PSDualTexture.inc"
-    #include "Shaders/Compiled/XboxOneDualTextureEffect_PSDualTextureNoFog.inc"
+    #include "XboxOneDualTextureEffect_PSDualTexture.inc"
+    #include "XboxOneDualTextureEffect_PSDualTextureNoFog.inc"
 #else
-    #include "Shaders/Compiled/DualTextureEffect_VSDualTexture.inc"
-    #include "Shaders/Compiled/DualTextureEffect_VSDualTextureNoFog.inc"
-    #include "Shaders/Compiled/DualTextureEffect_VSDualTextureVc.inc"
-    #include "Shaders/Compiled/DualTextureEffect_VSDualTextureVcNoFog.inc"
+    #include "DualTextureEffect_VSDualTexture.inc"
+    #include "DualTextureEffect_VSDualTextureNoFog.inc"
+    #include "DualTextureEffect_VSDualTextureVc.inc"
+    #include "DualTextureEffect_VSDualTextureVcNoFog.inc"
 
-    #include "Shaders/Compiled/DualTextureEffect_PSDualTexture.inc"
-    #include "Shaders/Compiled/DualTextureEffect_PSDualTextureNoFog.inc"
+    #include "DualTextureEffect_PSDualTexture.inc"
+    #include "DualTextureEffect_PSDualTextureNoFog.inc"
 #endif
 }
 

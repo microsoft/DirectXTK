@@ -19,6 +19,8 @@ option(BUILD_XAUDIO_WIN7 "Build for XAudio2Redist" OFF)
 
 option(ENABLE_CODE_ANALYSIS "Use Static Code Analysis on build" OFF)
 
+option(USE_PREBUILT_SHADERS "Use externally built HLSL shaders" OFF)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -146,19 +148,32 @@ if((BUILD_XAUDIO_WIN10) OR (BUILD_XAUDIO_WIN8) OR (BUILD_XAUDIO_WIN7))
         Audio/WAVFileReader.h)
 endif()
 
-set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
-    Src/Shaders/Compiled/SpriteEffect_SpriteVertexShader.inc)
+if (NOT COMPILED_SHADERS)
+    if (USE_PREBUILT_SHADERS)
+        message(FATAL_ERROR "ERROR: Using prebuilt shaders requires the COMPILED_SHADERS variable is set")
+    endif()
+    set(COMPILED_SHADERS ${CMAKE_CURRENT_BINARY_DIR}/Shaders/Compiled)
+    file(MAKE_DIRECTORY ${COMPILED_SHADERS})
+endif()
 
-add_custom_command(
-    OUTPUT "${PROJECT_SOURCE_DIR}/Src/Shaders/Compiled/SpriteEffect_SpriteVertexShader.inc"
-    MAIN_DEPENDENCY "${PROJECT_SOURCE_DIR}/Src/Shaders/CompileShaders.cmd"
-    DEPENDS ${SHADER_SOURCES}
-    COMMENT "Generating HLSL shaders..."
-    COMMAND "CompileShaders.cmd"
-    WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/Src/Shaders"
-    USES_TERMINAL)
+set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
+    ${COMPILED_SHADERS}/SpriteEffect_SpriteVertexShader.inc)
+
+if (NOT USE_PREBUILT_SHADERS)
+    add_custom_command(
+        OUTPUT "${COMPILED_SHADERS}/SpriteEffect_SpriteVertexShader.inc"
+        MAIN_DEPENDENCY "${PROJECT_SOURCE_DIR}/Src/Shaders/CompileShaders.cmd"
+        DEPENDS ${SHADER_SOURCES}
+        COMMENT "Generating HLSL shaders..."
+        COMMAND set CompileShadersOutput=${COMPILED_SHADERS}
+        COMMAND CompileShaders.cmd
+        WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/Src/Shaders"
+        USES_TERMINAL)
+endif()
 
 add_library(${PROJECT_NAME} STATIC ${LIBRARY_SOURCES} ${LIBRARY_HEADERS})
+
+target_include_directories(${PROJECT_NAME} PRIVATE ${COMPILED_SHADERS})
 
 if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.16")
     target_precompile_headers(${PROJECT_NAME} PRIVATE Src/pch.h)
