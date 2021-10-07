@@ -469,11 +469,10 @@ namespace DirectX
 
     //----------------------------------------------------------------------------------
     // Built-in effect for Visual Studio Shader Designer (DGSL) shaders
-    class DGSLEffect : public IEffect, public IEffectMatrices, public IEffectLights, public IEffectSkinning
+    class DGSLEffect : public IEffect, public IEffectMatrices, public IEffectLights
     {
     public:
-        explicit DGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader = nullptr,
-                            _In_ bool enableSkinning = false);
+        explicit DGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader = nullptr);
 
         DGSLEffect(DGSLEffect&&) noexcept;
         DGSLEffect& operator= (DGSLEffect&&) noexcept;
@@ -533,12 +532,7 @@ namespace DirectX
 
         static constexpr int MaxTextures = 8;
 
-        // Animation setting.
-        void __cdecl SetWeightsPerVertex(int value) override;
-        void __cdecl SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, size_t count) override;
-        void __cdecl ResetBoneTransforms() override;
-
-    private:
+    protected:
         // Private implementation.
         class Impl;
 
@@ -546,6 +540,17 @@ namespace DirectX
 
         // Unsupported interface methods.
         void __cdecl SetPerPixelLighting(bool value) override;
+    };
+
+    class SkinnedDGSLEffect : public DGSLEffect, public IEffectSkinning
+    {
+    public:
+        explicit SkinnedDGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader = nullptr);
+
+        // Animation setting.
+        void __cdecl SetWeightsPerVertex(int value) override;
+        void __cdecl SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, size_t count) override;
+        void __cdecl ResetBoneTransforms() override;
     };
 
     //----------------------------------------------------------------------------------

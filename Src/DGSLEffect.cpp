@@ -90,7 +90,7 @@ namespace
     // Slot 4
     struct BoneConstants
     {
-        XMVECTOR Bones[DGSLEffect::MaxBones][3];
+        XMVECTOR Bones[SkinnedDGSLEffect::MaxBones][3];
     };
 
 #pragma pack(pop)
@@ -217,14 +217,14 @@ const ShaderBytecode DGSLEffectTraits::PixelShaderBytecode[] =
 class DGSLEffect::Impl : public AlignedNew<DGSLEffectConstants>
 {
 public:
-    Impl(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader, _In_ bool enableSkinning) :
+    Impl(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader) :
         constants{},
         dirtyFlags(INT_MAX),
         vertexColorEnabled(false),
         textureEnabled(false),
         specularEnabled(false),
         alphaDiscardEnabled(false),
-        weightsPerVertex(enableSkinning ? 4 : 0),
+        weightsPerVertex(0),
         mCBMaterial(device),
         mCBLight(device),
         mCBObject(device),
@@ -234,6 +234,12 @@ public:
     {
         static_assert(static_cast<int>(std::size(DGSLEffectTraits::VertexShaderBytecode)) == DGSLEffectTraits::VertexShaderCount, "array/max mismatch");
         static_assert(static_cast<int>(std::size(DGSLEffectTraits::PixelShaderBytecode)) == DGSLEffectTraits::PixelShaderCount, "array/max mismatch");
+        static_assert(MaxDirectionalLights == 4, "Mismatch with DGSL pipline");
+    }
+
+    void Initialize(_In_ ID3D11Device* device, bool enableSkinning)
+    {
+        weightsPerVertex = enableSkinning ? 4 : 0;
 
         XMMATRIX id = XMMatrixIdentity();
         world = id;
@@ -244,7 +250,6 @@ public:
         constants.material.SpecularPower = 16;
         constants.object.UvTransform4x4 = id;
 
-        static_assert(MaxDirectionalLights == 4, "Mismatch with DGSL pipline");
         for (int i = 0; i < MaxDirectionalLights; ++i)
         {
             lightEnabled[i] = (i == 0);
@@ -260,7 +265,7 @@ public:
         {
             mCBBone.Create(device);
 
-            for (size_t j = 0; j < MaxBones; ++j)
+            for (size_t j = 0; j < SkinnedDGSLEffect::MaxBones; ++j)
             {
                 constants.bones.Bones[j][0] = g_XMIdentityR0;
                 constants.bones.Bones[j][1] = g_XMIdentityR1;
@@ -584,9 +589,10 @@ int DGSLEffect::Impl::GetCurrentPSPermutation() const noexcept
 // DGSLEffect
 //--------------------------------------------------------------------------------------
 
-DGSLEffect::DGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader, _In_ bool enableSkinning)
-    : pImpl(std::make_unique<Impl>(device, pixelShader, enableSkinning))
+DGSLEffect::DGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader)
+    : pImpl(std::make_unique<Impl>(device, pixelShader))
 {
+    pImpl->Initialize(device, false);
 }
 
 
@@ -882,15 +888,19 @@ void DGSLEffect::SetTexture(int whichTexture, _In_opt_ ID3D11ShaderResourceView*
 }
 
 
-// Animation settings.
-void DGSLEffect::SetWeightsPerVertex(int value)
-{
-    if (!pImpl->weightsPerVertex)
-    {
-        // Safe to ignore since it's only an optimization hint
-        return;
-    }
+//--------------------------------------------------------------------------------------
+// SkinnedDGSLEffect
+//--------------------------------------------------------------------------------------
 
+SkinnedDGSLEffect::SkinnedDGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader) :
+    DGSLEffect(device, pixelShader)
+{
+    pImpl->Initialize(device, true);
+}
+
+// Animation settings.
+void SkinnedDGSLEffect::SetWeightsPerVertex(int value)
+{
     if ((value != 1) &&
         (value != 2) &&
         (value != 4))
@@ -902,11 +912,8 @@ void DGSLEffect::SetWeightsPerVertex(int value)
 }
 
 
-void DGSLEffect::SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, size_t count)
+void SkinnedDGSLEffect::SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, size_t count)
 {
-    if (!pImpl->weightsPerVertex)
-        throw std::runtime_error("Skinning not enabled for this effect");
-
     if (count > MaxBones)
         throw std::invalid_argument("count parameter exceeds MaxBones");
 
@@ -930,14 +937,8 @@ void DGSLEffect::SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, size
 }
 
 
-void DGSLEffect::ResetBoneTransforms()
+void SkinnedDGSLEffect::ResetBoneTransforms()
 {
-    if (!pImpl->weightsPerVertex)
-    {
-        // Safe to ignore since it just returns things back to default settings
-        return;
-    }
-
     auto boneConstant = pImpl->constants.bones.Bones;
 
     for (size_t i = 0; i < MaxBones; ++i)
