@@ -18,6 +18,44 @@
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
+namespace
+{
+    template<typename T>
+    void SetMaterialProperties(T* effect, const EffectFactory::EffectInfo& info)
+    {
+        effect->EnableDefaultLighting();
+
+        effect->SetAlpha(info.alpha);
+
+        // Most DirectX Tool Kit effects do not have an ambient material color.
+
+        XMVECTOR color = XMLoadFloat3(&info.diffuseColor);
+        effect->SetDiffuseColor(color);
+
+        if (info.specularColor.x != 0 || info.specularColor.y != 0 || info.specularColor.z != 0)
+        {
+            color = XMLoadFloat3(&info.specularColor);
+            effect->SetSpecularColor(color);
+            effect->SetSpecularPower(info.specularPower);
+        }
+        else
+        {
+            effect->DisableSpecular();
+        }
+
+        if (info.emissiveColor.x != 0 || info.emissiveColor.y != 0 || info.emissiveColor.z != 0)
+        {
+            color = XMLoadFloat3(&info.emissiveColor);
+            effect->SetEmissiveColor(color);
+        }
+
+        if (info.biasedVertexNormals)
+        {
+            effect->SetBiasedVertexNormals(true);
+        }
+    }
+}
+
 // Internal EffectFactory implementation class. Only one of these helpers is allocated
 // per D3D device, even if there are multiple public facing EffectFactory instances.
 class EffectFactory::Impl
@@ -89,31 +127,7 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
 
         auto effect = std::make_shared<SkinnedEffect>(mDevice.Get());
 
-        effect->EnableDefaultLighting();
-
-        effect->SetAlpha(info.alpha);
-
-        // Skinned Effect does not have an ambient material color, or per-vertex color support
-
-        XMVECTOR color = XMLoadFloat3(&info.diffuseColor);
-        effect->SetDiffuseColor(color);
-
-        if (info.specularColor.x != 0 || info.specularColor.y != 0 || info.specularColor.z != 0)
-        {
-            color = XMLoadFloat3(&info.specularColor);
-            effect->SetSpecularColor(color);
-            effect->SetSpecularPower(info.specularPower);
-        }
-        else
-        {
-            effect->DisableSpecular();
-        }
-
-        if (info.emissiveColor.x != 0 || info.emissiveColor.y != 0 || info.emissiveColor.z != 0)
-        {
-            color = XMLoadFloat3(&info.emissiveColor);
-            effect->SetEmissiveColor(color);
-        }
+        SetMaterialProperties(effect.get(), info);
 
         if (info.diffuseTexture && *info.diffuseTexture)
         {
@@ -122,11 +136,6 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
             factory->CreateTexture(info.diffuseTexture, deviceContext, srv.GetAddressOf());
 
             effect->SetTexture(srv.Get());
-        }
-
-        if (info.biasedVertexNormals)
-        {
-            effect->SetBiasedVertexNormals(true);
         }
 
         if (mSharing && info.name && *info.name)
@@ -214,35 +223,11 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
 
         auto effect = std::make_shared<NormalMapEffect>(mDevice.Get());
 
-        effect->EnableDefaultLighting();
-
-        effect->SetAlpha(info.alpha);
+        SetMaterialProperties(effect.get(), info);
 
         if (info.perVertexColor)
         {
             effect->SetVertexColorEnabled(true);
-        }
-
-        // NormalMap Effect does not have an ambient material color
-
-        XMVECTOR color = XMLoadFloat3(&info.diffuseColor);
-        effect->SetDiffuseColor(color);
-
-        if (info.specularColor.x != 0 || info.specularColor.y != 0 || info.specularColor.z != 0)
-        {
-            color = XMLoadFloat3(&info.specularColor);
-            effect->SetSpecularColor(color);
-            effect->SetSpecularPower(info.specularPower);
-        }
-        else
-        {
-            effect->DisableSpecular();
-        }
-
-        if (info.emissiveColor.x != 0 || info.emissiveColor.y != 0 || info.emissiveColor.z != 0)
-        {
-            color = XMLoadFloat3(&info.emissiveColor);
-            effect->SetEmissiveColor(color);
         }
 
         if (info.diffuseTexture && *info.diffuseTexture)
@@ -272,11 +257,6 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
             effect->SetNormalTexture(srv.Get());
         }
 
-        if (info.biasedVertexNormals)
-        {
-            effect->SetBiasedVertexNormals(true);
-        }
-
         if (mSharing && info.name && *info.name)
         {
             std::lock_guard<std::mutex> lock(mutex);
@@ -300,36 +280,13 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
 
         auto effect = std::make_shared<BasicEffect>(mDevice.Get());
 
-        effect->EnableDefaultLighting();
         effect->SetLightingEnabled(true);
 
-        effect->SetAlpha(info.alpha);
+        SetMaterialProperties(effect.get(), info);
 
         if (info.perVertexColor)
         {
             effect->SetVertexColorEnabled(true);
-        }
-
-        // Basic Effect does not have an ambient material color
-
-        XMVECTOR color = XMLoadFloat3(&info.diffuseColor);
-        effect->SetDiffuseColor(color);
-
-        if (info.specularColor.x != 0 || info.specularColor.y != 0 || info.specularColor.z != 0)
-        {
-            color = XMLoadFloat3(&info.specularColor);
-            effect->SetSpecularColor(color);
-            effect->SetSpecularPower(info.specularPower);
-        }
-        else
-        {
-            effect->DisableSpecular();
-        }
-
-        if (info.emissiveColor.x != 0 || info.emissiveColor.y != 0 || info.emissiveColor.z != 0)
-        {
-            color = XMLoadFloat3(&info.emissiveColor);
-            effect->SetEmissiveColor(color);
         }
 
         if (info.diffuseTexture && *info.diffuseTexture)
@@ -340,11 +297,6 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
 
             effect->SetTexture(srv.Get());
             effect->SetTextureEnabled(true);
-        }
-
-        if (info.biasedVertexNormals)
-        {
-            effect->SetBiasedVertexNormals(true);
         }
 
         if (mSharing && info.name && *info.name)
