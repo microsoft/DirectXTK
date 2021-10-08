@@ -29,7 +29,12 @@ public:
         mSharing(true),
         mUseNormalMapEffect(true),
         mForceSRGB(false)
-    {}
+    {
+        if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
+        {
+            mUseNormalMapEffect = false;
+        }
+    }
 
     std::shared_ptr<IEffect> CreateEffect(_In_ IEffectFactory* factory, _In_ const IEffectFactory::EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext);
     void CreateTexture(_In_z_ const wchar_t* texture, _In_opt_ ID3D11DeviceContext* deviceContext, _Outptr_ ID3D11ShaderResourceView** textureView);
