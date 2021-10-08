@@ -31,11 +31,31 @@ cbuffer Parameters : register(b0)
     float4x4 WorldViewProj          : packoffset(c22);
 };
 
+cbuffer SkinningParameters : register(b1)
+{
+    float4x3 Bones[72];
+}
+
 
 #include "Structures.fxh"
 #include "Common.fxh"
 #include "Lighting.fxh"
 #include "Utilities.fxh"
+
+
+float3 Skin(inout VSInputNmTxWeights vin, float3 normal, uniform int boneCount)
+{
+    float4x3 skinning = 0;
+
+    [unroll]
+    for (int i = 0; i < boneCount; i++)
+    {
+        skinning += Bones[vin.Indices[i]] * vin.Weights[i];
+    }
+
+    vin.Position.xyz = mul(vin.Position, skinning);
+    return mul(normal, (float3x3) skinning);
+}
 
 
 // Vertex shader: pixel lighting + texture.
@@ -164,6 +184,40 @@ VSOutputPixelLightingTx VSNormalPixelLightingTxVcBnInst(VSInputNmTxVcInst vin)
 
     vout.Diffuse.rgb = vin.Color.rgb;
     vout.Diffuse.a = vin.Color.a * DiffuseColor.a;
+    vout.TexCoord = vin.TexCoord;
+
+    return vout;
+}
+
+
+// Vertex shader: skinning (four bones) + pixel lighting + texture
+VSOutputPixelLightingTx VSSkinnedPixelLightingTx(VSInputNmTxWeights vin)
+{
+    VSOutputPixelLightingTx vout;
+
+    float3 normal = Skin(vin, vin.Normal, 4);
+
+    CommonVSOutputPixelLighting cout = ComputeCommonVSOutputPixelLighting(vin.Position, normal);
+    SetCommonVSOutputParamsPixelLighting;
+
+    vout.Diffuse = float4(1, 1, 1, DiffuseColor.a);
+    vout.TexCoord = vin.TexCoord;
+
+    return vout;
+}
+
+VSOutputPixelLightingTx VSSkinnedPixelLightingTxBn(VSInputNmTxWeights vin)
+{
+    VSOutputPixelLightingTx vout;
+
+    float3 normal = BiasX2(vin.Normal);
+
+    normal = Skin(vin, normal, 4);
+
+    CommonVSOutputPixelLighting cout = ComputeCommonVSOutputPixelLighting(vin.Position, normal);
+    SetCommonVSOutputParamsPixelLighting;
+
+    vout.Diffuse = float4(1, 1, 1, DiffuseColor.a);
     vout.TexCoord = vin.TexCoord;
 
     return vout;
