@@ -19,6 +19,7 @@ namespace DirectX
 }
 
 using namespace DirectX;
+using Microsoft::WRL::ComPtr;
 
 namespace
 {
@@ -73,8 +74,8 @@ public:
 
     void Initialize(_In_ ID3D11Device* device, bool enableSkinning);
 
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> normalTexture;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> specularTexture;
+    ComPtr<ID3D11ShaderResourceView> normalTexture;
+    ComPtr<ID3D11ShaderResourceView> specularTexture;
 
     bool vertexColorEnabled;
     bool biasedVertexNormals;
@@ -384,6 +385,15 @@ void NormalMapEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
 
     if (weightsPerVertex > 0)
     {
+#if defined(_XBOX_ONE) && defined(_TITLE)
+        void* grfxMemoryBone;
+        mBones.SetData(deviceContext, boneConstants, &grfxMemoryBone);
+
+        ComPtr<ID3D11DeviceContextX> deviceContextX;
+        ThrowIfFailed(deviceContext->QueryInterface(IID_GRAPHICS_PPV_ARGS(deviceContextX.GetAddressOf())));
+
+        deviceContextX->VSSetPlacementConstantBuffer(1, mBones.GetBuffer(), grfxMemoryBone);
+#else
         if (dirtyFlags & EffectDirtyFlags::ConstantBufferBones)
         {
             mBones.SetData(deviceContext, boneConstants);
@@ -392,6 +402,7 @@ void NormalMapEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
 
         ID3D11Buffer* buffer = mBones.GetBuffer();
         deviceContext->VSSetConstantBuffers(1, 1, &buffer);
+#endif
     }
 
     // Set the textures
