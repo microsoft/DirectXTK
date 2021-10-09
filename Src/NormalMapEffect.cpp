@@ -73,8 +73,8 @@ public:
 
     void Initialize(_In_ ID3D11Device* device, bool enableSkinning);
 
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> specularTexture;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> normalTexture;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> specularTexture;
 
     bool vertexColorEnabled;
     bool biasedVertexNormals;
@@ -398,8 +398,8 @@ void NormalMapEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
     ID3D11ShaderResourceView* textures[3] =
     {
         (texture) ? texture.Get() : GetDefaultTexture(),
-        specularTexture.Get(),
-        (normalTexture) ? normalTexture.Get() : GetDefaultNormalTexture()
+        (normalTexture) ? normalTexture.Get() : GetDefaultNormalTexture(),
+        specularTexture.Get()
     };
     deviceContext->PSSetShaderResources(0, 3, textures);
 

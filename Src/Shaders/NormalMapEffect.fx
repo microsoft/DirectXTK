@@ -5,8 +5,8 @@
 
 
 Texture2D<float4> Texture : register(t0);
-Texture2D<float3> SpecularTexture : register(t1);
-Texture2D<float3> NormalTexture : register(t2);
+Texture2D<float3> NormalTexture : register(t1);
+Texture2D<float3> SpecularTexture : register(t2);
 
 sampler Sampler : register(s0);
 
@@ -227,17 +227,18 @@ VSOutputPixelLightingTx VSSkinnedPixelLightingTxBn(VSInputNmTxWeights vin)
 // Pixel shader: pixel lighting + texture + no fog
 float4 PSNormalPixelLightingTxNoFog(PSInputPixelLightingTx pin) : SV_Target0
 {
+    float4 color = Texture.Sample(Sampler, pin.TexCoord) * pin.Diffuse;
+
     float3 eyeVector = normalize(EyePosition - pin.PositionWS.xyz);
+    float3 worldNormal = normalize(pin.NormalWS);
 
     // Before lighting, peturb the surface's normal by the one given in normal map.
     float3 localNormal = TwoChannelNormalX2(NormalTexture.Sample(Sampler, pin.TexCoord).xy);
-    float3 normal = PeturbNormal(localNormal, pin.PositionWS.xyz, pin.NormalWS, pin.TexCoord);
+    float3 normal = PeturbNormal(localNormal, pin.PositionWS.xyz, worldNormal, pin.TexCoord);
 
     // Do lighting
     ColorPair lightResult = ComputeLights(eyeVector, normal, 3);
 
-    // Get color from albedo texture
-    float4 color = Texture.Sample(Sampler, pin.TexCoord) * pin.Diffuse;
     color.rgb *= lightResult.Diffuse;
 
     // Apply specular, modulated by the intensity given in the specular map
@@ -251,17 +252,18 @@ float4 PSNormalPixelLightingTxNoFog(PSInputPixelLightingTx pin) : SV_Target0
 // Pixel shader: pixel lighting + texture
 float4 PSNormalPixelLightingTx(PSInputPixelLightingTx pin) : SV_Target0
 {
+    float4 color = Texture.Sample(Sampler, pin.TexCoord) * pin.Diffuse;
+
     float3 eyeVector = normalize(EyePosition - pin.PositionWS.xyz);
- 
+    float3 worldNormal = normalize(pin.NormalWS);
+
     // Before lighting, peturb the surface's normal by the one given in normal map.
     float3 localNormal = TwoChannelNormalX2(NormalTexture.Sample(Sampler, pin.TexCoord).xy);
-    float3 normal = PeturbNormal(localNormal, pin.PositionWS.xyz, pin.NormalWS, pin.TexCoord);
+    float3 normal = PeturbNormal(localNormal, pin.PositionWS.xyz, worldNormal, pin.TexCoord);
 
     // Do lighting
     ColorPair lightResult = ComputeLights(eyeVector, normal, 3);
 
-    // Get color from albedo texture
-    float4 color = Texture.Sample(Sampler, pin.TexCoord) * pin.Diffuse;
     color.rgb *= lightResult.Diffuse;
 
     // Apply specular, modulated by the intensity given in the specular map
@@ -269,52 +271,53 @@ float4 PSNormalPixelLightingTx(PSInputPixelLightingTx pin) : SV_Target0
     AddSpecular(color, lightResult.Specular * specIntensity);
 
     ApplyFog(color, pin.PositionWS.w);
+
     return color;
 }
 
 
-// Pixel shader: pixel lighting + texture + no fog + no specular
+// Pixel shader: pixel lighting + texture + no fog + no specular map
 float4 PSNormalPixelLightingTxNoFogSpec(PSInputPixelLightingTx pin) : SV_Target0
 {
+    float4 color = Texture.Sample(Sampler, pin.TexCoord) * pin.Diffuse;
+
     float3 eyeVector = normalize(EyePosition - pin.PositionWS.xyz);
+    float3 worldNormal = normalize(pin.NormalWS);
 
     // Before lighting, peturb the surface's normal by the one given in normal map.
     float3 localNormal = TwoChannelNormalX2(NormalTexture.Sample(Sampler, pin.TexCoord).xy);
-    float3 normal = PeturbNormal(localNormal, pin.PositionWS.xyz, pin.NormalWS, pin.TexCoord);
+    float3 normal = PeturbNormal(localNormal, pin.PositionWS.xyz, worldNormal, pin.TexCoord);
 
     // Do lighting
     ColorPair lightResult = ComputeLights(eyeVector, normal, 3);
 
-    // Get color from albedo texture
-    float4 color = Texture.Sample(Sampler, pin.TexCoord) * pin.Diffuse;
     color.rgb *= lightResult.Diffuse;
 
-    // Apply specular
     AddSpecular(color, lightResult.Specular);
 
     return color;
 }
 
 
-// Pixel shader: pixel lighting + texture + no specular
+// Pixel shader: pixel lighting + texture + no specular map
 float4 PSNormalPixelLightingTxNoSpec(PSInputPixelLightingTx pin) : SV_Target0
 {
+    float4 color = Texture.Sample(Sampler, pin.TexCoord) * pin.Diffuse;
+
     float3 eyeVector = normalize(EyePosition - pin.PositionWS.xyz);
+    float3 worldNormal = normalize(pin.NormalWS);
 
     // Before lighting, peturb the surface's normal by the one given in normal map.
     float3 localNormal = TwoChannelNormalX2(NormalTexture.Sample(Sampler, pin.TexCoord).xy);
-    float3 normal = PeturbNormal(localNormal, pin.PositionWS.xyz, pin.NormalWS, pin.TexCoord);
+    float3 normal = PeturbNormal(localNormal, pin.PositionWS.xyz, worldNormal, pin.TexCoord);
 
     // Do lighting
     ColorPair lightResult = ComputeLights(eyeVector, normal, 3);
 
-    // Get color from albedo texture
-    float4 color = Texture.Sample(Sampler, pin.TexCoord) * pin.Diffuse;
     color.rgb *= lightResult.Diffuse;
 
-    // Apply specular
     AddSpecular(color, lightResult.Specular);
-
     ApplyFog(color, pin.PositionWS.w);
+
     return color;
 }
