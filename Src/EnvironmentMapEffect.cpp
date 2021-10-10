@@ -13,46 +13,46 @@
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
-
-// Constant buffer layout. Must match the shader!
-struct EnvironmentMapEffectConstants
+namespace
 {
-    XMVECTOR environmentMapSpecular;
-    float environmentMapAmount;
-    float fresnelFactor;
-    float pad[2];
+    // Constant buffer layout. Must match the shader!
+    struct EnvironmentMapEffectConstants
+    {
+        XMVECTOR environmentMapSpecular;
+        float environmentMapAmount;
+        float fresnelFactor;
+        float pad[2];
 
-    XMVECTOR diffuseColor;
-    XMVECTOR emissiveColor;
-    
-    XMVECTOR lightDirection[IEffectLights::MaxDirectionalLights];
-    XMVECTOR lightDiffuseColor[IEffectLights::MaxDirectionalLights];
+        XMVECTOR diffuseColor;
+        XMVECTOR emissiveColor;
 
-    XMVECTOR eyePosition;
+        XMVECTOR lightDirection[IEffectLights::MaxDirectionalLights];
+        XMVECTOR lightDiffuseColor[IEffectLights::MaxDirectionalLights];
 
-    XMVECTOR fogColor;
-    XMVECTOR fogVector;
+        XMVECTOR eyePosition;
 
-    XMMATRIX world;
-    XMVECTOR worldInverseTranspose[3];
-    XMMATRIX worldViewProj;
-};
+        XMVECTOR fogColor;
+        XMVECTOR fogVector;
 
-static_assert((sizeof(EnvironmentMapEffectConstants) % 16) == 0, "CB size not padded correctly");
+        XMMATRIX world;
+        XMVECTOR worldInverseTranspose[3];
+        XMMATRIX worldViewProj;
+    };
 
+    static_assert((sizeof(EnvironmentMapEffectConstants) % 16) == 0, "CB size not padded correctly");
 
-// Traits type describes our characteristics to the EffectBase template.
-struct EnvironmentMapEffectTraits
-{
-    using ConstantBufferType = EnvironmentMapEffectConstants;
+    // Traits type describes our characteristics to the EffectBase template.
+    struct EnvironmentMapEffectTraits
+    {
+        using ConstantBufferType = EnvironmentMapEffectConstants;
 
-    static constexpr int VertexShaderCount = 12;
-    static constexpr int PixelShaderCount = 16;
-    static constexpr int ShaderPermutationCount = 56;
+        static constexpr int VertexShaderCount = 12;
+        static constexpr int PixelShaderCount = 16;
+        static constexpr int ShaderPermutationCount = 56;
 
-    static constexpr int MappingCount = 3;
-};
-
+        static constexpr int MappingCount = 3;
+    };
+}
 
 // Internal EnvironmentMapEffect implementation class.
 class EnvironmentMapEffect::Impl : public EffectBase<EnvironmentMapEffectTraits>

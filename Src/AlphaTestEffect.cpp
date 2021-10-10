@@ -26,7 +26,6 @@ namespace
 
     static_assert((sizeof(AlphaTestEffectConstants) % 16) == 0, "CB size not padded correctly");
 
-
     // Traits type describes our characteristics to the EffectBase template.
     struct AlphaTestEffectTraits
     {

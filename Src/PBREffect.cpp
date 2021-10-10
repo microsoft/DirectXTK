@@ -12,44 +12,44 @@
 
 using namespace DirectX;
 
-
-// Constant buffer layout. Must match the shader!
-struct PBREffectConstants
+namespace
 {
-    XMVECTOR eyePosition;
-    XMMATRIX world;
-    XMVECTOR worldInverseTranspose[3];
-    XMMATRIX worldViewProj;
-    XMMATRIX prevWorldViewProj; // for velocity generation
+    // Constant buffer layout. Must match the shader!
+    struct PBREffectConstants
+    {
+        XMVECTOR eyePosition;
+        XMMATRIX world;
+        XMVECTOR worldInverseTranspose[3];
+        XMMATRIX worldViewProj;
+        XMMATRIX prevWorldViewProj; // for velocity generation
 
-    XMVECTOR lightDirection[IEffectLights::MaxDirectionalLights];
-    XMVECTOR lightDiffuseColor[IEffectLights::MaxDirectionalLights];
+        XMVECTOR lightDirection[IEffectLights::MaxDirectionalLights];
+        XMVECTOR lightDiffuseColor[IEffectLights::MaxDirectionalLights];
 
-    // PBR Parameters
-    XMVECTOR Albedo;
-    float    Metallic;
-    float    Roughness;
-    int      numRadianceMipLevels;
+        // PBR Parameters
+        XMVECTOR Albedo;
+        float    Metallic;
+        float    Roughness;
+        int      numRadianceMipLevels;
 
-    // Size of render target
-    float   targetWidth;
-    float   targetHeight;
-};
+        // Size of render target
+        float   targetWidth;
+        float   targetHeight;
+    };
 
-static_assert((sizeof(PBREffectConstants) % 16) == 0, "CB size not padded correctly");
+    static_assert((sizeof(PBREffectConstants) % 16) == 0, "CB size not padded correctly");
 
+    // Traits type describes our characteristics to the EffectBase template.
+    struct PBREffectTraits
+    {
+        using ConstantBufferType = PBREffectConstants;
 
-// Traits type describes our characteristics to the EffectBase template.
-struct PBREffectTraits
-{
-    using ConstantBufferType = PBREffectConstants;
-
-    static constexpr int VertexShaderCount = 6;
-    static constexpr int PixelShaderCount = 5;
-    static constexpr int ShaderPermutationCount = 16;
-    static constexpr int RootSignatureCount = 1;
-};
-
+        static constexpr int VertexShaderCount = 6;
+        static constexpr int PixelShaderCount = 5;
+        static constexpr int ShaderPermutationCount = 16;
+        static constexpr int RootSignatureCount = 1;
+    };
+}
 
 // Internal PBREffect implementation class.
 class PBREffect::Impl : public EffectBase<PBREffectTraits>

@@ -12,43 +12,43 @@
 
 using namespace DirectX;
 
-
-// Constant buffer layout. Must match the shader!
-struct SkinnedEffectConstants
+namespace
 {
-    XMVECTOR diffuseColor;
-    XMVECTOR emissiveColor;
-    XMVECTOR specularColorAndPower;
-    
-    XMVECTOR lightDirection[IEffectLights::MaxDirectionalLights];
-    XMVECTOR lightDiffuseColor[IEffectLights::MaxDirectionalLights];
-    XMVECTOR lightSpecularColor[IEffectLights::MaxDirectionalLights];
+    // Constant buffer layout. Must match the shader!
+    struct SkinnedEffectConstants
+    {
+        XMVECTOR diffuseColor;
+        XMVECTOR emissiveColor;
+        XMVECTOR specularColorAndPower;
 
-    XMVECTOR eyePosition;
+        XMVECTOR lightDirection[IEffectLights::MaxDirectionalLights];
+        XMVECTOR lightDiffuseColor[IEffectLights::MaxDirectionalLights];
+        XMVECTOR lightSpecularColor[IEffectLights::MaxDirectionalLights];
 
-    XMVECTOR fogColor;
-    XMVECTOR fogVector;
+        XMVECTOR eyePosition;
 
-    XMMATRIX world;
-    XMVECTOR worldInverseTranspose[3];
-    XMMATRIX worldViewProj;
+        XMVECTOR fogColor;
+        XMVECTOR fogVector;
 
-    XMVECTOR bones[SkinnedEffect::MaxBones][3];
-};
+        XMMATRIX world;
+        XMVECTOR worldInverseTranspose[3];
+        XMMATRIX worldViewProj;
 
-static_assert((sizeof(SkinnedEffectConstants) % 16) == 0, "CB size not padded correctly");
+        XMVECTOR bones[SkinnedEffect::MaxBones][3];
+    };
 
+    static_assert((sizeof(SkinnedEffectConstants) % 16) == 0, "CB size not padded correctly");
 
-// Traits type describes our characteristics to the EffectBase template.
-struct SkinnedEffectTraits
-{
-    using ConstantBufferType = SkinnedEffectConstants;
+    // Traits type describes our characteristics to the EffectBase template.
+    struct SkinnedEffectTraits
+    {
+        using ConstantBufferType = SkinnedEffectConstants;
 
-    static constexpr int VertexShaderCount = 18;
-    static constexpr int PixelShaderCount = 3;
-    static constexpr int ShaderPermutationCount = 36;
-};
-
+        static constexpr int VertexShaderCount = 18;
+        static constexpr int PixelShaderCount = 3;
+        static constexpr int ShaderPermutationCount = 36;
+    };
+}
 
 // Internal SkinnedEffect implementation class.
 class SkinnedEffect::Impl : public EffectBase<SkinnedEffectTraits>

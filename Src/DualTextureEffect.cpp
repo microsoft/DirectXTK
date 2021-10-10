@@ -13,29 +13,29 @@
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
-
-// Constant buffer layout. Must match the shader!
-struct DualTextureEffectConstants
+namespace
 {
-    XMVECTOR diffuseColor;
-    XMVECTOR fogColor;
-    XMVECTOR fogVector;
-    XMMATRIX worldViewProj;
-};
+    // Constant buffer layout. Must match the shader!
+    struct DualTextureEffectConstants
+    {
+        XMVECTOR diffuseColor;
+        XMVECTOR fogColor;
+        XMVECTOR fogVector;
+        XMMATRIX worldViewProj;
+    };
 
-static_assert((sizeof(DualTextureEffectConstants) % 16) == 0, "CB size not padded correctly");
+    static_assert((sizeof(DualTextureEffectConstants) % 16) == 0, "CB size not padded correctly");
 
+    // Traits type describes our characteristics to the EffectBase template.
+    struct DualTextureEffectTraits
+    {
+        using ConstantBufferType = DualTextureEffectConstants;
 
-// Traits type describes our characteristics to the EffectBase template.
-struct DualTextureEffectTraits
-{
-    using ConstantBufferType = DualTextureEffectConstants;
-
-    static constexpr int VertexShaderCount = 4;
-    static constexpr int PixelShaderCount = 2;
-    static constexpr int ShaderPermutationCount = 4;
-};
-
+        static constexpr int VertexShaderCount = 4;
+        static constexpr int PixelShaderCount = 2;
+        static constexpr int ShaderPermutationCount = 4;
+    };
+}
 
 // Internal DualTextureEffect implementation class.
 class DualTextureEffect::Impl : public EffectBase<DualTextureEffectTraits>

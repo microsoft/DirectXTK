@@ -53,7 +53,6 @@ namespace
 
     static_assert((sizeof(BoneConstants) % 16) == 0, "CB size not padded correctly");
 
-
     // Traits type describes our characteristics to the EffectBase template.
     struct NormalMapEffectTraits
     {
@@ -64,7 +63,6 @@ namespace
         static constexpr int ShaderPermutationCount = 40;
     };
 }
-
 
 // Internal NormalMapEffect implementation class.
 class NormalMapEffect::Impl : public EffectBase<NormalMapEffectTraits>
