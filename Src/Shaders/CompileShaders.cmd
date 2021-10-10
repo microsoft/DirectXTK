@@ -176,6 +176,9 @@ call :CompileShaderSM4%1 NormalMapEffect vs VSNormalPixelLightingTxBnInst
 call :CompileShaderSM4%1 NormalMapEffect vs VSNormalPixelLightingTxVcInst
 call :CompileShaderSM4%1 NormalMapEffect vs VSNormalPixelLightingTxVcBnInst
 
+call :CompileShaderSM4%1 NormalMapEffect vs VSSkinnedPixelLightingTx
+call :CompileShaderSM4%1 NormalMapEffect vs VSSkinnedPixelLightingTxBn
+
 call :CompileShaderSM4%1 NormalMapEffect ps PSNormalPixelLightingTx
 call :CompileShaderSM4%1 NormalMapEffect ps PSNormalPixelLightingTxNoFog
 call :CompileShaderSM4%1 NormalMapEffect ps PSNormalPixelLightingTxNoSpec

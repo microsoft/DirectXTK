@@ -29,7 +29,7 @@ VSInputTx VSQuad(uint vI : SV_VertexId)
     float2 texcoord = float2((vI << 1) & 2, vI & 2);
     vout.TexCoord = texcoord;
 
-    vout.Position = float4(texcoord.x * 2 - 1, -texcoord.y * 2  + 1, 0, 1);
+    vout.Position = float4(texcoord.x * 2 - 1, -texcoord.y * 2 + 1, 0, 1);
     return vout;
 }
 

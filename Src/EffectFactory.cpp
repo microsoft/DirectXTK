@@ -96,6 +96,7 @@ private:
     EffectCache  mEffectCacheSkinning;
     EffectCache  mEffectCacheDualTexture;
     EffectCache  mEffectNormalMap;
+    EffectCache  mEffectNormalMapSkinned;
     TextureCache mTextureCache;
 
     bool mSharing;
@@ -115,37 +116,92 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
 {
     if (info.enableSkinning)
     {
-        // SkinnedEffect
-        if (mSharing && info.name && *info.name)
+        if (info.enableNormalMaps && mUseNormalMapEffect)
         {
-            auto it = mEffectCacheSkinning.find(info.name);
-            if (mSharing && it != mEffectCacheSkinning.end())
+            // SkinnedNormalMapEffect
+            if (mSharing && info.name && *info.name)
             {
-                return it->second;
+                auto it = mEffectNormalMapSkinned.find(info.name);
+                if (mSharing && it != mEffectNormalMapSkinned.end())
+                {
+                    return it->second;
+                }
             }
+
+            auto effect = std::make_shared<SkinnedNormalMapEffect>(mDevice.Get());
+
+            SetMaterialProperties(effect.get(), info);
+
+            if (info.diffuseTexture && *info.diffuseTexture)
+            {
+                ComPtr<ID3D11ShaderResourceView> srv;
+
+                factory->CreateTexture(info.diffuseTexture, deviceContext, srv.GetAddressOf());
+
+                effect->SetTexture(srv.Get());
+            }
+
+            if (info.specularTexture && *info.specularTexture)
+            {
+                ComPtr<ID3D11ShaderResourceView> srv;
+
+                factory->CreateTexture(info.specularTexture, deviceContext, srv.GetAddressOf());
+
+                effect->SetSpecularTexture(srv.Get());
+            }
+
+            if (info.normalTexture && *info.normalTexture)
+            {
+                ComPtr<ID3D11ShaderResourceView> srv;
+
+                factory->CreateTexture(info.normalTexture, deviceContext, srv.GetAddressOf());
+
+                effect->SetNormalTexture(srv.Get());
+            }
+
+            if (mSharing && info.name && *info.name)
+            {
+                std::lock_guard<std::mutex> lock(mutex);
+                EffectCache::value_type v(info.name, effect);
+                mEffectNormalMapSkinned.insert(v);
+            }
+
+            return std::move(effect);
         }
-
-        auto effect = std::make_shared<SkinnedEffect>(mDevice.Get());
-
-        SetMaterialProperties(effect.get(), info);
-
-        if (info.diffuseTexture && *info.diffuseTexture)
+        else
         {
-            ComPtr<ID3D11ShaderResourceView> srv;
+            // SkinnedEffect
+            if (mSharing && info.name && *info.name)
+            {
+                auto it = mEffectCacheSkinning.find(info.name);
+                if (mSharing && it != mEffectCacheSkinning.end())
+                {
+                    return it->second;
+                }
+            }
 
-            factory->CreateTexture(info.diffuseTexture, deviceContext, srv.GetAddressOf());
+            auto effect = std::make_shared<SkinnedEffect>(mDevice.Get());
 
-            effect->SetTexture(srv.Get());
+            SetMaterialProperties(effect.get(), info);
+
+            if (info.diffuseTexture && *info.diffuseTexture)
+            {
+                ComPtr<ID3D11ShaderResourceView> srv;
+
+                factory->CreateTexture(info.diffuseTexture, deviceContext, srv.GetAddressOf());
+
+                effect->SetTexture(srv.Get());
+            }
+
+            if (mSharing && info.name && *info.name)
+            {
+                std::lock_guard<std::mutex> lock(mutex);
+                EffectCache::value_type v(info.name, effect);
+                mEffectCacheSkinning.insert(v);
+            }
+
+            return std::move(effect);
         }
-
-        if (mSharing && info.name && *info.name)
-        {
-            std::lock_guard<std::mutex> lock(mutex);
-            EffectCache::value_type v(info.name, effect);
-            mEffectCacheSkinning.insert(v);
-        }
-
-        return std::move(effect);
     }
     else if (info.enableDualTexture)
     {
@@ -409,6 +465,7 @@ void EffectFactory::Impl::ReleaseCache()
     mEffectCacheSkinning.clear();
     mEffectCacheDualTexture.clear();
     mEffectNormalMap.clear();
+    mEffectNormalMapSkinned.clear();
     mTextureCache.clear();
 }
 
