@@ -311,5 +311,8 @@
       <Filter>Src\Shaders\Shared</Filter>
     </None>
     <None Include="README.md" />
+    <None Include="Src\Shaders\Skinning.fxh">
+      <Filter>Src\Shaders\Shared</Filter>
+    </None>
   </ItemGroup>
 </Project>

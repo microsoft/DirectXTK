@@ -4,7 +4,6 @@
 // http://go.microsoft.com/fwlink/?LinkId=248926
 // http://go.microsoft.com/fwlink/?LinkId=248929
 // http://go.microsoft.com/fwlink/?LinkID=615561
-// http://create.msdn.com/en-US/education/catalog/sample/stock_effects
 
 
 struct CommonVSOutputPixelLighting

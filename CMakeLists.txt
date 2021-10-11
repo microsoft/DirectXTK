@@ -124,6 +124,7 @@ set(SHADER_SOURCES
     Src/Shaders/PixelPacking_Velocity.hlsli
     Src/Shaders/PostProcess.fx
     Src/Shaders/SkinnedEffect.fx
+    Src/Shaders/Skinning.fxh
     Src/Shaders/SpriteEffect.fx
     Src/Shaders/Structures.fxh
     Src/Shaders/ToneMap.fx
