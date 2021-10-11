@@ -41,7 +41,7 @@ namespace
 class DualTextureEffect::Impl : public EffectBase<DualTextureEffectTraits>
 {
 public:
-    Impl(_In_ ID3D11Device* device);
+    explicit Impl(_In_ ID3D11Device* device);
 
     bool vertexColorEnabled;
     

@@ -42,7 +42,7 @@ namespace
 class DebugEffect::Impl : public EffectBase<DebugEffectTraits>
 {
 public:
-    Impl(_In_ ID3D11Device* device);
+    explicit Impl(_In_ ID3D11Device* device);
 
     bool vertexColorEnabled;
     bool biasedVertexNormals;

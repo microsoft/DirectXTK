@@ -41,7 +41,7 @@ namespace
 class AlphaTestEffect::Impl : public EffectBase<AlphaTestEffectTraits>
 {
 public:
-    Impl(_In_ ID3D11Device* device);
+    explicit Impl(_In_ ID3D11Device* device);
 
     D3D11_COMPARISON_FUNC alphaFunction;
     int referenceAlpha;

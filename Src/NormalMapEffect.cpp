@@ -68,7 +68,7 @@ namespace
 class NormalMapEffect::Impl : public EffectBase<NormalMapEffectTraits>
 {
 public:
-    Impl(_In_ ID3D11Device* device);
+    explicit Impl(_In_ ID3D11Device* device);
 
     void Initialize(_In_ ID3D11Device* device, bool enableSkinning);
 

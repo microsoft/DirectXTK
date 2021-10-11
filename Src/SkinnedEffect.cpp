@@ -54,7 +54,7 @@ namespace
 class SkinnedEffect::Impl : public EffectBase<SkinnedEffectTraits>
 {
 public:
-    Impl(_In_ ID3D11Device* device);
+    explicit Impl(_In_ ID3D11Device* device);
 
     bool preferPerPixelLighting;
     bool biasedVertexNormals;

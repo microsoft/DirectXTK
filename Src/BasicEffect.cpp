@@ -52,7 +52,7 @@ namespace
 class BasicEffect::Impl : public EffectBase<BasicEffectTraits>
 {
 public:
-    Impl(_In_ ID3D11Device* device);
+    explicit Impl(_In_ ID3D11Device* device);
 
     bool lightingEnabled;
     bool preferPerPixelLighting;

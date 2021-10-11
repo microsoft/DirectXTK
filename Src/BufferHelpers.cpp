@@ -373,7 +373,7 @@ void Internal::ConstantBufferBase::CreateBuffer(
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
 
-    Microsoft::WRL::ComPtr<ID3D11DeviceX> deviceX;
+    ComPtr<ID3D11DeviceX> deviceX;
     ThrowIfFailed(device->QueryInterface(IID_GRAPHICS_PPV_ARGS(deviceX.GetAddressOf())));
 
     ThrowIfFailed(deviceX->CreatePlacementBuffer(&desc, nullptr, pBuffer));

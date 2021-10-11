@@ -58,7 +58,7 @@ namespace
 class EnvironmentMapEffect::Impl : public EffectBase<EnvironmentMapEffectTraits>
 {
 public:
-    Impl(_In_ ID3D11Device* device);
+    explicit Impl(_In_ ID3D11Device* device);
 
     bool preferPerPixelLighting;
     bool fresnelEnabled;

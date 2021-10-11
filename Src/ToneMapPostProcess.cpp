@@ -240,7 +240,7 @@ namespace
 class ToneMapPostProcess::Impl : public AlignedNew<ToneMapConstants>
 {
 public:
-    Impl(_In_ ID3D11Device* device);
+    explicit Impl(_In_ ID3D11Device* device);
 
     void Process(_In_ ID3D11DeviceContext* deviceContext, std::function<void __cdecl()>& setCustomState);
 
@@ -334,7 +334,7 @@ void ToneMapPostProcess::Impl::Process(
     void *grfxMemory;
     mConstantBuffer.SetData(deviceContext, constants, &grfxMemory);
 
-    Microsoft::WRL::ComPtr<ID3D11DeviceContextX> deviceContextX;
+    ComPtr<ID3D11DeviceContextX> deviceContextX;
     ThrowIfFailed(deviceContext->QueryInterface(IID_GRAPHICS_PPV_ARGS(deviceContextX.GetAddressOf())));
 
     auto buffer = mConstantBuffer.GetBuffer();

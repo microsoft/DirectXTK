@@ -23,7 +23,7 @@ using Microsoft::WRL::ComPtr;
 class PBREffectFactory::Impl
 {
 public:
-    Impl(_In_ ID3D11Device* device)
+    explicit Impl(_In_ ID3D11Device* device)
         : mPath{},
         mDevice(device),
         mSharing(true),

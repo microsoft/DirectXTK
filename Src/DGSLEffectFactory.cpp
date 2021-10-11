@@ -29,7 +29,7 @@ static_assert(DGSLEffect::MaxTextures == DGSLEffectFactory::DGSLEffectInfo::Base
 class DGSLEffectFactory::Impl
 {
 public:
-    Impl(_In_ ID3D11Device* device)
+    explicit Impl(_In_ ID3D11Device* device)
         : mPath{},
         mDevice(device),
         mSharing(true),

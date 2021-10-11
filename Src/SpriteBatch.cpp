@@ -62,7 +62,7 @@ namespace
 XM_ALIGNED_STRUCT(16) SpriteBatch::Impl : public AlignedNew<SpriteBatch::Impl>
 {
 public:
-    Impl(_In_ ID3D11DeviceContext* deviceContext);
+    explicit Impl(_In_ ID3D11DeviceContext* deviceContext);
 
     void XM_CALLCONV Begin(SpriteSortMode sortMode,
         _In_opt_ ID3D11BlendState* blendState,
