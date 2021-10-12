@@ -166,28 +166,32 @@ const int EffectBase<PBREffectTraits>::VertexShaderIndices[] =
     0,      // constant
     0,      // textured
     0,      // textured + emissive
-    1,      // textured + velocity
-    1,      // textured + emissive + velocity
+
     4,      // instancing + constant
     4,      // instancing + textured
     4,      // instancing + textured + emissive
-
-    2,      // constant (biased vertex normals)
-    2,      // textured (biased vertex normals)
-    2,      // textured + emissive (biased vertex normals)
-    3,      // textured + velocity (biased vertex normals)
-    3,      // textured + emissive + velocity (biasoed vertex normals)
-    5,      // instancing + constant (biased vertex normals)
-    5,      // instancing + textured (biased vertex normals)
-    5,      // instancing + textured + emissive (biased vertex normals)
 
     6,      // skinning + constant
     6,      // skinning + textured
     6,      // skinning + textured + emissive
 
+    1,      // textured + velocity
+    1,      // textured + emissive + velocity
+
+    2,      // constant (biased vertex normals)
+    2,      // textured (biased vertex normals)
+    2,      // textured + emissive (biased vertex normals)
+
+    5,      // instancing + constant (biased vertex normals)
+    5,      // instancing + textured (biased vertex normals)
+    5,      // instancing + textured + emissive (biased vertex normals)
+
     7,      // skinning + constant (biased vertex normals)
     7,      // skinning + textured (biased vertex normals)
     7,      // skinning + textured + emissive (biased vertex normals)
+
+    3,      // textured + velocity (biased vertex normals)
+    3,      // textured + emissive + velocity (biased vertex normals)
 };
 
 
@@ -208,28 +212,32 @@ const int EffectBase<PBREffectTraits>::PixelShaderIndices[] =
     0,      // constant
     1,      // textured
     2,      // textured + emissive
-    3,      // textured + velocity
-    4,      // textured + emissive + velocity
+
     0,      // instancing + constant
     1,      // instancing + textured
     2,      // instancing + textured + emissive
-
-    0,      // constant (biased vertex normals)
-    1,      // textured (biased vertex normals)
-    2,      // textured + emissive (biased vertex normals)
-    3,      // textured + velocity (biased vertex normals)
-    4,      // textured + emissive + velocity (biased vertex normals)
-    0,      // instancing + constant (biased vertex normals)
-    1,      // instancing + textured (biased vertex normals)
-    2,      // instancing + textured + emissive (biased vertex normals)
 
     0,      // skinning + constant
     1,      // skinning + textured
     2,      // skinning + textured + emissive
 
+    3,      // textured + velocity
+    4,      // textured + emissive + velocity
+
+    0,      // constant (biased vertex normals)
+    1,      // textured (biased vertex normals)
+    2,      // textured + emissive (biased vertex normals)
+
+    0,      // instancing + constant (biased vertex normals)
+    1,      // instancing + textured (biased vertex normals)
+    2,      // instancing + textured + emissive (biased vertex normals)
+
     0,      // skinning + constant (biased vertex normals)
     1,      // skinning + textured (biased vertex normals)
     2,      // skinning + textured + emissive (biased vertex normals)
+
+    3,      // textured + velocity (biased vertex normals)
+    4,      // textured + emissive + velocity (biased vertex normals)
 };
 
 // Global pool of per-device PBREffect resources. Required by EffectBase<>, but not used.
@@ -291,24 +299,7 @@ void PBREffect::Impl::Initialize(_In_ ID3D11Device* device, bool enableSkinning)
 
 int PBREffect::Impl::GetCurrentShaderPermutation() const noexcept
 {
-    // TODO - adding skinning weightsPerVertex
     int permutation = 0;
-
-    if (instancing)
-    {
-        // Vertex shader needs to use vertex matrix transform.
-        permutation = (albedoTexture) ? 6 : 5;
-    }
-    else if (velocityEnabled)
-    {
-        // Optional velocity buffer (implies textured RMA)?
-        permutation = 3;
-    }
-    else if (albedoTexture)
-    {
-        // Textured RMA vs. constant albedo/roughness/metalness?
-        permutation = 1;
-    }
 
     // Using an emissive texture?
     if (emissiveTexture)
@@ -319,7 +310,28 @@ int PBREffect::Impl::GetCurrentShaderPermutation() const noexcept
     if (biasedVertexNormals)
     {
         // Compressed normals need to be scaled and biased in the vertex shader.
-        permutation += 8;
+        permutation += 11;
+    }
+
+    if (instancing)
+    {
+        // Vertex shader needs to use vertex matrix transform.
+        permutation += 3;
+    }
+    else if (weightsPerVertex > 0)
+    {
+        permutation += 6;
+    }
+    else if (velocityEnabled)
+    {
+        // Optional velocity buffer (implies textured).
+        permutation += 9;
+    }
+
+    if (albedoTexture && !velocityEnabled)
+    {
+        // Textured RMA vs. constant albedo/roughness/metalness.
+        permutation += 1;
     }
 
     return permutation;
