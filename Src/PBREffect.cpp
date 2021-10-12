@@ -313,14 +313,15 @@ int PBREffect::Impl::GetCurrentShaderPermutation() const noexcept
         permutation += 11;
     }
 
-    if (instancing)
+    if (weightsPerVertex > 0)
+    {
+        // Vertex skinning.
+        permutation += 6;
+    }
+    else if (instancing)
     {
         // Vertex shader needs to use vertex matrix transform.
         permutation += 3;
-    }
-    else if (weightsPerVertex > 0)
-    {
-        permutation += 6;
     }
     else if (velocityEnabled)
     {

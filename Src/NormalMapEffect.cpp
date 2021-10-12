@@ -348,6 +348,7 @@ int NormalMapEffect::Impl::GetCurrentShaderPermutation() const noexcept
 
     if (weightsPerVertex > 0)
     {
+        // Vertex skinning.
         permutation += 32;
     }
     else
