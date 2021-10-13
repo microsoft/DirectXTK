@@ -288,7 +288,7 @@ void PBREffect::Impl::Initialize(_In_ ID3D11Device* device, bool enableSkinning)
 
         mBones.Create(device);
 
-        for (size_t j = 0; j < SkinnedNormalMapEffect::MaxBones; ++j)
+        for (size_t j = 0; j < SkinnedPBREffect::MaxBones; ++j)
         {
             boneConstants.Bones[j][0] = g_XMIdentityR0;
             boneConstants.Bones[j][1] = g_XMIdentityR1;

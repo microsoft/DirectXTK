@@ -31,33 +31,42 @@ namespace
 
         effect->SetAlpha(info.alpha);
 
-        ComPtr<ID3D11ShaderResourceView> albedoSrv;
         if (info.diffuseTexture && *info.diffuseTexture)
         {
+            // Textured PBR material
+            ComPtr<ID3D11ShaderResourceView> albedoSrv;
             factory->CreateTexture(info.diffuseTexture, deviceContext, albedoSrv.GetAddressOf());
+
+            ComPtr<ID3D11ShaderResourceView> normalSrv;
+            if (info.normalTexture && *info.normalTexture)
+            {
+                factory->CreateTexture(info.normalTexture, deviceContext, normalSrv.GetAddressOf());
+            }
+
+            ComPtr<ID3D11ShaderResourceView> rmaSrv;
+            if (info.specularTexture && *info.specularTexture)
+            {
+                // We use the specular texture for the roughness/metalness/ambient-occlusion texture
+                factory->CreateTexture(info.specularTexture, deviceContext, rmaSrv.GetAddressOf());
+            }
+
+            effect->SetSurfaceTextures(albedoSrv.Get(), normalSrv.Get(), rmaSrv.Get());
+
+            if (info.emissiveTexture && *info.emissiveTexture)
+            {
+                ComPtr<ID3D11ShaderResourceView> srv;
+                factory->CreateTexture(info.emissiveTexture, deviceContext, srv.GetAddressOf());
+
+                effect->SetEmissiveTexture(srv.Get());
+            }
         }
-
-        ComPtr<ID3D11ShaderResourceView> normalSrv;
-        if (info.normalTexture && *info.normalTexture)
+        else
         {
-            factory->CreateTexture(info.normalTexture, deviceContext, normalSrv.GetAddressOf());
-        }
+            // Untextured material (for PBR this still requires texture coordinates)
+            XMVECTOR color = XMLoadFloat3(&info.diffuseColor);
+            effect->SetConstantAlbedo(color);
 
-        ComPtr<ID3D11ShaderResourceView> rmaSrv;
-        if (info.specularTexture && *info.specularTexture)
-        {
-            // We use the specular texture for the roughness/metalness/ambient-occlusion texture
-            factory->CreateTexture(info.specularTexture, deviceContext, rmaSrv.GetAddressOf());
-        }
-
-        effect->SetSurfaceTextures(albedoSrv.Get(), normalSrv.Get(), rmaSrv.Get());
-
-        if (info.emissiveTexture && *info.emissiveTexture)
-        {
-            ComPtr<ID3D11ShaderResourceView> srv;
-            factory->CreateTexture(info.emissiveTexture, deviceContext, srv.GetAddressOf());
-
-            effect->SetEmissiveTexture(srv.Get());
+            // info.ambientColor, info.specularPower, info.specularColor, and info.emissiveColor are unused by PBR.
         }
 
         if (info.biasedVertexNormals)
@@ -123,6 +132,8 @@ std::shared_ptr<IEffect> PBREffectFactory::Impl::CreateEffect(
     const IEffectFactory::EffectInfo& info,
     ID3D11DeviceContext* deviceContext)
 {
+    // info.perVertexColor and info.enableDualTexture are ignored by PBREffectFactory
+
     if (info.enableSkinning)
     {
         // SkinnedPBREffect
