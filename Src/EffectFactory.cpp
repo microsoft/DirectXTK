@@ -21,7 +21,7 @@ using Microsoft::WRL::ComPtr;
 namespace
 {
     template<typename T>
-    void SetMaterialProperties(T* effect, const EffectFactory::EffectInfo& info)
+    void SetMaterialProperties(_In_ T* effect, const EffectFactory::EffectInfo& info)
     {
         effect->EnableDefaultLighting();
 

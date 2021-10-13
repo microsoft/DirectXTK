@@ -653,7 +653,8 @@ namespace DirectX
     class PBREffect : public IEffect, public IEffectMatrices, public IEffectLights
     {
     public:
-        explicit PBREffect(_In_ ID3D11Device* device);
+        explicit PBREffect(_In_ ID3D11Device* device) :
+            PBREffect(device, false) {}
 
         PBREffect(PBREffect&&) noexcept;
         PBREffect& operator= (PBREffect&&) noexcept;
@@ -716,17 +717,31 @@ namespace DirectX
         // Render target size, required for velocity buffer output.
         void __cdecl SetRenderTargetSizeInPixels(int width, int height);
 
-    private:
+    protected:
         // Private implementation.
         class Impl;
 
         std::unique_ptr<Impl> pImpl;
+
+        PBREffect(_In_ ID3D11Device* device, bool skinningEnabled);
 
         // Unsupported interface methods.
         void __cdecl SetLightingEnabled(bool value) override;
         void __cdecl SetPerPixelLighting(bool value) override;
         void XM_CALLCONV SetAmbientLightColor(FXMVECTOR value) override;
         void XM_CALLCONV SetLightSpecularColor(int whichLight, FXMVECTOR value) override;
+    };
+
+    class SkinnedPBREffect : public PBREffect, public IEffectSkinning
+    {
+    public:
+        explicit SkinnedPBREffect(_In_ ID3D11Device* device) :
+            PBREffect(device, true) {}
+
+        // Animation settings.
+        void __cdecl SetWeightsPerVertex(int value) override;
+        void __cdecl SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, size_t count) override;
+        void __cdecl ResetBoneTransforms() override;
     };
 
     //----------------------------------------------------------------------------------

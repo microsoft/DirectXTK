@@ -18,6 +18,73 @@
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
+namespace
+{
+    template<typename T>
+    void SetPBRProperties(
+        _In_ T* effect,
+        const EffectFactory::EffectInfo& info,
+        _In_ IEffectFactory* factory,
+        _In_opt_ ID3D11DeviceContext* deviceContext)
+    {
+        // We don't use EnableDefaultLighting generally for PBR as it uses Image-Based Lighting instead.
+
+        effect->SetAlpha(info.alpha);
+
+        if (info.diffuseTexture && *info.diffuseTexture)
+        {
+            // Textured PBR material
+            ComPtr<ID3D11ShaderResourceView> albedoSrv;
+            factory->CreateTexture(info.diffuseTexture, deviceContext, albedoSrv.GetAddressOf());
+
+            ComPtr<ID3D11ShaderResourceView> normalSrv;
+            if (info.normalTexture && *info.normalTexture)
+            {
+                factory->CreateTexture(info.normalTexture, deviceContext, normalSrv.GetAddressOf());
+            }
+
+            ComPtr<ID3D11ShaderResourceView> rmaSrv;
+            if (info.specularTexture && *info.specularTexture)
+            {
+                // We use the specular texture for the roughness/metalness/ambient-occlusion texture
+                factory->CreateTexture(info.specularTexture, deviceContext, rmaSrv.GetAddressOf());
+            }
+
+            effect->SetSurfaceTextures(albedoSrv.Get(), normalSrv.Get(), rmaSrv.Get());
+
+            if (info.emissiveTexture && *info.emissiveTexture)
+            {
+                ComPtr<ID3D11ShaderResourceView> srv;
+                factory->CreateTexture(info.emissiveTexture, deviceContext, srv.GetAddressOf());
+
+                effect->SetEmissiveTexture(srv.Get());
+            }
+        }
+        else
+        {
+            // Untextured material (for PBR this still requires texture coordinates)
+            XMVECTOR color = XMLoadFloat3(&info.diffuseColor);
+            effect->SetConstantAlbedo(color);
+
+            if (info.specularColor.x != 0 || info.specularColor.y != 0 || info.specularColor.z != 0)
+            {
+                // Derived from specularPower = 2 / roughness ^ 4 - 2
+                // http://graphicrants.blogspot.com/2013/08/specular-brdf-reference.html
+
+                float roughness = powf(2.f / (info.specularPower + 2.f), 1.f / 4.f);
+                effect->SetConstantRoughness(roughness);
+            }
+
+            // info.ambientColor, info.specularColor, and info.emissiveColor are unused by PBR.
+        }
+
+        if (info.biasedVertexNormals)
+        {
+            effect->SetBiasedVertexNormals(true);
+        }
+    }
+}
+
 // Internal PBREffectFactory implementation class. Only one of these helpers is allocated
 // per D3D device, even if there are multiple public facing PBREffectFactory instances.
 class PBREffectFactory::Impl
@@ -30,8 +97,14 @@ public:
         mForceSRGB(false)
     {}
 
-    std::shared_ptr<IEffect> CreateEffect(_In_ IEffectFactory* factory, _In_ const IEffectFactory::EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext);
-    void CreateTexture(_In_z_ const wchar_t* texture, _In_opt_ ID3D11DeviceContext* deviceContext, _Outptr_ ID3D11ShaderResourceView** textureView);
+    std::shared_ptr<IEffect> CreateEffect(
+        _In_ IEffectFactory* factory,
+        _In_ const IEffectFactory::EffectInfo& info,
+        _In_opt_ ID3D11DeviceContext* deviceContext);
+
+    void CreateTexture(_In_z_ const wchar_t* texture,
+        _In_opt_ ID3D11DeviceContext* deviceContext,
+        _Outptr_ ID3D11ShaderResourceView** textureView);
 
     void ReleaseCache();
     void SetSharing(bool enabled) noexcept { mSharing = enabled; }
@@ -48,6 +121,7 @@ private:
     using TextureCache = std::map< std::wstring, ComPtr<ID3D11ShaderResourceView> >;
 
     EffectCache  mEffectCache;
+    EffectCache  mEffectCacheSkinning;
     TextureCache mTextureCache;
 
     bool mSharing;
@@ -62,69 +136,70 @@ SharedResourcePool<ID3D11Device*, PBREffectFactory::Impl> PBREffectFactory::Impl
 
 
 _Use_decl_annotations_
-std::shared_ptr<IEffect> PBREffectFactory::Impl::CreateEffect(IEffectFactory* factory, const IEffectFactory::EffectInfo& info, ID3D11DeviceContext* deviceContext)
+std::shared_ptr<IEffect> PBREffectFactory::Impl::CreateEffect(
+    IEffectFactory* factory,
+    const IEffectFactory::EffectInfo& info,
+    ID3D11DeviceContext* deviceContext)
 {
-    if (mSharing && info.name && *info.name)
+    // info.perVertexColor and info.enableDualTexture are ignored by PBREffectFactory
+
+    if (info.enableSkinning)
     {
-        auto it = mEffectCache.find(info.name);
-        if (mSharing && it != mEffectCache.end())
+        // SkinnedPBREffect
+        if (mSharing && info.name && *info.name)
         {
-            return it->second;
+            auto it = mEffectCacheSkinning.find(info.name);
+            if (mSharing && it != mEffectCacheSkinning.end())
+            {
+                return it->second;
+            }
         }
+
+        auto effect = std::make_shared<SkinnedPBREffect>(mDevice.Get());
+
+        SetPBRProperties(effect.get(), info, factory, deviceContext);
+
+        if (mSharing && info.name && *info.name)
+        {
+            std::lock_guard<std::mutex> lock(mutex);
+            EffectCache::value_type v(info.name, effect);
+            mEffectCacheSkinning.insert(v);
+        }
+
+        return std::move(effect);
     }
-
-    auto effect = std::make_shared<PBREffect>(mDevice.Get());
-
-    // We don't use EnableDefaultLighting generally for PBR as it uses Image-Based Lighting instead.
-
-    effect->SetAlpha(info.alpha);
-
-    ComPtr<ID3D11ShaderResourceView> albedoSrv;
-    if (info.diffuseTexture && *info.diffuseTexture)
+    else
     {
-        factory->CreateTexture(info.diffuseTexture, deviceContext, albedoSrv.GetAddressOf());
+        // PBREffect
+        if (mSharing && info.name && *info.name)
+        {
+            auto it = mEffectCache.find(info.name);
+            if (mSharing && it != mEffectCache.end())
+            {
+                return it->second;
+            }
+        }
+
+        auto effect = std::make_shared<PBREffect>(mDevice.Get());
+
+        SetPBRProperties(effect.get(), info, factory, deviceContext);
+
+        if (mSharing && info.name && *info.name)
+        {
+            std::lock_guard<std::mutex> lock(mutex);
+            EffectCache::value_type v(info.name, effect);
+            mEffectCache.insert(v);
+        }
+
+        return std::move(effect);
     }
-
-    ComPtr<ID3D11ShaderResourceView> normalSrv;
-    if (info.normalTexture && *info.normalTexture)
-    {
-        factory->CreateTexture(info.normalTexture, deviceContext, normalSrv.GetAddressOf());
-    }
-
-    ComPtr<ID3D11ShaderResourceView> rmaSrv;
-    if (info.specularTexture && *info.specularTexture)
-    {
-        // We use the specular texture for the roughness/metalness/ambient-occlusion texture
-        factory->CreateTexture(info.specularTexture, deviceContext, rmaSrv.GetAddressOf());
-    }
-
-    effect->SetSurfaceTextures(albedoSrv.Get(), normalSrv.Get(), rmaSrv.Get());
-
-    if (info.emissiveTexture && *info.emissiveTexture)
-    {
-        ComPtr<ID3D11ShaderResourceView> srv;
-        factory->CreateTexture(info.emissiveTexture, deviceContext, srv.GetAddressOf());
-
-        effect->SetEmissiveTexture(srv.Get());
-    }
-
-    if (info.biasedVertexNormals)
-    {
-        effect->SetBiasedVertexNormals(true);
-    }
-
-    if (mSharing && info.name && *info.name)
-    {
-        std::lock_guard<std::mutex> lock(mutex);
-        EffectCache::value_type v(info.name, effect);
-        mEffectCache.insert(v);
-    }
-
-    return std::move(effect);
 }
 
 _Use_decl_annotations_
-void PBREffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView)
+void PBREffectFactory::Impl::CreateTexture(
+    const wchar_t* name,
+    ID3D11DeviceContext* deviceContext,
+    ID3D11ShaderResourceView** textureView)
 {
     if (!name || !textureView)
         throw std::invalid_argument("name and textureView parameters can't be null");
@@ -219,6 +294,7 @@ void PBREffectFactory::Impl::ReleaseCache()
 {
     std::lock_guard<std::mutex> lock(mutex);
     mEffectCache.clear();
+    mEffectCacheSkinning.clear();
     mTextureCache.clear();
 }
 
@@ -232,7 +308,6 @@ PBREffectFactory::PBREffectFactory(_In_ ID3D11Device* device)
     : pImpl(Impl::instancePool.DemandCreate(device))
 {
 }
-
 
 PBREffectFactory::PBREffectFactory(PBREffectFactory&&) noexcept = default;
 PBREffectFactory& PBREffectFactory::operator= (PBREffectFactory&&) noexcept = default;
