@@ -22,10 +22,10 @@ namespace
 {
     template<typename T>
     void SetPBRProperties(
-        T* effect,
+        _In_ T* effect,
         const EffectFactory::EffectInfo& info,
         _In_ IEffectFactory* factory,
-        _In_ ID3D11DeviceContext* deviceContext)
+        _In_opt_ ID3D11DeviceContext* deviceContext)
     {
         // We don't use EnableDefaultLighting generally for PBR as it uses Image-Based Lighting instead.
 
