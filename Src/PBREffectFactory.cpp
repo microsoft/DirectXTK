@@ -66,7 +66,16 @@ namespace
             XMVECTOR color = XMLoadFloat3(&info.diffuseColor);
             effect->SetConstantAlbedo(color);
 
-            // info.ambientColor, info.specularPower, info.specularColor, and info.emissiveColor are unused by PBR.
+            if (info.specularColor.x != 0 || info.specularColor.y != 0 || info.specularColor.z != 0)
+            {
+                // Derived from specularPower = 2 / roughness ^ 4 - 2
+                // http://graphicrants.blogspot.com/2013/08/specular-brdf-reference.html
+
+                float roughness = powf(2.f / (info.specularPower + 2.f), 1.f / 4.f);
+                effect->SetConstantRoughness(roughness);
+            }
+
+            // info.ambientColor, info.specularColor, and info.emissiveColor are unused by PBR.
         }
 
         if (info.biasedVertexNormals)
