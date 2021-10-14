@@ -1,4 +1,4 @@
-![DirectX Logo](https://github.com/Microsoft/DirectXTK/wiki/X_jpg.jpg)
+![DirectX Logo](https://raw.githubusercontent.com/wiki/Microsoft/DirectXTK/X_jpg.jpg)
 
 # DirectX Tool Kit for DirectX 11
 
