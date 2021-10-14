@@ -264,7 +264,7 @@ ID3D11DepthStencilState* CommonStates::DepthRead() const
 
 ID3D11DepthStencilState* CommonStates::DepthReverseZ() const
 {
-    return DemandCreate(pImpl->depthDefault, pImpl->mutex, [&](ID3D11DepthStencilState** pResult)
+    return DemandCreate(pImpl->depthReverseZ, pImpl->mutex, [&](ID3D11DepthStencilState** pResult)
         {
             return pImpl->CreateDepthStencilState(true, true, true, pResult);
         });
@@ -273,7 +273,7 @@ ID3D11DepthStencilState* CommonStates::DepthReverseZ() const
 
 ID3D11DepthStencilState* CommonStates::DepthReadReverseZ() const
 {
-    return DemandCreate(pImpl->depthRead, pImpl->mutex, [&](ID3D11DepthStencilState** pResult)
+    return DemandCreate(pImpl->depthReadReverseZ, pImpl->mutex, [&](ID3D11DepthStencilState** pResult)
         {
             return pImpl->CreateDepthStencilState(true, false, true, pResult);
         });
