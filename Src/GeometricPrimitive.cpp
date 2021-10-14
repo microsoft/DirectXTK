@@ -126,13 +126,13 @@ void GeometricPrimitive::Impl::SharedResources::PrepareForRendering(bool alpha, 
     {
         // Alpha blended rendering.
         blendState = stateObjects->AlphaBlend();
-        depthStencilState = stateObjects->DepthRead();
+        depthStencilState = s_reversez ? stateObjects->DepthReadReverseZ() : stateObjects->DepthRead();
     }
     else
     {
         // Opaque rendering.
         blendState = stateObjects->Opaque();
-        depthStencilState = stateObjects->DepthDefault();
+        depthStencilState = s_reversez ? stateObjects->DepthReverseZ() : stateObjects->DepthDefault();
     }
 
     mDeviceContext->OMSetBlendState(blendState, nullptr, 0xFFFFFFFF);
@@ -340,6 +340,8 @@ void GeometricPrimitive::Impl::CreateInputLayout(IEffect* effect, ID3D11InputLay
 //--------------------------------------------------------------------------------------
 // GeometricPrimitive
 //--------------------------------------------------------------------------------------
+
+bool GeometricPrimitive::s_reversez = false;
 
 // Constructor.
 GeometricPrimitive::GeometricPrimitive() noexcept(false)

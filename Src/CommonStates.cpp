@@ -26,10 +26,10 @@ public:
       : mDevice(device)
     { }
 
-    HRESULT CreateBlendState(D3D11_BLEND srcBlend, D3D11_BLEND destBlend, _Out_ ID3D11BlendState** pResult);
-    HRESULT CreateDepthStencilState(bool enable, bool writeEnable, _Out_ ID3D11DepthStencilState** pResult);
-    HRESULT CreateRasterizerState(D3D11_CULL_MODE cullMode, D3D11_FILL_MODE fillMode, _Out_ ID3D11RasterizerState** pResult);
-    HRESULT CreateSamplerState(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE addressMode, _Out_ ID3D11SamplerState** pResult);
+    HRESULT CreateBlendState(D3D11_BLEND srcBlend, D3D11_BLEND destBlend, _Outptr_ ID3D11BlendState** pResult);
+    HRESULT CreateDepthStencilState(bool enable, bool writeEnable, bool reverseZ, _Outptr_ ID3D11DepthStencilState** pResult);
+    HRESULT CreateRasterizerState(D3D11_CULL_MODE cullMode, D3D11_FILL_MODE fillMode, _Outptr_ ID3D11RasterizerState** pResult);
+    HRESULT CreateSamplerState(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE addressMode, _Outptr_ ID3D11SamplerState** pResult);
 
     ComPtr<ID3D11Device> mDevice;
 
@@ -41,6 +41,8 @@ public:
     ComPtr<ID3D11DepthStencilState> depthNone;
     ComPtr<ID3D11DepthStencilState> depthDefault;
     ComPtr<ID3D11DepthStencilState> depthRead;
+    ComPtr<ID3D11DepthStencilState> depthReverseZ;
+    ComPtr<ID3D11DepthStencilState> depthReadReverseZ;
 
     ComPtr<ID3D11RasterizerState> cullNone;
     ComPtr<ID3D11RasterizerState> cullClockwise;
@@ -65,7 +67,10 @@ SharedResourcePool<ID3D11Device*, CommonStates::Impl> CommonStates::Impl::instan
 
 
 // Helper for creating blend state objects.
-HRESULT CommonStates::Impl::CreateBlendState(D3D11_BLEND srcBlend, D3D11_BLEND destBlend, _Out_ ID3D11BlendState** pResult)
+HRESULT CommonStates::Impl::CreateBlendState(
+    D3D11_BLEND srcBlend,
+    D3D11_BLEND destBlend,
+    _Outptr_ ID3D11BlendState** pResult)
 {
     D3D11_BLEND_DESC desc = {};
 
@@ -88,13 +93,17 @@ HRESULT CommonStates::Impl::CreateBlendState(D3D11_BLEND srcBlend, D3D11_BLEND d
 
 
 // Helper for creating depth stencil state objects.
-HRESULT CommonStates::Impl::CreateDepthStencilState(bool enable, bool writeEnable, _Out_ ID3D11DepthStencilState** pResult)
+HRESULT CommonStates::Impl::CreateDepthStencilState(
+    bool enable,
+    bool writeEnable,
+    bool reverseZ,
+    _Outptr_ ID3D11DepthStencilState** pResult)
 {
     D3D11_DEPTH_STENCIL_DESC desc = {};
 
     desc.DepthEnable = enable ? TRUE : FALSE;
     desc.DepthWriteMask = writeEnable ? D3D11_DEPTH_WRITE_MASK_ALL : D3D11_DEPTH_WRITE_MASK_ZERO;
-    desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+    desc.DepthFunc = reverseZ ? D3D11_COMPARISON_GREATER_EQUAL : D3D11_COMPARISON_LESS_EQUAL;
 
     desc.StencilEnable = FALSE;
     desc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
@@ -117,7 +126,10 @@ HRESULT CommonStates::Impl::CreateDepthStencilState(bool enable, bool writeEnabl
 
 
 // Helper for creating rasterizer state objects.
-HRESULT CommonStates::Impl::CreateRasterizerState(D3D11_CULL_MODE cullMode, D3D11_FILL_MODE fillMode, _Out_ ID3D11RasterizerState** pResult)
+HRESULT CommonStates::Impl::CreateRasterizerState(
+    D3D11_CULL_MODE cullMode,
+    D3D11_FILL_MODE fillMode,
+    _Outptr_ ID3D11RasterizerState** pResult)
 {
     D3D11_RASTERIZER_DESC desc = {};
 
@@ -136,7 +148,10 @@ HRESULT CommonStates::Impl::CreateRasterizerState(D3D11_CULL_MODE cullMode, D3D1
 
 
 // Helper for creating sampler state objects.
-HRESULT CommonStates::Impl::CreateSamplerState(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE addressMode, _Out_ ID3D11SamplerState** pResult)
+HRESULT CommonStates::Impl::CreateSamplerState(
+    D3D11_FILTER filter,
+    D3D11_TEXTURE_ADDRESS_MODE addressMode,
+    _Outptr_ ID3D11SamplerState** pResult)
 {
     D3D11_SAMPLER_DESC desc = {};
 
@@ -224,7 +239,7 @@ ID3D11DepthStencilState* CommonStates::DepthNone() const
 {
     return DemandCreate(pImpl->depthNone, pImpl->mutex, [&](ID3D11DepthStencilState** pResult)
     {
-        return pImpl->CreateDepthStencilState(false, false, pResult);
+        return pImpl->CreateDepthStencilState(false, false, false, pResult);
     });
 }
 
@@ -233,7 +248,7 @@ ID3D11DepthStencilState* CommonStates::DepthDefault() const
 {
     return DemandCreate(pImpl->depthDefault, pImpl->mutex, [&](ID3D11DepthStencilState** pResult)
     {
-        return pImpl->CreateDepthStencilState(true, true, pResult);
+        return pImpl->CreateDepthStencilState(true, true, false, pResult);
     });
 }
 
@@ -242,8 +257,26 @@ ID3D11DepthStencilState* CommonStates::DepthRead() const
 {
     return DemandCreate(pImpl->depthRead, pImpl->mutex, [&](ID3D11DepthStencilState** pResult)
     {
-        return pImpl->CreateDepthStencilState(true, false, pResult);
+        return pImpl->CreateDepthStencilState(true, false, false, pResult);
     });
+}
+
+
+ID3D11DepthStencilState* CommonStates::DepthReverseZ() const
+{
+    return DemandCreate(pImpl->depthDefault, pImpl->mutex, [&](ID3D11DepthStencilState** pResult)
+        {
+            return pImpl->CreateDepthStencilState(true, true, true, pResult);
+        });
+}
+
+
+ID3D11DepthStencilState* CommonStates::DepthReadReverseZ() const
+{
+    return DemandCreate(pImpl->depthRead, pImpl->mutex, [&](ID3D11DepthStencilState** pResult)
+        {
+            return pImpl->CreateDepthStencilState(true, false, true, pResult);
+        });
 }
 
 

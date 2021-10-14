@@ -89,7 +89,14 @@ namespace DirectX
        // Create input layout for drawing with a custom effect.
         void __cdecl CreateInputLayout(_In_ IEffect* effect, _Outptr_ ID3D11InputLayout** inputLayout) const;
 
+        static void SetDepthBufferMode(bool reverseZ)
+        {
+            s_reversez = reverseZ;
+        }
+
     private:
+        static bool s_reversez;
+
         GeometricPrimitive() noexcept(false);
 
         // Private implementation.

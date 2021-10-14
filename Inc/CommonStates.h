@@ -43,6 +43,8 @@ namespace DirectX
         ID3D11DepthStencilState* __cdecl DepthNone() const;
         ID3D11DepthStencilState* __cdecl DepthDefault() const;
         ID3D11DepthStencilState* __cdecl DepthRead() const;
+        ID3D11DepthStencilState* __cdecl DepthReverseZ() const;
+        ID3D11DepthStencilState* __cdecl DepthReadReverseZ() const;
 
         // Rasterizer states.
         ID3D11RasterizerState* __cdecl CullNone() const;

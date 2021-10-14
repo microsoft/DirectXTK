@@ -200,6 +200,14 @@ namespace DirectX
             FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection,
             bool alpha = false,
             _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
+
+        static void SetDepthBufferMode(bool reverseZ)
+        {
+            s_reversez = reverseZ;
+        }
+
+    private:
+        static bool s_reversez;
     };
 
 
