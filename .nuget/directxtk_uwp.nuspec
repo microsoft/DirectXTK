@@ -7,7 +7,7 @@
         <authors>Microsoft</authors>
         <owners>microsoft,directxtk</owners>
         <summary>The DirectX Tool Kit (aka DirectXTK) is a collection of helper classes for writing Direct3D 11.x code in C++.</summary>
-        <description>This version is for Universal Windows Platform apps on Windows 10 using Visual Studio 2017 or Visual Studio 2019.
+        <description>This version is for Universal Windows Platform apps on Windows 10 / Windows 11 using Visual Studio 2017 or Visual Studio 2019.
 
 Features:
 Audio - low-level audio API using XAudio2
