@@ -40,7 +40,10 @@ if exist %PCFXC% goto continue
 set PCFXC=fxc.exe
 
 :continue
-@if %CompileShadersOutput%.==. set CompileShadersOutput=Compiled
+if not defined CompileShadersOutput set CompileShadersOutput=Compiled
+set StrTrim=%CompileShadersOutput%##
+set StrTrim=%StrTrim: ##=%
+set CompileShadersOutput=%StrTrim:##=%
 @if not exist %CompileShadersOutput% mkdir %CompileShadersOutput%
 call :CompileShader%1 AlphaTestEffect vs VSAlphaTest
 call :CompileShader%1 AlphaTestEffect vs VSAlphaTestNoFog
