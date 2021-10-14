@@ -6,9 +6,9 @@ http://go.microsoft.com/fwlink/?LinkId=248929
 
 Copyright (c) Microsoft Corporation.
 
-**September 30, 2021**
+**October 13, 2021**
 
-This package contains the "DirectX Tool Kit", a collection of helper classes for writing Direct3D 11 C++ code for Universal Windows Platform (UWP) apps for Windows 10, Xbox One, and Win32 desktop applications for Windows 7 Service Pack 1 or later.
+This package contains the "DirectX Tool Kit", a collection of helper classes for writing Direct3D 11 C++ code for Universal Windows Platform (UWP) apps for Windows 11, Windows 10, Xbox One, and Win32 desktop applications for Windows 7 Service Pack 1 or later.
 
 This code is designed to build with Visual Studio 2017 ([15.9](https://walbourn.github.io/vs-2017-15-9-update/)), Visual Studio 2019, or clang for Windows v11 or later. Use of the Windows 10 May 2020 Update SDK ([19041](https://walbourn.github.io/windows-10-may-2020-update-sdk/)) or later is required.
 
@@ -69,6 +69,8 @@ All content and source code for this package are subject to the terms of the [MI
 For the latest version of DirectXTK, bug reports, etc. please visit the project site on [GitHub](https://github.com/microsoft/DirectXTK).
 
 ## Release Notes
+
+* As of the October 2021 release, the DGSLEffect no longer directly supports skinning. Instead, make use of **SkinnedDGSLEffect** which is derived from DGSLEffect.
 
 * As of the August 2021 release, **MakeSpriteFont** requires the .NET version 4.7.2 targeting pack to be installed to build. For VS 2017, this is an optional individual component *.NET Framework 4.7.2 development tools* (``Microsoft.Net.Component.4.7.2.TargetingPack``).
 

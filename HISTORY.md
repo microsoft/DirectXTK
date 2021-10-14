@@ -6,6 +6,19 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### October 13, 2021
+* Added skinning support for **NormalMapEffect** and **PBREffect**
+* Common states updated with support for reverse z-buffer rendering with **DepthReverseZ** and **DepthReadReverseZ** methods.
+* Effect factory updates
+  * Updated to use ``SkinnedNormalMapEffect`` / ``SkinnedPBREffect`` as appropriate.
+  * Automatically disables use of normal mapping on 9.x feature levels
+  * PBR now supports 'untextured' models (always requires texture coordinates) with use of diffuse color for constant albedo, and specular power for an estimated constant roughness.
+* Model loader updates
+  * SDKMESH loader no longer requires precomputed vertex tangents for normal mapping as we don't use them.
+  * Added ``ModelLoader_DisableSkinning`` flag when dealing with legacy SDKMESH files with too many skinning bone influences for _MaxBone_
+* Minor update for the Mouse implementation for GameInput
+* Project and code cleanup
+
 ### September 30, 2021
 * Added ModelBone support for transformation hierarchies
   * Rigid-body & skinned animation Draw support added to Model
