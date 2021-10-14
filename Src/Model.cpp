@@ -163,6 +163,8 @@ void ModelMeshPart::ModifyEffect(ID3D11Device* d3dDevice, std::shared_ptr<IEffec
 // ModelMesh
 //--------------------------------------------------------------------------------------
 
+bool ModelMesh::s_reversez = false;
+
 ModelMesh::ModelMesh() noexcept :
     boneIndex(ModelBone::c_Invalid),
     ccw(true),
@@ -192,21 +194,20 @@ void ModelMesh::PrepareForRendering(
 
     if (alpha)
     {
+        depthStencilState = (s_reversez) ? states.DepthReadReverseZ() : states.DepthRead();
         if (pmalpha)
         {
             blendState = states.AlphaBlend();
-            depthStencilState = states.DepthRead();
         }
         else
         {
             blendState = states.NonPremultiplied();
-            depthStencilState = states.DepthRead();
         }
     }
     else
     {
         blendState = states.Opaque();
-        depthStencilState = states.DepthDefault();
+        depthStencilState = (s_reversez) ? states.DepthReverseZ() : states.DepthDefault();
     }
 
     deviceContext->OMSetBlendState(blendState, nullptr, 0xFFFFFFFF);
