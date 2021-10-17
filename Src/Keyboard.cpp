@@ -439,14 +439,14 @@ private:
             HRESULT hr = mWindow->get_Dispatcher(dispatcher.GetAddressOf());
             ThrowIfFailed(hr);
 
-            (void)mWindow->remove_Activated(mActivatedToken);
+            std::ignore = mWindow->remove_Activated(mActivatedToken);
             mActivatedToken.value = 0;
 
             ComPtr<ICoreAcceleratorKeys> keys;
             hr = dispatcher.As(&keys);
             ThrowIfFailed(hr);
 
-            (void)keys->remove_AcceleratorKeyActivated(mAcceleratorKeyToken);
+            std::ignore = keys->remove_AcceleratorKeyActivated(mAcceleratorKeyToken);
             mAcceleratorKeyToken.value = 0;
         }
     }

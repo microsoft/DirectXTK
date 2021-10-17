@@ -150,7 +150,7 @@ void DynamicSoundEffectInstance::Impl::Play()
         mBase.AllocateVoice(&mWaveFormat);
     }
 
-    (void)mBase.Play();
+    std::ignore = mBase.Play();
 
     if (mBase.voice && (mBase.state == PLAYING) && (mBase.GetPendingBufferCount() <= 2))
     {

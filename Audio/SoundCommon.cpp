@@ -790,11 +790,11 @@ void SoundEffectInstanceBase::Apply3D(const X3DAUDIO_LISTENER& listener, const X
 
     mDSPSettings.pMatrixCoefficients = nullptr;
 
-    (void)voice->SetFrequencyRatio(mFreqRatio * mDSPSettings.DopplerFactor);
+    std::ignore = voice->SetFrequencyRatio(mFreqRatio * mDSPSettings.DopplerFactor);
 
     auto direct = mDirectVoice;
     assert(direct != nullptr);
-    (void)voice->SetOutputMatrix(direct, mDSPSettings.SrcChannelCount, mDSPSettings.DstChannelCount, matrix);
+    std::ignore = voice->SetOutputMatrix(direct, mDSPSettings.SrcChannelCount, mDSPSettings.DstChannelCount, matrix);
 
     if (reverb)
     {
@@ -802,20 +802,20 @@ void SoundEffectInstanceBase::Apply3D(const X3DAUDIO_LISTENER& listener, const X
         {
             matrix[j] = mDSPSettings.ReverbLevel;
         }
-        (void)voice->SetOutputMatrix(reverb, mDSPSettings.SrcChannelCount, 1, matrix);
+        std::ignore = voice->SetOutputMatrix(reverb, mDSPSettings.SrcChannelCount, 1, matrix);
     }
 
     if (mFlags & SoundEffectInstance_ReverbUseFilters)
     {
         XAUDIO2_FILTER_PARAMETERS filterDirect = { LowPassFilter, 2.0f * sinf(X3DAUDIO_PI / 6.0f * mDSPSettings.LPFDirectCoefficient), 1.0f };
         // see XAudio2CutoffFrequencyToRadians() in XAudio2.h for more information on the formula used here
-        (void)voice->SetOutputFilterParameters(direct, &filterDirect);
+        std::ignore = voice->SetOutputFilterParameters(direct, &filterDirect);
 
         if (reverb)
         {
             XAUDIO2_FILTER_PARAMETERS filterReverb = { LowPassFilter, 2.0f * sinf(X3DAUDIO_PI / 6.0f * mDSPSettings.LPFReverbCoefficient), 1.0f };
             // see XAudio2CutoffFrequencyToRadians() in XAudio2.h for more information on the formula used here
-            (void)voice->SetOutputFilterParameters(reverb, &filterReverb);
+            std::ignore = voice->SetOutputFilterParameters(reverb, &filterReverb);
         }
     }
 }

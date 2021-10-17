@@ -697,7 +697,7 @@ bool AudioEngine::Impl::Update()
 
                 if (!xstate.BuffersQueued)
                 {
-                    (void)it->second->Stop(0);
+                    std::ignore = it->second->Stop(0);
                     if (it->first)
                     {
                         // Put voice back into voice pool for reuse since it has a non-zero voiceKey
@@ -750,15 +750,15 @@ void AudioEngine::Impl::SetReverb(const XAUDIO2FX_REVERB_PARAMETERS* native) noe
         if (!mReverbEnabled)
         {
             mReverbEnabled = true;
-            (void)mReverbVoice->EnableEffect(0);
+            std::ignore = mReverbVoice->EnableEffect(0);
         }
 
-        (void)mReverbVoice->SetEffectParameters(0, native, sizeof(XAUDIO2FX_REVERB_PARAMETERS));
+        std::ignore = mReverbVoice->SetEffectParameters(0, native, sizeof(XAUDIO2FX_REVERB_PARAMETERS));
     }
     else if (mReverbEnabled)
     {
         mReverbEnabled = false;
-        (void)mReverbVoice->DisableEffect(0);
+        std::ignore = mReverbVoice->DisableEffect(0);
     }
 }
 
@@ -1090,8 +1090,8 @@ void AudioEngine::Impl::UnregisterNotify(_In_ IVoiceNotify* notify, bool usesOne
 
             if (state.pCurrentBufferContext == notify)
             {
-                (void)it.second->Stop(0);
-                (void)it.second->FlushSourceBuffers();
+                std::ignore = it.second->Stop(0);
+                std::ignore = it.second->FlushSourceBuffers();
                 setevent = true;
             }
         }

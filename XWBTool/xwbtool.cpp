@@ -42,6 +42,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -1337,11 +1338,11 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
 
     if (dwOptions & (1 << OPT_TOLOWER))
     {
-        (void)_wcslwr_s(szOutputFile);
+        std::ignore = _wcslwr_s(szOutputFile);
 
         if (*szHeaderFile)
         {
-            (void)_wcslwr_s(szHeaderFile);
+            std::ignore = _wcslwr_s(szHeaderFile);
         }
     }
 

@@ -199,17 +199,17 @@ namespace DirectX
             if (immediate)
             {
                 state = STOPPED;
-                (void)voice->Stop(0);
-                (void)voice->FlushSourceBuffers();
+                std::ignore = voice->Stop(0);
+                std::ignore = voice->FlushSourceBuffers();
             }
             else if (looped)
             {
                 looped = false;
-                (void)voice->ExitLoop();
+                std::ignore = voice->ExitLoop();
             }
             else
             {
-                (void)voice->Stop(XAUDIO2_PLAY_TAILS);
+                std::ignore = voice->Stop(XAUDIO2_PLAY_TAILS);
             }
         }
 
@@ -219,7 +219,7 @@ namespace DirectX
             {
                 state = PAUSED;
 
-                (void)voice->Stop(0);
+                std::ignore = voice->Stop(0);
             }
         }
 
@@ -281,7 +281,7 @@ namespace DirectX
                 if (!xstate.BuffersQueued)
                 {
                     // Automatic stop if the buffer has finished playing
-                    (void)voice->Stop();
+                    std::ignore = voice->Stop();
                     state = STOPPED;
                 }
             }
@@ -334,8 +334,8 @@ namespace DirectX
         {
             if (voice)
             {
-                (void)voice->Stop(0);
-                (void)voice->FlushSourceBuffers();
+                std::ignore = voice->Stop(0);
+                std::ignore = voice->FlushSourceBuffers();
                 voice->DestroyVoice();
                 voice = nullptr;
             }

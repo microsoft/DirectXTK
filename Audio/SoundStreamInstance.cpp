@@ -125,14 +125,14 @@ public:
         mBase.Initialize(engine, mWaveBank->GetFormat(index, wfx, sizeof(buff)), flags);
 
         WaveBankReader::Metadata metadata = {};
-        (void)mWaveBank->GetPrivateData(index, &metadata, sizeof(metadata));
+        std::ignore = mWaveBank->GetPrivateData(index, &metadata, sizeof(metadata));
 
         mOffsetBytes = metadata.offsetBytes;
         mLengthInBytes = metadata.lengthBytes;
 
         #ifdef DIRECTX_ENABLE_SEEK_TABLES
         WaveBankSeekData seekData = {};
-        (void)mWaveBank->GetPrivateData(index, &seekData, sizeof(seekData));
+        std::ignore = mWaveBank->GetPrivateData(index, &seekData, sizeof(seekData));
         if (seekData.tag == WAVE_FORMAT_WMAUDIO2 || seekData.tag == WAVE_FORMAT_WMAUDIO3)
         {
             mSeekCount = seekData.seekCount;
@@ -165,7 +165,7 @@ public:
         {
             for (size_t j = 0; j < MAX_BUFFER_COUNT; ++j)
             {
-                (void)CancelIoEx(mWaveBank->GetAsyncHandle(), &mPackets[j].request);
+                std::ignore = CancelIoEx(mWaveBank->GetAsyncHandle(), &mPackets[j].request);
             }
         }
 

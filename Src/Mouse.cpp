@@ -1199,22 +1199,22 @@ private:
     {
         if (mWindow)
         {
-            (void)mWindow->remove_PointerPressed(mPointerPressedToken);
+            std::ignore = mWindow->remove_PointerPressed(mPointerPressedToken);
             mPointerPressedToken.value = 0;
 
-            (void)mWindow->remove_PointerReleased(mPointerReleasedToken);
+            std::ignore = mWindow->remove_PointerReleased(mPointerReleasedToken);
             mPointerReleasedToken.value = 0;
 
-            (void)mWindow->remove_PointerMoved(mPointerMovedToken);
+            std::ignore = mWindow->remove_PointerMoved(mPointerMovedToken);
             mPointerMovedToken.value = 0;
 
-            (void)mWindow->remove_PointerWheelChanged(mPointerWheelToken);
+            std::ignore = mWindow->remove_PointerWheelChanged(mPointerWheelToken);
             mPointerWheelToken.value = 0;
         }
 
         if (mMouse)
         {
-            (void)mMouse->remove_MouseMoved(mPointerMouseMovedToken);
+            std::ignore = mMouse->remove_MouseMoved(mPointerMouseMovedToken);
             mPointerMouseMovedToken.value = 0;
         }
     }

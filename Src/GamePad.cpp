@@ -459,7 +459,7 @@ public:
                 HRESULT hr = mGamePad[j].As(&ctrl);
                 if (SUCCEEDED(hr) && ctrl)
                 {
-                    (void)ctrl->remove_UserChanged(mUserChangeToken[j]);
+                    std::ignore = ctrl->remove_UserChanged(mUserChangeToken[j]);
                     mUserChangeToken[j].value = 0;
                 }
 
@@ -469,10 +469,10 @@ public:
 
         if (mStatics)
         {
-            (void)mStatics->remove_GamepadAdded(mAddedToken);
+            std::ignore = mStatics->remove_GamepadAdded(mAddedToken);
             mAddedToken.value = 0;
 
-            (void)mStatics->remove_GamepadRemoved(mRemovedToken);
+            std::ignore = mStatics->remove_GamepadRemoved(mRemovedToken);
             mRemovedToken.value = 0;
 
             mStatics.Reset();
@@ -695,7 +695,7 @@ private:
                     HRESULT hr = mGamePad[j].As(&ctrl);
                     if (SUCCEEDED(hr) && ctrl)
                     {
-                        (void)ctrl->remove_UserChanged(mUserChangeToken[j]);
+                        std::ignore = ctrl->remove_UserChanged(mUserChangeToken[j]);
                         mUserChangeToken[j].value = 0;
                     }
 
@@ -930,10 +930,10 @@ public:
     {
         if (mStatics)
         {
-            (void)mStatics->remove_GamepadAdded(mAddedToken);
+            std::ignore = mStatics->remove_GamepadAdded(mAddedToken);
             mAddedToken.value = 0;
 
-            (void)mStatics->remove_GamepadRemoved(mRemovedToken);
+            std::ignore = mStatics->remove_GamepadRemoved(mRemovedToken);
             mRemovedToken.value = 0;
 
             mStatics.Reset();
@@ -941,7 +941,7 @@ public:
 
         if (mStaticsCtrl)
         {
-            (void)mStaticsCtrl->remove_ControllerPairingChanged(mUserParingToken);
+            std::ignore = mStaticsCtrl->remove_ControllerPairingChanged(mUserParingToken);
             mUserParingToken.value = 0;
 
             mStaticsCtrl.Reset();
@@ -1462,7 +1462,7 @@ public:
                 {
                     XINPUT_VIBRATION xvibration;
                     xvibration.wLeftMotorSpeed = xvibration.wRightMotorSpeed = 0;
-                    (void)XInputSetState(DWORD(j), &xvibration);
+                    std::ignore = XInputSetState(DWORD(j), &xvibration);
                 }
             }
 

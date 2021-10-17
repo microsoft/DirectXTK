@@ -506,7 +506,7 @@ namespace
                     }
 #endif
 
-                    (void)PropVariantClear(&value);
+                    std::ignore = PropVariantClear(&value);
 
                     if (sRGB)
                         format = LoaderHelpers::MakeSRGB(format);
