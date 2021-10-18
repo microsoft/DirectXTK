@@ -162,7 +162,7 @@ namespace
         EffectFactory::EffectInfo info;
         info.name = matName;
         info.perVertexColor = false;
-        info.enableSkinning = false;
+        info.enableSkinning = (flags & SKINNING) != 0;
         info.enableDualTexture = false;
         info.enableNormalMaps = true;
         info.biasedVertexNormals = (flags & BIASED_VERTEX_NORMALS) != 0;
