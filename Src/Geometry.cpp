@@ -907,9 +907,9 @@ void DirectX::ComputeDodecahedron(VertexCollection& vertices, IndexCollection& i
     vertices.clear();
     indices.clear();
 
-    static const float a = 1.f / SQRT3;
-    static const float b = 0.356822089773089931942f; // sqrt( ( 3 - sqrt(5) ) / 6 )
-    static const float c = 0.934172358962715696451f; // sqrt( ( 3 + sqrt(5) ) / 6 );
+    constexpr float a = 1.f / SQRT3;
+    constexpr float b = 0.356822089773089931942f; // sqrt( ( 3 - sqrt(5) ) / 6 )
+    constexpr float c = 0.934172358962715696451f; // sqrt( ( 3 + sqrt(5) ) / 6 );
 
     static const XMVECTORF32 verts[20] =
     {
@@ -1038,8 +1038,8 @@ void DirectX::ComputeIcosahedron(VertexCollection& vertices, IndexCollection& in
     vertices.clear();
     indices.clear();
 
-    static const float  t = 1.618033988749894848205f; // (1 + sqrt(5)) / 2
-    static const float t2 = 1.519544995837552493271f; // sqrt( 1 + sqr( (1 + sqrt(5)) / 2 ) )
+    constexpr float  t = 1.618033988749894848205f; // (1 + sqrt(5)) / 2
+    constexpr float t2 = 1.519544995837552493271f; // sqrt( 1 + sqr( (1 + sqrt(5)) / 2 ) )
 
     static const XMVECTORF32 verts[12] =
     {
