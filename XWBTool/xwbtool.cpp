@@ -120,14 +120,14 @@ namespace
 
 #pragma pack(push, 1)
 
-    static const size_t DVD_SECTOR_SIZE = 2048;
+    constexpr size_t DVD_SECTOR_SIZE = 2048;
 
-    static const size_t ALIGNMENT_MIN = 4;
-    static const size_t ALIGNMENT_DVD = DVD_SECTOR_SIZE;
+    constexpr size_t ALIGNMENT_MIN = 4;
+    constexpr size_t ALIGNMENT_DVD = DVD_SECTOR_SIZE;
 
-    static const size_t MAX_COMPACT_DATA_SEGMENT_SIZE = 0x001FFFFF;
+    constexpr size_t MAX_COMPACT_DATA_SEGMENT_SIZE = 0x001FFFFF;
 
-    static const size_t ENTRYNAME_LENGTH = 64;
+    constexpr size_t ENTRYNAME_LENGTH = 64;
 
     struct REGION
     {
