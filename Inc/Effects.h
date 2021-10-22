@@ -551,6 +551,12 @@ namespace DirectX
         explicit SkinnedDGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader = nullptr) :
             DGSLEffect(device, pixelShader, true) {}
 
+        SkinnedDGSLEffect(SkinnedDGSLEffect&&) = default;
+        SkinnedDGSLEffect& operator= (SkinnedDGSLEffect&&) = default;
+
+        SkinnedDGSLEffect(SkinnedDGSLEffect const&) = delete;
+        SkinnedDGSLEffect& operator= (SkinnedDGSLEffect const&) = delete;
+
         // Animation setting.
         void __cdecl SetWeightsPerVertex(int value) override;
         void __cdecl SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, size_t count) override;
@@ -641,6 +647,12 @@ namespace DirectX
     public:
         explicit SkinnedNormalMapEffect(_In_ ID3D11Device* device) :
             NormalMapEffect(device, true) {}
+
+        SkinnedNormalMapEffect(SkinnedNormalMapEffect&&) = default;
+        SkinnedNormalMapEffect& operator= (SkinnedNormalMapEffect&&) = default;
+
+        SkinnedNormalMapEffect(SkinnedNormalMapEffect const&) = delete;
+        SkinnedNormalMapEffect& operator= (SkinnedNormalMapEffect const&) = delete;
 
         // Animation settings.
         void __cdecl SetWeightsPerVertex(int value) override;
@@ -737,6 +749,12 @@ namespace DirectX
     public:
         explicit SkinnedPBREffect(_In_ ID3D11Device* device) :
             PBREffect(device, true) {}
+
+        SkinnedPBREffect(SkinnedPBREffect&&) = default;
+        SkinnedPBREffect& operator= (SkinnedPBREffect&&) = default;
+
+        SkinnedPBREffect(SkinnedPBREffect const&) = delete;
+        SkinnedPBREffect& operator= (SkinnedPBREffect const&) = delete;
 
         // Animation settings.
         void __cdecl SetWeightsPerVertex(int value) override;
