@@ -18,8 +18,9 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <memory>
 #include <functional>
+#include <memory>
+#include <new>
 #include <set>
 #include <string>
 #include <vector>
