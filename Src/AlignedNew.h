@@ -12,7 +12,7 @@
 
 #include <cstddef>
 #include <cstdlib>
-#include <exception>
+#include <new>
 
 #ifdef WIN32
 #include <malloc.h>
