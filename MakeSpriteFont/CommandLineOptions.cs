@@ -32,6 +32,7 @@ namespace MakeSpriteFont
         FL11_1,
         FL12_0,
         FL12_1,
+        FL12_2,
     }
 
 

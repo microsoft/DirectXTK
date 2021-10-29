@@ -76,7 +76,7 @@ namespace MakeSpriteFont
             // Emit texture size warning based on known Feature Level limits.
             if (bitmap.Width > 16384 || bitmap.Height > 16384)
             {
-                Console.WriteLine("WARNING: Resulting texture is too large for all known Feature Levels (9.1 - 12.1)");
+                Console.WriteLine("WARNING: Resulting texture is too large for all known Feature Levels (9.1 - 12.2)");
             }
             else if (bitmap.Width > 8192 || bitmap.Height > 8192)
             {
