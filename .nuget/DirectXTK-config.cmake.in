@@ -1,5 +1,17 @@
 @PACKAGE_INIT@
 
 include(${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-targets.cmake)
+include(CMakeFindDependencyMacro)
+
+set(BUILD_XAUDIO_WIN10 @BUILD_XAUDIO_WIN10@)
+set(BUILD_XAUDIO_WIN8 @BUILD_XAUDIO_WIN8@)
+set(BUILD_XAUDIO_WIN7 @BUILD_XAUDIO_WIN7@)
+if (BUILD_XAUDIO_WIN7 AND (NOT BUILD_XAUDIO_WIN10) AND (NOT BUILD_XAUDIO_WIN8) AND (NOT WINDOWS_STORE))
+    find_dependency(xaudio2redist CONFIG)
+endif()
+
+if(VCPKG_TOOLCHAIN)
+    find_dependency(directxmath CONFIG)
+endif()
 
 check_required_components("@PROJECT_NAME@")
