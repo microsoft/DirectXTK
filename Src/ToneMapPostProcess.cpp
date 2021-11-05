@@ -445,7 +445,7 @@ void ToneMapPostProcess::SetColorRotation(ColorPrimaryRotation value)
 }
 
 
-void ToneMapPostProcess::SetColorRotation(FXMMATRIX value)
+void ToneMapPostProcess::SetColorRotation(CXMMATRIX value)
 {
     XMMATRIX transpose = XMMatrixTranspose(value);
     pImpl->constants.colorRotation[0] = transpose.r[0];

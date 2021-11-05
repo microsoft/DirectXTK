@@ -628,7 +628,7 @@ void Model::CopyAbsoluteBoneTransforms(
 _Use_decl_annotations_
 void Model::ComputeAbsolute(
     uint32_t index,
-    FXMMATRIX parent,
+    CXMMATRIX parent,
     size_t nbones,
     const XMMATRIX* inBoneTransforms,
     XMMATRIX* outBoneTransforms,

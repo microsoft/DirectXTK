@@ -326,8 +326,8 @@ namespace DirectX
     private:
         std::set<IEffect*>  mEffectCache;
 
-        void XM_CALLCONV ComputeAbsolute(uint32_t index,
-            FXMMATRIX local, size_t nbones,
+        void __cdecl ComputeAbsolute(uint32_t index,
+            CXMMATRIX local, size_t nbones,
             _In_reads_(nbones) const XMMATRIX* inBoneTransforms,
             _Inout_updates_(nbones) XMMATRIX* outBoneTransforms,
             size_t& visited) const;

@@ -207,7 +207,7 @@ namespace DirectX
 
         // Sets the Color Rotation Transform for HDR10 signal output
         void __cdecl SetColorRotation(ColorPrimaryRotation value);
-        void XM_CALLCONV SetColorRotation(FXMMATRIX value);
+        void __cdecl SetColorRotation(CXMMATRIX value);
 
         // Sets exposure value for LDR tonemap operators
         void __cdecl SetExposure(float exposureValue);
