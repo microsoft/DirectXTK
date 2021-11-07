@@ -40,7 +40,7 @@ namespace DirectX
         // Reads an array of values.
         template<typename T> T const* ReadArray(size_t elementCount)
         {
-            static_assert(std::is_pod<T>::value, "Can only read plain-old-data types");
+            static_assert(std::is_standard_layout<T>::value, "Can only read plain-old-data types");
 
             uint8_t const* newPos = mPos + sizeof(T) * elementCount;
 
