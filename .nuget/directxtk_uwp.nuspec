@@ -30,7 +30,7 @@ SpriteBatch - simple &amp; efficient 2D sprite rendering
 SpriteFont - bitmap based text rendering
 VertexTypes - structures for commonly used vertex data formats
 WICTextureLoader - WIC-based image file texture loader</description>
-        <releaseNotes>Matches the October 18, 2021 release on GitHub.</releaseNotes>
+        <releaseNotes>Matches the November 8, 2021 release on GitHub.</releaseNotes>
         <projectUrl>http://go.microsoft.com/fwlink/?LinkId=248929</projectUrl>
         <repository type="git" url="https://github.com/microsoft/DirectXTK" />
         <icon>images\icon.jpg</icon>

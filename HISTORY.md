@@ -6,6 +6,12 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### November 8, 2021
+* VS 2022 support
+* Minor code and project review
+* makespritefont: Updated with 12.2 for FeatureLevel switch
+* xwbtool: Fixed potential locale issue with ``-flist``
+
 ### October 18, 2021
 * Fixed loading of skinned PBR models from SDKMESH v2
 * *DirectX Tool Kit for Audio* updated for XAudio2Redist 1.2.8
