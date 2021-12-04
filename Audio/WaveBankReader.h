@@ -62,6 +62,8 @@ namespace DirectX
 
         HANDLE GetAsyncHandle() const noexcept;
 
+        uint32_t GetWaveAlignment() const noexcept;
+
         struct Metadata
         {
             uint32_t    duration;

@@ -1441,7 +1441,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     else if (xma)
     {
         // Xbox requires 2K alignment for XMA2
-        dwAlignment = 2048;
+        dwAlignment = 2048 /* XMA_BYTES_PER_PACKET */;
     }
 
     // Convert wave format to miniformat, failing if any won't map
