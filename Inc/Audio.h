@@ -333,6 +333,7 @@ namespace DirectX
         bool __cdecl IsPrepared() const noexcept;
         bool __cdecl IsInUse() const noexcept;
         bool __cdecl IsStreamingBank() const noexcept;
+        bool __cdecl IsAdvancedFormat() const noexcept;
 
         size_t __cdecl GetSampleSizeInBytes(unsigned int index) const noexcept;
         // Returns size of wave audio data

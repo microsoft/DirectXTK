@@ -444,6 +444,12 @@ bool WaveBank::IsStreamingBank() const noexcept
 }
 
 
+bool WaveBank::IsAdvancedFormat() const noexcept
+{
+    return (pImpl->mReader.GetWaveAlignment() == 4096);
+}
+
+
 size_t WaveBank::GetSampleSizeInBytes(unsigned int index) const noexcept
 {
     if (index >= pImpl->mReader.Count())

@@ -40,7 +40,7 @@ using namespace DirectX;
 namespace
 {
     const size_t DVD_SECTOR_SIZE = 2048;
-    const size_t MEMORY_ALLOC_SIZE = 4096;
+    const size_t ADVANCED_FORMAT_SECTOR_SIZE = 4096;
     const size_t MAX_BUFFER_COUNT = 3;
 
     #ifdef DIRECTX_ENABLE_SEEK_TABLES
@@ -53,7 +53,7 @@ namespace
     struct apu_deleter { void operator()(void* p) noexcept { if (p) ApuFree(p); } };
     #endif
 
-    size_t ComputeAsyncPacketSize(_In_ const WAVEFORMATEX* wfx, uint32_t tag)
+    size_t ComputeAsyncPacketSize(_In_ const WAVEFORMATEX* wfx, uint32_t tag, uint32_t alignment)
     {
         if (!wfx)
             return 0;
@@ -71,13 +71,10 @@ namespace
         UNREFERENCED_PARAMETER(tag);
     #endif
 
-        buffer = AlignUp(buffer, MEMORY_ALLOC_SIZE);
+        buffer = AlignUp(buffer, size_t(alignment) * 2);
         buffer = std::max<size_t>(65536u, buffer);
         return buffer;
     }
-
-    static_assert(MEMORY_ALLOC_SIZE >= DVD_SECTOR_SIZE, "Memory size should be larger than sector size");
-    static_assert(MEMORY_ALLOC_SIZE >= DVD_SECTOR_SIZE || (MEMORY_ALLOC_SIZE% DVD_SECTOR_SIZE) == 0, "Memory size should be multiples of sector size");
 }
 
 
@@ -105,6 +102,7 @@ public:
         mCurrentDiskReadBuffer(0),
         mCurrentPlayBuffer(0),
         mBlockAlign(0),
+        mAsyncAlign(DVD_SECTOR_SIZE),
         mCurrentPosition(0),
         mOffsetBytes(0),
         mLengthInBytes(0),
@@ -129,6 +127,7 @@ public:
 
         mOffsetBytes = metadata.offsetBytes;
         mLengthInBytes = metadata.lengthBytes;
+        mAsyncAlign = mWaveBank->IsAdvancedFormat() ? ADVANCED_FORMAT_SECTOR_SIZE : DVD_SECTOR_SIZE;
 
         #ifdef DIRECTX_ENABLE_SEEK_TABLES
         WaveBankSeekData seekData = {};
@@ -372,6 +371,7 @@ private:
     uint32_t                        mCurrentDiskReadBuffer;
     uint32_t                        mCurrentPlayBuffer;
     uint32_t                        mBlockAlign;
+    uint32_t                        mAsyncAlign;
     size_t                          mCurrentPosition;
     size_t                          mOffsetBytes;
     size_t                          mLengthInBytes;
@@ -403,7 +403,7 @@ HRESULT SoundStreamInstance::Impl::AllocateStreamingBuffers(const WAVEFORMATEX* 
 
     uint32_t tag = GetFormatTag(wfx);
 
-    size_t packetSize = ComputeAsyncPacketSize(wfx, tag);
+    size_t packetSize = ComputeAsyncPacketSize(wfx, tag, mAsyncAlign);
     if (!packetSize)
         return E_UNEXPECTED;
 
@@ -420,7 +420,7 @@ HRESULT SoundStreamInstance::Impl::AllocateStreamingBuffers(const WAVEFORMATEX* 
     {
         mSitching = true;
 
-        stitchSize = AlignUp<size_t>(wfx->nBlockAlign, DVD_SECTOR_SIZE);
+        stitchSize = AlignUp<size_t>(wfx->nBlockAlign, mAsyncAlign);
         totalSize += uint64_t(stitchSize) * uint64_t(MAX_BUFFER_COUNT);
         if (totalSize > UINT32_MAX)
             return HRESULT_FROM_WIN32(ERROR_ARITHMETIC_OVERFLOW);
@@ -531,6 +531,13 @@ HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
                     DWORD error = GetLastError();
                     if (error != ERROR_IO_PENDING)
                     {
+#ifdef _DEBUG
+                        if (error == ERROR_INVALID_PARAMETER)
+                        {
+                            // May be due to Advanced Format (4Kn) vs. DVD sector size. See the xwbtool -af switch.
+                            OutputDebugStringA("ERROR: non-buffered async I/O failed: check disk sector size vs. streaming wave bank alignment!\n");
+                        }
+#endif
                         return HRESULT_FROM_WIN32(error);
                     }
                 }
