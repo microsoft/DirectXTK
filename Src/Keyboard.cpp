@@ -119,6 +119,18 @@ public:
             for (size_t j = 0; j < readCount; ++j)
             {
                 int vk = static_cast<int>(mKeyState[j].virtualKey);
+
+                // Workaround for known issues with VK_RSHIFT and VK_NUMLOCK
+                if (vk == 0)
+                {
+                    switch (mKeyState[j].scanCode)
+                    {
+                    case 0xe036: vk = VK_RSHIFT; break;
+                    case 0xe045: vk = VK_NUMLOCK; break;
+                    default: break;
+                    }
+                }
+
                 KeyDown(vk, state);
             }
         }
@@ -284,7 +296,7 @@ void Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
     {
         case VK_SHIFT:
             vk = static_cast<int>(
-                MapVirtualKey((static_cast<UINT>(lParam) & 0x00ff0000) >> 16u,
+                MapVirtualKeyW((static_cast<UINT>(lParam) & 0x00ff0000) >> 16u,
                     MAPVK_VSC_TO_VK_EX));
             if (!down)
             {
