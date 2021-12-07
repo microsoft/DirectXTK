@@ -44,7 +44,7 @@ public:
     explicit Impl(_In_ ID3D11Device* device);
 
     bool vertexColorEnabled;
-    
+
     EffectColor color;
 
     ComPtr<ID3D11ShaderResourceView> texture2;
@@ -175,7 +175,7 @@ void DualTextureEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
     };
 
     deviceContext->PSSetShaderResources(0, 2, textures);
-    
+
     // Set shaders and constant buffers.
     ApplyShaders(deviceContext, GetCurrentShaderPermutation());
 }

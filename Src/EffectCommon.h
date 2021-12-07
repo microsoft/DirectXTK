@@ -218,7 +218,7 @@ namespace DirectX
             if (dirtyFlags & EffectDirtyFlags::ConstantBuffer)
             {
                 mConstantBuffer.SetData(deviceContext, constants);
-     
+
                 dirtyFlags &= ~EffectDirtyFlags::ConstantBuffer;
             }
 
@@ -259,7 +259,7 @@ namespace DirectX
                 mPixelShaders{}
             { }
 
-        
+
             // Gets or lazily creates the specified vertex shader permutation.
             ID3D11VertexShader* GetVertexShader(int permutation)
             {

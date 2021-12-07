@@ -441,7 +441,7 @@ void EnvironmentMapEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
     matrices.SetConstants(dirtyFlags, constants.worldViewProj);
 
     fog.SetConstants(dirtyFlags, matrices.worldView, constants.fogVector);
-            
+
     lights.SetConstants(dirtyFlags, matrices, constants.world, constants.worldInverseTranspose, constants.eyePosition, constants.diffuseColor, constants.emissiveColor, true);
 
     // Set the textures.
@@ -452,7 +452,7 @@ void EnvironmentMapEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
     };
 
     deviceContext->PSSetShaderResources(0, 2, textures);
-    
+
     // Set shaders and constant buffers.
     ApplyShaders(deviceContext, GetCurrentShaderPermutation());
 }

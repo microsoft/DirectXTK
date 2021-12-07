@@ -170,14 +170,14 @@ const int EffectBase<SkinnedEffectTraits>::VertexShaderIndices[] =
     1,      // vertex lighting, two bones, no fog
     2,      // vertex lighting, four bones
     2,      // vertex lighting, four bones, no fog
-    
+
     3,      // one light, one bone
     3,      // one light, one bone, no fog
     4,      // one light, two bones
     4,      // one light, two bones, no fog
     5,      // one light, four bones
     5,      // one light, four bones, no fog
-    
+
     6,      // pixel lighting, one bone
     6,      // pixel lighting, one bone, no fog
     7,      // pixel lighting, two bones
@@ -226,14 +226,14 @@ const int EffectBase<SkinnedEffectTraits>::PixelShaderIndices[] =
     1,      // vertex lighting, two bones, no fog
     0,      // vertex lighting, four bones
     1,      // vertex lighting, four bones, no fog
-    
+
     0,      // one light, one bone
     1,      // one light, one bone, no fog
     0,      // one light, two bones
     1,      // one light, two bones, no fog
     0,      // one light, four bones
     1,      // one light, four bones, no fog
-    
+
     2,      // pixel lighting, one bone
     2,      // pixel lighting, one bone, no fog
     2,      // pixel lighting, two bones
@@ -458,7 +458,7 @@ void SkinnedEffect::DisableSpecular()
     // Set specular color to black, power to 1
     // Note: Don't use a power of 0 or the shader will generate strange highlights on non-specular materials
 
-    pImpl->constants.specularColorAndPower = g_XMIdentityR3; 
+    pImpl->constants.specularColorAndPower = g_XMIdentityR3;
 
     pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
 }

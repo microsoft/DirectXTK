@@ -416,8 +416,8 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
             // To see the trace output, you need to view ETW logs for this application:
             //    Go to Control Panel, Administrative Tools, Event Viewer.
             //    View->Show Analytic and Debug Logs.
-            //    Applications and Services Logs / Microsoft / Windows / XAudio2. 
-            //    Right click on Microsoft Windows XAudio2 debug logging, Properties, then Enable Logging, and hit OK 
+            //    Applications and Services Logs / Microsoft / Windows / XAudio2.
+            //    Right click on Microsoft Windows XAudio2 debug logging, Properties, then Enable Logging, and hit OK
         DebugTrace("INFO: XAudio 2.8 debugging enabled\n");
     #endif
     }

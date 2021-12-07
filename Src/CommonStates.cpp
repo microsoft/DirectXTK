@@ -162,7 +162,7 @@ HRESULT CommonStates::Impl::CreateSamplerState(
     desc.AddressW = addressMode;
 
     desc.MaxAnisotropy = (mDevice->GetFeatureLevel() > D3D_FEATURE_LEVEL_9_1) ? D3D11_MAX_MAXANISOTROPY : 2u;
-    
+
     desc.MaxLOD = FLT_MAX;
     desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 

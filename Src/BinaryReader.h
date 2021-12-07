@@ -29,7 +29,7 @@ namespace DirectX
 
         BinaryReader(BinaryReader const&) = delete;
         BinaryReader& operator= (BinaryReader const&) = delete;
-        
+
         // Reads a single value.
         template<typename T> T const& Read()
         {

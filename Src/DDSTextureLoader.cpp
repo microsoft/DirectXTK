@@ -728,7 +728,7 @@ namespace
                     while (d3dDeviceX->IsFencePending(copyFence)) { SwitchToThread(); }
                     pStaging->Release();
                 }
-#else 
+#else
                 if (arraySize > 1)
                 {
                     const uint8_t* pSrcBits = bitData;

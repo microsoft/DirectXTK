@@ -50,7 +50,7 @@ private:
 
     size_t mCurrentIndex;
     size_t mCurrentVertex;
-    
+
     size_t mBaseIndex;
     size_t mBaseVertex;
 
@@ -198,7 +198,7 @@ void PrimitiveBatchBase::Impl::Begin()
 
     mDeviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexStride, &vertexOffset);
 #endif
-     
+
     // If this is a deferred D3D context, reset position so the first Map calls will use D3D11_MAP_WRITE_DISCARD.
     if (mDeviceContext->GetType() == D3D11_DEVICE_CONTEXT_DEFERRED)
     {
@@ -345,17 +345,17 @@ void PrimitiveBatchBase::Impl::Draw(D3D11_PRIMITIVE_TOPOLOGY topology, bool isIn
         mCurrentTopology = topology;
         mCurrentlyIndexed = isIndexed;
     }
-    
+
     // Copy over the index data.
     if (isIndexed)
     {
         auto outputIndices = static_cast<uint16_t*>(mMappedIndices.pData) + mCurrentIndex;
-        
+
         for (size_t i = 0; i < indexCount; i++)
         {
             outputIndices[i] = static_cast<uint16_t>(indices[i] + mCurrentVertex - mBaseVertex);
         }
- 
+
         mCurrentIndex += indexCount;
     }
 

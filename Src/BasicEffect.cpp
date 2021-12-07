@@ -80,7 +80,7 @@ namespace
     #include "XboxOneBasicEffect_VSBasicTxNoFog.inc"
     #include "XboxOneBasicEffect_VSBasicTxVc.inc"
     #include "XboxOneBasicEffect_VSBasicTxVcNoFog.inc"
-    
+
     #include "XboxOneBasicEffect_VSBasicVertexLighting.inc"
     #include "XboxOneBasicEffect_VSBasicVertexLightingVc.inc"
     #include "XboxOneBasicEffect_VSBasicVertexLightingTx.inc"
@@ -132,7 +132,7 @@ namespace
     #include "BasicEffect_VSBasicTxNoFog.inc"
     #include "BasicEffect_VSBasicTxVc.inc"
     #include "BasicEffect_VSBasicTxVcNoFog.inc"
-    
+
     #include "BasicEffect_VSBasicVertexLighting.inc"
     #include "BasicEffect_VSBasicVertexLightingVc.inc"
     #include "BasicEffect_VSBasicVertexLightingTx.inc"
@@ -142,7 +142,7 @@ namespace
     #include "BasicEffect_VSBasicOneLightVc.inc"
     #include "BasicEffect_VSBasicOneLightTx.inc"
     #include "BasicEffect_VSBasicOneLightTxVc.inc"
-    
+
     #include "BasicEffect_VSBasicPixelLighting.inc"
     #include "BasicEffect_VSBasicPixelLightingVc.inc"
     #include "BasicEffect_VSBasicPixelLightingTx.inc"
@@ -210,12 +210,12 @@ const ShaderBytecode EffectBase<BasicEffectTraits>::VertexShaderBytecode[] =
     { BasicEffect_VSBasicVertexLightingVcBn,   sizeof(BasicEffect_VSBasicVertexLightingVcBn)   },
     { BasicEffect_VSBasicVertexLightingTxBn,   sizeof(BasicEffect_VSBasicVertexLightingTxBn)   },
     { BasicEffect_VSBasicVertexLightingTxVcBn, sizeof(BasicEffect_VSBasicVertexLightingTxVcBn) },
-    
+
     { BasicEffect_VSBasicOneLightBn,           sizeof(BasicEffect_VSBasicOneLightBn)           },
     { BasicEffect_VSBasicOneLightVcBn,         sizeof(BasicEffect_VSBasicOneLightVcBn)         },
     { BasicEffect_VSBasicOneLightTxBn,         sizeof(BasicEffect_VSBasicOneLightTxBn)         },
     { BasicEffect_VSBasicOneLightTxVcBn,       sizeof(BasicEffect_VSBasicOneLightTxVcBn)       },
-    
+
     { BasicEffect_VSBasicPixelLightingBn,      sizeof(BasicEffect_VSBasicPixelLightingBn)      },
     { BasicEffect_VSBasicPixelLightingVcBn,    sizeof(BasicEffect_VSBasicPixelLightingVcBn)    },
     { BasicEffect_VSBasicPixelLightingTxBn,    sizeof(BasicEffect_VSBasicPixelLightingTxBn)    },
@@ -234,7 +234,7 @@ const int EffectBase<BasicEffectTraits>::VertexShaderIndices[] =
     5,      // texture, no fog
     6,      // texture + vertex color
     7,      // texture + vertex color, no fog
-    
+
     8,      // vertex lighting
     8,      // vertex lighting, no fog
     9,      // vertex lighting + vertex color
@@ -243,7 +243,7 @@ const int EffectBase<BasicEffectTraits>::VertexShaderIndices[] =
     10,     // vertex lighting + texture, no fog
     11,     // vertex lighting + texture + vertex color
     11,     // vertex lighting + texture + vertex color, no fog
-    
+
     12,     // one light
     12,     // one light, no fog
     13,     // one light + vertex color
@@ -252,7 +252,7 @@ const int EffectBase<BasicEffectTraits>::VertexShaderIndices[] =
     14,     // one light + texture, no fog
     15,     // one light + texture + vertex color
     15,     // one light + texture + vertex color, no fog
-    
+
     16,     // pixel lighting
     16,     // pixel lighting, no fog
     17,     // pixel lighting + vertex color
@@ -320,7 +320,7 @@ const int EffectBase<BasicEffectTraits>::PixelShaderIndices[] =
     3,      // texture, no fog
     2,      // texture + vertex color
     3,      // texture + vertex color, no fog
-    
+
     4,      // vertex lighting
     5,      // vertex lighting, no fog
     4,      // vertex lighting + vertex color
@@ -329,7 +329,7 @@ const int EffectBase<BasicEffectTraits>::PixelShaderIndices[] =
     7,      // vertex lighting + texture, no fog
     6,      // vertex lighting + texture + vertex color
     7,      // vertex lighting + texture + vertex color, no fog
-    
+
     4,      // one light
     5,      // one light, no fog
     4,      // one light + vertex color
@@ -338,7 +338,7 @@ const int EffectBase<BasicEffectTraits>::PixelShaderIndices[] =
     7,      // one light + texture, no fog
     6,      // one light + texture + vertex color
     7,      // one light + texture + vertex color, no fog
-    
+
     8,      // pixel lighting
     8,      // pixel lighting, no fog
     8,      // pixel lighting + vertex color
@@ -574,7 +574,7 @@ void BasicEffect::DisableSpecular()
     // Set specular color to black, power to 1
     // Note: Don't use a power of 0 or the shader will generate strange highlights on non-specular materials
 
-    pImpl->constants.specularColorAndPower = g_XMIdentityR3; 
+    pImpl->constants.specularColorAndPower = g_XMIdentityR3;
 
     pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
 }

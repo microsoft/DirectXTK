@@ -394,7 +394,7 @@ void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indi
     // occurs across that triangle. Eg. when the left hand side of the triangle has a U coordinate of 0.98 and the
     // right hand side has a U coordinate of 0.0. The intent is that such a triangle should render with a U of 0.98 to
     // 1.0, not 0.98 to 0.0. If we don't do this fixup, there will be a visible seam across one side of the sphere.
-    // 
+    //
     // Luckily this is relatively easy to fix. There is a straight edge which runs down the prime meridian of the
     // completed sphere. If you imagine the vertices along that edge, they circumscribe a semicircular arc starting at
     // y=1 and ending at y=-1, and sweeping across the range of z=0 to z=1. x stays zero. It's along this edge that we

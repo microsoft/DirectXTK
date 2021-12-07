@@ -33,4 +33,3 @@ namespace VBO
 } // namespace
 
 static_assert(sizeof(VBO::header_t) == 8, "VBO header size mismatch");
-

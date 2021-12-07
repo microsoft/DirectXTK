@@ -116,7 +116,7 @@ namespace
     #include "XboxOneNormalMapEffect_PSNormalPixelLightingTxNoFog.inc"
     #include "XboxOneNormalMapEffect_PSNormalPixelLightingTxNoSpec.inc"
     #include "XboxOneNormalMapEffect_PSNormalPixelLightingTxNoFogSpec.inc"
-#else    
+#else
     #include "NormalMapEffect_VSNormalPixelLightingTx.inc"
     #include "NormalMapEffect_VSNormalPixelLightingTxInst.inc"
 
@@ -142,7 +142,7 @@ namespace
 
 template<>
 const ShaderBytecode EffectBase<NormalMapEffectTraits>::VertexShaderBytecode[] =
-{    
+{
     { NormalMapEffect_VSNormalPixelLightingTx,         sizeof(NormalMapEffect_VSNormalPixelLightingTx)         },
     { NormalMapEffect_VSNormalPixelLightingTxVc,       sizeof(NormalMapEffect_VSNormalPixelLightingTxVc)       },
 
@@ -162,7 +162,7 @@ const ShaderBytecode EffectBase<NormalMapEffectTraits>::VertexShaderBytecode[] =
 
 template<>
 const int EffectBase<NormalMapEffectTraits>::VertexShaderIndices[] =
-{    
+{
     0,      // pixel lighting + texture
     0,      // pixel lighting + texture, no fog
     0,      // pixel lighting + texture, no specular
@@ -227,7 +227,7 @@ const ShaderBytecode EffectBase<NormalMapEffectTraits>::PixelShaderBytecode[] =
 
 template<>
 const int EffectBase<NormalMapEffectTraits>::PixelShaderIndices[] =
-{    
+{
     0,      // pixel lighting + texture
     1,      // pixel lighting + texture, no fog
     2,      // pixel lighting + texture, no specular
@@ -379,7 +379,7 @@ void NormalMapEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
     matrices.SetConstants(dirtyFlags, constants.worldViewProj);
 
     fog.SetConstants(dirtyFlags, matrices.worldView, constants.fogVector);
-            
+
     lights.SetConstants(dirtyFlags, matrices, constants.world, constants.worldInverseTranspose, constants.eyePosition, constants.diffuseColor, constants.emissiveColor, true);
 
     if (weightsPerVertex > 0)
@@ -521,7 +521,7 @@ void NormalMapEffect::DisableSpecular()
     // Set specular color to black, power to 1
     // Note: Don't use a power of 0 or the shader will generate strange highlights on non-specular materials
 
-    pImpl->constants.specularColorAndPower = g_XMIdentityR3; 
+    pImpl->constants.specularColorAndPower = g_XMIdentityR3;
 
     pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
 }
