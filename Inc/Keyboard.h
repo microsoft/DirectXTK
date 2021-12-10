@@ -50,9 +50,11 @@ namespace DirectX
             Pause               = 0x13,
             CapsLock            = 0x14,
             Kana                = 0x15,
+            ImeOn               = 0x16,
 
             Kanji               = 0x19,
 
+            ImeOff              = 0x1a,
             Escape              = 0x1b,
             ImeConvert          = 0x1c,
             ImeNoConvert        = 0x1d,
@@ -230,10 +232,11 @@ namespace DirectX
             bool Pause : 1;             // VK_PAUSE, 0x13
             bool CapsLock : 1;          // VK_CAPITAL, 0x14
             bool Kana : 1;              // VK_KANA, 0x15
-            bool Reserved4 : 2;
+            bool ImeOn : 1;             // VK_IME_ON, 0x16
+            bool Reserved4 : 1;
             bool Reserved5 : 1;
             bool Kanji : 1;             // VK_KANJI, 0x19
-            bool Reserved6 : 1;
+            bool ImeOff : 1;            // VK_IME_OFF, 0X1A
             bool Escape : 1;            // VK_ESCAPE, 0x1B
             bool ImeConvert : 1;        // VK_CONVERT, 0x1C
             bool ImeNoConvert : 1;      // VK_NONCONVERT, 0x1D
