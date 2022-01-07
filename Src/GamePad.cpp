@@ -288,7 +288,7 @@ public:
         }
     }
 
-    _Success_(return != false)
+    _Success_(return)
     bool GetDevice(int player, _Outptr_ IGameInputDevice** device) noexcept
     {
         if (!device)
@@ -1649,7 +1649,7 @@ void GamePad::RegisterEvents(HANDLE ctrlChanged) noexcept
     pImpl->mCtrlChanged = (!ctrlChanged) ? INVALID_HANDLE_VALUE : ctrlChanged;
 }
 
-_Success_(return != false)
+_Success_(return)
 bool GamePad::GetDevice(int player, _Outptr_ IGameInputDevice** device) noexcept
 {
     return pImpl->GetDevice(player, device);
