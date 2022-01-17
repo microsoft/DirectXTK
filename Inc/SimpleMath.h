@@ -576,9 +576,11 @@ namespace DirectX
 
             static Matrix CreateFromQuaternion(const Quaternion& quat) noexcept;
 
+            // Rotates about y-axis (yaw), then x-axis (pitch), then z-axis (roll)
             static Matrix CreateFromYawPitchRoll(float yaw, float pitch, float roll) noexcept;
+
+            // Rotates about y-axis (angles.y), then x-axis (angles.x), then z-axis (angles.z)
             static Matrix CreateFromYawPitchRoll(const Vector3& angles) noexcept;
-                // Rotates about y-axis (yaw), then x-axis (pitch), then z-axis (roll)
 
             static Matrix CreateShadow(const Vector3& lightDir, const Plane& plane) noexcept;
 
@@ -715,9 +717,11 @@ namespace DirectX
             // Static functions
             static Quaternion CreateFromAxisAngle(const Vector3& axis, float angle) noexcept;
 
+            // Rotates about y-axis (yaw), then x-axis (pitch), then z-axis (roll)
             static Quaternion CreateFromYawPitchRoll(float yaw, float pitch, float roll) noexcept;
+
+            // Rotates about y-axis (angles.y), then x-axis (angles.x), then z-axis (angles.z)
             static Quaternion CreateFromYawPitchRoll(const Vector3& angles) noexcept;
-                // Rotates about y-axis (yaw), then x-axis (pitch), then z-axis (roll)
 
             static Quaternion CreateFromRotationMatrix(const Matrix& M) noexcept;
 
