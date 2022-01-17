@@ -2360,6 +2360,20 @@ inline float Matrix::Determinant() const noexcept
     return XMVectorGetX(XMMatrixDeterminant(M));
 }
 
+inline Vector3 Matrix::ToEuler() const noexcept
+{
+    float cy = sqrtf(_33 * _33 + _31 * _31);
+    float cx = atan2f(-_32, cy);
+    if (cy > 16.f * FLT_EPSILON)
+    {
+        return Vector3(cx, atan2f(_31, _33), atan2f(_12, _22));
+    }
+    else
+    {
+        return Vector3(cx, 0.f, atan2f(-_21, _11));
+    }
+}
+
 //------------------------------------------------------------------------------
 // Static functions
 //------------------------------------------------------------------------------
@@ -2645,6 +2659,14 @@ inline Matrix Matrix::CreateFromYawPitchRoll(float yaw, float pitch, float roll)
     using namespace DirectX;
     Matrix R;
     XMStoreFloat4x4(&R, XMMatrixRotationRollPitchYaw(pitch, yaw, roll));
+    return R;
+}
+
+inline Matrix Matrix::CreateFromYawPitchRoll(const Vector3& angles) noexcept
+{
+    using namespace DirectX;
+    Matrix R;
+    XMStoreFloat4x4(&R, XMMatrixRotationRollPitchYawFromVector(angles));
     return R;
 }
 
@@ -3093,6 +3115,34 @@ inline float Quaternion::Dot(const Quaternion& q) const noexcept
     return XMVectorGetX(XMQuaternionDot(q1, q2));
 }
 
+inline Vector3 Quaternion::ToEuler() const noexcept
+{
+    float xx = x * x;
+    float yy = y * y;
+    float zz = z * z;
+
+    float m31 = 2.f * x * z + 2.f * y * w;
+    float m32 = 2.f * y * z - 2.f * x * w;
+    float m33 = 1.f - 2.f * xx - 2.f * yy;
+
+    float cy = sqrtf(m33 * m33 + m31 * m31);
+    float cx = atan2f(-m32, cy);
+    if (cy > 16.f * FLT_EPSILON)
+    {
+        float m12 = 2.f * x * y + 2.f * z * w;
+        float m22 = 1.f - 2.f * xx - 2.f * zz;
+
+        return Vector3(cx, atan2f(m31, m33), atan2f(m12, m22));
+    }
+    else
+    {
+        float m11 = 1.f - 2.f * yy - 2.f * zz;
+        float m21 = 2.f * x * y - 2.f * z * w;
+
+        return Vector3(cx, 0.f, atan2f(-m21, m11));
+    }
+}
+
 //------------------------------------------------------------------------------
 // Static functions
 //------------------------------------------------------------------------------
@@ -3112,6 +3162,14 @@ inline Quaternion Quaternion::CreateFromYawPitchRoll(float yaw, float pitch, flo
     using namespace DirectX;
     Quaternion R;
     XMStoreFloat4(&R, XMQuaternionRotationRollPitchYaw(pitch, yaw, roll));
+    return R;
+}
+
+inline Quaternion Quaternion::CreateFromYawPitchRoll(const Vector3& angles) noexcept
+{
+    using namespace DirectX;
+    Quaternion R;
+    XMStoreFloat4(&R, XMQuaternionRotationRollPitchYawFromVector(angles));
     return R;
 }
 
