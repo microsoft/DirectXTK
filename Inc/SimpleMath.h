@@ -542,6 +542,9 @@ namespace DirectX
 
             float Determinant() const noexcept;
 
+            // Computes rotation about y-axis (y), then x-axis (x), then z-axis (z)
+            Vector3 ToEuler() const noexcept;
+
             // Static functions
             static Matrix CreateBillboard(
                 const Vector3& object, const Vector3& cameraPosition, const Vector3& cameraUp, _In_opt_ const Vector3* cameraForward = nullptr) noexcept;
@@ -574,7 +577,11 @@ namespace DirectX
 
             static Matrix CreateFromQuaternion(const Quaternion& quat) noexcept;
 
+            // Rotates about y-axis (yaw), then x-axis (pitch), then z-axis (roll)
             static Matrix CreateFromYawPitchRoll(float yaw, float pitch, float roll) noexcept;
+
+            // Rotates about y-axis (angles.y), then x-axis (angles.x), then z-axis (angles.z)
+            static Matrix CreateFromYawPitchRoll(const Vector3& angles) noexcept;
 
             static Matrix CreateShadow(const Vector3& lightDir, const Plane& plane) noexcept;
 
@@ -706,9 +713,18 @@ namespace DirectX
 
             float Dot(const Quaternion& Q) const noexcept;
 
+            // Computes rotation about y-axis (y), then x-axis (x), then z-axis (z)
+            Vector3 ToEuler() const noexcept;
+
             // Static functions
             static Quaternion CreateFromAxisAngle(const Vector3& axis, float angle) noexcept;
+
+            // Rotates about y-axis (yaw), then x-axis (pitch), then z-axis (roll)
             static Quaternion CreateFromYawPitchRoll(float yaw, float pitch, float roll) noexcept;
+
+            // Rotates about y-axis (angles.y), then x-axis (angles.x), then z-axis (angles.z)
+            static Quaternion CreateFromYawPitchRoll(const Vector3& angles) noexcept;
+
             static Quaternion CreateFromRotationMatrix(const Matrix& M) noexcept;
 
             static void Lerp(const Quaternion& q1, const Quaternion& q2, float t, Quaternion& result) noexcept;
