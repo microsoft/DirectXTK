@@ -542,6 +542,7 @@ namespace DirectX
 
             float Determinant() const noexcept;
 
+            // Computes rotation about y-axis (y), then x-axis (x), then z-axis (z)
             Vector3 ToEuler() const noexcept;
 
             // Static functions
@@ -712,6 +713,7 @@ namespace DirectX
 
             float Dot(const Quaternion& Q) const noexcept;
 
+            // Computes rotation about y-axis (y), then x-axis (x), then z-axis (z)
             Vector3 ToEuler() const noexcept;
 
             // Static functions
