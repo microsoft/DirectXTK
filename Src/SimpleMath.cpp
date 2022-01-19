@@ -63,7 +63,7 @@ using namespace DirectX::SimpleMath;
  *
  ****************************************************************************/
 
-void Quaternion::RotateTowards(const Quaternion& target, float maxAngle, Quaternion& result) const noexcept
+void __cdecl Quaternion::RotateTowards(const Quaternion& target, float maxAngle, Quaternion& result) const noexcept
 {
     XMVECTOR T = XMLoadFloat4(this);
 
@@ -86,7 +86,7 @@ void Quaternion::RotateTowards(const Quaternion& target, float maxAngle, Quatern
     }
 }
 
-void Quaternion::FromToRotation(const Vector3& fromDir, const Vector3& toDir, Quaternion& result) noexcept
+void __cdecl Quaternion::FromToRotation(const Vector3& fromDir, const Vector3& toDir, Quaternion& result) noexcept
 {
     // Melax, "The Shortest Arc Quaternion", Game Programming Gems, Charles River Media (2000).
 
@@ -122,7 +122,7 @@ void Quaternion::FromToRotation(const Vector3& fromDir, const Vector3& toDir, Qu
     }
 }
 
-void Quaternion::LookRotation(const Vector3& forward, const Vector3& up, Quaternion& result) noexcept
+void __cdecl Quaternion::LookRotation(const Vector3& forward, const Vector3& up, Quaternion& result) noexcept
 {
     Quaternion q1;
     FromToRotation(Vector3::Forward, forward, q1);
