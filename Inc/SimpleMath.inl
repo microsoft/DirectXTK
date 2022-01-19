@@ -3297,7 +3297,7 @@ inline float Quaternion::Angle(const Quaternion& q1, const Quaternion& q2) noexc
 
     float w = XMVectorGetW(R);
     R = XMVector3Length(R);
-    return 2.f * atan2f(XMVectorGetW(R), w);
+    return 2.f * atan2f(XMVectorGetX(R), w);
 }
 
 
