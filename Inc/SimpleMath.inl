@@ -3273,6 +3273,19 @@ inline Quaternion Quaternion::Concatenate(const Quaternion& q1, const Quaternion
     return result;
 }
 
+inline Quaternion Quaternion::FromToRotation(const Vector3& fromDir, const Vector3& toDir) noexcept
+{
+    Quaternion result;
+    FromToRotation(fromDir, toDir, result);
+    return result;
+}
+
+inline Quaternion Quaternion::LookRotation(const Vector3& forward, const Vector3& up) noexcept
+{
+    Quaternion result;
+    LookRotation(forward, up, result);
+    return result;
+}
 
 /****************************************************************************
  *
