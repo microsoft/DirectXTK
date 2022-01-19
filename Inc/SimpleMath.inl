@@ -3294,7 +3294,10 @@ inline float Quaternion::Angle(const Quaternion& q1, const Quaternion& q2) noexc
     XMVECTOR Q1 = XMLoadFloat4(&q2);
 
     XMVECTOR R = XMQuaternionMultiply(XMQuaternionConjugate(Q0), Q1);
-    return 2.f * acosf(XMVectorGetW(R));
+
+    float w = XMVectorGetW(R);
+    R = XMVector3Length(R);
+    return 2.f * atan2f(XMVectorGetW(R), w);
 }
 
 
