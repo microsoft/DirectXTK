@@ -122,7 +122,7 @@ void Quaternion::FromToRotation(const Vector3& fromDir, const Vector3& toDir, Qu
     }
 }
 
-inline void Quaternion::LookRotation(const Vector3& forward, const Vector3& up, Quaternion& result) noexcept
+void Quaternion::LookRotation(const Vector3& forward, const Vector3& up, Quaternion& result) noexcept
 {
     Quaternion q1;
     FromToRotation(Vector3::Forward, forward, q1);
@@ -132,6 +132,7 @@ inline void Quaternion::LookRotation(const Vector3& forward, const Vector3& up, 
     {
         // forward and up are co-linear
         result = q1;
+        return;
     }
 
     XMVECTOR U = XMQuaternionMultiply(q1, Vector3::Up);
