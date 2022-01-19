@@ -3287,6 +3287,17 @@ inline Quaternion Quaternion::LookRotation(const Vector3& forward, const Vector3
     return result;
 }
 
+inline float Angle(const Quaternion& q1, const Quaternion& q2) noexcept
+{
+    using namespace DirectX;
+    XMVECTOR Q0 = XMLoadFloat4(&q1);
+    XMVECTOR Q1 = XMLoadFloat4(&q2);
+
+    XMVECTOR R = XMQuaternionMultiply(XMQuaternionConjugate(Q0), Q1);
+    return 2.f * acosf(XMVectorGetW(R));
+}
+
+
 /****************************************************************************
  *
  * Color
