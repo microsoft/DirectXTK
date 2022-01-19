@@ -3287,7 +3287,7 @@ inline Quaternion Quaternion::LookRotation(const Vector3& forward, const Vector3
     return result;
 }
 
-inline float Angle(const Quaternion& q1, const Quaternion& q2) noexcept
+inline float Quaternion::Angle(const Quaternion& q1, const Quaternion& q2) noexcept
 {
     using namespace DirectX;
     XMVECTOR Q0 = XMLoadFloat4(&q1);
