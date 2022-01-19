@@ -63,22 +63,26 @@ using namespace DirectX::SimpleMath;
  *
  ****************************************************************************/
 
-void Quaternion::RotateTowards(const Quaternion& target, float maxAngle) noexcept
+void Quaternion::RotateTowards(const Quaternion& target, float maxAngle, Quaternion& result) const noexcept
 {
     XMVECTOR T = XMLoadFloat4(this);
+
+    // We can use the conjugate here instead of inverse assuming q1 & q2 are normalized.
     XMVECTOR R = XMQuaternionMultiply(XMQuaternionConjugate(T), target);
 
-    float angle = 2.f * acosf(XMVectorGetW(R));
+    float rs = XMVectorGetW(R);
+    XMVECTOR L = XMVector3Length(R);
+    float angle = 2.f * atan2f(XMVectorGetX(L), rs);
     if (angle > maxAngle)
     {
         XMVECTOR delta = XMQuaternionRotationAxis(R, maxAngle);
         XMVECTOR Q = XMQuaternionMultiply(delta, T);
-        XMStoreFloat4(this, Q);
+        XMStoreFloat4(&result, Q);
     }
     else
     {
         // Don't overshoot.
-        *this = target;
+        result = target;
     }
 }
 

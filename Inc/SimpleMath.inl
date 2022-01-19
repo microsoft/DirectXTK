@@ -3115,6 +3115,11 @@ inline float Quaternion::Dot(const Quaternion& q) const noexcept
     return XMVectorGetX(XMQuaternionDot(q1, q2));
 }
 
+inline void Quaternion::RotateTowards(const Quaternion& target, float maxAngle) noexcept
+{
+    RotateTowards(target, maxAngle, *this);
+}
+
 inline Vector3 Quaternion::ToEuler() const noexcept
 {
     float xx = x * x;
@@ -3293,11 +3298,12 @@ inline float Quaternion::Angle(const Quaternion& q1, const Quaternion& q2) noexc
     XMVECTOR Q0 = XMLoadFloat4(&q1);
     XMVECTOR Q1 = XMLoadFloat4(&q2);
 
+    // We can use the conjugate here instead of inverse assuming q1 & q2 are normalized.
     XMVECTOR R = XMQuaternionMultiply(XMQuaternionConjugate(Q0), Q1);
 
-    float w = XMVectorGetW(R);
+    float rs = XMVectorGetW(R);
     R = XMVector3Length(R);
-    return 2.f * atan2f(XMVectorGetX(R), w);
+    return 2.f * atan2f(XMVectorGetX(R), rs);
 }
 
 

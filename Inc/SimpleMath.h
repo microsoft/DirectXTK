@@ -714,6 +714,7 @@ namespace DirectX
             float Dot(const Quaternion& Q) const noexcept;
 
             void RotateTowards(const Quaternion& target, float maxAngle) noexcept;
+            void RotateTowards(const Quaternion& target, float maxAngle, Quaternion& result) const noexcept;
 
             // Computes rotation about y-axis (y), then x-axis (x), then z-axis (z)
             Vector3 ToEuler() const noexcept;
@@ -772,11 +773,11 @@ namespace DirectX
             Color(const XMFLOAT4& c) noexcept { this->x = c.x; this->y = c.y; this->z = c.z; this->w = c.w; }
             explicit Color(const XMVECTORF32& F) noexcept { this->x = F.f[0]; this->y = F.f[1]; this->z = F.f[2]; this->w = F.f[3]; }
 
+            // BGRA Direct3D 9 D3DCOLOR packed color
             explicit Color(const DirectX::PackedVector::XMCOLOR& Packed) noexcept;
-                // BGRA Direct3D 9 D3DCOLOR packed color
 
+            // RGBA XNA Game Studio packed color
             explicit Color(const DirectX::PackedVector::XMUBYTEN4& Packed) noexcept;
-                // RGBA XNA Game Studio packed color
 
             Color(const Color&) = default;
             Color& operator=(const Color&) = default;
