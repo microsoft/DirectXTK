@@ -401,6 +401,7 @@ void Mouse::SetResolution(float scale)
 // {
 //     switch (message)
 //     {
+//     case WM_ACTIVATE:
 //     case WM_ACTIVATEAPP:
 //     case WM_INPUT:
 //     case WM_MOUSEMOVE:
@@ -513,6 +514,7 @@ public:
 
         assert(mWindow != nullptr);
 
+        // Send a WM_HOVER as a way to 'kick' the message processing even if the mouse is still.
         TRACKMOUSEEVENT tme;
         tme.cbSize = sizeof(tme);
         tme.dwFlags = TME_HOVER;
@@ -702,6 +704,7 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 
     switch (message)
     {
+        case WM_ACTIVATE:
         case WM_ACTIVATEAPP:
             if (wParam)
             {
@@ -721,6 +724,11 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
                 int scrollWheel = pImpl->mState.scrollWheelValue;
                 memset(&pImpl->mState, 0, sizeof(State));
                 pImpl->mState.scrollWheelValue = scrollWheel;
+
+                if (pImpl->mMode == MODE_RELATIVE)
+                {
+                    ClipCursor(nullptr);
+                }
 
                 pImpl->mInFocus = false;
             }
