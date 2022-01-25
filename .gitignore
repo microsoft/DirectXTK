@@ -27,3 +27,4 @@ packages
 /Tests
 /wiki
 /out
+/CMakeUserPresets.json

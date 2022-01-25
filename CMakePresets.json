@@ -1,0 +1,149 @@
+﻿{
+  "version": 2,
+  "configurePresets": [
+    {
+      "name": "base",
+      "displayName": "Basic Config",
+      "description": "Basic build using Ninja generator",
+      "generator": "Ninja",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "cacheVariables": { "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}" }
+    },
+
+    {
+      "name": "x64",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "hidden": true
+    },
+    {
+      "name": "x86",
+      "architecture": {
+        "value": "x86",
+        "strategy": "external"
+      },
+      "hidden": true
+    },
+    {
+      "name": "ARM64",
+      "architecture": {
+        "value": "arm64",
+        "strategy": "external"
+      },
+      "hidden": true
+    },
+
+    {
+      "name": "Debug",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" },
+      "hidden": true
+    },
+    {
+      "name": "Release",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "RelWithDebInfo" },
+      "hidden": true
+    },
+
+    {
+      "name": "MSVC",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "cl.exe"
+      },
+      "toolset": {
+        "value": "host=x64",
+        "strategy": "external"
+      }
+    },
+    {
+      "name": "Clang",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "clang-cl.exe"
+      },
+      "toolset": {
+        "value": "host=x64",
+        "strategy": "external"
+      }
+    },
+
+    {
+      "name": "Win7",
+      "cacheVariables": {
+        "BUILD_XAUDIO_WIN10": false,
+        "BUILD_XAUDIO_WIN8": false,
+        "BUILD_XAUDIO_WIN7": false
+      },
+      "hidden": true
+    },
+    {
+      "name": "Win10",
+      "cacheVariables": {
+        "BUILD_XAUDIO_WIN10": true,
+        "BUILD_XAUDIO_WIN8": false,
+        "BUILD_XAUDIO_WIN7": false
+      },
+      "hidden": true
+    },
+    {
+      "name": "VCPKG",
+      "cacheVariables": {
+        "BUILD_XAUDIO_WIN10": false,
+        "BUILD_XAUDIO_WIN8": false,
+        "BUILD_XAUDIO_WIN7": true,
+        "CMAKE_TOOLCHAIN_FILE": {
+          "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+          "type": "FILEPATH"
+        }
+      },
+      "hidden": true
+    },
+
+    { "name": "x64-Debug"    , "description": "MSVC for x64 (Debug) for Windows 8", "inherits": [ "base", "x64", "Debug", "MSVC" ] },
+    { "name": "x64-Release"  , "description": "MSVC for x64 (Release) for Windows 8", "inherits": [ "base", "x64", "Release", "MSVC" ] },
+    { "name": "x86-Debug"    , "description": "MSVC for x86 (Debug) for Windows 8", "inherits": [ "base", "x86", "Debug", "MSVC" ] },
+    { "name": "x86-Release"  , "description": "MSVC for x86 (Release) for Windows 8", "inherits": [ "base", "x86", "Release", "MSVC" ] },
+
+    { "name": "x64-Debug-Win10"    , "description": "MSVC for x64 (Debug) for Windows 10", "inherits": [ "base", "x64", "Debug", "MSVC", "Win10" ] },
+    { "name": "x64-Release-Win10"  , "description": "MSVC for x64 (Release) for Windows 10", "inherits": [ "base", "x64", "Release", "MSVC", "Win10" ] },
+    { "name": "x86-Debug-Win10"    , "description": "MSVC for x86 (Debug) for Windows 10", "inherits": [ "base", "x86", "Debug", "MSVC", "Win10" ] },
+    { "name": "x86-Release-Win10"  , "description": "MSVC for x86 (Release) for Windows 10", "inherits": [ "base", "x86", "Release", "MSVC", "Win10" ] },
+    { "name": "arm64-Debug-Win10"  , "description": "MSVC for ARM64 (Debug) for Windows 10", "inherits": [ "base", "ARM64", "Debug", "MSVC", "Win10" ] },
+    { "name": "arm64-Release-Win10", "description": "MSVC for ARM64 (Release) for Windows 10", "inherits": [ "base", "ARM64", "Release", "MSVC", "Win10" ] },
+
+    { "name": "x64-Debug-VCPKG"  , "description": "MSVC for x64 (Debug) for Windows 7 w/ XAudio2Redist", "inherits": [ "base", "x64", "Debug", "MSVC", "VCPKG" ] },
+    { "name": "x64-Release-VCPKG", "description": "MSVC for x64 (Release) for Windows 7 w/ XAudio2Redist", "inherits": [ "base", "x64", "Release", "MSVC", "VCPKG" ] },
+    { "name": "x86-Debug-VCPKG"  , "description": "MSVC for x86 (Debug) for Windows 7 w/ XAudio2Redist", "inherits": [ "base", "x86", "Debug", "MSVC", "VCPKG" ] },
+    { "name": "x86-Release-VCPKG", "description": "MSVC for x86 (Release) for Windows 7 w/ XAudio2Redist", "inherits": [ "base", "x86", "Release", "MSVC", "VCPKG" ] },
+
+    { "name": "x64-Debug-Win7"  , "description": "MSVC for x64 (Debug) for Windows 7 (no audio)", "inherits": [ "base", "x64", "Debug", "MSVC", "Win7" ] },
+    { "name": "x64-Release-Win7", "description": "MSVC for x64 (Release) for Windows 7 (no audio)", "inherits": [ "base", "x64", "Release", "MSVC", "Win7" ] },
+    { "name": "x86-Debug-Win7"  , "description": "MSVC for x86 (Debug) for Windows 7 (no audio)", "inherits": [ "base", "x86", "Debug", "MSVC", "Win7" ] },
+    { "name": "x86-Release-Win7", "description": "MSVC for x86 (Release) for Windows 7 (no audio)", "inherits": [ "base", "x86", "Release", "MSVC", "Win7" ] },
+
+    { "name": "x64-Debug-Clang"    , "description": "Clang/LLVM for x64 (Debug) for Windows 8", "inherits": [ "base", "x64", "Debug", "Clang" ] },
+    { "name": "x64-Release-Clang"  , "description": "Clang/LLVM for x64 (Release) for Windows 8", "inherits": [ "base", "x64", "Release", "Clang" ] },
+    { "name": "x86-Debug-Clang"    , "description": "Clang/LLVM for x86 (Debug) for Windows 8", "inherits": [ "base", "x86", "Debug", "Clang" ], "environment": { "CXXFLAGS": "-m32" } },
+    { "name": "x86-Release-Clang"  , "description": "Clang/LLVM for x86 (Release) for Windows 8", "inherits": [ "base", "x86", "Release", "Clang" ], "environment": { "CXXFLAGS": "-m32" } },
+
+    { "name": "x64-Debug-Win10-Clang"    , "description": "Clang/LLVM for x64 (Debug) for Windows 10", "inherits": [ "base", "x64", "Debug", "Clang", "Win10" ] },
+    { "name": "x64-Release-Win10-Clang"  , "description": "Clang/LLVM for x64 (Release) for Windows 10", "inherits": [ "base", "x64", "Release", "Clang", "Win10" ] },
+    { "name": "x86-Debug-Win10-Clang"    , "description": "Clang/LLVM for x86 (Debug) for Windows 10", "inherits": [ "base", "x86", "Debug", "Clang", "Win10" ], "environment": { "CXXFLAGS": "-m32" } },
+    { "name": "x86-Release-Win10-Clang"  , "description": "Clang/LLVM for x86 (Release) for Windows 10", "inherits": [ "base", "x86", "Release", "Clang", "Win10" ], "environment": { "CXXFLAGS": "-m32" } },
+    { "name": "arm64-Debug-Win10-Clang"  , "description": "Clang/LLVM for AArch64 (Debug) for Windows 10", "inherits": [ "base", "ARM64", "Debug", "Clang", "Win10" ], "environment": { "CXXFLAGS": "--target=arm64-pc-windows-msvc" } },
+    { "name": "arm64-Release-Win10-Clang", "description": "Clang/LLVM for AArch64 (Release) for Windows 10", "inherits": [ "base", "ARM64", "Release", "Clang", "Win10" ], "environment": { "CXXFLAGS": "--target=arm64-pc-windows-msvc" } },
+
+    { "name": "x64-Debug-VCPKG-Clang"  , "description": "Clang/LLVM for x64 (Debug) for Windows 7 w/ XAudio2Redist", "inherits": [ "base", "x64", "Debug", "Clang", "VCPKG" ] },
+    { "name": "x64-Release-VCPKG-Clang", "description": "Clang/LLVM for x64 (Release) for Windows 7 w/ XAudio2Redist", "inherits": [ "base", "x64", "Release", "Clang", "VCPKG" ] },
+    { "name": "x86-Debug-VCPKG-Clang"  , "description": "Clang/LLVM for x86 (Debug) for Windows 7 w/ XAudio2Redist", "inherits": [ "base", "x86", "Debug", "Clang", "VCPKG" ], "environment": { "CXXFLAGS": "-m32" } },
+    { "name": "x86-Release-VCPKG-Clang", "description": "Clang/LLVM for x86 (Release) for Windows 7 w/ XAudio2Redist", "inherits": [ "base", "x86", "Release", "Clang", "VCPKG" ], "environment": { "CXXFLAGS": "-m32" } },
+
+    { "name": "x64-Debug-Win7-Clang"  , "description": "Clang/LLVM for x64 (Debug) for Windows 7 (no audio)", "inherits": [ "base", "x64", "Debug", "Clang", "Win7" ] },
+    { "name": "x64-Release-Win7-Clang", "description": "Clang/LLVM for x64 (Release) for Windows 7 (no audio)", "inherits": [ "base", "x64", "Release", "Clang", "Win7" ] },
+    { "name": "x86-Debug-Win7-Clang"  , "description": "Clang/LLVM for x86 (Debug) for Windows 7 (no audio)", "inherits": [ "base", "x86", "Debug", "Clang", "Win7" ], "environment": { "CXXFLAGS": "-m32" } },
+    { "name": "x86-Release-Win7-Clang", "description": "Clang/LLVM for x86 (Release) for Windows 7 (no audio)", "inherits": [ "base", "x86", "Release", "Clang", "Win7" ], "environment": { "CXXFLAGS": "-m32" } }
+  ]
+}
