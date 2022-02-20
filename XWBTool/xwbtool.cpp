@@ -1625,7 +1625,12 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     wprintf(L"writing %ls%ls wavebank %ls w/ %zu entries\n", (compact) ? L"compact " : L"", (dwOptions & (1 << OPT_STREAMING)) ? L"streaming" : L"in-memory", szOutputFile, waves.size());
     fflush(stdout);
 
-    ScopedHandle hFile(safe_handle(CreateFileW(szOutputFile, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr)));
+    ScopedHandle hFile(safe_handle(CreateFileW(
+        szOutputFile,
+        GENERIC_WRITE, 0,
+        nullptr,
+        CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL,
+        nullptr)));
     if (!hFile)
     {
         wprintf(L"ERROR: Failed opening output file %ls, %lu\n", szOutputFile, GetLastError());
