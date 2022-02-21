@@ -131,7 +131,7 @@ SpriteFont::Impl::Impl(
     auto textureStride = reader->Read<uint32_t>();
     auto textureRows = reader->Read<uint32_t>();
 
-    uint64_t dataSize = uint64_t(textureStride) * uint64_t(textureRows);
+    const uint64_t dataSize = uint64_t(textureStride) * uint64_t(textureRows);
     if (dataSize > UINT32_MAX)
     {
         DebugTrace("ERROR: SpriteFont provided with an invalid .spritefont file\n");
@@ -251,7 +251,7 @@ void SpriteFont::Impl::ForEachGlyph(_In_z_ wchar_t const* text, TAction action, 
 
     for (; *text; text++)
     {
-        wchar_t character = *text;
+        const wchar_t character = *text;
 
         switch (character)
         {
@@ -274,7 +274,7 @@ void SpriteFont::Impl::ForEachGlyph(_In_z_ wchar_t const* text, TAction action, 
                 if (x < 0)
                     x = 0;
 
-                float advance = float(glyph->Subrect.right) - float(glyph->Subrect.left) + glyph->XAdvance;
+                const float advance = float(glyph->Subrect.right) - float(glyph->Subrect.left) + glyph->XAdvance;
 
                 if (!ignoreWhitespace
                     || !iswspace(character)
@@ -299,7 +299,7 @@ void SpriteFont::Impl::CreateTextureResource(
     uint32_t stride, uint32_t rows,
     const uint8_t* data) noexcept(false)
 {
-    uint64_t sliceBytes = uint64_t(stride) * uint64_t(rows);
+    const uint64_t sliceBytes = uint64_t(stride) * uint64_t(rows);
     if (sliceBytes > UINT32_MAX)
     {
         DebugTrace("ERROR: SpriteFont provided with an invalid .spritefont file\n");
@@ -480,7 +480,7 @@ XMVECTOR XM_CALLCONV SpriteFont::MeasureString(_In_z_ wchar_t const* text, bool 
         {
             UNREFERENCED_PARAMETER(advance);
 
-            auto w = static_cast<float>(glyph->Subrect.right - glyph->Subrect.left);
+            auto const w = static_cast<float>(glyph->Subrect.right - glyph->Subrect.left);
             auto h = static_cast<float>(glyph->Subrect.bottom - glyph->Subrect.top) + glyph->YOffset;
 
             h = iswspace(wchar_t(glyph->Character)) ?
@@ -500,17 +500,17 @@ RECT SpriteFont::MeasureDrawBounds(_In_z_ wchar_t const* text, XMFLOAT2 const& p
 
     pImpl->ForEachGlyph(text, [&](Glyph const* glyph, float x, float y, float advance) noexcept
         {
-            auto isWhitespace = iswspace(wchar_t(glyph->Character));
-            auto w = static_cast<float>(glyph->Subrect.right - glyph->Subrect.left);
-            auto h = isWhitespace ?
+            auto const isWhitespace = iswspace(wchar_t(glyph->Character));
+            auto const w = static_cast<float>(glyph->Subrect.right - glyph->Subrect.left);
+            auto const h = isWhitespace ?
                 pImpl->lineSpacing :
                 static_cast<float>(glyph->Subrect.bottom - glyph->Subrect.top);
 
-            float minX = position.x + x;
-            float minY = position.y + y + (isWhitespace ? 0.0f : glyph->YOffset);
+            const float minX = position.x + x;
+            const float minY = position.y + y + (isWhitespace ? 0.0f : glyph->YOffset);
 
-            float maxX = std::max(minX + advance, minX + w);
-            float maxY = minY + h;
+            const float maxX = std::max(minX + advance, minX + w);
+            const float maxY = minY + h;
 
             if (minX < float(result.left))
                 result.left = long(minX);

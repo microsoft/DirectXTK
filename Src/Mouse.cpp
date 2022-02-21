@@ -554,7 +554,7 @@ public:
             throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "GetCursorInfo");
         }
 
-        bool isvisible = (info.flags & CURSOR_SHOWING) != 0;
+        const bool isvisible = (info.flags & CURSOR_SHOWING) != 0;
         if (isvisible != visible)
         {
             ShowCursor(visible);
@@ -721,7 +721,7 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
             }
             else
             {
-                int scrollWheel = pImpl->mState.scrollWheelValue;
+                const int scrollWheel = pImpl->mState.scrollWheelValue;
                 memset(&pImpl->mState, 0, sizeof(State));
                 pImpl->mState.scrollWheelValue = scrollWheel;
 
@@ -740,7 +740,7 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
                 RAWINPUT raw;
                 UINT rawSize = sizeof(raw);
 
-                UINT resultData = GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, &raw, &rawSize, sizeof(RAWINPUTHEADER));
+                const UINT resultData = GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, &raw, &rawSize, sizeof(RAWINPUTHEADER));
                 if (resultData == UINT(-1))
                 {
                     throw std::runtime_error("GetRawInputData");
@@ -761,8 +761,8 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
                         const int width = GetSystemMetrics(SM_CXVIRTUALSCREEN);
                         const int height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
 
-                        int x = static_cast<int>((float(raw.data.mouse.lLastX) / 65535.0f) * float(width));
-                        int y = static_cast<int>((float(raw.data.mouse.lLastY) / 65535.0f) * float(height));
+                        auto const x = static_cast<int>((float(raw.data.mouse.lLastX) / 65535.0f) * float(width));
+                        auto const y = static_cast<int>((float(raw.data.mouse.lLastY) / 65535.0f) * float(height));
 
                         if (pImpl->mRelativeX == INT32_MAX)
                         {
@@ -851,8 +851,8 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
     if (pImpl->mMode == MODE_ABSOLUTE)
     {
         // All mouse messages provide a new pointer position
-        int xPos = static_cast<short>(LOWORD(lParam)); // GET_X_LPARAM(lParam);
-        int yPos = static_cast<short>(HIWORD(lParam)); // GET_Y_LPARAM(lParam);
+        const int xPos = static_cast<short>(LOWORD(lParam)); // GET_X_LPARAM(lParam);
+        const int yPos = static_cast<short>(HIWORD(lParam)); // GET_Y_LPARAM(lParam);
 
         pImpl->mState.x = pImpl->mLastX = xPos;
         pImpl->mState.y = pImpl->mLastY = yPos;

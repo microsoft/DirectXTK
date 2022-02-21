@@ -40,7 +40,7 @@ namespace
         }
 
         // Scale into 0-1 range.
-        float scaledValue = value / (maxValue - deadZoneSize);
+        const float scaledValue = value / (maxValue - deadZoneSize);
         return std::max(-1.f, std::min(scaledValue, 1.f));
     }
 
@@ -62,10 +62,10 @@ namespace
 
             case GamePad::DEAD_ZONE_CIRCULAR:
             {
-                float dist = sqrtf(x*x + y * y);
-                float wanted = ApplyLinearDeadZone(dist, maxValue, deadZoneSize);
+                const float dist = sqrtf(x*x + y * y);
+                const float wanted = ApplyLinearDeadZone(dist, maxValue, deadZoneSize);
 
-                float scale = (wanted > 0.f) ? (wanted / dist) : 0.f;
+                const float scale = (wanted > 0.f) ? (wanted / dist) : 0.f;
 
                 resultX = std::max(-1.f, std::min(x * scale, 1.f));
                 resultY = std::max(-1.f, std::min(y * scale, 1.f));
@@ -1273,7 +1273,7 @@ public:
         if (player == c_MostRecent)
             player = GetMostRecent();
 
-        ULONGLONG time = GetTickCount64();
+        const ULONGLONG time = GetTickCount64();
 
         if (!ThrottleRetry(player, time))
         {
@@ -1287,7 +1287,7 @@ public:
         #endif
 
             XINPUT_STATE xstate;
-            DWORD result = XInputGetState(DWORD(player), &xstate);
+            const DWORD result = XInputGetState(DWORD(player), &xstate);
             if (result == ERROR_DEVICE_NOT_CONNECTED)
             {
                 ClearSlot(player, time);
@@ -1302,7 +1302,7 @@ public:
                 state.connected = true;
                 state.packet = xstate.dwPacketNumber;
 
-                WORD xbuttons = xstate.Gamepad.wButtons;
+                const WORD xbuttons = xstate.Gamepad.wButtons;
                 state.buttons.a = (xbuttons & XINPUT_GAMEPAD_A) != 0;
                 state.buttons.b = (xbuttons & XINPUT_GAMEPAD_B) != 0;
                 state.buttons.x = (xbuttons & XINPUT_GAMEPAD_X) != 0;
@@ -1350,12 +1350,12 @@ public:
         if (player == c_MostRecent)
             player = GetMostRecent();
 
-        ULONGLONG time = GetTickCount64();
+        const ULONGLONG time = GetTickCount64();
 
         if (!ThrottleRetry(player, time))
         {
             XINPUT_CAPABILITIES xcaps;
-            DWORD result = XInputGetCapabilities(DWORD(player), 0, &xcaps);
+            const DWORD result = XInputGetCapabilities(DWORD(player), 0, &xcaps);
             if (result == ERROR_DEVICE_NOT_CONNECTED)
             {
                 ClearSlot(player, time);
@@ -1407,7 +1407,7 @@ public:
         if (player == c_MostRecent)
             player = GetMostRecent();
 
-        ULONGLONG time = GetTickCount64();
+        const ULONGLONG time = GetTickCount64();
 
         if (ThrottleRetry(player, time))
         {
@@ -1430,7 +1430,7 @@ public:
         XINPUT_VIBRATION xvibration;
         xvibration.wLeftMotorSpeed = WORD(leftMotor * 0xFFFF);
         xvibration.wRightMotorSpeed = WORD(rightMotor * 0xFFFF);
-        DWORD result = XInputSetState(DWORD(player), &xvibration);
+        const DWORD result = XInputSetState(DWORD(player), &xvibration);
         if (result == ERROR_DEVICE_NOT_CONNECTED)
         {
             ClearSlot(player, time);
@@ -1481,7 +1481,7 @@ public:
         // For XInput 9.1.0, we have to emulate the behavior of XInputEnable( TRUE )
         if (mSuspended)
         {
-            ULONGLONG time = GetTickCount64();
+            const ULONGLONG time = GetTickCount64();
 
             for (int j = 0; j < XUSER_MAX_COUNT; ++j)
             {
@@ -1490,7 +1490,7 @@ public:
                     XINPUT_VIBRATION xvibration;
                     xvibration.wLeftMotorSpeed = WORD(mLeftMotor[j] * 0xFFFF);
                     xvibration.wRightMotorSpeed = WORD(mRightMotor[j] * 0xFFFF);
-                    DWORD result = XInputSetState(DWORD(j), &xvibration);
+                    const DWORD result = XInputSetState(DWORD(j), &xvibration);
                     if (result == ERROR_DEVICE_NOT_CONNECTED)
                     {
                         ClearSlot(j, time);
@@ -1534,7 +1534,7 @@ private:
         {
             if (!mConnected[j])
             {
-                LONGLONG delta = LONGLONG(time) - LONGLONG(mLastReadTime[j]);
+                const LONGLONG delta = LONGLONG(time) - LONGLONG(mLastReadTime[j]);
 
                 LONGLONG interval = 1000;
                 if (j != player)

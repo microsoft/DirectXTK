@@ -190,7 +190,7 @@ namespace
                 return 0;
         }
 
-        uint32_t tag = GetFormatTag(wfx);
+        const uint32_t tag = GetFormatTag(wfx);
         switch (tag)
         {
             case WAVE_FORMAT_PCM:
@@ -911,7 +911,7 @@ void AudioEngine::Impl::AllocateVoice(
                     char buff[64] = {};
                     auto wfmt = reinterpret_cast<WAVEFORMATEX*>(buff);
 
-                    uint32_t tag = GetFormatTag(wfx);
+                    const uint32_t tag = GetFormatTag(wfx);
                     switch (tag)
                     {
                         case WAVE_FORMAT_PCM:
@@ -980,7 +980,7 @@ void AudioEngine::Impl::AllocateVoice(
             throw std::runtime_error("Too many instance voices");
         }
 
-        UINT32 vflags = (flags & SoundEffectInstance_NoSetPitch) ? XAUDIO2_VOICE_NOPITCH : 0u;
+        const UINT32 vflags = (flags & SoundEffectInstance_NoSetPitch) ? XAUDIO2_VOICE_NOPITCH : 0u;
 
         HRESULT hr;
         if (flags & SoundEffectInstance_Use3D)

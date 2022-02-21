@@ -211,7 +211,7 @@ void DynamicSoundEffectInstance::Impl::SubmitBuffer(const uint8_t* pAudioData, u
 
 void DynamicSoundEffectInstance::Impl::OnUpdate()
 {
-    DWORD result = WaitForSingleObjectEx(mBufferEvent.get(), 0, FALSE);
+    const DWORD result = WaitForSingleObjectEx(mBufferEvent.get(), 0, FALSE);
     switch (result)
     {
         case WAIT_TIMEOUT:

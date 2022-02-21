@@ -27,7 +27,7 @@ void XM_CALLCONV IEffectMatrices::SetMatrices(FXMMATRIX world, CXMMATRIX view, C
 // Constructor initializes default matrix values.
 EffectMatrices::EffectMatrices() noexcept
 {
-    XMMATRIX id = XMMatrixIdentity();
+    const XMMATRIX id = XMMatrixIdentity();
     world = id;
     view = id;
     projection = id;
@@ -83,11 +83,12 @@ void XM_CALLCONV EffectFog::SetConstants(int& dirtyFlags, FXMMATRIX worldView, X
                 // with a single dot product, using only the Z row of the world+view matrix.
 
                 // _13, _23, _33, _43
-                XMVECTOR worldViewZ = XMVectorMergeXY(XMVectorMergeZW(worldView.r[0], worldView.r[2]),
-                                                      XMVectorMergeZW(worldView.r[1], worldView.r[3]));
+                const XMVECTOR worldViewZ = XMVectorMergeXY(
+                    XMVectorMergeZW(worldView.r[0], worldView.r[2]),
+                    XMVectorMergeZW(worldView.r[1], worldView.r[3]));
 
                 // 0, 0, 0, fogStart
-                XMVECTOR wOffset = XMVectorSwizzle<1, 2, 3, 0>(XMLoadFloat(&start));
+                const XMVECTOR wOffset = XMVectorSwizzle<1, 2, 3, 0>(XMLoadFloat(&start));
 
                 // (worldViewZ + wOffset) / (start - end);
                 fogVectorConstant = XMVectorDivide(XMVectorAdd(worldViewZ, wOffset), XMVectorReplicate(start - end));
@@ -124,7 +125,7 @@ void EffectColor::SetConstants(_Inout_ int& dirtyFlags, _Inout_ XMVECTOR& diffus
 {
     if (dirtyFlags & EffectDirtyFlags::MaterialColor)
     {
-        XMVECTOR alphaVector = XMVectorReplicate(alpha);
+        const XMVECTOR alphaVector = XMVectorReplicate(alpha);
 
         // xyz = diffuse * alpha, w = alpha.
         diffuseColorConstant = XMVectorSelect(alphaVector, XMVectorMultiply(diffuseColor, alphaVector), g_XMSelect1110);
@@ -188,7 +189,7 @@ _Use_decl_annotations_ void EffectLights::SetConstants(int& dirtyFlags, EffectMa
         {
             worldConstant = XMMatrixTranspose(matrices.world);
 
-            XMMATRIX worldInverse = XMMatrixInverse(nullptr, matrices.world);
+            const XMMATRIX worldInverse = XMMatrixInverse(nullptr, matrices.world);
 
             worldInverseTransposeConstant[0] = worldInverse.r[0];
             worldInverseTransposeConstant[1] = worldInverse.r[1];
@@ -234,7 +235,7 @@ _Use_decl_annotations_ void EffectLights::SetConstants(int& dirtyFlags, EffectMa
     if (dirtyFlags & EffectDirtyFlags::MaterialColor)
     {
         XMVECTOR diffuse = diffuseColor;
-        XMVECTOR alphaVector = XMVectorReplicate(alpha);
+        const XMVECTOR alphaVector = XMVectorReplicate(alpha);
 
         if (lightingEnabled)
         {

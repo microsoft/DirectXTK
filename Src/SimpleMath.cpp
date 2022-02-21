@@ -65,18 +65,18 @@ using namespace DirectX::SimpleMath;
 
 void Quaternion::RotateTowards(const Quaternion& target, float maxAngle, Quaternion& result) const noexcept
 {
-    XMVECTOR T = XMLoadFloat4(this);
+    const XMVECTOR T = XMLoadFloat4(this);
 
     // We can use the conjugate here instead of inverse assuming q1 & q2 are normalized.
-    XMVECTOR R = XMQuaternionMultiply(XMQuaternionConjugate(T), target);
+    const XMVECTOR R = XMQuaternionMultiply(XMQuaternionConjugate(T), target);
 
-    float rs = XMVectorGetW(R);
-    XMVECTOR L = XMVector3Length(R);
-    float angle = 2.f * atan2f(XMVectorGetX(L), rs);
+    const float rs = XMVectorGetW(R);
+    const XMVECTOR L = XMVector3Length(R);
+    const float angle = 2.f * atan2f(XMVectorGetX(L), rs);
     if (angle > maxAngle)
     {
-        XMVECTOR delta = XMQuaternionRotationAxis(R, maxAngle);
-        XMVECTOR Q = XMQuaternionMultiply(delta, T);
+        const XMVECTOR delta = XMQuaternionRotationAxis(R, maxAngle);
+        const XMVECTOR Q = XMQuaternionMultiply(delta, T);
         XMStoreFloat4(&result, Q);
     }
     else
@@ -90,10 +90,10 @@ void Quaternion::FromToRotation(const Vector3& fromDir, const Vector3& toDir, Qu
 {
     // Melax, "The Shortest Arc Quaternion", Game Programming Gems, Charles River Media (2000).
 
-    XMVECTOR F = XMVector3Normalize(fromDir);
-    XMVECTOR T = XMVector3Normalize(toDir);
+    const XMVECTOR F = XMVector3Normalize(fromDir);
+    const XMVECTOR T = XMVector3Normalize(toDir);
 
-    float dot = XMVectorGetX(XMVector3Dot(F, T));
+    const float dot = XMVectorGetX(XMVector3Dot(F, T));
     if (dot >= 1.f)
     {
         result = Identity;
@@ -106,15 +106,15 @@ void Quaternion::FromToRotation(const Vector3& fromDir, const Vector3& toDir, Qu
             axis = XMVector3Cross(F, Vector3::Up);
         }
 
-        XMVECTOR Q = XMQuaternionRotationAxis(axis, XM_PI);
+        const XMVECTOR Q = XMQuaternionRotationAxis(axis, XM_PI);
         XMStoreFloat4(&result, Q);
     }
     else
     {
-        XMVECTOR C = XMVector3Cross(F, T);
+        const XMVECTOR C = XMVector3Cross(F, T);
         XMStoreFloat4(&result, C);
 
-        float s = sqrtf((1.f + dot) * 2.f);
+        const float s = sqrtf((1.f + dot) * 2.f);
         result.x /= s;
         result.y /= s;
         result.z /= s;
@@ -127,7 +127,7 @@ void Quaternion::LookRotation(const Vector3& forward, const Vector3& up, Quatern
     Quaternion q1;
     FromToRotation(Vector3::Forward, forward, q1);
 
-    XMVECTOR C = XMVector3Cross(forward, up);
+    const XMVECTOR C = XMVector3Cross(forward, up);
     if (XMVector3NearEqual(XMVector3LengthSq(C), g_XMZero, g_XMEpsilon))
     {
         // forward and up are co-linear
@@ -135,7 +135,7 @@ void Quaternion::LookRotation(const Vector3& forward, const Vector3& up, Quatern
         return;
     }
 
-    XMVECTOR U = XMQuaternionMultiply(q1, Vector3::Up);
+    const XMVECTOR U = XMQuaternionMultiply(q1, Vector3::Up);
 
     Quaternion q2;
     FromToRotation(U, up, q2);
@@ -190,7 +190,7 @@ RECT Viewport::ComputeDisplayArea(DXGI_SCALING scaling, UINT backBufferWidth, UI
             // Note: This scaling option is not supported for legacy Win32 windows swap chains
         {
             assert(backBufferHeight > 0);
-            float aspectRatio = float(backBufferWidth) / float(backBufferHeight);
+            const float aspectRatio = float(backBufferWidth) / float(backBufferHeight);
 
             // Horizontal fill
             float scaledWidth = float(outputWidth);
@@ -202,8 +202,8 @@ RECT Viewport::ComputeDisplayArea(DXGI_SCALING scaling, UINT backBufferWidth, UI
                 scaledHeight = float(outputHeight);
             }
 
-            float offsetX = (float(outputWidth) - scaledWidth) * 0.5f;
-            float offsetY = (float(outputHeight) - scaledHeight) * 0.5f;
+            const float offsetX = (float(outputWidth) - scaledWidth) * 0.5f;
+            const float offsetY = (float(outputHeight) - scaledHeight) * 0.5f;
 
             rct.left = static_cast<LONG>(offsetX);
             rct.top = static_cast<LONG>(offsetY);
@@ -234,8 +234,8 @@ RECT Viewport::ComputeDisplayArea(DXGI_SCALING scaling, UINT backBufferWidth, UI
 
 RECT Viewport::ComputeTitleSafeArea(UINT backBufferWidth, UINT backBufferHeight) noexcept
 {
-    float safew = (float(backBufferWidth) + 19.f) / 20.f;
-    float safeh = (float(backBufferHeight) + 19.f) / 20.f;
+    const float safew = (float(backBufferWidth) + 19.f) / 20.f;
+    const float safeh = (float(backBufferHeight) + 19.f) / 20.f;
 
     RECT rct;
     rct.left = static_cast<LONG>(safew);

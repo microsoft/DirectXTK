@@ -72,7 +72,7 @@ public:
         }
     }
 
-    HRESULT Initialize(_In_ AudioEngine* engine, _In_z_ const wchar_t* wbFileName) noexcept;
+    HRESULT Initialize(_In_ const AudioEngine* engine, _In_z_ const wchar_t* wbFileName) noexcept;
 
     void Play(unsigned int index, float volume, float pitch, float pan);
 
@@ -138,7 +138,7 @@ public:
 
 
 _Use_decl_annotations_
-HRESULT WaveBank::Impl::Initialize(AudioEngine* engine, const wchar_t* wbFileName) noexcept
+HRESULT WaveBank::Impl::Initialize(const AudioEngine* engine, const wchar_t* wbFileName) noexcept
 {
     if (!engine || !wbFileName)
         return E_INVALIDARG;
@@ -197,7 +197,7 @@ void WaveBank::Impl::Play(unsigned int index, float volume, float pitch, float p
 
     if (pitch != 0.f)
     {
-        float fr = XAudio2SemitonesToFrequencyRatio(pitch * 12.f);
+        const float fr = XAudio2SemitonesToFrequencyRatio(pitch * 12.f);
 
         hr = voice->SetFrequencyRatio(fr);
         ThrowIfFailed(hr);
@@ -298,7 +298,7 @@ void WaveBank::Play(unsigned int index, float volume, float pitch, float pan)
 
 void WaveBank::Play(_In_z_ const char* name)
 {
-    unsigned int index = pImpl->mReader.Find(name);
+    const unsigned int index = pImpl->mReader.Find(name);
     if (index == unsigned(-1))
     {
         DebugTrace("WARNING: Name '%hs' not found in wave bank, one-shot not triggered\n", name);
@@ -311,7 +311,7 @@ void WaveBank::Play(_In_z_ const char* name)
 
 void WaveBank::Play(_In_z_ const char* name, float volume, float pitch, float pan)
 {
-    unsigned int index = pImpl->mReader.Find(name);
+    const unsigned int index = pImpl->mReader.Find(name);
     if (index == unsigned(-1))
     {
         DebugTrace("WARNING: Name '%hs' not found in wave bank, one-shot not triggered\n", name);
@@ -354,7 +354,7 @@ std::unique_ptr<SoundEffectInstance> WaveBank::CreateInstance(unsigned int index
 
 std::unique_ptr<SoundEffectInstance> WaveBank::CreateInstance(_In_z_ const char* name, SOUND_EFFECT_INSTANCE_FLAGS flags)
 {
-    unsigned int index = pImpl->mReader.Find(name);
+    const unsigned int index = pImpl->mReader.Find(name);
     if (index == unsigned(-1))
     {
         // We don't throw an exception here as titles often simply ignore missing assets rather than fail
@@ -397,7 +397,7 @@ std::unique_ptr<SoundStreamInstance> WaveBank::CreateStreamInstance(unsigned int
 
 std::unique_ptr<SoundStreamInstance> WaveBank::CreateStreamInstance(_In_z_ const char* name, SOUND_EFFECT_INSTANCE_FLAGS flags)
 {
-    unsigned int index = pImpl->mReader.Find(name);
+    const unsigned int index = pImpl->mReader.Find(name);
     if (index == unsigned(-1))
     {
         // We don't throw an exception here as titles often simply ignore missing assets rather than fail

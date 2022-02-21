@@ -176,7 +176,7 @@ namespace
                         1280
                     };
 
-                    uint32_t dwBlockAlignIndex = wBlockAlign & 0x1F;
+                    const uint32_t dwBlockAlignIndex = wBlockAlign & 0x1F;
                     if (dwBlockAlignIndex < 17)
                         return aWMABlockAlign[dwBlockAlignIndex];
                 }
@@ -198,8 +198,8 @@ namespace
 
                 case TAG_ADPCM:
                 {
-                    uint32_t blockAlign = BlockAlign();
-                    uint32_t samplesPerAdpcmBlock = AdpcmSamplesPerBlock();
+                    const uint32_t blockAlign = BlockAlign();
+                    const uint32_t samplesPerAdpcmBlock = AdpcmSamplesPerBlock();
                     return blockAlign * nSamplesPerSec / samplesPerAdpcmBlock;
                 }
 
@@ -217,7 +217,7 @@ namespace
                     };
                     // bitrate = entry * 8
 
-                    uint32_t dwBytesPerSecIndex = wBlockAlign >> 5;
+                    const uint32_t dwBytesPerSecIndex = wBlockAlign >> 5;
                     if (dwBytesPerSecIndex < 7)
                         return aWMAAvgBytesPerSec[dwBytesPerSecIndex];
                 }
@@ -229,7 +229,7 @@ namespace
 
         DWORD AdpcmSamplesPerBlock() const noexcept
         {
-            uint32_t nBlockAlign = (wBlockAlign + ADPCM_BLOCKALIGN_CONVERSION_OFFSET) * nChannels;
+            const uint32_t nBlockAlign = (wBlockAlign + ADPCM_BLOCKALIGN_CONVERSION_OFFSET) * nChannels;
             return nBlockAlign * 2 / uint32_t(nChannels) - 12;
         }
 
@@ -349,7 +349,7 @@ namespace
                 case MINIWAVEFORMAT::TAG_ADPCM:
                 {
                     uint32_t duration = (length / data.CompactFormat.BlockAlign()) * data.CompactFormat.AdpcmSamplesPerBlock();
-                    uint32_t partial = length % data.CompactFormat.BlockAlign();
+                    const uint32_t partial = length % data.CompactFormat.BlockAlign();
                     if (partial)
                     {
                         if (partial >= (7u * data.CompactFormat.nChannels))
@@ -361,7 +361,7 @@ namespace
                 case MINIWAVEFORMAT::TAG_WMA:
                     if (seekTable)
                     {
-                        uint32_t seekCount = *seekTable;
+                        const uint32_t seekCount = *seekTable;
                         if (seekCount > 0)
                         {
                             return seekTable[seekCount] / uint32_t(2 * data.CompactFormat.nChannels);
@@ -372,7 +372,7 @@ namespace
                 case MINIWAVEFORMAT::TAG_XMA:
                     if (seekTable)
                     {
-                        uint32_t seekCount = *seekTable;
+                        const uint32_t seekCount = *seekTable;
                         if (seekCount > 0)
                         {
                             return seekTable[seekCount];
@@ -394,7 +394,7 @@ namespace
         if (!seekTable || index >= data.dwEntryCount)
             return nullptr;
 
-        uint32_t seekSize = header.Segments[HEADER::SEGIDX_SEEKTABLES].dwLength;
+        const uint32_t seekSize = header.Segments[HEADER::SEGIDX_SEEKTABLES].dwLength;
 
         if ((index * sizeof(uint32_t)) > seekSize)
             return nullptr;
@@ -544,7 +544,7 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
     bool wait = false;
     if (!ReadFile(hFile.get(), &m_header, sizeof(m_header), nullptr, &request))
     {
-        DWORD error = GetLastError();
+        const DWORD error = GetLastError();
         if (error != ERROR_IO_PENDING)
             return HRESULT_FROM_WIN32(error);
         wait = true;
@@ -574,7 +574,7 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
         return E_FAIL;
     }
 
-    bool be = (m_header.dwSignature == HEADER::BE_SIGNATURE);
+    const bool be = (m_header.dwSignature == HEADER::BE_SIGNATURE);
     if (be)
     {
         DebugTrace("INFO: \"%ls\" is a big-endian (Xbox 360) wave bank\n", szFileName);
@@ -594,7 +594,7 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
     wait = false;
     if (!ReadFile(hFile.get(), &m_data, sizeof(m_data), nullptr, &request))
     {
-        DWORD error = GetLastError();
+        const DWORD error = GetLastError();
         if (error != ERROR_IO_PENDING)
             return HRESULT_FROM_WIN32(error);
         wait = true;
@@ -657,14 +657,14 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
         }
     }
 
-    DWORD metadataBytes = m_header.Segments[HEADER::SEGIDX_ENTRYMETADATA].dwLength;
+    const DWORD metadataBytes = m_header.Segments[HEADER::SEGIDX_ENTRYMETADATA].dwLength;
     if (metadataBytes != (m_data.dwEntryCount * m_data.dwEntryMetaDataElementSize))
     {
         return E_FAIL;
     }
 
     // Load names
-    DWORD namesBytes = m_header.Segments[HEADER::SEGIDX_ENTRYNAMES].dwLength;
+    const DWORD namesBytes = m_header.Segments[HEADER::SEGIDX_ENTRYNAMES].dwLength;
     if (namesBytes > 0)
     {
         if (namesBytes >= (m_data.dwEntryNameElementSize * m_data.dwEntryCount))
@@ -680,7 +680,7 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
             wait = false;
             if (!ReadFile(hFile.get(), temp.get(), namesBytes, nullptr, &request))
             {
-                DWORD error = GetLastError();
+                const DWORD error = GetLastError();
                 if (error != ERROR_IO_PENDING)
                     return HRESULT_FROM_WIN32(error);
                 wait = true;
@@ -704,7 +704,7 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
 
             for (uint32_t j = 0; j < m_data.dwEntryCount; ++j)
             {
-                DWORD n = m_data.dwEntryNameElementSize * j;
+                const DWORD n = m_data.dwEntryNameElementSize * j;
 
                 char name[64] = {};
                 strncpy_s(name, &temp[n], sizeof(name));
@@ -733,7 +733,7 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
     wait = false;
     if (!ReadFile(hFile.get(), m_entries.get(), metadataBytes, nullptr, &request))
     {
-        DWORD error = GetLastError();
+        const DWORD error = GetLastError();
         if (error != ERROR_IO_PENDING)
             return HRESULT_FROM_WIN32(error);
         wait = true;
@@ -772,7 +772,7 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
     }
 
     // Load seek tables (XMA2 / xWMA)
-    DWORD seekLen = m_header.Segments[HEADER::SEGIDX_SEEKTABLES].dwLength;
+    const DWORD seekLen = m_header.Segments[HEADER::SEGIDX_SEEKTABLES].dwLength;
     if (seekLen > 0)
     {
         m_seekData.reset(new (std::nothrow) uint8_t[seekLen]);
@@ -786,7 +786,7 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
         wait = false;
         if (!ReadFile(hFile.get(), m_seekData.get(), seekLen, nullptr, &request))
         {
-            DWORD error = GetLastError();
+            const DWORD error = GetLastError();
             if (error != ERROR_IO_PENDING)
                 return HRESULT_FROM_WIN32(error);
             wait = true;
@@ -818,7 +818,7 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
         }
     }
 
-    DWORD waveLen = m_header.Segments[HEADER::SEGIDX_ENTRYWAVEDATA].dwLength;
+    const DWORD waveLen = m_header.Segments[HEADER::SEGIDX_ENTRYWAVEDATA].dwLength;
     if (!waveLen)
     {
         return HRESULT_FROM_WIN32(ERROR_NO_DATA);
@@ -907,7 +907,7 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
 
         if (!ReadFile(hFile.get(), dest, waveLen, nullptr, &m_request))
         {
-            DWORD error = GetLastError();
+            const DWORD error = GetLastError();
             if (error != ERROR_IO_PENDING)
                 return HRESULT_FROM_WIN32(error);
         }
@@ -1232,7 +1232,7 @@ HRESULT WaveBankReader::Impl::GetMetadata(uint32_t index, Metadata& metadata) co
 
     if (m_data.dwFlags & BANKDATA::TYPE_STREAMING)
     {
-        uint64_t offset = uint64_t(metadata.offsetBytes) + uint64_t(m_header.Segments[HEADER::SEGIDX_ENTRYWAVEDATA].dwOffset);
+        const uint64_t offset = uint64_t(metadata.offsetBytes) + uint64_t(m_header.Segments[HEADER::SEGIDX_ENTRYWAVEDATA].dwOffset);
         if (offset > UINT32_MAX)
             return HRESULT_FROM_WIN32(ERROR_ARITHMETIC_OVERFLOW);
 
@@ -1256,9 +1256,9 @@ bool WaveBankReader::Impl::UpdatePrepared() noexcept
 
     #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
         DWORD bytes;
-        BOOL result = GetOverlappedResultEx(m_async, &m_request, &bytes, 0, FALSE);
+        const BOOL result = GetOverlappedResultEx(m_async, &m_request, &bytes, 0, FALSE);
     #else
-        bool result = HasOverlappedIoCompleted(&m_request);
+        const bool result = HasOverlappedIoCompleted(&m_request);
     #endif
         if (result)
         {

@@ -181,7 +181,7 @@ namespace DirectX
             assert(pShaderByteCode != nullptr && pByteCodeLength != nullptr);
             assert(permutation >= 0 && permutation < Traits::ShaderPermutationCount);
             _Analysis_assume_(permutation >= 0 && permutation < Traits::ShaderPermutationCount);
-            int shaderIndex = VertexShaderIndices[permutation];
+            const int shaderIndex = VertexShaderIndices[permutation];
             assert(shaderIndex >= 0 && shaderIndex < Traits::VertexShaderCount);
             _Analysis_assume_(shaderIndex >= 0 && shaderIndex < Traits::VertexShaderCount);
 

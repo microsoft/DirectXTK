@@ -386,7 +386,7 @@ namespace
     {
         HRESULT hr = S_OK;
 
-        UINT width = header->width;
+        const UINT width = header->width;
         UINT height = header->height;
         UINT depth = header->depth;
 
@@ -743,7 +743,7 @@ namespace
                             return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
                         }
 
-                        UINT res = D3D11CalcSubresource(0, item, mipLevels);
+                        const UINT res = D3D11CalcSubresource(0, item, mipLevels);
                         d3dContext->UpdateSubresource(tex, res, nullptr, pSrcBits, static_cast<UINT>(rowBytes), static_cast<UINT>(numBytes));
                         pSrcBits += numBytes;
                     }
@@ -876,7 +876,7 @@ namespace
             }
 #else
             CHAR strFileA[MAX_PATH];
-            int result = WideCharToMultiByte(CP_UTF8,
+            const int result = WideCharToMultiByte(CP_UTF8,
                 WC_NO_BEST_FIT_CHARS,
                 fileName,
                 -1,

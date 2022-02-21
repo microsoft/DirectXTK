@@ -355,7 +355,7 @@ void PBREffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
     {
         constants.world = XMMatrixTranspose(matrices.world);
 
-        XMMATRIX worldInverse = XMMatrixInverse(nullptr, matrices.world);
+        const XMMATRIX worldInverse = XMMatrixInverse(nullptr, matrices.world);
 
         constants.worldInverseTranspose[0] = worldInverse.r[0];
         constants.worldInverseTranspose[1] = worldInverse.r[1];
@@ -368,7 +368,7 @@ void PBREffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
     // Eye position vector.
     if (dirtyFlags & EffectDirtyFlags::EyePosition)
     {
-        XMMATRIX viewInverse = XMMatrixInverse(nullptr, matrices.view);
+        const XMMATRIX viewInverse = XMMatrixInverse(nullptr, matrices.view);
 
         constants.eyePosition = viewInverse.r[3];
 

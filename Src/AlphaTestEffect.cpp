@@ -195,10 +195,10 @@ void AlphaTestEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
     if (dirtyFlags & EffectDirtyFlags::AlphaTest)
     {
         // Convert reference alpha from 8 bit integer to 0-1 float format.
-        auto reference = static_cast<float>(referenceAlpha) / 255.0f;
+        auto const reference = static_cast<float>(referenceAlpha) / 255.0f;
 
         // Comparison tolerance of half the 8 bit integer precision.
-        const float threshold = 0.5f / 255.0f;
+        constexpr float threshold = 0.5f / 255.0f;
 
         // What to do if the alpha comparison passes or fails. Positive accepts the pixel, negative clips it.
         static const XMVECTORF32 selectIfTrue  = { { {  1, -1 } } };

@@ -142,7 +142,7 @@ namespace DirectX
         void __cdecl CreateInputLayout(_In_ ID3D11Device* device, _In_ IEffect* ieffect, _Outptr_ ID3D11InputLayout** iinputLayout) const;
 
         // Change effect used by part and regenerate input layout (be sure to call Model::Modified as well)
-        void __cdecl ModifyEffect(_In_ ID3D11Device* device, _In_ std::shared_ptr<IEffect>& ieffect, bool isalpha = false);
+        void __cdecl ModifyEffect(_In_ ID3D11Device* device, _In_ const std::shared_ptr<IEffect>& ieffect, bool isalpha = false);
     };
 
 

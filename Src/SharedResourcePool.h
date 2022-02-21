@@ -89,9 +89,9 @@ namespace DirectX
 
             ~WrappedData()
             {
-                std::lock_guard<std::mutex> lock(mResourceMap->mutex);
+                const std::lock_guard<std::mutex> lock(mResourceMap->mutex);
 
-                auto pos = mResourceMap->find(mKey);
+                auto const pos = mResourceMap->find(mKey);
 
                 // Check for weak reference expiry before erasing, in case DemandCreate runs on
                 // a different thread at the same time as a previous instance is being destroyed.

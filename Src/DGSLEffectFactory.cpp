@@ -406,7 +406,7 @@ void DGSLEffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceCon
 
         wchar_t ext[_MAX_EXT] = {};
         _wsplitpath_s(name, nullptr, 0, nullptr, 0, nullptr, 0, ext, _MAX_EXT);
-        bool isdds = _wcsicmp(ext, L".dds") == 0;
+        const bool isdds = _wcsicmp(ext, L".dds") == 0;
 
         if (isdds)
         {

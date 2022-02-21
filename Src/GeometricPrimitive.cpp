@@ -32,19 +32,19 @@ public:
         FXMVECTOR color,
         _In_opt_ ID3D11ShaderResourceView* texture,
         bool wireframe,
-        std::function<void()>& setCustomState) const;
+        const std::function<void()>& setCustomState) const;
 
     void Draw(_In_ IEffect* effect,
         _In_ ID3D11InputLayout* inputLayout,
         bool alpha, bool wireframe,
-        std::function<void()>& setCustomState) const;
+        const std::function<void()>& setCustomState) const;
 
     void DrawInstanced(_In_ IEffect* effect,
         _In_ ID3D11InputLayout* inputLayout,
         uint32_t instanceCount,
         bool alpha, bool wireframe,
         uint32_t startInstanceLocation,
-        std::function<void()>& setCustomState) const;
+        const std::function<void()>& setCustomState) const;
 
     void CreateInputLayout(_In_ IEffect* effect, _Outptr_ ID3D11InputLayout** inputLayout) const;
 
@@ -189,7 +189,7 @@ void XM_CALLCONV GeometricPrimitive::Impl::Draw(
     FXMVECTOR color,
     ID3D11ShaderResourceView* texture,
     bool wireframe,
-    std::function<void()>& setCustomState) const
+    const std::function<void()>& setCustomState) const
 {
     assert(mResources);
     auto effect = mResources->effect.get();
@@ -215,7 +215,7 @@ void XM_CALLCONV GeometricPrimitive::Impl::Draw(
 
     effect->SetColorAndAlpha(color);
 
-    float alpha = XMVectorGetW(color);
+    const float alpha = XMVectorGetW(color);
     Draw(effect, inputLayout, (alpha < 1.f), wireframe, setCustomState);
 }
 
@@ -227,7 +227,7 @@ void GeometricPrimitive::Impl::Draw(
     ID3D11InputLayout* inputLayout,
     bool alpha,
     bool wireframe,
-    std::function<void()>& setCustomState) const
+    const std::function<void()>& setCustomState) const
 {
     assert(mResources);
     auto deviceContext = mResources->mDeviceContext.Get();
@@ -246,8 +246,8 @@ void GeometricPrimitive::Impl::Draw(
 
     // Set the vertex and index buffer.
     auto vertexBuffer = mVertexBuffer.Get();
-    UINT vertexStride = sizeof(VertexType);
-    UINT vertexOffset = 0;
+    constexpr UINT vertexStride = sizeof(VertexType);
+    constexpr UINT vertexOffset = 0;
 
     deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexStride, &vertexOffset);
 
@@ -273,7 +273,7 @@ void GeometricPrimitive::Impl::DrawInstanced(
     bool alpha,
     bool wireframe,
     uint32_t startInstanceLocation,
-    std::function<void()>& setCustomState) const
+    const std::function<void()>& setCustomState) const
 {
     assert(mResources);
     auto deviceContext = mResources->mDeviceContext.Get();
@@ -292,8 +292,8 @@ void GeometricPrimitive::Impl::DrawInstanced(
 
     // Set the vertex and index buffer.
     auto vertexBuffer = mVertexBuffer.Get();
-    UINT vertexStride = sizeof(VertexType);
-    UINT vertexOffset = 0;
+    constexpr UINT vertexStride = sizeof(VertexType);
+    constexpr UINT vertexOffset = 0;
 
     deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexStride, &vertexOffset);
 
@@ -821,7 +821,7 @@ std::unique_ptr<GeometricPrimitive> GeometricPrimitive::CreateCustom(
     if (indices.size() % 3)
         throw std::invalid_argument("Expected triangular faces");
 
-    size_t nVerts = vertices.size();
+    const size_t nVerts = vertices.size();
     if (nVerts >= USHRT_MAX)
         throw std::out_of_range("Too many vertices for 16-bit index buffer");
 

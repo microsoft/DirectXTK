@@ -95,12 +95,15 @@ public:
     #endif
     }
 
-    HRESULT Initialize(_In_ AudioEngine* engine, _Inout_ std::unique_ptr<uint8_t[]>& wavData,
-                       _In_ const WAVEFORMATEX* wfx, _In_reads_bytes_(audioBytes) const uint8_t* startAudio, size_t audioBytes,
-                   #ifdef DIRECTX_ENABLE_SEEK_TABLES
-                       _In_reads_opt_(seekCount) const uint32_t* seekTable, size_t seekCount,
-                   #endif
-                       uint32_t loopStart, uint32_t loopLength) noexcept;
+    HRESULT Initialize(
+        _In_ const AudioEngine* engine,
+        _Inout_ std::unique_ptr<uint8_t[]>& wavData,
+        _In_ const WAVEFORMATEX* wfx,
+        _In_reads_bytes_(audioBytes) const uint8_t* startAudio, size_t audioBytes,
+#ifdef DIRECTX_ENABLE_SEEK_TABLES
+        _In_reads_opt_(seekCount) const uint32_t* seekTable, size_t seekCount,
+#endif
+        uint32_t loopStart, uint32_t loopLength) noexcept;
 
     void Play(float volume, float pitch, float pan);
 
@@ -176,12 +179,15 @@ private:
 
 
 _Use_decl_annotations_
-HRESULT SoundEffect::Impl::Initialize(AudioEngine* engine, std::unique_ptr<uint8_t[]>& wavData,
-                                      const WAVEFORMATEX* wfx, const uint8_t* startAudio, size_t audioBytes,
-                                  #ifdef DIRECTX_ENABLE_SEEK_TABLES
-                                      const uint32_t* seekTable, size_t seekCount,
-                                  #endif
-                                      uint32_t loopStart, uint32_t loopLength) noexcept
+HRESULT SoundEffect::Impl::Initialize(
+    const AudioEngine* engine,
+    std::unique_ptr<uint8_t[]>& wavData,
+    const WAVEFORMATEX* wfx,
+    const uint8_t* startAudio, size_t audioBytes,
+#ifdef DIRECTX_ENABLE_SEEK_TABLES
+    const uint32_t* seekTable, size_t seekCount,
+#endif
+    uint32_t loopStart, uint32_t loopLength) noexcept
 {
     if (!engine || !IsValid(wfx) || !startAudio || !audioBytes || !wavData)
         return E_INVALIDARG;
@@ -191,96 +197,96 @@ HRESULT SoundEffect::Impl::Initialize(AudioEngine* engine, std::unique_ptr<uint8
 
     switch (GetFormatTag(wfx))
     {
-        case WAVE_FORMAT_PCM:
-        case WAVE_FORMAT_IEEE_FLOAT:
-        case WAVE_FORMAT_ADPCM:
-            // Take ownership of the buffer
-            mWavData.reset(wavData.release());
+    case WAVE_FORMAT_PCM:
+    case WAVE_FORMAT_IEEE_FLOAT:
+    case WAVE_FORMAT_ADPCM:
+        // Take ownership of the buffer
+        mWavData.reset(wavData.release());
 
-            // WARNING: We assume the wfx and startAudio parameters are pointers into the wavData memory buffer
-            mWaveFormat = wfx;
-            mStartAudio = startAudio;
-            break;
+        // WARNING: We assume the wfx and startAudio parameters are pointers into the wavData memory buffer
+        mWaveFormat = wfx;
+        mStartAudio = startAudio;
+        break;
 
-        #ifdef DIRECTX_ENABLE_XWMA
+#ifdef DIRECTX_ENABLE_XWMA
 
-        case WAVE_FORMAT_WMAUDIO2:
-        case WAVE_FORMAT_WMAUDIO3:
-            if (!seekCount || !seekTable)
-            {
-                DebugTrace("ERROR: SoundEffect format xWMA requires seek table\n");
-                return E_FAIL;
-            }
-
-            if (seekCount > UINT32_MAX)
-                return E_INVALIDARG;
-
-            // Take ownership of the buffer
-            mWavData.reset(wavData.release());
-
-            // WARNING: We assume the wfx, startAudio, and mSeekTable parameters are pointers into the wavData memory buffer
-            mWaveFormat = wfx;
-            mStartAudio = startAudio;
-            mSeekCount = static_cast<uint32_t>(seekCount);
-            mSeekTable = seekTable;
-            break;
-
-        #endif // xWMA
-
-        #ifdef DIRECTX_ENABLE_XMA2
-
-        case WAVE_FORMAT_XMA2:
-            if (!seekCount || !seekTable)
-            {
-                DebugTrace("ERROR: SoundEffect format XMA2 requires seek table\n");
-                return E_FAIL;
-            }
-
-            if (seekCount > UINT32_MAX)
-                return E_INVALIDARG;
-
-            {
-                HRESULT hr = ApuAlloc(&mXMAMemory, nullptr,
-                                      static_cast<UINT32>(audioBytes), SHAPE_XMA_INPUT_BUFFER_ALIGNMENT);
-                if (FAILED(hr))
-                {
-                    DebugTrace("ERROR: ApuAlloc failed. Did you allocate a large enough heap with ApuCreateHeap for all your XMA wave data?\n");
-                    return hr;
-                }
-            }
-
-            memcpy(mXMAMemory, startAudio, audioBytes);
-            mStartAudio = reinterpret_cast<const uint8_t*>(mXMAMemory);
-
-            mWavData.reset(new (std::nothrow) uint8_t[sizeof(XMA2WAVEFORMATEX) + (seekCount * sizeof(uint32_t))]);
-            if (!mWavData)
-                return E_OUTOFMEMORY;
-
-            memcpy(mWavData.get(), wfx, sizeof(XMA2WAVEFORMATEX));
-            mWaveFormat = reinterpret_cast<WAVEFORMATEX*>(mWavData.get());
-
-            // XMA seek table is Big-Endian
-            {
-                auto dest = reinterpret_cast<uint32_t*>(mWavData.get() + sizeof(XMA2WAVEFORMATEX));
-                for (size_t k = 0; k < seekCount; ++k)
-                {
-                    dest[k] = _byteswap_ulong(seekTable[k]);
-                }
-            }
-
-            mSeekCount = static_cast<uint32_t>(seekCount);
-            mSeekTable = reinterpret_cast<const uint32_t*>(mWavData.get() + sizeof(XMA2WAVEFORMATEX));
-
-            wavData.reset();
-            break;
-
-        #endif // XMA2
-
-        default:
+    case WAVE_FORMAT_WMAUDIO2:
+    case WAVE_FORMAT_WMAUDIO3:
+        if (!seekCount || !seekTable)
         {
-            DebugTrace("ERROR: SoundEffect encountered an unsupported format tag (%u)\n", wfx->wFormatTag);
-            return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
+            DebugTrace("ERROR: SoundEffect format xWMA requires seek table\n");
+            return E_FAIL;
         }
+
+        if (seekCount > UINT32_MAX)
+            return E_INVALIDARG;
+
+        // Take ownership of the buffer
+        mWavData.reset(wavData.release());
+
+        // WARNING: We assume the wfx, startAudio, and mSeekTable parameters are pointers into the wavData memory buffer
+        mWaveFormat = wfx;
+        mStartAudio = startAudio;
+        mSeekCount = static_cast<uint32_t>(seekCount);
+        mSeekTable = seekTable;
+        break;
+
+#endif // xWMA
+
+#ifdef DIRECTX_ENABLE_XMA2
+
+    case WAVE_FORMAT_XMA2:
+        if (!seekCount || !seekTable)
+        {
+            DebugTrace("ERROR: SoundEffect format XMA2 requires seek table\n");
+            return E_FAIL;
+        }
+
+        if (seekCount > UINT32_MAX)
+            return E_INVALIDARG;
+
+        {
+            HRESULT hr = ApuAlloc(&mXMAMemory, nullptr,
+                static_cast<UINT32>(audioBytes), SHAPE_XMA_INPUT_BUFFER_ALIGNMENT);
+            if (FAILED(hr))
+            {
+                DebugTrace("ERROR: ApuAlloc failed. Did you allocate a large enough heap with ApuCreateHeap for all your XMA wave data?\n");
+                return hr;
+            }
+        }
+
+        memcpy(mXMAMemory, startAudio, audioBytes);
+        mStartAudio = reinterpret_cast<const uint8_t*>(mXMAMemory);
+
+        mWavData.reset(new (std::nothrow) uint8_t[sizeof(XMA2WAVEFORMATEX) + (seekCount * sizeof(uint32_t))]);
+        if (!mWavData)
+            return E_OUTOFMEMORY;
+
+        memcpy(mWavData.get(), wfx, sizeof(XMA2WAVEFORMATEX));
+        mWaveFormat = reinterpret_cast<WAVEFORMATEX*>(mWavData.get());
+
+        // XMA seek table is Big-Endian
+        {
+            auto dest = reinterpret_cast<uint32_t*>(mWavData.get() + sizeof(XMA2WAVEFORMATEX));
+            for (size_t k = 0; k < seekCount; ++k)
+            {
+                dest[k] = _byteswap_ulong(seekTable[k]);
+            }
+        }
+
+        mSeekCount = static_cast<uint32_t>(seekCount);
+        mSeekTable = reinterpret_cast<const uint32_t*>(mWavData.get() + sizeof(XMA2WAVEFORMATEX));
+
+        wavData.reset();
+        break;
+
+#endif // XMA2
+
+    default:
+    {
+        DebugTrace("ERROR: SoundEffect encountered an unsupported format tag (%u)\n", wfx->wFormatTag);
+        return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
+    }
     }
 
     mAudioBytes = static_cast<uint32_t>(audioBytes);
@@ -311,7 +317,7 @@ void SoundEffect::Impl::Play(float volume, float pitch, float pan)
 
     if (pitch != 0.f)
     {
-        float fr = XAudio2SemitonesToFrequencyRatio(pitch * 12.f);
+        const float fr = XAudio2SemitonesToFrequencyRatio(pitch * 12.f);
 
         HRESULT hr = voice->SetFrequencyRatio(fr);
         ThrowIfFailed(hr);
@@ -337,7 +343,7 @@ void SoundEffect::Impl::Play(float volume, float pitch, float pan)
     buffer.pContext = this;
 
     #ifdef DIRECTX_ENABLE_XWMA
-    uint32_t tag = GetFormatTag(mWaveFormat);
+    const uint32_t tag = GetFormatTag(mWaveFormat);
     if (tag == WAVE_FORMAT_WMAUDIO2 || tag == WAVE_FORMAT_WMAUDIO3)
     {
         XAUDIO2_BUFFER_WMA wmaBuffer = {};
@@ -517,7 +523,7 @@ size_t SoundEffect::GetSampleDuration() const noexcept
             auto adpcmFmt = reinterpret_cast<const ADPCMWAVEFORMAT*>(pImpl->mWaveFormat);
 
             uint64_t duration = uint64_t(pImpl->mAudioBytes / adpcmFmt->wfx.nBlockAlign) * adpcmFmt->wSamplesPerBlock;
-            unsigned int partial = pImpl->mAudioBytes % adpcmFmt->wfx.nBlockAlign;
+            const unsigned int partial = pImpl->mAudioBytes % adpcmFmt->wfx.nBlockAlign;
             if (partial)
             {
                 if (partial >= (7u * adpcmFmt->wfx.nChannels))
@@ -562,7 +568,7 @@ size_t SoundEffect::GetSampleDurationMS() const noexcept
     if (!pImpl->mWaveFormat || !pImpl->mWaveFormat->nSamplesPerSec)
         return 0;
 
-    uint64_t samples = GetSampleDuration();
+    const uint64_t samples = GetSampleDuration();
     return static_cast<size_t>((samples * 1000) / pImpl->mWaveFormat->nSamplesPerSec);
 }
 
@@ -585,7 +591,7 @@ bool SoundEffect::FillSubmitBuffer(_Out_ XAUDIO2_BUFFER& buffer, _Out_ XAUDIO2_B
     buffer.LoopBegin = pImpl->mLoopStart;
     buffer.LoopLength = pImpl->mLoopLength;
 
-    uint32_t tag = GetFormatTag(pImpl->mWaveFormat);
+    const uint32_t tag = GetFormatTag(pImpl->mWaveFormat);
     if (tag == WAVE_FORMAT_WMAUDIO2 || tag == WAVE_FORMAT_WMAUDIO3)
     {
         wmaBuffer.PacketCount = pImpl->mSeekCount;

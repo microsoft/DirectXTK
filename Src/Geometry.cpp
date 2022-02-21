@@ -100,16 +100,16 @@ void DirectX::ComputeBox(VertexCollection& vertices, IndexCollection& indices, c
     // Create each face in turn.
     for (int i = 0; i < FaceCount; i++)
     {
-        XMVECTOR normal = faceNormals[i];
+        const XMVECTOR normal = faceNormals[i];
 
         // Get two vectors perpendicular both to the face normal and to each other.
-        XMVECTOR basis = (i >= 4) ? g_XMIdentityR2 : g_XMIdentityR1;
+        const XMVECTOR basis = (i >= 4) ? g_XMIdentityR2 : g_XMIdentityR1;
 
-        XMVECTOR side1 = XMVector3Cross(normal, basis);
-        XMVECTOR side2 = XMVector3Cross(normal, side1);
+        const XMVECTOR side1 = XMVector3Cross(normal, basis);
+        const XMVECTOR side2 = XMVector3Cross(normal, side1);
 
         // Six indices (two triangles) per face.
-        size_t vbase = vertices.size();
+        const size_t vbase = vertices.size();
         index_push_back(indices, vbase + 0);
         index_push_back(indices, vbase + 1);
         index_push_back(indices, vbase + 2);
@@ -152,17 +152,17 @@ void DirectX::ComputeSphere(VertexCollection& vertices, IndexCollection& indices
     if (tessellation < 3)
         throw std::invalid_argument("tesselation parameter must be at least 3");
 
-    size_t verticalSegments = tessellation;
-    size_t horizontalSegments = tessellation * 2;
+    const size_t verticalSegments = tessellation;
+    const size_t horizontalSegments = tessellation * 2;
 
-    float radius = diameter / 2;
+    const float radius = diameter / 2;
 
     // Create rings of vertices at progressively higher latitudes.
     for (size_t i = 0; i <= verticalSegments; i++)
     {
-        float v = 1 - float(i) / float(verticalSegments);
+        const float v = 1 - float(i) / float(verticalSegments);
 
-        float latitude = (float(i) * XM_PI / float(verticalSegments)) - XM_PIDIV2;
+        const float latitude = (float(i) * XM_PI / float(verticalSegments)) - XM_PIDIV2;
         float dy, dxz;
 
         XMScalarSinCos(&dy, &dxz, latitude);
@@ -170,9 +170,9 @@ void DirectX::ComputeSphere(VertexCollection& vertices, IndexCollection& indices
         // Create a single ring of vertices at this latitude.
         for (size_t j = 0; j <= horizontalSegments; j++)
         {
-            float u = float(j) / float(horizontalSegments);
+            const float u = float(j) / float(horizontalSegments);
 
-            float longitude = float(j) * XM_2PI / float(horizontalSegments);
+            const float longitude = float(j) * XM_2PI / float(horizontalSegments);
             float dx, dz;
 
             XMScalarSinCos(&dx, &dz, longitude);
@@ -180,22 +180,22 @@ void DirectX::ComputeSphere(VertexCollection& vertices, IndexCollection& indices
             dx *= dxz;
             dz *= dxz;
 
-            XMVECTOR normal = XMVectorSet(dx, dy, dz, 0);
-            XMVECTOR textureCoordinate = XMVectorSet(u, v, 0, 0);
+            const XMVECTOR normal = XMVectorSet(dx, dy, dz, 0);
+            const XMVECTOR textureCoordinate = XMVectorSet(u, v, 0, 0);
 
             vertices.push_back(VertexPositionNormalTexture(XMVectorScale(normal, radius), normal, textureCoordinate));
         }
     }
 
     // Fill the index buffer with triangles joining each pair of latitude rings.
-    size_t stride = horizontalSegments + 1;
+    const size_t stride = horizontalSegments + 1;
 
     for (size_t i = 0; i < verticalSegments; i++)
     {
         for (size_t j = 0; j <= horizontalSegments; j++)
         {
-            size_t nextI = i + 1;
-            size_t nextJ = (j + 1) % stride;
+            const size_t nextI = i + 1;
+            const size_t nextJ = (j + 1) % stride;
 
             index_push_back(indices, i * stride + j);
             index_push_back(indices, nextI * stride + j);
@@ -274,8 +274,8 @@ void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indi
     // We know these values by looking at the above index list for the octahedron. Despite the subdivisions that are
     // about to go on, these values aren't ever going to change because the vertices don't move around in the array.
     // We'll need these values later on to fix the singularities that show up at the poles.
-    const uint16_t northPoleIndex = 0;
-    const uint16_t southPoleIndex = 5;
+    constexpr uint16_t northPoleIndex = 0;
+    constexpr uint16_t southPoleIndex = 5;
 
     for (size_t iSubdivision = 0; iSubdivision < tessellation; ++iSubdivision)
     {
@@ -294,9 +294,9 @@ void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indi
             // The winding order of the triangles we output are the same as the winding order of the inputs.
 
             // Indices of the vertices making up this triangle
-            uint16_t iv0 = indices[iTriangle * 3 + 0];
-            uint16_t iv1 = indices[iTriangle * 3 + 1];
-            uint16_t iv2 = indices[iTriangle * 3 + 2];
+            const uint16_t iv0 = indices[iTriangle * 3 + 0];
+            const uint16_t iv1 = indices[iTriangle * 3 + 1];
+            const uint16_t iv2 = indices[iTriangle * 3 + 2];
 
             // Get the new vertices
             XMFLOAT3 v01; // vertex on the midpoint of v0 and v1
@@ -307,7 +307,7 @@ void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indi
             uint16_t iv20; // index of v20
 
             // Function that, when given the index of two vertices, creates a new vertex at the midpoint of those vertices.
-            auto divideEdge = [&](uint16_t i0, uint16_t i1, XMFLOAT3& outVertex, uint16_t& outIndex)
+            auto const divideEdge = [&](uint16_t i0, uint16_t i1, XMFLOAT3& outVertex, uint16_t& outIndex)
             {
                 const UndirectedEdge edge = makeUndirectedEdge(i0, i1);
 
@@ -372,20 +372,20 @@ void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indi
     vertices.reserve(vertexPositions.size());
     for (const auto& it : vertexPositions)
     {
-        auto normal = XMVector3Normalize(XMLoadFloat3(&it));
-        auto pos = XMVectorScale(normal, radius);
+        auto const normal = XMVector3Normalize(XMLoadFloat3(&it));
+        auto const pos = XMVectorScale(normal, radius);
 
         XMFLOAT3 normalFloat3;
         XMStoreFloat3(&normalFloat3, normal);
 
         // calculate texture coordinates for this vertex
-        float longitude = atan2f(normalFloat3.x, -normalFloat3.z);
-        float latitude = acosf(normalFloat3.y);
+        const float longitude = atan2f(normalFloat3.x, -normalFloat3.z);
+        const float latitude = acosf(normalFloat3.y);
 
-        float u = longitude / XM_2PI + 0.5f;
-        float v = latitude / XM_PI;
+        const float u = longitude / XM_2PI + 0.5f;
+        const float v = latitude / XM_PI;
 
-        auto texcoord = XMVectorSet(1.0f - u, v, 0.0f, 0.0f);
+        auto const texcoord = XMVectorSet(1.0f - u, v, 0.0f, 0.0f);
         vertices.push_back(VertexPositionNormalTexture(pos, normal, texcoord));
     }
 
@@ -399,11 +399,11 @@ void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indi
     // completed sphere. If you imagine the vertices along that edge, they circumscribe a semicircular arc starting at
     // y=1 and ending at y=-1, and sweeping across the range of z=0 to z=1. x stays zero. It's along this edge that we
     // need to duplicate our vertices - and provide the correct texture coordinates.
-    size_t preFixupVertexCount = vertices.size();
+    const size_t preFixupVertexCount = vertices.size();
     for (size_t i = 0; i < preFixupVertexCount; ++i)
     {
         // This vertex is on the prime meridian if position.x and texcoord.u are both zero (allowing for small epsilon).
-        bool isOnPrimeMeridian = XMVector2NearEqual(
+        const bool isOnPrimeMeridian = XMVector2NearEqual(
             XMVectorSet(vertices[i].position.x, vertices[i].textureCoordinate.x, 0.0f, 0.0f),
             XMVectorZero(),
             XMVectorSplatEpsilon());
@@ -468,7 +468,7 @@ void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indi
     // onto a single point. In general there's no real way to do that right. But to match the behavior of non-geodesic
     // spheres, we need to duplicate the pole vertex for every triangle that uses it. This will introduce seams near the
     // poles, but reduce stretching.
-    auto fixPole = [&](size_t poleIndex)
+    auto const fixPole = [&](size_t poleIndex)
     {
         const auto& poleVertex = vertices[poleIndex];
         bool overwrittenPoleVertex = false; // overwriting the original pole vertex saves us one vertex
@@ -544,23 +544,23 @@ namespace
     // Helper computes a point on a unit circle, aligned to the x/z plane and centered on the origin.
     inline XMVECTOR GetCircleVector(size_t i, size_t tessellation) noexcept
     {
-        float angle = float(i) * XM_2PI / float(tessellation);
+        const float angle = float(i) * XM_2PI / float(tessellation);
         float dx, dz;
 
         XMScalarSinCos(&dx, &dz, angle);
 
-        XMVECTORF32 v = { { { dx, 0, dz, 0 } } };
+        const XMVECTORF32 v = { { { dx, 0, dz, 0 } } };
         return v;
     }
 
     inline XMVECTOR GetCircleTangent(size_t i, size_t tessellation) noexcept
     {
-        float angle = (float(i) * XM_2PI / float(tessellation)) + XM_PIDIV2;
+        const float angle = (float(i) * XM_2PI / float(tessellation)) + XM_PIDIV2;
         float dx, dz;
 
         XMScalarSinCos(&dx, &dz, angle);
 
-        XMVECTORF32 v = { { { dx, 0, dz, 0 } } };
+        const XMVECTORF32 v = { { { dx, 0, dz, 0 } } };
         return v;
     }
 
@@ -579,7 +579,7 @@ namespace
                 std::swap(i1, i2);
             }
 
-            size_t vbase = vertices.size();
+            const size_t vbase = vertices.size();
             index_push_back(indices, vbase);
             index_push_back(indices, vbase + i1);
             index_push_back(indices, vbase + i2);
@@ -598,11 +598,11 @@ namespace
         // Create cap vertices.
         for (size_t i = 0; i < tessellation; i++)
         {
-            XMVECTOR circleVector = GetCircleVector(i, tessellation);
+            const XMVECTOR circleVector = GetCircleVector(i, tessellation);
 
-            XMVECTOR position = XMVectorAdd(XMVectorScale(circleVector, radius), XMVectorScale(normal, height));
+            const XMVECTOR position = XMVectorAdd(XMVectorScale(circleVector, radius), XMVectorScale(normal, height));
 
-            XMVECTOR textureCoordinate = XMVectorMultiplyAdd(XMVectorSwizzle<0, 2, 3, 3>(circleVector), textureScale, g_XMOneHalf);
+            const XMVECTOR textureCoordinate = XMVectorMultiplyAdd(XMVectorSwizzle<0, 2, 3, 3>(circleVector), textureScale, g_XMOneHalf);
 
             vertices.push_back(VertexPositionNormalTexture(position, normal, textureCoordinate));
         }
@@ -619,21 +619,21 @@ void DirectX::ComputeCylinder(VertexCollection& vertices, IndexCollection& indic
 
     height /= 2;
 
-    XMVECTOR topOffset = XMVectorScale(g_XMIdentityR1, height);
+    const XMVECTOR topOffset = XMVectorScale(g_XMIdentityR1, height);
 
-    float radius = diameter / 2;
-    size_t stride = tessellation + 1;
+    const float radius = diameter / 2;
+    const size_t stride = tessellation + 1;
 
     // Create a ring of triangles around the outside of the cylinder.
     for (size_t i = 0; i <= tessellation; i++)
     {
-        XMVECTOR normal = GetCircleVector(i, tessellation);
+        const XMVECTOR normal = GetCircleVector(i, tessellation);
 
-        XMVECTOR sideOffset = XMVectorScale(normal, radius);
+        const XMVECTOR sideOffset = XMVectorScale(normal, radius);
 
-        float u = float(i) / float(tessellation);
+        const float u = float(i) / float(tessellation);
 
-        XMVECTOR textureCoordinate = XMLoadFloat(&u);
+        const XMVECTOR textureCoordinate = XMLoadFloat(&u);
 
         vertices.push_back(VertexPositionNormalTexture(XMVectorAdd(sideOffset, topOffset), normal, textureCoordinate));
         vertices.push_back(VertexPositionNormalTexture(XMVectorSubtract(sideOffset, topOffset), normal, XMVectorAdd(textureCoordinate, g_XMIdentityR1)));
@@ -668,23 +668,23 @@ void DirectX::ComputeCone(VertexCollection& vertices, IndexCollection& indices, 
 
     height /= 2;
 
-    XMVECTOR topOffset = XMVectorScale(g_XMIdentityR1, height);
+    const XMVECTOR topOffset = XMVectorScale(g_XMIdentityR1, height);
 
-    float radius = diameter / 2;
-    size_t stride = tessellation + 1;
+    const float radius = diameter / 2;
+    const size_t stride = tessellation + 1;
 
     // Create a ring of triangles around the outside of the cone.
     for (size_t i = 0; i <= tessellation; i++)
     {
-        XMVECTOR circlevec = GetCircleVector(i, tessellation);
+        const XMVECTOR circlevec = GetCircleVector(i, tessellation);
 
-        XMVECTOR sideOffset = XMVectorScale(circlevec, radius);
+        const XMVECTOR sideOffset = XMVectorScale(circlevec, radius);
 
-        float u = float(i) / float(tessellation);
+        const float u = float(i) / float(tessellation);
 
-        XMVECTOR textureCoordinate = XMLoadFloat(&u);
+        const XMVECTOR textureCoordinate = XMLoadFloat(&u);
 
-        XMVECTOR pt = XMVectorSubtract(sideOffset, topOffset);
+        const XMVECTOR pt = XMVectorSubtract(sideOffset, topOffset);
 
         XMVECTOR normal = XMVector3Cross(
             GetCircleTangent(i, tessellation),
@@ -720,25 +720,25 @@ void DirectX::ComputeTorus(VertexCollection& vertices, IndexCollection& indices,
     if (tessellation < 3)
         throw std::invalid_argument("tesselation parameter must be at least 3");
 
-    size_t stride = tessellation + 1;
+    const size_t stride = tessellation + 1;
 
     // First we loop around the main ring of the torus.
     for (size_t i = 0; i <= tessellation; i++)
     {
-        float u = float(i) / float(tessellation);
+        const float u = float(i) / float(tessellation);
 
-        float outerAngle = float(i) * XM_2PI / float(tessellation) - XM_PIDIV2;
+        const float outerAngle = float(i) * XM_2PI / float(tessellation) - XM_PIDIV2;
 
         // Create a transform matrix that will align geometry to
         // slice perpendicularly though the current ring position.
-        XMMATRIX transform = XMMatrixTranslation(diameter / 2, 0, 0) * XMMatrixRotationY(outerAngle);
+        const XMMATRIX transform = XMMatrixTranslation(diameter / 2, 0, 0) * XMMatrixRotationY(outerAngle);
 
         // Now we loop along the other axis, around the side of the tube.
         for (size_t j = 0; j <= tessellation; j++)
         {
-            float v = 1 - float(j) / float(tessellation);
+            const float v = 1 - float(j) / float(tessellation);
 
-            float innerAngle = float(j) * XM_2PI / float(tessellation) + XM_PI;
+            const float innerAngle = float(j) * XM_2PI / float(tessellation) + XM_PI;
             float dx, dy;
 
             XMScalarSinCos(&dy, &dx, innerAngle);
@@ -746,7 +746,7 @@ void DirectX::ComputeTorus(VertexCollection& vertices, IndexCollection& indices,
             // Create a vertex.
             XMVECTOR normal = XMVectorSet(dx, dy, 0, 0);
             XMVECTOR position = XMVectorScale(normal, thickness / 2);
-            XMVECTOR textureCoordinate = XMVectorSet(u, v, 0, 0);
+            const XMVECTOR textureCoordinate = XMVectorSet(u, v, 0, 0);
 
             position = XMVector3Transform(position, transform);
             normal = XMVector3TransformNormal(normal, transform);
@@ -754,8 +754,8 @@ void DirectX::ComputeTorus(VertexCollection& vertices, IndexCollection& indices,
             vertices.push_back(VertexPositionNormalTexture(position, normal, textureCoordinate));
 
             // And create indices for two triangles.
-            size_t nextI = (i + 1) % stride;
-            size_t nextJ = (j + 1) % stride;
+            const size_t nextI = (i + 1) % stride;
+            const size_t nextJ = (j + 1) % stride;
 
             index_push_back(indices, i * stride + j);
             index_push_back(indices, i * stride + nextJ);
@@ -799,16 +799,16 @@ void DirectX::ComputeTetrahedron(VertexCollection& vertices, IndexCollection& in
 
     for (size_t j = 0; j < std::size(faces); j += 3)
     {
-        uint32_t v0 = faces[j];
-        uint32_t v1 = faces[j + 1];
-        uint32_t v2 = faces[j + 2];
+        const uint32_t v0 = faces[j];
+        const uint32_t v1 = faces[j + 1];
+        const uint32_t v2 = faces[j + 2];
 
         XMVECTOR normal = XMVector3Cross(
             XMVectorSubtract(verts[v1].v, verts[v0].v),
             XMVectorSubtract(verts[v2].v, verts[v0].v));
         normal = XMVector3Normalize(normal);
 
-        size_t base = vertices.size();
+        const size_t base = vertices.size();
         index_push_back(indices, base);
         index_push_back(indices, base + 1);
         index_push_back(indices, base + 2);
@@ -865,16 +865,16 @@ void DirectX::ComputeOctahedron(VertexCollection& vertices, IndexCollection& ind
 
     for (size_t j = 0; j < std::size(faces); j += 3)
     {
-        uint32_t v0 = faces[j];
-        uint32_t v1 = faces[j + 1];
-        uint32_t v2 = faces[j + 2];
+        const uint32_t v0 = faces[j];
+        const uint32_t v1 = faces[j + 1];
+        const uint32_t v2 = faces[j + 2];
 
         XMVECTOR normal = XMVector3Cross(
             XMVectorSubtract(verts[v1].v, verts[v0].v),
             XMVectorSubtract(verts[v2].v, verts[v0].v));
         normal = XMVector3Normalize(normal);
 
-        size_t base = vertices.size();
+        const size_t base = vertices.size();
         index_push_back(indices, base);
         index_push_back(indices, base + 1);
         index_push_back(indices, base + 2);
@@ -979,18 +979,18 @@ void DirectX::ComputeDodecahedron(VertexCollection& vertices, IndexCollection& i
     size_t t = 0;
     for (size_t j = 0; j < std::size(faces); j += 5, ++t)
     {
-        uint32_t v0 = faces[j];
-        uint32_t v1 = faces[j + 1];
-        uint32_t v2 = faces[j + 2];
-        uint32_t v3 = faces[j + 3];
-        uint32_t v4 = faces[j + 4];
+        const uint32_t v0 = faces[j];
+        const uint32_t v1 = faces[j + 1];
+        const uint32_t v2 = faces[j + 2];
+        const uint32_t v3 = faces[j + 3];
+        const uint32_t v4 = faces[j + 4];
 
         XMVECTOR normal = XMVector3Cross(
             XMVectorSubtract(verts[v1].v, verts[v0].v),
             XMVectorSubtract(verts[v2].v, verts[v0].v));
         normal = XMVector3Normalize(normal);
 
-        size_t base = vertices.size();
+        const size_t base = vertices.size();
 
         index_push_back(indices, base);
         index_push_back(indices, base + 1);
@@ -1083,16 +1083,16 @@ void DirectX::ComputeIcosahedron(VertexCollection& vertices, IndexCollection& in
 
     for (size_t j = 0; j < std::size(faces); j += 3)
     {
-        uint32_t v0 = faces[j];
-        uint32_t v1 = faces[j + 1];
-        uint32_t v2 = faces[j + 2];
+        const uint32_t v0 = faces[j];
+        const uint32_t v1 = faces[j + 1];
+        const uint32_t v2 = faces[j + 2];
 
         XMVECTOR normal = XMVector3Cross(
             XMVectorSubtract(verts[v1].v, verts[v0].v),
             XMVectorSubtract(verts[v2].v, verts[v0].v));
         normal = XMVector3Normalize(normal);
 
-        size_t base = vertices.size();
+        const size_t base = vertices.size();
         index_push_back(indices, base);
         index_push_back(indices, base + 1);
         index_push_back(indices, base + 2);
@@ -1162,11 +1162,11 @@ void DirectX::ComputeTeapot(VertexCollection& vertices, IndexCollection& indices
     if (tessellation < 1)
         throw std::invalid_argument("tesselation parameter must be non-zero");
 
-    XMVECTOR scaleVector = XMVectorReplicate(size);
+    const XMVECTOR scaleVector = XMVectorReplicate(size);
 
-    XMVECTOR scaleNegateX = XMVectorMultiply(scaleVector, g_XMNegateX);
-    XMVECTOR scaleNegateZ = XMVectorMultiply(scaleVector, g_XMNegateZ);
-    XMVECTOR scaleNegateXZ = XMVectorMultiply(scaleVector, XMVectorMultiply(g_XMNegateX, g_XMNegateZ));
+    const XMVECTOR scaleNegateX = XMVectorMultiply(scaleVector, g_XMNegateX);
+    const XMVECTOR scaleNegateZ = XMVectorMultiply(scaleVector, g_XMNegateZ);
+    const XMVECTOR scaleNegateXZ = XMVectorMultiply(scaleVector, XMVectorMultiply(g_XMNegateX, g_XMNegateZ));
 
     for (size_t i = 0; i < std::size(TeapotPatches); i++)
     {

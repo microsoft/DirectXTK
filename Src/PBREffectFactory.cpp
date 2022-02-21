@@ -63,7 +63,7 @@ namespace
         else
         {
             // Untextured material (for PBR this still requires texture coordinates)
-            XMVECTOR color = XMLoadFloat3(&info.diffuseColor);
+            const XMVECTOR color = XMLoadFloat3(&info.diffuseColor);
             effect->SetConstantAlbedo(color);
 
             if (info.specularColor.x != 0 || info.specularColor.y != 0 || info.specularColor.z != 0)
@@ -71,7 +71,7 @@ namespace
                 // Derived from specularPower = 2 / roughness ^ 4 - 2
                 // http://graphicrants.blogspot.com/2013/08/specular-brdf-reference.html
 
-                float roughness = powf(2.f / (info.specularPower + 2.f), 1.f / 4.f);
+                const float roughness = powf(2.f / (info.specularPower + 2.f), 1.f / 4.f);
                 effect->SetConstantRoughness(roughness);
             }
 
@@ -236,7 +236,7 @@ void PBREffectFactory::Impl::CreateTexture(
 
         wchar_t ext[_MAX_EXT] = {};
         _wsplitpath_s(name, nullptr, 0, nullptr, 0, nullptr, 0, ext, _MAX_EXT);
-        bool isdds = _wcsicmp(ext, L".dds") == 0;
+        const bool isdds = _wcsicmp(ext, L".dds") == 0;
 
         if (isdds)
         {

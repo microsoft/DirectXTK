@@ -376,14 +376,14 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
     if (!d3dDevice || !meshData)
         throw std::invalid_argument("Device and meshData cannot be null");
 
-    uint64_t dataSize = idataSize;
+    const uint64_t dataSize = idataSize;
 
     // File Headers
     if (dataSize < sizeof(DXUT::SDKMESH_HEADER))
         throw std::runtime_error("End of file");
     auto header = reinterpret_cast<const DXUT::SDKMESH_HEADER*>(meshData);
 
-    size_t headerSize = sizeof(DXUT::SDKMESH_HEADER)
+    const size_t headerSize = sizeof(DXUT::SDKMESH_HEADER)
         + header->NumVertexBuffers * sizeof(DXUT::SDKMESH_VERTEX_BUFFER_HEADER)
         + header->NumIndexBuffers * sizeof(DXUT::SDKMESH_INDEX_BUFFER_HEADER);
     if (header->HeaderSize != headerSize)
@@ -463,7 +463,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
     }
 
     // Buffer data
-    uint64_t bufferDataOffset = header->HeaderSize + header->NonBufferDataSize;
+    const uint64_t bufferDataOffset = header->HeaderSize + header->NonBufferDataSize;
     if ((dataSize < bufferDataOffset)
         || (dataSize < bufferDataOffset + header->BufferDataSize))
         throw std::runtime_error("End of file");
@@ -638,7 +638,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
         mesh->meshParts.reserve(mh.NumSubsets);
         for (size_t j = 0; j < mh.NumSubsets; ++j)
         {
-            auto sIndex = subsets[j];
+            auto const sIndex = subsets[j];
             if (sIndex >= header->NumTotalSubsets)
                 throw std::out_of_range("Invalid mesh found");
 
@@ -672,7 +672,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
 
             if (!mat.effect)
             {
-                size_t vi = mh.VertexBuffers[0];
+                const size_t vi = mh.VertexBuffers[0];
 
                 if (materialArray_v2)
                 {
@@ -745,7 +745,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
 
             transforms[j] = XMLoadFloat4x4(&frameArray[j].Matrix);
 
-            uint32_t index = frameArray[j].Mesh;
+            const uint32_t index = frameArray[j].Mesh;
             if (index != DXUT::INVALID_MESH)
             {
                 if (index >= model->meshes.size())

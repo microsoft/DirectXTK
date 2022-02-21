@@ -179,9 +179,9 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
                     return false;
                 }
 
-                int nHeaderBytes = 7 /*MSADPCM_HEADER_LENGTH*/ * wfx->nChannels;
-                int nBitsPerFrame = 4 /*MSADPCM_BITS_PER_SAMPLE*/ * wfx->nChannels;
-                int nPcmFramesPerBlock = (wfx->nBlockAlign - nHeaderBytes) * 8 / nBitsPerFrame + 2;
+                const int nHeaderBytes = 7 /*MSADPCM_HEADER_LENGTH*/ * wfx->nChannels;
+                const int nBitsPerFrame = 4 /*MSADPCM_BITS_PER_SAMPLE*/ * wfx->nChannels;
+                const int nPcmFramesPerBlock = (wfx->nBlockAlign - nHeaderBytes) * 8 / nBitsPerFrame + 2;
 
                 if (wfadpcm->wSamplesPerBlock != nPcmFramesPerBlock)
                 {
@@ -468,7 +468,7 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
 
                 if (wfex->dwChannelMask)
                 {
-                    auto channelBits = ChannelsSpecifiedInMask(wfex->dwChannelMask);
+                    auto const channelBits = ChannelsSpecifiedInMask(wfex->dwChannelMask);
                     if (channelBits != wfx->nChannels)
                     {
                         DebugTrace("ERROR: WAVEFORMATEXTENSIBLE: nChannels=%u but ChannelMask has %u bits set\n",
@@ -511,7 +511,7 @@ void DirectX::CreateIntegerPCM(
     int channels,
     int sampleBits) noexcept
 {
-    int blockAlign = channels * sampleBits / 8;
+    const int blockAlign = channels * sampleBits / 8;
 
     wfx->wFormatTag = WAVE_FORMAT_PCM;
     wfx->nChannels = static_cast<WORD>(channels);
@@ -531,7 +531,7 @@ void DirectX::CreateFloatPCM(
     int sampleRate,
     int channels) noexcept
 {
-    int blockAlign = channels * 4;
+    const int blockAlign = channels * 4;
 
     wfx->wFormatTag = WAVE_FORMAT_IEEE_FLOAT;
     wfx->nChannels = static_cast<WORD>(channels);
@@ -566,7 +566,7 @@ void DirectX::CreateADPCM(
         throw std::invalid_argument("ADPCMWAVEFORMAT");
     }
 
-    int blockAlign = (7 /*MSADPCM_HEADER_LENGTH*/) * channels
+    const int blockAlign = (7 /*MSADPCM_HEADER_LENGTH*/) * channels
         + (samplesPerBlock - 2) * (4 /* MSADPCM_BITS_PER_SAMPLE */) * channels / 8;
 
     wfx->wFormatTag = WAVE_FORMAT_ADPCM;

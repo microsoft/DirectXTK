@@ -123,7 +123,7 @@ namespace
             if (header->tag == tag)
                 return header;
 
-            auto offset = header->size + sizeof(RIFFChunk);
+            auto const offset = header->size + sizeof(RIFFChunk);
             ptr += offset;
         }
 

@@ -52,8 +52,8 @@ void ModelMeshPart::Draw(
     deviceContext->IASetInputLayout(iinputLayout);
 
     auto vb = vertexBuffer.Get();
-    UINT vbStride = vertexStride;
-    UINT vbOffset = 0;
+    const UINT vbStride = vertexStride;
+    constexpr UINT vbOffset = 0;
     deviceContext->IASetVertexBuffers(0, 1, &vb, &vbStride, &vbOffset);
 
     // Note that if indexFormat is DXGI_FORMAT_R32_UINT, this model mesh part requires a Feature Level 9.2 or greater device
@@ -87,8 +87,8 @@ void ModelMeshPart::DrawInstanced(
     deviceContext->IASetInputLayout(iinputLayout);
 
     auto vb = vertexBuffer.Get();
-    UINT vbStride = vertexStride;
-    UINT vbOffset = 0;
+    const UINT vbStride = vertexStride;
+    constexpr UINT vbOffset = 0;
     deviceContext->IASetVertexBuffers(0, 1, &vb, &vbStride, &vbOffset);
 
     // Note that if indexFormat is DXGI_FORMAT_R32_UINT, this model mesh part requires a Feature Level 9.2 or greater device
@@ -139,7 +139,7 @@ void ModelMeshPart::CreateInputLayout(ID3D11Device* d3dDevice, IEffect* ieffect,
 
 // Assigns a new effect and re-generates input layout.
 _Use_decl_annotations_
-void ModelMeshPart::ModifyEffect(ID3D11Device* d3dDevice, std::shared_ptr<IEffect>& ieffect, bool isalpha)
+void ModelMeshPart::ModifyEffect(ID3D11Device* d3dDevice, const std::shared_ptr<IEffect>& ieffect, bool isalpha)
 {
     if (!vbDecl || vbDecl->empty())
         throw std::runtime_error("Model mesh part missing vertex buffer input elements data");
@@ -393,7 +393,7 @@ void XM_CALLCONV ModelMesh::DrawSkinned(
         else if (imatrices)
         {
             // Fallback for if we encounter a non-skinning effect in the model
-            XMMATRIX bm = (boneIndex != ModelBone::c_Invalid && boneIndex < nbones)
+            const XMMATRIX bm = (boneIndex != ModelBone::c_Invalid && boneIndex < nbones)
                 ? boneTransforms[boneIndex] : XMMatrixIdentity();
 
             imatrices->SetWorld(XMMatrixMultiply(bm, world));
@@ -466,7 +466,7 @@ void XM_CALLCONV Model::Draw(
     // Draw opaque parts
     for (const auto& it : meshes)
     {
-        auto mesh = it.get();
+        const auto *mesh = it.get();
         assert(mesh != nullptr);
 
         mesh->PrepareForRendering(deviceContext, states, false, wireframe);
@@ -477,7 +477,7 @@ void XM_CALLCONV Model::Draw(
     // Draw alpha parts
     for (const auto& it : meshes)
     {
-        auto mesh = it.get();
+        const auto *mesh = it.get();
         assert(mesh != nullptr);
 
         mesh->PrepareForRendering(deviceContext, states, true, wireframe);
@@ -505,7 +505,7 @@ void XM_CALLCONV Model::Draw(
     // Draw opaque parts
     for (const auto& it : meshes)
     {
-        auto mesh = it.get();
+        const auto *mesh = it.get();
         assert(mesh != nullptr);
 
         mesh->PrepareForRendering(deviceContext, states, false, wireframe);
@@ -516,7 +516,7 @@ void XM_CALLCONV Model::Draw(
     // Draw alpha parts
     for (const auto& it : meshes)
     {
-        auto mesh = it.get();
+        const auto *mesh = it.get();
         assert(mesh != nullptr);
 
         mesh->PrepareForRendering(deviceContext, states, true, wireframe);
@@ -544,7 +544,7 @@ void XM_CALLCONV Model::DrawSkinned(
     // Draw opaque parts
     for (const auto& it : meshes)
     {
-        auto mesh = it.get();
+        const auto *mesh = it.get();
         assert(mesh != nullptr);
 
         mesh->PrepareForRendering(deviceContext, states, false, wireframe);
@@ -555,7 +555,7 @@ void XM_CALLCONV Model::DrawSkinned(
     // Draw alpha parts
     for (const auto& it : meshes)
     {
-        auto mesh = it.get();
+        const auto *mesh = it.get();
         assert(mesh != nullptr);
 
         mesh->PrepareForRendering(deviceContext, states, true, wireframe);
@@ -588,7 +588,7 @@ void Model::CopyAbsoluteBoneTransformsTo(
 
     memset(boneTransforms, 0, sizeof(XMMATRIX) * nbones);
 
-    XMMATRIX id = XMMatrixIdentity();
+    const XMMATRIX id = XMMatrixIdentity();
     size_t visited = 0;
     ComputeAbsolute(0, id, bones.size(), boneMatrices.get(), boneTransforms, visited);
 }
@@ -618,7 +618,7 @@ void Model::CopyAbsoluteBoneTransforms(
 
     memset(outBoneTransforms, 0, sizeof(XMMATRIX) * nbones);
 
-    XMMATRIX id = XMMatrixIdentity();
+    const XMMATRIX id = XMMatrixIdentity();
     size_t visited = 0;
     ComputeAbsolute(0, id, bones.size(), inBoneTransforms, outBoneTransforms, visited);
 }

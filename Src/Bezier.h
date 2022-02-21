@@ -33,10 +33,10 @@ namespace Bezier
     {
         using namespace DirectX;
 
-        XMVECTOR T0 = XMVectorReplicate((1 - t) * (1 - t) * (1 - t));
-        XMVECTOR T1 = XMVectorReplicate(3 * t * (1 - t) * (1 - t));
-        XMVECTOR T2 = XMVectorReplicate(3 * t * t * (1 - t));
-        XMVECTOR T3 = XMVectorReplicate(t * t * t);
+        const XMVECTOR T0 = XMVectorReplicate((1 - t) * (1 - t) * (1 - t));
+        const XMVECTOR T1 = XMVectorReplicate(3 * t * (1 - t) * (1 - t));
+        const XMVECTOR T2 = XMVectorReplicate(3 * t * t * (1 - t));
+        const XMVECTOR T3 = XMVectorReplicate(t * t * t);
 
         XMVECTOR Result = XMVectorMultiply(p1, T0);
         Result = XMVectorMultiplyAdd(p2, T1, Result);
@@ -62,10 +62,10 @@ namespace Bezier
     {
         using namespace DirectX;
 
-        XMVECTOR T0 = XMVectorReplicate(-1 + 2 * t - t * t);
-        XMVECTOR T1 = XMVectorReplicate(1 - 4 * t + 3 * t * t);
-        XMVECTOR T2 = XMVectorReplicate(2 * t - 3 * t * t);
-        XMVECTOR T3 = XMVectorReplicate(t * t);
+        const XMVECTOR T0 = XMVectorReplicate(-1 + 2 * t - t * t);
+        const XMVECTOR T1 = XMVectorReplicate(1 - 4 * t + 3 * t * t);
+        const XMVECTOR T2 = XMVectorReplicate(2 * t - 3 * t * t);
+        const XMVECTOR T3 = XMVectorReplicate(t * t);
 
         XMVECTOR Result = XMVectorMultiply(p1, T0);
         Result = XMVectorMultiplyAdd(p2, T1, Result);
@@ -80,39 +80,39 @@ namespace Bezier
     // Calls the specified outputVertex function for each generated vertex,
     // passing the position, normal, and texture coordinate as parameters.
     template<typename TOutputFunc>
-    void CreatePatchVertices(_In_reads_(16) DirectX::XMVECTOR patch[16], size_t tessellation, bool isMirrored, TOutputFunc outputVertex)
+    void CreatePatchVertices(_In_reads_(16) const DirectX::XMVECTOR patch[16], size_t tessellation, bool isMirrored, TOutputFunc outputVertex)
     {
         using namespace DirectX;
 
         for (size_t i = 0; i <= tessellation; i++)
         {
-            float u = float(i) / float(tessellation);
+            const float u = float(i) / float(tessellation);
 
             for (size_t j = 0; j <= tessellation; j++)
             {
-                float v = float(j) / float(tessellation);
+                const float v = float(j) / float(tessellation);
 
                 // Perform four horizontal bezier interpolations
                 // between the control points of this patch.
-                XMVECTOR p1 = CubicInterpolate(patch[0], patch[1], patch[2], patch[3], u);
-                XMVECTOR p2 = CubicInterpolate(patch[4], patch[5], patch[6], patch[7], u);
-                XMVECTOR p3 = CubicInterpolate(patch[8], patch[9], patch[10], patch[11], u);
-                XMVECTOR p4 = CubicInterpolate(patch[12], patch[13], patch[14], patch[15], u);
+                const XMVECTOR p1 = CubicInterpolate(patch[0], patch[1], patch[2], patch[3], u);
+                const XMVECTOR p2 = CubicInterpolate(patch[4], patch[5], patch[6], patch[7], u);
+                const XMVECTOR p3 = CubicInterpolate(patch[8], patch[9], patch[10], patch[11], u);
+                const XMVECTOR p4 = CubicInterpolate(patch[12], patch[13], patch[14], patch[15], u);
 
                 // Perform a vertical interpolation between the results of the
                 // previous horizontal interpolations, to compute the position.
-                XMVECTOR position = CubicInterpolate(p1, p2, p3, p4, v);
+                const XMVECTOR position = CubicInterpolate(p1, p2, p3, p4, v);
 
                 // Perform another four bezier interpolations between the control
                 // points, but this time vertically rather than horizontally.
-                XMVECTOR q1 = CubicInterpolate(patch[0], patch[4], patch[8], patch[12], v);
-                XMVECTOR q2 = CubicInterpolate(patch[1], patch[5], patch[9], patch[13], v);
-                XMVECTOR q3 = CubicInterpolate(patch[2], patch[6], patch[10], patch[14], v);
-                XMVECTOR q4 = CubicInterpolate(patch[3], patch[7], patch[11], patch[15], v);
+                const XMVECTOR q1 = CubicInterpolate(patch[0], patch[4], patch[8], patch[12], v);
+                const XMVECTOR q2 = CubicInterpolate(patch[1], patch[5], patch[9], patch[13], v);
+                const XMVECTOR q3 = CubicInterpolate(patch[2], patch[6], patch[10], patch[14], v);
+                const XMVECTOR q4 = CubicInterpolate(patch[3], patch[7], patch[11], patch[15], v);
 
                 // Compute vertical and horizontal tangent vectors.
-                XMVECTOR tangent1 = CubicTangent(p1, p2, p3, p4, v);
-                XMVECTOR tangent2 = CubicTangent(q1, q2, q3, q4, u);
+                const XMVECTOR tangent1 = CubicTangent(p1, p2, p3, p4, v);
+                const XMVECTOR tangent2 = CubicTangent(q1, q2, q3, q4, u);
 
                 // Cross the two tangent vectors to compute the normal.
                 XMVECTOR normal = XMVector3Cross(tangent1, tangent2);
@@ -145,9 +145,9 @@ namespace Bezier
                 }
 
                 // Compute the texture coordinate.
-                float mirroredU = isMirrored ? 1 - u : u;
+                const float mirroredU = isMirrored ? 1 - u : u;
 
-                XMVECTOR textureCoordinate = XMVectorSet(mirroredU, v, 0, 0);
+                const XMVECTOR textureCoordinate = XMVectorSet(mirroredU, v, 0, 0);
 
                 // Output this vertex.
                 outputVertex(position, normal, textureCoordinate);

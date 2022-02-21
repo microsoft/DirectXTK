@@ -31,7 +31,7 @@ namespace
 
         auto ptr = reinterpret_cast<uint32_t*>(&state);
 
-        unsigned int bf = 1u << (key & 0x1f);
+        const unsigned int bf = 1u << (key & 0x1f);
         ptr[(key >> 5)] |= bf;
     }
 
@@ -42,7 +42,7 @@ namespace
 
         auto ptr = reinterpret_cast<uint32_t*>(&state);
 
-        unsigned int bf = 1u << (key & 0x1f);
+        const unsigned int bf = 1u << (key & 0x1f);
         ptr[(key >> 5)] &= ~bf;
     }
 }

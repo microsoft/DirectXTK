@@ -241,7 +241,7 @@ public:
     {
         weightsPerVertex = enableSkinning ? 4 : 0;
 
-        XMMATRIX id = XMMatrixIdentity();
+        const XMMATRIX id = XMMatrixIdentity();
         world = id;
         view = id;
         projection = id;
@@ -376,7 +376,7 @@ void DGSLEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
         constants.object.LocalToWorld4x4 = XMMatrixTranspose(world);
         constants.object.WorldToView4x4 = XMMatrixTranspose(view);
 
-        XMMATRIX worldView = XMMatrixMultiply(world, view);
+        const XMMATRIX worldView = XMMatrixMultiply(world, view);
 
         constants.object.LocalToProjected4x4 = XMMatrixTranspose(XMMatrixMultiply(worldView, projection));
 
@@ -386,7 +386,7 @@ void DGSLEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
 
     if (dirtyFlags & EffectDirtyFlags::WorldInverseTranspose)
     {
-        XMMATRIX worldInverse = XMMatrixInverse(nullptr, world);
+        const XMMATRIX worldInverse = XMMatrixInverse(nullptr, world);
 
         constants.object.WorldToLocal4x4 = XMMatrixTranspose(worldInverse);
 
@@ -396,7 +396,7 @@ void DGSLEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
 
     if (dirtyFlags & EffectDirtyFlags::EyePosition)
     {
-        XMMATRIX viewInverse = XMMatrixInverse(nullptr, view);
+        const XMMATRIX viewInverse = XMMatrixInverse(nullptr, view);
 
         constants.object.EyePosition = viewInverse.r[3];
 
@@ -532,7 +532,7 @@ void DGSLEffect::Impl::GetVertexShaderBytecode(_Out_ void const** pShaderByteCod
 {
     assert(pShaderByteCode != nullptr && pByteCodeLength != nullptr);
 
-    int permutation = GetCurrentVSPermutation();
+    const int permutation = GetCurrentVSPermutation();
     assert(permutation < DGSLEffectTraits::VertexShaderCount);
     _Analysis_assume_(permutation < DGSLEffectTraits::VertexShaderCount);
 

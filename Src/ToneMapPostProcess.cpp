@@ -242,7 +242,7 @@ class ToneMapPostProcess::Impl : public AlignedNew<ToneMapConstants>
 public:
     explicit Impl(_In_ ID3D11Device* device);
 
-    void Process(_In_ ID3D11DeviceContext* deviceContext, std::function<void __cdecl()>& setCustomState);
+    void Process(_In_ ID3D11DeviceContext* deviceContext, const std::function<void __cdecl()>& setCustomState);
 
     void SetDirtyFlag() noexcept { mDirtyFlags = INT_MAX; }
 
@@ -300,7 +300,7 @@ ToneMapPostProcess::Impl::Impl(_In_ ID3D11Device* device)
 // Sets our state onto the D3D device.
 void ToneMapPostProcess::Impl::Process(
     _In_ ID3D11DeviceContext* deviceContext,
-    std::function<void __cdecl()>& setCustomState)
+    const std::function<void __cdecl()>& setCustomState)
 {
     // Set the texture.
     ID3D11ShaderResourceView* textures[1] = { hdrTexture.Get() };
@@ -447,7 +447,7 @@ void ToneMapPostProcess::SetColorRotation(ColorPrimaryRotation value)
 
 void ToneMapPostProcess::SetColorRotation(CXMMATRIX value)
 {
-    XMMATRIX transpose = XMMatrixTranspose(value);
+    const XMMATRIX transpose = XMMatrixTranspose(value);
     pImpl->constants.colorRotation[0] = transpose.r[0];
     pImpl->constants.colorRotation[1] = transpose.r[1];
     pImpl->constants.colorRotation[2] = transpose.r[2];

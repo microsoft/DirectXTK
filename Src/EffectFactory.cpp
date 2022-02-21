@@ -226,7 +226,7 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
             effect->SetVertexColorEnabled(true);
         }
 
-        XMVECTOR color = XMLoadFloat3(&info.diffuseColor);
+        const XMVECTOR color = XMLoadFloat3(&info.diffuseColor);
         effect->SetDiffuseColor(color);
 
         if (info.diffuseTexture && *info.diffuseTexture)
@@ -404,7 +404,7 @@ void EffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext
 
         wchar_t ext[_MAX_EXT] = {};
         _wsplitpath_s(name, nullptr, 0, nullptr, 0, nullptr, 0, ext, _MAX_EXT);
-        bool isdds = _wcsicmp(ext, L".dds") == 0;
+        const bool isdds = _wcsicmp(ext, L".dds") == 0;
 
         if (isdds)
         {

@@ -309,7 +309,7 @@ namespace DirectX
             }
 
             // DDS files always start with the same magic number ("DDS ")
-            auto dwMagicNumber = *reinterpret_cast<const uint32_t*>(ddsData);
+            auto const dwMagicNumber = *reinterpret_cast<const uint32_t*>(ddsData);
             if (dwMagicNumber != DDS_MAGIC)
             {
                 return E_FAIL;
@@ -430,7 +430,7 @@ namespace DirectX
             }
 
             // DDS files always start with the same magic number ("DDS ")
-            auto dwMagicNumber = *reinterpret_cast<const uint32_t*>(ddsData.get());
+            auto const dwMagicNumber = *reinterpret_cast<const uint32_t*>(ddsData.get());
             if (dwMagicNumber != DDS_MAGIC)
             {
                 ddsData.reset();
@@ -601,7 +601,7 @@ namespace DirectX
             }
             else
             {
-                size_t bpp = BitsPerPixel(fmt);
+                const size_t bpp = BitsPerPixel(fmt);
                 if (!bpp)
                     return E_INVALIDARG;
 
@@ -912,7 +912,7 @@ namespace DirectX
                 if (MAKEFOURCC('D', 'X', '1', '0') == header->ddspf.fourCC)
                 {
                     auto d3d10ext = reinterpret_cast<const DDS_HEADER_DXT10*>(reinterpret_cast<const uint8_t*>(header) + sizeof(DDS_HEADER));
-                    auto mode = static_cast<DDS_ALPHA_MODE>(d3d10ext->miscFlags2 & DDS_MISC_FLAGS2_ALPHA_MODE_MASK);
+                    auto const mode = static_cast<DDS_ALPHA_MODE>(d3d10ext->miscFlags2 & DDS_MISC_FLAGS2_ALPHA_MODE_MASK);
                     switch (mode)
                     {
                         case DDS_ALPHA_MODE_STRAIGHT:
@@ -1008,7 +1008,7 @@ namespace DirectX
 
         inline void FitPowerOf2(UINT origx, UINT origy, _Inout_ UINT& targetx, _Inout_ UINT& targety, size_t maxsize)
         {
-            float origAR = float(origx) / float(origy);
+            const float origAR = float(origx) / float(origy);
 
             if (origx > origy)
             {
@@ -1019,7 +1019,7 @@ namespace DirectX
                 float bestScore = FLT_MAX;
                 for (size_t y = maxsize; y > 0; y >>= 1)
                 {
-                    float score = fabsf((float(x) / float(y)) - origAR);
+                    const float score = fabsf((float(x) / float(y)) - origAR);
                     if (score < bestScore)
                     {
                         bestScore = score;
@@ -1036,7 +1036,7 @@ namespace DirectX
                 float bestScore = FLT_MAX;
                 for (size_t x = maxsize; x > 0; x >>= 1)
                 {
-                    float score = fabsf((float(x) / float(y)) - origAR);
+                    const float score = fabsf((float(x) / float(y)) - origAR);
                     if (score < bestScore)
                     {
                         bestScore = score;

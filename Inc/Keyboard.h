@@ -413,7 +413,7 @@ namespace DirectX
                 if (key <= 0xfe)
                 {
                     auto ptr = reinterpret_cast<const uint32_t*>(this);
-                    unsigned int bf = 1u << (key & 0x1f);
+                    const unsigned int bf = 1u << (key & 0x1f);
                     return (ptr[(key >> 5)] & bf) != 0;
                 }
                 return false;
@@ -424,7 +424,7 @@ namespace DirectX
                 if (key <= 0xfe)
                 {
                     auto ptr = reinterpret_cast<const uint32_t*>(this);
-                    unsigned int bf = 1u << (key & 0x1f);
+                    const unsigned int bf = 1u << (key & 0x1f);
                     return (ptr[(key >> 5)] & bf) == 0;
                 }
                 return false;

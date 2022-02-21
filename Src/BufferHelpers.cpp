@@ -33,7 +33,7 @@ HRESULT DirectX::CreateStaticBuffer(
     if (!device || !ptr || !count || !stride)
         return E_INVALIDARG;
 
-    uint64_t sizeInbytes = uint64_t(count) * uint64_t(stride);
+    const uint64_t sizeInbytes = uint64_t(count) * uint64_t(stride);
 
     static constexpr uint64_t c_maxBytes = D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u;
     static_assert(c_maxBytes <= UINT32_MAX, "Exceeded integer limits");

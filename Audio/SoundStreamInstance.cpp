@@ -39,16 +39,16 @@ using namespace DirectX;
 
 namespace
 {
-    const size_t DVD_SECTOR_SIZE = 2048;
-    const size_t ADVANCED_FORMAT_SECTOR_SIZE = 4096;
-    const size_t MAX_BUFFER_COUNT = 3;
+    constexpr size_t DVD_SECTOR_SIZE = 2048;
+    constexpr size_t ADVANCED_FORMAT_SECTOR_SIZE = 4096;
+    constexpr size_t MAX_BUFFER_COUNT = 3;
 
     #ifdef DIRECTX_ENABLE_SEEK_TABLES
-    const size_t MAX_STREAMING_SEEK_PACKETS = 2048;
+    constexpr size_t MAX_STREAMING_SEEK_PACKETS = 2048;
     #endif
 
     #ifdef DIRECTX_ENABLE_XMA2
-    const size_t XMA2_64KBLOCKINBYTES = 65536;
+    constexpr size_t XMA2_64KBLOCKINBYTES = 65536;
 
     struct apu_deleter { void operator()(void* p) noexcept { if (p) ApuFree(p); } };
     #endif
@@ -401,7 +401,7 @@ HRESULT SoundStreamInstance::Impl::AllocateStreamingBuffers(const WAVEFORMATEX* 
     if (!wfx)
         return E_INVALIDARG;
 
-    uint32_t tag = GetFormatTag(wfx);
+    const uint32_t tag = GetFormatTag(wfx);
 
     size_t packetSize = ComputeAsyncPacketSize(wfx, tag, mAsyncAlign);
     if (!packetSize)
@@ -511,7 +511,7 @@ HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
 
     HANDLE async = mWaveBank->GetAsyncHandle();
 
-    uint32_t readBuffer = mCurrentDiskReadBuffer;
+    const uint32_t readBuffer = mCurrentDiskReadBuffer;
     for (uint32_t j = 0; j < MAX_BUFFER_COUNT; ++j)
     {
         uint32_t entry = (j + readBuffer) % uint32_t(MAX_BUFFER_COUNT);
@@ -519,7 +519,7 @@ HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
         {
             if (mCurrentPosition < mLengthInBytes)
             {
-                auto cbValid = static_cast<uint32_t>(std::min(mPacketSize, mLengthInBytes - mCurrentPosition));
+                auto const cbValid = static_cast<uint32_t>(std::min(mPacketSize, mLengthInBytes - mCurrentPosition));
 
                 mPackets[entry].valid = cbValid;
                 mPackets[entry].audioBytes = 0;
@@ -528,7 +528,7 @@ HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
 
                 if (!ReadFile(async, mPackets[entry].buffer, uint32_t(mPacketSize), nullptr, &mPackets[entry].request))
                 {
-                    DWORD error = GetLastError();
+                    const DWORD error = GetLastError();
                     if (error != ERROR_IO_PENDING)
                     {
 #ifdef _DEBUG
@@ -573,9 +573,9 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
         {
             DWORD cb = 0;
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
-            BOOL result = GetOverlappedResultEx(async, &mPackets[j].request, &cb, 0, FALSE);
+            const BOOL result = GetOverlappedResultEx(async, &mPackets[j].request, &cb, 0, FALSE);
 #else
-            BOOL result = GetOverlappedResult(async, &mPackets[j].request, &cb, FALSE);
+            const BOOL result = GetOverlappedResult(async, &mPackets[j].request, &cb, FALSE);
 #endif
             if (result)
             {
@@ -583,7 +583,7 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
             }
             else
             {
-                DWORD error = GetLastError();
+                const DWORD error = GetLastError();
                 if (error != ERROR_IO_INCOMPLETE)
                 {
                     ThrowIfFailed(HRESULT_FROM_WIN32(error));
@@ -625,7 +625,7 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
                 // Compute how many bytes at the start of our current packet are the tail of the partial block.
                 thisFrameStitch = mBlockAlign - prevFrameStitch;
 
-                uint32_t k = (mCurrentPlayBuffer + MAX_BUFFER_COUNT - 1) % MAX_BUFFER_COUNT;
+                const uint32_t k = (mCurrentPlayBuffer + MAX_BUFFER_COUNT - 1) % MAX_BUFFER_COUNT;
                 if (mPackets[k].state == State::READY || mPackets[k].state == State::PLAYING)
                 {
                     // Compute how many bytes at the start of the previous packet were the tail of the previous stitch block.
@@ -633,7 +633,7 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
                     prevFrameStitchOffset = (prevFrameStitchOffset > 0) ? (mBlockAlign - prevFrameStitchOffset) : 0u;
 
                     // Point to the start of the partial block's head in the previous packet.
-                    auto prevBuffer = mPackets[k].buffer + prevFrameStitchOffset + mPackets[k].audioBytes;
+                    const auto *prevBuffer = mPackets[k].buffer + prevFrameStitchOffset + mPackets[k].audioBytes;
 
                     // Merge the the head partial block in the previous packet with the tail partial block at the start of our packet.
                     memcpy(buffer, prevBuffer, prevFrameStitch);
@@ -659,7 +659,7 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
                         wmaBuf.pDecodedPacketCumulativeBytes = mSeekTableCopy;
                         wmaBuf.PacketCount = 1;
 
-                        uint32_t seekOffset = (mPackets[k].startPosition + prevFrameStitchOffset + mPackets[k].audioBytes) / mBlockAlign;
+                        const uint32_t seekOffset = (mPackets[k].startPosition + prevFrameStitchOffset + mPackets[k].audioBytes) / mBlockAlign;
                         assert(seekOffset > 0);
                         mSeekTableCopy[0] = mSeekTable[seekOffset] - mSeekTable[seekOffset - 1];
 
@@ -697,7 +697,7 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
 
                 wmaBuf.PacketCount = valid / mBlockAlign;
 
-                uint32_t seekOffset = mPackets[mCurrentPlayBuffer].startPosition / mBlockAlign;
+                const uint32_t seekOffset = mPackets[mCurrentPlayBuffer].startPosition / mBlockAlign;
                 if (seekOffset > MAX_STREAMING_SEEK_PACKETS)
                 {
                     DebugTrace("ERROR: xWMA packet seek count exceeds %zu\n", MAX_STREAMING_SEEK_PACKETS);
@@ -835,7 +835,7 @@ bool SoundStreamInstance::IsLooped() const noexcept
 
 SoundState SoundStreamInstance::GetState() noexcept
 {
-    SoundState state = pImpl->mBase.GetState(pImpl->mEndStream);
+    const SoundState state = pImpl->mBase.GetState(pImpl->mEndStream);
     if (state == STOPPED)
     {
         pImpl->mPlaying = false;
