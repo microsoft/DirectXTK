@@ -186,11 +186,17 @@ HRESULT DirectX::SaveDDSTextureToFile(
 
     // Create file
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
-    ScopedHandle hFile(safe_handle(CreateFile2(fileName,
-        GENERIC_WRITE | DELETE, 0, CREATE_ALWAYS, nullptr)));
+    ScopedHandle hFile(safe_handle(CreateFile2(
+        fileName,
+        GENERIC_WRITE | DELETE, 0, CREATE_ALWAYS,
+        nullptr)));
 #else
-    ScopedHandle hFile(safe_handle(CreateFileW(fileName,
-        GENERIC_WRITE | DELETE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr)));
+    ScopedHandle hFile(safe_handle(CreateFileW(
+        fileName,
+        GENERIC_WRITE | DELETE, 0,
+        nullptr,
+        CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL,
+        nullptr)));
 #endif
     if (!hFile)
         return HRESULT_FROM_WIN32(GetLastError());
@@ -339,8 +345,11 @@ HRESULT DirectX::SaveDDSTextureToFile(
 //--------------------------------------------------------------------------------------
 namespace DirectX
 {
-    extern bool _IsWIC2() noexcept;
-    extern IWICImagingFactory* _GetWIC() noexcept;
+    namespace Internal
+    {
+        extern bool IsWIC2() noexcept;
+        extern IWICImagingFactory* GetWIC() noexcept;
+    }
 }
 
 _Use_decl_annotations_
@@ -353,6 +362,8 @@ HRESULT DirectX::SaveWICTextureToFile(
     std::function<void(IPropertyBag2*)> setCustomProps,
     bool forceSRGB)
 {
+    using namespace Internal;
+
     if (!fileName)
         return E_INVALIDARG;
 
@@ -412,7 +423,7 @@ HRESULT DirectX::SaveWICTextureToFile(
             return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
     }
 
-    auto pWIC = _GetWIC();
+    auto pWIC = GetWIC();
     if (!pWIC)
         return E_NOINTERFACE;
 
@@ -442,7 +453,7 @@ HRESULT DirectX::SaveWICTextureToFile(
     if (FAILED(hr))
         return hr;
 
-    if (targetFormat && memcmp(&guidContainerFormat, &GUID_ContainerFormatBmp, sizeof(WICPixelFormatGUID)) == 0 && _IsWIC2())
+    if (targetFormat && memcmp(&guidContainerFormat, &GUID_ContainerFormatBmp, sizeof(WICPixelFormatGUID)) == 0 && IsWIC2())
     {
         // Opt-in to the WIC2 support for writing 32-bit Windows BMP files with an alpha channel
         PROPBAG2 option = {};
@@ -485,7 +496,7 @@ HRESULT DirectX::SaveWICTextureToFile(
         #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
             case DXGI_FORMAT_R32G32B32A32_FLOAT:
             case DXGI_FORMAT_R16G16B16A16_FLOAT:
-                if (_IsWIC2())
+                if (IsWIC2())
                 {
                     targetGuid = GUID_WICPixelFormat96bppRGBFloat;
                 }

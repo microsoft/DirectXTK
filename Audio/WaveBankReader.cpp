@@ -519,19 +519,17 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
     CREATEFILE2_EXTENDED_PARAMETERS params = { sizeof(CREATEFILE2_EXTENDED_PARAMETERS), 0, 0, 0, {}, nullptr };
     params.dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
     params.dwFileFlags = FILE_FLAG_OVERLAPPED | FILE_FLAG_SEQUENTIAL_SCAN;
-    ScopedHandle hFile(safe_handle(CreateFile2(szFileName,
-                       GENERIC_READ,
-                       FILE_SHARE_READ,
-                       OPEN_EXISTING,
-                       &params)));
+    ScopedHandle hFile(safe_handle(CreateFile2(
+        szFileName,
+        GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING,
+        &params)));
 #else
-    ScopedHandle hFile(safe_handle(CreateFileW(szFileName,
-                       GENERIC_READ,
-                       FILE_SHARE_READ,
-                       nullptr,
-                       OPEN_EXISTING,
-                       FILE_FLAG_OVERLAPPED | FILE_FLAG_SEQUENTIAL_SCAN,
-                       nullptr)));
+    ScopedHandle hFile(safe_handle(CreateFileW(
+        szFileName,
+        GENERIC_READ, FILE_SHARE_READ,
+        nullptr,
+        OPEN_EXISTING, FILE_FLAG_OVERLAPPED | FILE_FLAG_SEQUENTIAL_SCAN,
+        nullptr)));
 #endif
 
     if (!hFile)
@@ -554,10 +552,14 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
 
     DWORD bytes;
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
+    std::ignore = wait;
+
     BOOL result = GetOverlappedResultEx(hFile.get(), &request, &bytes, INFINITE, FALSE);
 #else
     if (wait)
+    {
         std::ignore = WaitForSingleObject(m_event.get(), INFINITE);
+    }
 
     BOOL result = GetOverlappedResult(hFile.get(), &request, &bytes, FALSE);
 #endif
@@ -602,7 +604,9 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
     result = GetOverlappedResultEx(hFile.get(), &request, &bytes, INFINITE, FALSE);
 #else
     if (wait)
+    {
         std::ignore = WaitForSingleObject(m_event.get(), INFINITE);
+    }
 
     result = GetOverlappedResult(hFile.get(), &request, &bytes, FALSE);
 #endif
@@ -686,7 +690,9 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
             result = GetOverlappedResultEx(hFile.get(), &request, &bytes, INFINITE, FALSE);
         #else
             if (wait)
+            {
                 std::ignore = WaitForSingleObject(m_event.get(), INFINITE);
+            }
 
             result = GetOverlappedResult(hFile.get(), &request, &bytes, FALSE);
         #endif
@@ -737,7 +743,9 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
     result = GetOverlappedResultEx(hFile.get(), &request, &bytes, INFINITE, FALSE);
 #else
     if (wait)
+    {
         std::ignore = WaitForSingleObject(m_event.get(), INFINITE);
+    }
 
     result = GetOverlappedResult(hFile.get(), &request, &bytes, FALSE);
 #endif
@@ -788,7 +796,9 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
         result = GetOverlappedResultEx(hFile.get(), &request, &bytes, INFINITE, FALSE);
     #else
         if (wait)
+        {
             std::ignore = WaitForSingleObject(m_event.get(), INFINITE);
+        }
 
         result = GetOverlappedResult(hFile.get(), &request, &bytes, FALSE);
     #endif
