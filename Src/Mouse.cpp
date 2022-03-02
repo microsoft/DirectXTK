@@ -1099,7 +1099,7 @@ public:
         if (FAILED(mWindow->get_PointerCursor(cursor.GetAddressOf())))
             return false;
 
-        return cursor != 0;
+        return cursor != nullptr;
     }
 
     void SetVisible(bool visible)

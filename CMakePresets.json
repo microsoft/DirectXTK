@@ -28,6 +28,14 @@
       "hidden": true
     },
     {
+      "name": "ARM",
+      "architecture": {
+        "value": "arm",
+        "strategy": "external"
+      },
+      "hidden": true
+    },
+    {
       "name": "ARM64",
       "architecture": {
         "value": "arm64",
@@ -89,6 +97,17 @@
       "hidden": true
     },
     {
+      "name": "UWP",
+      "cacheVariables": {
+        "CMAKE_SYSTEM_NAME": "WindowsStore",
+        "CMAKE_SYSTEM_VERSION": "10.0",
+        "BUILD_XAUDIO_WIN10": true,
+        "BUILD_XAUDIO_WIN8": false,
+        "BUILD_XAUDIO_WIN7": false
+      },
+      "hidden": true
+    },
+    {
       "name": "VCPKG",
       "cacheVariables": {
         "BUILD_XAUDIO_WIN10": false,
@@ -114,6 +133,15 @@
     { "name": "arm64-Debug-Win10"  , "description": "MSVC for ARM64 (Debug) for Windows 10", "inherits": [ "base", "ARM64", "Debug", "MSVC", "Win10" ] },
     { "name": "arm64-Release-Win10", "description": "MSVC for ARM64 (Release) for Windows 10", "inherits": [ "base", "ARM64", "Release", "MSVC", "Win10" ] },
 
+    { "name": "x64-Debug-UWP"    , "description": "MSVC for x64 (Debug) for UWP", "inherits": [ "base", "x64", "Debug", "MSVC", "UWP" ] },
+    { "name": "x64-Release-UWP"  , "description": "MSVC for x64 (Release) for UWP", "inherits": [ "base", "x64", "Release", "MSVC", "UWP" ] },
+    { "name": "x86-Debug-UWP"    , "description": "MSVC for x86 (Debug) for UWP", "inherits": [ "base", "x86", "Debug", "MSVC", "UWP" ] },
+    { "name": "x86-Release-UWP"  , "description": "MSVC for x86 (Release) for UWP", "inherits": [ "base", "x86", "Release", "MSVC", "UWP" ] },
+    { "name": "arm-Debug-UWP"    , "description": "MSVC for ARM (Debug) for UWP", "inherits": [ "base", "ARM", "Debug", "MSVC", "UWP" ] },
+    { "name": "arm-Release-UWP"  , "description": "MSVC for ARM (Release) for UWP", "inherits": [ "base", "ARM", "Release", "MSVC", "UWP" ] },
+    { "name": "arm64-Debug-UWP"  , "description": "MSVC for ARM64 (Debug) for UWP", "inherits": [ "base", "ARM64", "Debug", "MSVC", "UWP" ] },
+    { "name": "arm64-Release-UWP", "description": "MSVC for ARM64 (Release) for UWP", "inherits": [ "base", "ARM64", "Release", "MSVC", "UWP" ] },
+
     { "name": "x64-Debug-VCPKG"  , "description": "MSVC for x64 (Debug) for Windows 7 w/ XAudio2Redist", "inherits": [ "base", "x64", "Debug", "MSVC", "VCPKG" ] },
     { "name": "x64-Release-VCPKG", "description": "MSVC for x64 (Release) for Windows 7 w/ XAudio2Redist", "inherits": [ "base", "x64", "Release", "MSVC", "VCPKG" ] },
     { "name": "x86-Debug-VCPKG"  , "description": "MSVC for x86 (Debug) for Windows 7 w/ XAudio2Redist", "inherits": [ "base", "x86", "Debug", "MSVC", "VCPKG" ] },
@@ -135,6 +163,13 @@
     { "name": "x86-Release-Win10-Clang"  , "description": "Clang/LLVM for x86 (Release) for Windows 10", "inherits": [ "base", "x86", "Release", "Clang", "Win10" ], "environment": { "CXXFLAGS": "-m32" } },
     { "name": "arm64-Debug-Win10-Clang"  , "description": "Clang/LLVM for AArch64 (Debug) for Windows 10", "inherits": [ "base", "ARM64", "Debug", "Clang", "Win10" ], "environment": { "CXXFLAGS": "--target=arm64-pc-windows-msvc" } },
     { "name": "arm64-Release-Win10-Clang", "description": "Clang/LLVM for AArch64 (Release) for Windows 10", "inherits": [ "base", "ARM64", "Release", "Clang", "Win10" ], "environment": { "CXXFLAGS": "--target=arm64-pc-windows-msvc" } },
+
+    { "name": "x64-Debug-UWP-Clang"    , "description": "Clang/LLVM for x64 (Debug) for UWP", "inherits": [ "base", "x64", "Debug", "Clang", "UWP" ] },
+    { "name": "x64-Release-UWP-Clang"  , "description": "Clang/LLVM for x64 (Release) for UWP", "inherits": [ "base", "x64", "Release", "Clang", "UWP" ] },
+    { "name": "x86-Debug-UWP-Clang"    , "description": "Clang/LLVM for x86 (Debug) for UWP", "inherits": [ "base", "x86", "Debug", "Clang", "UWP" ], "environment": { "CXXFLAGS": "-m32" } },
+    { "name": "x86-Release-UWP-Clang"  , "description": "Clang/LLVM for x86 (Release) for UWP", "inherits": [ "base", "x86", "Release", "Clang", "UWP" ], "environment": { "CXXFLAGS": "-m32" } },
+    { "name": "arm64-Debug-UWP-Clang"  , "description": "Clang/LLVM for AArch64 (Debug) for UWP", "inherits": [ "base", "ARM64", "Debug", "Clang", "UWP" ], "environment": { "CXXFLAGS": "--target=arm64-pc-windows-msvc" } },
+    { "name": "arm64-Release-UWP-Clang", "description": "Clang/LLVM for AArch64 (Release) for UWP", "inherits": [ "base", "ARM64", "Release", "Clang", "UWP" ], "environment": { "CXXFLAGS": "--target=arm64-pc-windows-msvc" } },
 
     { "name": "x64-Debug-VCPKG-Clang"  , "description": "Clang/LLVM for x64 (Debug) for Windows 7 w/ XAudio2Redist", "inherits": [ "base", "x64", "Debug", "Clang", "VCPKG" ] },
     { "name": "x64-Release-VCPKG-Clang", "description": "Clang/LLVM for x64 (Release) for Windows 7 w/ XAudio2Redist", "inherits": [ "base", "x64", "Release", "Clang", "VCPKG" ] },
