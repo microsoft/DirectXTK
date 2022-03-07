@@ -81,7 +81,7 @@ namespace
 }
 
 
-#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)
+#ifdef USING_GAMEINPUT
 
 #include <GameInput.h>
 
@@ -386,8 +386,19 @@ private:
 
 GamePad::Impl* GamePad::Impl::s_gamePad = nullptr;
 
+void GamePad::RegisterEvents(HANDLE ctrlChanged) noexcept
+{
+    pImpl->mCtrlChanged = (!ctrlChanged) ? INVALID_HANDLE_VALUE : ctrlChanged;
+}
 
-#elif (_WIN32_WINNT >= _WIN32_WINNT_WIN10) && !defined(_GAMING_DESKTOP)
+_Success_(return)
+bool GamePad::GetDevice(int player, _Outptr_ IGameInputDevice * *device) noexcept
+{
+    return pImpl->GetDevice(player, device);
+}
+
+
+#elif defined(USING_WINDOWS_GAMING_INPUT)
 
 //======================================================================================
 // Windows::Gaming::Input (Windows 10)
@@ -802,11 +813,17 @@ private:
 
 GamePad::Impl* GamePad::Impl::s_gamePad = nullptr;
 
+void GamePad::RegisterEvents(HANDLE ctrlChanged, HANDLE userChanged) noexcept
+{
+    pImpl->mCtrlChanged = (!ctrlChanged) ? INVALID_HANDLE_VALUE : ctrlChanged;
+    pImpl->mUserChanged = (!userChanged) ? INVALID_HANDLE_VALUE : userChanged;
+}
+
 
 #elif defined(_XBOX_ONE)
 
 //======================================================================================
-// Windows::Xbox::Input (Xbox One)
+// Windows::Xbox::Input (Xbox One XDK)
 //======================================================================================
 
 #include <Windows.Xbox.Input.h>
@@ -1062,7 +1079,6 @@ public:
                     }
                 }
 
-            #if _XDK_VER >= 0x42ED07E4 /* XDK Edition 180400 */
                 ComPtr<IController3> ctrl3;
                 hr = mGamePad[player].As(&ctrl3);
                 if (SUCCEEDED(hr) && ctrl3)
@@ -1073,7 +1089,6 @@ public:
                     if (FAILED(ctrl3->get_HardwareProductId(&caps.pid)))
                         caps.pid = 0;
                 }
-            #endif
 
                 return;
             }
@@ -1226,6 +1241,13 @@ private:
 };
 
 GamePad::Impl* GamePad::Impl::s_gamePad = nullptr;
+
+void GamePad::RegisterEvents(HANDLE ctrlChanged, HANDLE userChanged) noexcept
+{
+    pImpl->mCtrlChanged = (!ctrlChanged) ? INVALID_HANDLE_VALUE : ctrlChanged;
+    pImpl->mUserChanged = (!userChanged) ? INVALID_HANDLE_VALUE : userChanged;
+}
+
 
 #else
 
@@ -1641,26 +1663,6 @@ void GamePad::Resume() noexcept
 {
     pImpl->Resume();
 }
-
-
-#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)
-void GamePad::RegisterEvents(HANDLE ctrlChanged) noexcept
-{
-    pImpl->mCtrlChanged = (!ctrlChanged) ? INVALID_HANDLE_VALUE : ctrlChanged;
-}
-
-_Success_(return)
-bool GamePad::GetDevice(int player, _Outptr_ IGameInputDevice** device) noexcept
-{
-    return pImpl->GetDevice(player, device);
-}
-#elif ((_WIN32_WINNT >= _WIN32_WINNT_WIN10) && !defined(_GAMING_DESKTOP)) || defined(_XBOX_ONE)
-void GamePad::RegisterEvents(HANDLE ctrlChanged, HANDLE userChanged) noexcept
-{
-    pImpl->mCtrlChanged = (!ctrlChanged) ? INVALID_HANDLE_VALUE : ctrlChanged;
-    pImpl->mUserChanged = (!userChanged) ? INVALID_HANDLE_VALUE : userChanged;
-}
-#endif
 
 
 GamePad& GamePad::Get()

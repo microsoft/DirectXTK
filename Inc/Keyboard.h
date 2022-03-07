@@ -10,10 +10,16 @@
 
 #pragma once
 
+#if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)) || (defined(_XBOX_ONE) && defined(_TITLE))
+#ifndef USING_COREWINDOW
+#define USING_COREWINDOW
+#endif
+#endif
+
 #include <cstdint>
 #include <memory>
 
-#if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)) || (defined(_XBOX_ONE) && defined(_TITLE))
+#ifdef USING_COREWINDOW
 namespace ABI { namespace Windows { namespace UI { namespace Core { struct ICoreWindow; } } } }
 #endif
 
@@ -462,11 +468,7 @@ namespace DirectX
         // Feature detection
         bool __cdecl IsConnected() const;
 
-    #if (!defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)) && defined(WM_USER)
-        static void __cdecl ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam);
-    #endif
-
-    #if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)) || (defined(_XBOX_ONE) && defined(_TITLE))
+    #ifdef USING_COREWINDOW
         void __cdecl SetWindow(ABI::Windows::UI::Core::ICoreWindow* window);
     #ifdef __cplusplus_winrt
         void __cdecl SetWindow(Windows::UI::Core::CoreWindow^ window)
@@ -482,7 +484,9 @@ namespace DirectX
             SetWindow(reinterpret_cast<ABI::Windows::UI::Core::ICoreWindow*>(winrt::get_abi(window)));
         }
     #endif
-    #endif // WINAPI_FAMILY == WINAPI_FAMILY_APP
+    #elif defined(WM_USER)
+        static void __cdecl ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam);
+    #endif
 
         // Singleton
         static Keyboard& __cdecl Get();

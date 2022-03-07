@@ -102,6 +102,12 @@
 #ifdef _GAMING_XBOX
 #error This version of DirectX Tool Kit not supported for GDK
 #elif defined(_XBOX_ONE) && defined(_TITLE)
+#include <xdk.h>
+
+#if _XDK_VER < 0x42ED07E4 /* XDK Edition 180400 */
+#error DirectX Tool Kit for Direct3D 11 requires the April 2018 XDK or later
+#endif
+
 #include <d3d11_x.h>
 #else
 #include <d3d11_1.h>
