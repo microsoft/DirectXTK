@@ -797,6 +797,15 @@ private:
             hr = currentPoint->get_Properties(props.GetAddressOf());
             ThrowIfFailed(hr);
 
+            boolean ishorz;
+            hr = props->get_IsHorizontalMouseWheel(&ishorz);
+            ThrowIfFailed(hr);
+            if (ishorz)
+            {
+                // Mouse only exposes the vertical scroll wheel.
+                return S_OK;
+            }
+
             INT32 value;
             hr = props->get_MouseWheelDelta(&value);
             ThrowIfFailed(hr);
