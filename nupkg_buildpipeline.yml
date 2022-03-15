@@ -173,7 +173,7 @@ jobs:
       InputType: 'Basic'
       ScanType: 'CustomScan'
       FileDirPath: $(Agent.BuildDirectory)
-      EnableServices: true
+      EnableSERVICEs: true
       SupportLogOnError: false
       TreatSignatureUpdateFailureAs: 'Warning'
       SignatureFreshness: 'OneDay'
@@ -370,7 +370,7 @@ jobs:
   - task: EsrpCodeSigning@1
     displayName: 'ESRP CodeSigning'
     inputs:
-      ConnectedServiceName: 5dd90be5-31a3-4635-b576-dc8f7e98b1d4
+      ConnectedServiceName: f0ff3588-df9f-4763-9fd8-9004aa6a6fdb
       FolderPath: $(Build.ArtifactStagingDirectory)
       Pattern: '*.nupkg'
       signConfigType: inlineSignParams
