@@ -1,0 +1,140 @@
+{
+  "version": "latest",
+  "suppressionSets": {
+    "dev15tooling": {
+      "name": "dev15tooling",
+      "createdDate": "2022-03-15 07:49:39Z",
+      "lastUpdatedDate": "2022-03-15 07:49:39Z"
+    }
+  },
+  "results": {
+    "a461019ddfad223fda6268fb42db94bce8da5fe9ad35aeefbe29bdb17515798a": {
+      "signature": "a461019ddfad223fda6268fb42db94bce8da5fe9ad35aeefbe29bdb17515798a",
+      "alternativeSignatures": [
+        "56169be496a8dfbb6d9ab5b5ede6bef7f5c4658a5c3189b20c0aa054896a3d88"
+      ],
+      "target": "XWBTool/Bin/Desktop_2017/ARM64/Release/XWBTool.exe",
+      "memberOf": [
+        "dev15tooling"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2022-03-15 07:49:39Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "8e80e107137c702c75032af4a5fc8733ed7fa1f6f3281769ae0ee91f77a7e450": {
+      "signature": "8e80e107137c702c75032af4a5fc8733ed7fa1f6f3281769ae0ee91f77a7e450",
+      "alternativeSignatures": [
+        "41469deac05e947c00c60f521c7deefaa813595ab63818a7e386052521b44300"
+      ],
+      "target": "XWBTool/Bin/Desktop_2017/ARM64/Release/XWBTool.exe",
+      "memberOf": [
+        "dev15tooling"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2024",
+      "justification": null,
+      "createdDate": "2022-03-15 07:49:39Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "bb92d5c94433ad63fcd5587890cde170dfc7ef52e7e9421c7ed5750e5d27ce16": {
+      "signature": "bb92d5c94433ad63fcd5587890cde170dfc7ef52e7e9421c7ed5750e5d27ce16",
+      "alternativeSignatures": [
+        "ad703654ed446293a9a500b8eff964f59844ecd5e5e0791573e2878ca4f664e1"
+      ],
+      "target": "XWBTool/Bin/Desktop_2017/Win32/Release/XWBTool.exe",
+      "memberOf": [
+        "dev15tooling"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2022-03-15 07:49:39Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "2bd5ecef65a94e20f99de4b095e94ef69229856bf827b234af4d3c6e4c256d0f": {
+      "signature": "2bd5ecef65a94e20f99de4b095e94ef69229856bf827b234af4d3c6e4c256d0f",
+      "alternativeSignatures": [
+        "17cb13b062b61e82294a3f36b6dc2ca03741da434c1a3abb09f0409b38cd76ba"
+      ],
+      "target": "XWBTool/Bin/Desktop_2017/Win32/Release/XWBTool.exe",
+      "memberOf": [
+        "dev15tooling"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2024",
+      "justification": null,
+      "createdDate": "2022-03-15 07:49:39Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "6fdd2feeac60051f61bc53d1020039b096d5b926feda19c12df4b74e5926b17f": {
+      "signature": "6fdd2feeac60051f61bc53d1020039b096d5b926feda19c12df4b74e5926b17f",
+      "alternativeSignatures": [
+        "4500f3c86ddeca269674f0cd75083b7bb57abe2aeb87c63f158bd157d6f63d12"
+      ],
+      "target": "XWBTool/Bin/Desktop_2017/Win32/Release/XWBTool.exe",
+      "memberOf": [
+        "dev15tooling"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2025",
+      "justification": null,
+      "createdDate": "2022-03-15 07:49:39Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "24d184a845d8792f2ff941bf4818fe2c5df3268ad906588067da80aca34eedec": {
+      "signature": "24d184a845d8792f2ff941bf4818fe2c5df3268ad906588067da80aca34eedec",
+      "alternativeSignatures": [
+        "deaa8b9b44e43e5fccb4b41eb8606c26568180af7820802d9a77f9a6b417301c"
+      ],
+      "target": "XWBTool/Bin/Desktop_2017/x64/Release/XWBTool.exe",
+      "memberOf": [
+        "dev15tooling"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2004",
+      "justification": null,
+      "createdDate": "2022-03-15 07:49:39Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "5c2b0fb436bf08e85d2c782986c4a0228294b57ac5b83486688bd134c17e9a96": {
+      "signature": "5c2b0fb436bf08e85d2c782986c4a0228294b57ac5b83486688bd134c17e9a96",
+      "alternativeSignatures": [
+        "7cc8a99ccfd315519ac4e415c82d814baef702dec77a27404046c9b9327679c0"
+      ],
+      "target": "XWBTool/Bin/Desktop_2017/x64/Release/XWBTool.exe",
+      "memberOf": [
+        "dev15tooling"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2024",
+      "justification": null,
+      "createdDate": "2022-03-15 07:49:39Z",
+      "expirationDate": null,
+      "type": null
+    },
+    "28a490a5688c4d4b2a8430c5e66ecbe52ae3a9c1b9518ecc153baf9aae28c7e6": {
+      "signature": "28a490a5688c4d4b2a8430c5e66ecbe52ae3a9c1b9518ecc153baf9aae28c7e6",
+      "alternativeSignatures": [
+        "eb9ddbc2806e2c3fe7212aae612f08d2a2830a30c53933e71bf4bf2028853496"
+      ],
+      "target": "XWBTool/Bin/Desktop_2017/x64/Release/XWBTool.exe",
+      "memberOf": [
+        "dev15tooling"
+      ],
+      "tool": "binskim",
+      "ruleId": "BA2025",
+      "justification": null,
+      "createdDate": "2022-03-15 07:49:39Z",
+      "expirationDate": null,
+      "type": null
+    }
+  }
+}
