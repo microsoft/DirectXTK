@@ -179,6 +179,13 @@ jobs:
       SignatureFreshness: 'OneDay'
       TreatStaleSignatureAs: 'Error'
     condition: always()
+  - task: BinSkim@4
+    displayName: 'Run BinSkim'
+    inputs:
+      arguments: XWBTool\Bin\Release\x64\xwbtool.exe;MakeSpriteFont\bin\Release\MakeSpriteFont.exe
+      AnalyzeTargetBinskim: ''
+      AnalyzeTargetGlob: +:file|**\Bin\**\Release\*.exe
+      AnalyzeVerbose: true
   - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@2
     displayName: 'Post Analysis'
     inputs:
