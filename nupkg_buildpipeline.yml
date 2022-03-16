@@ -186,7 +186,7 @@ jobs:
       GdnBreakPolicy: 'Microsoft'
       GdnBreakPolicyMinSev: 'Error'
       GdnBreakGdnToolCredScan: true
-      GdnBreakSuppressionFiles: '.config\directxtk.gdnsuppress'
+      GdnBreakSuppressionFiles: 'directxtk.gdnsuppress'
       GdnBreakSuppressionSets: dev15tooling
   - task: CopyFiles@2
     displayName: 'Copy Tools'
