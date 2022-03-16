@@ -232,9 +232,7 @@ jobs:
     displayName: 'NuGet pack'
     inputs:
       command: pack
-      searchPatternPack: |
-          .nuget/directxtk_desktop_2017.nuspec
-          .nuget/directxtk_desktop_win10.nuspec
+      searchPatternPack: .nuget/directxtk_desktop_2017.nuspec;.nuget/directxtk_desktop_win10.nuspec
       configurationToPack: ''
       versioningScheme: byBuildNumber
       basePath: .\
