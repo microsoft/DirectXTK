@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-cmake_minimum_required (VERSION 3.11)
+cmake_minimum_required (VERSION 3.13)
 
 set(DIRECTXTK_VERSION 1.8.1)
 
@@ -28,6 +28,10 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/CMake")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/CMake")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/CMake")
+
+if (DEFINED VCPKG_TARGET_ARCHITECTURE)
+    set(DIRECTX_ARCH ${VCPKG_TARGET_ARCHITECTURE})
+endif()
 
 #--- Library
 set(LIBRARY_HEADERS
@@ -271,21 +275,7 @@ if(MSVC)
       target_compile_options(xwbtool PRIVATE /fp:fast)
     endif()
 
-   if(ENABLE_CODE_ANALYSIS)
-      target_compile_options(${PROJECT_NAME} PRIVATE /analyze)
-      if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
-        target_compile_options(xwbtool PRIVATE /analyze)
-      endif()
-   endif()
-
-    if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.26)
-        target_compile_options(${PROJECT_NAME} PRIVATE /Zc:preprocessor /wd5104 /wd5105)
-        if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
-          target_compile_options(xwbtool PRIVATE /Zc:preprocessor /wd5104 /wd5105)
-        endif()
-    endif()
-
-    if (${CMAKE_SIZEOF_VOID_P} EQUAL "4" AND (NOT ${CMAKE_VS_PLATFORM_NAME} MATCHES "arm"))
+    if((${CMAKE_SIZEOF_VOID_P} EQUAL 4) AND (NOT ${DIRECTX_ARCH} MATCHES "arm"))
         target_compile_options(${PROJECT_NAME} PRIVATE /arch:SSE2)
         if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
           target_compile_options(xwbtool PRIVATE /arch:SSE2)
@@ -306,10 +296,38 @@ if ( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
 endif()
 if ( CMAKE_CXX_COMPILER_ID MATCHES "MSVC" )
     target_compile_options(${PROJECT_NAME} PRIVATE /permissive- /JMC- /Zc:__cplusplus)
-
     if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
       target_compile_options(xwbtool PRIVATE /permissive- /Zc:__cplusplus)
+    endif()
 
+    if(ENABLE_CODE_ANALYSIS)
+      target_compile_options(${PROJECT_NAME} PRIVATE /analyze)
+      if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
+        target_compile_options(xwbtool PRIVATE /analyze)
+      endif()
+    endif()
+
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.24)
+        target_compile_options(${PROJECT_NAME} PRIVATE /ZH:SHA_256)
+        if(BUILD_TOOLS AND WIN32 AND (NOT WINDOWS_STORE))
+          target_compile_options(xwbtool PRIVATE /ZH:SHA_256)
+        endif()
+    endif()
+
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.26)
+        target_compile_options(${PROJECT_NAME} PRIVATE /Zc:preprocessor /wd5104 /wd5105)
+        if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
+          target_compile_options(xwbtool PRIVATE /Zc:preprocessor /wd5104 /wd5105)
+        endif()
+    endif()
+
+    if ((CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.27) AND (NOT (${DIRECTX_ARCH} MATCHES "arm(64)?")))
+        if(BUILD_TOOLS AND WIN32 AND (NOT WINDOWS_STORE))
+          target_link_options(xwbtool PRIVATE /CETCOMPAT)
+        endif()
+    endif()
+
+    if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
       set(WarningsEXE "/wd4365" "/wd4514" "/wd4625" "/wd4626" "/wd4627" "/wd4710" "/wd4820" "/wd5026" "/wd5027" "/wd5039" "/wd5045")
       target_compile_options(xwbtool PRIVATE ${WarningsEXE})
     endif()
