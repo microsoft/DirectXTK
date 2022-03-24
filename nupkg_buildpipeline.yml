@@ -188,10 +188,9 @@ jobs:
   - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@2
     displayName: 'Post Analysis'
     inputs:
-      GdnBreakAllTools: false
+      GdnBreakAllTools: true
       GdnBreakPolicy: 'Microsoft'
       GdnBreakPolicyMinSev: 'Error'
-      GdnBreakGdnToolCredScan: true
       GdnBreakSuppressionFiles: '$(Build.SourcesDirectory)\.gdn\directxtk.gdnsuppress'
       GdnBreakSuppressionSets: dev15tooling
   - task: CopyFiles@2
