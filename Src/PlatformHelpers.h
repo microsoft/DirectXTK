@@ -23,6 +23,15 @@
                 | (static_cast<uint32_t>(static_cast<uint8_t>(ch3)) << 24))
 #endif /* defined(MAKEFOURCC) */
 
+// See https://walbourn.github.io/modern-c++-bitmask-types/
+#ifndef ENUM_FLAGS_CONSTEXPR
+    #ifdef NTDDI_WIN10_RS1
+    #define ENUM_FLAGS_CONSTEXPR constexpr
+    #else
+    #define ENUM_FLAGS_CONSTEXPR const
+    #endif
+#endif
+
 namespace DirectX
 {
     // Helper class for COM exceptions
