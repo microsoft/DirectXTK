@@ -17,6 +17,7 @@
         "value": "x64",
         "strategy": "external"
       },
+      "cacheVariables": { "DIRECTX_ARCH": "x64" },
       "hidden": true
     },
     {
@@ -25,6 +26,7 @@
         "value": "x86",
         "strategy": "external"
       },
+      "cacheVariables": { "DIRECTX_ARCH": "x86" },
       "hidden": true
     },
     {
@@ -33,6 +35,7 @@
         "value": "arm",
         "strategy": "external"
       },
+      "cacheVariables": { "DIRECTX_ARCH": "arm" },
       "hidden": true
     },
     {
@@ -41,6 +44,7 @@
         "value": "arm64",
         "strategy": "external"
       },
+      "cacheVariables": { "DIRECTX_ARCH": "arm64" },
       "hidden": true
     },
 
