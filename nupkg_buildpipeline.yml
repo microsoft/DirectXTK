@@ -59,6 +59,8 @@ jobs:
       version: 2.1.x
   - task: NuGetToolInstaller@1
     displayName: 'Use NuGet'
+  - task: NuGetAuthenticate@0
+    displayName: 'NuGet authentication'
   - task: NuGetCommand@2
     displayName: 'NuGet restore'
     inputs:
@@ -289,6 +291,8 @@ jobs:
       version: 2.1.x
   - task: NuGetToolInstaller@1
     displayName: 'Use NuGet'
+  - task: NuGetAuthenticate@0
+    displayName: 'NuGet authentication'
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Windows10_2017.sln 32dbg
     inputs:
@@ -360,10 +364,9 @@ jobs:
   - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@2
     displayName: 'Post Analysis'
     inputs:
-      GdnBreakAllTools: false
+      GdnBreakAllTools: true
       GdnBreakPolicy: 'Microsoft'
       GdnBreakPolicyMinSev: 'Error'
-      GdnBreakGdnToolCredScan: true
   - task: NuGetCommand@2
     displayName: 'NuGet pack'
     inputs:
