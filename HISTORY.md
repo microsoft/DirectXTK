@@ -6,6 +6,13 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### March 24, 2022
+* Fixed bug in UWP implementation of Mouse that combined vertical/horizontal scroll-wheel input
+* Code refactoring for input classes (GamePad, Keyboard, and Mouse)
+* Update build switches for SDL recommendations
+* CMake project updates and UWP platform CMakePresets
+* Dropped support for legacy Xbox One XDK prior to April 2018
+
 ### February 28, 2022
 * SimpleMath Matrix updated with ToEuler and Vector3 version of CreateFromYawPitchRoll methods
 * SimpleMath Quaternion updated with ToEuler, RotateTowards, FromToRotation, LookRotation, and Angle methods
