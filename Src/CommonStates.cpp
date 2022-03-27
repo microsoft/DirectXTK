@@ -23,8 +23,9 @@ class CommonStates::Impl
 {
 public:
     explicit Impl(_In_ ID3D11Device* device) noexcept
-      : mDevice(device)
-    { }
+        : mDevice(device)
+    {
+    }
 
     HRESULT CreateBlendState(D3D11_BLEND srcBlend, D3D11_BLEND destBlend, _Outptr_ ID3D11BlendState** pResult);
     HRESULT CreateDepthStencilState(bool enable, bool writeEnable, bool reverseZ, _Outptr_ ID3D11DepthStencilState** pResult);
@@ -75,11 +76,11 @@ HRESULT CommonStates::Impl::CreateBlendState(
     D3D11_BLEND_DESC desc = {};
 
     desc.RenderTarget[0].BlendEnable = (srcBlend != D3D11_BLEND_ONE) ||
-                                       (destBlend != D3D11_BLEND_ZERO);
+        (destBlend != D3D11_BLEND_ZERO);
 
-    desc.RenderTarget[0].SrcBlend  = desc.RenderTarget[0].SrcBlendAlpha  = srcBlend;
+    desc.RenderTarget[0].SrcBlend = desc.RenderTarget[0].SrcBlendAlpha = srcBlend;
     desc.RenderTarget[0].DestBlend = desc.RenderTarget[0].DestBlendAlpha = destBlend;
-    desc.RenderTarget[0].BlendOp   = desc.RenderTarget[0].BlendOpAlpha   = D3D11_BLEND_OP_ADD;
+    desc.RenderTarget[0].BlendOp = desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 
     desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
@@ -181,7 +182,7 @@ HRESULT CommonStates::Impl::CreateSamplerState(
 
 // Public constructor.
 CommonStates::CommonStates(_In_ ID3D11Device* device)
-  : pImpl(Impl::instancePool.DemandCreate(device))
+    : pImpl(Impl::instancePool.DemandCreate(device))
 {
 }
 
@@ -198,36 +199,36 @@ CommonStates::~CommonStates() = default;
 ID3D11BlendState* CommonStates::Opaque() const
 {
     return DemandCreate(pImpl->opaque, pImpl->mutex, [&](ID3D11BlendState** pResult)
-    {
-        return pImpl->CreateBlendState(D3D11_BLEND_ONE, D3D11_BLEND_ZERO, pResult);
-    });
+        {
+            return pImpl->CreateBlendState(D3D11_BLEND_ONE, D3D11_BLEND_ZERO, pResult);
+        });
 }
 
 
 ID3D11BlendState* CommonStates::AlphaBlend() const
 {
     return DemandCreate(pImpl->alphaBlend, pImpl->mutex, [&](ID3D11BlendState** pResult)
-    {
-        return pImpl->CreateBlendState(D3D11_BLEND_ONE, D3D11_BLEND_INV_SRC_ALPHA, pResult);
-    });
+        {
+            return pImpl->CreateBlendState(D3D11_BLEND_ONE, D3D11_BLEND_INV_SRC_ALPHA, pResult);
+        });
 }
 
 
 ID3D11BlendState* CommonStates::Additive() const
 {
     return DemandCreate(pImpl->additive, pImpl->mutex, [&](ID3D11BlendState** pResult)
-    {
-        return pImpl->CreateBlendState(D3D11_BLEND_SRC_ALPHA, D3D11_BLEND_ONE, pResult);
-    });
+        {
+            return pImpl->CreateBlendState(D3D11_BLEND_SRC_ALPHA, D3D11_BLEND_ONE, pResult);
+        });
 }
 
 
 ID3D11BlendState* CommonStates::NonPremultiplied() const
 {
     return DemandCreate(pImpl->nonPremultiplied, pImpl->mutex, [&](ID3D11BlendState** pResult)
-    {
-        return pImpl->CreateBlendState(D3D11_BLEND_SRC_ALPHA, D3D11_BLEND_INV_SRC_ALPHA, pResult);
-    });
+        {
+            return pImpl->CreateBlendState(D3D11_BLEND_SRC_ALPHA, D3D11_BLEND_INV_SRC_ALPHA, pResult);
+        });
 }
 
 
@@ -238,27 +239,27 @@ ID3D11BlendState* CommonStates::NonPremultiplied() const
 ID3D11DepthStencilState* CommonStates::DepthNone() const
 {
     return DemandCreate(pImpl->depthNone, pImpl->mutex, [&](ID3D11DepthStencilState** pResult)
-    {
-        return pImpl->CreateDepthStencilState(false, false, false, pResult);
-    });
+        {
+            return pImpl->CreateDepthStencilState(false, false, false, pResult);
+        });
 }
 
 
 ID3D11DepthStencilState* CommonStates::DepthDefault() const
 {
     return DemandCreate(pImpl->depthDefault, pImpl->mutex, [&](ID3D11DepthStencilState** pResult)
-    {
-        return pImpl->CreateDepthStencilState(true, true, false, pResult);
-    });
+        {
+            return pImpl->CreateDepthStencilState(true, true, false, pResult);
+        });
 }
 
 
 ID3D11DepthStencilState* CommonStates::DepthRead() const
 {
     return DemandCreate(pImpl->depthRead, pImpl->mutex, [&](ID3D11DepthStencilState** pResult)
-    {
-        return pImpl->CreateDepthStencilState(true, false, false, pResult);
-    });
+        {
+            return pImpl->CreateDepthStencilState(true, false, false, pResult);
+        });
 }
 
 
@@ -287,36 +288,36 @@ ID3D11DepthStencilState* CommonStates::DepthReadReverseZ() const
 ID3D11RasterizerState* CommonStates::CullNone() const
 {
     return DemandCreate(pImpl->cullNone, pImpl->mutex, [&](ID3D11RasterizerState** pResult)
-    {
-        return pImpl->CreateRasterizerState(D3D11_CULL_NONE, D3D11_FILL_SOLID, pResult);
-    });
+        {
+            return pImpl->CreateRasterizerState(D3D11_CULL_NONE, D3D11_FILL_SOLID, pResult);
+        });
 }
 
 
 ID3D11RasterizerState* CommonStates::CullClockwise() const
 {
     return DemandCreate(pImpl->cullClockwise, pImpl->mutex, [&](ID3D11RasterizerState** pResult)
-    {
-        return pImpl->CreateRasterizerState(D3D11_CULL_FRONT, D3D11_FILL_SOLID, pResult);
-    });
+        {
+            return pImpl->CreateRasterizerState(D3D11_CULL_FRONT, D3D11_FILL_SOLID, pResult);
+        });
 }
 
 
 ID3D11RasterizerState* CommonStates::CullCounterClockwise() const
 {
     return DemandCreate(pImpl->cullCounterClockwise, pImpl->mutex, [&](ID3D11RasterizerState** pResult)
-    {
-        return pImpl->CreateRasterizerState(D3D11_CULL_BACK, D3D11_FILL_SOLID, pResult);
-    });
+        {
+            return pImpl->CreateRasterizerState(D3D11_CULL_BACK, D3D11_FILL_SOLID, pResult);
+        });
 }
 
 
 ID3D11RasterizerState* CommonStates::Wireframe() const
 {
     return DemandCreate(pImpl->wireframe, pImpl->mutex, [&](ID3D11RasterizerState** pResult)
-    {
-        return pImpl->CreateRasterizerState(D3D11_CULL_NONE, D3D11_FILL_WIREFRAME, pResult);
-    });
+        {
+            return pImpl->CreateRasterizerState(D3D11_CULL_NONE, D3D11_FILL_WIREFRAME, pResult);
+        });
 }
 
 
@@ -327,52 +328,52 @@ ID3D11RasterizerState* CommonStates::Wireframe() const
 ID3D11SamplerState* CommonStates::PointWrap() const
 {
     return DemandCreate(pImpl->pointWrap, pImpl->mutex, [&](ID3D11SamplerState** pResult)
-    {
-        return pImpl->CreateSamplerState(D3D11_FILTER_MIN_MAG_MIP_POINT, D3D11_TEXTURE_ADDRESS_WRAP, pResult);
-    });
+        {
+            return pImpl->CreateSamplerState(D3D11_FILTER_MIN_MAG_MIP_POINT, D3D11_TEXTURE_ADDRESS_WRAP, pResult);
+        });
 }
 
 
 ID3D11SamplerState* CommonStates::PointClamp() const
 {
     return DemandCreate(pImpl->pointClamp, pImpl->mutex, [&](ID3D11SamplerState** pResult)
-    {
-        return pImpl->CreateSamplerState(D3D11_FILTER_MIN_MAG_MIP_POINT, D3D11_TEXTURE_ADDRESS_CLAMP, pResult);
-    });
+        {
+            return pImpl->CreateSamplerState(D3D11_FILTER_MIN_MAG_MIP_POINT, D3D11_TEXTURE_ADDRESS_CLAMP, pResult);
+        });
 }
 
 
 ID3D11SamplerState* CommonStates::LinearWrap() const
 {
     return DemandCreate(pImpl->linearWrap, pImpl->mutex, [&](ID3D11SamplerState** pResult)
-    {
-        return pImpl->CreateSamplerState(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, pResult);
-    });
+        {
+            return pImpl->CreateSamplerState(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, pResult);
+        });
 }
 
 
 ID3D11SamplerState* CommonStates::LinearClamp() const
 {
     return DemandCreate(pImpl->linearClamp, pImpl->mutex, [&](ID3D11SamplerState** pResult)
-    {
-        return pImpl->CreateSamplerState(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_CLAMP, pResult);
-    });
+        {
+            return pImpl->CreateSamplerState(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_CLAMP, pResult);
+        });
 }
 
 
 ID3D11SamplerState* CommonStates::AnisotropicWrap() const
 {
     return DemandCreate(pImpl->anisotropicWrap, pImpl->mutex, [&](ID3D11SamplerState** pResult)
-    {
-        return pImpl->CreateSamplerState(D3D11_FILTER_ANISOTROPIC, D3D11_TEXTURE_ADDRESS_WRAP, pResult);
-    });
+        {
+            return pImpl->CreateSamplerState(D3D11_FILTER_ANISOTROPIC, D3D11_TEXTURE_ADDRESS_WRAP, pResult);
+        });
 }
 
 
 ID3D11SamplerState* CommonStates::AnisotropicClamp() const
 {
     return DemandCreate(pImpl->anisotropicClamp, pImpl->mutex, [&](ID3D11SamplerState** pResult)
-    {
-        return pImpl->CreateSamplerState(D3D11_FILTER_ANISOTROPIC, D3D11_TEXTURE_ADDRESS_CLAMP, pResult);
-    });
+        {
+            return pImpl->CreateSamplerState(D3D11_FILTER_ANISOTROPIC, D3D11_TEXTURE_ADDRESS_CLAMP, pResult);
+        });
 }

@@ -9,8 +9,8 @@ sampler Sampler : register(s0);
 
 cbuffer Parameters : register(b0)
 {
-    float linearExposure    : packoffset(c0.x);
-    float paperWhiteNits    : packoffset(c0.y);
+    float linearExposure : packoffset(c0.x);
+    float paperWhiteNits : packoffset(c0.y);
     float4x3 colorRotation  : packoffset(c1);
 };
 

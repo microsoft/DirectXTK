@@ -26,17 +26,17 @@ cbuffer Constants : register(b0)
 
     float3 LightDirection[3]        : packoffset(c16);
     float3 LightColor[3]            : packoffset(c19);   // "Specular and diffuse light" in PBR
- 
-    float3 ConstantAlbedo           : packoffset(c22);   // Constant values if not a textured effect
-    float  Alpha                    : packoffset(c22.w);
-    float  ConstantMetallic         : packoffset(c23.x);
-    float  ConstantRoughness        : packoffset(c23.y);
 
-    int NumRadianceMipLevels        : packoffset(c23.z);
+    float3 ConstantAlbedo           : packoffset(c22);   // Constant values if not a textured effect
+    float  Alpha : packoffset(c22.w);
+    float  ConstantMetallic : packoffset(c23.x);
+    float  ConstantRoughness : packoffset(c23.y);
+
+    int NumRadianceMipLevels : packoffset(c23.z);
 
     // Size of render target
-    float TargetWidth               : packoffset(c23.w);
-    float TargetHeight              : packoffset(c24.x);
+    float TargetWidth : packoffset(c23.w);
+    float TargetHeight : packoffset(c24.x);
 };
 
 cbuffer SkinningParameters : register(b1)
@@ -57,7 +57,7 @@ VSOutputPixelLightingTx VSConstant(VSInputNmTx vin)
     VSOutputPixelLightingTx vout;
 
     CommonVSOutputPixelLighting cout = ComputeCommonVSOutputPixelLighting(vin.Position, vin.Normal);
-    
+
     vout.PositionPS = cout.Pos_ps;
     vout.PositionWS = float4(cout.Pos_ws, 1);
     vout.NormalWS = cout.Normal_ws;
@@ -93,7 +93,7 @@ VSOut_Velocity VSConstantVelocity(VSInputNmTx vin)
     VSOut_Velocity vout;
 
     CommonVSOutputPixelLighting cout = ComputeCommonVSOutputPixelLighting(vin.Position, vin.Normal);
-    
+
     vout.current.PositionPS = cout.Pos_ps;
     vout.current.PositionWS = float4(cout.Pos_ws, 1);
     vout.current.NormalWS = cout.Normal_ws;

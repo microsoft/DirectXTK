@@ -28,8 +28,8 @@ namespace Bezier
             p4 * t * t * t;
     }
 
-     template<>
-     inline DirectX::XMVECTOR CubicInterpolate(DirectX::XMVECTOR const& p1, DirectX::XMVECTOR const& p2, DirectX::XMVECTOR const& p3, DirectX::XMVECTOR const& p4, float t) noexcept
+    template<>
+    inline DirectX::XMVECTOR CubicInterpolate(DirectX::XMVECTOR const& p1, DirectX::XMVECTOR const& p2, DirectX::XMVECTOR const& p3, DirectX::XMVECTOR const& p4, float t) noexcept
     {
         using namespace DirectX;
 

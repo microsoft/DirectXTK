@@ -67,7 +67,8 @@ namespace DirectX
     public:
         explicit PrimitiveBatch(_In_ ID3D11DeviceContext* deviceContext, size_t maxIndices = DefaultBatchSize * 3, size_t maxVertices = DefaultBatchSize)
             : PrimitiveBatchBase(deviceContext, maxIndices, maxVertices, sizeof(TVertex))
-        { }
+        {
+        }
 
         PrimitiveBatch(PrimitiveBatch&&) = default;
         PrimitiveBatch& operator= (PrimitiveBatch&&) = default;

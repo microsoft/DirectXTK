@@ -227,7 +227,7 @@ void WaveBank::Impl::Play(unsigned int index, float volume, float pitch, float p
     buffer.Flags = XAUDIO2_END_OF_STREAM;
     buffer.pContext = this;
 
-    #ifdef DIRECTX_ENABLE_XWMA
+#ifdef DIRECTX_ENABLE_XWMA
 
     XAUDIO2_BUFFER_WMA wmaBuffer = {};
 
@@ -274,7 +274,7 @@ WaveBank::WaveBank(AudioEngine* engine, const wchar_t* wbFileName)
     }
 
     DebugTrace("INFO: WaveBank \"%hs\" with %u entries loaded from .xwb file \"%ls\"\n",
-               pImpl->mReader.BankName(), pImpl->mReader.Count(), wbFileName);
+        pImpl->mReader.BankName(), pImpl->mReader.Count(), wbFileName);
 }
 
 
@@ -587,13 +587,13 @@ bool WaveBank::GetPrivateData(unsigned int index, void* data, size_t datasize)
 
     switch (datasize)
     {
-        case sizeof(WaveBankReader::Metadata):
+        case sizeof(WaveBankReader::Metadata) :
         {
             auto ptr = reinterpret_cast<WaveBankReader::Metadata*>(data);
             return SUCCEEDED(pImpl->mReader.GetMetadata(index, *ptr));
         }
 
-        case sizeof(WaveBankSeekData):
+        case sizeof(WaveBankSeekData) :
         {
             auto ptr = reinterpret_cast<WaveBankSeekData*>(data);
             return SUCCEEDED(pImpl->mReader.GetSeekTable(index, &ptr->seekTable, ptr->seekCount, ptr->tag));

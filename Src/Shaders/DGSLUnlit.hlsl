@@ -6,9 +6,9 @@
 // <Visual Studio install folder>\Common7\IDE\Extensions\Microsoft\VsGraphics\Assets\Effects\Unlit.dgsl 
 //
 
-Texture2D Texture1 : register( t0 );
+Texture2D Texture1 : register(t0);
 
-SamplerState TexSampler : register( s0 );
+SamplerState TexSampler : register(s0);
 
 cbuffer MaterialVars : register (b0)
 {
@@ -67,9 +67,9 @@ struct P2F
 //
 // combines a float3 RGB value with an alpha value into a float4
 //
-float4 CombineRGBWithAlpha(float3 rgb, float a) 
-{ 
-    return float4(rgb.r, rgb.g, rgb.b, a); 
+float4 CombineRGBWithAlpha(float3 rgb, float a)
+{
+    return float4(rgb.r, rgb.g, rgb.b, a);
 }
 
 P2F main(V2P pixel)

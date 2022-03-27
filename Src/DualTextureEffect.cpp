@@ -59,21 +59,21 @@ public:
 namespace
 {
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    #include "XboxOneDualTextureEffect_VSDualTexture.inc"
-    #include "XboxOneDualTextureEffect_VSDualTextureNoFog.inc"
-    #include "XboxOneDualTextureEffect_VSDualTextureVc.inc"
-    #include "XboxOneDualTextureEffect_VSDualTextureVcNoFog.inc"
+#include "XboxOneDualTextureEffect_VSDualTexture.inc"
+#include "XboxOneDualTextureEffect_VSDualTextureNoFog.inc"
+#include "XboxOneDualTextureEffect_VSDualTextureVc.inc"
+#include "XboxOneDualTextureEffect_VSDualTextureVcNoFog.inc"
 
-    #include "XboxOneDualTextureEffect_PSDualTexture.inc"
-    #include "XboxOneDualTextureEffect_PSDualTextureNoFog.inc"
+#include "XboxOneDualTextureEffect_PSDualTexture.inc"
+#include "XboxOneDualTextureEffect_PSDualTextureNoFog.inc"
 #else
-    #include "DualTextureEffect_VSDualTexture.inc"
-    #include "DualTextureEffect_VSDualTextureNoFog.inc"
-    #include "DualTextureEffect_VSDualTextureVc.inc"
-    #include "DualTextureEffect_VSDualTextureVcNoFog.inc"
+#include "DualTextureEffect_VSDualTexture.inc"
+#include "DualTextureEffect_VSDualTextureNoFog.inc"
+#include "DualTextureEffect_VSDualTextureVc.inc"
+#include "DualTextureEffect_VSDualTextureVcNoFog.inc"
 
-    #include "DualTextureEffect_PSDualTexture.inc"
-    #include "DualTextureEffect_PSDualTextureNoFog.inc"
+#include "DualTextureEffect_PSDualTexture.inc"
+#include "DualTextureEffect_PSDualTextureNoFog.inc"
 #endif
 }
 
@@ -125,7 +125,7 @@ SharedResourcePool<ID3D11Device*, EffectBase<DualTextureEffectTraits>::DeviceRes
 
 // Constructor.
 DualTextureEffect::Impl::Impl(_In_ ID3D11Device* device)
-  : EffectBase(device),
+    : EffectBase(device),
     vertexColorEnabled(false)
 {
     static_assert(static_cast<int>(std::size(EffectBase<DualTextureEffectTraits>::VertexShaderIndices)) == DualTextureEffectTraits::ShaderPermutationCount, "array/max mismatch");
@@ -183,7 +183,7 @@ void DualTextureEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
 
 // Public constructor.
 DualTextureEffect::DualTextureEffect(_In_ ID3D11Device* device)
-  : pImpl(std::make_unique<Impl>(device))
+    : pImpl(std::make_unique<Impl>(device))
 {
 }
 

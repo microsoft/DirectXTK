@@ -93,9 +93,9 @@ SpriteFont::Impl::Impl(
     ID3D11Device* device,
     BinaryReader* reader,
     bool forceSRGB) noexcept(false) :
-        defaultGlyph(nullptr),
-        lineSpacing(0),
-        utfBufferSize(0)
+    defaultGlyph(nullptr),
+    lineSpacing(0),
+    utfBufferSize(0)
 {
     // Validate the header.
     for (char const* magic = spriteFontMagic; *magic; magic++)
@@ -162,11 +162,11 @@ SpriteFont::Impl::Impl(
     Glyph const* iglyphs,
     size_t glyphCount,
     float ilineSpacing) noexcept(false) :
-        texture(itexture),
-        glyphs(iglyphs, iglyphs + glyphCount),
-        defaultGlyph(nullptr),
-        lineSpacing(ilineSpacing),
-        utfBufferSize(0)
+    texture(itexture),
+    glyphs(iglyphs, iglyphs + glyphCount),
+    defaultGlyph(nullptr),
+    lineSpacing(ilineSpacing),
+    utfBufferSize(0)
 {
     if (!std::is_sorted(iglyphs, iglyphs + glyphCount))
     {
@@ -255,37 +255,37 @@ void SpriteFont::Impl::ForEachGlyph(_In_z_ wchar_t const* text, TAction action, 
 
         switch (character)
         {
-            case '\r':
-                // Skip carriage returns.
-                continue;
+        case '\r':
+            // Skip carriage returns.
+            continue;
 
-            case '\n':
-                // New line.
+        case '\n':
+            // New line.
+            x = 0;
+            y += lineSpacing;
+            break;
+
+        default:
+            // Output this character.
+            auto glyph = FindGlyph(character);
+
+            x += glyph->XOffset;
+
+            if (x < 0)
                 x = 0;
-                y += lineSpacing;
-                break;
 
-            default:
-                // Output this character.
-                auto glyph = FindGlyph(character);
+            const float advance = float(glyph->Subrect.right) - float(glyph->Subrect.left) + glyph->XAdvance;
 
-                x += glyph->XOffset;
+            if (!ignoreWhitespace
+                || !iswspace(character)
+                || ((glyph->Subrect.right - glyph->Subrect.left) > 1)
+                || ((glyph->Subrect.bottom - glyph->Subrect.top) > 1))
+            {
+                action(glyph, x, y, advance);
+            }
 
-                if (x < 0)
-                    x = 0;
-
-                const float advance = float(glyph->Subrect.right) - float(glyph->Subrect.left) + glyph->XAdvance;
-
-                if (!ignoreWhitespace
-                    || !iswspace(character)
-                    || ((glyph->Subrect.right - glyph->Subrect.left) > 1)
-                    || ((glyph->Subrect.bottom - glyph->Subrect.top) > 1))
-                {
-                    action(glyph, x, y, advance);
-                }
-
-                x += advance;
-                break;
+            x += advance;
+            break;
         }
     }
 }
@@ -418,9 +418,9 @@ void XM_CALLCONV SpriteFont::DrawString(_In_ SpriteBatch* spriteBatch, _In_z_ wc
 void XM_CALLCONV SpriteFont::DrawString(_In_ SpriteBatch* spriteBatch, _In_z_ wchar_t const* text, FXMVECTOR position, FXMVECTOR color, float rotation, FXMVECTOR origin, GXMVECTOR scale, SpriteEffects effects, float layerDepth) const
 {
     static_assert(SpriteEffects_FlipHorizontally == 1 &&
-                  SpriteEffects_FlipVertically == 2, "If you change these enum values, the following tables must be updated to match");
+        SpriteEffects_FlipVertically == 2, "If you change these enum values, the following tables must be updated to match");
 
-    // Lookup table indicates which way to move along each axis per SpriteEffects enum value.
+// Lookup table indicates which way to move along each axis per SpriteEffects enum value.
     static XMVECTORF32 axisDirectionTable[4] =
     {
         { { { -1, -1, 0, 0 } } },
@@ -451,24 +451,24 @@ void XM_CALLCONV SpriteFont::DrawString(_In_ SpriteBatch* spriteBatch, _In_z_ wc
 
     // Draw each character in turn.
     pImpl->ForEachGlyph(text, [&](Glyph const* glyph, float x, float y, float advance)
-    {
-        UNREFERENCED_PARAMETER(advance);
-
-        XMVECTOR offset = XMVectorMultiplyAdd(XMVectorSet(x, y + glyph->YOffset, 0, 0), axisDirectionTable[effects & 3], baseOffset);
-
-        if (effects)
         {
-            // For mirrored characters, specify bottom and/or right instead of top left.
-            XMVECTOR glyphRect = XMConvertVectorIntToFloat(XMLoadInt4(reinterpret_cast<uint32_t const*>(&glyph->Subrect)), 0);
+            UNREFERENCED_PARAMETER(advance);
 
-            // xy = glyph width/height.
-            glyphRect = XMVectorSubtract(XMVectorSwizzle<2, 3, 0, 1>(glyphRect), glyphRect);
+            XMVECTOR offset = XMVectorMultiplyAdd(XMVectorSet(x, y + glyph->YOffset, 0, 0), axisDirectionTable[effects & 3], baseOffset);
 
-            offset = XMVectorMultiplyAdd(glyphRect, axisIsMirroredTable[effects & 3], offset);
-        }
+            if (effects)
+            {
+                // For mirrored characters, specify bottom and/or right instead of top left.
+                XMVECTOR glyphRect = XMConvertVectorIntToFloat(XMLoadInt4(reinterpret_cast<uint32_t const*>(&glyph->Subrect)), 0);
 
-        spriteBatch->Draw(pImpl->texture.Get(), position, &glyph->Subrect, color, rotation, offset, scale, effects, layerDepth);
-    }, true);
+                // xy = glyph width/height.
+                glyphRect = XMVectorSubtract(XMVectorSwizzle<2, 3, 0, 1>(glyphRect), glyphRect);
+
+                offset = XMVectorMultiplyAdd(glyphRect, axisIsMirroredTable[effects & 3], offset);
+            }
+
+            spriteBatch->Draw(pImpl->texture.Get(), position, &glyph->Subrect, color, rotation, offset, scale, effects, layerDepth);
+        }, true);
 }
 
 

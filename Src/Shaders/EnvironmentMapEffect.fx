@@ -16,8 +16,8 @@ sampler EnvMapSampler : register(s1);
 cbuffer Parameters : register(b0)
 {
     float3 EnvironmentMapSpecular   : packoffset(c0);
-    float  EnvironmentMapAmount     : packoffset(c1.x);
-    float  FresnelFactor            : packoffset(c1.y);
+    float  EnvironmentMapAmount : packoffset(c1.x);
+    float  FresnelFactor : packoffset(c1.y);
 
     float4 DiffuseColor             : packoffset(c2);
     float3 EmissiveColor            : packoffset(c3);
