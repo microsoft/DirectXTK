@@ -55,6 +55,7 @@ public:
 };
 
 
+#pragma region Shaders
 // Include the precompiled shader code.
 namespace
 {
@@ -116,7 +117,7 @@ const int EffectBase<DualTextureEffectTraits>::PixelShaderIndices[] =
     0,      // vertex color
     1,      // vertex color, no fog
 };
-
+#pragma endregion
 
 // Global pool of per-device DualTextureEffect resources.
 template<>

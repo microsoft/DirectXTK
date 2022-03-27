@@ -38,6 +38,8 @@ namespace
     static_assert((sizeof(PostProcessConstants) % 16) == 0, "CB size not padded correctly");
 }
 
+
+#pragma region Shaders
 // Include the precompiled shader code.
 namespace
 {
@@ -52,10 +54,7 @@ namespace
 #include "PostProcess_PSMerge.inc"
 #include "PostProcess_PSBloomCombine.inc"
 #endif
-}
 
-namespace
-{
     struct ShaderBytecode
     {
         void const* code;
@@ -122,6 +121,8 @@ namespace
         std::mutex                  mMutex;
     };
 }
+#pragma endregion
+
 
 class DualPostProcess::Impl : public AlignedNew<PostProcessConstants>
 {

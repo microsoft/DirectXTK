@@ -68,6 +68,7 @@ public:
 };
 
 
+#pragma region Shaders
 // Include the precompiled shader code.
 namespace
 {
@@ -262,7 +263,7 @@ const int EffectBase<SkinnedEffectTraits>::PixelShaderIndices[] =
     2,      // pixel lighting (biased vertex normals), four bones
     2,      // pixel lighting (biased vertex normals), four bones, no fog
 };
-
+#pragma endregion
 
 // Global pool of per-device SkinnedEffect resources.
 template<>

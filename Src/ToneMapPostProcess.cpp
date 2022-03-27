@@ -69,6 +69,8 @@ namespace
     };
 }
 
+
+#pragma region Shaders
 // Include the precompiled shader code.
 namespace
 {
@@ -236,6 +238,8 @@ namespace
         std::mutex                  mMutex;
     };
 }
+#pragma endregion
+
 
 class ToneMapPostProcess::Impl : public AlignedNew<ToneMapConstants>
 {

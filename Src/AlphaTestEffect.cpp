@@ -56,6 +56,7 @@ public:
 };
 
 
+#pragma region Shaders
 // Include the precompiled shader code.
 namespace
 {
@@ -131,7 +132,7 @@ const int EffectBase<AlphaTestEffectTraits>::PixelShaderIndices[] =
     2,      // eq/ne, vertex color
     3,      // eq/ne, vertex color, no fog
 };
-
+#pragma endregion
 
 // Global pool of per-device AlphaTestEffect resources.
 template<>

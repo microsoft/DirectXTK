@@ -48,6 +48,7 @@ namespace
 }
 
 
+#pragma region Implementations
 #if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)
 
 #include <GameInput.h>
@@ -568,6 +569,7 @@ void Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 #endif
+#pragma endregion
 
 #pragma warning( disable : 4355 )
 

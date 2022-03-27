@@ -120,6 +120,8 @@ namespace
     };
 }
 
+
+#pragma region Shaders
 // Include the precompiled shader code.
 namespace
 {
@@ -212,6 +214,7 @@ const ShaderBytecode DGSLEffectTraits::PixelShaderBytecode[] =
     { DGSLLambert_mainTxTk, sizeof(DGSLLambert_mainTxTk) }, // LAMBERT (textured, discard)
     { DGSLPhong_mainTxTk, sizeof(DGSLPhong_mainTxTk) },     // PHONG (textured, discard)
 };
+#pragma endregion
 
 
 class DGSLEffect::Impl : public AlignedNew<DGSLEffectConstants>

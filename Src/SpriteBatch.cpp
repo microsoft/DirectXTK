@@ -31,8 +31,7 @@ namespace
 #include "SpriteEffect_SpritePixelShader.inc"
 #endif
 
-
-// Helper looks up the D3D device corresponding to a context interface.
+    // Helper looks up the D3D device corresponding to a context interface.
     inline ComPtr<ID3D11Device> GetDevice(_In_ ID3D11DeviceContext* deviceContext)
     {
         ComPtr<ID3D11Device> device;

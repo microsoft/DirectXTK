@@ -81,6 +81,7 @@ namespace
 }
 
 
+#pragma region Implementations
 #ifdef USING_GAMEINPUT
 
 #include <GameInput.h>
@@ -1600,6 +1601,7 @@ private:
 GamePad::Impl* GamePad::Impl::s_gamePad = nullptr;
 
 #endif
+#pragma endregion
 
 #pragma warning( disable : 4355 )
 

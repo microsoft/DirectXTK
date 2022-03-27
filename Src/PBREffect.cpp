@@ -101,6 +101,7 @@ private:
 };
 
 
+#pragma region Shaders
 // Include the precompiled shader code.
 namespace
 {
@@ -239,6 +240,7 @@ const int EffectBase<PBREffectTraits>::PixelShaderIndices[] =
     3,      // textured + velocity (biased vertex normals)
     4,      // textured + emissive + velocity (biased vertex normals)
 };
+#pragma endregion
 
 // Global pool of per-device PBREffect resources. Required by EffectBase<>, but not used.
 template<>

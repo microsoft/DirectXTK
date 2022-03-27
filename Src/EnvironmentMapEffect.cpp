@@ -76,6 +76,7 @@ public:
 };
 
 
+#pragma region Shaders
 // Include the precompiled shader code.
 namespace
 {
@@ -336,7 +337,7 @@ const int EffectBase<EnvironmentMapEffectTraits>::PixelShaderIndices[] =
     14,     // dual-parabola pixel lighting (biased vertex normals), fresnel
     15,     // dual-parabola pixel lighting (biased vertex normals), fresnel, no fog
 };
-
+#pragma endregion
 
 // Global pool of per-device EnvironmentMapEffect resources.
 template<>

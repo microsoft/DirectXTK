@@ -93,6 +93,7 @@ private:
 };
 
 
+#pragma region Shaders
 // Include the precompiled shader code.
 namespace
 {
@@ -278,7 +279,7 @@ const int EffectBase<NormalMapEffectTraits>::PixelShaderIndices[] =
     2,      // skinning + pixel lighting (biased vertex normal) + texture, no specular
     3,      // skinning + pixel lighting (biased vertex normal) + texture, no fog or specular
 };
-
+#pragma endregion
 
 // Global pool of per-device NormalMapEffect resources.
 template<>

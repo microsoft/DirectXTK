@@ -68,6 +68,7 @@ public:
 };
 
 
+#pragma region Shaders
 // Include the precompiled shader code.
 namespace
 {
@@ -375,7 +376,7 @@ const int EffectBase<BasicEffectTraits>::PixelShaderIndices[] =
     9,      // pixel lighting (biased vertex normals) + texture + vertex color
     9,      // pixel lighting (biased vertex normals) + texture + vertex color, no fog
 };
-
+#pragma endregion
 
 // Global pool of per-device BasicEffect resources.
 template<>

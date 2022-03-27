@@ -55,6 +55,7 @@ public:
 };
 
 
+#pragma region Shaders
 // Include the precompiled shader code.
 namespace
 {
@@ -208,7 +209,7 @@ const int EffectBase<DebugEffectTraits>::PixelShaderIndices[] =
     2,      // instancing + vertex color (biased vertex normal) + tangents
     3,      // instancing + vertex color (biased vertex normal) + bitangents
 };
-
+#pragma endregion
 
 // Global pool of per-deviceDebugEffect resources.
 template<>

@@ -44,6 +44,7 @@ namespace
     }
 }
 
+#pragma region Shaders
 // Include the precompiled shader code.
 namespace
 {
@@ -70,10 +71,7 @@ namespace
 #include "PostProcess_PSBloomExtract.inc"
 #include "PostProcess_PSBloomBlur.inc"
 #endif
-}
 
-namespace
-{
     struct ShaderBytecode
     {
         void const* code;
@@ -146,6 +144,8 @@ namespace
         std::mutex                  mMutex;
     };
 }
+#pragma endregion
+
 
 class BasicPostProcess::Impl : public AlignedNew<PostProcessConstants>
 {

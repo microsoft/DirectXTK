@@ -16,7 +16,7 @@
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
-
+#pragma region Implementations
 #if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)
 
 #include <GameInput.h>
@@ -1355,6 +1355,7 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 #endif
+#pragma endregion
 
 #pragma warning( disable : 4355 )
 
