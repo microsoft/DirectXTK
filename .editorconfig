@@ -1,6 +1,17 @@
 root = true
 
-[*.{cpp,h,hpp,inl,fx,fxh,hlsl,hlsli}]
+[*.{fx,fxh,hlsl,hlsli}]
+indent_size = 4
+indent_style = space
+trim_trailing_whitespace = true
+insert_final_newline = true
+end_of_line = crlf
+charset = latin1
+cpp_space_before_function_open_parenthesis = remove
+cpp_space_around_binary_operator = ignore
+cpp_space_pointer_reference_alignment = ignore
+
+[*.{cpp,h,hpp,inl}]
 indent_size = 4
 indent_style = space
 trim_trailing_whitespace = true

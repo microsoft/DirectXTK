@@ -28,11 +28,11 @@ cbuffer Constants : register(b0)
     float3 LightColor[3]            : packoffset(c19);   // "Specular and diffuse light" in PBR
 
     float3 ConstantAlbedo           : packoffset(c22);   // Constant values if not a textured effect
-    float  Alpha : packoffset(c22.w);
-    float  ConstantMetallic : packoffset(c23.x);
-    float  ConstantRoughness : packoffset(c23.y);
+    float  Alpha                    : packoffset(c22.w);
+    float  ConstantMetallic         : packoffset(c23.x);
+    float  ConstantRoughness        : packoffset(c23.y);
 
-    int NumRadianceMipLevels : packoffset(c23.z);
+    int NumRadianceMipLevels        : packoffset(c23.z);
 
     // Size of render target
     float TargetWidth : packoffset(c23.w);

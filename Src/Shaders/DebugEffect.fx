@@ -7,7 +7,7 @@
 cbuffer Parameters : register(b0)
 {
     float3 AmbientDown              : packoffset(c0);
-    float  Alpha : packoffset(c0.w);
+    float  Alpha                    : packoffset(c0.w);
     float3 AmbientRange             : packoffset(c1);
 
     float4x4 World                  : packoffset(c2);
