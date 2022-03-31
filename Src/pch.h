@@ -100,7 +100,7 @@
 #endif
 
 #ifdef _GAMING_XBOX
-#error This version of DirectX Tool Kit not supported for GDK
+#error This version of DirectX Tool Kit not supported for GDKX
 #elif defined(_XBOX_ONE) && defined(_TITLE)
 #include <xdk.h>
 
