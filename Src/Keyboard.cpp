@@ -48,6 +48,7 @@ namespace
 }
 
 
+#pragma region Implementations
 #if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)
 
 #include <GameInput.h>
@@ -515,46 +516,46 @@ void Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 
     switch (message)
     {
-        case WM_ACTIVATE:
-        case WM_ACTIVATEAPP:
-            pImpl->Reset();
-            return;
+    case WM_ACTIVATE:
+    case WM_ACTIVATEAPP:
+        pImpl->Reset();
+        return;
 
-        case WM_KEYDOWN:
-        case WM_SYSKEYDOWN:
-            down = true;
-            break;
+    case WM_KEYDOWN:
+    case WM_SYSKEYDOWN:
+        down = true;
+        break;
 
-        case WM_KEYUP:
-        case WM_SYSKEYUP:
-            break;
+    case WM_KEYUP:
+    case WM_SYSKEYUP:
+        break;
 
-        default:
-            return;
+    default:
+        return;
     }
 
     int vk = static_cast<int>(wParam);
     switch (vk)
     {
-        case VK_SHIFT:
-            vk = static_cast<int>(
-                MapVirtualKeyW((static_cast<UINT>(lParam) & 0x00ff0000) >> 16u,
-                    MAPVK_VSC_TO_VK_EX));
-            if (!down)
-            {
-                // Workaround to ensure left vs. right shift get cleared when both were pressed at same time
-                KeyUp(VK_LSHIFT, pImpl->mState);
-                KeyUp(VK_RSHIFT, pImpl->mState);
-            }
-            break;
+    case VK_SHIFT:
+        vk = static_cast<int>(
+            MapVirtualKeyW((static_cast<UINT>(lParam) & 0x00ff0000) >> 16u,
+                MAPVK_VSC_TO_VK_EX));
+        if (!down)
+        {
+            // Workaround to ensure left vs. right shift get cleared when both were pressed at same time
+            KeyUp(VK_LSHIFT, pImpl->mState);
+            KeyUp(VK_RSHIFT, pImpl->mState);
+        }
+        break;
 
-        case VK_CONTROL:
-            vk = (static_cast<UINT>(lParam) & 0x01000000) ? VK_RCONTROL : VK_LCONTROL;
-            break;
+    case VK_CONTROL:
+        vk = (static_cast<UINT>(lParam) & 0x01000000) ? VK_RCONTROL : VK_LCONTROL;
+        break;
 
-        case VK_MENU:
-            vk = (static_cast<UINT>(lParam) & 0x01000000) ? VK_RMENU : VK_LMENU;
-            break;
+    case VK_MENU:
+        vk = (static_cast<UINT>(lParam) & 0x01000000) ? VK_RMENU : VK_LMENU;
+        break;
     }
 
     if (down)
@@ -568,6 +569,7 @@ void Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 #endif
+#pragma endregion
 
 #pragma warning( disable : 4355 )
 

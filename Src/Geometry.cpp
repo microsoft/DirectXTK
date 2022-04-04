@@ -327,9 +327,9 @@ void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indi
                     XMStoreFloat3(
                         &outVertex,
                         XMVectorScale(
-                        XMVectorAdd(XMLoadFloat3(&vertexPositions[i0]), XMLoadFloat3(&vertexPositions[i1])),
-                        0.5f
-                    )
+                            XMVectorAdd(XMLoadFloat3(&vertexPositions[i0]), XMLoadFloat3(&vertexPositions[i1])),
+                            0.5f
+                        )
                     );
 
                     outIndex = static_cast<uint16_t>(vertexPositions.size());
@@ -1140,15 +1140,15 @@ namespace
         // Create the index data.
         size_t vbase = vertices.size();
         Bezier::CreatePatchIndices(tessellation, isMirrored, [&](size_t index)
-                                   {
-                                       index_push_back(indices, vbase + index);
-                                   });
+            {
+                index_push_back(indices, vbase + index);
+            });
 
-                                   // Create the vertex data.
+        // Create the vertex data.
         Bezier::CreatePatchVertices(controlPoints, tessellation, isMirrored, [&](FXMVECTOR position, FXMVECTOR normal, FXMVECTOR textureCoordinate)
-                                    {
-                                        vertices.push_back(VertexPositionNormalTexture(position, normal, textureCoordinate));
-                                    });
+            {
+                vertices.push_back(VertexPositionNormalTexture(position, normal, textureCoordinate));
+            });
     }
 }
 

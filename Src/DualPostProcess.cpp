@@ -25,8 +25,8 @@ namespace
 {
     constexpr int c_MaxSamples = 16;
 
-    constexpr int Dirty_ConstantBuffer  = 0x01;
-    constexpr int Dirty_Parameters      = 0x02;
+    constexpr int Dirty_ConstantBuffer = 0x01;
+    constexpr int Dirty_Parameters = 0x02;
 
     // Constant buffer layout. Must match the shader!
     XM_ALIGNED_STRUCT(16) PostProcessConstants
@@ -38,24 +38,23 @@ namespace
     static_assert((sizeof(PostProcessConstants) % 16) == 0, "CB size not padded correctly");
 }
 
+
+#pragma region Shaders
 // Include the precompiled shader code.
 namespace
 {
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    #include "XboxOnePostProcess_VSQuad.inc"
+#include "XboxOnePostProcess_VSQuad.inc"
 
-    #include "XboxOnePostProcess_PSMerge.inc"
-    #include "XboxOnePostProcess_PSBloomCombine.inc"
+#include "XboxOnePostProcess_PSMerge.inc"
+#include "XboxOnePostProcess_PSBloomCombine.inc"
 #else
-    #include "PostProcess_VSQuad.inc"
+#include "PostProcess_VSQuad.inc"
 
-    #include "PostProcess_PSMerge.inc"
-    #include "PostProcess_PSBloomCombine.inc"
+#include "PostProcess_PSMerge.inc"
+#include "PostProcess_PSBloomCombine.inc"
 #endif
-}
 
-namespace
-{
     struct ShaderBytecode
     {
         void const* code;
@@ -86,14 +85,14 @@ namespace
         ID3D11VertexShader* GetVertexShader()
         {
             return DemandCreate(mVertexShader, mMutex, [&](ID3D11VertexShader** pResult) -> HRESULT
-            {
-                HRESULT hr = mDevice->CreateVertexShader(PostProcess_VSQuad, sizeof(PostProcess_VSQuad), nullptr, pResult);
+                {
+                    HRESULT hr = mDevice->CreateVertexShader(PostProcess_VSQuad, sizeof(PostProcess_VSQuad), nullptr, pResult);
 
-                if (SUCCEEDED(hr))
-                    SetDebugObjectName(*pResult, "DualPostProcess");
+                    if (SUCCEEDED(hr))
+                        SetDebugObjectName(*pResult, "DualPostProcess");
 
-                return hr;
-            });
+                    return hr;
+                });
         }
 
         // Gets or lazily creates the specified pixel shader.
@@ -103,14 +102,14 @@ namespace
             _Analysis_assume_(shaderIndex < DualPostProcess::Effect_Max);
 
             return DemandCreate(mPixelShaders[shaderIndex], mMutex, [&](ID3D11PixelShader** pResult) -> HRESULT
-            {
-                HRESULT hr = mDevice->CreatePixelShader(pixelShaders[shaderIndex].code, pixelShaders[shaderIndex].length, nullptr, pResult);
+                {
+                    HRESULT hr = mDevice->CreatePixelShader(pixelShaders[shaderIndex].code, pixelShaders[shaderIndex].length, nullptr, pResult);
 
-                if (SUCCEEDED(hr))
-                    SetDebugObjectName(*pResult, "DualPostProcess");
+                    if (SUCCEEDED(hr))
+                        SetDebugObjectName(*pResult, "DualPostProcess");
 
-                return hr;
-            });
+                    return hr;
+                });
         }
 
         CommonStates                stateObjects;
@@ -122,6 +121,8 @@ namespace
         std::mutex                  mMutex;
     };
 }
+#pragma endregion
+
 
 class DualPostProcess::Impl : public AlignedNew<PostProcessConstants>
 {
@@ -269,7 +270,7 @@ void DualPostProcess::Impl::Process(
 
 // Public constructor.
 DualPostProcess::DualPostProcess(_In_ ID3D11Device* device)
-  : pImpl(std::make_unique<Impl>(device))
+    : pImpl(std::make_unique<Impl>(device))
 {
 }
 

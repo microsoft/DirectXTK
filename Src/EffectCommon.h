@@ -30,14 +30,14 @@ namespace DirectX
     // Bitfield tracks which derived parameter values need to be recomputed.
     namespace EffectDirtyFlags
     {
-        constexpr int ConstantBuffer        = 0x01;
-        constexpr int WorldViewProj         = 0x02;
+        constexpr int ConstantBuffer = 0x01;
+        constexpr int WorldViewProj = 0x02;
         constexpr int WorldInverseTranspose = 0x04;
-        constexpr int EyePosition           = 0x08;
-        constexpr int MaterialColor         = 0x10;
-        constexpr int FogVector             = 0x20;
-        constexpr int FogEnable             = 0x40;
-        constexpr int AlphaTest             = 0x80;
+        constexpr int EyePosition = 0x08;
+        constexpr int MaterialColor = 0x10;
+        constexpr int FogVector = 0x20;
+        constexpr int FogEnable = 0x40;
+        constexpr int AlphaTest = 0x80;
     }
 
 
@@ -124,11 +124,12 @@ namespace DirectX
     {
     public:
         EffectDeviceResources(_In_ ID3D11Device* device) noexcept
-          : mDevice(device)
-        { }
+            : mDevice(device)
+        {
+        }
 
         ID3D11VertexShader* DemandCreateVertexShader(_Inout_ Microsoft::WRL::ComPtr<ID3D11VertexShader>& vertexShader, ShaderBytecode const& bytecode);
-        ID3D11PixelShader * DemandCreatePixelShader (_Inout_ Microsoft::WRL::ComPtr<ID3D11PixelShader> & pixelShader,  ShaderBytecode const& bytecode);
+        ID3D11PixelShader * DemandCreatePixelShader(_Inout_ Microsoft::WRL::ComPtr<ID3D11PixelShader> & pixelShader, ShaderBytecode const& bytecode);
         ID3D11ShaderResourceView* GetDefaultTexture();
         ID3D11ShaderResourceView* GetDefaultNormalTexture();
         D3D_FEATURE_LEVEL GetDeviceFeatureLevel() const;
@@ -149,7 +150,7 @@ namespace DirectX
     public:
         // Constructor.
         EffectBase(_In_ ID3D11Device* device)
-          : constants{},
+            : constants{},
             dirtyFlags(INT_MAX),
             mConstantBuffer(device),
             mDeviceResources(deviceResourcesPool.DemandCreate(device))
@@ -202,7 +203,7 @@ namespace DirectX
             deviceContext->VSSetShader(vertexShader, nullptr, 0);
             deviceContext->PSSetShader(pixelShader, nullptr, 0);
 
-#if defined(_XBOX_ONE) && defined(_TITLE)
+        #if defined(_XBOX_ONE) && defined(_TITLE)
             void *grfxMemory;
             mConstantBuffer.SetData(deviceContext, constants, &grfxMemory);
 
@@ -213,8 +214,8 @@ namespace DirectX
 
             deviceContextX->VSSetPlacementConstantBuffer(0, buffer, grfxMemory);
             deviceContextX->PSSetPlacementConstantBuffer(0, buffer, grfxMemory);
-#else
-            // Make sure the constant buffer is up to date.
+        #else
+                    // Make sure the constant buffer is up to date.
             if (dirtyFlags & EffectDirtyFlags::ConstantBuffer)
             {
                 mConstantBuffer.SetData(deviceContext, constants);
@@ -227,7 +228,7 @@ namespace DirectX
 
             deviceContext->VSSetConstantBuffers(0, 1, &buffer);
             deviceContext->PSSetConstantBuffers(0, 1, &buffer);
-#endif
+        #endif
         }
 
 
@@ -254,7 +255,7 @@ namespace DirectX
         {
         public:
             DeviceResources(_In_ ID3D11Device* device) noexcept
-              : EffectDeviceResources(device),
+                : EffectDeviceResources(device),
                 mVertexShaders{},
                 mPixelShaders{}
             { }

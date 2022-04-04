@@ -473,7 +473,9 @@ namespace DirectX
     {
     public:
         explicit DGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader = nullptr) :
-            DGSLEffect(device, pixelShader, false) {}
+            DGSLEffect(device, pixelShader, false)
+        {
+        }
 
         DGSLEffect(DGSLEffect&&) noexcept;
         DGSLEffect& operator= (DGSLEffect&&) noexcept;
@@ -549,7 +551,9 @@ namespace DirectX
     {
     public:
         explicit SkinnedDGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader = nullptr) :
-            DGSLEffect(device, pixelShader, true) {}
+            DGSLEffect(device, pixelShader, true)
+        {
+        }
 
         SkinnedDGSLEffect(SkinnedDGSLEffect&&) = default;
         SkinnedDGSLEffect& operator= (SkinnedDGSLEffect&&) = default;
@@ -569,7 +573,9 @@ namespace DirectX
     {
     public:
         explicit NormalMapEffect(_In_ ID3D11Device* device) :
-            NormalMapEffect(device, false) {}
+            NormalMapEffect(device, false)
+        {
+        }
 
         NormalMapEffect(NormalMapEffect&&) noexcept;
         NormalMapEffect& operator= (NormalMapEffect&&) noexcept;
@@ -646,7 +652,9 @@ namespace DirectX
     {
     public:
         explicit SkinnedNormalMapEffect(_In_ ID3D11Device* device) :
-            NormalMapEffect(device, true) {}
+            NormalMapEffect(device, true)
+        {
+        }
 
         SkinnedNormalMapEffect(SkinnedNormalMapEffect&&) = default;
         SkinnedNormalMapEffect& operator= (SkinnedNormalMapEffect&&) = default;
@@ -666,7 +674,9 @@ namespace DirectX
     {
     public:
         explicit PBREffect(_In_ ID3D11Device* device) :
-            PBREffect(device, false) {}
+            PBREffect(device, false)
+        {
+        }
 
         PBREffect(PBREffect&&) noexcept;
         PBREffect& operator= (PBREffect&&) noexcept;
@@ -748,7 +758,9 @@ namespace DirectX
     {
     public:
         explicit SkinnedPBREffect(_In_ ID3D11Device* device) :
-            PBREffect(device, true) {}
+            PBREffect(device, true)
+        {
+        }
 
         SkinnedPBREffect(SkinnedPBREffect&&) = default;
         SkinnedPBREffect& operator= (SkinnedPBREffect&&) = default;
@@ -863,7 +875,8 @@ namespace DirectX
                 specularTexture(nullptr),
                 normalTexture(nullptr),
                 emissiveTexture(nullptr)
-                {}
+            {
+            }
         };
 
         virtual std::shared_ptr<IEffect> __cdecl CreateEffect(_In_ const EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext) = 0;
@@ -984,7 +997,7 @@ namespace DirectX
                 EffectInfo(),
                 textures{},
                 pixelShader(nullptr)
-                {}
+            {}
         };
 
         virtual std::shared_ptr<IEffect> __cdecl CreateDGSLEffect(_In_ const DGSLEffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext);

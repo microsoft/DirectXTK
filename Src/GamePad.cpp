@@ -55,12 +55,12 @@ namespace
     {
         switch (deadZoneMode)
         {
-            case GamePad::DEAD_ZONE_INDEPENDENT_AXES:
-                resultX = ApplyLinearDeadZone(x, maxValue, deadZoneSize);
-                resultY = ApplyLinearDeadZone(y, maxValue, deadZoneSize);
-                break;
+        case GamePad::DEAD_ZONE_INDEPENDENT_AXES:
+            resultX = ApplyLinearDeadZone(x, maxValue, deadZoneSize);
+            resultY = ApplyLinearDeadZone(y, maxValue, deadZoneSize);
+            break;
 
-            case GamePad::DEAD_ZONE_CIRCULAR:
+        case GamePad::DEAD_ZONE_CIRCULAR:
             {
                 const float dist = sqrtf(x*x + y * y);
                 const float wanted = ApplyLinearDeadZone(dist, maxValue, deadZoneSize);
@@ -72,15 +72,16 @@ namespace
             }
             break;
 
-            default: // GamePad::DEAD_ZONE_NONE
-                resultX = ApplyLinearDeadZone(x, maxValue, 0);
-                resultY = ApplyLinearDeadZone(y, maxValue, 0);
-                break;
+        default: // GamePad::DEAD_ZONE_NONE
+            resultX = ApplyLinearDeadZone(x, maxValue, 0);
+            resultY = ApplyLinearDeadZone(y, maxValue, 0);
+            break;
         }
     }
 }
 
 
+#pragma region Implementations
 #ifdef USING_GAMEINPUT
 
 #include <GameInput.h>
@@ -289,7 +290,7 @@ public:
     }
 
     _Success_(return)
-    bool GetDevice(int player, _Outptr_ IGameInputDevice** device) noexcept
+        bool GetDevice(int player, _Outptr_ IGameInputDevice** device) noexcept
     {
         if (!device)
             return false;
@@ -536,12 +537,12 @@ public:
                     state.dpad.left = (reading.Buttons & GamepadButtons::GamepadButtons_DPadLeft) != 0;
 
                     ApplyStickDeadZone(static_cast<float>(reading.LeftThumbstickX), static_cast<float>(reading.LeftThumbstickY),
-                                       deadZoneMode, 1.f, c_XboxOneThumbDeadZone,
-                                       state.thumbSticks.leftX, state.thumbSticks.leftY);
+                        deadZoneMode, 1.f, c_XboxOneThumbDeadZone,
+                        state.thumbSticks.leftX, state.thumbSticks.leftY);
 
                     ApplyStickDeadZone(static_cast<float>(reading.RightThumbstickX), static_cast<float>(reading.RightThumbstickY),
-                                       deadZoneMode, 1.f, c_XboxOneThumbDeadZone,
-                                       state.thumbSticks.rightX, state.thumbSticks.rightY);
+                        deadZoneMode, 1.f, c_XboxOneThumbDeadZone,
+                        state.thumbSticks.rightX, state.thumbSticks.rightY);
 
                     state.triggers.left = static_cast<float>(reading.LeftTrigger);
                     state.triggers.right = static_cast<float>(reading.RightTrigger);
@@ -1011,12 +1012,12 @@ public:
                     state.dpad.left = (reading.Buttons & GamepadButtons::GamepadButtons_DPadLeft) != 0;
 
                     ApplyStickDeadZone(reading.LeftThumbstickX, reading.LeftThumbstickY,
-                                       deadZoneMode, 1.f, c_XboxOneThumbDeadZone,
-                                       state.thumbSticks.leftX, state.thumbSticks.leftY);
+                        deadZoneMode, 1.f, c_XboxOneThumbDeadZone,
+                        state.thumbSticks.leftX, state.thumbSticks.leftY);
 
                     ApplyStickDeadZone(reading.RightThumbstickX, reading.RightThumbstickY,
-                                       deadZoneMode, 1.f, c_XboxOneThumbDeadZone,
-                                       state.thumbSticks.rightX, state.thumbSticks.rightY);
+                        deadZoneMode, 1.f, c_XboxOneThumbDeadZone,
+                        state.thumbSticks.rightX, state.thumbSticks.rightY);
 
                     state.triggers.left = reading.LeftTrigger;
                     state.triggers.right = reading.RightTrigger;
@@ -1353,12 +1354,12 @@ public:
                 }
 
                 ApplyStickDeadZone(float(xstate.Gamepad.sThumbLX), float(xstate.Gamepad.sThumbLY),
-                                   deadZoneMode, 32767.f, float(XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE),
-                                   state.thumbSticks.leftX, state.thumbSticks.leftY);
+                    deadZoneMode, 32767.f, float(XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE),
+                    state.thumbSticks.leftX, state.thumbSticks.leftY);
 
                 ApplyStickDeadZone(float(xstate.Gamepad.sThumbRX), float(xstate.Gamepad.sThumbRY),
-                                   deadZoneMode, 32767.f, float(XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE),
-                                   state.thumbSticks.rightX, state.thumbSticks.rightY);
+                    deadZoneMode, 32767.f, float(XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE),
+                    state.thumbSticks.rightX, state.thumbSticks.rightY);
 
                 return;
             }
@@ -1600,6 +1601,7 @@ private:
 GamePad::Impl* GamePad::Impl::s_gamePad = nullptr;
 
 #endif
+#pragma endregion
 
 #pragma warning( disable : 4355 )
 
@@ -1681,27 +1683,31 @@ GamePad& GamePad::Get()
 
 #define UPDATE_BUTTON_STATE(field) field = static_cast<ButtonState>( ( !!state.buttons.field ) | ( ( !!state.buttons.field ^ !!lastState.buttons.field ) << 1 ) );
 
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Wextra-semi-stmt"
+#endif
+
 void GamePad::ButtonStateTracker::Update(const GamePad::State& state) noexcept
 {
-    UPDATE_BUTTON_STATE(a)
+    UPDATE_BUTTON_STATE(a);
 
     assert((!state.buttons.a && !lastState.buttons.a) == (a == UP));
     assert((state.buttons.a && lastState.buttons.a) == (a == HELD));
     assert((!state.buttons.a && lastState.buttons.a) == (a == RELEASED));
     assert((state.buttons.a && !lastState.buttons.a) == (a == PRESSED));
 
-    UPDATE_BUTTON_STATE(b)
-    UPDATE_BUTTON_STATE(x)
-    UPDATE_BUTTON_STATE(y)
+    UPDATE_BUTTON_STATE(b);
+    UPDATE_BUTTON_STATE(x);
+    UPDATE_BUTTON_STATE(y);
 
-    UPDATE_BUTTON_STATE(leftStick)
-    UPDATE_BUTTON_STATE(rightStick)
+    UPDATE_BUTTON_STATE(leftStick);
+    UPDATE_BUTTON_STATE(rightStick);
 
-    UPDATE_BUTTON_STATE(leftShoulder)
-    UPDATE_BUTTON_STATE(rightShoulder)
+    UPDATE_BUTTON_STATE(leftShoulder);
+    UPDATE_BUTTON_STATE(rightShoulder);
 
-    UPDATE_BUTTON_STATE(back)
-    UPDATE_BUTTON_STATE(start)
+    UPDATE_BUTTON_STATE(back);
+    UPDATE_BUTTON_STATE(start);
 
     dpadUp = static_cast<ButtonState>((!!state.dpad.up) | ((!!state.dpad.up ^ !!lastState.dpad.up) << 1));
     dpadDown = static_cast<ButtonState>((!!state.dpad.down) | ((!!state.dpad.down ^ !!lastState.dpad.down) << 1));

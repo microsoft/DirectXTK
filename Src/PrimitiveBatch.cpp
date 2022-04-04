@@ -108,7 +108,7 @@ namespace
 
 // Constructor.
 PrimitiveBatchBase::Impl::Impl(_In_ ID3D11DeviceContext* deviceContext, size_t maxIndices, size_t maxVertices, size_t vertexSize)
-  : mMaxIndices(maxIndices),
+    : mMaxIndices(maxIndices),
     mMaxVertices(maxVertices),
     mVertexSize(vertexSize),
     mCurrentTopology(D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED),
@@ -122,8 +122,10 @@ PrimitiveBatchBase::Impl::Impl(_In_ ID3D11DeviceContext* deviceContext, size_t m
     grfxMemoryIB(nullptr),
     grfxMemoryVB(nullptr)
 #else
-    mMappedIndices{},
-    mMappedVertices{}
+    mMappedIndices
+{
+},
+mMappedVertices{}
 #endif
 {
     ComPtr<ID3D11Device> device;
@@ -420,7 +422,7 @@ void PrimitiveBatchBase::Impl::FlushBatch()
 
 // Public constructor.
 PrimitiveBatchBase::PrimitiveBatchBase(_In_ ID3D11DeviceContext* deviceContext, size_t maxIndices, size_t maxVertices, size_t vertexSize)
-  : pImpl(std::make_unique<Impl>(deviceContext, maxIndices, maxVertices, vertexSize))
+    : pImpl(std::make_unique<Impl>(deviceContext, maxIndices, maxVertices, vertexSize))
 {
 }
 

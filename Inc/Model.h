@@ -44,13 +44,13 @@ namespace DirectX
     // Model loading options
     enum ModelLoaderFlags : uint32_t
     {
-        ModelLoader_Clockwise           = 0x0,
-        ModelLoader_CounterClockwise    = 0x1,
-        ModelLoader_PremultipledAlpha   = 0x2,
-        ModelLoader_MaterialColorsSRGB  = 0x4,
-        ModelLoader_AllowLargeModels    = 0x8,
-        ModelLoader_IncludeBones        = 0x10,
-        ModelLoader_DisableSkinning     = 0x20,
+        ModelLoader_Clockwise = 0x0,
+        ModelLoader_CounterClockwise = 0x1,
+        ModelLoader_PremultipledAlpha = 0x2,
+        ModelLoader_MaterialColorsSRGB = 0x4,
+        ModelLoader_AllowLargeModels = 0x8,
+        ModelLoader_IncludeBones = 0x10,
+        ModelLoader_DisableSkinning = 0x20,
     };
 
     //----------------------------------------------------------------------------------
@@ -61,13 +61,15 @@ namespace DirectX
             parentIndex(c_Invalid),
             childIndex(c_Invalid),
             siblingIndex(c_Invalid)
-        {}
+        {
+        }
 
         ModelBone(uint32_t parent, uint32_t child, uint32_t sibling) noexcept :
             parentIndex(parent),
             childIndex(child),
             siblingIndex(sibling)
-        {}
+        {
+        }
 
         uint32_t            parentIndex;
         uint32_t            childIndex;

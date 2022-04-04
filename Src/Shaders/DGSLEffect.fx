@@ -15,7 +15,7 @@ cbuffer MaterialVars : register (b0)
     float4 MaterialEmissive;
     float MaterialSpecularPower;
 };
-  
+
 cbuffer ObjectVars : register(b2)
 {
     float4x4 LocalToWorld4x4;
@@ -90,7 +90,7 @@ void Skin(inout A2V_Weights vertex, uniform int boneCount)
     [unroll]
     for (int i = 0; i < boneCount; i++)
     {
-        skinning += Bones[ vertex.boneIndices[i] ] * vertex.blendWeights[ i ];
+        skinning += Bones[vertex.boneIndices[i]] * vertex.blendWeights[i];
     }
 
     vertex.pos.xyz = mul(vertex.pos, skinning);
@@ -118,9 +118,9 @@ void SkinVc(inout A2V_WeightsVc vertex, uniform int boneCount)
 V2P main(A2V vertex)
 {
     V2P result;
-  
+
     float3 wp = mul(vertex.pos, LocalToWorld4x4).xyz;
-  
+
     // set output data
     result.pos = mul(vertex.pos, LocalToProjected4x4);
     result.diffuse = MaterialDiffuse;
@@ -130,7 +130,7 @@ V2P main(A2V vertex)
     result.toEye = EyePosition - wp;
     result.tangent = vertex.tangent;
     result.normal = vertex.normal;
-  
+
     return result;
 }
 
@@ -139,9 +139,9 @@ V2P main(A2V vertex)
 V2P mainVc(A2V_Vc vertex)
 {
     V2P result;
-  
+
     float3 wp = mul(vertex.pos, LocalToWorld4x4).xyz;
-  
+
     // set output data
     result.pos = mul(vertex.pos, LocalToProjected4x4);
     result.diffuse = vertex.color * MaterialDiffuse;
@@ -151,7 +151,7 @@ V2P mainVc(A2V_Vc vertex)
     result.toEye = EyePosition - wp;
     result.tangent = vertex.tangent;
     result.normal = vertex.normal;
-  
+
     return result;
 }
 
@@ -164,7 +164,7 @@ V2P main1Bones(A2V_Weights vertex)
     Skin(vertex, 1);
 
     float3 wp = mul(vertex.pos, LocalToWorld4x4).xyz;
-  
+
     // set output data
     result.pos = mul(vertex.pos, LocalToProjected4x4);
     result.diffuse = MaterialDiffuse;
@@ -174,7 +174,7 @@ V2P main1Bones(A2V_Weights vertex)
     result.toEye = EyePosition - wp;
     result.tangent = vertex.tangent;
     result.normal = vertex.normal;
-  
+
     return result;
 }
 
@@ -186,7 +186,7 @@ V2P main2Bones(A2V_Weights vertex)
     Skin(vertex, 2);
 
     float3 wp = mul(vertex.pos, LocalToWorld4x4).xyz;
-  
+
     // set output data
     result.pos = mul(vertex.pos, LocalToProjected4x4);
     result.diffuse = MaterialDiffuse;
@@ -196,7 +196,7 @@ V2P main2Bones(A2V_Weights vertex)
     result.toEye = EyePosition - wp;
     result.tangent = vertex.tangent;
     result.normal = vertex.normal;
-  
+
     return result;
 }
 
@@ -208,7 +208,7 @@ V2P main4Bones(A2V_Weights vertex)
     Skin(vertex, 4);
 
     float3 wp = mul(vertex.pos, LocalToWorld4x4).xyz;
-  
+
     // set output data
     result.pos = mul(vertex.pos, LocalToProjected4x4);
     result.diffuse = MaterialDiffuse;
@@ -218,7 +218,7 @@ V2P main4Bones(A2V_Weights vertex)
     result.toEye = EyePosition - wp;
     result.tangent = vertex.tangent;
     result.normal = vertex.normal;
-  
+
     return result;
 }
 
@@ -227,11 +227,11 @@ V2P main4Bones(A2V_Weights vertex)
 V2P main1BonesVc(A2V_WeightsVc vertex)
 {
     V2P result;
-  
+
     SkinVc(vertex, 1);
 
     float3 wp = mul(vertex.pos, LocalToWorld4x4).xyz;
-  
+
     // set output data
     result.pos = mul(vertex.pos, LocalToProjected4x4);
     result.diffuse = vertex.color * MaterialDiffuse;
@@ -241,7 +241,7 @@ V2P main1BonesVc(A2V_WeightsVc vertex)
     result.toEye = EyePosition - wp;
     result.tangent = vertex.tangent;
     result.normal = vertex.normal;
-  
+
     return result;
 }
 
@@ -249,11 +249,11 @@ V2P main1BonesVc(A2V_WeightsVc vertex)
 V2P main2BonesVc(A2V_WeightsVc vertex)
 {
     V2P result;
-  
+
     SkinVc(vertex, 2);
 
     float3 wp = mul(vertex.pos, LocalToWorld4x4).xyz;
-  
+
     // set output data
     result.pos = mul(vertex.pos, LocalToProjected4x4);
     result.diffuse = vertex.color * MaterialDiffuse;
@@ -263,7 +263,7 @@ V2P main2BonesVc(A2V_WeightsVc vertex)
     result.toEye = EyePosition - wp;
     result.tangent = vertex.tangent;
     result.normal = vertex.normal;
-  
+
     return result;
 }
 
@@ -271,11 +271,11 @@ V2P main2BonesVc(A2V_WeightsVc vertex)
 V2P main4BonesVc(A2V_WeightsVc vertex)
 {
     V2P result;
-  
+
     SkinVc(vertex, 4);
 
     float3 wp = mul(vertex.pos, LocalToWorld4x4).xyz;
-  
+
     // set output data
     result.pos = mul(vertex.pos, LocalToProjected4x4);
     result.diffuse = vertex.color * MaterialDiffuse;
@@ -285,6 +285,6 @@ V2P main4BonesVc(A2V_WeightsVc vertex)
     result.toEye = EyePosition - wp;
     result.tangent = vertex.tangent;
     result.normal = vertex.normal;
-  
+
     return result;
 }

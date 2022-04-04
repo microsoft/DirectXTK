@@ -22,13 +22,13 @@ namespace DirectX
         T* result = comPtr.Get();
 
         // Double-checked lock pattern.
-#ifdef _MSC_VER
+    #ifdef _MSC_VER
         MemoryBarrier();
-#elif defined(__GNUC__)
+    #elif defined(__GNUC__)
         __sync_synchronize();
-#else
-#error Unknown memory barrier syntax
-#endif
+    #else
+    #error Unknown memory barrier syntax
+    #endif
 
         if (!result)
         {
@@ -43,11 +43,11 @@ namespace DirectX
                     createFunc(&result)
                 );
 
-#ifdef _MSC_VER
+            #ifdef _MSC_VER
                 MemoryBarrier();
-#elif defined(__GNUC__)
+            #elif defined(__GNUC__)
                 __sync_synchronize();
-#endif
+            #endif
 
                 comPtr.Attach(result);
             }

@@ -190,13 +190,13 @@ namespace
         // Validate WAVEFORMAT (focused on chunk size and format tag, not other data that XAUDIO2 will validate)
         switch (wf->wFormatTag)
         {
-            case WAVE_FORMAT_PCM:
-            case WAVE_FORMAT_IEEE_FLOAT:
-                // Can be a PCMWAVEFORMAT (16 bytes) or WAVEFORMATEX (18 bytes)
-                // We validiated chunk as at least sizeof(PCMWAVEFORMAT) above
-                break;
+        case WAVE_FORMAT_PCM:
+        case WAVE_FORMAT_IEEE_FLOAT:
+            // Can be a PCMWAVEFORMAT (16 bytes) or WAVEFORMATEX (18 bytes)
+            // We validiated chunk as at least sizeof(PCMWAVEFORMAT) above
+            break;
 
-            default:
+        default:
             {
                 if (fmtChunk->size < sizeof(WAVEFORMATEX))
                 {
@@ -212,65 +212,65 @@ namespace
 
                 switch (wfx->wFormatTag)
                 {
-                    case WAVE_FORMAT_WMAUDIO2:
-                    case WAVE_FORMAT_WMAUDIO3:
-                        dpds = true;
-                        break;
+                case WAVE_FORMAT_WMAUDIO2:
+                case WAVE_FORMAT_WMAUDIO3:
+                    dpds = true;
+                    break;
 
-                    case  0x166 /*WAVE_FORMAT_XMA2*/: // XMA2 is supported by Xbox One
-                        if ((fmtChunk->size < 52 /*sizeof(XMA2WAVEFORMATEX)*/) || (wfx->cbSize < 34 /*( sizeof(XMA2WAVEFORMATEX) - sizeof(WAVEFORMATEX) )*/))
+                case  0x166 /*WAVE_FORMAT_XMA2*/: // XMA2 is supported by Xbox One
+                    if ((fmtChunk->size < 52 /*sizeof(XMA2WAVEFORMATEX)*/) || (wfx->cbSize < 34 /*( sizeof(XMA2WAVEFORMATEX) - sizeof(WAVEFORMATEX) )*/))
+                    {
+                        return E_FAIL;
+                    }
+                    seek = true;
+                    break;
+
+                case WAVE_FORMAT_ADPCM:
+                    if ((fmtChunk->size < (sizeof(WAVEFORMATEX) + 32)) || (wfx->cbSize < 32 /*MSADPCM_FORMAT_EXTRA_BYTES*/))
+                    {
+                        return E_FAIL;
+                    }
+                    break;
+
+                case WAVE_FORMAT_EXTENSIBLE:
+                    if ((fmtChunk->size < sizeof(WAVEFORMATEXTENSIBLE)) || (wfx->cbSize < (sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX))))
+                    {
+                        return E_FAIL;
+                    }
+                    else
+                    {
+                        static const GUID s_wfexBase = { 0x00000000, 0x0000, 0x0010, { 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71 } };
+
+                        auto wfex = reinterpret_cast<const WAVEFORMATEXTENSIBLE*>(ptr);
+
+                        if (memcmp(reinterpret_cast<const BYTE*>(&wfex->SubFormat) + sizeof(DWORD),
+                            reinterpret_cast<const BYTE*>(&s_wfexBase) + sizeof(DWORD), sizeof(GUID) - sizeof(DWORD)) != 0)
                         {
-                            return E_FAIL;
+                            return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
                         }
-                        seek = true;
-                        break;
 
-                    case WAVE_FORMAT_ADPCM:
-                        if ((fmtChunk->size < (sizeof(WAVEFORMATEX) + 32)) || (wfx->cbSize < 32 /*MSADPCM_FORMAT_EXTRA_BYTES*/))
+                        switch (wfex->SubFormat.Data1)
                         {
-                            return E_FAIL;
+                        case WAVE_FORMAT_PCM:
+                        case WAVE_FORMAT_IEEE_FLOAT:
+                            break;
+
+                        // MS-ADPCM and XMA2 are not supported as WAVEFORMATEXTENSIBLE
+
+                        case WAVE_FORMAT_WMAUDIO2:
+                        case WAVE_FORMAT_WMAUDIO3:
+                            dpds = true;
+                            break;
+
+                        default:
+                            return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
                         }
-                        break;
 
-                    case WAVE_FORMAT_EXTENSIBLE:
-                        if ((fmtChunk->size < sizeof(WAVEFORMATEXTENSIBLE)) || (wfx->cbSize < (sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX))))
-                        {
-                            return E_FAIL;
-                        }
-                        else
-                        {
-                            static const GUID s_wfexBase = { 0x00000000, 0x0000, 0x0010, { 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71 } };
+                    }
+                    break;
 
-                            auto wfex = reinterpret_cast<const WAVEFORMATEXTENSIBLE*>(ptr);
-
-                            if (memcmp(reinterpret_cast<const BYTE*>(&wfex->SubFormat) + sizeof(DWORD),
-                                reinterpret_cast<const BYTE*>(&s_wfexBase) + sizeof(DWORD), sizeof(GUID) - sizeof(DWORD)) != 0)
-                            {
-                                return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
-                            }
-
-                            switch (wfex->SubFormat.Data1)
-                            {
-                                case WAVE_FORMAT_PCM:
-                                case WAVE_FORMAT_IEEE_FLOAT:
-                                    break;
-
-                                // MS-ADPCM and XMA2 are not supported as WAVEFORMATEXTENSIBLE
-
-                                case WAVE_FORMAT_WMAUDIO2:
-                                case WAVE_FORMAT_WMAUDIO3:
-                                    dpds = true;
-                                    break;
-
-                                default:
-                                    return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
-                            }
-
-                        }
-                        break;
-
-                    default:
-                        return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
+                default:
+                    return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
                 }
             }
         }
@@ -536,7 +536,7 @@ namespace
             fileInfo.EndOfFile.LowPart,
             bytesRead,
             nullptr
-            ))
+        ))
         {
             return HRESULT_FROM_WIN32(GetLastError());
         }

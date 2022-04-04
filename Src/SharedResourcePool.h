@@ -28,7 +28,8 @@ namespace DirectX
     public:
         SharedResourcePool() noexcept(false)
             : mResourceMap(std::make_shared<ResourceMap>())
-        { }
+        {
+        }
 
         SharedResourcePool(SharedResourcePool const&) = delete;
         SharedResourcePool& operator= (SharedResourcePool const&) = delete;
@@ -79,7 +80,8 @@ namespace DirectX
                 : TData(key, args...),
                 mKey(key),
                 mResourceMap(resourceMap)
-            { }
+            {
+            }
 
             WrappedData(WrappedData&&) = default;
             WrappedData& operator= (WrappedData&&) = default;

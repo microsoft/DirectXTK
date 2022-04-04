@@ -100,9 +100,9 @@ public:
         _Inout_ std::unique_ptr<uint8_t[]>& wavData,
         _In_ const WAVEFORMATEX* wfx,
         _In_reads_bytes_(audioBytes) const uint8_t* startAudio, size_t audioBytes,
-#ifdef DIRECTX_ENABLE_SEEK_TABLES
+    #ifdef DIRECTX_ENABLE_SEEK_TABLES
         _In_reads_opt_(seekCount) const uint32_t* seekTable, size_t seekCount,
-#endif
+    #endif
         uint32_t loopStart, uint32_t loopLength) noexcept;
 
     void Play(float volume, float pitch, float pan);
@@ -208,7 +208,7 @@ HRESULT SoundEffect::Impl::Initialize(
         mStartAudio = startAudio;
         break;
 
-#ifdef DIRECTX_ENABLE_XWMA
+    #ifdef DIRECTX_ENABLE_XWMA
 
     case WAVE_FORMAT_WMAUDIO2:
     case WAVE_FORMAT_WMAUDIO3:
@@ -231,9 +231,9 @@ HRESULT SoundEffect::Impl::Initialize(
         mSeekTable = seekTable;
         break;
 
-#endif // xWMA
+    #endif // xWMA
 
-#ifdef DIRECTX_ENABLE_XMA2
+    #ifdef DIRECTX_ENABLE_XMA2
 
     case WAVE_FORMAT_XMA2:
         if (!seekCount || !seekTable)
@@ -280,13 +280,13 @@ HRESULT SoundEffect::Impl::Initialize(
         wavData.reset();
         break;
 
-#endif // XMA2
+    #endif // XMA2
 
     default:
-    {
-        DebugTrace("ERROR: SoundEffect encountered an unsupported format tag (%u)\n", wfx->wFormatTag);
-        return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
-    }
+        {
+            DebugTrace("ERROR: SoundEffect encountered an unsupported format tag (%u)\n", wfx->wFormatTag);
+            return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
+        }
     }
 
     mAudioBytes = static_cast<uint32_t>(audioBytes);
@@ -342,7 +342,7 @@ void SoundEffect::Impl::Play(float volume, float pitch, float pan)
     buffer.Flags = XAUDIO2_END_OF_STREAM;
     buffer.pContext = this;
 
-    #ifdef DIRECTX_ENABLE_XWMA
+#ifdef DIRECTX_ENABLE_XWMA
     const uint32_t tag = GetFormatTag(mWaveFormat);
     if (tag == WAVE_FORMAT_WMAUDIO2 || tag == WAVE_FORMAT_WMAUDIO3)
     {
@@ -390,11 +390,11 @@ SoundEffect::SoundEffect(AudioEngine* engine, const wchar_t* waveFileName)
 
 #ifdef DIRECTX_ENABLE_SEEK_TABLES
     hr = pImpl->Initialize(engine, wavData, wavInfo.wfx, wavInfo.startAudio, wavInfo.audioBytes,
-                           wavInfo.seek, wavInfo.seekCount,
-                           wavInfo.loopStart, wavInfo.loopLength);
+        wavInfo.seek, wavInfo.seekCount,
+        wavInfo.loopStart, wavInfo.loopLength);
 #else
     hr = pImpl->Initialize(engine, wavData, wavInfo.wfx, wavInfo.startAudio, wavInfo.audioBytes,
-                           wavInfo.loopStart, wavInfo.loopLength);
+        wavInfo.loopStart, wavInfo.loopLength);
 #endif
 
     if (FAILED(hr))
@@ -408,7 +408,7 @@ SoundEffect::SoundEffect(AudioEngine* engine, const wchar_t* waveFileName)
 
 _Use_decl_annotations_
 SoundEffect::SoundEffect(AudioEngine* engine, std::unique_ptr<uint8_t[]>& wavData,
-                         const WAVEFORMATEX* wfx, const uint8_t* startAudio, size_t audioBytes)
+    const WAVEFORMATEX* wfx, const uint8_t* startAudio, size_t audioBytes)
     : pImpl(std::make_unique<Impl>(engine))
 {
 #ifdef DIRECTX_ENABLE_SEEK_TABLES
@@ -426,8 +426,8 @@ SoundEffect::SoundEffect(AudioEngine* engine, std::unique_ptr<uint8_t[]>& wavDat
 
 _Use_decl_annotations_
 SoundEffect::SoundEffect(AudioEngine* engine, std::unique_ptr<uint8_t[]>& wavData,
-                         const WAVEFORMATEX* wfx, const uint8_t* startAudio, size_t audioBytes,
-                         uint32_t loopStart, uint32_t loopLength)
+    const WAVEFORMATEX* wfx, const uint8_t* startAudio, size_t audioBytes,
+    uint32_t loopStart, uint32_t loopLength)
     : pImpl(std::make_unique<Impl>(engine))
 {
 #ifdef DIRECTX_ENABLE_SEEK_TABLES
@@ -447,8 +447,8 @@ SoundEffect::SoundEffect(AudioEngine* engine, std::unique_ptr<uint8_t[]>& wavDat
 
 _Use_decl_annotations_
 SoundEffect::SoundEffect(AudioEngine* engine, std::unique_ptr<uint8_t[]>& wavData,
-                         const WAVEFORMATEX* wfx, const uint8_t* startAudio, size_t audioBytes,
-                         const uint32_t* seekTable, size_t seekCount)
+    const WAVEFORMATEX* wfx, const uint8_t* startAudio, size_t audioBytes,
+    const uint32_t* seekTable, size_t seekCount)
 {
     HRESULT hr = pImpl->Initialize(engine, wavData, wfx, startAudio, audioBytes, seekTable, seekCount, 0, 0);
     if (FAILED(hr))
@@ -518,7 +518,7 @@ size_t SoundEffect::GetSampleDuration() const noexcept
 
     switch (GetFormatTag(pImpl->mWaveFormat))
     {
-        case WAVE_FORMAT_ADPCM:
+    case WAVE_FORMAT_ADPCM:
         {
             auto adpcmFmt = reinterpret_cast<const ADPCMWAVEFORMAT*>(pImpl->mWaveFormat);
 
@@ -532,31 +532,31 @@ size_t SoundEffect::GetSampleDuration() const noexcept
             return static_cast<size_t>(duration);
         }
 
-        #ifdef DIRECTX_ENABLE_XWMA
+    #ifdef DIRECTX_ENABLE_XWMA
 
-        case WAVE_FORMAT_WMAUDIO2:
-        case WAVE_FORMAT_WMAUDIO3:
-            if (pImpl->mSeekTable && pImpl->mSeekCount > 0)
-            {
-                return pImpl->mSeekTable[pImpl->mSeekCount - 1] / uint32_t(2 * pImpl->mWaveFormat->nChannels);
-            }
-            break;
+    case WAVE_FORMAT_WMAUDIO2:
+    case WAVE_FORMAT_WMAUDIO3:
+        if (pImpl->mSeekTable && pImpl->mSeekCount > 0)
+        {
+            return pImpl->mSeekTable[pImpl->mSeekCount - 1] / uint32_t(2 * pImpl->mWaveFormat->nChannels);
+        }
+        break;
 
-        #endif
+    #endif
 
-        #ifdef DIRECTX_ENABLE_XMA2
+    #ifdef DIRECTX_ENABLE_XMA2
 
-        case WAVE_FORMAT_XMA2:
-            return reinterpret_cast<const XMA2WAVEFORMATEX*>(pImpl->mWaveFormat)->SamplesEncoded;
+    case WAVE_FORMAT_XMA2:
+        return reinterpret_cast<const XMA2WAVEFORMATEX*>(pImpl->mWaveFormat)->SamplesEncoded;
 
-        #endif
+    #endif
 
-        default:
-            if (pImpl->mWaveFormat->wBitsPerSample > 0)
-            {
-                return static_cast<size_t>((uint64_t(pImpl->mAudioBytes) * 8)
-                                           / (uint64_t(pImpl->mWaveFormat->wBitsPerSample) * uint64_t(pImpl->mWaveFormat->nChannels)));
-            }
+    default:
+        if (pImpl->mWaveFormat->wBitsPerSample > 0)
+        {
+            return static_cast<size_t>((uint64_t(pImpl->mAudioBytes) * 8)
+                / (uint64_t(pImpl->mWaveFormat->wBitsPerSample) * uint64_t(pImpl->mWaveFormat->nChannels)));
+        }
     }
 
     return 0;
