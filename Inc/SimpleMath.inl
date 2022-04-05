@@ -3724,6 +3724,7 @@ inline bool Ray::Intersects(const Plane& plane, _Out_ float& Dist) const noexcep
 // Comparision operators
 //------------------------------------------------------------------------------
 
+#if (__cplusplus < 202002L)
 inline bool Viewport::operator == (const Viewport& vp) const noexcept
 {
     return (x == vp.x && y == vp.y
@@ -3737,6 +3738,7 @@ inline bool Viewport::operator != (const Viewport& vp) const noexcept
         || width != vp.width || height != vp.height
         || minDepth != vp.minDepth || maxDepth != vp.maxDepth);
 }
+#endif
 
 //------------------------------------------------------------------------------
 // Assignment operators

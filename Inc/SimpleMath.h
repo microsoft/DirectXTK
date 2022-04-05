@@ -19,6 +19,10 @@
 #include <cstring>
 #include <functional>
 
+#if (__cplusplus >= 202002L)
+#include <compare>
+#endif
+
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
 #include <DirectXCollision.h>
@@ -65,10 +69,14 @@ namespace DirectX
         #endif
 
             // Comparison operators
+        #if (__cplusplus >= 202002L)
+            bool operator == (const Rectangle&) const = default;
+            auto operator <=> (const Rectangle&) const = default;
+        #else
             bool operator == (const Rectangle& r) const noexcept { return (x == r.x) && (y == r.y) && (width == r.width) && (height == r.height); }
-            bool operator == (const RECT& rct) const noexcept { return (x == rct.left) && (y == rct.top) && (width == (rct.right - rct.left)) && (height == (rct.bottom - rct.top)); }
-
             bool operator != (const Rectangle& r) const noexcept { return (x != r.x) || (y != r.y) || (width != r.width) || (height != r.height); }
+        #endif
+            bool operator == (const RECT& rct) const noexcept { return (x == rct.left) && (y == rct.top) && (width == (rct.right - rct.left)) && (height == (rct.bottom - rct.top)); }
             bool operator != (const RECT& rct) const noexcept { return (x != rct.left) || (y != rct.top) || (width != (rct.right - rct.left)) || (height != (rct.bottom - rct.top)); }
 
             // Assignment operators
@@ -956,8 +964,13 @@ namespace DirectX
             Viewport& operator=(Viewport&&) = default;
 
             // Comparison operators
+        #if (__cplusplus >= 202002L)
+            bool operator == (const Viewport&) const = default;
+            auto operator <=> (const Viewport&) const = default;
+        #else
             bool operator == (const Viewport& vp) const noexcept;
             bool operator != (const Viewport& vp) const noexcept;
+        #endif
 
             // Assignment operators
             Viewport& operator= (const RECT& rct) noexcept;
