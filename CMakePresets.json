@@ -104,10 +104,7 @@
       "name": "UWP",
       "cacheVariables": {
         "CMAKE_SYSTEM_NAME": "WindowsStore",
-        "CMAKE_SYSTEM_VERSION": "10.0",
-        "BUILD_XAUDIO_WIN10": true,
-        "BUILD_XAUDIO_WIN8": false,
-        "BUILD_XAUDIO_WIN7": false
+        "CMAKE_SYSTEM_VERSION": "10.0"
       },
       "hidden": true
     },

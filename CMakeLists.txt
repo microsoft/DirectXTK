@@ -142,7 +142,7 @@ set(SHADER_SOURCES
     Src/Shaders/ToneMap.fx
     Src/Shaders/Utilities.fxh)
 
-if((BUILD_XAUDIO_WIN10) OR (BUILD_XAUDIO_WIN8) OR (BUILD_XAUDIO_WIN7))
+if(WINDOWS_STORE OR BUILD_XAUDIO_WIN10 OR BUILD_XAUDIO_WIN8 OR BUILD_XAUDIO_WIN7)
     set(LIBRARY_HEADERS ${LIBRARY_HEADERS}
         Inc/Audio.h)
 
@@ -200,7 +200,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Inc>
   $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
 
-if((BUILD_XAUDIO_WIN10) OR (BUILD_XAUDIO_WIN8) OR (BUILD_XAUDIO_WIN7))
+if(WINDOWS_STORE OR BUILD_XAUDIO_WIN10 OR BUILD_XAUDIO_WIN8 OR BUILD_XAUDIO_WIN7)
     target_include_directories(${PROJECT_NAME} PRIVATE Src Audio)
 endif()
 
@@ -356,10 +356,8 @@ if(WIN32)
       target_compile_definitions(xwbtool PRIVATE _UNICODE UNICODE _WIN32_WINNT=0x0601)
     endif()
 
-    if(BUILD_XAUDIO_WIN10 OR WINDOWS_STORE)
-        if(BUILD_XAUDIO_WIN10)
-            message("INFO: Using DirectX Tool Kit for Audio on XAudio 2.9 (Windows 10).")
-        endif()
+    if(WINDOWS_STORE OR BUILD_XAUDIO_WIN10)
+        message("INFO: Using DirectX Tool Kit for Audio on XAudio 2.9 (Windows 10/Windows 11).")
         target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0A00)
     elseif(BUILD_XAUDIO_WIN8)
         message("INFO: Using DirectX Tool Kit for Audio on XAudio 2.8 (Windows 8).")
