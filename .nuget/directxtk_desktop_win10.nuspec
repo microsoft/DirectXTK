@@ -3,11 +3,11 @@
     <metadata minClientVersion="2.8.6">
         <id>directxtk_desktop_win10</id>
         <version>0.0.0-SpecifyVersionOnCommandline</version>
-        <title>DirectX Tool Kit (VS 2017/2019/2022 Win32 for Windows 10/11)</title>
+        <title>DirectX Tool Kit (VS 2019/2022 Win32 for Windows 10/11)</title>
         <authors>Microsoft</authors>
         <owners>microsoft,directxtk</owners>
         <summary>The DirectX Tool Kit (aka DirectXTK) is a collection of helper classes for writing Direct3D 11.x code in C++.</summary>
-        <description>This version is for Windows desktop applications using Visual Studio 2017, Visual Studio 2019, or Visual Studio 2022 on Windows 10 / Windows 11.
+        <description>This version is for Windows desktop applications using Visual Studio 2019 or Visual Studio 2022 on Windows 10 / Windows 11.
 
 Features:
 Audio - low-level audio API using XAudio2
@@ -49,23 +49,23 @@ DirectX Tool Kit for Audio in this package uses XAudio 2.9 which requires Window
 
         <file target="include" src="Inc\*" exclude="Inc\XboxDDSTextureLoader.h" />
 
-        <file target="native\lib\Win32\Debug" src="Bin\Desktop_2017_Win10\Win32\Debug\*.lib" />
-        <file target="native\lib\Win32\Debug" src="Bin\Desktop_2017_Win10\Win32\Debug\*.pdb" />
+        <file target="native\lib\Win32\Debug" src="Bin\Desktop_2019_Win10\Win32\Debug\*.lib" />
+        <file target="native\lib\Win32\Debug" src="Bin\Desktop_2019_Win10\Win32\Debug\*.pdb" />
 
-        <file target="native\lib\Win32\Release" src="Bin\Desktop_2017_Win10\Win32\Release\*.lib" />
-        <file target="native\lib\Win32\Release" src="Bin\Desktop_2017_Win10\Win32\Release\*.pdb" />
+        <file target="native\lib\Win32\Release" src="Bin\Desktop_2019_Win10\Win32\Release\*.lib" />
+        <file target="native\lib\Win32\Release" src="Bin\Desktop_2019_Win10\Win32\Release\*.pdb" />
 
-        <file target="native\lib\x64\Debug" src="Bin\Desktop_2017_Win10\x64\Debug\*.lib" />
-        <file target="native\lib\x64\Debug" src="Bin\Desktop_2017_Win10\x64\Debug\*.pdb" />
+        <file target="native\lib\x64\Debug" src="Bin\Desktop_2019_Win10\x64\Debug\*.lib" />
+        <file target="native\lib\x64\Debug" src="Bin\Desktop_2019_Win10\x64\Debug\*.pdb" />
 
-        <file target="native\lib\x64\Release" src="Bin\Desktop_2017_Win10\x64\Release\*.lib" />
-        <file target="native\lib\x64\Release" src="Bin\Desktop_2017_Win10\x64\Release\*.pdb" />
+        <file target="native\lib\x64\Release" src="Bin\Desktop_2019_Win10\x64\Release\*.lib" />
+        <file target="native\lib\x64\Release" src="Bin\Desktop_2019_Win10\x64\Release\*.pdb" />
 
-        <file target="native\lib\ARM64\Debug" src="Bin\Desktop_2017_Win10\ARM64\Debug\*.lib" />
-        <file target="native\lib\ARM64\Debug" src="Bin\Desktop_2017_Win10\ARM64\Debug\*.pdb" />
+        <file target="native\lib\ARM64\Debug" src="Bin\Desktop_2019_Win10\ARM64\Debug\*.lib" />
+        <file target="native\lib\ARM64\Debug" src="Bin\Desktop_2019_Win10\ARM64\Debug\*.pdb" />
 
-        <file target="native\lib\ARM64\Release" src="Bin\Desktop_2017_Win10\ARM64\Release\*.lib" />
-        <file target="native\lib\ARM64\Release" src="Bin\Desktop_2017_Win10\ARM64\Release\*.pdb" />
+        <file target="native\lib\ARM64\Release" src="Bin\Desktop_2019_Win10\ARM64\Release\*.lib" />
+        <file target="native\lib\ARM64\Release" src="Bin\Desktop_2019_Win10\ARM64\Release\*.pdb" />
 
         <file src=".nuget/directxtk_desktop_win10.targets" target="build\native" />
 
