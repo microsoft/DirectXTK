@@ -363,7 +363,7 @@ if(WIN32)
         message("INFO: Using DirectX Tool Kit for Audio on XAudio 2.8 (Windows 8).")
         target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0602)
     else()
-        target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0601)
+        target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0601 _WIN7_PLATFORM_UPDATE)
     endif()
 endif()
 
