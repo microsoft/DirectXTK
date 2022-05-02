@@ -80,7 +80,7 @@
 
 #pragma warning(push)
 #pragma warning(disable : 4005)
-#define NOMINMAX
+#define NOMINMAX 1
 #define NODRAWTEXT
 #define NOGDI
 #define NOBITMAP

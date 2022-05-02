@@ -10,7 +10,7 @@ if (BUILD_XAUDIO_WIN7 AND (NOT BUILD_XAUDIO_WIN10) AND (NOT BUILD_XAUDIO_WIN8) A
     find_dependency(xaudio2redist CONFIG)
 endif()
 
-if(VCPKG_TOOLCHAIN)
+if(MINGW OR VCPKG_TOOLCHAIN)
     find_dependency(directxmath CONFIG)
 endif()
 

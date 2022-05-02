@@ -59,7 +59,7 @@ namespace
     template<size_t sizeOfBuffer>
     inline void ASCIIToWChar(wchar_t(&buffer)[sizeOfBuffer], const char *ascii)
     {
-    #ifdef WIN32
+    #ifdef _WIN32
         MultiByteToWideChar(CP_UTF8, 0, ascii, -1, buffer, sizeOfBuffer);
     #else
         mbtowc(nullptr, nullptr, 0);
