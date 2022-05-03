@@ -113,9 +113,11 @@
 #include <d3d11_1.h>
 #endif
 
+#define _USE_MATH_DEFINES
 #include <algorithm>
 #include <array>
 #include <cassert>
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
@@ -155,7 +157,11 @@
 
 #pragma warning(push)
 #pragma warning(disable : 4467 5038 5204 5220)
+#ifdef __MINGW32__
+#include <wrl/client.h>
+#else
 #include <wrl.h>
+#endif
 #pragma warning(pop)
 
 #include <wincodec.h>
