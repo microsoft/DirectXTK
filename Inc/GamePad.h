@@ -14,7 +14,7 @@
 #ifndef USING_GAMEINPUT
 #define USING_GAMEINPUT
 #endif
-#elif (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/) && !defined(_GAMING_DESKTOP)
+#elif (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/) && !defined(_GAMING_DESKTOP) && !defined(__MINGW32__)
 #ifndef USING_WINDOWS_GAMING_INPUT
 #define USING_WINDOWS_GAMING_INPUT
 #endif
