@@ -25,7 +25,7 @@
 
 // See https://walbourn.github.io/modern-c++-bitmask-types/
 #ifndef ENUM_FLAGS_CONSTEXPR
-#ifdef NTDDI_WIN10_RS1
+#if defined(NTDDI_WIN10_RS1) && !defined(__MINGW32__)
 #define ENUM_FLAGS_CONSTEXPR constexpr
 #else
 #define ENUM_FLAGS_CONSTEXPR const
