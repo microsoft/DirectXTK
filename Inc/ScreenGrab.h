@@ -25,7 +25,7 @@
 
 #include <functional>
 
-#ifdef NTDDI_WIN10_FE
+#if defined(NTDDI_WIN10_FE) || defined(__MINGW32__)
 #include <ocidl.h>
 #else
 #include <OCIdl.h>

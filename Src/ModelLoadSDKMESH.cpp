@@ -59,7 +59,7 @@ namespace
     template<size_t sizeOfBuffer>
     inline void ASCIIToWChar(wchar_t(&buffer)[sizeOfBuffer], const char *ascii)
     {
-    #ifdef WIN32
+    #ifdef _WIN32
         MultiByteToWideChar(CP_UTF8, 0, ascii, -1, buffer, sizeOfBuffer);
     #else
         mbtowc(nullptr, nullptr, 0);
@@ -181,7 +181,10 @@ namespace
     //--------------------------------------------------------------------------------------
     // Direct3D 9 Vertex Declaration to Direct3D 11 Input Layout mapping
 
+
+#ifndef __MINGW32__
     static_assert(D3D11_IA_VERTEX_INPUT_STRUCTURE_ELEMENT_COUNT >= 32, "SDKMESH supports decls up to 32 entries");
+#endif
 
     unsigned int GetInputLayoutDesc(
         _In_reads_(32) const DXUT::D3DVERTEXELEMENT9 decl[],

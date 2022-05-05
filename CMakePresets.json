@@ -81,6 +81,17 @@
         "strategy": "external"
       }
     },
+    {
+      "name": "GNUC",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "g++.exe"
+      },
+      "toolset": {
+        "value": "host=x64",
+        "strategy": "external"
+      }
+    },
 
     {
       "name": "Win7",
@@ -174,6 +185,11 @@
     { "name": "x64-Debug-Win7-Clang"  , "description": "Clang/LLVM for x64 (Debug) for Windows 7 w/ XAudio2Redist", "inherits": [ "base", "x64", "Debug", "Clang", "Win7", "VCPKG" ] },
     { "name": "x64-Release-Win7-Clang", "description": "Clang/LLVM for x64 (Release) for Windows 7 w/ XAudio2Redist", "inherits": [ "base", "x64", "Release", "Clang", "Win7", "VCPKG" ] },
     { "name": "x86-Debug-Win7-Clang"  , "description": "Clang/LLVM for x86 (Debug) for Windows 7 w/ XAudio2Redist", "inherits": [ "base", "x86", "Debug", "Clang", "Win7", "VCPKG" ], "environment": { "CXXFLAGS": "-m32" } },
-    { "name": "x86-Release-Win7-Clang", "description": "Clang/LLVM for x86 (Release) for Windows 7 w/ XAudio2Redist", "inherits": [ "base", "x86", "Release", "Clang", "Win7", "VCPKG" ], "environment": { "CXXFLAGS": "-m32" } }
+    { "name": "x86-Release-Win7-Clang", "description": "Clang/LLVM for x86 (Release) for Windows 7 w/ XAudio2Redist", "inherits": [ "base", "x86", "Release", "Clang", "Win7", "VCPKG" ], "environment": { "CXXFLAGS": "-m32" } },
+
+    { "name": "x64-Debug-MinGW"  , "description": "MinG-W64 (Debug)", "inherits": [ "base", "x64", "Debug", "GNUC", "VCPKG", "Win7" ], "environment": { "PATH": "$penv{PATH};c:/mingw64/bin" } },
+    { "name": "x64-Release-MinGW", "description": "MinG-W64 (Release)", "inherits": [ "base", "x64", "Release", "GNUC", "VCPKG", "Win7" ], "environment": { "PATH": "$penv{PATH};c:/mingw64/bin" } },
+    { "name": "x86-Debug-MinGW"  , "description": "MinG-W32 (Debug)", "inherits": [ "base", "x86", "Debug", "GNUC", "VCPKG", "Win7" ], "environment": { "PATH": "$penv{PATH};c:/mingw32/bin" } },
+    { "name": "x86-Release-MinGW", "description": "MinG-W32 (Release)", "inherits": [ "base", "x86", "Release", "GNUC", "VCPKG", "Win7" ], "environment": { "PATH": "$penv{PATH};c:/mingw32/bin" } }
   ]
 }
