@@ -551,7 +551,7 @@ void Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 
             bool isExtendedKey = (HIWORD(lParam) & KF_EXTENDED) == KF_EXTENDED;
             int scanCode = LOBYTE(HIWORD(lParam)) | (isExtendedKey ? 0xe000 : 0);
-            vk = LOWORD(MapVirtualKeyW(scanCode, MAPVK_VSC_TO_VK_EX));
+            vk = LOWORD(MapVirtualKeyW(static_cast<UINT>(scanCode), MAPVK_VSC_TO_VK_EX));
         }
         break;
     }
