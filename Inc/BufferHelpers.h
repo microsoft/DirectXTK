@@ -69,13 +69,13 @@ namespace DirectX
         unsigned int bindFlags = D3D11_BIND_SHADER_RESOURCE) noexcept;
 
     HRESULT __cdecl CreateTextureFromMemory(
-#if defined(_XBOX_ONE) && defined(_TITLE)
+    #if defined(_XBOX_ONE) && defined(_TITLE)
         _In_ ID3D11DeviceX* d3dDeviceX,
         _In_ ID3D11DeviceContextX* d3dContextX,
-#else
+    #else
         _In_ ID3D11Device* device,
         _In_ ID3D11DeviceContext* d3dContext,
-#endif
+    #endif
         size_t width, size_t height,
         DXGI_FORMAT format,
         const D3D11_SUBRESOURCE_DATA& initData,
@@ -124,7 +124,7 @@ namespace DirectX
         }
 
         // Writes new data into the constant buffer.
-#if defined(_XBOX_ONE) && defined(_TITLE)
+    #if defined(_XBOX_ONE) && defined(_TITLE)
         void __cdecl SetData(_In_ ID3D11DeviceContext* deviceContext, T const& value, void** grfxMemory)
         {
             assert(grfxMemory != nullptr);
@@ -136,7 +136,7 @@ namespace DirectX
 
             *grfxMemory = ptr;
         }
-#else
+    #else
 
         void __cdecl SetData(_In_ ID3D11DeviceContext* deviceContext, T const& value) noexcept
         {
@@ -150,7 +150,7 @@ namespace DirectX
                 deviceContext->Unmap(mConstantBuffer.Get(), 0);
             }
         }
-#endif // _XBOX_ONE && _TITLE
+    #endif // _XBOX_ONE && _TITLE
 
         // Looks up the underlying D3D constant buffer.
         ID3D11Buffer* GetBuffer() const noexcept { return mConstantBuffer.Get(); }

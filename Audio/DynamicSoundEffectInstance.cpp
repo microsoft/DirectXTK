@@ -23,9 +23,9 @@ class DynamicSoundEffectInstance::Impl : public IVoiceNotify
 {
 public:
     Impl(_In_ AudioEngine* engine,
-         _In_ DynamicSoundEffectInstance* object,
+        _In_ DynamicSoundEffectInstance* object,
         std::function<void(DynamicSoundEffectInstance*)>& bufferNeeded,
-         int sampleRate, int channels, int sampleBits,
+        int sampleRate, int channels, int sampleBits,
         SOUND_EFFECT_INSTANCE_FLAGS flags) :
         mBase(),
         mBufferNeeded(nullptr),
@@ -46,13 +46,13 @@ public:
 
         switch (sampleBits)
         {
-            case 8:
-            case 16:
-                break;
+        case 8:
+        case 16:
+            break;
 
-            default:
-                DebugTrace("DynamicSoundEffectInstance sampleBits must be 8-bit or 16-bit\n");
-                throw std::invalid_argument("DynamicSoundEffectInstance supports 8 or 16 bit");
+        default:
+            DebugTrace("DynamicSoundEffectInstance sampleBits must be 8-bit or 16-bit\n");
+            throw std::invalid_argument("DynamicSoundEffectInstance supports 8 or 16 bit");
         }
 
         mBufferEvent.reset(CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE));
@@ -214,19 +214,19 @@ void DynamicSoundEffectInstance::Impl::OnUpdate()
     const DWORD result = WaitForSingleObjectEx(mBufferEvent.get(), 0, FALSE);
     switch (result)
     {
-        case WAIT_TIMEOUT:
-            break;
+    case WAIT_TIMEOUT:
+        break;
 
-        case WAIT_OBJECT_0:
-            if (mBufferNeeded)
-            {
-                // This callback happens on the same thread that called AudioEngine::Update()
-                mBufferNeeded(mObject);
-            }
-            break;
+    case WAIT_OBJECT_0:
+        if (mBufferNeeded)
+        {
+            // This callback happens on the same thread that called AudioEngine::Update()
+            mBufferNeeded(mObject);
+        }
+        break;
 
-        case WAIT_FAILED:
-            throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "WaitForSingleObjectEx");
+    case WAIT_FAILED:
+        throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "WaitForSingleObjectEx");
     }
 }
 
@@ -335,7 +335,7 @@ size_t DynamicSoundEffectInstance::GetSampleDuration(size_t bytes) const noexcep
         return 0;
 
     return static_cast<size_t>((uint64_t(bytes) * 8)
-                               / (uint64_t(wfx->wBitsPerSample) * uint64_t(wfx->nChannels)));
+        / (uint64_t(wfx->wBitsPerSample) * uint64_t(wfx->nChannels)));
 }
 
 

@@ -79,7 +79,7 @@ namespace DirectX
             ButtonState xButton1;
             ButtonState xButton2;
 
-            #pragma prefast(suppress: 26495, "Reset() performs the initialization")
+        #pragma prefast(suppress: 26495, "Reset() performs the initialization")
             ButtonStateTracker() noexcept { Reset(); }
 
             void __cdecl Update(const State& state) noexcept;
@@ -130,9 +130,9 @@ namespace DirectX
         void __cdecl SetWindow(HWND window);
         static void __cdecl ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam);
 
-#ifdef _GAMING_XBOX
+    #ifdef _GAMING_XBOX
         static void __cdecl SetResolution(float scale);
-#endif
+    #endif
     #endif
 
         // Singleton

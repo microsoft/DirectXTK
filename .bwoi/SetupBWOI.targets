@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="SetupVCTargets" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <ExtractedFolder Condition="'$(ExtractedFolder)'==''">C:\xtracted\</ExtractedFolder>
+    <ExtractedFolder Condition="!HasTrailingSlash('$(ExtractedFolder)')">$(ExtractedFolder)\</ExtractedFolder>
+  </PropertyGroup>
+
+  <!--
+      A list of VCTargets folders that we expect to exist after copying the BWOI VS files
+      If any of these folders is not present then we assume that the VCTargets has not been setup
+  -->
+  <ItemGroup>
+    <BWOIVCFolders Include="$(ExtractedFolder)VCTargets150\" />
+    <BWOIVCFolders Include="$(ExtractedFolder)VCTargets150\Platforms\" />
+    <BWOIVCFolders Include="$(ExtractedFolder)VCTargets150\Platforms\gaming.desktop.x64" />
+    <BWOIVCFolders Include="$(ExtractedFolder)VCTargets160\" />
+    <BWOIVCFolders Include="$(ExtractedFolder)VCTargets160\Platforms\" />
+    <BWOIVCFolders Include="$(ExtractedFolder)VCTargets160\Platforms\gaming.desktop.x64" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(VisualStudioVersion)' == '17.0'">
+    <BWOIVCFolders Include="$(ExtractedFolder)VCTargets170\" />
+    <BWOIVCFolders Include="$(ExtractedFolder)VCTargets170\Platforms\" />
+    <BWOIVCFolders Include="$(ExtractedFolder)VCTargets170\Platforms\gaming.desktop.x64" />
+  </ItemGroup>
+
+  <!--
+      Microsoft GDK NuGets for 2203 or later only support 64-bit MSBuild
+  -->
+  <UsingTask TaskName="Is64BitMSBuild" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <ParameterGroup>
+      <SixtyFourBit ParameterType="System.Boolean" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+SixtyFourBit = (IntPtr.Size == 8) ? true : false;
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="_CheckMSBuild64">
+    <Is64BitMSBuild>
+      <Output TaskParameter="SixtyFourBit" PropertyName="_SixtyFourBit" />
+    </Is64BitMSBuild>
+
+    <Error Condition="'$(_SixtyFourBit)'=='false'"
+        Text="The 64-bit version of MSBuild is required to support NuGet GDK packages." />
+  </Target>
+
+  <!--
+      Determine whether the VC Targets has already been setup
+  -->
+  <Target Name="_ProbeForExtractedVCTargets"
+          Outputs="%(BWOIVCFolders.Identity)">
+    <Error Condition="'$(ExtractedFolder)'==''"
+        Text="ExtractedFolder property is required" />
+
+    <PropertyGroup>
+      <_BWOIFolder>%(BWOIVCFolders.Identity)</_BWOIFolder>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <_MissingBWOIVCFolders Condition="'$(ForceVCTargetsBWOIRefresh)'=='true' or !Exists($(_BWOIFolder))" Include="$(_BWOIFolder)" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <_ExtractedOutOfDate Condition="'@(_MissingBWOIVCFolders)' != ''">true</_ExtractedOutOfDate>
+      <_BWOIFolder />
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="_CreateVCTargetsFolder"
+          Condition="'@(_MissingBWOIVCFolders)' != ''">
+    <Error Condition="'$(GDKEditionNumber)'==''"
+        Text="GDKEditionNumber property is required" />
+    <Error Condition="!Exists('$(ExtractedFolder)GDK\Microsoft.GDK.PC.$(GDKEditionNumber)')"
+        Text="NuGet package Microsoft.GDK.PC.$(GDKEditionNumber) not found in $(ExtractedFolder)GDK" />
+
+    <PropertyGroup>
+      <_VSFolder Condition="'$(VisualStudioVersion)' == '17.0'">VS2022</_VSFolder>
+      <_VSFolder Condition="'$(VisualStudioVersion)' == '16.0'">VS2019</_VSFolder>
+    </PropertyGroup>
+
+    <Error Condition="'$(_VSFolder)'==''"
+        Text="Only supports VS 2019 or VS 2022" />
+
+    <!-- Set up files for v141 platform toolset projects -->
+    <ItemGroup>
+      <SourceVCTargetsFilesV150 Include="$(MSBuildExtensionsPath32)\Microsoft\VC\v150\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <GDKVCTargetsFilesV150 Include="$(ExtractedFolder)GDK\Microsoft.GDK.PC.$(GDKEditionNumber)\native\$(GDKEditionNumber)\GRDK\$(_VSFolder)\flatDeployment\MSBuild\Microsoft\VC\v150\**" />
+    </ItemGroup>
+
+    <Copy SkipUnchangedFiles="true" SourceFiles="@(SourceVCTargetsFilesV150)" DestinationFolder="$(ExtractedFolder)VCTargets150\%(RecursiveDir)/" />
+    <Copy SourceFiles="@(GDKVCTargetsFilesV150)" DestinationFolder="$(ExtractedFolder)VCTargets150\%(RecursiveDir)/" />
+
+    <!-- Set up files for v142 platform toolset projects -->
+    <ItemGroup>
+      <SourceVCTargetsFilesV160 Include="$(MSBuildExtensionsPath32)\Microsoft\VC\v160\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <GDKVCTargetsFilesV160 Include="$(ExtractedFolder)GDK\Microsoft.GDK.PC.$(GDKEditionNumber)\native\$(GDKEditionNumber)\GRDK\$(_VSFolder)\flatDeployment\MSBuild\Microsoft\VC\v160\**" />
+    </ItemGroup>
+
+    <Copy SkipUnchangedFiles="true" SourceFiles="@(SourceVCTargetsFilesV160)" DestinationFolder="$(ExtractedFolder)VCTargets160\%(RecursiveDir)/" />
+    <Copy SourceFiles="@(GDKVCTargetsFilesV160)" DestinationFolder="$(ExtractedFolder)VCTargets160\%(RecursiveDir)/" />
+
+    <!-- Set up files for v143 platform toolset projects -->
+    <ItemGroup Condition="'$(VisualStudioVersion)' == '17.0'">
+      <SourceVCTargetsFilesV170 Include="$(MSBuildExtensionsPath32)\Microsoft\VC\v170\**" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(VisualStudioVersion)' == '17.0'">
+      <GDKVCTargetsFilesV170 Include="$(ExtractedFolder)GDK\Microsoft.GDK.PC.$(GDKEditionNumber)\native\$(GDKEditionNumber)\GRDK\$(_VSFolder)\flatDeployment\MSBuild\Microsoft\VC\v170\**" />
+    </ItemGroup>
+
+    <Copy SkipUnchangedFiles="true" SourceFiles="@(SourceVCTargetsFilesV170)" DestinationFolder="$(ExtractedFolder)VCTargets170\%(RecursiveDir)/" />
+    <Copy SourceFiles="@(GDKVCTargetsFilesV170)" DestinationFolder="$(ExtractedFolder)VCTargets170\%(RecursiveDir)/" />
+
+  </Target>
+
+  <Target Name="SetupVCTargets" DependsOnTargets="_CheckMSBuild64;_ProbeForExtractedVCTargets;_CreateVCTargetsFolder" />
+</Project>
+

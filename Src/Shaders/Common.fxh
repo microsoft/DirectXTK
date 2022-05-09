@@ -36,12 +36,12 @@ struct CommonVSOutput
 CommonVSOutput ComputeCommonVSOutput(float4 position)
 {
     CommonVSOutput vout;
-    
+
     vout.Pos_ps = mul(position, WorldViewProj);
     vout.Diffuse = DiffuseColor;
     vout.Specular = 0;
     vout.FogFactor = ComputeFogFactor(position);
-    
+
     return vout;
 }
 

@@ -1,23 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Inc">
-      <UniqueIdentifier>{771f5f80-d173-49c3-8afb-790e8f7cb0ce}</UniqueIdentifier>
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
     <Filter Include="Src">
-      <UniqueIdentifier>{c52e19b6-8703-49a1-9b36-101a05b4745d}</UniqueIdentifier>
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="Inc\Shared">
-      <UniqueIdentifier>{e07ba3bc-b69f-4ded-9ffa-3b47427e9fef}</UniqueIdentifier>
+      <UniqueIdentifier>{bfe08c7b-04ad-4694-97b7-1053f276b6d6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Src\Shared">
-      <UniqueIdentifier>{28e934ed-a6d7-4c30-b064-c72c50c99626}</UniqueIdentifier>
+      <UniqueIdentifier>{bb887e9d-4a05-42f1-928a-6e0aea0b39b6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Src\Shaders">
-      <UniqueIdentifier>{28d5fa16-99e2-471c-8cd8-2020e81f0024}</UniqueIdentifier>
+      <UniqueIdentifier>{ba729d67-3bf4-4323-8387-443d75ffabb3}</UniqueIdentifier>
     </Filter>
     <Filter Include="Src\Shaders\Shared">
-      <UniqueIdentifier>{34676173-31f5-4435-b90d-a0ad4f7d163c}</UniqueIdentifier>
+      <UniqueIdentifier>{d6b153c5-132e-4c53-8fba-476a4f2fd140}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Audio">
+      <UniqueIdentifier>{2c00e8fa-322f-4f28-bcbf-14d82c3b3a58}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -62,6 +67,18 @@
     </ClInclude>
     <ClInclude Include="Inc\DirectXHelpers.h">
       <Filter>Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Audio.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\SoundCommon.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\WAVFileReader.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\WaveBankReader.h">
+      <Filter>Audio</Filter>
     </ClInclude>
     <ClInclude Include="Inc\GamePad.h">
       <Filter>Inc\Shared</Filter>
@@ -212,6 +229,30 @@
     <ClCompile Include="Src\Geometry.cpp">
       <Filter>Src\Shared</Filter>
     </ClCompile>
+    <ClCompile Include="Audio\AudioEngine.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio\DynamicSoundEffectInstance.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio\SoundCommon.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio\WAVFileReader.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio\WaveBankReader.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio\WaveBank.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio\SoundEffectInstance.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio\SoundEffect.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
     <ClCompile Include="Src\NormalMapEffect.cpp">
       <Filter>Src</Filter>
     </ClCompile>
@@ -237,6 +278,9 @@
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="Src\DirectXHelpers.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio\SoundStreamInstance.cpp">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>

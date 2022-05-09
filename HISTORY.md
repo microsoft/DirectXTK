@@ -6,6 +6,15 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### May 9, 2022
+* C++20 spaceship operator updates for SimpleMath
+* Minor updates for VS 2022 (17.2)
+* CMake project updates (now supports MSVC, clang/LLVM, and MinGW)
+* Added Microsoft GDK projects using the Gaming.Desktop.x64 platform
+* Retired VS 2017 projects
+* Minor code review
+* Reformat source using updated .editorconfig settings
+
 ### March 24, 2022
 * Fixed bug in UWP implementation of Mouse that combined vertical/horizontal scroll-wheel input
 * Code refactoring for input classes (GamePad, Keyboard, and Mouse)

@@ -110,8 +110,8 @@ public:
             }
 
             mGrfxMemory = VirtualAlloc(nullptr, mPageSize,
-                                       MEM_LARGE_PAGES | MEM_GRAPHICS | MEM_RESERVE | MEM_COMMIT,
-                                       PAGE_WRITECOMBINE | PAGE_READWRITE | PAGE_GPU_READONLY);
+                MEM_LARGE_PAGES | MEM_GRAPHICS | MEM_RESERVE | MEM_COMMIT,
+                PAGE_WRITECOMBINE | PAGE_READWRITE | PAGE_GPU_READONLY);
             if (!mGrfxMemory)
                 throw std::bad_alloc();
         }

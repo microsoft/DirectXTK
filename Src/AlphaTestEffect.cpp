@@ -56,29 +56,30 @@ public:
 };
 
 
+#pragma region Shaders
 // Include the precompiled shader code.
 namespace
 {
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    #include "XboxOneAlphaTestEffect_VSAlphaTest.inc"
-    #include "XboxOneAlphaTestEffect_VSAlphaTestNoFog.inc"
-    #include "XboxOneAlphaTestEffect_VSAlphaTestVc.inc"
-    #include "XboxOneAlphaTestEffect_VSAlphaTestVcNoFog.inc"
+#include "XboxOneAlphaTestEffect_VSAlphaTest.inc"
+#include "XboxOneAlphaTestEffect_VSAlphaTestNoFog.inc"
+#include "XboxOneAlphaTestEffect_VSAlphaTestVc.inc"
+#include "XboxOneAlphaTestEffect_VSAlphaTestVcNoFog.inc"
 
-    #include "XboxOneAlphaTestEffect_PSAlphaTestLtGt.inc"
-    #include "XboxOneAlphaTestEffect_PSAlphaTestLtGtNoFog.inc"
-    #include "XboxOneAlphaTestEffect_PSAlphaTestEqNe.inc"
-    #include "XboxOneAlphaTestEffect_PSAlphaTestEqNeNoFog.inc"
+#include "XboxOneAlphaTestEffect_PSAlphaTestLtGt.inc"
+#include "XboxOneAlphaTestEffect_PSAlphaTestLtGtNoFog.inc"
+#include "XboxOneAlphaTestEffect_PSAlphaTestEqNe.inc"
+#include "XboxOneAlphaTestEffect_PSAlphaTestEqNeNoFog.inc"
 #else
-    #include "AlphaTestEffect_VSAlphaTest.inc"
-    #include "AlphaTestEffect_VSAlphaTestNoFog.inc"
-    #include "AlphaTestEffect_VSAlphaTestVc.inc"
-    #include "AlphaTestEffect_VSAlphaTestVcNoFog.inc"
+#include "AlphaTestEffect_VSAlphaTest.inc"
+#include "AlphaTestEffect_VSAlphaTestNoFog.inc"
+#include "AlphaTestEffect_VSAlphaTestVc.inc"
+#include "AlphaTestEffect_VSAlphaTestVcNoFog.inc"
 
-    #include "AlphaTestEffect_PSAlphaTestLtGt.inc"
-    #include "AlphaTestEffect_PSAlphaTestLtGtNoFog.inc"
-    #include "AlphaTestEffect_PSAlphaTestEqNe.inc"
-    #include "AlphaTestEffect_PSAlphaTestEqNeNoFog.inc"
+#include "AlphaTestEffect_PSAlphaTestLtGt.inc"
+#include "AlphaTestEffect_PSAlphaTestLtGtNoFog.inc"
+#include "AlphaTestEffect_PSAlphaTestEqNe.inc"
+#include "AlphaTestEffect_PSAlphaTestEqNeNoFog.inc"
 #endif
 }
 
@@ -131,7 +132,7 @@ const int EffectBase<AlphaTestEffectTraits>::PixelShaderIndices[] =
     2,      // eq/ne, vertex color
     3,      // eq/ne, vertex color, no fog
 };
-
+#pragma endregion
 
 // Global pool of per-device AlphaTestEffect resources.
 template<>
@@ -201,66 +202,66 @@ void AlphaTestEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
         constexpr float threshold = 0.5f / 255.0f;
 
         // What to do if the alpha comparison passes or fails. Positive accepts the pixel, negative clips it.
-        static const XMVECTORF32 selectIfTrue  = { { {  1, -1 } } };
+        static const XMVECTORF32 selectIfTrue = { { {  1, -1 } } };
         static const XMVECTORF32 selectIfFalse = { { { -1,  1 } } };
-        static const XMVECTORF32 selectNever   = { { { -1, -1 } } };
-        static const XMVECTORF32 selectAlways  = { { {  1,  1 } } };
+        static const XMVECTORF32 selectNever = { { { -1, -1 } } };
+        static const XMVECTORF32 selectAlways = { { {  1,  1 } } };
 
         float compareTo;
         XMVECTOR resultSelector;
 
         switch (alphaFunction)
         {
-            case D3D11_COMPARISON_LESS:
-                // Shader will evaluate: clip((a < x) ? z : w)
-                compareTo = reference - threshold;
-                resultSelector = selectIfTrue;
-                break;
+        case D3D11_COMPARISON_LESS:
+            // Shader will evaluate: clip((a < x) ? z : w)
+            compareTo = reference - threshold;
+            resultSelector = selectIfTrue;
+            break;
 
-            case D3D11_COMPARISON_LESS_EQUAL:
-                // Shader will evaluate: clip((a < x) ? z : w)
-                compareTo = reference + threshold;
-                resultSelector = selectIfTrue;
-                break;
+        case D3D11_COMPARISON_LESS_EQUAL:
+            // Shader will evaluate: clip((a < x) ? z : w)
+            compareTo = reference + threshold;
+            resultSelector = selectIfTrue;
+            break;
 
-            case D3D11_COMPARISON_GREATER_EQUAL:
-                // Shader will evaluate: clip((a < x) ? z : w)
-                compareTo = reference - threshold;
-                resultSelector = selectIfFalse;
-                break;
+        case D3D11_COMPARISON_GREATER_EQUAL:
+            // Shader will evaluate: clip((a < x) ? z : w)
+            compareTo = reference - threshold;
+            resultSelector = selectIfFalse;
+            break;
 
-            case D3D11_COMPARISON_GREATER:
-                // Shader will evaluate: clip((a < x) ? z : w)
-                compareTo = reference + threshold;
-                resultSelector = selectIfFalse;
-                break;
+        case D3D11_COMPARISON_GREATER:
+            // Shader will evaluate: clip((a < x) ? z : w)
+            compareTo = reference + threshold;
+            resultSelector = selectIfFalse;
+            break;
 
-            case D3D11_COMPARISON_EQUAL:
-                // Shader will evaluate: clip((abs(a - x) < y) ? z : w)
-                compareTo = reference;
-                resultSelector = selectIfTrue;
-                break;
+        case D3D11_COMPARISON_EQUAL:
+            // Shader will evaluate: clip((abs(a - x) < y) ? z : w)
+            compareTo = reference;
+            resultSelector = selectIfTrue;
+            break;
 
-            case D3D11_COMPARISON_NOT_EQUAL:
-                // Shader will evaluate: clip((abs(a - x) < y) ? z : w)
-                compareTo = reference;
-                resultSelector = selectIfFalse;
-                break;
+        case D3D11_COMPARISON_NOT_EQUAL:
+            // Shader will evaluate: clip((abs(a - x) < y) ? z : w)
+            compareTo = reference;
+            resultSelector = selectIfFalse;
+            break;
 
-            case D3D11_COMPARISON_NEVER:
-                // Shader will evaluate: clip((a < x) ? z : w)
-                compareTo = 0;
-                resultSelector = selectNever;
-                break;
+        case D3D11_COMPARISON_NEVER:
+            // Shader will evaluate: clip((a < x) ? z : w)
+            compareTo = 0;
+            resultSelector = selectNever;
+            break;
 
-            case D3D11_COMPARISON_ALWAYS:
-                // Shader will evaluate: clip((a < x) ? z : w)
-                compareTo = 0;
-                resultSelector = selectAlways;
-                break;
+        case D3D11_COMPARISON_ALWAYS:
+            // Shader will evaluate: clip((a < x) ? z : w)
+            compareTo = 0;
+            resultSelector = selectAlways;
+            break;
 
-            default:
-                throw std::runtime_error("Unknown alpha test function");
+        default:
+            throw std::runtime_error("Unknown alpha test function");
         }
 
         // x = compareTo, y = threshold, zw = resultSelector.

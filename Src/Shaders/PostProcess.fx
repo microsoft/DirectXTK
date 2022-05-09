@@ -76,11 +76,11 @@ float4 PSDownScale2x2(VSInputTx pin) : SV_Target0
     const int NUM_SAMPLES = 4;
     float4 vColor = 0.0f;
 
-    for( int i=0; i < NUM_SAMPLES; i++ )
+    for (int i = 0; i < NUM_SAMPLES; i++)
     {
         vColor += Texture.Sample(Sampler, pin.TexCoord + sampleOffsets[i].xy);
     }
-    
+
     return vColor / NUM_SAMPLES;
 }
 

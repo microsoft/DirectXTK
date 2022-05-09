@@ -1,26 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Inc">
-      <UniqueIdentifier>{771f5f80-d173-49c3-8afb-790e8f7cb0ce}</UniqueIdentifier>
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
     <Filter Include="Src">
-      <UniqueIdentifier>{c52e19b6-8703-49a1-9b36-101a05b4745d}</UniqueIdentifier>
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="Inc\Shared">
-      <UniqueIdentifier>{e07ba3bc-b69f-4ded-9ffa-3b47427e9fef}</UniqueIdentifier>
+      <UniqueIdentifier>{bfe08c7b-04ad-4694-97b7-1053f276b6d6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Src\Shared">
-      <UniqueIdentifier>{28e934ed-a6d7-4c30-b064-c72c50c99626}</UniqueIdentifier>
+      <UniqueIdentifier>{bb887e9d-4a05-42f1-928a-6e0aea0b39b6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Src\Shaders">
-      <UniqueIdentifier>{28d5fa16-99e2-471c-8cd8-2020e81f0024}</UniqueIdentifier>
+      <UniqueIdentifier>{ba729d67-3bf4-4323-8387-443d75ffabb3}</UniqueIdentifier>
     </Filter>
     <Filter Include="Src\Shaders\Shared">
-      <UniqueIdentifier>{34676173-31f5-4435-b90d-a0ad4f7d163c}</UniqueIdentifier>
+      <UniqueIdentifier>{d6b153c5-132e-4c53-8fba-476a4f2fd140}</UniqueIdentifier>
     </Filter>
     <Filter Include="Audio">
-      <UniqueIdentifier>{5d47b946-09b9-4477-934f-ca45fba9845d}</UniqueIdentifier>
+      <UniqueIdentifier>{2c00e8fa-322f-4f28-bcbf-14d82c3b3a58}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -45,9 +47,6 @@
     <ClInclude Include="Src\pch.h">
       <Filter>Src</Filter>
     </ClInclude>
-    <ClInclude Include="Src\PlatformHelpers.h">
-      <Filter>Src</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\GeometricPrimitive.h">
       <Filter>Inc</Filter>
     </ClInclude>
@@ -67,9 +66,6 @@
       <Filter>Inc</Filter>
     </ClInclude>
     <ClInclude Include="Inc\DirectXHelpers.h">
-      <Filter>Inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\GraphicsMemory.h">
       <Filter>Inc</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Audio.h">
@@ -114,10 +110,13 @@
     <ClInclude Include="Src\DemandCreate.h">
       <Filter>Src\Shared</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Geometry.h">
+    <ClInclude Include="Src\PlatformHelpers.h">
       <Filter>Src\Shared</Filter>
     </ClInclude>
-    <ClInclude Include="Src\LoaderHelpers.h">
+    <ClInclude Include="Inc\GraphicsMemory.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\SDKMesh.h">
       <Filter>Src\Shared</Filter>
     </ClInclude>
     <ClInclude Include="Src\SharedResourcePool.h">
@@ -126,7 +125,10 @@
     <ClInclude Include="Src\vbo.h">
       <Filter>Src\Shared</Filter>
     </ClInclude>
-    <ClInclude Include="Src\SDKMesh.h">
+    <ClInclude Include="Src\Geometry.h">
+      <Filter>Src\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\LoaderHelpers.h">
       <Filter>Src\Shared</Filter>
     </ClInclude>
     <ClInclude Include="Inc\PostProcess.h">
@@ -209,6 +211,24 @@
     <ClCompile Include="Src\GraphicsMemory.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="Src\BinaryReader.cpp">
+      <Filter>Src\Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\GamePad.cpp">
+      <Filter>Src\Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Keyboard.cpp">
+      <Filter>Src\Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Mouse.cpp">
+      <Filter>Src\Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\SimpleMath.cpp">
+      <Filter>Src\Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Geometry.cpp">
+      <Filter>Src\Shared</Filter>
+    </ClCompile>
     <ClCompile Include="Audio\AudioEngine.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
@@ -236,24 +256,6 @@
     <ClCompile Include="Src\NormalMapEffect.cpp">
       <Filter>Src</Filter>
     </ClCompile>
-    <ClCompile Include="Src\BinaryReader.cpp">
-      <Filter>Src\Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\GamePad.cpp">
-      <Filter>Src\Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Geometry.cpp">
-      <Filter>Src\Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Keyboard.cpp">
-      <Filter>Src\Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Mouse.cpp">
-      <Filter>Src\Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\SimpleMath.cpp">
-      <Filter>Src\Shared</Filter>
-    </ClCompile>
     <ClCompile Include="Src\BasicPostProcess.cpp">
       <Filter>Src</Filter>
     </ClCompile>
@@ -271,9 +273,6 @@
     </ClCompile>
     <ClCompile Include="Src\PBREffectFactory.cpp">
       <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Audio\SoundStreamInstance.cpp">
-      <Filter>Audio</Filter>
     </ClCompile>
     <ClCompile Include="Src\BufferHelpers.cpp">
       <Filter>Src</Filter>
@@ -316,20 +315,20 @@
     <None Include="Src\Shaders\DGSLLambert.hlsl">
       <Filter>Src\Shaders</Filter>
     </None>
-    <None Include="Src\Shaders\NormalMapEffect.fx">
-      <Filter>Src\Shaders</Filter>
-    </None>
-    <None Include="Src\Shaders\Lighting.fxh">
-      <Filter>Src\Shaders\Shared</Filter>
+    <None Include="Src\TeapotData.inc">
+      <Filter>Src\Shared</Filter>
     </None>
     <None Include="Src\Shaders\Common.fxh">
+      <Filter>Src\Shaders\Shared</Filter>
+    </None>
+    <None Include="Src\Shaders\Lighting.fxh">
       <Filter>Src\Shaders\Shared</Filter>
     </None>
     <None Include="Src\Shaders\Structures.fxh">
       <Filter>Src\Shaders\Shared</Filter>
     </None>
-    <None Include="Src\TeapotData.inc">
-      <Filter>Src\Shared</Filter>
+    <None Include="Src\Shaders\NormalMapEffect.fx">
+      <Filter>Src\Shaders</Filter>
     </None>
     <None Include="Src\Shaders\PostProcess.fx">
       <Filter>Src\Shaders</Filter>

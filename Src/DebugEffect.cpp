@@ -55,43 +55,44 @@ public:
 };
 
 
+#pragma region Shaders
 // Include the precompiled shader code.
 namespace
 {
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    #include "XboxOneDebugEffect_VSDebug.inc"
-    #include "XboxOneDebugEffect_VSDebugInst.inc"
+#include "XboxOneDebugEffect_VSDebug.inc"
+#include "XboxOneDebugEffect_VSDebugInst.inc"
 
-    #include "XboxOneDebugEffect_VSDebugVc.inc"
-    #include "XboxOneDebugEffect_VSDebugVcInst.inc"
+#include "XboxOneDebugEffect_VSDebugVc.inc"
+#include "XboxOneDebugEffect_VSDebugVcInst.inc"
 
-    #include "XboxOneDebugEffect_VSDebugBn.inc"
-    #include "XboxOneDebugEffect_VSDebugBnInst.inc"
+#include "XboxOneDebugEffect_VSDebugBn.inc"
+#include "XboxOneDebugEffect_VSDebugBnInst.inc"
 
-    #include "XboxOneDebugEffect_VSDebugVcBn.inc"
-    #include "XboxOneDebugEffect_VSDebugVcBnInst.inc"
+#include "XboxOneDebugEffect_VSDebugVcBn.inc"
+#include "XboxOneDebugEffect_VSDebugVcBnInst.inc"
 
-    #include "XboxOneDebugEffect_PSHemiAmbient.inc"
-    #include "XboxOneDebugEffect_PSRGBNormals.inc"
-    #include "XboxOneDebugEffect_PSRGBTangents.inc"
-    #include "XboxOneDebugEffect_PSRGBBiTangents.inc"
+#include "XboxOneDebugEffect_PSHemiAmbient.inc"
+#include "XboxOneDebugEffect_PSRGBNormals.inc"
+#include "XboxOneDebugEffect_PSRGBTangents.inc"
+#include "XboxOneDebugEffect_PSRGBBiTangents.inc"
 #else
-    #include "DebugEffect_VSDebug.inc"
-    #include "DebugEffect_VSDebugInst.inc"
+#include "DebugEffect_VSDebug.inc"
+#include "DebugEffect_VSDebugInst.inc"
 
-    #include "DebugEffect_VSDebugVc.inc"
-    #include "DebugEffect_VSDebugVcInst.inc"
+#include "DebugEffect_VSDebugVc.inc"
+#include "DebugEffect_VSDebugVcInst.inc"
 
-    #include "DebugEffect_VSDebugBn.inc"
-    #include "DebugEffect_VSDebugBnInst.inc"
+#include "DebugEffect_VSDebugBn.inc"
+#include "DebugEffect_VSDebugBnInst.inc"
 
-    #include "DebugEffect_VSDebugVcBn.inc"
-    #include "DebugEffect_VSDebugVcBnInst.inc"
+#include "DebugEffect_VSDebugVcBn.inc"
+#include "DebugEffect_VSDebugVcBnInst.inc"
 
-    #include "DebugEffect_PSHemiAmbient.inc"
-    #include "DebugEffect_PSRGBNormals.inc"
-    #include "DebugEffect_PSRGBTangents.inc"
-    #include "DebugEffect_PSRGBBiTangents.inc"
+#include "DebugEffect_PSHemiAmbient.inc"
+#include "DebugEffect_PSRGBNormals.inc"
+#include "DebugEffect_PSRGBTangents.inc"
+#include "DebugEffect_PSRGBBiTangents.inc"
 #endif
 }
 
@@ -208,7 +209,7 @@ const int EffectBase<DebugEffectTraits>::PixelShaderIndices[] =
     2,      // instancing + vertex color (biased vertex normal) + tangents
     3,      // instancing + vertex color (biased vertex normal) + bitangents
 };
-
+#pragma endregion
 
 // Global pool of per-deviceDebugEffect resources.
 template<>

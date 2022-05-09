@@ -25,8 +25,8 @@ namespace
 {
     constexpr int c_MaxSamples = 16;
 
-    constexpr int Dirty_ConstantBuffer  = 0x01;
-    constexpr int Dirty_Parameters      = 0x02;
+    constexpr int Dirty_ConstantBuffer = 0x01;
+    constexpr int Dirty_Parameters = 0x02;
 
     // Constant buffer layout. Must match the shader!
     XM_ALIGNED_STRUCT(16) PostProcessConstants
@@ -44,36 +44,34 @@ namespace
     }
 }
 
+#pragma region Shaders
 // Include the precompiled shader code.
 namespace
 {
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    #include "XboxOnePostProcess_VSQuad.inc"
+#include "XboxOnePostProcess_VSQuad.inc"
 
-    #include "XboxOnePostProcess_PSCopy.inc"
-    #include "XboxOnePostProcess_PSMonochrome.inc"
-    #include "XboxOnePostProcess_PSSepia.inc"
-    #include "XboxOnePostProcess_PSDownScale2x2.inc"
-    #include "XboxOnePostProcess_PSDownScale4x4.inc"
-    #include "XboxOnePostProcess_PSGaussianBlur5x5.inc"
-    #include "XboxOnePostProcess_PSBloomExtract.inc"
-    #include "XboxOnePostProcess_PSBloomBlur.inc"
+#include "XboxOnePostProcess_PSCopy.inc"
+#include "XboxOnePostProcess_PSMonochrome.inc"
+#include "XboxOnePostProcess_PSSepia.inc"
+#include "XboxOnePostProcess_PSDownScale2x2.inc"
+#include "XboxOnePostProcess_PSDownScale4x4.inc"
+#include "XboxOnePostProcess_PSGaussianBlur5x5.inc"
+#include "XboxOnePostProcess_PSBloomExtract.inc"
+#include "XboxOnePostProcess_PSBloomBlur.inc"
 #else
-    #include "PostProcess_VSQuad.inc"
+#include "PostProcess_VSQuad.inc"
 
-    #include "PostProcess_PSCopy.inc"
-    #include "PostProcess_PSMonochrome.inc"
-    #include "PostProcess_PSSepia.inc"
-    #include "PostProcess_PSDownScale2x2.inc"
-    #include "PostProcess_PSDownScale4x4.inc"
-    #include "PostProcess_PSGaussianBlur5x5.inc"
-    #include "PostProcess_PSBloomExtract.inc"
-    #include "PostProcess_PSBloomBlur.inc"
+#include "PostProcess_PSCopy.inc"
+#include "PostProcess_PSMonochrome.inc"
+#include "PostProcess_PSSepia.inc"
+#include "PostProcess_PSDownScale2x2.inc"
+#include "PostProcess_PSDownScale4x4.inc"
+#include "PostProcess_PSGaussianBlur5x5.inc"
+#include "PostProcess_PSBloomExtract.inc"
+#include "PostProcess_PSBloomBlur.inc"
 #endif
-}
 
-namespace
-{
     struct ShaderBytecode
     {
         void const* code;
@@ -110,14 +108,14 @@ namespace
         ID3D11VertexShader* GetVertexShader()
         {
             return DemandCreate(mVertexShader, mMutex, [&](ID3D11VertexShader** pResult) -> HRESULT
-            {
-                HRESULT hr = mDevice->CreateVertexShader(PostProcess_VSQuad, sizeof(PostProcess_VSQuad), nullptr, pResult);
+                {
+                    HRESULT hr = mDevice->CreateVertexShader(PostProcess_VSQuad, sizeof(PostProcess_VSQuad), nullptr, pResult);
 
-                if (SUCCEEDED(hr))
-                    SetDebugObjectName(*pResult, "BasicPostProcess");
+                    if (SUCCEEDED(hr))
+                        SetDebugObjectName(*pResult, "BasicPostProcess");
 
-                return hr;
-            });
+                    return hr;
+                });
         }
 
         // Gets or lazily creates the specified pixel shader.
@@ -127,14 +125,14 @@ namespace
             _Analysis_assume_(shaderIndex < BasicPostProcess::Effect_Max);
 
             return DemandCreate(mPixelShaders[shaderIndex], mMutex, [&](ID3D11PixelShader** pResult) -> HRESULT
-            {
-                HRESULT hr = mDevice->CreatePixelShader(pixelShaders[shaderIndex].code, pixelShaders[shaderIndex].length, nullptr, pResult);
+                {
+                    HRESULT hr = mDevice->CreatePixelShader(pixelShaders[shaderIndex].code, pixelShaders[shaderIndex].length, nullptr, pResult);
 
-                if (SUCCEEDED(hr))
-                    SetDebugObjectName(*pResult, "BasicPostProcess");
+                    if (SUCCEEDED(hr))
+                        SetDebugObjectName(*pResult, "BasicPostProcess");
 
-                return hr;
-            });
+                    return hr;
+                });
         }
 
         CommonStates                stateObjects;
@@ -146,6 +144,8 @@ namespace
         std::mutex                  mMutex;
     };
 }
+#pragma endregion
+
 
 class BasicPostProcess::Impl : public AlignedNew<PostProcessConstants>
 {
@@ -275,7 +275,7 @@ void BasicPostProcess::Impl::Process(
             }
         }
 
-#if defined(_XBOX_ONE) && defined(_TITLE)
+    #if defined(_XBOX_ONE) && defined(_TITLE)
         void *grfxMemory;
         mConstantBuffer.SetData(deviceContext, constants, &grfxMemory);
 
@@ -285,7 +285,7 @@ void BasicPostProcess::Impl::Process(
         auto buffer = mConstantBuffer.GetBuffer();
 
         deviceContextX->PSSetPlacementConstantBuffer(0, buffer, grfxMemory);
-#else
+    #else
         if (mDirtyFlags & Dirty_ConstantBuffer)
         {
             mDirtyFlags &= ~Dirty_ConstantBuffer;
@@ -296,7 +296,7 @@ void BasicPostProcess::Impl::Process(
         auto buffer = mConstantBuffer.GetBuffer();
 
         deviceContext->PSSetConstantBuffers(0, 1, &buffer);
-#endif
+    #endif
     }
 
     if (setCustomState)
@@ -471,7 +471,7 @@ void  BasicPostProcess::Impl::Bloom(bool horizontal, float size, float brightnes
 
 // Public constructor.
 BasicPostProcess::BasicPostProcess(_In_ ID3D11Device* device)
-  : pImpl(std::make_unique<Impl>(device))
+    : pImpl(std::make_unique<Impl>(device))
 {
 }
 
@@ -530,28 +530,28 @@ void BasicPostProcess::SetSourceTexture(_In_opt_ ID3D11ShaderResourceView* value
         switch (resType)
         {
         case D3D11_RESOURCE_DIMENSION_TEXTURE1D:
-        {
-            ComPtr<ID3D11Texture1D> tex;
-            ThrowIfFailed(res.As(&tex));
+            {
+                ComPtr<ID3D11Texture1D> tex;
+                ThrowIfFailed(res.As(&tex));
 
-            D3D11_TEXTURE1D_DESC desc = {};
-            tex->GetDesc(&desc);
-            pImpl->texWidth = desc.Width;
-            pImpl->texHeight = 1;
-            break;
-        }
+                D3D11_TEXTURE1D_DESC desc = {};
+                tex->GetDesc(&desc);
+                pImpl->texWidth = desc.Width;
+                pImpl->texHeight = 1;
+                break;
+            }
 
         case D3D11_RESOURCE_DIMENSION_TEXTURE2D:
-        {
-            ComPtr<ID3D11Texture2D> tex;
-            ThrowIfFailed(res.As(&tex));
+            {
+                ComPtr<ID3D11Texture2D> tex;
+                ThrowIfFailed(res.As(&tex));
 
-            D3D11_TEXTURE2D_DESC desc = {};
-            tex->GetDesc(&desc);
-            pImpl->texWidth = desc.Width;
-            pImpl->texHeight = desc.Height;
-            break;
-        }
+                D3D11_TEXTURE2D_DESC desc = {};
+                tex->GetDesc(&desc);
+                pImpl->texWidth = desc.Width;
+                pImpl->texHeight = desc.Height;
+                break;
+            }
 
         case D3D11_RESOURCE_DIMENSION_UNKNOWN:
         case D3D11_RESOURCE_DIMENSION_BUFFER:

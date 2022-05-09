@@ -76,73 +76,74 @@ public:
 };
 
 
+#pragma region Shaders
 // Include the precompiled shader code.
 namespace
 {
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    #include "XboxOneEnvironmentMapEffect_VSEnvMap.inc"
-    #include "XboxOneEnvironmentMapEffect_VSEnvMapFresnel.inc"
-    #include "XboxOneEnvironmentMapEffect_VSEnvMapOneLight.inc"
-    #include "XboxOneEnvironmentMapEffect_VSEnvMapOneLightFresnel.inc"
-    #include "XboxOneEnvironmentMapEffect_VSEnvMapPixelLighting.inc"
+#include "XboxOneEnvironmentMapEffect_VSEnvMap.inc"
+#include "XboxOneEnvironmentMapEffect_VSEnvMapFresnel.inc"
+#include "XboxOneEnvironmentMapEffect_VSEnvMapOneLight.inc"
+#include "XboxOneEnvironmentMapEffect_VSEnvMapOneLightFresnel.inc"
+#include "XboxOneEnvironmentMapEffect_VSEnvMapPixelLighting.inc"
 
-    #include "XboxOneEnvironmentMapEffect_VSEnvMapBn.inc"
-    #include "XboxOneEnvironmentMapEffect_VSEnvMapFresnelBn.inc"
-    #include "XboxOneEnvironmentMapEffect_VSEnvMapOneLightBn.inc"
-    #include "XboxOneEnvironmentMapEffect_VSEnvMapOneLightFresnelBn.inc"
-    #include "XboxOneEnvironmentMapEffect_VSEnvMapPixelLightingBn.inc"
+#include "XboxOneEnvironmentMapEffect_VSEnvMapBn.inc"
+#include "XboxOneEnvironmentMapEffect_VSEnvMapFresnelBn.inc"
+#include "XboxOneEnvironmentMapEffect_VSEnvMapOneLightBn.inc"
+#include "XboxOneEnvironmentMapEffect_VSEnvMapOneLightFresnelBn.inc"
+#include "XboxOneEnvironmentMapEffect_VSEnvMapPixelLightingBn.inc"
 
-    #include "XboxOneEnvironmentMapEffect_PSEnvMap.inc"
-    #include "XboxOneEnvironmentMapEffect_PSEnvMapNoFog.inc"
-    #include "XboxOneEnvironmentMapEffect_PSEnvMapSpecular.inc"
-    #include "XboxOneEnvironmentMapEffect_PSEnvMapSpecularNoFog.inc"
-    #include "XboxOneEnvironmentMapEffect_PSEnvMapPixelLighting.inc"
-    #include "XboxOneEnvironmentMapEffect_PSEnvMapPixelLightingNoFog.inc"
-    #include "XboxOneEnvironmentMapEffect_PSEnvMapPixelLightingFresnel.inc"
-    #include "XboxOneEnvironmentMapEffect_PSEnvMapPixelLightingFresnelNoFog.inc"
+#include "XboxOneEnvironmentMapEffect_PSEnvMap.inc"
+#include "XboxOneEnvironmentMapEffect_PSEnvMapNoFog.inc"
+#include "XboxOneEnvironmentMapEffect_PSEnvMapSpecular.inc"
+#include "XboxOneEnvironmentMapEffect_PSEnvMapSpecularNoFog.inc"
+#include "XboxOneEnvironmentMapEffect_PSEnvMapPixelLighting.inc"
+#include "XboxOneEnvironmentMapEffect_PSEnvMapPixelLightingNoFog.inc"
+#include "XboxOneEnvironmentMapEffect_PSEnvMapPixelLightingFresnel.inc"
+#include "XboxOneEnvironmentMapEffect_PSEnvMapPixelLightingFresnelNoFog.inc"
 
-    #include "XboxOneEnvironmentMapEffect_PSEnvMapSpherePixelLighting.inc"
-    #include "XboxOneEnvironmentMapEffect_PSEnvMapSpherePixelLightingNoFog.inc"
-    #include "XboxOneEnvironmentMapEffect_PSEnvMapSpherePixelLightingFresnel.inc"
-    #include "XboxOneEnvironmentMapEffect_PSEnvMapSpherePixelLightingFresnelNoFog.inc"
+#include "XboxOneEnvironmentMapEffect_PSEnvMapSpherePixelLighting.inc"
+#include "XboxOneEnvironmentMapEffect_PSEnvMapSpherePixelLightingNoFog.inc"
+#include "XboxOneEnvironmentMapEffect_PSEnvMapSpherePixelLightingFresnel.inc"
+#include "XboxOneEnvironmentMapEffect_PSEnvMapSpherePixelLightingFresnelNoFog.inc"
 
-    #include "XboxOneEnvironmentMapEffect_PSEnvMapDualParabolaPixelLighting.inc"
-    #include "XboxOneEnvironmentMapEffect_PSEnvMapDualParabolaPixelLightingNoFog.inc"
-    #include "XboxOneEnvironmentMapEffect_PSEnvMapDualParabolaPixelLightingFresnel.inc"
-    #include "XboxOneEnvironmentMapEffect_PSEnvMapDualParabolaPixelLightingFresnelNoFog.inc"
+#include "XboxOneEnvironmentMapEffect_PSEnvMapDualParabolaPixelLighting.inc"
+#include "XboxOneEnvironmentMapEffect_PSEnvMapDualParabolaPixelLightingNoFog.inc"
+#include "XboxOneEnvironmentMapEffect_PSEnvMapDualParabolaPixelLightingFresnel.inc"
+#include "XboxOneEnvironmentMapEffect_PSEnvMapDualParabolaPixelLightingFresnelNoFog.inc"
 #else
-    #include "EnvironmentMapEffect_VSEnvMap.inc"
-    #include "EnvironmentMapEffect_VSEnvMapFresnel.inc"
-    #include "EnvironmentMapEffect_VSEnvMapOneLight.inc"
-    #include "EnvironmentMapEffect_VSEnvMapOneLightFresnel.inc"
-    #include "EnvironmentMapEffect_VSEnvMapPixelLighting.inc"
-    #include "EnvironmentMapEffect_VSEnvMapPixelLightingSM4.inc"
+#include "EnvironmentMapEffect_VSEnvMap.inc"
+#include "EnvironmentMapEffect_VSEnvMapFresnel.inc"
+#include "EnvironmentMapEffect_VSEnvMapOneLight.inc"
+#include "EnvironmentMapEffect_VSEnvMapOneLightFresnel.inc"
+#include "EnvironmentMapEffect_VSEnvMapPixelLighting.inc"
+#include "EnvironmentMapEffect_VSEnvMapPixelLightingSM4.inc"
 
-    #include "EnvironmentMapEffect_VSEnvMapBn.inc"
-    #include "EnvironmentMapEffect_VSEnvMapFresnelBn.inc"
-    #include "EnvironmentMapEffect_VSEnvMapOneLightBn.inc"
-    #include "EnvironmentMapEffect_VSEnvMapOneLightFresnelBn.inc"
-    #include "EnvironmentMapEffect_VSEnvMapPixelLightingBn.inc"
-    #include "EnvironmentMapEffect_VSEnvMapPixelLightingBnSM4.inc"
+#include "EnvironmentMapEffect_VSEnvMapBn.inc"
+#include "EnvironmentMapEffect_VSEnvMapFresnelBn.inc"
+#include "EnvironmentMapEffect_VSEnvMapOneLightBn.inc"
+#include "EnvironmentMapEffect_VSEnvMapOneLightFresnelBn.inc"
+#include "EnvironmentMapEffect_VSEnvMapPixelLightingBn.inc"
+#include "EnvironmentMapEffect_VSEnvMapPixelLightingBnSM4.inc"
 
-    #include "EnvironmentMapEffect_PSEnvMap.inc"
-    #include "EnvironmentMapEffect_PSEnvMapNoFog.inc"
-    #include "EnvironmentMapEffect_PSEnvMapSpecular.inc"
-    #include "EnvironmentMapEffect_PSEnvMapSpecularNoFog.inc"
-    #include "EnvironmentMapEffect_PSEnvMapPixelLighting.inc"
-    #include "EnvironmentMapEffect_PSEnvMapPixelLightingNoFog.inc"
-    #include "EnvironmentMapEffect_PSEnvMapPixelLightingFresnel.inc"
-    #include "EnvironmentMapEffect_PSEnvMapPixelLightingFresnelNoFog.inc"
+#include "EnvironmentMapEffect_PSEnvMap.inc"
+#include "EnvironmentMapEffect_PSEnvMapNoFog.inc"
+#include "EnvironmentMapEffect_PSEnvMapSpecular.inc"
+#include "EnvironmentMapEffect_PSEnvMapSpecularNoFog.inc"
+#include "EnvironmentMapEffect_PSEnvMapPixelLighting.inc"
+#include "EnvironmentMapEffect_PSEnvMapPixelLightingNoFog.inc"
+#include "EnvironmentMapEffect_PSEnvMapPixelLightingFresnel.inc"
+#include "EnvironmentMapEffect_PSEnvMapPixelLightingFresnelNoFog.inc"
 
-    #include "EnvironmentMapEffect_PSEnvMapSpherePixelLighting.inc"
-    #include "EnvironmentMapEffect_PSEnvMapSpherePixelLightingNoFog.inc"
-    #include "EnvironmentMapEffect_PSEnvMapSpherePixelLightingFresnel.inc"
-    #include "EnvironmentMapEffect_PSEnvMapSpherePixelLightingFresnelNoFog.inc"
+#include "EnvironmentMapEffect_PSEnvMapSpherePixelLighting.inc"
+#include "EnvironmentMapEffect_PSEnvMapSpherePixelLightingNoFog.inc"
+#include "EnvironmentMapEffect_PSEnvMapSpherePixelLightingFresnel.inc"
+#include "EnvironmentMapEffect_PSEnvMapSpherePixelLightingFresnelNoFog.inc"
 
-    #include "EnvironmentMapEffect_PSEnvMapDualParabolaPixelLighting.inc"
-    #include "EnvironmentMapEffect_PSEnvMapDualParabolaPixelLightingNoFog.inc"
-    #include "EnvironmentMapEffect_PSEnvMapDualParabolaPixelLightingFresnel.inc"
-    #include "EnvironmentMapEffect_PSEnvMapDualParabolaPixelLightingFresnelNoFog.inc"
+#include "EnvironmentMapEffect_PSEnvMapDualParabolaPixelLighting.inc"
+#include "EnvironmentMapEffect_PSEnvMapDualParabolaPixelLightingNoFog.inc"
+#include "EnvironmentMapEffect_PSEnvMapDualParabolaPixelLightingFresnel.inc"
+#include "EnvironmentMapEffect_PSEnvMapDualParabolaPixelLightingFresnelNoFog.inc"
 #endif
 }
 
@@ -336,7 +337,7 @@ const int EffectBase<EnvironmentMapEffectTraits>::PixelShaderIndices[] =
     14,     // dual-parabola pixel lighting (biased vertex normals), fresnel
     15,     // dual-parabola pixel lighting (biased vertex normals), fresnel, no fog
 };
-
+#pragma endregion
 
 // Global pool of per-device EnvironmentMapEffect resources.
 template<>
@@ -460,7 +461,7 @@ void EnvironmentMapEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
 
 // Public constructor.
 EnvironmentMapEffect::EnvironmentMapEffect(_In_ ID3D11Device* device)
-  : pImpl(std::make_unique<Impl>(device))
+    : pImpl(std::make_unique<Impl>(device))
 {
 }
 

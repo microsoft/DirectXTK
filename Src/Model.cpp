@@ -125,7 +125,7 @@ void ModelMeshPart::CreateInputLayout(ID3D11Device* d3dDevice, IEffect* ieffect,
     if (!vbDecl || vbDecl->empty())
         throw std::runtime_error("Model mesh part missing vertex buffer input elements data");
 
-    if (vbDecl->size() > D3D11_IA_VERTEX_INPUT_STRUCTURE_ELEMENT_COUNT)
+    if (vbDecl->size() > 32 /* D3D11_IA_VERTEX_INPUT_STRUCTURE_ELEMENT_COUNT */)
         throw std::runtime_error("Model mesh part input layout size is too large for DirectX 11");
 
     ThrowIfFailed(
@@ -144,7 +144,7 @@ void ModelMeshPart::ModifyEffect(ID3D11Device* d3dDevice, const std::shared_ptr<
     if (!vbDecl || vbDecl->empty())
         throw std::runtime_error("Model mesh part missing vertex buffer input elements data");
 
-    if (vbDecl->size() > D3D11_IA_VERTEX_INPUT_STRUCTURE_ELEMENT_COUNT)
+    if (vbDecl->size() > 32 /* D3D11_IA_VERTEX_INPUT_STRUCTURE_ELEMENT_COUNT */)
         throw std::runtime_error("Model mesh part input layout size is too large for DirectX 11");
 
     assert(ieffect != nullptr);

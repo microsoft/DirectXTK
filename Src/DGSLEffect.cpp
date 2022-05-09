@@ -120,63 +120,65 @@ namespace
     };
 }
 
+
+#pragma region Shaders
 // Include the precompiled shader code.
 namespace
 {
 #if defined(_XBOX_ONE) && defined(_TITLE)
     // VS
-    #include "XboxOneDGSLEffect_main.inc"
-    #include "XboxOneDGSLEffect_mainVc.inc"
-    #include "XboxOneDGSLEffect_main1Bones.inc"
-    #include "XboxOneDGSLEffect_main1BonesVc.inc"
-    #include "XboxOneDGSLEffect_main2Bones.inc"
-    #include "XboxOneDGSLEffect_main2BonesVc.inc"
-    #include "XboxOneDGSLEffect_main4Bones.inc"
-    #include "XboxOneDGSLEffect_main4BonesVc.inc"
+#include "XboxOneDGSLEffect_main.inc"
+#include "XboxOneDGSLEffect_mainVc.inc"
+#include "XboxOneDGSLEffect_main1Bones.inc"
+#include "XboxOneDGSLEffect_main1BonesVc.inc"
+#include "XboxOneDGSLEffect_main2Bones.inc"
+#include "XboxOneDGSLEffect_main2BonesVc.inc"
+#include "XboxOneDGSLEffect_main4Bones.inc"
+#include "XboxOneDGSLEffect_main4BonesVc.inc"
 
-    // PS
-    #include "XboxOneDGSLUnlit_main.inc"
-    #include "XboxOneDGSLLambert_main.inc"
-    #include "XboxOneDGSLPhong_main.inc"
+// PS
+#include "XboxOneDGSLUnlit_main.inc"
+#include "XboxOneDGSLLambert_main.inc"
+#include "XboxOneDGSLPhong_main.inc"
 
-    #include "XboxOneDGSLUnlit_mainTk.inc"
-    #include "XboxOneDGSLLambert_mainTk.inc"
-    #include "XboxOneDGSLPhong_mainTk.inc"
+#include "XboxOneDGSLUnlit_mainTk.inc"
+#include "XboxOneDGSLLambert_mainTk.inc"
+#include "XboxOneDGSLPhong_mainTk.inc"
 
-    #include "XboxOneDGSLUnlit_mainTx.inc"
-    #include "XboxOneDGSLLambert_mainTx.inc"
-    #include "XboxOneDGSLPhong_mainTx.inc"
+#include "XboxOneDGSLUnlit_mainTx.inc"
+#include "XboxOneDGSLLambert_mainTx.inc"
+#include "XboxOneDGSLPhong_mainTx.inc"
 
-    #include "XboxOneDGSLUnlit_mainTxTk.inc"
-    #include "XboxOneDGSLLambert_mainTxTk.inc"
-    #include "XboxOneDGSLPhong_mainTxTk.inc"
+#include "XboxOneDGSLUnlit_mainTxTk.inc"
+#include "XboxOneDGSLLambert_mainTxTk.inc"
+#include "XboxOneDGSLPhong_mainTxTk.inc"
 #else
     // VS
-    #include "DGSLEffect_main.inc"
-    #include "DGSLEffect_mainVc.inc"
-    #include "DGSLEffect_main1Bones.inc"
-    #include "DGSLEffect_main1BonesVc.inc"
-    #include "DGSLEffect_main2Bones.inc"
-    #include "DGSLEffect_main2BonesVc.inc"
-    #include "DGSLEffect_main4Bones.inc"
-    #include "DGSLEffect_main4BonesVc.inc"
+#include "DGSLEffect_main.inc"
+#include "DGSLEffect_mainVc.inc"
+#include "DGSLEffect_main1Bones.inc"
+#include "DGSLEffect_main1BonesVc.inc"
+#include "DGSLEffect_main2Bones.inc"
+#include "DGSLEffect_main2BonesVc.inc"
+#include "DGSLEffect_main4Bones.inc"
+#include "DGSLEffect_main4BonesVc.inc"
 
-    // PS
-    #include "DGSLUnlit_main.inc"
-    #include "DGSLLambert_main.inc"
-    #include "DGSLPhong_main.inc"
+// PS
+#include "DGSLUnlit_main.inc"
+#include "DGSLLambert_main.inc"
+#include "DGSLPhong_main.inc"
 
-    #include "DGSLUnlit_mainTk.inc"
-    #include "DGSLLambert_mainTk.inc"
-    #include "DGSLPhong_mainTk.inc"
+#include "DGSLUnlit_mainTk.inc"
+#include "DGSLLambert_mainTk.inc"
+#include "DGSLPhong_mainTk.inc"
 
-    #include "DGSLUnlit_mainTx.inc"
-    #include "DGSLLambert_mainTx.inc"
-    #include "DGSLPhong_mainTx.inc"
+#include "DGSLUnlit_mainTx.inc"
+#include "DGSLLambert_mainTx.inc"
+#include "DGSLPhong_mainTx.inc"
 
-    #include "DGSLUnlit_mainTxTk.inc"
-    #include "DGSLLambert_mainTxTk.inc"
-    #include "DGSLPhong_mainTxTk.inc"
+#include "DGSLUnlit_mainTxTk.inc"
+#include "DGSLLambert_mainTxTk.inc"
+#include "DGSLPhong_mainTxTk.inc"
 #endif
 }
 
@@ -212,6 +214,7 @@ const ShaderBytecode DGSLEffectTraits::PixelShaderBytecode[] =
     { DGSLLambert_mainTxTk, sizeof(DGSLLambert_mainTxTk) }, // LAMBERT (textured, discard)
     { DGSLPhong_mainTxTk, sizeof(DGSLPhong_mainTxTk) },     // PHONG (textured, discard)
 };
+#pragma endregion
 
 
 class DGSLEffect::Impl : public AlignedNew<DGSLEffectConstants>
@@ -913,16 +916,16 @@ void SkinnedDGSLEffect::SetBoneTransforms(_In_reads_(count) XMMATRIX const* valu
 
     for (size_t i = 0; i < count; i++)
     {
-#if DIRECTX_MATH_VERSION >= 313
+    #if DIRECTX_MATH_VERSION >= 313
         XMStoreFloat3x4A(reinterpret_cast<XMFLOAT3X4A*>(&boneConstant[i]), value[i]);
-#else
-        // Xbox One XDK has an older version of DirectXMath
+    #else
+            // Xbox One XDK has an older version of DirectXMath
         XMMATRIX boneMatrix = XMMatrixTranspose(value[i]);
 
         boneConstant[i][0] = boneMatrix.r[0];
         boneConstant[i][1] = boneMatrix.r[1];
         boneConstant[i][2] = boneMatrix.r[2];
-#endif
+    #endif
     }
 
     pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBufferBones;

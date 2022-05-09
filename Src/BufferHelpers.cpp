@@ -255,7 +255,7 @@ HRESULT DirectX::CreateTextureFromMemory(
 
         if (desc.MipLevels != 1)
         {
-#if defined(_XBOX_ONE) && defined(_TITLE)
+        #if defined(_XBOX_ONE) && defined(_TITLE)
             ComPtr<ID3D11Texture2D> staging;
             desc.MipLevels = 1;
             desc.Usage = D3D11_USAGE_STAGING;
@@ -268,9 +268,9 @@ HRESULT DirectX::CreateTextureFromMemory(
             d3dContext->CopySubresourceRegion(tex.Get(), 0, 0, 0, 0, staging.Get(), 0, nullptr);
             UINT64 copyFence = d3dContext->InsertFence(0);
             while (device->IsFencePending(copyFence)) { SwitchToThread(); }
-#else
+        #else
             d3dContext->UpdateSubresource(tex.Get(), 0, nullptr, initData.pSysMem, initData.SysMemPitch, 0);
-#endif
+        #endif
             d3dContext->GenerateMips(srv.Get());
         }
 

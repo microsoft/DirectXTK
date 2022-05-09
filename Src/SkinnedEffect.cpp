@@ -68,65 +68,66 @@ public:
 };
 
 
+#pragma region Shaders
 // Include the precompiled shader code.
 namespace
 {
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    #include "XboxOneSkinnedEffect_VSSkinnedVertexLightingOneBone.inc"
-    #include "XboxOneSkinnedEffect_VSSkinnedVertexLightingTwoBones.inc"
-    #include "XboxOneSkinnedEffect_VSSkinnedVertexLightingFourBones.inc"
+#include "XboxOneSkinnedEffect_VSSkinnedVertexLightingOneBone.inc"
+#include "XboxOneSkinnedEffect_VSSkinnedVertexLightingTwoBones.inc"
+#include "XboxOneSkinnedEffect_VSSkinnedVertexLightingFourBones.inc"
 
-    #include "XboxOneSkinnedEffect_VSSkinnedOneLightOneBone.inc"
-    #include "XboxOneSkinnedEffect_VSSkinnedOneLightTwoBones.inc"
-    #include "XboxOneSkinnedEffect_VSSkinnedOneLightFourBones.inc"
+#include "XboxOneSkinnedEffect_VSSkinnedOneLightOneBone.inc"
+#include "XboxOneSkinnedEffect_VSSkinnedOneLightTwoBones.inc"
+#include "XboxOneSkinnedEffect_VSSkinnedOneLightFourBones.inc"
 
-    #include "XboxOneSkinnedEffect_VSSkinnedPixelLightingOneBone.inc"
-    #include "XboxOneSkinnedEffect_VSSkinnedPixelLightingTwoBones.inc"
-    #include "XboxOneSkinnedEffect_VSSkinnedPixelLightingFourBones.inc"
+#include "XboxOneSkinnedEffect_VSSkinnedPixelLightingOneBone.inc"
+#include "XboxOneSkinnedEffect_VSSkinnedPixelLightingTwoBones.inc"
+#include "XboxOneSkinnedEffect_VSSkinnedPixelLightingFourBones.inc"
 
-    #include "XboxOneSkinnedEffect_VSSkinnedVertexLightingOneBoneBn.inc"
-    #include "XboxOneSkinnedEffect_VSSkinnedVertexLightingTwoBonesBn.inc"
-    #include "XboxOneSkinnedEffect_VSSkinnedVertexLightingFourBonesBn.inc"
+#include "XboxOneSkinnedEffect_VSSkinnedVertexLightingOneBoneBn.inc"
+#include "XboxOneSkinnedEffect_VSSkinnedVertexLightingTwoBonesBn.inc"
+#include "XboxOneSkinnedEffect_VSSkinnedVertexLightingFourBonesBn.inc"
 
-    #include "XboxOneSkinnedEffect_VSSkinnedOneLightOneBoneBn.inc"
-    #include "XboxOneSkinnedEffect_VSSkinnedOneLightTwoBonesBn.inc"
-    #include "XboxOneSkinnedEffect_VSSkinnedOneLightFourBonesBn.inc"
+#include "XboxOneSkinnedEffect_VSSkinnedOneLightOneBoneBn.inc"
+#include "XboxOneSkinnedEffect_VSSkinnedOneLightTwoBonesBn.inc"
+#include "XboxOneSkinnedEffect_VSSkinnedOneLightFourBonesBn.inc"
 
-    #include "XboxOneSkinnedEffect_VSSkinnedPixelLightingOneBoneBn.inc"
-    #include "XboxOneSkinnedEffect_VSSkinnedPixelLightingTwoBonesBn.inc"
-    #include "XboxOneSkinnedEffect_VSSkinnedPixelLightingFourBonesBn.inc"
+#include "XboxOneSkinnedEffect_VSSkinnedPixelLightingOneBoneBn.inc"
+#include "XboxOneSkinnedEffect_VSSkinnedPixelLightingTwoBonesBn.inc"
+#include "XboxOneSkinnedEffect_VSSkinnedPixelLightingFourBonesBn.inc"
 
-    #include "XboxOneSkinnedEffect_PSSkinnedVertexLighting.inc"
-    #include "XboxOneSkinnedEffect_PSSkinnedVertexLightingNoFog.inc"
-    #include "XboxOneSkinnedEffect_PSSkinnedPixelLighting.inc"
+#include "XboxOneSkinnedEffect_PSSkinnedVertexLighting.inc"
+#include "XboxOneSkinnedEffect_PSSkinnedVertexLightingNoFog.inc"
+#include "XboxOneSkinnedEffect_PSSkinnedPixelLighting.inc"
 #else
-    #include "SkinnedEffect_VSSkinnedVertexLightingOneBone.inc"
-    #include "SkinnedEffect_VSSkinnedVertexLightingTwoBones.inc"
-    #include "SkinnedEffect_VSSkinnedVertexLightingFourBones.inc"
+#include "SkinnedEffect_VSSkinnedVertexLightingOneBone.inc"
+#include "SkinnedEffect_VSSkinnedVertexLightingTwoBones.inc"
+#include "SkinnedEffect_VSSkinnedVertexLightingFourBones.inc"
 
-    #include "SkinnedEffect_VSSkinnedOneLightOneBone.inc"
-    #include "SkinnedEffect_VSSkinnedOneLightTwoBones.inc"
-    #include "SkinnedEffect_VSSkinnedOneLightFourBones.inc"
+#include "SkinnedEffect_VSSkinnedOneLightOneBone.inc"
+#include "SkinnedEffect_VSSkinnedOneLightTwoBones.inc"
+#include "SkinnedEffect_VSSkinnedOneLightFourBones.inc"
 
-    #include "SkinnedEffect_VSSkinnedPixelLightingOneBone.inc"
-    #include "SkinnedEffect_VSSkinnedPixelLightingTwoBones.inc"
-    #include "SkinnedEffect_VSSkinnedPixelLightingFourBones.inc"
+#include "SkinnedEffect_VSSkinnedPixelLightingOneBone.inc"
+#include "SkinnedEffect_VSSkinnedPixelLightingTwoBones.inc"
+#include "SkinnedEffect_VSSkinnedPixelLightingFourBones.inc"
 
-    #include "SkinnedEffect_VSSkinnedVertexLightingOneBoneBn.inc"
-    #include "SkinnedEffect_VSSkinnedVertexLightingTwoBonesBn.inc"
-    #include "SkinnedEffect_VSSkinnedVertexLightingFourBonesBn.inc"
+#include "SkinnedEffect_VSSkinnedVertexLightingOneBoneBn.inc"
+#include "SkinnedEffect_VSSkinnedVertexLightingTwoBonesBn.inc"
+#include "SkinnedEffect_VSSkinnedVertexLightingFourBonesBn.inc"
 
-    #include "SkinnedEffect_VSSkinnedOneLightOneBoneBn.inc"
-    #include "SkinnedEffect_VSSkinnedOneLightTwoBonesBn.inc"
-    #include "SkinnedEffect_VSSkinnedOneLightFourBonesBn.inc"
+#include "SkinnedEffect_VSSkinnedOneLightOneBoneBn.inc"
+#include "SkinnedEffect_VSSkinnedOneLightTwoBonesBn.inc"
+#include "SkinnedEffect_VSSkinnedOneLightFourBonesBn.inc"
 
-    #include "SkinnedEffect_VSSkinnedPixelLightingOneBoneBn.inc"
-    #include "SkinnedEffect_VSSkinnedPixelLightingTwoBonesBn.inc"
-    #include "SkinnedEffect_VSSkinnedPixelLightingFourBonesBn.inc"
+#include "SkinnedEffect_VSSkinnedPixelLightingOneBoneBn.inc"
+#include "SkinnedEffect_VSSkinnedPixelLightingTwoBonesBn.inc"
+#include "SkinnedEffect_VSSkinnedPixelLightingFourBonesBn.inc"
 
-    #include "SkinnedEffect_PSSkinnedVertexLighting.inc"
-    #include "SkinnedEffect_PSSkinnedVertexLightingNoFog.inc"
-    #include "SkinnedEffect_PSSkinnedPixelLighting.inc"
+#include "SkinnedEffect_PSSkinnedVertexLighting.inc"
+#include "SkinnedEffect_PSSkinnedVertexLightingNoFog.inc"
+#include "SkinnedEffect_PSSkinnedPixelLighting.inc"
 #endif
 }
 
@@ -262,7 +263,7 @@ const int EffectBase<SkinnedEffectTraits>::PixelShaderIndices[] =
     2,      // pixel lighting (biased vertex normals), four bones
     2,      // pixel lighting (biased vertex normals), four bones, no fog
 };
-
+#pragma endregion
 
 // Global pool of per-device SkinnedEffect resources.
 template<>
@@ -360,7 +361,7 @@ void SkinnedEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
 
 // Public constructor.
 SkinnedEffect::SkinnedEffect(_In_ ID3D11Device* device)
-  : pImpl(std::make_unique<Impl>(device))
+    : pImpl(std::make_unique<Impl>(device))
 {
 }
 
@@ -602,16 +603,16 @@ void SkinnedEffect::SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, s
 
     for (size_t i = 0; i < count; i++)
     {
-#if DIRECTX_MATH_VERSION >= 313
+    #if DIRECTX_MATH_VERSION >= 313
         XMStoreFloat3x4A(reinterpret_cast<XMFLOAT3X4A*>(&boneConstant[i]), value[i]);
-#else
-        // Xbox One XDK has an older version of DirectXMath
+    #else
+            // Xbox One XDK has an older version of DirectXMath
         XMMATRIX boneMatrix = XMMatrixTranspose(value[i]);
 
         boneConstant[i][0] = boneMatrix.r[0];
         boneConstant[i][1] = boneMatrix.r[1];
         boneConstant[i][2] = boneMatrix.r[2];
-#endif
+    #endif
     }
 
     pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
@@ -622,7 +623,7 @@ void SkinnedEffect::ResetBoneTransforms()
 {
     auto boneConstant = pImpl->constants.bones;
 
-    for(size_t i = 0; i < MaxBones; ++i)
+    for (size_t i = 0; i < MaxBones; ++i)
     {
         boneConstant[i][0] = g_XMIdentityR0;
         boneConstant[i][1] = g_XMIdentityR1;

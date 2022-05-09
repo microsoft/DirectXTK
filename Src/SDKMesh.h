@@ -56,9 +56,9 @@ namespace DXUT
     enum D3DDECLUSAGE
     {
         D3DDECLUSAGE_POSITION = 0,
-        D3DDECLUSAGE_BLENDWEIGHT =1,
-        D3DDECLUSAGE_BLENDINDICES =2,
-        D3DDECLUSAGE_NORMAL =3,
+        D3DDECLUSAGE_BLENDWEIGHT = 1,
+        D3DDECLUSAGE_BLENDINDICES = 2,
+        D3DDECLUSAGE_NORMAL = 3,
         D3DDECLUSAGE_TEXCOORD = 5,
         D3DDECLUSAGE_TANGENT = 6,
         D3DDECLUSAGE_BINORMAL = 7,
@@ -67,29 +67,51 @@ namespace DXUT
 
     enum D3DDECLTYPE
     {
-        D3DDECLTYPE_FLOAT1    =  0,  // 1D float expanded to (value, 0., 0., 1.)
-        D3DDECLTYPE_FLOAT2    =  1,  // 2D float expanded to (value, value, 0., 1.)
-        D3DDECLTYPE_FLOAT3    =  2,  // 3D float expanded to (value, value, value, 1.)
-        D3DDECLTYPE_FLOAT4    =  3,  // 4D float
-        D3DDECLTYPE_D3DCOLOR  =  4,  // 4D packed unsigned bytes mapped to 0. to 1. range
-                                     // Input is in D3DCOLOR format (ARGB) expanded to (R, G, B, A)
-        D3DDECLTYPE_UBYTE4    =  5,  // 4D unsigned uint8_t
-        D3DDECLTYPE_UBYTE4N   =  8,  // Each of 4 bytes is normalized by dividing to 255.0
-        D3DDECLTYPE_SHORT4N   = 10,  // 4D signed short normalized (v[0]/32767.0,v[1]/32767.0,v[2]/32767.0,v[3]/32767.0)
-        D3DDECLTYPE_DEC3N     = 14,  // 3D signed normalized (v[0]/511.0, v[1]/511.0, v[2]/511.0, 1.)
-                                     // Note: There is no equivalent to D3DDECLTYPE_DEC3N (14) as a DXGI_FORMAT
-        D3DDECLTYPE_FLOAT16_2 = 15,  // Two 16-bit floating point values, expanded to (value, value, 0, 1)
-        D3DDECLTYPE_FLOAT16_4 = 16,  // Four 16-bit floating point values
+        D3DDECLTYPE_FLOAT1 = 0,
+        // 1D float expanded to (value, 0., 0., 1.)
 
-        D3DDECLTYPE_UNUSED    = 17,  // When the type field in a decl is unused.
+        D3DDECLTYPE_FLOAT2 = 1,
+        // 2D float expanded to (value, value, 0., 1.)
+
+        D3DDECLTYPE_FLOAT3 = 2,
+        // 3D float expanded to (value, value, value, 1.)
+
+        D3DDECLTYPE_FLOAT4 = 3,
+        // 4D float
+
+        D3DDECLTYPE_D3DCOLOR = 4,
+        // 4D packed unsigned bytes mapped to 0. to 1. range
+        // Input is in D3DCOLOR format (ARGB) expanded to (R, G, B, A)
+
+        D3DDECLTYPE_UBYTE4 = 5,
+        // 4D unsigned uint8_t
+
+        D3DDECLTYPE_UBYTE4N = 8,
+        // Each of 4 bytes is normalized by dividing to 255.0
+
+        D3DDECLTYPE_SHORT4N = 10,
+        // 4D signed short normalized (v[0]/32767.0,v[1]/32767.0,v[2]/32767.0,v[3]/32767.0)
+
+        D3DDECLTYPE_DEC3N = 14,
+        // 3D signed normalized (v[0]/511.0, v[1]/511.0, v[2]/511.0, 1.)
+        // Note: There is no equivalent to D3DDECLTYPE_DEC3N (14) as a DXGI_FORMAT
+
+        D3DDECLTYPE_FLOAT16_2 = 15,
+        // Two 16-bit floating point values, expanded to (value, value, 0, 1)
+
+        D3DDECLTYPE_FLOAT16_4 = 16,
+        // Four 16-bit floating point values
+
+        D3DDECLTYPE_UNUSED = 17,
+        // When the type field in a decl is unused.
 
         // These are extensions for DXGI-based versions of Direct3D
         D3DDECLTYPE_DXGI_R10G10B10A2_UNORM = 32 + DXGI_FORMAT_R10G10B10A2_UNORM,
-        D3DDECLTYPE_DXGI_R11G11B10_FLOAT   = 32 + DXGI_FORMAT_R11G11B10_FLOAT,
-        D3DDECLTYPE_DXGI_R8G8B8A8_SNORM    = 32 + DXGI_FORMAT_R8G8B8A8_SNORM,
+        D3DDECLTYPE_DXGI_R11G11B10_FLOAT = 32 + DXGI_FORMAT_R11G11B10_FLOAT,
+        D3DDECLTYPE_DXGI_R8G8B8A8_SNORM = 32 + DXGI_FORMAT_R8G8B8A8_SNORM,
     };
 
-    #pragma pack(push,4)
+#pragma pack(push,4)
 
     struct D3DVERTEXELEMENT9
     {
@@ -101,11 +123,11 @@ namespace DXUT
         uint8_t  UsageIndex; // Semantic index
     };
 
-    #pragma pack(pop)
+#pragma pack(pop)
 
-    //--------------------------------------------------------------------------------------
-    // Hard Defines for the various structures
-    //--------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------
+// Hard Defines for the various structures
+//--------------------------------------------------------------------------------------
     constexpr uint32_t SDKMESH_FILE_VERSION = 101;
     constexpr uint32_t SDKMESH_FILE_VERSION_V2 = 200;
 
@@ -118,7 +140,7 @@ namespace DXUT
     constexpr uint32_t MAX_TEXTURE_NAME = MAX_PATH;
     constexpr uint32_t MAX_MATERIAL_PATH = MAX_PATH;
     constexpr uint32_t INVALID_FRAME = uint32_t(-1);
-    constexpr uint32_t INVALID_MESH =  uint32_t(-1);
+    constexpr uint32_t INVALID_MESH = uint32_t(-1);
     constexpr uint32_t INVALID_MATERIAL = uint32_t(-1);
     constexpr uint32_t INVALID_SUBSET = uint32_t(-1);
     constexpr uint32_t INVALID_ANIMATION_DATA = uint32_t(-1);
@@ -156,7 +178,7 @@ namespace DXUT
     //--------------------------------------------------------------------------------------
     // Structures.
     //--------------------------------------------------------------------------------------
-    #pragma pack(push,8)
+#pragma pack(push,8)
 
     struct SDKMESH_HEADER
     {
@@ -320,19 +342,19 @@ namespace DXUT
         uint64_t DataOffset;
     };
 
-    #pragma pack(pop)
+#pragma pack(pop)
 
 } // namespace
 
-static_assert( sizeof(DXUT::D3DVERTEXELEMENT9) == 8, "Direct3D9 Decl structure size incorrect" );
-static_assert( sizeof(DXUT::SDKMESH_HEADER)== 104, "SDK Mesh structure size incorrect" );
-static_assert( sizeof(DXUT::SDKMESH_VERTEX_BUFFER_HEADER) == 288, "SDK Mesh structure size incorrect" );
-static_assert( sizeof(DXUT::SDKMESH_INDEX_BUFFER_HEADER) == 32, "SDK Mesh structure size incorrect" );
-static_assert( sizeof(DXUT::SDKMESH_MESH) == 224, "SDK Mesh structure size incorrect" );
-static_assert( sizeof(DXUT::SDKMESH_SUBSET) == 144, "SDK Mesh structure size incorrect" );
-static_assert( sizeof(DXUT::SDKMESH_FRAME) == 184, "SDK Mesh structure size incorrect" );
-static_assert( sizeof(DXUT::SDKMESH_MATERIAL) == 1256, "SDK Mesh structure size incorrect" );
-static_assert( sizeof(DXUT::SDKMESH_MATERIAL_V2) == sizeof(DXUT::SDKMESH_MATERIAL), "SDK Mesh structure size incorrect" );
-static_assert( sizeof(DXUT::SDKANIMATION_FILE_HEADER) == 40, "SDK Mesh structure size incorrect" );
-static_assert( sizeof(DXUT::SDKANIMATION_DATA) == 40, "SDK Mesh structure size incorrect" );
-static_assert( sizeof(DXUT::SDKANIMATION_FRAME_DATA) == 112, "SDK Mesh structure size incorrect" );
+static_assert(sizeof(DXUT::D3DVERTEXELEMENT9) == 8, "Direct3D9 Decl structure size incorrect");
+static_assert(sizeof(DXUT::SDKMESH_HEADER)== 104, "SDK Mesh structure size incorrect");
+static_assert(sizeof(DXUT::SDKMESH_VERTEX_BUFFER_HEADER) == 288, "SDK Mesh structure size incorrect");
+static_assert(sizeof(DXUT::SDKMESH_INDEX_BUFFER_HEADER) == 32, "SDK Mesh structure size incorrect");
+static_assert(sizeof(DXUT::SDKMESH_MESH) == 224, "SDK Mesh structure size incorrect");
+static_assert(sizeof(DXUT::SDKMESH_SUBSET) == 144, "SDK Mesh structure size incorrect");
+static_assert(sizeof(DXUT::SDKMESH_FRAME) == 184, "SDK Mesh structure size incorrect");
+static_assert(sizeof(DXUT::SDKMESH_MATERIAL) == 1256, "SDK Mesh structure size incorrect");
+static_assert(sizeof(DXUT::SDKMESH_MATERIAL_V2) == sizeof(DXUT::SDKMESH_MATERIAL), "SDK Mesh structure size incorrect");
+static_assert(sizeof(DXUT::SDKANIMATION_FILE_HEADER) == 40, "SDK Mesh structure size incorrect");
+static_assert(sizeof(DXUT::SDKANIMATION_DATA) == 40, "SDK Mesh structure size incorrect");
+static_assert(sizeof(DXUT::SDKANIMATION_FRAME_DATA) == 112, "SDK Mesh structure size incorrect");

@@ -1922,9 +1922,9 @@ inline bool Matrix::operator == (const Matrix& M) const noexcept
     const XMVECTOR y4 = XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(&M._41));
 
     return (XMVector4Equal(x1, y1)
-            && XMVector4Equal(x2, y2)
-            && XMVector4Equal(x3, y3)
-            && XMVector4Equal(x4, y4)) != 0;
+        && XMVector4Equal(x2, y2)
+        && XMVector4Equal(x3, y3)
+        && XMVector4Equal(x4, y4)) != 0;
 }
 
 inline bool Matrix::operator != (const Matrix& M) const noexcept
@@ -1941,9 +1941,9 @@ inline bool Matrix::operator != (const Matrix& M) const noexcept
     const XMVECTOR y4 = XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(&M._41));
 
     return (XMVector4NotEqual(x1, y1)
-            || XMVector4NotEqual(x2, y2)
-            || XMVector4NotEqual(x3, y3)
-            || XMVector4NotEqual(x4, y4)) != 0;
+        || XMVector4NotEqual(x2, y2)
+        || XMVector4NotEqual(x3, y3)
+        || XMVector4NotEqual(x4, y4)) != 0;
 }
 
 //------------------------------------------------------------------------------
@@ -3724,19 +3724,21 @@ inline bool Ray::Intersects(const Plane& plane, _Out_ float& Dist) const noexcep
 // Comparision operators
 //------------------------------------------------------------------------------
 
+#if (__cplusplus < 202002L)
 inline bool Viewport::operator == (const Viewport& vp) const noexcept
 {
     return (x == vp.x && y == vp.y
-            && width == vp.width && height == vp.height
-            && minDepth == vp.minDepth && maxDepth == vp.maxDepth);
+        && width == vp.width && height == vp.height
+        && minDepth == vp.minDepth && maxDepth == vp.maxDepth);
 }
 
 inline bool Viewport::operator != (const Viewport& vp) const noexcept
 {
     return (x != vp.x || y != vp.y
-            || width != vp.width || height != vp.height
-            || minDepth != vp.minDepth || maxDepth != vp.maxDepth);
+        || width != vp.width || height != vp.height
+        || minDepth != vp.minDepth || maxDepth != vp.maxDepth);
 }
+#endif
 
 //------------------------------------------------------------------------------
 // Assignment operators

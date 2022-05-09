@@ -177,17 +177,17 @@ RECT Viewport::ComputeDisplayArea(DXGI_SCALING scaling, UINT backBufferWidth, UI
 
     switch (int(scaling))
     {
-        case DXGI_SCALING_STRETCH:
-            // Output fills the entire window area
-            rct.top = 0;
-            rct.left = 0;
-            rct.right = outputWidth;
-            rct.bottom = outputHeight;
-            break;
+    case DXGI_SCALING_STRETCH:
+        // Output fills the entire window area
+        rct.top = 0;
+        rct.left = 0;
+        rct.right = outputWidth;
+        rct.bottom = outputHeight;
+        break;
 
-        case 2 /*DXGI_SCALING_ASPECT_RATIO_STRETCH*/:
-            // Output fills the window area but respects the original aspect ratio, using pillar boxing or letter boxing as required
-            // Note: This scaling option is not supported for legacy Win32 windows swap chains
+    case 2 /*DXGI_SCALING_ASPECT_RATIO_STRETCH*/:
+        // Output fills the window area but respects the original aspect ratio, using pillar boxing or letter boxing as required
+        // Note: This scaling option is not supported for legacy Win32 windows swap chains
         {
             assert(backBufferHeight > 0);
             const float aspectRatio = float(backBufferWidth) / float(backBufferHeight);
@@ -218,14 +218,14 @@ RECT Viewport::ComputeDisplayArea(DXGI_SCALING scaling, UINT backBufferWidth, UI
         }
         break;
 
-        case DXGI_SCALING_NONE:
-        default:
-            // Output is displayed in the upper left corner of the window area
-            rct.top = 0;
-            rct.left = 0;
-            rct.right = std::min<LONG>(static_cast<LONG>(backBufferWidth), outputWidth);
-            rct.bottom = std::min<LONG>(static_cast<LONG>(backBufferHeight), outputHeight);
-            break;
+    case DXGI_SCALING_NONE:
+    default:
+        // Output is displayed in the upper left corner of the window area
+        rct.top = 0;
+        rct.left = 0;
+        rct.right = std::min<LONG>(static_cast<LONG>(backBufferWidth), outputWidth);
+        rct.bottom = std::min<LONG>(static_cast<LONG>(backBufferHeight), outputHeight);
+        break;
     }
 
     return rct;

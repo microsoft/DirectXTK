@@ -193,55 +193,55 @@ namespace
         const uint32_t tag = GetFormatTag(wfx);
         switch (tag)
         {
-            case WAVE_FORMAT_PCM:
-                static_assert(WAVE_FORMAT_PCM < 0x1ff, "KeyGen tag is too small");
-                result.pcm.tag = WAVE_FORMAT_PCM;
-                result.pcm.channels = wfx->nChannels;
-                result.pcm.bitsPerSample = wfx->wBitsPerSample;
-                break;
+        case WAVE_FORMAT_PCM:
+            static_assert(WAVE_FORMAT_PCM < 0x1ff, "KeyGen tag is too small");
+            result.pcm.tag = WAVE_FORMAT_PCM;
+            result.pcm.channels = wfx->nChannels;
+            result.pcm.bitsPerSample = wfx->wBitsPerSample;
+            break;
 
-            case WAVE_FORMAT_IEEE_FLOAT:
-                static_assert(WAVE_FORMAT_IEEE_FLOAT < 0x1ff, "KeyGen tag is too small");
+        case WAVE_FORMAT_IEEE_FLOAT:
+            static_assert(WAVE_FORMAT_IEEE_FLOAT < 0x1ff, "KeyGen tag is too small");
 
-                if (wfx->wBitsPerSample != 32)
+            if (wfx->wBitsPerSample != 32)
+                return 0;
+
+            result.pcm.tag = WAVE_FORMAT_IEEE_FLOAT;
+            result.pcm.channels = wfx->nChannels;
+            result.pcm.bitsPerSample = 32;
+            break;
+
+        case WAVE_FORMAT_ADPCM:
+            static_assert(WAVE_FORMAT_ADPCM < 0x1ff, "KeyGen tag is too small");
+            result.adpcm.tag = WAVE_FORMAT_ADPCM;
+            result.adpcm.channels = wfx->nChannels;
+
+            {
+                auto wfadpcm = reinterpret_cast<const ADPCMWAVEFORMAT*>(wfx);
+                result.adpcm.samplesPerBlock = wfadpcm->wSamplesPerBlock;
+            }
+            break;
+
+        #ifdef DIRECTX_ENABLE_XMA2
+        case WAVE_FORMAT_XMA2:
+            static_assert(WAVE_FORMAT_XMA2 < 0x1ff, "KeyGen tag is too small");
+            result.xma.tag = WAVE_FORMAT_XMA2;
+            result.xma.channels = wfx->nChannels;
+
+            {
+                auto xmaFmt = reinterpret_cast<const XMA2WAVEFORMATEX*>(wfx);
+
+                if ((xmaFmt->LoopBegin > 0)
+                    || (xmaFmt->PlayBegin > 0))
                     return 0;
 
-                result.pcm.tag = WAVE_FORMAT_IEEE_FLOAT;
-                result.pcm.channels = wfx->nChannels;
-                result.pcm.bitsPerSample = 32;
-                break;
+                result.xma.encoderVersion = xmaFmt->EncoderVersion;
+            }
+            break;
+        #endif
 
-            case WAVE_FORMAT_ADPCM:
-                static_assert(WAVE_FORMAT_ADPCM < 0x1ff, "KeyGen tag is too small");
-                result.adpcm.tag = WAVE_FORMAT_ADPCM;
-                result.adpcm.channels = wfx->nChannels;
-
-                {
-                    auto wfadpcm = reinterpret_cast<const ADPCMWAVEFORMAT*>(wfx);
-                    result.adpcm.samplesPerBlock = wfadpcm->wSamplesPerBlock;
-                }
-                break;
-
-            #ifdef DIRECTX_ENABLE_XMA2
-            case WAVE_FORMAT_XMA2:
-                static_assert(WAVE_FORMAT_XMA2 < 0x1ff, "KeyGen tag is too small");
-                result.xma.tag = WAVE_FORMAT_XMA2;
-                result.xma.channels = wfx->nChannels;
-
-                {
-                    auto xmaFmt = reinterpret_cast<const XMA2WAVEFORMATEX*>(wfx);
-
-                    if ((xmaFmt->LoopBegin > 0)
-                        || (xmaFmt->PlayBegin > 0))
-                        return 0;
-
-                    result.xma.encoderVersion = xmaFmt->EncoderVersion;
-                }
-                break;
-            #endif
-
-            default:
-                return 0;
+        default:
+            return 0;
         }
 
         return result.key;
@@ -256,6 +256,10 @@ static_assert(static_cast<unsigned int>(std::size(gReverbPresets)) == Reverb_MAX
 //======================================================================================
 
 #define SAFE_DESTROY_VOICE(voice) if ( voice ) { voice->DestroyVoice(); voice = nullptr; }
+
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Wextra-semi-stmt"
+#endif
 
 // Internal object implementation class.
 class AudioEngine::Impl
@@ -451,7 +455,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
     hr = mMasterVoice->GetChannelMask(&dwChannelMask);
     if (FAILED(hr))
     {
-        SAFE_DESTROY_VOICE(mMasterVoice)
+        SAFE_DESTROY_VOICE(mMasterVoice);
         xaudio2.Reset();
         return hr;
     }
@@ -471,7 +475,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
         hr = mMasterVoice->SetVolume(mMasterVolume);
         if (FAILED(hr))
         {
-            SAFE_DESTROY_VOICE(mMasterVoice)
+            SAFE_DESTROY_VOICE(mMasterVoice);
             xaudio2.Reset();
             return hr;
         }
@@ -489,7 +493,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
         hr = CreateFX(__uuidof(FXMasteringLimiter), mVolumeLimiter.ReleaseAndGetAddressOf(), &params, sizeof(params));
         if (FAILED(hr))
         {
-            SAFE_DESTROY_VOICE(mMasterVoice)
+            SAFE_DESTROY_VOICE(mMasterVoice);
             xaudio2.Reset();
             return hr;
         }
@@ -503,7 +507,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
         hr = mMasterVoice->SetEffectChain(&chain);
         if (FAILED(hr))
         {
-            SAFE_DESTROY_VOICE(mMasterVoice)
+            SAFE_DESTROY_VOICE(mMasterVoice);
             mVolumeLimiter.Reset();
             xaudio2.Reset();
             return hr;
@@ -520,7 +524,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
         hr = XAudio2CreateReverb(mReverbEffect.ReleaseAndGetAddressOf(), 0u);
         if (FAILED(hr))
         {
-            SAFE_DESTROY_VOICE(mMasterVoice)
+            SAFE_DESTROY_VOICE(mMasterVoice);
             mVolumeLimiter.Reset();
             xaudio2.Reset();
             return hr;
@@ -536,7 +540,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
             nullptr, &effectChain);
         if (FAILED(hr))
         {
-            SAFE_DESTROY_VOICE(mMasterVoice)
+            SAFE_DESTROY_VOICE(mMasterVoice);
             mReverbEffect.Reset();
             mVolumeLimiter.Reset();
             xaudio2.Reset();
@@ -548,8 +552,8 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
         hr = mReverbVoice->SetEffectParameters(0, &native, sizeof(XAUDIO2FX_REVERB_PARAMETERS));
         if (FAILED(hr))
         {
-            SAFE_DESTROY_VOICE(mReverbVoice)
-            SAFE_DESTROY_VOICE(mMasterVoice)
+            SAFE_DESTROY_VOICE(mReverbVoice);
+            SAFE_DESTROY_VOICE(mMasterVoice);
             mReverbEffect.Reset();
             mVolumeLimiter.Reset();
             xaudio2.Reset();
@@ -567,8 +571,8 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
     hr = X3DAudioInitialize(masterChannelMask, SPEEDOFSOUND, mX3DAudio);
     if (FAILED(hr))
     {
-        SAFE_DESTROY_VOICE(mReverbVoice)
-        SAFE_DESTROY_VOICE(mMasterVoice)
+        SAFE_DESTROY_VOICE(mReverbVoice);
+        SAFE_DESTROY_VOICE(mMasterVoice);
         mReverbEffect.Reset();
         mVolumeLimiter.Reset();
         xaudio2.Reset();
@@ -612,8 +616,8 @@ void AudioEngine::Impl::SetSilentMode()
 
     mVoiceInstances = 0;
 
-    SAFE_DESTROY_VOICE(mReverbVoice)
-    SAFE_DESTROY_VOICE(mMasterVoice)
+    SAFE_DESTROY_VOICE(mReverbVoice);
+    SAFE_DESTROY_VOICE(mMasterVoice);
 
     mReverbEffect.Reset();
     mVolumeLimiter.Reset();
@@ -651,8 +655,8 @@ void AudioEngine::Impl::Shutdown() noexcept
 
         mVoiceInstances = 0;
 
-        SAFE_DESTROY_VOICE(mReverbVoice)
-        SAFE_DESTROY_VOICE(mMasterVoice)
+        SAFE_DESTROY_VOICE(mReverbVoice);
+        SAFE_DESTROY_VOICE(mMasterVoice);
 
         mReverbEffect.Reset();
         mVolumeLimiter.Reset();
@@ -676,54 +680,54 @@ bool AudioEngine::Impl::Update()
     HANDLE events[2] = { mEngineCallback.mCriticalError.get(), mVoiceCallback.mBufferEnd.get() };
     switch (WaitForMultipleObjectsEx(static_cast<DWORD>(std::size(events)), events, FALSE, 0, FALSE))
     {
-        default:
-        case WAIT_TIMEOUT:
-            break;
+    default:
+    case WAIT_TIMEOUT:
+        break;
 
-        case WAIT_OBJECT_0:     // OnCritialError
-            mCriticalError = true;
+    case WAIT_OBJECT_0:     // OnCritialError
+        mCriticalError = true;
 
-            SetSilentMode();
-            return false;
+        SetSilentMode();
+        return false;
 
-        case WAIT_OBJECT_0 + 1: // OnBufferEnd
-            // Scan for completed one-shot voices
-            for (auto it = mOneShots.begin(); it != mOneShots.end(); )
+    case WAIT_OBJECT_0 + 1: // OnBufferEnd
+        // Scan for completed one-shot voices
+        for (auto it = mOneShots.begin(); it != mOneShots.end(); )
+        {
+            assert(it->second != nullptr);
+
+            XAUDIO2_VOICE_STATE xstate;
+            it->second->GetState(&xstate, XAUDIO2_VOICE_NOSAMPLESPLAYED);
+
+            if (!xstate.BuffersQueued)
             {
-                assert(it->second != nullptr);
-
-                XAUDIO2_VOICE_STATE xstate;
-                it->second->GetState(&xstate, XAUDIO2_VOICE_NOSAMPLESPLAYED);
-
-                if (!xstate.BuffersQueued)
+                std::ignore = it->second->Stop(0);
+                if (it->first)
                 {
-                    std::ignore = it->second->Stop(0);
-                    if (it->first)
-                    {
-                        // Put voice back into voice pool for reuse since it has a non-zero voiceKey
-                    #ifdef VERBOSE_TRACE
-                        DebugTrace("INFO: One-shot voice being saved for reuse (%08X)\n", it->first);
-                    #endif
-                        voicepool_t::value_type v(it->first, it->second);
-                        mVoicePool.emplace(v);
-                    }
-                    else
-                    {
-                        // Voice is to be destroyed rather than reused
-                    #ifdef VERBOSE_TRACE
-                        DebugTrace("INFO: Destroying one-shot voice\n");
-                    #endif
-                        it->second->DestroyVoice();
-                    }
-                    it = mOneShots.erase(it);
+                    // Put voice back into voice pool for reuse since it has a non-zero voiceKey
+                #ifdef VERBOSE_TRACE
+                    DebugTrace("INFO: One-shot voice being saved for reuse (%08X)\n", it->first);
+                #endif
+                    voicepool_t::value_type v(it->first, it->second);
+                    mVoicePool.emplace(v);
                 }
                 else
-                    ++it;
+                {
+                    // Voice is to be destroyed rather than reused
+                #ifdef VERBOSE_TRACE
+                    DebugTrace("INFO: Destroying one-shot voice\n");
+                #endif
+                    it->second->DestroyVoice();
+                }
+                it = mOneShots.erase(it);
             }
-            break;
+            else
+                ++it;
+        }
+        break;
 
-        case WAIT_FAILED:
-            throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "WaitForMultipleObjectsEx");
+    case WAIT_FAILED:
+        throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "WaitForMultipleObjectsEx");
     }
 
     //
@@ -850,8 +854,8 @@ void AudioEngine::Impl::AllocateVoice(
         if (flags & (SoundEffectInstance_Use3D | SoundEffectInstance_ReverbUseFilters | SoundEffectInstance_NoSetPitch))
         {
             DebugTrace((flags & SoundEffectInstance_NoSetPitch)
-                       ? "ERROR: One-shot voices must support pitch-shifting for voice reuse\n"
-                       : "ERROR: One-use voices cannot use 3D positional audio\n");
+                ? "ERROR: One-shot voices must support pitch-shifting for voice reuse\n"
+                : "ERROR: One-use voices cannot use 3D positional audio\n");
             throw std::invalid_argument("Invalid flags for one-shot voice");
         }
 
@@ -901,7 +905,7 @@ void AudioEngine::Impl::AllocateVoice(
                 else if ((mVoicePool.size() + mOneShots.size() + 1) >= maxVoiceOneshots)
                 {
                     DebugTrace("WARNING: Too many one-shot voices in use (%zu + %zu >= %zu); one-shot not played\n",
-                               mVoicePool.size(), mOneShots.size() + 1, maxVoiceOneshots);
+                        mVoicePool.size(), mOneShots.size() + 1, maxVoiceOneshots);
                     return;
                 }
                 else
@@ -914,26 +918,26 @@ void AudioEngine::Impl::AllocateVoice(
                     const uint32_t tag = GetFormatTag(wfx);
                     switch (tag)
                     {
-                        case WAVE_FORMAT_PCM:
-                            CreateIntegerPCM(wfmt, defaultRate, wfx->nChannels, wfx->wBitsPerSample);
-                            break;
+                    case WAVE_FORMAT_PCM:
+                        CreateIntegerPCM(wfmt, defaultRate, wfx->nChannels, wfx->wBitsPerSample);
+                        break;
 
-                        case WAVE_FORMAT_IEEE_FLOAT:
-                            CreateFloatPCM(wfmt, defaultRate, wfx->nChannels);
-                            break;
+                    case WAVE_FORMAT_IEEE_FLOAT:
+                        CreateFloatPCM(wfmt, defaultRate, wfx->nChannels);
+                        break;
 
-                        case WAVE_FORMAT_ADPCM:
+                    case WAVE_FORMAT_ADPCM:
                         {
                             auto wfadpcm = reinterpret_cast<const ADPCMWAVEFORMAT*>(wfx);
                             CreateADPCM(wfmt, sizeof(buff), defaultRate, wfx->nChannels, wfadpcm->wSamplesPerBlock);
                         }
                         break;
 
-                        #ifdef DIRECTX_ENABLE_XMA2
-                        case WAVE_FORMAT_XMA2:
-                            CreateXMA2(wfmt, sizeof(buff), defaultRate, wfx->nChannels, 65536, 2, 0);
-                            break;
-                        #endif
+                    #ifdef DIRECTX_ENABLE_XMA2
+                    case WAVE_FORMAT_XMA2:
+                        CreateXMA2(wfmt, sizeof(buff), defaultRate, wfx->nChannels, 65536, 2, 0);
+                        break;
+                    #endif
                     }
 
                 #ifdef VERBOSE_TRACE
@@ -969,7 +973,7 @@ void AudioEngine::Impl::AllocateVoice(
             if ((mVoicePool.size() + mOneShots.size() + 1) >= maxVoiceOneshots)
             {
                 DebugTrace("WARNING: Too many one-shot voices in use (%zu + %zu >= %zu); one-shot not played; see TrimVoicePool\n",
-                           mVoicePool.size(), mOneShots.size() + 1, maxVoiceOneshots);
+                    mVoicePool.size(), mOneShots.size() + 1, maxVoiceOneshots);
                 return;
             }
         }
@@ -1427,7 +1431,7 @@ X3DAUDIO_HANDLE& AudioEngine::Get3DHandle() const noexcept
 #elif (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
 #pragma comment(lib,"runtimeobject.lib")
 #pragma warning(push)
-#pragma warning(disable: 4471 5204)
+#pragma warning(disable: 4471 5204 5256)
 #ifdef __clang__
 #pragma clang diagnostic ignored "-Wnonportable-system-include-path"
 #endif

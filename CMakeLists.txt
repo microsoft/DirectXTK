@@ -41,6 +41,8 @@ elseif(CMAKE_GENERATOR_PLATFORM MATCHES "^[Aa][Rr][Mm]64$")
     set(DIRECTX_ARCH arm64)
 endif()
 
+include(GNUInstallDirs)
+
 #--- Library
 set(LIBRARY_HEADERS
     Inc/BufferHelpers.h
@@ -142,7 +144,12 @@ set(SHADER_SOURCES
     Src/Shaders/ToneMap.fx
     Src/Shaders/Utilities.fxh)
 
-if((BUILD_XAUDIO_WIN10) OR (BUILD_XAUDIO_WIN8) OR (BUILD_XAUDIO_WIN7))
+if(MINGW)
+   set(BUILD_XAUDIO_WIN10 OFF)
+   set(BUILD_XAUDIO_WIN8 OFF)
+endif()
+
+if(WINDOWS_STORE OR BUILD_XAUDIO_WIN10 OR BUILD_XAUDIO_WIN8 OR BUILD_XAUDIO_WIN7)
     set(LIBRARY_HEADERS ${LIBRARY_HEADERS}
         Inc/Audio.h)
 
@@ -167,6 +174,8 @@ if (NOT COMPILED_SHADERS)
     endif()
     set(COMPILED_SHADERS ${CMAKE_CURRENT_BINARY_DIR}/Shaders/Compiled)
     file(MAKE_DIRECTORY ${COMPILED_SHADERS})
+else()
+    file(TO_CMAKE_PATH ${COMPILED_SHADERS} COMPILED_SHADERS)
 endif()
 
 set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
@@ -178,8 +187,7 @@ if (NOT USE_PREBUILT_SHADERS)
         MAIN_DEPENDENCY "${PROJECT_SOURCE_DIR}/Src/Shaders/CompileShaders.cmd"
         DEPENDS ${SHADER_SOURCES}
         COMMENT "Generating HLSL shaders..."
-        COMMAND set CompileShadersOutput=${COMPILED_SHADERS}
-        COMMAND CompileShaders.cmd
+        COMMAND ${CMAKE_COMMAND} -E env CompileShadersOutput="${COMPILED_SHADERS}" CompileShaders.cmd > "${COMPILED_SHADERS}/compileshaders.log"
         WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/Src/Shaders"
         USES_TERMINAL)
 endif()
@@ -188,7 +196,7 @@ add_library(${PROJECT_NAME} STATIC ${LIBRARY_SOURCES} ${LIBRARY_HEADERS})
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${COMPILED_SHADERS})
 
-if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.16")
+if ((${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.16") AND (NOT MINGW))
     target_precompile_headers(${PROJECT_NAME} PRIVATE Src/pch.h)
 endif()
 
@@ -198,9 +206,9 @@ source_group(Src REGULAR_EXPRESSION Src/*.*)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Inc>
-  $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>)
 
-if((BUILD_XAUDIO_WIN10) OR (BUILD_XAUDIO_WIN8) OR (BUILD_XAUDIO_WIN7))
+if(WINDOWS_STORE OR BUILD_XAUDIO_WIN10 OR BUILD_XAUDIO_WIN8 OR BUILD_XAUDIO_WIN7)
     target_include_directories(${PROJECT_NAME} PRIVATE Src Audio)
 endif()
 
@@ -215,7 +223,7 @@ if(MSVC)
     # Library needs /EHsc (Enable C++ exceptions)
 endif()
 
-if (VCPKG_TOOLCHAIN)
+if (MINGW OR VCPKG_TOOLCHAIN)
     message("INFO: Using VCPKG for DirectXMath.")
     find_package(directxmath CONFIG REQUIRED)
     target_link_libraries(${PROJECT_NAME} PRIVATE Microsoft::DirectXMath)
@@ -235,35 +243,37 @@ include(CMakePackageConfigHelpers)
 string(TOLOWER ${PROJECT_NAME} PACKAGE_NAME)
 
 write_basic_package_version_file(
-  ${PROJECT_BINARY_DIR}/cmake/${PACKAGE_NAME}-config-version.cmake
+  ${PACKAGE_NAME}-config-version.cmake
   VERSION ${DIRECTXTK_VERSION}
   COMPATIBILITY AnyNewerVersion)
 
 install(TARGETS ${PROJECT_NAME}
   EXPORT ${PROJECT_NAME}-targets
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin)
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/.nuget/${PROJECT_NAME}-config.cmake.in
-  ${PROJECT_BINARY_DIR}/cmake/${PACKAGE_NAME}-config.cmake
-  INSTALL_DESTINATION cmake/})
+  ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}-config.cmake
+  INSTALL_DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PACKAGE_NAME}/cmake/)
 
 install(EXPORT ${PROJECT_NAME}-targets
   FILE ${PROJECT_NAME}-targets.cmake
   NAMESPACE Microsoft::
-  DESTINATION cmake/)
+  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PACKAGE_NAME}/cmake/)
 
 install(FILES ${LIBRARY_HEADERS}
-    DESTINATION include/${PROJECT_NAME})
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
 
 install(FILES
-    ${PROJECT_BINARY_DIR}/cmake/${PACKAGE_NAME}-config.cmake
-    ${PROJECT_BINARY_DIR}/cmake/${PACKAGE_NAME}-config-version.cmake
-  DESTINATION cmake/)
+    ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}-config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}-config-version.cmake
+  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PACKAGE_NAME}/cmake/)
 
 #--- Command-line tools
 if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
+  set(TOOL_EXES xwbtool)
+
   add_executable(xwbtool
     xwbtool/xwbtool.cpp
     Audio/WAVFileReader.cpp
@@ -271,102 +281,112 @@ if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
   target_include_directories(xwbtool PRIVATE Audio Src)
   target_link_libraries(xwbtool version.lib)
   source_group(xwbtool REGULAR_EXPRESSION XWBTool/*.*)
+endif()
 
-  if (VCPKG_TOOLCHAIN)
-    target_link_libraries(xwbtool Microsoft::DirectXMath)
-  endif()
+if (MINGW OR VCPKG_TOOLCHAIN)
+  foreach(t IN LISTS TOOL_EXES)
+    target_link_libraries(${t} Microsoft::DirectXMath)
+  endforeach()
 endif()
 
 if(MSVC)
-    target_compile_options(${PROJECT_NAME} PRIVATE /fp:fast "$<$<NOT:$<CONFIG:DEBUG>>:/guard:cf>")
+    foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+      target_compile_options(${t} PRIVATE /fp:fast "$<$<NOT:$<CONFIG:DEBUG>>:/guard:cf>")
+      target_link_options(${t} PRIVATE /DYNAMICBASE /NXCOMPAT)
+    endforeach()
 
-    if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
-      target_compile_options(xwbtool PRIVATE /fp:fast "$<$<NOT:$<CONFIG:DEBUG>>:/guard:cf>")
-      target_link_options(xwbtool PRIVATE /DYNAMICBASE /NXCOMPAT)
+    if((${CMAKE_SIZEOF_VOID_P} EQUAL 4) AND (NOT ${DIRECTX_ARCH} MATCHES "^arm"))
+        foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+          target_link_options(${t} PRIVATE /SAFESEH)
+        endforeach()
+    endif()
+endif()
+
+if(NOT ${DIRECTX_ARCH} MATCHES "^arm")
+    if (${CMAKE_SIZEOF_VOID_P} EQUAL "4")
+        set(ARCH_SSE2 $<$<CXX_COMPILER_ID:MSVC>:/arch:SSE2> $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-msse2>)
+    else()
+        set(ARCH_SSE2 $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-msse2>)
     endif()
 
-    if((${CMAKE_SIZEOF_VOID_P} EQUAL 4) AND (NOT ${DIRECTX_ARCH} MATCHES "arm"))
-        target_compile_options(${PROJECT_NAME} PRIVATE /arch:SSE2)
-
-        if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
-          target_compile_options(xwbtool PRIVATE /arch:SSE2)
-          target_link_options(xwbtool PRIVATE /SAFESEH)
-        endif()
-    endif()
+    foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+      target_compile_options(${t} PRIVATE ${ARCH_SSE2})
+    endforeach()
 endif()
 
 if ( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
     set(WarningsLib "-Wpedantic" "-Wextra")
     target_compile_options(${PROJECT_NAME} PRIVATE ${WarningsLib})
 
-    if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
-      set(WarningsEXE ${WarningsLib} "-Wno-c++98-compat" "-Wno-c++98-compat-pedantic"
+    set(WarningsEXE ${WarningsLib} "-Wno-c++98-compat" "-Wno-c++98-compat-pedantic"
         "-Wno-double-promotion" "-Wno-exit-time-destructors" "-Wno-gnu-anonymous-struct"
         "-Wno-missing-prototypes" "-Wno-nested-anon-types" "-Wno-unused-const-variable")
-      target_compile_options(xwbtool PRIVATE ${WarningsEXE})
-    endif()
+    foreach(t IN LISTS TOOL_EXES)
+      target_compile_options(${t} PRIVATE ${WarningsEXE})
+    endforeach()
+endif()
+if(MINGW)
+    foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+      target_compile_options(${t} PRIVATE -Wno-ignored-attributes)
+      target_link_options(${t} PRIVATE -municode)
+    endforeach()
 endif()
 if ( CMAKE_CXX_COMPILER_ID MATCHES "MSVC" )
-    target_compile_options(${PROJECT_NAME} PRIVATE /sdl /permissive- /JMC- /Zc:__cplusplus)
-    if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
-      target_compile_options(xwbtool PRIVATE /sdl /permissive- /Zc:__cplusplus)
-    endif()
+    foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+      target_compile_options(${t} PRIVATE /sdl /permissive- /JMC- /Zc:__cplusplus)
+    endforeach()
 
     if(ENABLE_CODE_ANALYSIS)
-      target_compile_options(${PROJECT_NAME} PRIVATE /analyze)
-      if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
-        target_compile_options(xwbtool PRIVATE /analyze)
-      endif()
+      foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+        target_compile_options(${t} PRIVATE /analyze)
+      endforeach()
     endif()
 
     if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.24)
-        target_compile_options(${PROJECT_NAME} PRIVATE /ZH:SHA_256)
-        if(BUILD_TOOLS AND WIN32 AND (NOT WINDOWS_STORE))
-          target_compile_options(xwbtool PRIVATE /ZH:SHA_256)
-        endif()
+        foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+          target_compile_options(${t} PRIVATE /ZH:SHA_256)
+        endforeach()
     endif()
 
     if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.26)
-        target_compile_options(${PROJECT_NAME} PRIVATE /Zc:preprocessor /wd5104 /wd5105)
-        if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
-          target_compile_options(xwbtool PRIVATE /Zc:preprocessor /wd5104 /wd5105)
-        endif()
+        foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+          target_compile_options(${t} PRIVATE /Zc:preprocessor /wd5105)
+        endforeach()
     endif()
 
-    if ((CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.27) AND (NOT (${DIRECTX_ARCH} MATCHES "arm(64)?")))
-        if(BUILD_TOOLS AND WIN32 AND (NOT WINDOWS_STORE))
-          target_link_options(xwbtool PRIVATE /CETCOMPAT)
-        endif()
+    if ((CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.27) AND (NOT (${DIRECTX_ARCH} MATCHES "^arm")))
+        foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+          target_link_options(${t} PRIVATE /CETCOMPAT)
+        endforeach()
     endif()
 
-    if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
-      set(WarningsEXE "/wd4365" "/wd4514" "/wd4625" "/wd4626" "/wd4627" "/wd4710" "/wd4820" "/wd5026" "/wd5027" "/wd5039" "/wd5045")
-      target_compile_options(xwbtool PRIVATE ${WarningsEXE})
-    endif()
+    set(WarningsEXE "/wd4365" "/wd4514" "/wd4625" "/wd4626" "/wd4627" "/wd4710" "/wd4820" "/wd5026" "/wd5027" "/wd5039" "/wd5045")
+    foreach(t IN LISTS TOOL_EXES)
+      target_compile_options(${t} PRIVATE ${WarningsEXE})
+    endforeach()
 endif()
 
 if(WIN32)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE _UNICODE UNICODE)
+    foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+      target_compile_definitions(${t} PRIVATE _UNICODE UNICODE)
+    endforeach()
 
     if(WINDOWS_STORE)
       target_compile_definitions(${PROJECT_NAME} PRIVATE WINAPI_FAMILY=WINAPI_FAMILY_APP)
     endif()
 
-    if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
-      target_compile_definitions(xwbtool PRIVATE _UNICODE UNICODE _WIN32_WINNT=0x0601)
-    endif()
-
-    if(BUILD_XAUDIO_WIN10 OR WINDOWS_STORE)
-        if(BUILD_XAUDIO_WIN10)
-            message("INFO: Using DirectX Tool Kit for Audio on XAudio 2.9 (Windows 10).")
-        endif()
+    if(WINDOWS_STORE OR BUILD_XAUDIO_WIN10)
+        message("INFO: Using DirectX Tool Kit for Audio on XAudio 2.9 (Windows 10/Windows 11).")
         target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0A00)
     elseif(BUILD_XAUDIO_WIN8)
         message("INFO: Using DirectX Tool Kit for Audio on XAudio 2.8 (Windows 8).")
         target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0602)
     else()
-        target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0601)
+        target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0601 _WIN7_PLATFORM_UPDATE)
     endif()
+    foreach(t IN LISTS TOOL_EXES)
+      target_compile_definitions(${t} PRIVATE _WIN32_WINNT=0x0601)
+    endforeach()
 endif()
 
 if(BUILD_TOOLS AND (NOT WINDOWS_STORE))

@@ -48,6 +48,7 @@ namespace
 }
 
 
+#pragma region Implementations
 #if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)
 
 #include <GameInput.h>
@@ -515,46 +516,44 @@ void Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 
     switch (message)
     {
-        case WM_ACTIVATE:
-        case WM_ACTIVATEAPP:
-            pImpl->Reset();
-            return;
+    case WM_ACTIVATE:
+    case WM_ACTIVATEAPP:
+        pImpl->Reset();
+        return;
 
-        case WM_KEYDOWN:
-        case WM_SYSKEYDOWN:
-            down = true;
-            break;
+    case WM_KEYDOWN:
+    case WM_SYSKEYDOWN:
+        down = true;
+        break;
 
-        case WM_KEYUP:
-        case WM_SYSKEYUP:
-            break;
+    case WM_KEYUP:
+    case WM_SYSKEYUP:
+        break;
 
-        default:
-            return;
+    default:
+        return;
     }
 
-    int vk = static_cast<int>(wParam);
+    int vk = LOWORD(wParam);
+    // We want to distinguish left and right shift/ctrl/alt keys
     switch (vk)
     {
-        case VK_SHIFT:
-            vk = static_cast<int>(
-                MapVirtualKeyW((static_cast<UINT>(lParam) & 0x00ff0000) >> 16u,
-                    MAPVK_VSC_TO_VK_EX));
-            if (!down)
+    case VK_SHIFT:
+    case VK_CONTROL:
+    case VK_MENU:
+        {
+            if (vk == VK_SHIFT && !down)
             {
                 // Workaround to ensure left vs. right shift get cleared when both were pressed at same time
                 KeyUp(VK_LSHIFT, pImpl->mState);
                 KeyUp(VK_RSHIFT, pImpl->mState);
             }
-            break;
 
-        case VK_CONTROL:
-            vk = (static_cast<UINT>(lParam) & 0x01000000) ? VK_RCONTROL : VK_LCONTROL;
-            break;
-
-        case VK_MENU:
-            vk = (static_cast<UINT>(lParam) & 0x01000000) ? VK_RMENU : VK_LMENU;
-            break;
+            bool isExtendedKey = (HIWORD(lParam) & KF_EXTENDED) == KF_EXTENDED;
+            int scanCode = LOBYTE(HIWORD(lParam)) | (isExtendedKey ? 0xe000 : 0);
+            vk = LOWORD(MapVirtualKeyW(static_cast<UINT>(scanCode), MAPVK_VSC_TO_VK_EX));
+        }
+        break;
     }
 
     if (down)
@@ -568,6 +567,7 @@ void Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 #endif
+#pragma endregion
 
 #pragma warning( disable : 4355 )
 

@@ -8,12 +8,12 @@
 
 float3 BiasX2(float3 x)
 {
-   return 2.0f * x - 1.0f;
+    return 2.0f * x - 1.0f;
 }
 
 float3 BiasD2(float3 x)
 {
-   return 0.5f * x + 0.5f;
+    return 0.5f * x + 0.5f;
 }
 
 

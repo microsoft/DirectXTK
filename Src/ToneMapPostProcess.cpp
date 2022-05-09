@@ -22,8 +22,8 @@ using Microsoft::WRL::ComPtr;
 
 namespace
 {
-    constexpr int Dirty_ConstantBuffer  = 0x01;
-    constexpr int Dirty_Parameters      = 0x02;
+    constexpr int Dirty_ConstantBuffer = 0x01;
+    constexpr int Dirty_Parameters = 0x02;
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
     constexpr int PixelShaderCount = 15;
@@ -69,39 +69,41 @@ namespace
     };
 }
 
+
+#pragma region Shaders
 // Include the precompiled shader code.
 namespace
 {
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    #include "XboxOneToneMap_VSQuad.inc"
+#include "XboxOneToneMap_VSQuad.inc"
 
-    #include "XboxOneToneMap_PSCopy.inc"
-    #include "XboxOneToneMap_PSSaturate.inc"
-    #include "XboxOneToneMap_PSReinhard.inc"
-    #include "XboxOneToneMap_PSACESFilmic.inc"
-    #include "XboxOneToneMap_PS_SRGB.inc"
-    #include "XboxOneToneMap_PSSaturate_SRGB.inc"
-    #include "XboxOneToneMap_PSReinhard_SRGB.inc"
-    #include "XboxOneToneMap_PSACESFilmic_SRGB.inc"
-    #include "XboxOneToneMap_PSHDR10.inc"
-    #include "XboxOneToneMap_PSHDR10_Saturate.inc"
-    #include "XboxOneToneMap_PSHDR10_Reinhard.inc"
-    #include "XboxOneToneMap_PSHDR10_ACESFilmic.inc"
-    #include "XboxOneToneMap_PSHDR10_Saturate_SRGB.inc"
-    #include "XboxOneToneMap_PSHDR10_Reinhard_SRGB.inc"
-    #include "XboxOneToneMap_PSHDR10_ACESFilmic_SRGB.inc"
+#include "XboxOneToneMap_PSCopy.inc"
+#include "XboxOneToneMap_PSSaturate.inc"
+#include "XboxOneToneMap_PSReinhard.inc"
+#include "XboxOneToneMap_PSACESFilmic.inc"
+#include "XboxOneToneMap_PS_SRGB.inc"
+#include "XboxOneToneMap_PSSaturate_SRGB.inc"
+#include "XboxOneToneMap_PSReinhard_SRGB.inc"
+#include "XboxOneToneMap_PSACESFilmic_SRGB.inc"
+#include "XboxOneToneMap_PSHDR10.inc"
+#include "XboxOneToneMap_PSHDR10_Saturate.inc"
+#include "XboxOneToneMap_PSHDR10_Reinhard.inc"
+#include "XboxOneToneMap_PSHDR10_ACESFilmic.inc"
+#include "XboxOneToneMap_PSHDR10_Saturate_SRGB.inc"
+#include "XboxOneToneMap_PSHDR10_Reinhard_SRGB.inc"
+#include "XboxOneToneMap_PSHDR10_ACESFilmic_SRGB.inc"
 #else
-    #include "ToneMap_VSQuad.inc"
+#include "ToneMap_VSQuad.inc"
 
-    #include "ToneMap_PSCopy.inc"
-    #include "ToneMap_PSSaturate.inc"
-    #include "ToneMap_PSReinhard.inc"
-    #include "ToneMap_PSACESFilmic.inc"
-    #include "ToneMap_PS_SRGB.inc"
-    #include "ToneMap_PSSaturate_SRGB.inc"
-    #include "ToneMap_PSReinhard_SRGB.inc"
-    #include "ToneMap_PSACESFilmic_SRGB.inc"
-    #include "ToneMap_PSHDR10.inc"
+#include "ToneMap_PSCopy.inc"
+#include "ToneMap_PSSaturate.inc"
+#include "ToneMap_PSReinhard.inc"
+#include "ToneMap_PSACESFilmic.inc"
+#include "ToneMap_PS_SRGB.inc"
+#include "ToneMap_PSSaturate_SRGB.inc"
+#include "ToneMap_PSReinhard_SRGB.inc"
+#include "ToneMap_PSACESFilmic_SRGB.inc"
+#include "ToneMap_PSHDR10.inc"
 #endif
 }
 
@@ -197,14 +199,14 @@ namespace
         ID3D11VertexShader* GetVertexShader()
         {
             return DemandCreate(mVertexShader, mMutex, [&](ID3D11VertexShader** pResult) -> HRESULT
-            {
-                HRESULT hr = mDevice->CreateVertexShader(ToneMap_VSQuad, sizeof(ToneMap_VSQuad), nullptr, pResult);
+                {
+                    HRESULT hr = mDevice->CreateVertexShader(ToneMap_VSQuad, sizeof(ToneMap_VSQuad), nullptr, pResult);
 
-                if (SUCCEEDED(hr))
-                    SetDebugObjectName(*pResult, "ToneMapPostProcess");
+                    if (SUCCEEDED(hr))
+                        SetDebugObjectName(*pResult, "ToneMapPostProcess");
 
-                return hr;
-            });
+                    return hr;
+                });
         }
 
         // Gets or lazily creates the specified pixel shader.
@@ -217,14 +219,14 @@ namespace
             _Analysis_assume_(shaderIndex >= 0 && shaderIndex < PixelShaderCount);
 
             return DemandCreate(mPixelShaders[shaderIndex], mMutex, [&](ID3D11PixelShader** pResult) -> HRESULT
-            {
-                HRESULT hr = mDevice->CreatePixelShader(pixelShaders[shaderIndex].code, pixelShaders[shaderIndex].length, nullptr, pResult);
+                {
+                    HRESULT hr = mDevice->CreatePixelShader(pixelShaders[shaderIndex].code, pixelShaders[shaderIndex].length, nullptr, pResult);
 
-                if (SUCCEEDED(hr))
-                    SetDebugObjectName(*pResult, "ToneMapPostProcess");
+                    if (SUCCEEDED(hr))
+                        SetDebugObjectName(*pResult, "ToneMapPostProcess");
 
-                return hr;
-            });
+                    return hr;
+                });
         }
 
         CommonStates                stateObjects;
@@ -236,6 +238,8 @@ namespace
         std::mutex                  mMutex;
     };
 }
+#pragma endregion
+
 
 class ToneMapPostProcess::Impl : public AlignedNew<ToneMapConstants>
 {
@@ -379,7 +383,7 @@ int ToneMapPostProcess::Impl::GetCurrentShaderPermutation() const noexcept
 
 // Public constructor.
 ToneMapPostProcess::ToneMapPostProcess(_In_ ID3D11Device* device)
-  : pImpl(std::make_unique<Impl>(device))
+    : pImpl(std::make_unique<Impl>(device))
 {
 }
 
