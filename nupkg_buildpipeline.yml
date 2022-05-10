@@ -71,6 +71,14 @@ jobs:
     inputs:
       filePath: .nuget/versioninfo.ps1
       arguments: $(Build.BuildNumber)
+  - task: PowerShell@2
+    displayName: 'VS 2019 16.9 workaround'
+    inputs:
+      targetType: 'inline'
+      script: |
+        Write-Host "Setting environment variable to suppress warning D9007"
+        Write-Host "##[command]set CL=/experimental:external"
+        Write-Host "##vso[task.setvariable variable=CL;]/experimental:external"
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2019.sln 32dbg
     inputs:
