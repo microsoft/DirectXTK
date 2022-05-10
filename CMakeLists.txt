@@ -194,7 +194,7 @@ endif()
 
 add_library(${PROJECT_NAME} STATIC ${LIBRARY_SOURCES} ${LIBRARY_HEADERS})
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${COMPILED_SHADERS})
+target_include_directories(${PROJECT_NAME} PRIVATE ${COMPILED_SHADERS} Src)
 
 if ((${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.16") AND (NOT MINGW))
     target_precompile_headers(${PROJECT_NAME} PRIVATE Src/pch.h)
@@ -209,7 +209,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>)
 
 if(WINDOWS_STORE OR BUILD_XAUDIO_WIN10 OR BUILD_XAUDIO_WIN8 OR BUILD_XAUDIO_WIN7)
-    target_include_directories(${PROJECT_NAME} PRIVATE Src Audio)
+    target_include_directories(${PROJECT_NAME} PRIVATE Audio)
 endif()
 
 if(MSVC)
