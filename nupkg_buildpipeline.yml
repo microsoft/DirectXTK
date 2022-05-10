@@ -301,6 +301,14 @@ jobs:
     displayName: 'Use NuGet'
   - task: NuGetAuthenticate@0
     displayName: 'NuGet authentication'
+  - task: PowerShell@2
+    displayName: 'VS 2019 16.9 workaround'
+    inputs:
+      targetType: 'inline'
+      script: |
+        Write-Host "Setting environment variable to suppress warning D9007"
+        Write-Host "##[command]set CL=/experimental:external"
+        Write-Host "##vso[task.setvariable variable=CL;]/experimental:external"
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Windows10_2019.sln 32dbg 
     inputs:
