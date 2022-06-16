@@ -10,7 +10,11 @@
 
 #pragma once
 
-#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)
+#ifdef _GAMING_DESKTOP
+#include <grdk.h>
+#endif
+
+#if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)) || (defined(_GAMING_DESKTOP) && (_GRDK_EDITION >= 220600))
 #ifndef USING_GAMEINPUT
 #define USING_GAMEINPUT
 #endif

@@ -16,7 +16,7 @@ CommonStates - factory providing commonly used D3D state objects
 DirectXHelpers - misc C++ helpers for D3D programming
 DDSTextureLoader - light-weight DDS file texture loader
 Effects - set of built-in shaders for common rendering tasks
-GamePad - gamepad controller helper using XInput
+GamePad - gamepad controller helper using Windows.Gaming.Input
 GeometricPrimitive - draws basic shapes such as cubes and spheres
 GraphicsMemory - helper for managing dynamic graphics memory allocation
 Keyboard - keyboard state tracking helper
@@ -30,7 +30,7 @@ SpriteBatch - simple &amp; efficient 2D sprite rendering
 SpriteFont - bitmap based text rendering
 VertexTypes - structures for commonly used vertex data formats
 WICTextureLoader - WIC-based image file texture loader</description>
-        <releaseNotes>Matches the May 9, 2022 release on GitHub.</releaseNotes>
+        <releaseNotes>Matches the June 15, 2022 release on GitHub.</releaseNotes>
         <projectUrl>http://go.microsoft.com/fwlink/?LinkId=248929</projectUrl>
         <repository type="git" url="https://github.com/microsoft/DirectXTK.git" />
         <icon>images\icon.jpg</icon>

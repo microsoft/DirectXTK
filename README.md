@@ -6,7 +6,7 @@ http://go.microsoft.com/fwlink/?LinkId=248929
 
 Copyright (c) Microsoft Corporation.
 
-**May 9, 2022**
+**June 15, 2022**
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for writing Direct3D 11 C++ code for Universal Windows Platform (UWP) apps for Windows 11, Windows 10, Xbox One, and Win32 desktop applications for Windows 7 Service Pack 1 or later.
 
@@ -26,7 +26,7 @@ These components are designed to work without requiring any content from the leg
     * DDSTextureLoader.h - light-weight DDS file texture loader
     * DirectXHelpers.h - misc C++ helpers for D3D programming
     * Effects.h - set of built-in shaders for common rendering tasks
-    * GamePad.h - gamepad controller helper using XInput
+    * GamePad.h - gamepad controller helper using XInput, Windows.Gaming.Input, or GameInput
     * GeometricPrimitive.h - draws basic shapes such as cubes and spheres
     * GraphicsMemory.h - helper for managing dynamic graphics memory allocation
     * Keyboard.h - keyboard state tracking helper

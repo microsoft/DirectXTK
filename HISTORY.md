@@ -6,6 +6,11 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### June 15, 2022
+* GamePad, Keyboard, and Mouse updated to use GameInput on PC for the Gaming.Desktop.x64 platform
+* *DirectX Tool Kit for Audio* updated for XAudio2Redist 1.2.9
+* CMake project updates
+
 ### May 9, 2022
 * C++20 spaceship operator updates for SimpleMath
 * Minor updates for VS 2022 (17.2)

@@ -17,7 +17,7 @@ using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
 #pragma region Implementations
-#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)
+#if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)) || (defined(_GAMING_DESKTOP) && (_GRDK_EDITION >= 220600))
 
 #include <GameInput.h>
 
@@ -184,7 +184,18 @@ public:
         mRelativeY = INT64_MAX;
         mRelativeWheelY = INT64_MAX;
 
-        ShowCursor((mode == MODE_ABSOLUTE) ? TRUE : FALSE);
+        if (mode == MODE_RELATIVE)
+        {
+            ShowCursor(FALSE);
+            ClipToWindow();
+        }
+        else
+        {
+            ShowCursor(TRUE);
+#ifndef _GAMING_XBOX
+            ClipCursor(nullptr);
+#endif
+        }
     }
 
     bool IsConnected() const noexcept
@@ -263,6 +274,35 @@ private:
             --impl->mConnected;
         }
     }
+
+    void ClipToWindow() noexcept
+    {
+#ifndef _GAMING_XBOX
+        assert(mWindow != nullptr);
+
+        RECT rect;
+        GetClientRect(mWindow, &rect);
+
+        POINT ul;
+        ul.x = rect.left;
+        ul.y = rect.top;
+
+        POINT lr;
+        lr.x = rect.right;
+        lr.y = rect.bottom;
+
+        std::ignore = MapWindowPoints(mWindow, nullptr, &ul, 1);
+        std::ignore = MapWindowPoints(mWindow, nullptr, &lr, 1);
+
+        rect.left = ul.x;
+        rect.top = ul.y;
+
+        rect.right = lr.x;
+        rect.bottom = lr.y;
+
+        ClipCursor(&rect);
+#endif
+    }
 };
 
 
@@ -297,6 +337,14 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
                 pImpl->mRelativeY = INT64_MAX;
 
                 ShowCursor(FALSE);
+
+                pImpl->ClipToWindow();
+            }
+            else
+            {
+#ifndef _GAMING_XBOX
+                ClipCursor(nullptr);
+#endif
             }
         }
         else
