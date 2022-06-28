@@ -1193,8 +1193,8 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
     if (!pImpl)
         return;
 
-    HANDLE events[3] = { pImpl->mScrollWheelValue.get(), pImpl->mAbsoluteMode.get(), pImpl->mRelativeMode.get() };
-    switch (WaitForMultipleObjectsEx(static_cast<DWORD>(std::size(events)), events, FALSE, 0, FALSE))
+    // First handle any pending scroll wheel reset event.
+    switch (WaitForSingleObjectEx(pImpl->mScrollWheelValue.get(), 0, FALSE))
     {
     default:
     case WAIT_TIMEOUT:
@@ -1202,10 +1202,22 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 
     case WAIT_OBJECT_0:
         pImpl->mState.scrollWheelValue = 0;
-        ResetEvent(events[0]);
+        ResetEvent(pImpl->mScrollWheelValue.get());
         break;
 
-    case (WAIT_OBJECT_0 + 1):
+    case WAIT_FAILED:
+        throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "WaitForMultipleObjectsEx");
+    }
+
+    // Next handle mode change events.
+    HANDLE events[2] = { pImpl->mAbsoluteMode.get(), pImpl->mRelativeMode.get() };
+    switch (WaitForMultipleObjectsEx(static_cast<DWORD>(std::size(events)), events, FALSE, 0, FALSE))
+    {
+    default:
+    case WAIT_TIMEOUT:
+        break;
+
+    case WAIT_OBJECT_0:
         {
             pImpl->mMode = MODE_ABSOLUTE;
             ClipCursor(nullptr);
@@ -1226,7 +1238,7 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
 
-    case (WAIT_OBJECT_0 + 2):
+    case (WAIT_OBJECT_0 + 1):
         {
             ResetEvent(pImpl->mRelativeRead.get());
 
