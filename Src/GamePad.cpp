@@ -1683,11 +1683,7 @@ GamePad& GamePad::Get()
 // ButtonStateTracker
 //======================================================================================
 
-#define UPDATE_BUTTON_STATE(field) field = static_cast<ButtonState>( ( !!state.buttons.field ) | ( ( !!state.buttons.field ^ !!lastState.buttons.field ) << 1 ) );
-
-#ifdef __clang__
-#pragma clang diagnostic ignored "-Wextra-semi-stmt"
-#endif
+#define UPDATE_BUTTON_STATE(field) field = static_cast<ButtonState>( ( !!state.buttons.field ) | ( ( !!state.buttons.field ^ !!lastState.buttons.field ) << 1 ) )
 
 void GamePad::ButtonStateTracker::Update(const GamePad::State& state) noexcept
 {

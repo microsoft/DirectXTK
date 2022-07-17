@@ -1496,11 +1496,7 @@ Mouse& Mouse::Get()
 // ButtonStateTracker
 //======================================================================================
 
-#define UPDATE_BUTTON_STATE(field) field = static_cast<ButtonState>( ( !!state.field ) | ( ( !!state.field ^ !!lastState.field ) << 1 ) );
-
-#ifdef __clang__
-#pragma clang diagnostic ignored "-Wextra-semi-stmt"
-#endif
+#define UPDATE_BUTTON_STATE(field) field = static_cast<ButtonState>( ( !!state.field ) | ( ( !!state.field ^ !!lastState.field ) << 1 ) )
 
 void Mouse::ButtonStateTracker::Update(const Mouse::State& state) noexcept
 {
