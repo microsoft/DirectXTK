@@ -99,6 +99,7 @@ namespace DirectX
         _In_ unsigned int cpuAccessFlags,
         _In_ unsigned int miscFlags,
         _In_ bool forceSRGB,
+        _In_ bool stripSRGB,
         _Outptr_opt_ ID3D11Resource** texture,
         _Outptr_opt_ ID3D11ShaderResourceView** textureView,
         _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr) noexcept;
@@ -112,6 +113,7 @@ namespace DirectX
         _In_ unsigned int cpuAccessFlags,
         _In_ unsigned int miscFlags,
         _In_ bool forceSRGB,
+        _In_ bool stripSRGB,
         _Outptr_opt_ ID3D11Resource** texture,
         _Outptr_opt_ ID3D11ShaderResourceView** textureView,
         _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr) noexcept;
@@ -133,6 +135,7 @@ namespace DirectX
         _In_ unsigned int cpuAccessFlags,
         _In_ unsigned int miscFlags,
         _In_ bool forceSRGB,
+        _In_ bool stripSRGB,
         _Outptr_opt_ ID3D11Resource** texture,
         _Outptr_opt_ ID3D11ShaderResourceView** textureView,
         _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr) noexcept;
@@ -152,6 +155,7 @@ namespace DirectX
         _In_ unsigned int cpuAccessFlags,
         _In_ unsigned int miscFlags,
         _In_ bool forceSRGB,
+        _In_ bool stripSRGB,
         _Outptr_opt_ ID3D11Resource** texture,
         _Outptr_opt_ ID3D11ShaderResourceView** textureView,
         _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr) noexcept;
