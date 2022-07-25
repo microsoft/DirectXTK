@@ -302,6 +302,13 @@ if(MSVC)
           target_link_options(${t} PRIVATE /SAFESEH)
         endforeach()
     endif()
+
+    if((MSVC_VERSION GREATER_EQUAL 1928) AND (CMAKE_SIZEOF_VOID_P EQUAL 8))
+      foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+        target_compile_options(${t} PRIVATE "$<$<NOT:$<CONFIG:DEBUG>>:/guard:ehcont>")
+        target_link_options(${t} PRIVATE "$<$<NOT:$<CONFIG:DEBUG>>:/guard:ehcont>")
+      endforeach()
+    endif()
 endif()
 
 if(NOT ${DIRECTX_ARCH} MATCHES "^arm")
