@@ -411,7 +411,7 @@ void EffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext
             HRESULT hr = CreateDDSTextureFromFileEx(
                 mDevice.Get(), fullName, 0,
                 D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
-                mForceSRGB, false, nullptr, textureView);
+                mForceSRGB ? DDS_LOADER_FORCE_SRGB : DDS_LOADER_DEFAULT, nullptr, textureView);
             if (FAILED(hr))
             {
                 DebugTrace("ERROR: CreateDDSTextureFromFile failed (%08X) for '%ls'\n",
