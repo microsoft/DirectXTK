@@ -158,7 +158,7 @@ namespace
         uint32_t exclusiveFlags = DDS_LOADER_FORCE_SRGB | DDS_LOADER_IGNORE_SRGB | DDS_LOADER_SRGB_DEFAULT;
         uint32_t exclusivesSet = loadFlags & exclusiveFlags;
 
-        if (!(exclusivesSet && !(exclusivesSet & (exclusivesSet - 1))))
+        if (exclusivesSet && (exclusivesSet & (exclusivesSet - 1)))
             return E_INVALIDARG;
 
         if (loadFlags & DDS_LOADER_FORCE_SRGB)
