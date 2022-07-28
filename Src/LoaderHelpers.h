@@ -222,6 +222,37 @@ namespace DirectX
         }
 
         //--------------------------------------------------------------------------------------
+        inline DXGI_FORMAT MakeLinear(_In_ DXGI_FORMAT format) noexcept
+        {
+            switch (format)
+            {
+            case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
+                return DXGI_FORMAT_R8G8B8A8_UNORM;
+
+            case DXGI_FORMAT_BC1_UNORM_SRGB:
+                return DXGI_FORMAT_BC1_UNORM;
+
+            case DXGI_FORMAT_BC2_UNORM_SRGB:
+                return DXGI_FORMAT_BC2_UNORM;
+
+            case DXGI_FORMAT_BC3_UNORM_SRGB:
+                return DXGI_FORMAT_BC3_UNORM;
+
+            case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
+                return DXGI_FORMAT_B8G8R8A8_UNORM;
+
+            case DXGI_FORMAT_B8G8R8X8_UNORM_SRGB:
+                return DXGI_FORMAT_B8G8R8X8_UNORM;
+
+            case DXGI_FORMAT_BC7_UNORM_SRGB:
+                return DXGI_FORMAT_BC7_UNORM;
+
+            default:
+                return format;
+            }
+        }
+
+        //--------------------------------------------------------------------------------------
         inline bool IsCompressed(_In_ DXGI_FORMAT fmt) noexcept
         {
             switch (fmt)
