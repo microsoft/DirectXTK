@@ -3,7 +3,7 @@
 
 cmake_minimum_required (VERSION 3.13)
 
-set(DIRECTXTK_VERSION 1.8.1)
+set(DIRECTXTK_VERSION 1.8.2)
 
 project (DirectXTK
   VERSION ${DIRECTXTK_VERSION}
@@ -301,6 +301,14 @@ if(MSVC)
         foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
           target_link_options(${t} PRIVATE /SAFESEH)
         endforeach()
+    endif()
+
+    if((MSVC_VERSION GREATER_EQUAL 1928) AND (CMAKE_SIZEOF_VOID_P EQUAL 8)
+       AND ((NOT (CMAKE_CXX_COMPILER_ID MATCHES "Clang")) OR (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 13.0)))
+      foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+        target_compile_options(${t} PRIVATE "$<$<NOT:$<CONFIG:DEBUG>>:/guard:ehcont>")
+        target_link_options(${t} PRIVATE "$<$<NOT:$<CONFIG:DEBUG>>:/guard:ehcont>")
+      endforeach()
     endif()
 endif()
 

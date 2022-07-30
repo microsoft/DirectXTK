@@ -28,6 +28,7 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <exception>
 
 //
@@ -101,6 +102,18 @@ namespace DirectX
         uint8_t* scanline(size_t slice, size_t row) const noexcept
         {
             return static_cast<uint8_t*>(pData) + (slice * DepthPitch) + (row * RowPitch);
+        }
+
+        template<typename T>
+        void copy(_In_reads_(count) T const* data, size_t count) noexcept
+        {
+            memcpy(pData, data, count * sizeof(T));
+        }
+
+        template<typename T>
+        void copy(T const& data) noexcept
+        {
+            memcpy(pData, data.data(), data.size() * sizeof(typename T::value_type));
         }
 
     private:

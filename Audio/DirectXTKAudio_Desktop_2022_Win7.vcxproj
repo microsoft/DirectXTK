@@ -190,6 +190,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalOptions>/Zc:__cplusplus /Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
       <ExternalWarningLevel>Level4</ExternalWarningLevel>
+      <GuardEHContMetadata>true</GuardEHContMetadata>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

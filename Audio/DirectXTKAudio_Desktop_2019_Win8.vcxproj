@@ -187,6 +187,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalOptions>/Zc:__cplusplus /ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
       <ExternalWarningLevel>Level4</ExternalWarningLevel>
+      <GuardEHContMetadata>true</GuardEHContMetadata>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

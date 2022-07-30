@@ -464,6 +464,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <ExternalWarningLevel>Level4</ExternalWarningLevel>
+      <GuardEHContMetadata>true</GuardEHContMetadata>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -508,6 +509,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <ExternalWarningLevel>Level4</ExternalWarningLevel>
+      <GuardEHContMetadata>true</GuardEHContMetadata>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

@@ -144,7 +144,7 @@ namespace
         _In_ unsigned int bindFlags,
         _In_ unsigned int cpuAccessFlags,
         _In_ unsigned int miscFlags,
-        _In_ bool forceSRGB,
+        _In_ DDS_LOADER_FLAGS loadFlags,
         _In_ bool isCubeMap,
         _In_reads_opt_(mipCount*arraySize) const D3D11_SUBRESOURCE_DATA* initData,
         _Outptr_opt_ ID3D11Resource** texture,
@@ -155,9 +155,13 @@ namespace
 
         HRESULT hr = E_FAIL;
 
-        if (forceSRGB)
+        if (loadFlags & DDS_LOADER_FORCE_SRGB)
         {
             format = MakeSRGB(format);
+        }
+        else if (loadFlags & DDS_LOADER_IGNORE_SRGB)
+        {
+            format = MakeLinear(format);
         }
 
         switch (resDim)
@@ -380,7 +384,7 @@ namespace
         _In_ unsigned int bindFlags,
         _In_ unsigned int cpuAccessFlags,
         _In_ unsigned int miscFlags,
-        _In_ bool forceSRGB,
+        _In_ DDS_LOADER_FLAGS loadFlags,
         _Outptr_opt_ ID3D11Resource** texture,
         _Outptr_opt_ ID3D11ShaderResourceView** textureView) noexcept
     {
@@ -612,7 +616,7 @@ namespace
                 usage,
                 bindFlags | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET,
                 cpuAccessFlags,
-                miscFlags | D3D11_RESOURCE_MISC_GENERATE_MIPS, forceSRGB,
+                miscFlags | D3D11_RESOURCE_MISC_GENERATE_MIPS, loadFlags,
                 isCubeMap,
                 nullptr,
                 &tex, textureView);
@@ -789,7 +793,7 @@ namespace
                     resDim, twidth, theight, tdepth, mipCount - skipMip, arraySize,
                     format,
                     usage, bindFlags, cpuAccessFlags, miscFlags,
-                    forceSRGB,
+                    loadFlags,
                     isCubeMap,
                     initData.get(),
                     texture, textureView);
@@ -835,7 +839,7 @@ namespace
                             resDim, twidth, theight, tdepth, mipCount - skipMip, arraySize,
                             format,
                             usage, bindFlags, cpuAccessFlags, miscFlags,
-                            forceSRGB,
+                            loadFlags,
                             isCubeMap,
                             initData.get(),
                             texture, textureView);
@@ -939,7 +943,7 @@ HRESULT DirectX::CreateDDSTextureFromMemory(
         ddsData, ddsDataSize,
         maxsize,
         D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
-        false,
+        DDS_LOADER_DEFAULT,
         texture, textureView, alphaMode);
 }
 
@@ -964,7 +968,7 @@ HRESULT DirectX::CreateDDSTextureFromMemory(
         ddsData, ddsDataSize,
         maxsize,
         D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
-        false,
+        DDS_LOADER_DEFAULT,
         texture, textureView, alphaMode);
 }
 
@@ -978,7 +982,7 @@ HRESULT DirectX::CreateDDSTextureFromMemoryEx(
     unsigned int bindFlags,
     unsigned int cpuAccessFlags,
     unsigned int miscFlags,
-    bool forceSRGB,
+    DDS_LOADER_FLAGS loadFlags,
     ID3D11Resource** texture,
     ID3D11ShaderResourceView** textureView,
     DDS_ALPHA_MODE* alphaMode) noexcept
@@ -1028,7 +1032,7 @@ HRESULT DirectX::CreateDDSTextureFromMemoryEx(
         header, bitData, bitSize,
         maxsize,
         usage, bindFlags, cpuAccessFlags, miscFlags,
-        forceSRGB,
+        loadFlags,
         texture, textureView);
     if (SUCCEEDED(hr))
     {
@@ -1066,7 +1070,7 @@ HRESULT DirectX::CreateDDSTextureFromMemoryEx(
         unsigned int bindFlags,
         unsigned int cpuAccessFlags,
         unsigned int miscFlags,
-        bool forceSRGB,
+        DDS_LOADER_FLAGS loadFlags,
         ID3D11Resource** texture,
         ID3D11ShaderResourceView** textureView,
         DDS_ALPHA_MODE* alphaMode) noexcept
@@ -1116,7 +1120,7 @@ HRESULT DirectX::CreateDDSTextureFromMemoryEx(
         header, bitData, bitSize,
         maxsize,
         usage, bindFlags, cpuAccessFlags, miscFlags,
-        forceSRGB,
+        loadFlags,
         texture, textureView);
     if (SUCCEEDED(hr))
     {
@@ -1151,7 +1155,7 @@ HRESULT DirectX::CreateDDSTextureFromFile(
         fileName,
         maxsize,
         D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
-        false,
+        DDS_LOADER_DEFAULT,
         texture, textureView, alphaMode);
 }
 
@@ -1175,7 +1179,7 @@ HRESULT DirectX::CreateDDSTextureFromFile(
         fileName,
         maxsize,
         D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
-        false,
+        DDS_LOADER_DEFAULT,
         texture, textureView, alphaMode);
 }
 
@@ -1188,7 +1192,7 @@ HRESULT DirectX::CreateDDSTextureFromFileEx(
     unsigned int bindFlags,
     unsigned int cpuAccessFlags,
     unsigned int miscFlags,
-    bool forceSRGB,
+    DDS_LOADER_FLAGS loadFlags,
     ID3D11Resource** texture,
     ID3D11ShaderResourceView** textureView,
     DDS_ALPHA_MODE* alphaMode) noexcept
@@ -1239,7 +1243,7 @@ HRESULT DirectX::CreateDDSTextureFromFileEx(
         header, bitData, bitSize,
         maxsize,
         usage, bindFlags, cpuAccessFlags, miscFlags,
-        forceSRGB,
+        loadFlags,
         texture, textureView);
 
     if (SUCCEEDED(hr))
@@ -1269,7 +1273,7 @@ HRESULT DirectX::CreateDDSTextureFromFileEx(
         unsigned int bindFlags,
         unsigned int cpuAccessFlags,
         unsigned int miscFlags,
-        bool forceSRGB,
+        DDS_LOADER_FLAGS loadFlags,
         ID3D11Resource** texture,
         ID3D11ShaderResourceView** textureView,
         DDS_ALPHA_MODE* alphaMode) noexcept
@@ -1320,7 +1324,7 @@ HRESULT DirectX::CreateDDSTextureFromFileEx(
         header, bitData, bitSize,
         maxsize,
         usage, bindFlags, cpuAccessFlags, miscFlags,
-        forceSRGB,
+        loadFlags,
         texture, textureView);
 
     if (SUCCEEDED(hr))

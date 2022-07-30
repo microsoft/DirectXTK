@@ -6,7 +6,7 @@ http://go.microsoft.com/fwlink/?LinkId=248929
 
 Copyright (c) Microsoft Corporation.
 
-**June 15, 2022**
+**July 29, 2022**
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for writing Direct3D 11 C++ code for Universal Windows Platform (UWP) apps for Windows 11, Windows 10, Xbox One, and Win32 desktop applications for Windows 7 Service Pack 1 or later.
 
@@ -70,6 +70,8 @@ For the latest version of DirectXTK, bug reports, etc. please visit the project 
 
 ## Release Notes
 
+* Starting with the July 2022 release, the ``bool forceSRGB`` parameter for DDSTextureLoader ``Ex`` functions is now a ``DDS_LOADER_FLAGS`` typed enum bitmask flag parameter. This may have a *breaking change* impact to client code. Replace ``true`` with ``DDS_LOADER_FORCE_SRGB`` and ``false`` with ``DDS_LOADER_DEFAULT``.
+
 * As of the March 2022 release, legacy Xbox One XDK support requires the XDK April 2018 release or later.
 
 * As of the October 2021 release, the DGSLEffect no longer directly supports skinning. Instead, make use of **SkinnedDGSLEffect** which is derived from DGSLEffect.
@@ -108,7 +110,7 @@ This project may contain trademarks or logos for projects, products, or services
 
 ## Credits
 
-The _DirectX Tool Kit_ is the work of Shawn Hargreaves and Chuck Walbourn, with contributions from Aaron Rodriguez Hernandez, and Dani Roman.
+The _DirectX Tool Kit_ is the work of Shawn Hargreaves and Chuck Walbourn, with contributions from Aaron Rodriguez Hernandez and Dani Roman.
 
 Thanks to Shanon Drone for the SDKMESH file format.
 

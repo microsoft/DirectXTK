@@ -6,6 +6,13 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### July 29, 2022
+* *breaking change* DDSTextureLoader ``Ex`` functions now use ``DDS_LOADER_FLAGS`` instead of ``bool forceSRGB`` parameter.
+* MapGuard helper class updated with a new ``copy`` method
+* Fixed Mouse race-condition with changing mode and resetting scroll wheel at the same time.
+* CMake and MSBuild project updates
+* Minor code review
+
 ### June 15, 2022
 * GamePad, Keyboard, and Mouse updated to use GameInput on PC for the Gaming.Desktop.x64 platform
 * *DirectX Tool Kit for Audio* updated for XAudio2Redist 1.2.9
