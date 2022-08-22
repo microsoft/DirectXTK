@@ -626,6 +626,9 @@ namespace DirectX
 
         // Set multi-channel emitter azimuths based on speaker configuration geometry.
         void __cdecl EnableDefaultMultiChannel(unsigned int channels, float radius = 1.f);
+
+        // Set default volume, LFE, LPF, and reverb curves.
+        void __cdecl EnableDefaultCurves() noexcept;
     };
 
 

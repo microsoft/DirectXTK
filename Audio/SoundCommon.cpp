@@ -945,3 +945,17 @@ void AudioEmitter::EnableDefaultMultiChannel(unsigned int channels, float radius
         memset(EmitterAzimuths, 0, sizeof(float) * size_t(channels));
     }
 }
+
+namespace
+{
+    // **Note these match the defaults from xact3d3.h in the legacy DirectX SDK**
+    constexpr X3DAUDIO_DISTANCE_CURVE_POINT c_defaultCurvePoints[2] = { { 0.0f, 1.0f }, { 1.0f, 1.0f } };
+    constexpr X3DAUDIO_DISTANCE_CURVE c_defaultCurve = { const_cast<X3DAUDIO_DISTANCE_CURVE_POINT*>(c_defaultCurvePoints), 2 };
+}
+
+void AudioEmitter::EnableDefaultCurves() noexcept
+{
+    pVolumeCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_defaultCurve);
+    pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_defaultCurve);
+    pLPFDirectCurve = pLPFReverbCurve = pReverbCurve = nullptr;
+}
