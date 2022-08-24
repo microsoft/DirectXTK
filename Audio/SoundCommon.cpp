@@ -822,8 +822,62 @@ void SoundEffectInstanceBase::Apply3D(const X3DAUDIO_LISTENER& listener, const X
 
 
 //======================================================================================
-// AudioEmitter helper
+// AudioListener/Emitter helpers
 //======================================================================================
+
+namespace
+{
+    inline bool IsValid(const X3DAUDIO_CONE& cone) noexcept
+    {
+        // These match the validation ranges in X3DAudio.
+        if (cone.InnerAngle < 0.f || cone.InnerAngle > X3DAUDIO_2PI)
+            return false;
+
+        if (cone.OuterAngle < 0.f || cone.OuterAngle > X3DAUDIO_2PI)
+            return false;
+
+        if (cone.InnerAngle > cone.OuterAngle)
+            return false;
+
+        if (cone.InnerVolume < 0.f || cone.InnerVolume > 2.f)
+            return false;
+
+        if (cone.OuterVolume < 0.f || cone.OuterVolume > 2.f)
+            return false;
+
+        if (cone.InnerLPF < 0.f || cone.InnerLPF > 1.f)
+            return false;
+
+        if (cone.OuterLPF < 0.f || cone.OuterLPF > 1.f)
+            return false;
+
+        if (cone.InnerReverb < 0.f || cone.InnerReverb > 2.f)
+            return false;
+
+        if (cone.OuterReverb < 0.f || cone.OuterReverb > 2.f)
+            return false;
+
+        return true;
+    }
+}
+
+void AudioListener::SetCone(const X3DAUDIO_CONE& listenerCone)
+{
+    if (!::IsValid(listenerCone))
+        throw std::invalid_argument("X3DAUDIO_CONE values out of range");
+
+    ListenerCone = listenerCone;
+    pCone = &ListenerCone;
+}
+
+void AudioEmitter::SetCone(const X3DAUDIO_CONE& emitterCone)
+{
+    if (!::IsValid(emitterCone))
+        throw std::invalid_argument("X3DAUDIO_CONE values out of range");
+
+    EmitterCone = emitterCone;
+    pCone = &EmitterCone;
+}
 
 namespace
 {
@@ -890,4 +944,18 @@ void AudioEmitter::EnableDefaultMultiChannel(unsigned int channels, float radius
     {
         memset(EmitterAzimuths, 0, sizeof(float) * size_t(channels));
     }
+}
+
+namespace
+{
+    // **Note these match the defaults from xact3d3.h in the legacy DirectX SDK**
+    constexpr X3DAUDIO_DISTANCE_CURVE_POINT c_defaultCurvePoints[2] = { { 0.0f, 1.0f }, { 1.0f, 1.0f } };
+    constexpr X3DAUDIO_DISTANCE_CURVE c_defaultCurve = { const_cast<X3DAUDIO_DISTANCE_CURVE_POINT*>(c_defaultCurvePoints), 2 };
+}
+
+void AudioEmitter::EnableDefaultCurves() noexcept
+{
+    pVolumeCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_defaultCurve);
+    pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_defaultCurve);
+    pLPFDirectCurve = pLPFReverbCurve = pReverbCurve = nullptr;
 }
