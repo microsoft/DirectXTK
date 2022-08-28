@@ -184,7 +184,7 @@ namespace
 //--------------------------------------------------------------------------------------
 namespace DirectX
 {
-    namespace DX11
+    inline namespace DX11
     {
         namespace Internal
         {
