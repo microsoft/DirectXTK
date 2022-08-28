@@ -355,7 +355,7 @@ HRESULT DirectX::CreateTextureFromMemory(
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_
-void Internal::ConstantBufferBase::CreateBuffer(
+void Private::ConstantBufferBase::CreateBuffer(
     ID3D11Device* device,
     size_t bytes,
     ID3D11Buffer** pBuffer)

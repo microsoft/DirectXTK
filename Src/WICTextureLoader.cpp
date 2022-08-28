@@ -184,20 +184,23 @@ namespace
 //--------------------------------------------------------------------------------------
 namespace DirectX
 {
-    namespace Internal
+    namespace DX11
     {
-        bool IsWIC2() noexcept;
-        IWICImagingFactory* GetWIC() noexcept;
-        // Also used by ScreenGrab
+        namespace Internal
+        {
+            bool IsWIC2() noexcept;
+            IWICImagingFactory* GetWIC() noexcept;
+            // Also used by ScreenGrab
+        }
     }
 }
 
-bool DirectX::Internal::IsWIC2() noexcept
+bool DirectX::DX11::Internal::IsWIC2() noexcept
 {
     return g_WIC2;
 }
 
-IWICImagingFactory* DirectX::Internal::GetWIC() noexcept
+IWICImagingFactory* DirectX::DX11::Internal::GetWIC() noexcept
 {
     static INIT_ONCE s_initOnce = INIT_ONCE_STATIC_INIT;
 
@@ -214,7 +217,7 @@ IWICImagingFactory* DirectX::Internal::GetWIC() noexcept
     return factory;
 }
 
-using namespace Internal;
+using namespace DirectX::DX11::Internal;
 
 namespace
 {

@@ -40,12 +40,15 @@ namespace DirectX
     };
 #endif
 
-    enum DDS_LOADER_FLAGS : uint32_t
+    inline namespace DX11
     {
-        DDS_LOADER_DEFAULT = 0,
-        DDS_LOADER_FORCE_SRGB = 0x1,
-        DDS_LOADER_IGNORE_SRGB = 0x2,
-    };
+        enum DDS_LOADER_FLAGS : uint32_t
+        {
+            DDS_LOADER_DEFAULT = 0,
+            DDS_LOADER_FORCE_SRGB = 0x1,
+            DDS_LOADER_IGNORE_SRGB = 0x2,
+        };
+    }
 
     // Standard version
     HRESULT __cdecl CreateDDSTextureFromMemory(
@@ -168,7 +171,10 @@ namespace DirectX
 #pragma clang diagnostic ignored "-Wdeprecated-dynamic-exception-spec"
 #endif
 
-    DEFINE_ENUM_FLAG_OPERATORS(DDS_LOADER_FLAGS);
+    inline namespace DX11
+    {
+        DEFINE_ENUM_FLAG_OPERATORS(DDS_LOADER_FLAGS);
+    }
 
 #ifdef __clang__
 #pragma clang diagnostic pop
