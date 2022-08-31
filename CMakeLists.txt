@@ -285,6 +285,7 @@ if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
 
   add_executable(xwbtool
     xwbtool/xwbtool.cpp
+    xwbtool/xwbtool.rc
     Audio/WAVFileReader.cpp
     Audio/WAVFileReader.h)
   target_include_directories(xwbtool PRIVATE Audio Src)
