@@ -166,6 +166,12 @@
 
 #include <wincodec.h>
 
+#if defined(NTDDI_WIN10_FE) || defined(__MINGW32__)
+#include <ocidl.h>
+#else
+#include <OCIdl.h>
+#endif
+
 #if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)) || (defined(_XBOX_ONE) && defined(_TITLE))
 #pragma warning(push)
 #pragma warning(disable: 4471 5204 5256)
