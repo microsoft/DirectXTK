@@ -4,12 +4,18 @@
   <PropertyGroup Label="Debug" Condition="'$(Configuration.ToLower())' == 'debug'">
     <NuGetConfiguration>Debug</NuGetConfiguration>
   </PropertyGroup>
-  <PropertyGroup Label="Non_Debug" Condition="'$(Configuration.ToLower())' != 'debug'">
+  <PropertyGroup Label="Non_Debug" Condition="'$(Configuration.ToLower())' == 'profile'">
+    <NuGetConfiguration>Release</NuGetConfiguration>
+  </PropertyGroup>
+  <PropertyGroup Label="Non_Debug" Condition="'$(Configuration.ToLower())' == 'release'">
+    <NuGetConfiguration>Release</NuGetConfiguration>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(NuGetConfiguration)' == ''">
     <NuGetConfiguration>Release</NuGetConfiguration>
   </PropertyGroup>
 
   <PropertyGroup>
-    <directxtk-LibPath>$(MSBuildThisFileDirectory)..\..\native\lib\$(Platform)\$(NuGetConfiguration)</directxtk-LibPath>
+    <directxtk-LibPath>$(MSBuildThisFileDirectory)..\..\native\lib\$(PlatformTarget)\$(NuGetConfiguration)</directxtk-LibPath>
   </PropertyGroup>
 
   <ItemDefinitionGroup>
