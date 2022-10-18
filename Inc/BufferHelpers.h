@@ -91,18 +91,21 @@ namespace DirectX
         unsigned int bindFlags = D3D11_BIND_SHADER_RESOURCE) noexcept;
 
     // Strongly typed wrapper around a Direct3D constant buffer.
-    namespace Private
+    inline namespace DX11
     {
-        // Base class, not to be used directly: clients should access this via the derived PrimitiveBatch<T>.
-        class ConstantBufferBase
+        namespace Private
         {
-        protected:
-            void __cdecl CreateBuffer(_In_ ID3D11Device* device, size_t bytes, _Outptr_ ID3D11Buffer** pBuffer);
-        };
+            // Base class, not to be used directly: clients should access this via the derived PrimitiveBatch<T>.
+            class ConstantBufferBase
+            {
+            protected:
+                void __cdecl CreateBuffer(_In_ ID3D11Device* device, size_t bytes, _Outptr_ ID3D11Buffer** pBuffer);
+            };
+        }
     }
 
     template<typename T>
-    class ConstantBuffer : public Private::ConstantBufferBase
+    class ConstantBuffer : public DX11::Private::ConstantBufferBase
     {
     public:
         // Constructor.
