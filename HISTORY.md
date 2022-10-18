@@ -6,6 +6,12 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### October 17, 2022
+* Additional methods for *DirectX Tool Kit for Audio* emitter and listener for cone and falloff curves
+* Added use of C++11 inline namespaces to make it possible to link both DX11 and DX12 versions at once
+* Minor fix for ``CompileShaders.cmd`` to address additional 'paths with spaces' issues
+* Minor CMake update
+
 ### July 29, 2022
 * *breaking change* DDSTextureLoader ``Ex`` functions now use ``DDS_LOADER_FLAGS`` instead of ``bool forceSRGB`` parameter.
 * MapGuard helper class updated with a new ``copy`` method
