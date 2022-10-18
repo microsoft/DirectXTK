@@ -71,110 +71,102 @@ jobs:
     inputs:
       filePath: .nuget/versioninfo.ps1
       arguments: $(Build.BuildNumber)
-  - task: PowerShell@2
-    displayName: 'VS 2019 16.9 workaround'
-    inputs:
-      targetType: 'inline'
-      script: |
-        Write-Host "Setting environment variable to suppress warning D9007"
-        Write-Host "##[command]set CL=/experimental:external"
-        Write-Host "##vso[task.setvariable variable=CL;]/experimental:external"
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2019.sln 32dbg
     inputs:
       solution: DirectXTK_Desktop_2019.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:VCToolsVersion=14.28.29910
+      msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x86
       configuration: Debug
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2019.sln 32rel
     inputs:
       solution: DirectXTK_Desktop_2019.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:VCToolsVersion=14.28.29910
+      msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x86
       configuration: Release
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2019.sln 64dbg
     inputs:
       solution: DirectXTK_Desktop_2019.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:VCToolsVersion=14.28.29910
+      msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Debug
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2019.sln 64rel
     inputs:
       solution: DirectXTK_Desktop_2019.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:VCToolsVersion=14.28.29910
+      msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Release
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2019_Win7.sln 32dbg
     inputs:
       solution: DirectXTK_Desktop_2019_Win7.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:VCToolsVersion=14.28.29910
+      msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x86
       configuration: Debug
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2019_Win7.sln 32rel
     inputs:
       solution: DirectXTK_Desktop_2019_Win7.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:VCToolsVersion=14.28.29910
+      msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x86
       configuration: Release
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2019_Win7.sln 64dbg
     inputs:
       solution: DirectXTK_Desktop_2019_Win7.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:VCToolsVersion=14.28.29910
+      msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Debug
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2019_Win7.sln 64rel
     inputs:
       solution: DirectXTK_Desktop_2019_Win7.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:VCToolsVersion=14.28.29910
+      msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Release
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2019_Win10.sln 32dbg
     inputs:
       solution: DirectXTK_Desktop_2019_Win10.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:VCToolsVersion=14.28.29910
+      msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x86
       configuration: Debug
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2019_Win10.sln 32rel
     inputs:
       solution: DirectXTK_Desktop_2019_Win10.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:VCToolsVersion=14.28.29910
+      msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x86
       configuration: Release
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2019_Win10.sln 64dbg
     inputs:
       solution: DirectXTK_Desktop_2019_Win10.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:VCToolsVersion=14.28.29910
+      msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Debug
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2019_Win10.sln 64rel
     inputs:
       solution: DirectXTK_Desktop_2019_Win10.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:VCToolsVersion=14.28.29910
+      msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Release
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2019_Win10.sln arm64dbg
     inputs:
       solution: DirectXTK_Desktop_2019_Win10.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:VCToolsVersion=14.28.29910
+      msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: ARM64
       configuration: Debug
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2019_Win10.sln arm64rel
     inputs:
       solution: DirectXTK_Desktop_2019_Win10.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:VCToolsVersion=14.28.29910
+      msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: ARM64
       configuration: Release
   - task: securedevelopmentteam.vss-secure-development-tools.build-task-antimalware.AntiMalware@4
@@ -301,68 +293,60 @@ jobs:
     displayName: 'Use NuGet'
   - task: NuGetAuthenticate@0
     displayName: 'NuGet authentication'
-  - task: PowerShell@2
-    displayName: 'VS 2019 16.9 workaround'
-    inputs:
-      targetType: 'inline'
-      script: |
-        Write-Host "Setting environment variable to suppress warning D9007"
-        Write-Host "##[command]set CL=/experimental:external"
-        Write-Host "##vso[task.setvariable variable=CL;]/experimental:external"
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Windows10_2019.sln 32dbg 
     inputs:
       solution: DirectXTK_Windows10_2019.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:VCToolsVersion=14.28.29910
+      msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x86
       configuration: Debug
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Windows10_2019.sln 32rel
     inputs:
       solution: DirectXTK_Windows10_2019.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:VCToolsVersion=14.28.29910
+      msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x86
       configuration: Release
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Windows10_2019.sln 64dbg
     inputs:
       solution: DirectXTK_Windows10_2019.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:VCToolsVersion=14.28.29910
+      msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Debug
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Windows10_2019.sln 64rel
     inputs:
       solution: DirectXTK_Windows10_2019.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:VCToolsVersion=14.28.29910
+      msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Release
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Windows10_2019.sln armdbg
     inputs:
       solution: DirectXTK_Windows10_2019.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:VCToolsVersion=14.28.29910
+      msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: ARM
       configuration: Debug
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Windows10_2019.sln armrel
     inputs:
       solution: DirectXTK_Windows10_2019.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:VCToolsVersion=14.28.29910
+      msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: ARM
       configuration: Release
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Windows10_2019.sln arm64dbg
     inputs:
       solution: DirectXTK_Windows10_2019.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:VCToolsVersion=14.28.29910
+      msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: ARM64
       configuration: Debug
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Windows10_2019.sln arm64rel
     inputs:
       solution: DirectXTK_Windows10_2019.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:VCToolsVersion=14.28.29910
+      msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: ARM64
       configuration: Release
   - task: securedevelopmentteam.vss-secure-development-tools.build-task-antimalware.AntiMalware@4
