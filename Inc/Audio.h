@@ -434,10 +434,12 @@ namespace DirectX
     //----------------------------------------------------------------------------------
     struct AudioListener : public X3DAUDIO_LISTENER
     {
-        AudioListener() noexcept
-        {
-            memset(this, 0, sizeof(X3DAUDIO_LISTENER));
+        X3DAUDIO_CONE   ListenerCone;
 
+        AudioListener() noexcept :
+            X3DAUDIO_LISTENER{},
+            ListenerCone{}
+        {
             OrientFront.z = -1.f;
 
             OrientTop.y = 1.f;
@@ -486,8 +488,8 @@ namespace DirectX
             XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&OrientTop), up);
         }
 
+        // Updates velocity and orientation by tracking changes in position over time.
         void XM_CALLCONV Update(FXMVECTOR newPos, XMVECTOR upDir, float dt) noexcept
-            // Updates velocity and orientation by tracking changes in position over time...
         {
             if (dt > 0.f)
             {
@@ -511,19 +513,27 @@ namespace DirectX
                 XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&Position), newPos);
             }
         }
+
+        void __cdecl SetOmnidirectional() noexcept
+        {
+            pCone = nullptr;
+        }
+
+        void __cdecl SetCone(const X3DAUDIO_CONE& listenerCone);
     };
 
 
     //----------------------------------------------------------------------------------
     struct AudioEmitter : public X3DAUDIO_EMITTER
     {
-        float       EmitterAzimuths[XAUDIO2_MAX_AUDIO_CHANNELS];
+        X3DAUDIO_CONE   EmitterCone;
+        float           EmitterAzimuths[XAUDIO2_MAX_AUDIO_CHANNELS];
 
         AudioEmitter() noexcept :
+            X3DAUDIO_EMITTER{},
+            EmitterCone{},
             EmitterAzimuths{}
         {
-            memset(this, 0, sizeof(X3DAUDIO_EMITTER));
-
             OrientFront.z = -1.f;
 
             OrientTop.y =
@@ -580,8 +590,8 @@ namespace DirectX
             XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&OrientTop), up);
         }
 
+        // Updates velocity and orientation by tracking changes in position over time.
         void XM_CALLCONV Update(FXMVECTOR newPos, XMVECTOR upDir, float dt) noexcept
-            // Updates velocity and orientation by tracking changes in position over time...
         {
             if (dt > 0.f)
             {
@@ -606,7 +616,19 @@ namespace DirectX
             }
         }
 
+        void __cdecl SetOmnidirectional() noexcept
+        {
+            pCone = nullptr;
+        }
+
+        // Only used for single-channel emitters.
+        void __cdecl SetCone(const X3DAUDIO_CONE& emitterCone);
+
+        // Set multi-channel emitter azimuths based on speaker configuration geometry.
         void __cdecl EnableDefaultMultiChannel(unsigned int channels, float radius = 1.f);
+
+        // Set default volume, LFE, LPF, and reverb curves.
+        void __cdecl EnableDefaultCurves() noexcept;
     };
 
 

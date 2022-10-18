@@ -55,7 +55,10 @@
 
 namespace DirectX
 {
-    class IEffect;
+    inline namespace DX11
+    {
+        class IEffect;
+    }
 
     // simliar to std::lock_guard for exception-safe Direct3D resource locking
     class MapGuard : public D3D11_MAPPED_SUBRESOURCE
@@ -166,33 +169,36 @@ namespace DirectX
     #endif
     }
 
-    // Helper to check for power-of-2
-    template<typename T>
-    constexpr bool IsPowerOf2(T x) noexcept { return ((x != 0) && !(x & (x - 1))); }
-
-    // Helpers for aligning values by a power of 2
-    template<typename T>
-    inline T AlignDown(T size, size_t alignment) noexcept
+    inline namespace DX11
     {
-        if (alignment > 0)
-        {
-            assert(((alignment - 1) & alignment) == 0);
-            auto mask = static_cast<T>(alignment - 1);
-            return size & ~mask;
-        }
-        return size;
-    }
+        // Helper to check for power-of-2
+        template<typename T>
+        constexpr bool IsPowerOf2(T x) noexcept { return ((x != 0) && !(x & (x - 1))); }
 
-    template<typename T>
-    inline T AlignUp(T size, size_t alignment) noexcept
-    {
-        if (alignment > 0)
+        // Helpers for aligning values by a power of 2
+        template<typename T>
+        inline T AlignDown(T size, size_t alignment) noexcept
         {
-            assert(((alignment - 1) & alignment) == 0);
-            auto mask = static_cast<T>(alignment - 1);
-            return (size + mask) & ~mask;
+            if (alignment > 0)
+            {
+                assert(((alignment - 1) & alignment) == 0);
+                auto mask = static_cast<T>(alignment - 1);
+                return size & ~mask;
+            }
+            return size;
         }
-        return size;
+
+        template<typename T>
+        inline T AlignUp(T size, size_t alignment) noexcept
+        {
+            if (alignment > 0)
+            {
+                assert(((alignment - 1) & alignment) == 0);
+                auto mask = static_cast<T>(alignment - 1);
+                return (size + mask) & ~mask;
+            }
+            return size;
+        }
     }
 
     // Helper for creating a Direct3D input layout to match a shader from an IEffect

@@ -14,7 +14,7 @@
 #include "PlatformHelpers.h"
 
 using namespace DirectX;
-using namespace DirectX::Internal;
+using namespace DirectX::DX11::Private;
 using Microsoft::WRL::ComPtr;
 
 
