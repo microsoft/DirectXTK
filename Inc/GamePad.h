@@ -28,7 +28,7 @@
 
 #ifdef USING_GAMEINPUT
 interface IGameInputDevice;
-#ifndef _XBOX_GAMING
+#ifndef _GAMING_XBOX
 #pragma comment(lib,"gameinput.lib")
 #endif
 
