@@ -17,7 +17,7 @@ using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
 #pragma region Implementations
-#if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)) || (defined(_GAMING_DESKTOP) && (_GRDK_EDITION >= 220600))
+#ifdef USING_GAMEINPUT
 
 #include <GameInput.h>
 

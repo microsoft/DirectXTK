@@ -1250,7 +1250,7 @@ void GamePad::RegisterEvents(HANDLE ctrlChanged, HANDLE userChanged) noexcept
 }
 
 
-#else
+#elif defined(USING_XINPUT)
 
 //======================================================================================
 // XInput
@@ -1601,6 +1601,10 @@ private:
 };
 
 GamePad::Impl* GamePad::Impl::s_gamePad = nullptr;
+
+#else
+
+#error Unknown GamePad implementation
 
 #endif
 #pragma endregion

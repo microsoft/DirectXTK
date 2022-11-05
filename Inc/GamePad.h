@@ -10,31 +10,42 @@
 
 #pragma once
 
+#if !defined(USING_XINPUT) && !defined(USING_GAMEINPUT) && !defined(USING_WINDOWS_GAMING_INPUT)
+
 #ifdef _GAMING_DESKTOP
 #include <grdk.h>
 #endif
 
 #if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)) || (defined(_GAMING_DESKTOP) && (_GRDK_EDITION >= 220600))
-#ifndef USING_GAMEINPUT
 #define USING_GAMEINPUT
-#endif
 #elif (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/) && !defined(_GAMING_DESKTOP) && !defined(__MINGW32__)
-#ifndef USING_WINDOWS_GAMING_INPUT
 #define USING_WINDOWS_GAMING_INPUT
+#elif !defined(_XBOX_ONE)
+#define USING_XINPUT
 #endif
-#endif
+
+#endif // !USING_XINPUT && !USING_GAMEINPUT && !USING_WINDOWS_GAMING_INPUT
 
 #ifdef USING_GAMEINPUT
 interface IGameInputDevice;
+#ifndef _GAMING_XBOX
+#pragma comment(lib,"gameinput.lib")
+#endif
+
 #elif defined(USING_WINDOWS_GAMING_INPUT)
 #pragma comment(lib,"runtimeobject.lib")
 #include <string>
-#elif !defined(_XBOX_ONE)
+
+#elif defined(_XBOX_ONE)
+// Legacy Xbox One XDK uses Windows::Xbox::Input
+
+#elif defined(USING_XINPUT)
 #if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/ )
 #pragma comment(lib,"xinput.lib")
 #else
 #pragma comment(lib,"xinput9_1_0.lib")
 #endif
+
 #endif
 
 #include <cstdint>
