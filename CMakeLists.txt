@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-cmake_minimum_required (VERSION 3.13)
+cmake_minimum_required (VERSION 3.20)
 
 set(DIRECTXTK_VERSION 1.8.2)
 
@@ -203,7 +203,7 @@ add_library(${PROJECT_NAME} STATIC ${LIBRARY_SOURCES} ${LIBRARY_HEADERS})
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${COMPILED_SHADERS} Src)
 
-if ((${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.16") AND (NOT MINGW))
+if (NOT MINGW)
     target_precompile_headers(${PROJECT_NAME} PRIVATE Src/pch.h)
 endif()
 
@@ -219,17 +219,6 @@ target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_11)
 
 if(WINDOWS_STORE OR BUILD_XAUDIO_WIN10 OR BUILD_XAUDIO_WIN8 OR BUILD_XAUDIO_WIN7)
     target_include_directories(${PROJECT_NAME} PRIVATE Audio)
-endif()
-
-if(MSVC)
-    # Use max Warning Level
-    string(REPLACE "/W3 " "/Wall " CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-    string(REPLACE "/W3 " "/Wall " CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
-    string(REPLACE "/W3 " "/Wall " CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
-
-    # Model uses dynamic_cast, so we need /GR (Enable RTTI)
-
-    # Library needs /EHsc (Enable C++ exceptions)
 endif()
 
 if (MINGW OR VCPKG_TOOLCHAIN)
@@ -299,9 +288,10 @@ if (MINGW OR VCPKG_TOOLCHAIN)
   endforeach()
 endif()
 
+# Model uses dynamic_cast, so we need /GR (Enable RTTI)
 if(MSVC)
     foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
-      target_compile_options(${t} PRIVATE /fp:fast "$<$<NOT:$<CONFIG:DEBUG>>:/guard:cf>")
+      target_compile_options(${t} PRIVATE /Wall /GR /fp:fast "$<$<NOT:$<CONFIG:DEBUG>>:/guard:cf>")
       target_link_options(${t} PRIVATE /DYNAMICBASE /NXCOMPAT)
     endforeach()
 
@@ -389,25 +379,23 @@ if ( CMAKE_CXX_COMPILER_ID MATCHES "MSVC" )
 endif()
 
 if(WIN32)
-    foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
-      target_compile_definitions(${t} PRIVATE _UNICODE UNICODE)
-    endforeach()
-
     if(WINDOWS_STORE)
       target_compile_definitions(${PROJECT_NAME} PRIVATE WINAPI_FAMILY=WINAPI_FAMILY_APP)
     endif()
 
-    if(WINDOWS_STORE OR BUILD_XAUDIO_WIN10)
+    if(WINDOWS_STORE OR BUILD_XAUDIO_WIN10 OR (${DIRECTX_ARCH} MATCHES "^arm64"))
         message("INFO: Using DirectX Tool Kit for Audio on XAudio 2.9 (Windows 10/Windows 11).")
-        target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0A00)
-    elseif(BUILD_XAUDIO_WIN8)
+        set(WINVER 0x0A00)
+    elseif(BUILD_XAUDIO_WIN8 OR ${DIRECTX_ARCH} MATCHES "^arm")
         message("INFO: Using DirectX Tool Kit for Audio on XAudio 2.8 (Windows 8).")
-        target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0602)
+        set(WINVER 0x0602)
     else()
-        target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0601 _WIN7_PLATFORM_UPDATE)
+        set(WINVER 0x0601)
+        target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN7_PLATFORM_UPDATE)
     endif()
-    foreach(t IN LISTS TOOL_EXES)
-      target_compile_definitions(${t} PRIVATE _WIN32_WINNT=0x0601)
+
+    foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+      target_compile_definitions(${t} PRIVATE _UNICODE UNICODE _WIN32_WINNT=${WINVER})
     endforeach()
 endif()
 
