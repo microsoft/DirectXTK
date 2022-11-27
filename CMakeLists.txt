@@ -224,7 +224,7 @@ endif()
 if (MINGW OR VCPKG_TOOLCHAIN)
     message("INFO: Using VCPKG for DirectXMath.")
     find_package(directxmath CONFIG REQUIRED)
-    target_link_libraries(${PROJECT_NAME} PRIVATE Microsoft::DirectXMath)
+    target_link_libraries(${PROJECT_NAME} PUBLIC Microsoft::DirectXMath)
 endif()
 
 if (BUILD_XAUDIO_WIN7 AND (NOT BUILD_XAUDIO_WIN10) AND (NOT BUILD_XAUDIO_WIN8) AND (NOT WINDOWS_STORE))
@@ -232,7 +232,7 @@ if (BUILD_XAUDIO_WIN7 AND (NOT BUILD_XAUDIO_WIN10) AND (NOT BUILD_XAUDIO_WIN8) A
     target_compile_definitions(${PROJECT_NAME} PRIVATE USING_XAUDIO2_REDIST)
 
     find_package(xaudio2redist CONFIG REQUIRED)
-    target_link_libraries(${PROJECT_NAME} PRIVATE Microsoft::XAudio2Redist)
+    target_link_libraries(${PROJECT_NAME} PUBLIC Microsoft::XAudio2Redist)
 endif()
 
 #--- Package
@@ -278,13 +278,13 @@ if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
     Audio/WAVFileReader.cpp
     Audio/WAVFileReader.h)
   target_include_directories(xwbtool PRIVATE Audio Src)
-  target_link_libraries(xwbtool version.lib)
+  target_link_libraries(xwbtool PRIVATE version.lib)
   source_group(xwbtool REGULAR_EXPRESSION XWBTool/*.*)
 endif()
 
 if (MINGW OR VCPKG_TOOLCHAIN)
-  foreach(t IN LISTS TOOL_EXES)
-    target_link_libraries(${t} Microsoft::DirectXMath)
+  foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+    target_link_libraries(${t} PUBLIC Microsoft::DirectXMath)
   endforeach()
 endif()
 
@@ -335,6 +335,7 @@ if ( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
 endif()
 if(MINGW)
     foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+      target_compile_definitions(${t} PRIVATE $<IF:$<CONFIG:DEBUG>,_DEBUG,NDEBUG>)
       target_compile_options(${t} PRIVATE -Wno-ignored-attributes)
       target_link_options(${t} PRIVATE -municode)
     endforeach()
