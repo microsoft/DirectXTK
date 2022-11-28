@@ -166,7 +166,7 @@ namespace DirectX
     }
 #else
     template<UINT TNameLength>
-    inline void SetDebugObjectName(_In_ ID3D11DeviceChild* resource, _In_z_ const wchar_t(&)[TNameLength])
+    inline void SetDebugObjectName(_In_ ID3D11DeviceChild*, _In_z_ const wchar_t(&)[TNameLength])
     {
     }
 #endif
