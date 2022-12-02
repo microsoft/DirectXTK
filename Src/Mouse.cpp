@@ -74,16 +74,30 @@ public:
 
         s_mouse = this;
 
-        ThrowIfFailed(GameInputCreate(mGameInput.GetAddressOf()));
-
-        ThrowIfFailed(mGameInput->RegisterDeviceCallback(
-            nullptr,
-            GameInputKindMouse,
-            GameInputDeviceConnected,
-            GameInputBlockingEnumeration,
-            this,
-            OnGameInputDevice,
-            &mDeviceToken));
+        HRESULT hr = GameInputCreate(mGameInput.GetAddressOf());
+        if (SUCCEEDED(hr))
+        {
+            ThrowIfFailed(mGameInput->RegisterDeviceCallback(
+                nullptr,
+                GameInputKindMouse,
+                GameInputDeviceConnected,
+                GameInputBlockingEnumeration,
+                this,
+                OnGameInputDevice,
+                &mDeviceToken));
+        }
+        else
+        {
+            DebugTrace("ERROR: GameInputCreate [mouse] failed with %08X\n", static_cast<unsigned int>(hr));
+        #ifdef _GAMING_XBOX
+            ThrowIfFailed(hr);
+        #elif defined(_DEBUG)
+            DebugTrace(
+                "\t**** Check that the 'GameInput Service' is running on this system.             ****\n"
+                "\t**** NOTE: No relative movement be returned and IsConnected will return false. ****\n"
+            );
+        #endif
+        }
 
         mScrollWheelValue.reset(CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE));
         if (!mScrollWheelValue)
@@ -134,29 +148,32 @@ public:
         {
             state.x = state.y = 0;
 
-            ComPtr<IGameInputReading> reading;
-            if (SUCCEEDED(mGameInput->GetCurrentReading(GameInputKindMouse, nullptr, reading.GetAddressOf())))
+            if (mGameInput)
             {
-                GameInputMouseState mouse;
-                if (reading->GetMouseState(&mouse))
+                ComPtr<IGameInputReading> reading;
+                if (SUCCEEDED(mGameInput->GetCurrentReading(GameInputKindMouse, nullptr, reading.GetAddressOf())))
                 {
-                    state.leftButton = (mouse.buttons & GameInputMouseLeftButton) != 0;
-                    state.middleButton = (mouse.buttons & GameInputMouseMiddleButton) != 0;
-                    state.rightButton = (mouse.buttons & GameInputMouseRightButton) != 0;
-                    state.xButton1 = (mouse.buttons & GameInputMouseButton4) != 0;
-                    state.xButton2 = (mouse.buttons & GameInputMouseButton5) != 0;
-
-                    if (mRelativeX != INT64_MAX)
+                    GameInputMouseState mouse;
+                    if (reading->GetMouseState(&mouse))
                     {
-                        state.x = static_cast<int>(mouse.positionX - mRelativeX);
-                        state.y = static_cast<int>(mouse.positionY - mRelativeY);
-                        int scrollDelta = static_cast<int>(mouse.wheelY - mRelativeWheelY);
-                        mScrollWheelCurrent += scrollDelta;
-                    }
+                        state.leftButton = (mouse.buttons & GameInputMouseLeftButton) != 0;
+                        state.middleButton = (mouse.buttons & GameInputMouseMiddleButton) != 0;
+                        state.rightButton = (mouse.buttons & GameInputMouseRightButton) != 0;
+                        state.xButton1 = (mouse.buttons & GameInputMouseButton4) != 0;
+                        state.xButton2 = (mouse.buttons & GameInputMouseButton5) != 0;
 
-                    mRelativeX = mouse.positionX;
-                    mRelativeY = mouse.positionY;
-                    mRelativeWheelY = mouse.wheelY;
+                        if (mRelativeX != INT64_MAX)
+                        {
+                            state.x = static_cast<int>(mouse.positionX - mRelativeX);
+                            state.y = static_cast<int>(mouse.positionY - mRelativeY);
+                            int scrollDelta = static_cast<int>(mouse.wheelY - mRelativeWheelY);
+                            mScrollWheelCurrent += scrollDelta;
+                        }
+
+                        mRelativeX = mouse.positionX;
+                        mRelativeY = mouse.positionY;
+                        mRelativeWheelY = mouse.wheelY;
+                    }
                 }
             }
         }
