@@ -1,0 +1,112 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# http://go.microsoft.com/fwlink/?LinkId=248929
+
+# Builds the SimpleMath module for Windows Subsystem for Linux (WSL)
+
+schedules:
+- cron: "30 3 * * *"
+  displayName: 'Nightly build'
+  branches:
+    include:
+    - main
+
+resources:
+  repositories:
+  - repository: self
+    type: git
+    ref: refs/heads/main
+    trigger: none
+
+name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
+
+pool:
+    vmImage: ubuntu-22.04
+
+variables:
+  GITHUB_PAT: $(GITHUBPUBLICTOKEN)
+  DEST_DIR: $(DESTDIR)
+
+jobs:
+- job: BUILD_SIMPLEMATH
+  displayName: SimpleMath
+  timeoutInMinutes: 120
+  cancelTimeoutInMinutes: 1
+  steps:
+  - checkout: self
+    clean: true
+    fetchTags: false
+  - task: CmdLine@2
+    displayName: Fetch directx-headers
+    inputs:
+      script: git clone --quiet https://%GITHUB_PAT%@github.com/microsoft/DirectX-Headers.git directx-headers
+  - task: CMake@1
+    displayName: CMake DirectX-Headers
+    inputs:
+      cwd: directx-headers
+      cmakeArgs: . -DDXHEADERS_BUILD_TEST=OFF -DDXHEADERS_BUILD_GOOGLE_TEST=OFF
+  - task: CMake@1
+    displayName: CMake DirectX-Headers (Build)
+    inputs:
+      cwd: directx-headers
+      cmakeArgs: --build . -v
+  - task: CMake@1
+    displayName: CMake DirectX-Headers (Install)
+    inputs:
+      cwd: directx-headers
+      cmakeArgs: --install .
+  - task: CmdLine@2
+    displayName: Fetch directxmath
+    inputs:
+      script: git clone --quiet https://%GITHUB_PAT%@github.com/microsoft/DirectXMath.git directxmath
+  - task: CMake@1
+    displayName: CMake DirectXMath
+    inputs:
+      cwd: directxmath
+      cmakeArgs: .
+  - task: CMake@1
+    displayName: CMake DirectXMath (Build)
+    inputs:
+      cwd: directxmath
+      cmakeArgs: --build . -v
+  - task: CMake@1
+    displayName: CMake DirectXMath (Install)
+    inputs:
+      cwd: directxmath
+      cmakeArgs: --install .
+  - task: CmdLine@2
+    displayName: Fetch Tests
+    inputs:
+      script: git clone --quiet https://%GITHUB_PAT%@github.com/walbourn/directxtktest.git Tests
+      workingDirectory: $(Build.SourcesDirectory)
+      failOnStderr: true
+  - task: PowerShell@2
+    displayName: Fetch SAL.H
+    inputs:
+      targetType: inline
+      script: |
+        $ProgressPreference = 'SilentlyContinue'
+        Invoke-WebRequest -Uri https://raw.githubusercontent.com/dotnet/corert/master/src/Native/inc/unix/sal.h -o $(DEST_DIR)usr/local/include/sal.h
+        $fileHash = Get-FileHash -Algorithm SHA512 $(DEST_DIR)usr/local/include/sal.h | ForEach { $_.Hash} | Out-String
+        $filehash = $fileHash.Trim()
+        Write-Host "##[debug]SHA512: " $filehash
+        if ($fileHash -ne "1643571673195d9eb892d2f2ac76eac7113ef7aa0ca116d79f3e4d3dc9df8a31600a9668b7e7678dfbe5a76906f9e0734ef8d6db0903ccc68fc742dd8238d8b0") {
+            Write-Error -Message "##[error]Computed hash does not match!" -ErrorAction Stop
+        }
+
+  - task: CMake@1
+    displayName: CMake SimpleMath
+    inputs:
+      cwd: Tests/SimpleMathTest
+      cmakeArgs: -B out -DCMAKE_PREFIX_PATH=$(DEST_DIR)usr/local/share;$(DEST_DIR)usr/local/cmake
+  - task: CMake@1
+    displayName: CMake SimpleMath (Build)
+    inputs:
+      cwd: Tests/SimpleMathTest
+      cmakeArgs: --build out -v
+  - task: CmdLine@2
+    displayName: Run tests
+    inputs:
+      script: ./out/bin/CMake/simplemathtest
+      workingDirectory: Tests/SimpleMathTest
