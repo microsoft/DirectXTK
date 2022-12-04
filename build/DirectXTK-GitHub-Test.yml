@@ -1,0 +1,348 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# http://go.microsoft.com/fwlink/?LinkId=248929
+
+# Builds the library and test suite.
+
+schedules:
+- cron: "30 2 * * *"
+  displayName: 'Nightly build'
+  branches:
+    include:
+    - main
+
+resources:
+  repositories:
+  - repository: self
+    type: git
+    ref: refs/heads/main
+    trigger: none
+
+name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
+
+pool:
+  vmImage: windows-2019
+
+variables:
+  GITHUB_PAT: $(GITHUBPUBLICTOKEN)
+  GUID_FEED: $(ADOFeedGUID)
+
+jobs:
+- job: DESKTOP_BUILD
+  displayName: 'Win32 Desktop'
+  timeoutInMinutes: 120
+  cancelTimeoutInMinutes: 1
+  steps:
+  - checkout: self
+    clean: true
+    fetchTags: false
+  - task: DeleteFiles@1
+    displayName: Delete files from Tests
+    inputs:
+      SourceFolder: Tests
+      Contents: '**'
+      RemoveSourceFolder: true
+      RemoveDotFiles: true
+  - task: CmdLine@2
+    displayName: Fetch Tests
+    inputs:
+      script: git clone --quiet https://%GITHUB_PAT%@github.com/walbourn/directxtktest.git Tests
+      workingDirectory: $(Build.SourcesDirectory)
+      failOnStderr: true
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Desktop_2019.sln 32dbg
+    inputs:
+      solution: Tests/DirectXTK_Tests_Desktop_2019.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x86
+      configuration: Debug
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Desktop_2019.sln 32rel
+    inputs:
+      solution: Tests/DirectXTK_Tests_Desktop_2019.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x86
+      configuration: Release
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Desktop_2019.sln 64dbg
+    inputs:
+      solution: Tests/DirectXTK_Tests_Desktop_2019.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x64
+      configuration: Debug
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Desktop_2019.sln 64rel
+    inputs:
+      solution: Tests/DirectXTK_Tests_Desktop_2019.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x64
+      configuration: Release
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Desktop_2019_Win10.sln 32dbg
+    inputs:
+      solution: Tests/DirectXTK_Tests_Desktop_2019_Win10.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x86
+      configuration: Debug
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Desktop_2019_Win10.sln 32rel
+    inputs:
+      solution: Tests/DirectXTK_Tests_Desktop_2019_Win10.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x86
+      configuration: Release
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Desktop_2019_Win10.sln 64dbg
+    inputs:
+      solution: Tests/DirectXTK_Tests_Desktop_2019_Win10.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x64
+      configuration: Debug
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Desktop_2019_Win10.sln 64rel
+    inputs:
+      solution: Tests/DirectXTK_Tests_Desktop_2019_Win10.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x64
+      configuration: Release
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Desktop_2019_Win10.sln arm64dbg
+    inputs:
+      solution: Tests/DirectXTK_Tests_Desktop_2019_Win10.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: ARM64
+      configuration: Debug
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Desktop_2019_Win10.sln arm64rel
+    inputs:
+      solution: Tests/DirectXTK_Tests_Desktop_2019_Win10.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: ARM64
+      configuration: Release
+
+- job: DESKTOP_BUILD_WIN7
+  displayName: 'Win32 Desktop for Windows 7'
+  timeoutInMinutes: 120
+  steps:
+  - checkout: self
+    clean: true
+    fetchTags: false
+  - task: DeleteFiles@1
+    displayName: Delete files from Tests
+    inputs:
+      SourceFolder: Tests
+      Contents: '**'
+      RemoveSourceFolder: true
+      RemoveDotFiles: true
+  - task: CmdLine@2
+    displayName: Fetch Tests
+    inputs:
+      script: git clone --quiet https://%GITHUB_PAT%@github.com/walbourn/directxtktest.git Tests
+      workingDirectory: $(Build.SourcesDirectory)
+      failOnStderr: true
+  - task: NuGetToolInstaller@1
+    displayName: 'Use NuGet '
+  - task: NuGetCommand@2
+    displayName: NuGet restore
+    inputs:
+      solution: DirectXTK_Desktop_2019_Win7.sln
+      feedRestore: $(GUID_FEED)
+      includeNuGetOrg: false
+  - task: NuGetCommand@2
+    displayName: NuGet restore tests
+    inputs:
+      solution: Tests\DirectXTK_Tests_Desktop_2019_Win7.sln
+      feedRestore: $(GUID_FEED)
+      includeNuGetOrg: false
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Desktop_2019_Win7.sln 32dbg
+    inputs:
+      solution: Tests/DirectXTK_Tests_Desktop_2019_Win7.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x86
+      configuration: Debug
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Desktop_2019_Win7.sln 32rel
+    inputs:
+      solution: Tests/DirectXTK_Tests_Desktop_2019_Win7.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x86
+      configuration: Release
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Desktop_2019_Win7.sln 64rel
+    inputs:
+      solution: Tests/DirectXTK_Tests_Desktop_2019_Win7.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x64
+      configuration: Release
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Desktop_2019_Win7.sln 64dbg
+    inputs:
+      solution: Tests/DirectXTK_Tests_Desktop_2019_Win7.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x64
+      configuration: Debug
+
+- job: UWP_BUILD_X64
+  displayName: 'Universal Windows Platform (UWP) for x64'
+  timeoutInMinutes: 120
+  cancelTimeoutInMinutes: 1
+  steps:
+  - checkout: self
+    clean: true
+    fetchTags: false
+  - task: DeleteFiles@1
+    displayName: Delete files from Tests
+    inputs:
+      SourceFolder: Tests
+      Contents: '**'
+      RemoveSourceFolder: true
+      RemoveDotFiles: true
+  - task: CmdLine@2
+    displayName: Fetch Tests
+    inputs:
+      script: git clone --quiet https://%GITHUB_PAT%@github.com/walbourn/directxtktest.git Tests
+      workingDirectory: $(Build.SourcesDirectory)
+      failOnStderr: true
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Windows10.sln 64dbg
+    inputs:
+      solution: Tests/DirectXTK_Tests_Windows10.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:AppxBundle=Never
+      platform: x64
+      configuration: Debug
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Windows10.sln 64rel
+    inputs:
+      solution: Tests/DirectXTK_Tests_Windows10.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:AppxBundle=Never
+      platform: x64
+      configuration: Release
+
+- job: UWP_BUILD_X86
+  displayName: 'Universal Windows Platform (UWP) for x86'
+  timeoutInMinutes: 120
+  steps:
+  - checkout: self
+    clean: true
+    fetchTags: false
+  - task: DeleteFiles@1
+    displayName: Delete files from Tests
+    inputs:
+      SourceFolder: Tests
+      Contents: '**'
+      RemoveSourceFolder: true
+      RemoveDotFiles: true
+  - task: CmdLine@2
+    displayName: Fetch Tests
+    inputs:
+      script: git clone --quiet https://%GITHUB_PAT%@github.com/walbourn/directxtktest.git Tests
+      workingDirectory: $(Build.SourcesDirectory)
+      failOnStderr: true
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Windows10.sln 32rel
+    inputs:
+      solution: Tests/DirectXTK_Tests_Windows10.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:AppxBundle=Never
+      platform: x86
+      configuration: Release
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Windows10.sln 32dbg
+    inputs:
+      solution: Tests/DirectXTK_Tests_Windows10.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:AppxBundle=Never
+      platform: x86
+      configuration: Debug
+
+- job: UWP_BUILD_ARM
+  displayName: 'Universal Windows Platform (UWP) for ARM'
+  timeoutInMinutes: 120
+  steps:
+  - checkout: self
+    clean: true
+    fetchTags: false
+  - task: DeleteFiles@1
+    displayName: Delete files from Tests
+    inputs:
+      SourceFolder: Tests
+      Contents: '**'
+      RemoveSourceFolder: true
+      RemoveDotFiles: true
+  - task: CmdLine@2
+    displayName: Fetch Tests
+    inputs:
+      script: git clone --quiet https://%GITHUB_PAT%@github.com/walbourn/directxtktest.git Tests
+      workingDirectory: $(Build.SourcesDirectory)
+      failOnStderr: true
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Windows10.sln armdbg
+    inputs:
+      solution: Tests/DirectXTK_Tests_Windows10.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:AppxBundle=Never
+      platform: ARM
+      configuration: Debug
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Windows10.sln armrel
+    inputs:
+      solution: Tests/DirectXTK_Tests_Windows10.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:AppxBundle=Never
+      platform: ARM
+      configuration: Release
+
+- job: UWP_BUILD_ARM64
+  displayName: 'Universal Windows Platform (UWP) for ARM64'
+  timeoutInMinutes: 120
+  steps:
+  - checkout: self
+    clean: true
+    fetchTags: false
+  - task: DeleteFiles@1
+    displayName: Delete files from Tests
+    inputs:
+      SourceFolder: Tests
+      Contents: '**'
+      RemoveSourceFolder: true
+      RemoveDotFiles: true
+  - task: CmdLine@2
+    displayName: Fetch Tests
+    inputs:
+      script: git clone --quiet https://%GITHUB_PAT%@github.com/walbourn/directxtktest.git Tests
+      workingDirectory: $(Build.SourcesDirectory)
+      failOnStderr: true
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Windows10.sln arm64dbg
+    inputs:
+      solution: Tests/DirectXTK_Tests_Windows10.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:AppxBundle=Never
+      platform: ARM64
+      configuration: Debug
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Windows10.sln arm64rel
+    inputs:
+      solution: Tests/DirectXTK_Tests_Windows10.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:AppxBundle=Never
+      platform: ARM64
+      configuration: Release
