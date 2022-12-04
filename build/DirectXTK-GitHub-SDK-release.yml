@@ -43,8 +43,7 @@ jobs:
     displayName: Set nuget.config to single source
     inputs:
       targetType: inline
-      script:
-        - |
+      script: |
         $file = '.\NuGet.Config'
         $doc = [xml](Get-Content $file)
         $newelement = $doc.CreateElement("clear")
@@ -210,8 +209,7 @@ jobs:
     displayName: Set nuget.config to single source
     inputs:
       targetType: inline
-      script:
-        - |
+      script: |
         $file = '.\NuGet.Config'
         $doc = [xml](Get-Content $file)
         $newelement = $doc.CreateElement("clear")
@@ -281,8 +279,7 @@ jobs:
     displayName: Set nuget.config to single source
     inputs:
       targetType: inline
-      script:
-        - |
+      script: |
         $file = '.\NuGet.Config'
         $doc = [xml](Get-Content $file)
         $newelement = $doc.CreateElement("clear")

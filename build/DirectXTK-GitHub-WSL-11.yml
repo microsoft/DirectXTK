@@ -77,8 +77,7 @@ jobs:
     displayName: Fetch SAL.H
     inputs:
       targetType: inline
-      script:
-        - |
+      script: |
         $ProgressPreference = 'SilentlyContinue'
         Invoke-WebRequest -Uri https://raw.githubusercontent.com/dotnet/corert/master/src/Native/inc/unix/sal.h -o $(DESTDIR)usr/local/include/sal.h
         $fileHash = Get-FileHash -Algorithm SHA512 $(DESTDIR)usr/local/include/sal.h | ForEach { $_.Hash} | Out-String

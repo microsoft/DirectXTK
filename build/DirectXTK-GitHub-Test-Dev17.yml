@@ -227,8 +227,7 @@ jobs:
   - task: CmdLine@2
     displayName: Setup environment for CMake to use VS
     inputs:
-      script:
-        - |
+      script: |
         @echo off
         pushd "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
         for /f "delims=" %%x in ('.\vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
@@ -285,8 +284,7 @@ jobs:
   - task: CmdLine@2
     displayName: Set LIB for ARM64
     inputs:
-      script:
-        - |
+      script: |
         @echo off
         pushd "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
         for /f "delims=" %%x in ('.\vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x

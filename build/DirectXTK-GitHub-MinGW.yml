@@ -35,8 +35,7 @@ jobs:
   - task: CmdLine@2
     displayName: Fetch VCPKG
     inputs:
-      script:
-        - |
+      script: |
         REM can remove this when MS Hosted updates their vcpkg to the newer DirectX-Headers
         git clone --quiet https://%GITHUB_PAT%@github.com/microsoft/vcpkg.git
 
@@ -44,8 +43,7 @@ jobs:
   - task: CmdLine@2
     displayName: VCPKG Bootstrap
     inputs:
-      script:
-        - |
+      script: |
         call bootstrap-vcpkg.bat
         echo ##vso[task.setvariable variable=VCPKG_DEFAULT_TRIPLET;]x86-mingw-static
         echo ##vso[task.setvariable variable=VCPKG_DEFAULT_HOST_TRIPLET;]x86-mingw-static
@@ -55,8 +53,7 @@ jobs:
     displayName: Install MinGW32
     inputs:
       targetType: inline
-      script:
-        - |
+      script: |
         $ProgressPreference = 'SilentlyContinue'
         Write-Host "Downloading winlibs..."
         Invoke-WebRequest -Uri "$URL_MINGW32" -OutFile "gw32.zip"
@@ -94,8 +91,7 @@ jobs:
   - task: CmdLine@2
     displayName: VCPKG install headers
     inputs:
-      script:
-        - |
+      script: |
         call vcpkg install directxmath
         REM @if ERRORLEVEL 1 goto error
         call vcpkg install xaudio2redist
@@ -137,8 +133,7 @@ jobs:
   - task: CmdLine@2
     displayName: Fetch VCPKG
     inputs:
-      script:
-        - |
+      script: |
         REM can remove this when MS Hosted updates their vcpkg to the newer DirectX-Headers
         git clone --quiet https://%GITHUB_PAT%@github.com/microsoft/vcpkg.git
 
@@ -150,8 +145,7 @@ jobs:
   - task: CmdLine@2
     displayName: VCPKG Bootstrap
     inputs:
-      script:
-        - |
+      script: |
         call bootstrap-vcpkg.bat
         echo ##vso[task.setvariable variable=VCPKG_DEFAULT_TRIPLET;]x64-mingw-static
         echo ##vso[task.setvariable variable=VCPKG_DEFAULT_HOST_TRIPLET;]x64-mingw-static
@@ -161,8 +155,7 @@ jobs:
     displayName: Install MinGW-W64
     inputs:
       targetType: inline
-      script:
-        - |
+      script: |
         $ProgressPreference = 'SilentlyContinue'
         Write-Host "Downloading winlibs..."
         Invoke-WebRequest -Uri "$URL_MINGW64" -OutFile "gw64.zip"
@@ -200,8 +193,7 @@ jobs:
   - task: CmdLine@2
     displayName: VCPKG install headers
     inputs:
-      script:
-        - |
+      script: |
         call vcpkg install directxmath
         REM @if ERRORLEVEL 1 goto error
         call vcpkg install directx-headers
