@@ -56,12 +56,12 @@ jobs:
       script: |
         $ProgressPreference = 'SilentlyContinue'
         Write-Host "Downloading winlibs..."
-        Invoke-WebRequest -Uri "$URL_MINGW32" -OutFile "gw32.zip"
+        Invoke-WebRequest -Uri "$(URL_MINGW32)" -OutFile "gw32.zip"
         Write-Host "Downloaded."
         $fileHash = Get-FileHash -Algorithm SHA512 gw32.zip | ForEach { $_.Hash} | Out-String
         $filehash = $fileHash.Trim()
         Write-Host "##[debug]SHA512: " $fileHash
-        if ($fileHash -ne $HASH_MINGW32) {
+        if ($fileHash -ne '$(HASH_MINGW32)') {
             Write-Error -Message "##[error]Computed hash does not match!" -ErrorAction Stop
         }
         Write-Host "Extracting winlibs..."
@@ -70,12 +70,12 @@ jobs:
         Write-Host "Added to path: $env:BUILD_SOURCESDIRECTORY\gw32\mingw32\bin"
         Write-Host "##vso[task.prependpath]$env:BUILD_SOURCESDIRECTORY\gw32\mingw32\bin"
         $sdkroot = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows Kits\Installed Roots' | Select-Object -ExpandProperty KitsRoot10
-        $windows11sdk = "{0}bin\$WIN11_SDK\" -f $sdkroot
+        $windows11sdk = "{0}bin\$(WIN11_SDK)\" -f $sdkroot
         if (Test-Path "$windows11sdk") {
             Write-Host "##vso[task.setvariable variable=WindowsSdkVerBinPath;]$windows11sdk"
         }
         else {
-            Write-Error -Message "##[error]Can't find Windows SDK ($WIN11_SDK)" -ErrorAction Stop
+            Write-Error -Message "##[error]Can't find Windows SDK ($(WIN11_SDK))" -ErrorAction Stop
         }
 
       workingDirectory: $(Build.SourcesDirectory)
@@ -158,12 +158,12 @@ jobs:
       script: |
         $ProgressPreference = 'SilentlyContinue'
         Write-Host "Downloading winlibs..."
-        Invoke-WebRequest -Uri "$URL_MINGW64" -OutFile "gw64.zip"
+        Invoke-WebRequest -Uri "$(URL_MINGW64)" -OutFile "gw64.zip"
         Write-Host "Downloaded."
         $fileHash = Get-FileHash -Algorithm SHA512 gw64.zip | ForEach { $_.Hash} | Out-String
         $filehash = $fileHash.Trim()
         Write-Host "##[debug]SHA512: " $fileHash
-        if ($fileHash -ne $HASH_MINGW64) {
+        if ($fileHash -ne '$(HASH_MINGW64)') {
             Write-Error -Message "##[error]Computed hash does not match!" -ErrorAction Stop
         }
         Write-Host "Extracting winlibs..."
@@ -172,12 +172,12 @@ jobs:
         Write-Host "Added to path: $env:BUILD_SOURCESDIRECTORY\gw64\mingw64\bin"
         Write-Host "##vso[task.prependpath]$env:BUILD_SOURCESDIRECTORY\gw64\mingw64\bin"
         $sdkroot = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows Kits\Installed Roots' | Select-Object -ExpandProperty KitsRoot10
-        $windows11sdk = "{0}bin\$WIN11_SDK\" -f $sdkroot
+        $windows11sdk = "{0}bin\$(WIN11_SDK)\" -f $sdkroot
         if (Test-Path "$windows11sdk") {
             Write-Host "##vso[task.setvariable variable=WindowsSdkVerBinPath;]$windows11sdk"
         }
         else {
-            Write-Error -Message "##[error]Can't find Windows SDK ($WIN11_SDK)" -ErrorAction Stop
+            Write-Error -Message "##[error]Can't find Windows SDK ($(WIN11_SDK))" -ErrorAction Stop
         }
 
       workingDirectory: $(Build.SourcesDirectory)
