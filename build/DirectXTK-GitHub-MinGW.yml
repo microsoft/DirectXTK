@@ -124,7 +124,7 @@ jobs:
       cmakeArgs: --build out
 
 - job: MINGW64_BUILD
-  displayName: 'Minimalist GNU for Windows (MinGW-W64)'
+  displayName: 'Minimalist GNU for Windows (MinGW-W64) BUILD_TESTING=ON'
   steps:
   - checkout: self
     clean: true
@@ -187,10 +187,13 @@ jobs:
     inputs:
       script: g++ --version
   - task: CmdLine@2
+    # Test suite for DirectX Tool Kit for DX11 needs DX12 headers for the simplemath test.
     displayName: VCPKG install headers
     inputs:
       script: |
         call vcpkg install directxmath
+        REM @if ERRORLEVEL 1 goto error
+        call vcpkg install directx-headers
         REM @if ERRORLEVEL 1 goto error
         call vcpkg install xaudio2redist
         REM @if ERRORLEVEL 1 goto error
