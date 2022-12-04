@@ -1,0 +1,152 @@
+schedules:
+- cron: "0 4 * * *"
+  displayName: 'Nightly build'
+  branches:
+    include:
+    - main
+
+resources:
+  repositories:
+  - repository: self
+    type: git
+    ref: refs/heads/main
+
+name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
+
+variables:
+  VS_GENERATOR: 'Visual Studio 17 2022'
+  XAUDIO2REDIST_DIR: $(xaudio2redist_DIR)
+  WIN10_SDK: '10.0.19041.0'
+  WIN11_SDK: '10.0.22000.0'
+
+pool:
+  vmImage: windows-2022
+
+jobs:
+- job: CMAKE_BUILD
+  displayName: CMake using VS Generator
+  steps:
+  - checkout: self
+    clean: true
+    fetchTags: false
+  - task: CMake@1
+    displayName: 'CMake (MSVC): Config x64'
+    inputs:
+      cwd: ''
+      cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -B out -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK) -DBUILD_XAUDIO_WIN8=ON -DBUILD_TOOLS=ON '
+  - task: CMake@1
+    displayName: 'CMake (MSVC): Build x64 Debug'
+    inputs:
+      cwd: ''
+      cmakeArgs: --build out -v --config Debug
+  - task: CMake@1
+    displayName: 'CMake (MSVC): Build x64 Release'
+    inputs:
+      cwd: ''
+      cmakeArgs: --build out -v --config RelWithDebInfo
+  - task: CMake@1
+    displayName: 'CMake (MSVC): Config x86'
+    inputs:
+      cwd: ''
+      cmakeArgs: '-G "$(VS_GENERATOR)" -A Win32 -B out2 -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK) -DBUILD_XAUDIO_WIN8=ON -DBUILD_TOOLS=ON '
+  - task: CMake@1
+    displayName: 'CMake (MSVC): Build x86 Debug'
+    inputs:
+      cwd: ''
+      cmakeArgs: --build out2 -v --config Debug
+  - task: CMake@1
+    displayName: 'CMake (MSVC): Build x86 Release'
+    inputs:
+      cwd: ''
+      cmakeArgs: --build out2 -v --config RelWithDebInfo
+  - task: CMake@1
+    displayName: 'CMake (MSVC): Config ARM64'
+    inputs:
+      cwd: ''
+      cmakeArgs: '-G "$(VS_GENERATOR)" -A ARM64 -B out3 -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK) -DBUILD_XAUDIO_WIN8=ON -DBUILD_TOOLS=ON '
+  - task: CMake@1
+    displayName: 'CMake (MSVC): Build ARM64 Debug'
+    inputs:
+      cwd: ''
+      cmakeArgs: --build out3 -v --config Debug
+  - task: CMake@1
+    displayName: 'CMake (MSVC): Build ARM64 Release'
+    inputs:
+      cwd: ''
+      cmakeArgs: --build out3 -v --config RelWithDebInfo
+  - task: CMake@1
+    displayName: 'CMake (UWP): Config x64'
+    inputs:
+      cwd: ''
+      cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -B out4 -DCMAKE_SYSTEM_NAME=WindowsStore -DCMAKE_SYSTEM_VERSION=10.0 '
+  - task: CMake@1
+    displayName: 'CMake (UWP): Build x64'
+    inputs:
+      cwd: ''
+      cmakeArgs: --build out4 -v
+  - task: CMake@1
+    displayName: 'CMake (UWP): Config ARM'
+    inputs:
+      cwd: ''
+      cmakeArgs: '-G "$(VS_GENERATOR)" -A ARM -B out5 -DCMAKE_SYSTEM_NAME=WindowsStore -DCMAKE_SYSTEM_VERSION=10.0 '
+  - task: CMake@1
+    displayName: 'CMake (UWP): Build ARM'
+    inputs:
+      cwd: ''
+      cmakeArgs: --build out5 -v
+  - task: CMake@1
+    displayName: 'CMake (ClangCl): Config x64'
+    inputs:
+      cwd: ''
+      cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -T clangcl -B out6 -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK) -DBUILD_XAUDIO_WIN8=ON -DBUILD_TOOLS=ON '
+  - task: CMake@1
+    displayName: 'CMake (ClangCl): Build x64 Debug'
+    inputs:
+      cwd: ''
+      cmakeArgs: --build out6 -v --config Debug
+  - task: CMake@1
+    displayName: 'CMake (ClangCl): Build x64 Release'
+    inputs:
+      cwd: ''
+      cmakeArgs: --build out6 -v --config RelWithDebInfo
+  - task: CMake@1
+    displayName: 'CMake (ClangCl): Config ARM64'
+    inputs:
+      cwd: ''
+      cmakeArgs: '-G "$(VS_GENERATOR)" -A ARM64 -T clangcl -B out7 -DCMAKE_SYSTEM_VERSION=$(WIN11_SDK) -DBUILD_XAUDIO_WIN8=ON -DBUILD_TOOLS=ON '
+  - task: CMake@1
+    displayName: 'CMake (ClangCl): Build ARM64'
+    inputs:
+      cwd: ''
+      cmakeArgs: --build out7 -v --config Debug
+  - task: CMake@1
+    displayName: 'CMake (Win10): Config'
+    inputs:
+      cwd: ''
+      cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -B out8 -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK) -DBUILD_XAUDIO_WIN10=ON -DBUILD_TOOLS=OFF '
+  - task: CMake@1
+    displayName: 'CMake (Win10): Build'
+    inputs:
+      cwd: ''
+      cmakeArgs: --build out8 -v
+  - task: NuGetToolInstaller@1
+    displayName: 'Use NuGet '
+    enabled: False
+  - task: NuGetCommand@2
+    displayName: Install Microsoft.XAudio2.Redist
+    enabled: False
+    inputs:
+      command: custom
+      arguments: install Microsoft.XAudio2.Redist -ExcludeVersion -OutputDirectory $(XAUDIO2REDIST_DIR)
+  - task: CMake@1
+    displayName: 'CMake (ClangCl Win7): Config'
+    enabled: False
+    inputs:
+      cwd: ''
+      cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -T clangcl -B out9 -DBUILD_XAUDIO_WIN7=ON -DBUILD_XAUDIO_WIN8=OFF -DBUILD_TOOLS=OFF -Dxaudio2redist_DIR=$(XAUDIO2REDIST_DIR)\Microsoft.XAudio2.Redist'
+  - task: CMake@1
+    displayName: 'CMake (Build Win7): Build'
+    enabled: False
+    inputs:
+      cwd: ''
+      cmakeArgs: --build out9 -v

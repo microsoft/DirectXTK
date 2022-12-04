@@ -1,0 +1,335 @@
+schedules:
+- cron: "0 2 * * 0"
+  displayName: 'Sunday night build'
+  branches:
+    include:
+    - main
+  always: true
+
+resources:
+  repositories:
+  - repository: self
+    type: git
+    ref: refs/heads/main
+
+name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
+
+variables:
+  EXTRACTED_FOLDER: $(ExtractedFolder)
+  WSDKEnableBWOI: true
+  URL_FEED: $(ADOFeedURL)
+
+pool:
+  vmImage: windows-2019
+
+jobs:
+- job: DESKTOP_BUILD
+  displayName: 'Win32 Desktop'
+  timeoutInMinutes: 120 
+  cancelTimeoutInMinutes: 1
+  steps:
+  - checkout: self
+    clean: true
+    fetchTags: false
+  - task: NuGetToolInstaller@1
+    displayName: 'Use NuGet'
+  - task: NuGetCommand@2
+    # We have to use a nuget.config to provide the feed for the 'nuget install' option.
+    displayName: NuGet set package source to ADO feed
+    inputs:
+      command: custom
+      arguments: sources add -Name xboxgdk-DirectXTK -Source $(URL_FEED) -ConfigFile NuGet.config
+  - task: PowerShell@2
+    displayName: Set nuget.config to single source
+    inputs:
+      targetType: inline
+      script:
+        - |
+        $file = '.\NuGet.Config'
+        $doc = [xml](Get-Content $file)
+        $newelement = $doc.CreateElement("clear")
+        $clearadd = $doc.configuration.packageSources.PrependChild($newelement)
+        $doc.OuterXml | Set-Content $file
+
+  - task: NuGetCommand@2
+    displayName: NuGet Install WSDK x64
+    inputs:
+      command: custom
+      arguments: install Microsoft.Windows.SDK.CPP.x64 -ExcludeVersion -OutputDirectory $(EXTRACTED_FOLDER)\SDK
+  - task: NuGetCommand@2
+    displayName: NuGet Install WSDK x86
+    inputs:
+      command: custom
+      arguments: install Microsoft.Windows.SDK.CPP.x86 -ExcludeVersion -OutputDirectory $(EXTRACTED_FOLDER)\SDK
+  - task: NuGetCommand@2
+    displayName: NuGet Install WSDK arm64
+    inputs:
+      command: custom
+      arguments: install Microsoft.Windows.SDK.CPP.arm64 -ExcludeVersion -OutputDirectory $(EXTRACTED_FOLDER)\SDK
+  - task: CopyFiles@2
+    displayName: Set up Directory.Build.props
+    inputs:
+      SourceFolder: build
+      Contents: 'Directory.Build.props'
+      TargetFolder: $(Build.SourcesDirectory)
+  - task: NuGetCommand@2
+    displayName: NuGet restore
+    inputs:
+      solution: DirectXTK_Desktop_2019_Win7.sln
+      selectOrConfig: config
+      nugetConfigPath: NuGet.Config
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Desktop_2019.sln 32dbg
+    inputs:
+      solution: DirectXTK_Desktop_2019.sln
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x86
+      configuration: Debug
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Desktop_2019.sln 32rel
+    inputs:
+      solution: DirectXTK_Desktop_2019.sln
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x86
+      configuration: Release
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Desktop_2019.sln 64dbg
+    inputs:
+      solution: DirectXTK_Desktop_2019.sln
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x64
+      configuration: Debug
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Desktop_2019.sln 64rel
+    inputs:
+      solution: DirectXTK_Desktop_2019.sln
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x64
+      configuration: Release
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Desktop_2019_Win7.sln 32dbg
+    inputs:
+      solution: DirectXTK_Desktop_2019_Win7.sln
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x86
+      configuration: Debug
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Desktop_2019_Win7.sln 32rel
+    inputs:
+      solution: DirectXTK_Desktop_2019_Win7.sln
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x86
+      configuration: Release
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Desktop_2019.sln 64dbg
+    inputs:
+      solution: DirectXTK_Desktop_2019_Win7.sln
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x64
+      configuration: Debug
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Desktop_2019_Win7.sln 64rel
+    inputs:
+      solution: DirectXTK_Desktop_2019_Win7.sln
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x64
+      configuration: Release
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Desktop_2019.sln managed dbg
+    inputs:
+      solution: DirectXTK_Desktop_2019.sln
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: Mixed Platforms
+      configuration: Debug
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Desktop_2019.sln managed rel
+    inputs:
+      solution: DirectXTK_Desktop_2019.sln
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: Mixed Platforms
+      configuration: Release
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Desktop_2019_Win10.sln 32dbg
+    inputs:
+      solution: DirectXTK_Desktop_2019_Win10.sln
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x86
+      configuration: Debug
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Desktop_2019_Win10.sln 32rel
+    inputs:
+      solution: DirectXTK_Desktop_2019_Win10.sln
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x86
+      configuration: Release
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Desktop_2019_Win10.sln 64dbg
+    inputs:
+      solution: DirectXTK_Desktop_2019_Win10.sln
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x64
+      configuration: Debug
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Desktop_2019_Win10.sln 64rel
+    inputs:
+      solution: DirectXTK_Desktop_2019_Win10.sln
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x64
+      configuration: Release
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Desktop_2019_Win10.sln arm64dbg
+    inputs:
+      solution: DirectXTK_Desktop_2019_Win10.sln
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: ARM64
+      configuration: Debug
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Desktop_2019_Win10.sln arm64rel
+    inputs:
+      solution: DirectXTK_Desktop_2019_Win10.sln
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: ARM64
+      configuration: Release
+
+- job: UWP_BUILD
+  displayName: 'Universal Windows Platform (UWP)'
+  timeoutInMinutes: 120
+  cancelTimeoutInMinutes: 1
+  steps:
+  - checkout: self
+    clean: true
+    fetchTags: false
+  - task: NuGetToolInstaller@1
+    displayName: 'Use NuGet'
+  - task: NuGetCommand@2
+    displayName: NuGet set package source to ADO feed
+    inputs:
+      command: custom
+      arguments: sources add -Name xboxgdk-DirectXTK -Source $(URL_FEED) -ConfigFile NuGet.config
+  - task: PowerShell@2
+    displayName: Set nuget.config to single source
+    inputs:
+      targetType: inline
+      script:
+        - |
+        $file = '.\NuGet.Config'
+        $doc = [xml](Get-Content $file)
+        $newelement = $doc.CreateElement("clear")
+        $clearadd = $doc.configuration.packageSources.PrependChild($newelement)
+        $doc.OuterXml | Set-Content $file
+
+  - task: NuGetCommand@2
+    displayName: NuGet Install WSDK x64
+    inputs:
+      command: custom
+      arguments: install Microsoft.Windows.SDK.CPP.x64 -ExcludeVersion -OutputDirectory $(EXTRACTED_FOLDER)\SDK
+  - task: NuGetCommand@2
+    displayName: NuGet Install WSDK x86
+    inputs:
+      command: custom
+      arguments: install Microsoft.Windows.SDK.CPP.x86 -ExcludeVersion -OutputDirectory $(EXTRACTED_FOLDER)\SDK
+  - task: CopyFiles@2
+    displayName: Set up Directory.Build.props
+    inputs:
+      SourceFolder: build
+      Contents: 'Directory.Build.props'
+      TargetFolder: $(Build.SourcesDirectory)
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Windows10_2019.sln 32dbg
+    inputs:
+      solution: DirectXTK_Windows10_2019.sln
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x86
+      configuration: Debug
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Windows10_2019.sln 32rel
+    enabled: False
+    inputs:
+      solution: DirectXTK_Windows10_2019.sln
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x86
+      configuration: Release
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Windows10_2019.sln 64dbg
+    inputs:
+      solution: DirectXTK_Windows10_2019.sln
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x64
+      configuration: Debug
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Windows10_2019.sln 64rel
+    inputs:
+      solution: DirectXTK_Windows10_2019.sln
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: x64
+      configuration: Release
+
+- job: UWP_BUILD_ARM_ARM64
+  displayName: 'Universal Windows Platform (UWP) for ARM/ARM64'
+  steps:
+  - checkout: self
+    clean: true
+    fetchTags: false
+  - task: NuGetToolInstaller@1
+    displayName: Use NuGet
+  - task: NuGetCommand@2
+    displayName: NuGet set package source to ADO feed
+    inputs:
+      command: custom
+      arguments: sources add -Name xboxgdk-DirectXTK -Source $(URL_FEED) -ConfigFile NuGet.config
+  - task: PowerShell@2
+    displayName: Set nuget.config to single source
+    inputs:
+      targetType: inline
+      script:
+        - |
+        $file = '.\NuGet.Config'
+        $doc = [xml](Get-Content $file)
+        $newelement = $doc.CreateElement("clear")
+        $clearadd = $doc.configuration.packageSources.PrependChild($newelement)
+        $doc.OuterXml | Set-Content $file
+
+  - task: NuGetCommand@2
+    displayName: NuGet Install WSDK arm
+    inputs:
+      command: custom
+      arguments: install Microsoft.Windows.SDK.CPP.arm -ExcludeVersion -OutputDirectory $(EXTRACTED_FOLDER)\SDK
+  - task: NuGetCommand@2
+    displayName: NuGet Install WSDK arm64
+    inputs:
+      command: custom
+      arguments: install Microsoft.Windows.SDK.CPP.arm64 -ExcludeVersion -OutputDirectory $(EXTRACTED_FOLDER)\SDK
+  - task: CopyFiles@2
+    displayName: Set up Directory.Build.props
+    inputs:
+      SourceFolder: build
+      Contents: 'Directory.Build.props'
+      TargetFolder: $(Build.SourcesDirectory)
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Windows10_2019.sln armdbg
+    inputs:
+      solution: DirectXTK_Windows10_2019.sln
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: ARM
+      configuration: Debug
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Windows10_2019.sln armrel
+    inputs:
+      solution: DirectXTK_Windows10_2019.sln
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: ARM
+      configuration: Release
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Windows10_2019.sln arm64dbg
+    inputs:
+      solution: DirectXTK_Windows10_2019.sln
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: ARM64
+      configuration: Debug
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Windows10_2019.sln arm64rel
+    inputs:
+      solution: DirectXTK_Windows10_2019.sln
+      msbuildArgs: /p:PreferredToolArchitecture=x64
+      platform: ARM64
+      configuration: Release
