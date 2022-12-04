@@ -1,3 +1,10 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# http://go.microsoft.com/fwlink/?LinkId=248929
+
+# Builds the library and test suite using CMake.
+
 schedules:
 - cron: "0 4 * * *"
   displayName: 'Nightly build'

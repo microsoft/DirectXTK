@@ -1,3 +1,10 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# http://go.microsoft.com/fwlink/?LinkId=248929
+
+# Builds the library using the latest prerelease of the Windows SDK from nuget.org.
+
 schedules:
 - cron: "0 2 * * 6"
   displayName: 'Saturday night build'
