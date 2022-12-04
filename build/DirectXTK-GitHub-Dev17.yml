@@ -50,6 +50,7 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x86
       configuration: Debug
+      msbuildArchitecture: x64
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2022.sln 32rel
     inputs:
@@ -57,6 +58,7 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x86
       configuration: Release
+      msbuildArchitecture: x64
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2022.sln 64dbg
     inputs:
@@ -64,6 +66,7 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Debug
+      msbuildArchitecture: x64
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2022.sln 64rel
     inputs:
@@ -71,6 +74,7 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Release
+      msbuildArchitecture: x64
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2022_Win7.sln 32dbg
     inputs:
@@ -78,6 +82,7 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x86
       configuration: Debug
+      msbuildArchitecture: x64
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2022_Win7.sln 32rel
     inputs:
@@ -85,6 +90,7 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x86
       configuration: Release
+      msbuildArchitecture: x64
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2022_Win7.sln 64dbg
     inputs:
@@ -92,6 +98,7 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Debug
+      msbuildArchitecture: x64
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2022_Win7.sln 64rel
     inputs:
@@ -99,6 +106,7 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Release
+      msbuildArchitecture: x64
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2022.sln managed dbg
     inputs:
@@ -106,6 +114,7 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: Mixed Platforms
       configuration: Debug
+      msbuildArchitecture: x64
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2022.sln managed rel
     inputs:
@@ -113,6 +122,7 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: Mixed Platforms
       configuration: Release
+      msbuildArchitecture: x64
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2022_Win10.sln 32dbg
     inputs:
@@ -120,6 +130,7 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x86
       configuration: Debug
+      msbuildArchitecture: x64
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2022_Win10.sln 32rel
     inputs:
@@ -127,6 +138,7 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x86
       configuration: Release
+      msbuildArchitecture: x64
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2022_Win10.sln 64dbg
     inputs:
@@ -134,6 +146,7 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Debug
+      msbuildArchitecture: x64
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2022_Win10.sln 64rel
     inputs:
@@ -141,6 +154,7 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Release
+      msbuildArchitecture: x64
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2022_Win10.sln arm64dbg
     inputs:
@@ -148,6 +162,7 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: ARM64
       configuration: Debug
+      msbuildArchitecture: x64
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2022_Win10.sln arm64rel
     inputs:
@@ -155,6 +170,7 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: ARM64
       configuration: Release
+      msbuildArchitecture: x64
 
 - job: UWP_BUILD
   displayName: 'Universal Windows Platform (UWP)'
@@ -171,6 +187,7 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x86
       configuration: Debug
+      msbuildArchitecture: x64
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Windows10_2022.sln 32rel
     inputs:
@@ -178,6 +195,7 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x86
       configuration: Release
+      msbuildArchitecture: x64
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Windows10_2022.sln 64dbg
     inputs:
@@ -185,6 +203,7 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Debug
+      msbuildArchitecture: x64
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Windows10_2022.sln 64rel
     inputs:
@@ -192,6 +211,7 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Release
+      msbuildArchitecture: x64
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Windows10_2022.sln armdbg
     inputs:
@@ -199,6 +219,7 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: ARM
       configuration: Debug
+      msbuildArchitecture: x64
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Windows10_2022.sln armrel
     inputs:
@@ -206,6 +227,7 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: ARM
       configuration: Release
+      msbuildArchitecture: x64
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Windows10_2022.sln arm64dbg
     inputs:
@@ -213,6 +235,7 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: ARM64
       configuration: Debug
+      msbuildArchitecture: x64
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Windows10_2022.sln arm64rel
     inputs:
@@ -220,3 +243,4 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: ARM64
       configuration: Release
+      msbuildArchitecture: x64
