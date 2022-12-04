@@ -3,7 +3,9 @@
 #
 # http://go.microsoft.com/fwlink/?LinkId=248929
 
-# Builds the library and test suite using the Microsoft GDK compiler.
+# Builds the library and test suite using the Microsoft GDK.
+
+# NOTE: We use x64 MSBuild for the GDK as the NuGets don't include 32-bit support to avoid cross-arch dependencies.
 
 schedules:
 - cron: "30 5 * * *"
@@ -44,12 +46,12 @@ jobs:
     displayName: 'Use NuGet'
   - task: NuGetCommand@2
     # We have to use a nuget.config to provide the feed for the 'nuget install' option.
-    displayName: NuGet set package source to ADO feed
+    displayName: 'NuGet set package source to ADO feed'
     inputs:
       command: custom
       arguments: sources add -Name xboxgdk -Source $(URL_FEED) -ConfigFile NuGet.config
   - task: PowerShell@2
-    displayName: Set nuget.config to single source
+    displayName: 'Set nuget.config to single source'
     inputs:
       targetType: inline
       script: |
@@ -110,12 +112,12 @@ jobs:
   - task: NuGetToolInstaller@1
     displayName: 'Use NuGet'
   - task: NuGetCommand@2
-    displayName: NuGet set package source to ADO feed
+    displayName: 'NuGet set package source to ADO feed'
     inputs:
       command: custom
       arguments: sources add -Name xboxgdk -Source $(URL_FEED) -ConfigFile NuGet.config
   - task: PowerShell@2
-    displayName: Set nuget.config to single source
+    displayName: 'Set nuget.config to single source'
     inputs:
       targetType: inline
       script: |

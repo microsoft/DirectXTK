@@ -17,6 +17,8 @@ resources:
   - repository: self
     type: git
     ref: refs/heads/main
+    trigger:
+    - main
 
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
