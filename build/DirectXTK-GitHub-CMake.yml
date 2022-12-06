@@ -17,7 +17,13 @@ resources:
   - repository: self
     type: git
     ref: refs/heads/main
-    trigger: none
+    trigger:
+      branches:
+        include:
+        - main
+      paths:
+        include:
+        - CMakeLists.txt
 
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
