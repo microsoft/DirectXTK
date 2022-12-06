@@ -58,7 +58,11 @@ These components are designed to work without requiring any content from the leg
 
   +  Command line tool for building XACT-style wave banks for use with DirectXTK for Audio's WaveBank class
 
-# Documentation
+* ``build\``
+
+  + Contains YAML files for the build pipelines along with some miscellaneous build files and scripts.
+
+## Documentation
 
 Documentation is available on the [GitHub wiki](https://github.com/Microsoft/DirectXTK/wiki).
 

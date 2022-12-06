@@ -138,7 +138,7 @@ jobs:
       cwd: ''
       cmakeArgs: --build out8 -v
   - task: NuGetToolInstaller@1
-    displayName: 'Use NuGet '
+    displayName: 'Use NuGet'
     enabled: False
   - task: NuGetCommand@2
     displayName: Install Microsoft.XAudio2.Redist
@@ -158,3 +158,33 @@ jobs:
     inputs:
       cwd: ''
       cmakeArgs: --build out9 -v
+  - task: CMake@1
+    displayName: 'CMake (MSVC Spectre): Config x64'
+    inputs:
+      cwd: ''
+      cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -B out10 -DENABLE_SPECTRE_MITIGATION=ON -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK) -DBUILD_XAUDIO_WIN8=ON -DBUILD_TOOLS=ON'
+  - task: CMake@1
+    displayName: 'CMake (MSVC Spectre): Build x64 Debug'
+    inputs:
+      cwd: ''
+      cmakeArgs: --build out10 -v --config Debug
+  - task: CMake@1
+    displayName: 'CMake (MSVC Spectre): Build x64 Release'
+    inputs:
+      cwd: ''
+      cmakeArgs: --build out10 -v --config RelWithDebInfo
+  - task: CMake@1
+    displayName: 'CMake (MSVC Spectre): Config ARM64'
+    inputs:
+      cwd: ''
+      cmakeArgs: '-G "$(VS_GENERATOR)" -A ARM64 -B out11 -DENABLE_SPECTRE_MITIGATION=ON -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK) -DBUILD_XAUDIO_WIN8=ON -DBUILD_TOOLS=ON'
+  - task: CMake@1
+    displayName: 'CMake (MSVC Spectre): Build ARM64 Debug'
+    inputs:
+      cwd: ''
+      cmakeArgs: --build out11 -v --config Debug
+  - task: CMake@1
+    displayName: 'CMake (MSVC Spectre): Build ARM64 Release'
+    inputs:
+      cwd: ''
+      cmakeArgs: --build out11 -v --config RelWithDebInfo

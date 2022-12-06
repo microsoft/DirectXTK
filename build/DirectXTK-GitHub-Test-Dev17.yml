@@ -162,7 +162,7 @@ jobs:
       workingDirectory: $(Build.SourcesDirectory)
       failOnStderr: true
   - task: NuGetToolInstaller@1
-    displayName: 'Use NuGet '
+    displayName: 'Use NuGet'
   - task: NuGetCommand@2
     displayName: NuGet restore
     inputs:
