@@ -22,6 +22,9 @@ pool:
     name: GDKDevToolsMSCodeHubPool
     demands: DotNetFramework
 
+variables:
+  ESRP_GUID: $(ESRPServiceGUID)
+
 jobs:
 - job: SDL_SCAN
   displayName: 'Source scans'
@@ -29,6 +32,7 @@ jobs:
   steps:
   - checkout: self
     clean: true
+    fetchTags: false
   - task: NodeTool@0
     displayName: Use Node 14.x
     inputs:
@@ -53,6 +57,7 @@ jobs:
   steps:
   - checkout: self
     clean: true
+    fetchTags: false
   - task: NodeTool@0
     displayName: 'NPM install'
     inputs:
@@ -211,7 +216,7 @@ jobs:
   - task: EsrpCodeSigning@1
     displayName: 'ESRP CodeSigning - EXE'
     inputs:
-      ConnectedServiceName: f0ff3588-df9f-4763-9fd8-9004aa6a6fdb
+      ConnectedServiceName: $(ESRP_GUID)
       FolderPath: $(Build.ArtifactStagingDirectory)
       Pattern: '*.exe'
       signConfigType: inlineSignParams
@@ -250,7 +255,7 @@ jobs:
   - task: EsrpCodeSigning@1
     displayName: 'ESRP CodeSigning - NuGet'
     inputs:
-      ConnectedServiceName: f0ff3588-df9f-4763-9fd8-9004aa6a6fdb
+      ConnectedServiceName: $(ESRP_GUID)
       FolderPath: $(Build.ArtifactStagingDirectory)
       Pattern: '*.nupkg'
       signConfigType: inlineSignParams
@@ -277,7 +282,6 @@ jobs:
     displayName: 'Publish Artifact: Drop'
     inputs:
       ArtifactName: Drop
-      TargetPath: $(XES_DFSDROP)
 
 - job: BUILD_UWP
   displayName: 'Build UWP nupkg'
@@ -285,6 +289,7 @@ jobs:
   steps:
   - checkout: self
     clean: true
+    fetchTags: false
   - task: NodeTool@0
     displayName: 'NPM install'
     inputs:
@@ -382,7 +387,7 @@ jobs:
   - task: EsrpCodeSigning@1
     displayName: 'ESRP CodeSigning'
     inputs:
-      ConnectedServiceName: f0ff3588-df9f-4763-9fd8-9004aa6a6fdb
+      ConnectedServiceName: $(ESRP_GUID)
       FolderPath: $(Build.ArtifactStagingDirectory)
       Pattern: '*.nupkg'
       signConfigType: inlineSignParams
@@ -411,4 +416,3 @@ jobs:
     displayName: 'Publish Artifact: Drop'
     inputs:
       ArtifactName: Drop
-      TargetPath: $(XES_DFSDROP)
