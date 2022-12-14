@@ -357,7 +357,7 @@ elseif(MINGW)
     endforeach()
 elseif( CMAKE_CXX_COMPILER_ID MATCHES "MSVC" )
     foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
-      target_compile_options(${t} PRIVATE /sdl /permissive- /JMC- /Zc:__cplusplus)
+      target_compile_options(${t} PRIVATE /sdl /permissive- /JMC- /Zc:__cplusplus /Zc:inline)
     endforeach()
 
     if(ENABLE_CODE_ANALYSIS)
