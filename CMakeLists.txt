@@ -384,6 +384,12 @@ elseif( CMAKE_CXX_COMPILER_ID MATCHES "MSVC" )
         endforeach()
     endif()
 
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.28)
+        foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+          target_compile_options(${t} PRIVATE /Zc:lambda)
+        endforeach()
+    endif()
+
     set(WarningsEXE "/wd4365" "/wd4514" "/wd4625" "/wd4626" "/wd4627" "/wd4710" "/wd4820" "/wd5026" "/wd5027" "/wd5039" "/wd5045")
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.34)
         list(APPEND WarningsEXE "/wd5262" "/wd5264")
