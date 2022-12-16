@@ -6,6 +6,16 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### December 15, 2022
+* GamePad, Keyboard, and Mouse headers have ``USING_XINPUT``, ``USING_GAMEINPUT``, ``USING_WINDOWS_GAMING_INPUT`` defines
+* Updates for *GameInputCreate* failure handling on PC
+* *DirectX Tool Kit for Audio* updated for XAudio2Redist 1.2.10
+* CMake project updated to require 3.20 or later
+* CMake and MSBuild project updates
+* Minor MinGW code changes
+* Added Azure Dev Ops Pipeline YAML files
+* Test suite updated with CTest support
+
 ### October 17, 2022
 * Additional methods for *DirectX Tool Kit for Audio* emitter and listener for cone and falloff curves
 * Added use of C++11 inline namespaces to make it possible to link both DX11 and DX12 versions at once
