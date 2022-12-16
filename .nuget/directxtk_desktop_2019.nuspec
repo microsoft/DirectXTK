@@ -30,7 +30,7 @@ SpriteBatch - simple &amp; efficient 2D sprite rendering
 SpriteFont - bitmap based text rendering
 VertexTypes - structures for commonly used vertex data formats
 WICTextureLoader - WIC-based image file texture loader</description>
-        <releaseNotes>Matches the October 17, 2022 release on GitHub.
+        <releaseNotes>Matches the December 15, 2022 release on GitHub.
 
 DirectX Tool Kit for Audio in this package uses XAudio2Redist NuGet package to support Windows 7 or later.</releaseNotes>
         <projectUrl>http://go.microsoft.com/fwlink/?LinkId=248929</projectUrl>
@@ -42,7 +42,7 @@ DirectX Tool Kit for Audio in this package uses XAudio2Redist NuGet package to s
         <copyright>&#169; Microsoft Corporation. All rights reserved.</copyright>
         <tags>DirectX DirectXTK native nativepackage</tags>
         <dependencies>
-            <dependency id="Microsoft.XAudio2.Redist" version="1.2.9" />
+            <dependency id="Microsoft.XAudio2.Redist" version="1.2.10" />
         </dependencies>
     </metadata>
 

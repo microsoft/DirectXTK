@@ -149,10 +149,10 @@ namespace DirectX
     }
     #endif
 
+#if !defined(NO_D3D11_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
     template<UINT TNameLength>
     inline void SetDebugObjectName(_In_ ID3D11DeviceChild* resource, _In_z_ const wchar_t(&name)[TNameLength])
     {
-    #if !defined(NO_D3D11_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
     #if defined(_XBOX_ONE) && defined(_TITLE)
         resource->SetName(name);
     #else
@@ -163,11 +163,13 @@ namespace DirectX
             resource->SetPrivateData(WKPDID_D3DDebugObjectName, TNameLength - 1, aname);
         }
     #endif
-    #else
-        UNREFERENCED_PARAMETER(resource);
-        UNREFERENCED_PARAMETER(name);
-    #endif
     }
+#else
+    template<UINT TNameLength>
+    inline void SetDebugObjectName(_In_ ID3D11DeviceChild*, _In_z_ const wchar_t(&)[TNameLength])
+    {
+    }
+#endif
 
     inline namespace DX11
     {

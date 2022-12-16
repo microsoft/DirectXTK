@@ -22,7 +22,7 @@ resources:
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
 pool:
-    vmImage: ubuntu-20.04
+  vmImage: ubuntu-20.04
 
 variables:
   GITHUB_PAT: $(GITHUBPUBLICTOKEN)

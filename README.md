@@ -6,11 +6,11 @@ http://go.microsoft.com/fwlink/?LinkId=248929
 
 Copyright (c) Microsoft Corporation.
 
-**October 17, 2022**
+**December 15, 2022**
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for writing Direct3D 11 C++ code for Universal Windows Platform (UWP) apps for Windows 11, Windows 10, Xbox One, and Win32 desktop applications for Windows 7 Service Pack 1 or later.
 
-This code is designed to build with Visual Studio 2019 (16.11), Visual Studio 2022, or clang for Windows v11 or later. Use of the Windows 10 May 2020 Update SDK ([19041](https://walbourn.github.io/windows-10-may-2020-update-sdk/)) or later is required.
+This code is designed to build with Visual Studio 2019 (16.11), Visual Studio 2022, clang for Windows v12 or later, or MinGW 12.2. Use of the Windows 10 May 2020 Update SDK ([19041](https://walbourn.github.io/windows-10-may-2020-update-sdk/)) or later is required for Visual Studio.
 
 These components are designed to work without requiring any content from the legacy DirectX SDK. For details, see [Where is the DirectX SDK?](https://aka.ms/dxsdk).
 
@@ -58,7 +58,11 @@ These components are designed to work without requiring any content from the leg
 
   +  Command line tool for building XACT-style wave banks for use with DirectXTK for Audio's WaveBank class
 
-# Documentation
+* ``build\``
+
+  + Contains YAML files for the build pipelines along with some miscellaneous build files and scripts.
+
+## Documentation
 
 Documentation is available on the [GitHub wiki](https://github.com/Microsoft/DirectXTK/wiki).
 

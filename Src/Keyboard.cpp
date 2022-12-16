@@ -49,7 +49,7 @@ namespace
 
 
 #pragma region Implementations
-#if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)) || (defined(_GAMING_DESKTOP) && (_GRDK_EDITION >= 220600))
+#ifdef USING_GAMEINPUT
 
 #include <GameInput.h>
 
@@ -73,16 +73,30 @@ public:
 
         s_keyboard = this;
 
-        ThrowIfFailed(GameInputCreate(mGameInput.GetAddressOf()));
-
-        ThrowIfFailed(mGameInput->RegisterDeviceCallback(
-            nullptr,
-            GameInputKindKeyboard,
-            GameInputDeviceConnected,
-            GameInputBlockingEnumeration,
-            this,
-            OnGameInputDevice,
-            &mDeviceToken));
+        HRESULT hr = GameInputCreate(mGameInput.GetAddressOf());
+        if (SUCCEEDED(hr))
+        {
+            ThrowIfFailed(mGameInput->RegisterDeviceCallback(
+                nullptr,
+                GameInputKindKeyboard,
+                GameInputDeviceConnected,
+                GameInputBlockingEnumeration,
+                this,
+                OnGameInputDevice,
+                &mDeviceToken));
+        }
+        else
+        {
+            DebugTrace("ERROR: GameInputCreate [keyboard] failed with %08X\n", static_cast<unsigned int>(hr));
+        #ifdef _GAMING_XBOX
+            ThrowIfFailed(hr);
+        #elif defined(_DEBUG)
+            DebugTrace(
+                "\t**** Check that the 'GameInput Service' is running on this system.     ****\n"
+                "\t**** NOTE: No keys will be returned and IsConnected will return false. ****\n"
+            );
+        #endif
+        }
     }
 
     Impl(Impl&&) = default;
@@ -112,6 +126,9 @@ public:
     void GetState(State& state) const
     {
         state = {};
+
+        if (!mGameInput)
+            return;
 
         ComPtr<IGameInputReading> reading;
         if (SUCCEEDED(mGameInput->GetCurrentReading(GameInputKindKeyboard, nullptr, reading.GetAddressOf())))

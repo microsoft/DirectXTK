@@ -25,7 +25,7 @@ pool:
   vmImage: windows-2022
 
 variables:
-  # VCPKG_ROOT needs to be set in the environment as well.
+  VCPKG_CMAKE_DIR: '$(VCPKG_ROOT)/scripts/buildsystems/vcpkg.cmake'
   GITHUB_PAT: $(GITHUBPUBLICTOKEN)
   WIN11_SDK: '10.0.22000.0'
   URL_MINGW32: https://github.com/brechtsanders/winlibs_mingw/releases/download/12.2.0-14.0.6-10.0.0-ucrt-r2/winlibs-i686-posix-dwarf-gcc-12.2.0-llvm-14.0.6-mingw-w64ucrt-10.0.0-r2.zip
@@ -41,12 +41,10 @@ jobs:
     clean: true
     fetchTags: false
   - task: CmdLine@2
+    # We can use the preinstalled vcpkg instead of the latest when MS Hosted updates their vcpkg to the newer DirectX-Headers
     displayName: Fetch VCPKG
     inputs:
-      script: |
-        REM can remove this when MS Hosted updates their vcpkg to the newer DirectX-Headers
-        git clone --quiet https://%GITHUB_PAT%@github.com/microsoft/vcpkg.git
-
+      script: git clone --quiet https://%GITHUB_PAT%@github.com/microsoft/vcpkg.git
       workingDirectory: $(Build.SourcesDirectory)
   - task: CmdLine@2
     displayName: VCPKG Bootstrap
@@ -58,6 +56,7 @@ jobs:
 
       workingDirectory: $(Build.SourcesDirectory)\vcpkg
   - task: PowerShell@2
+    # We install GCC 12.2 as the MS Hosted only offers 11.2
     displayName: Install MinGW32
     inputs:
       targetType: inline
@@ -97,6 +96,7 @@ jobs:
       filename: Src/Shaders/CompileShaders.cmd
       workingFolder: $(Build.SourcesDirectory)\Src\Shaders
   - task: CmdLine@2
+    # The error checks are commented out due to a bug with vcpkg not returning 0 on success.
     displayName: VCPKG install headers
     inputs:
       script: |
@@ -109,31 +109,22 @@ jobs:
         exit /b 0
         :error
         @echo --- ERROR: VCPKG FAILED ---
-        call vcpkg install directxmath
-        REM @if ERRORLEVEL 1 goto error
-        call vcpkg install directx-headers
-        REM @if ERRORLEVEL 1 goto error
-        :finish
-        @echo --- VCPKG COMPLETE ---
-        exit /b 0
-        :error
-        @echo --- ERROR: VCPKG FAILED ---
         exit /b 1
 
       workingDirectory: $(Build.SourcesDirectory)\vcpkg
   - task: CMake@1
     displayName: CMake (MinGW32)
     inputs:
-      cwd: ''
-      cmakeArgs: -B out -DCMAKE_BUILD_TYPE="Debug" -DDIRECTX_ARCH=x86 -DCMAKE_TOOLCHAIN_FILE="$(Build.SourcesDirectory)/vcpkg/scripts/buildsystems/vcpkg.cmake" -DCMAKE_CXX_COMPILER="g++.exe" -G "MinGW Makefiles" -DVCPKG_TARGET_TRIPLET=x86-mingw-static -DUSE_PREBUILT_SHADERS=ON -DCOMPILED_SHADERS=$(Build.SourcesDirectory)\Src\Shaders\Compiled -DBUILD_XAUDIO_WIN7=ON
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: -B out -DCMAKE_BUILD_TYPE="Debug" -DDIRECTX_ARCH=x86 -DCMAKE_TOOLCHAIN_FILE="$(VCPKG_CMAKE_DIR)" -DCMAKE_CXX_COMPILER="g++.exe" -G "MinGW Makefiles" -DVCPKG_TARGET_TRIPLET=x86-mingw-static -DUSE_PREBUILT_SHADERS=ON -DCOMPILED_SHADERS=$(Build.SourcesDirectory)\Src\Shaders\Compiled -DBUILD_XAUDIO_WIN7=ON
   - task: CMake@1
     displayName: CMake (MinGW32) Build
     inputs:
-      cwd: ''
+      cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --build out
 
 - job: MINGW64_BUILD
-  displayName: 'Minimalist GNU for Windows (MinGW-W64)'
+  displayName: 'Minimalist GNU for Windows (MinGW-W64) BUILD_TESTING=ON'
   steps:
   - checkout: self
     clean: true
@@ -141,10 +132,7 @@ jobs:
   - task: CmdLine@2
     displayName: Fetch VCPKG
     inputs:
-      script: |
-        REM can remove this when MS Hosted updates their vcpkg to the newer DirectX-Headers
-        git clone --quiet https://%GITHUB_PAT%@github.com/microsoft/vcpkg.git
-
+      script: git clone --quiet https://%GITHUB_PAT%@github.com/microsoft/vcpkg.git
       workingDirectory: $(Build.SourcesDirectory)
   - task: CmdLine@2
     displayName: Fetch Tests
@@ -199,6 +187,7 @@ jobs:
     inputs:
       script: g++ --version
   - task: CmdLine@2
+    # Test suite for DirectX Tool Kit for DX11 needs DX12 headers for the simplemath test.
     displayName: VCPKG install headers
     inputs:
       script: |
@@ -213,25 +202,17 @@ jobs:
         exit /b 0
         :error
         @echo --- ERROR: VCPKG FAILED ---
-        call vcpkg install directxmath
-        REM @if ERRORLEVEL 1 goto error
-        call vcpkg install directx-headers
-        REM @if ERRORLEVEL 1 goto error
-        :finish
-        @echo --- VCPKG COMPLETE ---
-        exit /b 0
-        :error
-        @echo --- ERROR: VCPKG FAILED ---
         exit /b 1
 
       workingDirectory: $(Build.SourcesDirectory)\vcpkg
   - task: CMake@1
+    # We are building with audio off until the GUID+MinGW linker issues are fixed in the xaudio2redist port.
     displayName: CMake (MinGW-W64)
     inputs:
-      cwd: ''
-      cmakeArgs: -B out -DCMAKE_BUILD_TYPE="Debug" -DDIRECTX_ARCH=x64 -DCMAKE_TOOLCHAIN_FILE="$(Build.SourcesDirectory)/vcpkg/scripts/buildsystems/vcpkg.cmake" -DCMAKE_CXX_COMPILER="g++.exe" -G "MinGW Makefiles" -DVCPKG_TARGET_TRIPLET=x64-mingw-static -DUSE_PREBUILT_SHADERS=ON -DCOMPILED_SHADERS=$(Build.SourcesDirectory)\Src\Shaders\Compiled -DBUILD_XAUDIO_WIN7=OFF
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: -B out -DCMAKE_BUILD_TYPE="Debug" -DDIRECTX_ARCH=x64 -DCMAKE_TOOLCHAIN_FILE="$(VCPKG_CMAKE_DIR)" -DCMAKE_CXX_COMPILER="g++.exe" -G "MinGW Makefiles" -DVCPKG_TARGET_TRIPLET=x64-mingw-static -DUSE_PREBUILT_SHADERS=ON -DCOMPILED_SHADERS=$(Build.SourcesDirectory)\Src\Shaders\Compiled -DBUILD_XAUDIO_WIN7=OFF
   - task: CMake@1
     displayName: CMake (MinGW-W64) Build
     inputs:
-      cwd: ''
+      cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --build out

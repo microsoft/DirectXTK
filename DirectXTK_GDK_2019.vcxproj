@@ -78,7 +78,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Gaming.Desktop.x64'">
     <LibraryPath>$(Console_SdkLibPath);$(LibraryPath)</LibraryPath>
     <IncludePath>$(Console_SdkIncludeRoot);$(IncludePath)</IncludePath>
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <OutDir>Bin\GDK_2019\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>Bin\GDK_2019\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>DirectXTK</TargetName>

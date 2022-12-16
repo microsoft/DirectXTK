@@ -106,16 +106,29 @@ public:
 
         s_gamePad = this;
 
-        ThrowIfFailed(GameInputCreate(mGameInput.GetAddressOf()));
-
-        ThrowIfFailed(mGameInput->RegisterDeviceCallback(
-            nullptr,
-            GameInputKindGamepad,
-            GameInputDeviceConnected,
-            GameInputBlockingEnumeration,
-            this,
-            OnGameInputDevice,
-            &mDeviceToken));
+        HRESULT hr = GameInputCreate(mGameInput.GetAddressOf());
+        if (SUCCEEDED(hr))
+        {
+            ThrowIfFailed(mGameInput->RegisterDeviceCallback(
+                nullptr,
+                GameInputKindGamepad,
+                GameInputDeviceConnected,
+                GameInputBlockingEnumeration,
+                this,
+                OnGameInputDevice,
+                &mDeviceToken));
+        }
+        else
+        {
+            DebugTrace("ERROR: GameInputCreate [gamepad] failed with %08X\n", static_cast<unsigned int>(hr));
+        #ifdef _GAMING_XBOX
+            ThrowIfFailed(hr);
+        #elif defined(_DEBUG)
+            DebugTrace(
+                "\t**** Check that the 'GameInput Service' is running on this system.    ****\n"
+                "\t**** NOTE: All calls to GetState will be reported as 'not connected'. ****\n");
+        #endif
+        }
     }
 
     Impl(Impl&&) = default;
@@ -153,6 +166,8 @@ public:
             device = mInputDevices[player].Get();
             if (!device)
                 return;
+
+            assert(mGameInput != nullptr);
         }
         else if (player == c_MostRecent)
         {
@@ -161,8 +176,10 @@ public:
             device = mInputDevices[player].Get();
             if (!device)
                 return;
+
+            assert(mGameInput != nullptr);
         }
-        else if (player != c_MergedInput)
+        else if (player != c_MergedInput || !mGameInput)
         {
             return;
         }
@@ -1250,7 +1267,7 @@ void GamePad::RegisterEvents(HANDLE ctrlChanged, HANDLE userChanged) noexcept
 }
 
 
-#else
+#elif defined(USING_XINPUT)
 
 //======================================================================================
 // XInput
@@ -1601,6 +1618,10 @@ private:
 };
 
 GamePad::Impl* GamePad::Impl::s_gamePad = nullptr;
+
+#else
+
+#error Unknown GamePad implementation
 
 #endif
 #pragma endregion

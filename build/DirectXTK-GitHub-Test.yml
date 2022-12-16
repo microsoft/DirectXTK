@@ -152,7 +152,7 @@ jobs:
       workingDirectory: $(Build.SourcesDirectory)
       failOnStderr: true
   - task: NuGetToolInstaller@1
-    displayName: 'Use NuGet '
+    displayName: 'Use NuGet'
   - task: NuGetCommand@2
     displayName: NuGet restore
     inputs:
@@ -257,14 +257,6 @@ jobs:
       workingDirectory: $(Build.SourcesDirectory)
       failOnStderr: true
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Tests_Windows10.sln 32rel
-    inputs:
-      solution: Tests/DirectXTK_Tests_Windows10.sln
-      vsVersion: 16.0
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:AppxBundle=Never
-      platform: x86
-      configuration: Release
-  - task: VSBuild@1
     displayName: Build solution DirectXTK_Tests_Windows10.sln 32dbg
     inputs:
       solution: Tests/DirectXTK_Tests_Windows10.sln
@@ -272,6 +264,14 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64 /p:AppxBundle=Never
       platform: x86
       configuration: Debug
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Windows10.sln 32rel
+    inputs:
+      solution: Tests/DirectXTK_Tests_Windows10.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:AppxBundle=Never
+      platform: x86
+      configuration: Release
 
 - job: UWP_BUILD_ARM
   displayName: 'Universal Windows Platform (UWP) for ARM'

@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-cmake_minimum_required (VERSION 3.13)
+cmake_minimum_required (VERSION 3.20)
 
 set(DIRECTXTK_VERSION 1.8.2)
 
@@ -17,6 +17,9 @@ option(BUILD_XAUDIO_WIN10 "Build for XAudio 2.9" OFF)
 option(BUILD_XAUDIO_WIN8 "Build for XAudio 2.8" ON)
 option(BUILD_XAUDIO_WIN7 "Build for XAudio2Redist" OFF)
 
+# https://devblogs.microsoft.com/cppblog/spectre-mitigations-in-msvc/
+option(ENABLE_SPECTRE_MITIGATION "Build using /Qspectre for MSVC" OFF)
+
 option(ENABLE_CODE_ANALYSIS "Use Static Code Analysis on build" OFF)
 
 option(USE_PREBUILT_SHADERS "Use externally built HLSL shaders" OFF)
@@ -29,7 +32,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/CMake")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/CMake")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/CMake")
 
-if (DEFINED VCPKG_TARGET_ARCHITECTURE)
+if(DEFINED VCPKG_TARGET_ARCHITECTURE)
     set(DIRECTX_ARCH ${VCPKG_TARGET_ARCHITECTURE})
 elseif(CMAKE_GENERATOR_PLATFORM MATCHES "^[Ww][Ii][Nn]32$")
     set(DIRECTX_ARCH x86)
@@ -175,9 +178,9 @@ if(WINDOWS_STORE OR BUILD_XAUDIO_WIN10 OR BUILD_XAUDIO_WIN8 OR BUILD_XAUDIO_WIN7
         Audio/WAVFileReader.h)
 endif()
 
-if (NOT COMPILED_SHADERS)
-    if (USE_PREBUILT_SHADERS)
-        message(FATAL_ERROR "ERROR: Using prebuilt shaders requires the COMPILED_SHADERS variable is set")
+if(NOT COMPILED_SHADERS)
+    if(USE_PREBUILT_SHADERS)
+        message(FATAL_ERROR "ERROR: Using prebuilt shaders requires the COMPILED_SHADERS variable is set.")
     endif()
     set(COMPILED_SHADERS ${CMAKE_CURRENT_BINARY_DIR}/Shaders/Compiled)
     file(MAKE_DIRECTORY ${COMPILED_SHADERS})
@@ -188,7 +191,7 @@ endif()
 set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
     ${COMPILED_SHADERS}/SpriteEffect_SpriteVertexShader.inc)
 
-if (NOT USE_PREBUILT_SHADERS)
+if(NOT USE_PREBUILT_SHADERS)
     add_custom_command(
         OUTPUT "${COMPILED_SHADERS}/SpriteEffect_SpriteVertexShader.inc"
         MAIN_DEPENDENCY "${PROJECT_SOURCE_DIR}/Src/Shaders/CompileShaders.cmd"
@@ -203,7 +206,7 @@ add_library(${PROJECT_NAME} STATIC ${LIBRARY_SOURCES} ${LIBRARY_HEADERS})
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${COMPILED_SHADERS} Src)
 
-if ((${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.16") AND (NOT MINGW))
+if(NOT MINGW)
     target_precompile_headers(${PROJECT_NAME} PRIVATE Src/pch.h)
 endif()
 
@@ -221,29 +224,18 @@ if(WINDOWS_STORE OR BUILD_XAUDIO_WIN10 OR BUILD_XAUDIO_WIN8 OR BUILD_XAUDIO_WIN7
     target_include_directories(${PROJECT_NAME} PRIVATE Audio)
 endif()
 
-if(MSVC)
-    # Use max Warning Level
-    string(REPLACE "/W3 " "/Wall " CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-    string(REPLACE "/W3 " "/Wall " CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
-    string(REPLACE "/W3 " "/Wall " CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
-
-    # Model uses dynamic_cast, so we need /GR (Enable RTTI)
-
-    # Library needs /EHsc (Enable C++ exceptions)
-endif()
-
-if (MINGW OR VCPKG_TOOLCHAIN)
-    message("INFO: Using VCPKG for DirectXMath.")
+if(MINGW OR VCPKG_TOOLCHAIN)
+    message(STATUS "Using VCPKG for DirectXMath.")
     find_package(directxmath CONFIG REQUIRED)
-    target_link_libraries(${PROJECT_NAME} PRIVATE Microsoft::DirectXMath)
+    target_link_libraries(${PROJECT_NAME} PUBLIC Microsoft::DirectXMath)
 endif()
 
-if (BUILD_XAUDIO_WIN7 AND (NOT BUILD_XAUDIO_WIN10) AND (NOT BUILD_XAUDIO_WIN8) AND (NOT WINDOWS_STORE))
-    message("INFO: Using XAudio2Redist for DirectX Tool Kit for Audio on Windows 7.")
+if(BUILD_XAUDIO_WIN7 AND (NOT BUILD_XAUDIO_WIN10) AND (NOT BUILD_XAUDIO_WIN8) AND (NOT WINDOWS_STORE))
+    message(STATUS "Using XAudio2Redist for DirectX Tool Kit for Audio on Windows 7.")
     target_compile_definitions(${PROJECT_NAME} PRIVATE USING_XAUDIO2_REDIST)
 
     find_package(xaudio2redist CONFIG REQUIRED)
-    target_link_libraries(${PROJECT_NAME} PRIVATE Microsoft::XAudio2Redist)
+    target_link_libraries(${PROJECT_NAME} PUBLIC Microsoft::XAudio2Redist)
 endif()
 
 #--- Package
@@ -262,7 +254,7 @@ install(TARGETS ${PROJECT_NAME}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/.nuget/${PROJECT_NAME}-config.cmake.in
+configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/build/${PROJECT_NAME}-config.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}-config.cmake
   INSTALL_DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PACKAGE_NAME})
 
@@ -289,39 +281,55 @@ if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
     Audio/WAVFileReader.cpp
     Audio/WAVFileReader.h)
   target_include_directories(xwbtool PRIVATE Audio Src)
-  target_link_libraries(xwbtool version.lib)
+  target_link_libraries(xwbtool PRIVATE version.lib)
   source_group(xwbtool REGULAR_EXPRESSION XWBTool/*.*)
 endif()
 
-if (MINGW OR VCPKG_TOOLCHAIN)
-  foreach(t IN LISTS TOOL_EXES)
-    target_link_libraries(${t} Microsoft::DirectXMath)
+if(MINGW OR VCPKG_TOOLCHAIN)
+  foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+    target_link_libraries(${t} PUBLIC Microsoft::DirectXMath)
   endforeach()
 endif()
 
+# Model uses dynamic_cast, so we need /GR (Enable RTTI)
 if(MSVC)
     foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
-      target_compile_options(${t} PRIVATE /fp:fast "$<$<NOT:$<CONFIG:DEBUG>>:/guard:cf>")
+      target_compile_options(${t} PRIVATE /Wall /GR /fp:fast "$<$<NOT:$<CONFIG:DEBUG>>:/guard:cf>")
       target_link_options(${t} PRIVATE /DYNAMICBASE /NXCOMPAT)
     endforeach()
 
     if((${CMAKE_SIZEOF_VOID_P} EQUAL 4) AND (NOT ${DIRECTX_ARCH} MATCHES "^arm"))
-        foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
-          target_link_options(${t} PRIVATE /SAFESEH)
-        endforeach()
+      foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+        target_link_options(${t} PRIVATE /SAFESEH)
+      endforeach()
     endif()
 
-    if((MSVC_VERSION GREATER_EQUAL 1928) AND (CMAKE_SIZEOF_VOID_P EQUAL 8)
+    if(ENABLE_SPECTRE_MITIGATION
+       AND (MSVC_VERSION GREATER_EQUAL 1913)
+       AND (NOT WINDOWS_STORE)
+       AND (NOT (CMAKE_CXX_COMPILER_ID MATCHES "Clang")))
+      message(STATUS "Building Spectre-mitigated libraries.")
+      foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+        target_compile_options(${t} PRIVATE "/Qspectre")
+      endforeach()
+    endif()
+
+    if((MSVC_VERSION GREATER_EQUAL 1928)
+       AND (CMAKE_SIZEOF_VOID_P EQUAL 8)
        AND ((NOT (CMAKE_CXX_COMPILER_ID MATCHES "Clang")) OR (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 13.0)))
       foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
         target_compile_options(${t} PRIVATE "$<$<NOT:$<CONFIG:DEBUG>>:/guard:ehcont>")
         target_link_options(${t} PRIVATE "$<$<NOT:$<CONFIG:DEBUG>>:/guard:ehcont>")
       endforeach()
     endif()
+else()
+    foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+      target_compile_definitions(${t} PRIVATE $<IF:$<CONFIG:DEBUG>,_DEBUG,NDEBUG>)
+    endforeach()
 endif()
 
 if(NOT ${DIRECTX_ARCH} MATCHES "^arm")
-    if (${CMAKE_SIZEOF_VOID_P} EQUAL "4")
+    if(${CMAKE_SIZEOF_VOID_P} EQUAL "4")
         set(ARCH_SSE2 $<$<CXX_COMPILER_ID:MSVC>:/arch:SSE2> $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-msse2>)
     else()
         set(ARCH_SSE2 $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-msse2>)
@@ -332,7 +340,7 @@ if(NOT ${DIRECTX_ARCH} MATCHES "^arm")
     endforeach()
 endif()
 
-if ( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
+if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
     set(WarningsLib "-Wpedantic" "-Wextra")
     target_compile_options(${PROJECT_NAME} PRIVATE ${WarningsLib})
 
@@ -342,16 +350,14 @@ if ( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
     foreach(t IN LISTS TOOL_EXES)
       target_compile_options(${t} PRIVATE ${WarningsEXE})
     endforeach()
-endif()
-if(MINGW)
+elseif(MINGW)
     foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
       target_compile_options(${t} PRIVATE -Wno-ignored-attributes)
       target_link_options(${t} PRIVATE -municode)
     endforeach()
-endif()
-if ( CMAKE_CXX_COMPILER_ID MATCHES "MSVC" )
+elseif( CMAKE_CXX_COMPILER_ID MATCHES "MSVC" )
     foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
-      target_compile_options(${t} PRIVATE /sdl /permissive- /JMC- /Zc:__cplusplus)
+      target_compile_options(${t} PRIVATE /sdl /permissive- /JMC- /Zc:__cplusplus /Zc:inline)
     endforeach()
 
     if(ENABLE_CODE_ANALYSIS)
@@ -360,26 +366,32 @@ if ( CMAKE_CXX_COMPILER_ID MATCHES "MSVC" )
       endforeach()
     endif()
 
-    if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.24)
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.24)
         foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
           target_compile_options(${t} PRIVATE /ZH:SHA_256)
         endforeach()
     endif()
 
-    if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.26)
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.26)
         foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
           target_compile_options(${t} PRIVATE /Zc:preprocessor /wd5105)
         endforeach()
     endif()
 
-    if ((CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.27) AND (NOT (${DIRECTX_ARCH} MATCHES "^arm")))
+    if((CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.27) AND (NOT (${DIRECTX_ARCH} MATCHES "^arm")))
         foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
           target_link_options(${t} PRIVATE /CETCOMPAT)
         endforeach()
     endif()
 
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.28)
+        foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+          target_compile_options(${t} PRIVATE /Zc:lambda)
+        endforeach()
+    endif()
+
     set(WarningsEXE "/wd4365" "/wd4514" "/wd4625" "/wd4626" "/wd4627" "/wd4710" "/wd4820" "/wd5026" "/wd5027" "/wd5039" "/wd5045")
-    if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.34)
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.34)
         list(APPEND WarningsEXE "/wd5262" "/wd5264")
         target_compile_options(${PROJECT_NAME} PRIVATE "/wd5262")
     endif()
@@ -389,28 +401,33 @@ if ( CMAKE_CXX_COMPILER_ID MATCHES "MSVC" )
 endif()
 
 if(WIN32)
-    foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
-      target_compile_definitions(${t} PRIVATE _UNICODE UNICODE)
-    endforeach()
-
     if(WINDOWS_STORE)
       target_compile_definitions(${PROJECT_NAME} PRIVATE WINAPI_FAMILY=WINAPI_FAMILY_APP)
     endif()
 
-    if(WINDOWS_STORE OR BUILD_XAUDIO_WIN10)
-        message("INFO: Using DirectX Tool Kit for Audio on XAudio 2.9 (Windows 10/Windows 11).")
-        target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0A00)
-    elseif(BUILD_XAUDIO_WIN8)
-        message("INFO: Using DirectX Tool Kit for Audio on XAudio 2.8 (Windows 8).")
-        target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0602)
+    if(WINDOWS_STORE OR BUILD_XAUDIO_WIN10 OR (${DIRECTX_ARCH} MATCHES "^arm64"))
+        message(STATUS "Using DirectX Tool Kit for Audio on XAudio 2.9 (Windows 10/Windows 11).")
+        set(WINVER 0x0A00)
+    elseif(BUILD_XAUDIO_WIN8 OR ${DIRECTX_ARCH} MATCHES "^arm")
+        message(STATUS "Using DirectX Tool Kit for Audio on XAudio 2.8 (Windows 8).")
+        set(WINVER 0x0602)
     else()
-        target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0601 _WIN7_PLATFORM_UPDATE)
+        set(WINVER 0x0601)
+        target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN7_PLATFORM_UPDATE)
     endif()
-    foreach(t IN LISTS TOOL_EXES)
-      target_compile_definitions(${t} PRIVATE _WIN32_WINNT=0x0601)
+
+    foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+      target_compile_definitions(${t} PRIVATE _UNICODE UNICODE _WIN32_WINNT=${WINVER})
     endforeach()
 endif()
 
 if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
   set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT xwbtool)
+endif()
+
+#--- Test suite
+include(CTest)
+if(BUILD_TESTING AND WIN32 AND (NOT WINDOWS_STORE) AND (EXISTS "${CMAKE_CURRENT_LIST_DIR}/Tests/CMakeLists.txt"))
+  enable_testing()
+  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/Tests)
 endif()

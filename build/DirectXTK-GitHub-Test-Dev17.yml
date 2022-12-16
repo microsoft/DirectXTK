@@ -162,7 +162,7 @@ jobs:
       workingDirectory: $(Build.SourcesDirectory)
       failOnStderr: true
   - task: NuGetToolInstaller@1
-    displayName: 'Use NuGet '
+    displayName: 'Use NuGet'
   - task: NuGetCommand@2
     displayName: NuGet restore
     inputs:
@@ -252,42 +252,42 @@ jobs:
   - task: CMake@1
     displayName: CMake (MSVC; x64-Debug) Config
     inputs:
-      cwd: ''
+      cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --preset=x64-Debug
   - task: CMake@1
     displayName: CMake (MSVC; x64-Debug) Build
     inputs:
-      cwd: ''
+      cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --build out/build/x64-Debug -v
   - task: CMake@1
     displayName: CMake (MSVC; x64-Release) Config
     inputs:
-      cwd: ''
+      cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --preset=x64-Release
   - task: CMake@1
     displayName: CMake (MSVC; x64-Release) Build
     inputs:
-      cwd: ''
+      cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --build out/build/x64-Release -v
   - task: CMake@1
     displayName: CMake (clang/LLVM; x64-Debug) Config
     inputs:
-      cwd: ''
+      cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --preset=x64-Debug-Clang
   - task: CMake@1
     displayName: CMake (clang/LLVM; x64-Debug) Build
     inputs:
-      cwd: ''
+      cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --build out/build/x64-Debug-Clang -v
   - task: CMake@1
     displayName: CMake (clang/LLVM; x64-Release) Config
     inputs:
-      cwd: ''
+      cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --preset=x64-Release-Clang
   - task: CMake@1
     displayName: CMake (clang/LLVM; x64-Release) Build
     inputs:
-      cwd: ''
+      cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --build out/build/x64-Release-Clang -v
   - task: CmdLine@2
     displayName: Set LIB for ARM64
@@ -303,20 +303,20 @@ jobs:
   - task: CMake@1
     displayName: CMake (clang/LLVM; arm64-Debug) Config
     inputs:
-      cwd: ''
+      cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --preset=arm64-Debug-Win10-Clang
   - task: CMake@1
     displayName: CMake (clang/LLVM; arm64-Debug) Build
     inputs:
-      cwd: ''
+      cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --build out/build/arm64-Debug-Win10-Clang -v
   - task: CMake@1
     displayName: CMake (clang/LLVM; arm64-Release) Config
     inputs:
-      cwd: ''
+      cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --preset=arm64-Release-Win10-Clang
   - task: CMake@1
     displayName: CMake (clang/LLVM; arm64-Release) Build
     inputs:
-      cwd: ''
+      cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --build out/build/arm64-Release-Win10-Clang -v

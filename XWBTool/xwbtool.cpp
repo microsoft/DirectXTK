@@ -1087,22 +1087,25 @@ namespace
     {
         PrintLogo();
 
-        wprintf(L"Usage: xwbtool <options> <wav-files>\n");
-        wprintf(L"\n");
-        wprintf(L"   -r                  wildcard filename search is recursive\n");
-        wprintf(L"   -s                  creates a streaming wave bank,\n");
-        wprintf(L"                       otherwise an in-memory bank is created\n");
-        wprintf(L"   -af                 for streaming, use 4K instead of 2K alignment\n");
-        wprintf(L"                       (required for advanced format drives without 512e)\n");
-        wprintf(L"   -o <filename>       output filename\n");
-        wprintf(L"   -h <h-filename>     output C/C++ header\n");
-        wprintf(L"   -l                  force output filename to lower case\n");
-        wprintf(L"   -y                  overwrite existing output file (if any)\n");
-        wprintf(L"   -c                  force creation of compact wavebank\n");
-        wprintf(L"   -nc                 force creation of non-compact wavebank\n");
-        wprintf(L"   -f                  include entry friendly names\n");
-        wprintf(L"   -nologo             suppress copyright message\n");
-        wprintf(L"   -flist <filename>   use text file with a list of input files (one per line)\n");
+        static const wchar_t* const s_usage =
+            L"Usage: xwbtool <options> <wav-files>\n"
+            L"\n"
+            L"   -r                  wildcard filename search is recursive\n"
+            L"   -s                  creates a streaming wave bank,\n"
+            L"                       otherwise an in-memory bank is created\n"
+            L"   -af                 for streaming, use 4K instead of 2K alignment\n"
+            L"                       (required for advanced format drives without 512e)\n"
+            L"   -o <filename>       output filename\n"
+            L"   -h <h-filename>     output C/C++ header\n"
+            L"   -l                  force output filename to lower case\n"
+            L"   -y                  overwrite existing output file (if any)\n"
+            L"   -c                  force creation of compact wavebank\n"
+            L"   -nc                 force creation of non-compact wavebank\n"
+            L"   -f                  include entry friendly names\n"
+            L"   -nologo             suppress copyright message\n"
+            L"   -flist <filename>   use text file with a list of input files (one per line)\n";
+
+        wprintf(L"%ls", s_usage);
     }
 
     const wchar_t* GetErrorDesc(HRESULT hr)

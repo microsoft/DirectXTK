@@ -1490,6 +1490,11 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
 
 #elif defined(USING_XAUDIO2_REDIST) || defined(_GAMING_DESKTOP)
 
+#ifdef __MINGW32__
+    // Value matches Windows SDK header shared\devpkey.h
+    constexpr static PROPERTYKEY PKEY_Device_FriendlyName = { { 0xa45c254e, 0xdf1c, 0x4efd, { 0x80, 0x20, 0x67, 0xd1, 0x46, 0xa8, 0x50, 0xe0 } }, 14 };
+#endif
+
     ComPtr<IMMDeviceEnumerator> devEnum;
     HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(devEnum.GetAddressOf()));
     ThrowIfFailed(hr);

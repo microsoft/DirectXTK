@@ -133,7 +133,7 @@
       "name": "MinGW32",
       "hidden": true,
       "environment": {
-        "PATH": "$penv{PATH};c:/mingw32/bin"
+        "PATH": "$penv{PATH};c:/mingw32/bin;c:/mingw32/libexec/gcc/i686-w64-mingw32/12.2.0"
       },
       "cacheVariables": {
         "VCPKG_TARGET_TRIPLET": "x86-mingw-static",
@@ -144,7 +144,7 @@
       "name": "MinGW64",
       "hidden": true,
       "environment": {
-        "PATH": "$penv{PATH};c:/mingw64/bin"
+        "PATH": "$penv{PATH};c:/mingw64/bin;c:/mingw64/libexec/gcc/x86_64-w64-mingw32/12.2.0"
       },
       "cacheVariables": {
         "VCPKG_TARGET_TRIPLET": "x64-mingw-static",
@@ -213,5 +213,25 @@
     { "name": "x64-Release-MinGW", "description": "MinG-W64 (Release)", "inherits": [ "base", "x64", "Release", "GNUC", "VCPKG", "MinGW64", "Win7" ] },
     { "name": "x86-Debug-MinGW"  , "description": "MinG-W32 (Debug)", "inherits": [ "base", "x86", "Debug", "GNUC", "VCPKG", "MinGW32", "Win7" ] },
     { "name": "x86-Release-MinGW", "description": "MinG-W32 (Release)", "inherits": [ "base", "x86", "Release", "GNUC", "VCPKG", "MinGW32", "Win7" ] }
+  ],
+  "testPresets": [
+    { "name": "x64-Debug"    , "configurePreset": "x64-Debug" },
+    { "name": "x64-Release"  , "configurePreset": "x64-Release" },
+    { "name": "x86-Debug"    , "configurePreset": "x86-Debug" },
+    { "name": "x86-Release"  , "configurePreset": "x86-Release" },
+    { "name": "arm64-Debug"  , "configurePreset": "arm64-Debug-Win10" },
+    { "name": "arm64-Release", "configurePreset": "arm64-Release-Win10" },
+
+    { "name": "x64-Debug-Clang"    , "configurePreset": "x64-Debug-Clang" },
+    { "name": "x64-Release-Clang"  , "configurePreset": "x64-Release-Clang" },
+    { "name": "x86-Debug-Clang"    , "configurePreset": "x86-Debug-Clang" },
+    { "name": "x86-Release-Clang"  , "configurePreset": "x86-Release-Clang" },
+    { "name": "arm64-Debug-Clang"  , "configurePreset": "arm64-Debug-Win10-Clang" },
+    { "name": "arm64-Release-Clang", "configurePreset": "arm64-Release-Win10-Clang" },
+
+    { "name": "x64-Debug-MinGW"    , "configurePreset": "x64-Debug-MinGW" },
+    { "name": "x64-Release-MinGW"  , "configurePreset": "x64-Release-MinGW" },
+    { "name": "x86-Debug-MinGW"    , "configurePreset": "x86-Debug-MinGW" },
+    { "name": "x86-Release-MinGW"  , "configurePreset": "x86-Release-MinGW" }
   ]
 }
