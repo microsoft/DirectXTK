@@ -22,7 +22,7 @@ resources:
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
 pool:
-    vmImage: ubuntu-22.04
+  vmImage: ubuntu-22.04
 
 variables:
   GITHUB_PAT: $(GITHUBPUBLICTOKEN)
@@ -96,17 +96,32 @@ jobs:
         }
 
   - task: CMake@1
-    displayName: CMake SimpleMath
+    displayName: CMake SimpleMath (Config) dbg
     inputs:
       cwd: Tests/SimpleMathTest
-      cmakeArgs: -B out -DCMAKE_PREFIX_PATH=$(DEST_DIR)usr/local/share;$(DEST_DIR)usr/local/cmake
+      cmakeArgs: -B out -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=$(DEST_DIR)usr/local/share;$(DEST_DIR)usr/local/cmake
   - task: CMake@1
-    displayName: CMake SimpleMath (Build)
+    displayName: CMake SimpleMath (Build) dbg
     inputs:
       cwd: Tests/SimpleMathTest
       cmakeArgs: --build out -v
+  - task: CMake@1
+    displayName: CMake SimpleMath (Config) rel
+    inputs:
+      cwd: Tests/SimpleMathTest
+      cmakeArgs: -B out2 -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$(DEST_DIR)usr/local/share;$(DEST_DIR)usr/local/cmake
+  - task: CMake@1
+    displayName: CMake SimpleMath (Build) rel
+    inputs:
+      cwd: Tests/SimpleMathTest
+      cmakeArgs: --build out2 -v
   - task: CmdLine@2
-    displayName: Run tests
+    displayName: Run tests dbg
     inputs:
       script: ./out/bin/CMake/simplemathtest
+      workingDirectory: Tests/SimpleMathTest
+  - task: CmdLine@2
+    displayName: Run tests rel
+    inputs:
+      script: ./out2/bin/CMake/simplemathtest
       workingDirectory: Tests/SimpleMathTest
