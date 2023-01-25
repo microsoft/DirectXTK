@@ -568,15 +568,31 @@ namespace DirectX
 
             case DXGI_FORMAT_NV12:
             case DXGI_FORMAT_420_OPAQUE:
-            #if (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
-            case DXGI_FORMAT_P208:
-            #endif
+                if ((height % 2) != 0)
+                {
+                    // Requires a height alignment of 2.
+                    return E_INVALIDARG;
+                }
                 planar = true;
                 bpe = 2;
                 break;
 
+            #if (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
+
+            case DXGI_FORMAT_P208:
+                planar = true;
+                bpe = 2;
+                break;
+
+            #endif
+
             case DXGI_FORMAT_P010:
             case DXGI_FORMAT_P016:
+                if ((height % 2) != 0)
+                {
+                    // Requires a height alignment of 2.
+                    return E_INVALIDARG;
+                }
                 planar = true;
                 bpe = 4;
                 break;
