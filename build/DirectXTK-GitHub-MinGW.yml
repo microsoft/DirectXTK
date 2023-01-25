@@ -35,17 +35,20 @@ variables:
 
 jobs:
 - job: MINGW32_BUILD
-  displayName: 'Minimalist GNU for Windows (MinGW32)'
+  displayName: 'Minimalist GNU for Windows (MinGW32) BUILD_TESTING=ON'
   steps:
   - checkout: self
     clean: true
     fetchTags: false
   - task: CmdLine@2
-    # We can use the preinstalled vcpkg instead of the latest when MS Hosted updates their vcpkg to the newer DirectX-Headers
     displayName: Fetch VCPKG
     inputs:
       script: git clone --quiet https://%GITHUB_PAT%@github.com/microsoft/vcpkg.git
       workingDirectory: $(Build.SourcesDirectory)
+  - task: CmdLine@2
+    displayName: Fetch Tests
+    inputs:
+      script: git clone --quiet https://%GITHUB_PAT%@github.com/walbourn/directxtktest.git Tests
   - task: CmdLine@2
     displayName: VCPKG Bootstrap
     inputs:
@@ -96,10 +99,13 @@ jobs:
       filename: Src/Shaders/CompileShaders.cmd
       workingFolder: $(Build.SourcesDirectory)\Src\Shaders
   - task: CmdLine@2
+    # Test suite for DirectX Tool Kit for DX11 needs DX12 headers for the simplemath test.
     displayName: VCPKG install headers
     inputs:
       script: |
         call vcpkg install directxmath
+        @if ERRORLEVEL 1 goto error
+        call vcpkg install directx-headers
         @if ERRORLEVEL 1 goto error
         call vcpkg install xaudio2redist
         @if ERRORLEVEL 1 goto error
@@ -186,7 +192,6 @@ jobs:
     inputs:
       script: g++ --version
   - task: CmdLine@2
-    # Test suite for DirectX Tool Kit for DX11 needs DX12 headers for the simplemath test.
     displayName: VCPKG install headers
     inputs:
       script: |
