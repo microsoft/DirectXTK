@@ -42,7 +42,7 @@ DirectX Tool Kit for Audio in this package uses XAudio2Redist NuGet package to s
         <copyright>&#169; Microsoft Corporation. All rights reserved.</copyright>
         <tags>DirectX DirectXTK native nativepackage</tags>
         <dependencies>
-            <dependency id="Microsoft.XAudio2.Redist" version="1.2.10" />
+            <dependency id="Microsoft.XAudio2.Redist" version="1.2.11" />
         </dependencies>
     </metadata>
 

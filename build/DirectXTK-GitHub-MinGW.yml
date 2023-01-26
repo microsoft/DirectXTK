@@ -35,17 +35,20 @@ variables:
 
 jobs:
 - job: MINGW32_BUILD
-  displayName: 'Minimalist GNU for Windows (MinGW32)'
+  displayName: 'Minimalist GNU for Windows (MinGW32) BUILD_TESTING=ON'
   steps:
   - checkout: self
     clean: true
     fetchTags: false
   - task: CmdLine@2
-    # We can use the preinstalled vcpkg instead of the latest when MS Hosted updates their vcpkg to the newer DirectX-Headers
     displayName: Fetch VCPKG
     inputs:
       script: git clone --quiet https://%GITHUB_PAT%@github.com/microsoft/vcpkg.git
       workingDirectory: $(Build.SourcesDirectory)
+  - task: CmdLine@2
+    displayName: Fetch Tests
+    inputs:
+      script: git clone --quiet https://%GITHUB_PAT%@github.com/walbourn/directxtktest.git Tests
   - task: CmdLine@2
     displayName: VCPKG Bootstrap
     inputs:
@@ -96,14 +99,16 @@ jobs:
       filename: Src/Shaders/CompileShaders.cmd
       workingFolder: $(Build.SourcesDirectory)\Src\Shaders
   - task: CmdLine@2
-    # The error checks are commented out due to a bug with vcpkg not returning 0 on success.
+    # Test suite for DirectX Tool Kit for DX11 needs DX12 headers for the simplemath test.
     displayName: VCPKG install headers
     inputs:
       script: |
         call vcpkg install directxmath
-        REM @if ERRORLEVEL 1 goto error
+        @if ERRORLEVEL 1 goto error
+        call vcpkg install directx-headers
+        @if ERRORLEVEL 1 goto error
         call vcpkg install xaudio2redist
-        REM @if ERRORLEVEL 1 goto error
+        @if ERRORLEVEL 1 goto error
         :finish
         @echo --- VCPKG COMPLETE ---
         exit /b 0
@@ -187,16 +192,15 @@ jobs:
     inputs:
       script: g++ --version
   - task: CmdLine@2
-    # Test suite for DirectX Tool Kit for DX11 needs DX12 headers for the simplemath test.
     displayName: VCPKG install headers
     inputs:
       script: |
         call vcpkg install directxmath
-        REM @if ERRORLEVEL 1 goto error
+        @if ERRORLEVEL 1 goto error
         call vcpkg install directx-headers
-        REM @if ERRORLEVEL 1 goto error
+        @if ERRORLEVEL 1 goto error
         call vcpkg install xaudio2redist
-        REM @if ERRORLEVEL 1 goto error
+        @if ERRORLEVEL 1 goto error
         :finish
         @echo --- VCPKG COMPLETE ---
         exit /b 0
@@ -206,11 +210,10 @@ jobs:
 
       workingDirectory: $(Build.SourcesDirectory)\vcpkg
   - task: CMake@1
-    # We are building with audio off until the GUID+MinGW linker issues are fixed in the xaudio2redist port.
     displayName: CMake (MinGW-W64)
     inputs:
       cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: -B out -DCMAKE_BUILD_TYPE="Debug" -DDIRECTX_ARCH=x64 -DCMAKE_TOOLCHAIN_FILE="$(VCPKG_CMAKE_DIR)" -DCMAKE_CXX_COMPILER="g++.exe" -G "MinGW Makefiles" -DVCPKG_TARGET_TRIPLET=x64-mingw-static -DUSE_PREBUILT_SHADERS=ON -DCOMPILED_SHADERS=$(Build.SourcesDirectory)\Src\Shaders\Compiled -DBUILD_XAUDIO_WIN7=OFF
+      cmakeArgs: -B out -DCMAKE_BUILD_TYPE="Debug" -DDIRECTX_ARCH=x64 -DCMAKE_TOOLCHAIN_FILE="$(VCPKG_CMAKE_DIR)" -DCMAKE_CXX_COMPILER="g++.exe" -G "MinGW Makefiles" -DVCPKG_TARGET_TRIPLET=x64-mingw-static -DUSE_PREBUILT_SHADERS=ON -DCOMPILED_SHADERS=$(Build.SourcesDirectory)\Src\Shaders\Compiled -DBUILD_XAUDIO_WIN7=ON
   - task: CMake@1
     displayName: CMake (MinGW-W64) Build
     inputs:
