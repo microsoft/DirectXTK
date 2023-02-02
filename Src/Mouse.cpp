@@ -726,7 +726,7 @@ public:
     }
 
     State           mState;
-    Mouse* mOwner;
+    Mouse*          mOwner;
     float           mDPI;
 
     static Mouse::Impl* s_mouse;
@@ -1057,6 +1057,8 @@ public:
             {
                 SetEvent(mRelativeRead.get());
             }
+
+            mState.x = mState.y = 0;
         }
     }
 
@@ -1141,7 +1143,7 @@ public:
         mWindow = window;
     }
 
-    State           mState;
+    mutable State   mState;
 
     Mouse*          mOwner;
 
@@ -1322,8 +1324,8 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
             {
                 if (!(raw.data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE))
                 {
-                    pImpl->mState.x = raw.data.mouse.lLastX;
-                    pImpl->mState.y = raw.data.mouse.lLastY;
+                    pImpl->mState.x += raw.data.mouse.lLastX;
+                    pImpl->mState.y += raw.data.mouse.lLastY;
 
                     ResetEvent(pImpl->mRelativeRead.get());
                 }
