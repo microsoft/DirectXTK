@@ -113,6 +113,9 @@ namespace DirectX
         // Sets mouse mode (defaults to absolute)
         void __cdecl SetMode(Mode mode);
 
+        // Signals the end of frame (recommended, but optional)
+        void __cdecl EndOfInputFrame() noexcept;
+
         // Feature detection
         bool __cdecl IsConnected() const;
 

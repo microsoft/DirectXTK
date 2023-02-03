@@ -215,6 +215,11 @@ public:
         }
     }
 
+    void EndOfInputFrame()
+    {
+        // TODO -
+    }
+
     bool IsConnected() const noexcept
     {
         return mConnected > 0;
@@ -614,6 +619,11 @@ public:
         }
     }
 
+    void EndOfInputFrame()
+    {
+        // TODO -
+    }
+
     bool IsConnected() const
     {
         using namespace Microsoft::WRL;
@@ -994,7 +1004,8 @@ public:
         mLastY(0),
         mRelativeX(INT32_MAX),
         mRelativeY(INT32_MAX),
-        mInFocus(true)
+        mInFocus(true),
+        mAutoReset(true)
     {
         if (s_mouse)
         {
@@ -1050,15 +1061,17 @@ public:
 
             if (result == WAIT_OBJECT_0)
             {
-                state.x = 0;
-                state.y = 0;
+                state.x = state.y = 0;
             }
             else
             {
                 SetEvent(mRelativeRead.get());
             }
 
-            mState.x = mState.y = 0;
+            if (mAutoReset)
+            {
+                mState.x = mState.y = 0;
+            }
         }
     }
 
@@ -1086,6 +1099,13 @@ public:
         {
             throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "TrackMouseEvent");
         }
+    }
+
+    void EndOfInputFrame()
+    {
+        mAutoReset = false;
+
+        mState.x = mState.y = 0;
     }
 
     bool IsConnected() const noexcept
@@ -1164,6 +1184,7 @@ private:
     int             mRelativeY;
 
     bool            mInFocus;
+    bool            mAutoReset;
 
     friend void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -1483,6 +1504,12 @@ void Mouse::ResetScrollWheelValue() noexcept
 void Mouse::SetMode(Mode mode)
 {
     pImpl->SetMode(mode);
+}
+
+
+void Mouse::EndOfInputFrame() noexcept
+{
+    pImpl->EndOfInputFrame();
 }
 
 
