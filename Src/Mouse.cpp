@@ -371,8 +371,8 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
         {
             if (pImpl->mMode == MODE_RELATIVE)
             {
-                pImpl->mRelativeX = INT64_MAX;
-                pImpl->mRelativeY = INT64_MAX;
+                pImpl->mLastX = pImpl->mRelativeX = INT64_MAX;
+                pImpl->mLastY = pImpl->mRelativeY = INT64_MAX;
 
                 ShowCursor(FALSE);
 
@@ -521,7 +521,8 @@ public:
         mPointerReleasedToken{},
         mPointerMovedToken{},
         mPointerWheelToken{},
-        mPointerMouseMovedToken{}
+        mPointerMouseMovedToken{},
+        mActivatedToken{}
     {
         if (s_mouse)
         {
@@ -716,6 +717,7 @@ public:
         using namespace Microsoft::WRL::Wrappers;
         using namespace ABI::Windows::Foundation;
         using namespace ABI::Windows::Devices::Input;
+        using namespace ABI::Windows::UI::Core;
 
         if (mWindow.Get() == window)
             return;
@@ -738,11 +740,11 @@ public:
         hr = mouseStatics->GetForCurrentView(mMouse.ReleaseAndGetAddressOf());
         ThrowIfFailed(hr);
 
-        typedef __FITypedEventHandler_2_Windows__CDevices__CInput__CMouseDevice_Windows__CDevices__CInput__CMouseEventArgs MouseMovedHandler;
+        using MouseMovedHandler = __FITypedEventHandler_2_Windows__CDevices__CInput__CMouseDevice_Windows__CDevices__CInput__CMouseEventArgs;
         hr = mMouse->add_MouseMoved(Callback<MouseMovedHandler>(MouseMovedEvent).Get(), &mPointerMouseMovedToken);
         ThrowIfFailed(hr);
 
-        typedef __FITypedEventHandler_2_Windows__CUI__CCore__CCoreWindow_Windows__CUI__CCore__CPointerEventArgs PointerHandler;
+        using PointerHandler = __FITypedEventHandler_2_Windows__CUI__CCore__CCoreWindow_Windows__CUI__CCore__CPointerEventArgs;
         auto cb = Callback<PointerHandler>(PointerEvent);
 
         hr = window->add_PointerPressed(cb.Get(), &mPointerPressedToken);
@@ -755,6 +757,10 @@ public:
         ThrowIfFailed(hr);
 
         hr = window->add_PointerWheelChanged(Callback<PointerHandler>(PointerWheel).Get(), &mPointerWheelToken);
+        ThrowIfFailed(hr);
+
+        using ActivatedHandler = __FITypedEventHandler_2_Windows__CUI__CCore__CCoreWindow_Windows__CUI__CCore__CWindowActivatedEventArgs;
+        hr = window->add_Activated(Callback<ActivatedHandler>(ActivatedEvent).Get(), &mActivatedToken);
         ThrowIfFailed(hr);
     }
 
@@ -780,6 +786,7 @@ private:
     EventRegistrationToken mPointerMovedToken;
     EventRegistrationToken mPointerWheelToken;
     EventRegistrationToken mPointerMouseMovedToken;
+    EventRegistrationToken mActivatedToken;
 
     void RemoveHandlers()
     {
@@ -796,6 +803,9 @@ private:
 
             std::ignore = mWindow->remove_PointerWheelChanged(mPointerWheelToken);
             mPointerWheelToken.value = 0;
+
+            std::ignore = mWindow->remove_Activated(mActivatedToken);
+            mActivatedToken.value = 0;
         }
 
         if (mMouse)
@@ -860,7 +870,7 @@ private:
             hr = currentPoint->get_Position(&pos);
             ThrowIfFailed(hr);
 
-            float dpi = s_mouse->mDPI;
+            const float dpi = s_mouse->mDPI;
 
             s_mouse->mState.x = static_cast<int>(pos.X * dpi / 96.f + 0.5f);
             s_mouse->mState.y = static_cast<int>(pos.Y * dpi / 96.f + 0.5f);
@@ -952,6 +962,16 @@ private:
 
             ResetEvent(s_mouse->mRelativeRead.get());
         }
+
+        return S_OK;
+    }
+
+    static HRESULT ActivatedEvent(IInspectable*, ABI::Windows::UI::Core::IWindowActivatedEventArgs*)
+    {
+        if (!s_mouse)
+            return S_OK;
+
+        s_mouse->mState.x = s_mouse->mState.y = 0;
 
         return S_OK;
     }
