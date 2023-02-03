@@ -109,9 +109,13 @@ namespace
     const RIFFChunk* FindChunk(
         _In_reads_bytes_(sizeBytes) const uint8_t* data,
         _In_ size_t sizeBytes,
+        _In_ const uint8_t* upperBound,
         _In_ uint32_t tag) noexcept
     {
         if (!data)
+            return nullptr;
+
+        if (sizeBytes < sizeof(RIFFChunk))
             return nullptr;
 
         const uint8_t* ptr = data;
@@ -123,8 +127,14 @@ namespace
             if (header->tag == tag)
                 return header;
 
-            auto const offset = header->size + sizeof(RIFFChunk);
-            ptr += offset;
+            const uint64_t offset = static_cast<uint64_t>(header->size) + sizeof(RIFFChunk);
+            if (offset >= UINT32_MAX)
+                return nullptr;
+
+            ptr += static_cast<size_t>(offset);
+
+            if (ptr > upperBound)
+                return nullptr;
         }
 
         return nullptr;
@@ -154,7 +164,7 @@ namespace
         const uint8_t* wavEnd = wavData + wavDataSize;
 
         // Locate RIFF 'WAVE'
-        auto riffChunk = FindChunk(wavData, wavDataSize, FOURCC_RIFF_TAG);
+        auto riffChunk = FindChunk(wavData, wavDataSize, wavEnd, FOURCC_RIFF_TAG);
         if (!riffChunk || riffChunk->size < 4)
         {
             return E_FAIL;
@@ -173,7 +183,7 @@ namespace
             return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
         }
 
-        auto fmtChunk = FindChunk(ptr, riffHeader->size, FOURCC_FORMAT_TAG);
+        auto fmtChunk = FindChunk(ptr, riffHeader->size, wavEnd, FOURCC_FORMAT_TAG);
         if (!fmtChunk || fmtChunk->size < sizeof(PCMWAVEFORMAT))
         {
             return E_FAIL;
@@ -282,7 +292,7 @@ namespace
             return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
         }
 
-        auto dataChunk = FindChunk(ptr, riffChunk->size, FOURCC_DATA_TAG);
+        auto dataChunk = FindChunk(ptr, riffChunk->size, wavEnd, FOURCC_DATA_TAG);
         if (!dataChunk || !dataChunk->size)
         {
             return HRESULT_FROM_WIN32(ERROR_INVALID_DATA);
@@ -322,7 +332,7 @@ namespace
         const uint8_t* wavEnd = wavData + wavDataSize;
 
         // Locate RIFF 'WAVE'
-        auto riffChunk = FindChunk(wavData, wavDataSize, FOURCC_RIFF_TAG);
+        auto riffChunk = FindChunk(wavData, wavDataSize, wavEnd, FOURCC_RIFF_TAG);
         if (!riffChunk || riffChunk->size < 4)
         {
             return E_FAIL;
@@ -347,7 +357,7 @@ namespace
             return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
         }
 
-        auto dlsChunk = FindChunk(ptr, riffChunk->size, FOURCC_DLS_SAMPLE);
+        auto dlsChunk = FindChunk(ptr, riffChunk->size, wavEnd, FOURCC_DLS_SAMPLE);
         if (dlsChunk)
         {
             ptr = reinterpret_cast<const uint8_t*>(dlsChunk) + sizeof(RIFFChunk);
@@ -378,7 +388,7 @@ namespace
         }
 
         // Locate 'smpl' (Sample Chunk)
-        auto midiChunk = FindChunk(ptr, riffChunk->size, FOURCC_MIDI_SAMPLE);
+        auto midiChunk = FindChunk(ptr, riffChunk->size, wavEnd, FOURCC_MIDI_SAMPLE);
         if (midiChunk)
         {
             ptr = reinterpret_cast<const uint8_t*>(midiChunk) + sizeof(RIFFChunk);
@@ -434,7 +444,7 @@ namespace
         const uint8_t* wavEnd = wavData + wavDataSize;
 
         // Locate RIFF 'WAVE'
-        auto riffChunk = FindChunk(wavData, wavDataSize, FOURCC_RIFF_TAG);
+        auto riffChunk = FindChunk(wavData, wavDataSize, wavEnd, FOURCC_RIFF_TAG);
         if (!riffChunk || riffChunk->size < 4)
         {
             return E_FAIL;
@@ -453,7 +463,7 @@ namespace
             return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
         }
 
-        auto tableChunk = FindChunk(ptr, riffChunk->size, tag);
+        auto tableChunk = FindChunk(ptr, riffChunk->size, wavEnd, tag);
         if (tableChunk)
         {
             ptr = reinterpret_cast<const uint8_t*>(tableChunk) + sizeof(RIFFChunk);
