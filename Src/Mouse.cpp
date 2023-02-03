@@ -500,6 +500,7 @@ public:
         mOwner(owner),
         mDPI(96.f),
         mMode(MODE_ABSOLUTE),
+        mAutoReset(true),
         mPointerPressedToken{},
         mPointerReleasedToken{},
         mPointerMovedToken{},
@@ -551,12 +552,16 @@ public:
 
             if (result == WAIT_OBJECT_0)
             {
-                state.x = 0;
-                state.y = 0;
+                state.x = state.y = 0;
             }
             else
             {
                 SetEvent(mRelativeRead.get());
+            }
+
+            if (mAutoReset)
+            {
+                mState.x = mState.y = 0;
             }
         }
 
@@ -621,7 +626,9 @@ public:
 
     void EndOfInputFrame()
     {
-        // TODO -
+        mAutoReset = false;
+
+        mState.x = mState.y = 0;
     }
 
     bool IsConnected() const
@@ -735,7 +742,7 @@ public:
         ThrowIfFailed(hr);
     }
 
-    State           mState;
+    mutable State   mState;
     Mouse*          mOwner;
     float           mDPI;
 
@@ -743,6 +750,7 @@ public:
 
 private:
     Mode            mMode;
+    bool            mAutoReset;
 
     ComPtr<ABI::Windows::UI::Core::ICoreWindow> mWindow;
     ComPtr<ABI::Windows::Devices::Input::IMouseDevice> mMouse;
@@ -923,8 +931,8 @@ private:
             HRESULT hr = args->get_MouseDelta(&delta);
             ThrowIfFailed(hr);
 
-            s_mouse->mState.x = delta.X;
-            s_mouse->mState.y = delta.Y;
+            s_mouse->mState.x += delta.X;
+            s_mouse->mState.y += delta.Y;
 
             ResetEvent(s_mouse->mRelativeRead.get());
         }
