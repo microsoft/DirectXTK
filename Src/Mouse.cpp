@@ -62,9 +62,12 @@ public:
         mDeviceToken(0),
         mWindow(nullptr),
         mMode(MODE_ABSOLUTE),
+        mAutoReset(true),
         mScrollWheelCurrent(0),
         mRelativeX(INT64_MAX),
         mRelativeY(INT64_MAX),
+        mLastX(INT64_MAX),
+        mLastY(INT64_MAX),
         mRelativeWheelY(INT64_MAX)
     {
         if (s_mouse)
@@ -170,8 +173,14 @@ public:
                             mScrollWheelCurrent += scrollDelta;
                         }
 
-                        mRelativeX = mouse.positionX;
-                        mRelativeY = mouse.positionY;
+                        if (mAutoReset)
+                        {
+                            mRelativeX = mouse.positionX;
+                            mRelativeY = mouse.positionY;
+                        }
+
+                        mLastX = mouse.positionX;
+                        mLastY = mouse.positionY;
                         mRelativeWheelY = mouse.wheelY;
                     }
                 }
@@ -197,8 +206,8 @@ public:
             return;
 
         mMode = mode;
-        mRelativeX = INT64_MAX;
-        mRelativeY = INT64_MAX;
+        mLastX = mRelativeX = INT64_MAX;
+        mLastY = mRelativeY = INT64_MAX;
         mRelativeWheelY = INT64_MAX;
 
         if (mode == MODE_RELATIVE)
@@ -217,7 +226,10 @@ public:
 
     void EndOfInputFrame()
     {
-        // TODO -
+        mAutoReset = false;
+
+        mRelativeX = mLastX;
+        mRelativeY = mLastY;
     }
 
     bool IsConnected() const noexcept
@@ -268,11 +280,15 @@ private:
 
     HWND                    mWindow;
     Mode                    mMode;
+    bool                    mAutoReset;
+
     ScopedHandle            mScrollWheelValue;
 
     mutable int             mScrollWheelCurrent;
     mutable int64_t         mRelativeX;
     mutable int64_t         mRelativeY;
+    mutable int64_t         mLastX;
+    mutable int64_t         mLastY;
     mutable int64_t         mRelativeWheelY;
 
     friend void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam);
