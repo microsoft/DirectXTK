@@ -218,7 +218,17 @@ public:
         else
         {
             ShowCursor(TRUE);
+
 #ifndef _GAMING_XBOX
+            POINT point;
+            point.x = mState.x;
+            point.y = mState.y;
+
+            if (MapWindowPoints(mWindow, nullptr, &point, 1))
+            {
+                SetCursorPos(point.x, point.y);
+            }
+
             ClipCursor(nullptr);
 #endif
         }
