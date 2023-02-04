@@ -228,8 +228,11 @@ public:
     {
         mAutoReset = false;
 
-        mRelativeX = mLastX;
-        mRelativeY = mLastY;
+        if (mMode == MODE_RELATIVE)
+        {
+            mRelativeX = mLastX;
+            mRelativeY = mLastY;
+        }
     }
 
     bool IsConnected() const noexcept
@@ -517,6 +520,8 @@ public:
         mDPI(96.f),
         mMode(MODE_ABSOLUTE),
         mAutoReset(true),
+        mLastX(0),
+        mLastY(0),
         mPointerPressedToken{},
         mPointerReleasedToken{},
         mPointerMovedToken{},
@@ -618,6 +623,11 @@ public:
 
             SetEvent(mRelativeRead.get());
 
+            mLastX = mState.x;
+            mLastY = mState.y;
+
+            mState.x = mState.y = 0;
+
             mMode = MODE_RELATIVE;
         }
         else
@@ -635,6 +645,9 @@ public:
             hr = window->put_PointerCursor(mCursor.Get());
             ThrowIfFailed(hr);
 
+            mState.x = mLastX;
+            mState.y = mLastY;
+
             mCursor.Reset();
 
             mMode = MODE_ABSOLUTE;
@@ -645,7 +658,10 @@ public:
     {
         mAutoReset = false;
 
-        mState.x = mState.y = 0;
+        if (mMode == MODE_RELATIVE)
+        {
+            mState.x = mState.y = 0;
+        }
     }
 
     bool IsConnected() const
@@ -773,6 +789,8 @@ public:
 private:
     Mode            mMode;
     bool            mAutoReset;
+    int             mLastX;
+    int             mLastY;
 
     ComPtr<ABI::Windows::UI::Core::ICoreWindow> mWindow;
     ComPtr<ABI::Windows::Devices::Input::IMouseDevice> mMouse;
@@ -971,7 +989,10 @@ private:
         if (!s_mouse)
             return S_OK;
 
-        s_mouse->mState.x = s_mouse->mState.y = 0;
+        if (s_mouse->mMode == MODE_RELATIVE)
+        {
+            s_mouse->mState.x = s_mouse->mState.y = 0;
+        }
 
         return S_OK;
     }
@@ -1149,7 +1170,10 @@ public:
     {
         mAutoReset = false;
 
-        mState.x = mState.y = 0;
+        if (mMode == MODE_RELATIVE)
+        {
+            mState.x = mState.y = 0;
+        }
     }
 
     bool IsConnected() const noexcept
