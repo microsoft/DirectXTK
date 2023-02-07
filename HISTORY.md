@@ -6,6 +6,13 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### February 6, 2023
+* Mouse relative mode now accumulates multiple delta updates per frame. Added new optional but recommended method ``EndOfInputFrame``.
+* Fixed out-of-bounds read bug in the .WAV file reader.
+* Additional checks added to DDSTextureLoader for planar video formats.
+* *DirectX Tool Kit for Audio* updated for XAudio2Redist 1.2.11
+* CMake project updates
+
 ### December 15, 2022
 * GamePad, Keyboard, and Mouse headers have ``USING_XINPUT``, ``USING_GAMEINPUT``, ``USING_WINDOWS_GAMING_INPUT`` defines
 * Updates for *GameInputCreate* failure handling on PC
