@@ -3,7 +3,7 @@
 
 cmake_minimum_required (VERSION 3.20)
 
-set(DIRECTXTK_VERSION 1.8.2)
+set(DIRECTXTK_VERSION 1.8.3)
 
 project (DirectXTK
   VERSION ${DIRECTXTK_VERSION}
@@ -19,6 +19,8 @@ option(BUILD_XAUDIO_WIN7 "Build for XAudio2Redist" OFF)
 
 # https://devblogs.microsoft.com/cppblog/spectre-mitigations-in-msvc/
 option(ENABLE_SPECTRE_MITIGATION "Build using /Qspectre for MSVC" OFF)
+
+option(DISABLE_MSVC_ITERATOR_DEBUGGING "Disable iterator debugging in Debug configurations with the MSVC CRT" OFF)
 
 option(ENABLE_CODE_ANALYSIS "Use Static Code Analysis on build" OFF)
 
@@ -408,7 +410,7 @@ if(WIN32)
     if(WINDOWS_STORE OR BUILD_XAUDIO_WIN10 OR (${DIRECTX_ARCH} MATCHES "^arm64"))
         message(STATUS "Using DirectX Tool Kit for Audio on XAudio 2.9 (Windows 10/Windows 11).")
         set(WINVER 0x0A00)
-    elseif(BUILD_XAUDIO_WIN8 OR ${DIRECTX_ARCH} MATCHES "^arm")
+    elseif(BUILD_XAUDIO_WIN8 OR (${DIRECTX_ARCH} MATCHES "^arm"))
         message(STATUS "Using DirectX Tool Kit for Audio on XAudio 2.8 (Windows 8).")
         set(WINVER 0x0602)
     else()
@@ -419,6 +421,12 @@ if(WIN32)
     foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
       target_compile_definitions(${t} PRIVATE _UNICODE UNICODE _WIN32_WINNT=${WINVER})
     endforeach()
+
+    if(DISABLE_MSVC_ITERATOR_DEBUGGING)
+      foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+        target_compile_definitions(${t} PRIVATE _ITERATOR_DEBUG_LEVEL=0)
+      endforeach()
+    endif()
 endif()
 
 if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
