@@ -12,18 +12,14 @@ schedules:
     include:
     - main
 
+trigger: none
+pr: none
+
 resources:
   repositories:
   - repository: self
     type: git
     ref: refs/heads/main
-    trigger:
-      branches:
-        include:
-        - main
-      paths:
-        include:
-        - CMakeLists.txt
 
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
