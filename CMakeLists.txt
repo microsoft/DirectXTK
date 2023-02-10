@@ -226,18 +226,22 @@ if(WINDOWS_STORE OR BUILD_XAUDIO_WIN10 OR BUILD_XAUDIO_WIN8 OR BUILD_XAUDIO_WIN7
     target_include_directories(${PROJECT_NAME} PRIVATE Audio)
 endif()
 
-if(MINGW OR VCPKG_TOOLCHAIN)
-    message(STATUS "Using VCPKG for DirectXMath.")
+if(MINGW)
     find_package(directxmath CONFIG REQUIRED)
+else()
+    find_package(directxmath CONFIG QUIET)
+endif()
+
+if(directxmath_FOUND)
+    message(STATUS "Using DirectXMath package")
     target_link_libraries(${PROJECT_NAME} PUBLIC Microsoft::DirectXMath)
 endif()
 
 if(BUILD_XAUDIO_WIN7 AND (NOT BUILD_XAUDIO_WIN10) AND (NOT BUILD_XAUDIO_WIN8) AND (NOT WINDOWS_STORE))
     message(STATUS "Using XAudio2Redist for DirectX Tool Kit for Audio on Windows 7.")
-    target_compile_definitions(${PROJECT_NAME} PRIVATE USING_XAUDIO2_REDIST)
-
     find_package(xaudio2redist CONFIG REQUIRED)
     target_link_libraries(${PROJECT_NAME} PUBLIC Microsoft::XAudio2Redist)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE USING_XAUDIO2_REDIST)
 endif()
 
 #--- Package
@@ -287,7 +291,7 @@ if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
   source_group(xwbtool REGULAR_EXPRESSION XWBTool/*.*)
 endif()
 
-if(MINGW OR VCPKG_TOOLCHAIN)
+if(directxmath_FOUND)
   foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
     target_link_libraries(${t} PUBLIC Microsoft::DirectXMath)
   endforeach()
