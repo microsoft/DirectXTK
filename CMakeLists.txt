@@ -17,6 +17,10 @@ option(BUILD_XAUDIO_WIN10 "Build for XAudio 2.9" OFF)
 option(BUILD_XAUDIO_WIN8 "Build for XAudio 2.8" ON)
 option(BUILD_XAUDIO_WIN7 "Build for XAudio2Redist" OFF)
 
+option(BUILD_GAMEINPUT "Build for GameInput" OFF)
+option(BUILD_WGI "Build for Windows.Gaming.Input" OFF)
+option(BUILD_XINPUT "Build for XInput" OFF)
+
 # https://devblogs.microsoft.com/cppblog/spectre-mitigations-in-msvc/
 option(ENABLE_SPECTRE_MITIGATION "Build using /Qspectre for MSVC" OFF)
 
@@ -47,6 +51,11 @@ elseif(CMAKE_GENERATOR_PLATFORM MATCHES "^[Aa][Rr][Mm]64$")
 endif()
 
 include(GNUInstallDirs)
+
+if(WINDOWS_STORE)
+   set(BUILD_GAMEINPUT OFF)
+   set(USING_WINDOWS_GAMING_INPUT ON)
+endif()
 
 #--- Library
 set(LIBRARY_HEADERS
@@ -244,6 +253,23 @@ if(BUILD_XAUDIO_WIN7 AND (NOT BUILD_XAUDIO_WIN10) AND (NOT BUILD_XAUDIO_WIN8) AN
     target_compile_definitions(${PROJECT_NAME} PRIVATE USING_XAUDIO2_REDIST)
 endif()
 
+include(CheckIncludeFileCXX)
+
+if(BUILD_GAMEINPUT)
+    message(STATUS "Using GameInput for GamePad/Keyboard/Mouse.")
+    CHECK_INCLUDE_FILE_CXX(GameInput.h GAMEINPUT_HEADER)
+    if(NOT GAMEINPUT_HEADER)
+        message(FATAL_ERROR "Microsoft GDK required to build GameInput.")
+    endif()
+    target_compile_definitions(${PROJECT_NAME} PRIVATE USING_GAMEINPUT)
+elseif(BUILD_WGI)
+    message(STATUS "Using Windows.Gaming.Input for GamePad.")
+    target_compile_definitions(${PROJECT_NAME} PRIVATE USING_WINDOWS_GAMING_INPUT)
+elseif(BUILD_XINPUT)
+    message(STATUS "Using XInput for GamePad.")
+    target_compile_definitions(${PROJECT_NAME} PRIVATE USING_XINPUT)
+endif()
+
 #--- Package
 include(CMakePackageConfigHelpers)
 
@@ -411,13 +437,20 @@ if(WIN32)
       target_compile_definitions(${PROJECT_NAME} PRIVATE WINAPI_FAMILY=WINAPI_FAMILY_APP)
     endif()
 
-    if(WINDOWS_STORE OR BUILD_XAUDIO_WIN10 OR (${DIRECTX_ARCH} MATCHES "^arm64"))
+    if(WINDOWS_STORE OR BUILD_XAUDIO_WIN10)
         message(STATUS "Using DirectX Tool Kit for Audio on XAudio 2.9 (Windows 10/Windows 11).")
         set(WINVER 0x0A00)
-    elseif(BUILD_XAUDIO_WIN8 OR (${DIRECTX_ARCH} MATCHES "^arm"))
+    elseif((${DIRECTX_ARCH} MATCHES "^arm64") OR BUILD_GAMEINPUT OR BUILD_WGI)
+        message(STATUS "Building for Windows 10/Windows 11.")
+        set(WINVER 0x0A00)
+    elseif(BUILD_XAUDIO_WIN8)
         message(STATUS "Using DirectX Tool Kit for Audio on XAudio 2.8 (Windows 8).")
         set(WINVER 0x0602)
+    elseif(${DIRECTX_ARCH} MATCHES "^arm")
+        message(STATUS "Building for Windows 8.")
+        set(WINVER 0x0602)
     else()
+        message(STATUS "Building for Windows 7.")
         set(WINVER 0x0601)
         target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN7_PLATFORM_UPDATE)
     endif()
