@@ -202,8 +202,6 @@ jobs:
       GdnBreakAllTools: true
       GdnBreakPolicy: 'Microsoft'
       GdnBreakPolicyMinSev: 'Error'
-      GdnBreakSuppressionFiles: '$(Build.SourcesDirectory)\.gdn\directxtk.gdnsuppress'
-      GdnBreakSuppressionSets: dev15tooling
   - task: CopyFiles@2
     displayName: 'Copy Tools'
     inputs:
