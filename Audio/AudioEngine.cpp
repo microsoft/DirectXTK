@@ -1130,6 +1130,7 @@ AudioEngine::AudioEngine(
     HRESULT hr = pImpl->Initialize(flags, wfx, deviceId, category);
     if (FAILED(hr))
     {
+        const wchar_t* deviceName = (deviceId) ? deviceId : L"default";
         if (hr == HRESULT_FROM_WIN32(ERROR_NOT_FOUND))
         {
             if (flags & AudioEngine_ThrowOnNoAudioHW)
@@ -1142,11 +1143,22 @@ AudioEngine::AudioEngine(
                 DebugTrace("WARNING: AudioEngine found no default audio device; running in 'silent mode'\n");
             }
         }
+        else if (hr == AUDCLNT_E_DEVICE_IN_USE)
+        {
+            if (flags & AudioEngine_ThrowOnNoAudioHW)
+            {
+                DebugTrace("ERROR: AudioEngine audio device [%ls] was already in use\n", deviceName);
+                throw std::runtime_error("AudioEngineNoAudioHW");
+            }
+            else
+            {
+                DebugTrace("WARNING: AudioEngine audio device [%ls] already in use; running in 'silent mode'\n", deviceName);
+            }
+        }
         else
         {
             DebugTrace("ERROR: AudioEngine failed (%08X) to initialize using device [%ls]\n",
-                static_cast<unsigned int>(hr),
-                (deviceId) ? deviceId : L"default");
+                static_cast<unsigned int>(hr), deviceName);
             throw std::runtime_error("AudioEngine");
         }
     }
@@ -1187,6 +1199,7 @@ bool AudioEngine::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceId)
     HRESULT hr = pImpl->Reset(wfx, deviceId);
     if (FAILED(hr))
     {
+        const wchar_t* deviceName = (deviceId) ? deviceId : L"default";
         if (hr == HRESULT_FROM_WIN32(ERROR_NOT_FOUND))
         {
             if (pImpl->mEngineFlags & AudioEngine_ThrowOnNoAudioHW)
@@ -1200,10 +1213,23 @@ bool AudioEngine::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceId)
                 return false;
             }
         }
+        else if (hr == AUDCLNT_E_DEVICE_IN_USE)
+        {
+            if (pImpl->mEngineFlags & AudioEngine_ThrowOnNoAudioHW)
+            {
+                DebugTrace("ERROR: AudioEngine failed to initialize using device [%ls] because it was already in use.\n", deviceName);
+                throw std::runtime_error("AudioEngineNoAudioHW");
+            }
+            else
+            {
+                DebugTrace("WARNING: AudioEngine failed to initialize using device [%ls] because it was already in use.\n", deviceName);
+                return false;
+            }
+        }
         else
         {
             DebugTrace("ERROR: AudioEngine failed (%08X) to Reset using device [%ls]\n",
-                static_cast<unsigned int>(hr), (deviceId) ? deviceId : L"default");
+                static_cast<unsigned int>(hr), deviceName);
             throw std::runtime_error("AudioEngine::Reset");
         }
     }
@@ -1229,7 +1255,11 @@ void AudioEngine::Resume()
         return;
 
     HRESULT hr = pImpl->xaudio2->StartEngine();
-    ThrowIfFailed(hr);
+    if (FAILED(hr))
+    {
+        DebugTrace("WARNING: Resume of the audio engine failed; running in 'silent mode'\n");
+        pImpl->SetSilentMode();
+    }
 }
 
 
