@@ -222,6 +222,12 @@ class DGSLEffect::Impl : public AlignedNew<DGSLEffectConstants>
 public:
     Impl(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader) :
         constants{},
+        world{},
+        view{},
+        projection{},
+        lightEnabled{},
+        lightDiffuseColor{},
+        lightSpecularColor{},
         dirtyFlags(INT_MAX),
         vertexColorEnabled(false),
         textureEnabled(false),
