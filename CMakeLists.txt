@@ -55,6 +55,7 @@ include(GNUInstallDirs)
 if(WINDOWS_STORE)
    set(BUILD_GAMEINPUT OFF)
    set(USING_WINDOWS_GAMING_INPUT ON)
+   set(BUILD_TOOLS OFF)
 endif()
 
 #--- Library
@@ -305,7 +306,7 @@ install(FILES
   DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PACKAGE_NAME})
 
 #--- Command-line tools
-if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
+if(BUILD_TOOLS AND WIN32)
   set(TOOL_EXES xwbtool)
 
   add_executable(xwbtool
@@ -480,13 +481,14 @@ if(WIN32)
     endif()
 endif()
 
-if(BUILD_TOOLS AND (NOT WINDOWS_STORE))
+if(BUILD_TOOLS AND WIN32)
   set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT xwbtool)
 endif()
 
 #--- Test suite
 include(CTest)
-if(BUILD_TESTING AND WIN32 AND (NOT WINDOWS_STORE) AND (EXISTS "${CMAKE_CURRENT_LIST_DIR}/Tests/CMakeLists.txt"))
+if(BUILD_TESTING AND WIN32 AND (NOT WINDOWS_STORE)
+   AND (EXISTS "${CMAKE_CURRENT_LIST_DIR}/Tests/CMakeLists.txt"))
   enable_testing()
   add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/Tests)
 endif()
