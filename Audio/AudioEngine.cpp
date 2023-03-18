@@ -1490,36 +1490,6 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
 {
     std::vector<RendererDetail> list;
 
-#if defined(__cplusplus_winrt)
-
-    // Enumerating with WinRT using C++/CX (Windows Store apps)
-    using Windows::Devices::Enumeration::DeviceClass;
-    using Windows::Devices::Enumeration::DeviceInformation;
-    using Windows::Devices::Enumeration::DeviceInformationCollection;
-
-    auto operation = DeviceInformation::FindAllAsync(DeviceClass::AudioRender);
-    while (operation->Status == Windows::Foundation::AsyncStatus::Started) { Sleep(100); }
-    if (operation->Status != Windows::Foundation::AsyncStatus::Completed)
-    {
-        throw std::runtime_error("FindAllAsync");
-    }
-
-    DeviceInformationCollection^ devices = operation->GetResults();
-
-    for (unsigned i = 0; i < devices->Size; ++i)
-    {
-        using Windows::Devices::Enumeration::DeviceInformation;
-
-        DeviceInformation^ d = devices->GetAt(i);
-
-        RendererDetail device;
-        device.deviceId = d->Id->Data();
-        device.description = d->Name->Data();
-        list.emplace_back(device);
-    }
-
-#else
-
     // Enumerating with WinRT using WRL (Win32 desktop app for Windows 8.x)
     using namespace Microsoft::WRL;
     using namespace Microsoft::WRL::Wrappers;
@@ -1594,7 +1564,6 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
             list.emplace_back(device);
         }
     }
-#endif
 
     return list;
 }
