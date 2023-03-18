@@ -1464,7 +1464,8 @@ X3DAUDIO_HANDLE& AudioEngine::Get3DHandle() const noexcept
 // Note that this form of enumeration would also be needed for XAudio2.9 prior to Windows 10 (18362).
 //
 // If you care about supporting Windows 10 (17763), Windows Server 2019, or earlier Windows 10 builds,
-// you will need to modify the library to use this codepath for Windows desktop -or- use XAudio 2.8.
+// you will need to modify the library to use this codepath for Windows desktop -or-
+// -or- use XAudio2Redist -or- use XAudio 2.8.
 
 #pragma comment(lib,"runtimeobject.lib")
 #pragma warning(push)
