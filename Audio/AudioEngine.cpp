@@ -1488,6 +1488,10 @@ X3DAUDIO_HANDLE& AudioEngine::Get3DHandle() const noexcept
 
 #include <wrl.h>
 
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Wdeprecated-dynamic-exception-spec"
+#endif
+
 namespace
 {
     const wchar_t* c_PKEY_AudioEngine_DeviceFormat = L"{f19f064d-082c-4e27-bc73-6882a1bb8e4c} 0";
