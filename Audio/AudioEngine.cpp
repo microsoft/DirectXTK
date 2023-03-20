@@ -1342,6 +1342,7 @@ WAVEFORMATEXTENSIBLE AudioEngine::GetOutputFormat() const noexcept
 
     wfx.Format = pImpl->mOutputFormat;
     wfx.Format.cbSize = sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX);
+    wfx.Format.wFormatTag = WAVE_FORMAT_EXTENSIBLE;
 
     wfx.Samples.wValidBitsPerSample = wfx.Format.wBitsPerSample;
     wfx.dwChannelMask = pImpl->masterChannelMask;
