@@ -247,7 +247,7 @@ namespace
         return result.key;
     }
 
-    uint16_t GetDeviceBitDepth(const wchar_t*);
+    void GetDeviceOutputFormat(const wchar_t* deviceId, WAVEFORMATEX& wfx);
 }
 
 static_assert(static_cast<unsigned int>(std::size(gReverbPresets)) == Reverb_MAX, "AUDIO_ENGINE_REVERB enum mismatch");
@@ -272,7 +272,6 @@ public:
         mReverbVoice(nullptr),
         masterChannelMask(0),
         masterChannels(0),
-        masterBitDepth(0),
         masterRate(0),
         defaultRate(44100),
         maxVoiceOneshots(SIZE_MAX),
@@ -282,6 +281,7 @@ public:
         mCriticalError(false),
         mReverbEnabled(false),
         mEngineFlags(AudioEngine_Default),
+        mOutputFormat{},
         mCategory(AudioCategory_GameEffects),
         mVoiceInstances(0)
     {
@@ -329,8 +329,7 @@ public:
     IXAudio2SubmixVoice*                mReverbVoice;
 
     uint32_t                            masterChannelMask;
-    uint16_t                            masterChannels;
-    uint16_t                            masterBitDepth;
+    uint32_t                            masterChannels;
     uint32_t                            masterRate;
 
     int                                 defaultRate;
@@ -344,6 +343,7 @@ public:
     bool                                mReverbEnabled;
 
     AUDIO_ENGINE_FLAGS                  mEngineFlags;
+    WAVEFORMATEX                        mOutputFormat;
 
 private:
     using notifylist_t = std::set<IVoiceNotify*>;
@@ -398,8 +398,8 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
     assert(mMasterVoice == nullptr);
     assert(mReverbVoice == nullptr);
 
-    masterChannelMask = masterRate = 0;
-    masterChannels = masterBitDepth = 0;
+    masterChannelMask = masterChannels = masterRate = 0;
+    mOutputFormat = {};
 
     memset(&mX3DAudio, 0, X3DAUDIO_HANDLE_BYTESIZE);
 
@@ -469,7 +469,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
     mMasterVoice->GetVoiceDetails(&details);
 
     masterChannelMask = dwChannelMask;
-    masterChannels = static_cast<uint16_t>(details.InputChannels);
+    masterChannels = details.InputChannels;
     masterRate = details.InputSampleRate;
 
     DebugTrace("INFO: mastering voice has %u channels, %u sample rate, %08X channel mask\n",
@@ -486,7 +486,11 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
         }
     }
 
-    masterBitDepth = GetDeviceBitDepth(deviceId);
+    mOutputFormat.wFormatTag = WAVE_FORMAT_PCM;
+    mOutputFormat.nChannels = static_cast<WORD>(details.InputChannels);
+    mOutputFormat.nSamplesPerSec = details.InputSampleRate;
+    mOutputFormat.wBitsPerSample = 16;
+    GetDeviceOutputFormat(deviceId, mOutputFormat);
 
     //
     // Setup mastering volume limiter (optional)
@@ -669,8 +673,8 @@ void AudioEngine::Impl::Shutdown() noexcept
         mVolumeLimiter.Reset();
         xaudio2.Reset();
 
-        masterChannelMask = masterRate = 0;
-        masterChannels = masterBitDepth = 0;
+        masterChannelMask = masterChannels = masterRate = 0;
+        mOutputFormat = {};
 
         mCriticalError = false;
         mReverbEnabled = false;
@@ -1336,19 +1340,18 @@ WAVEFORMATEXTENSIBLE AudioEngine::GetOutputFormat() const noexcept
     if (!pImpl->xaudio2)
         return wfx;
 
-    wfx.Format.wFormatTag = WAVE_FORMAT_EXTENSIBLE;
-    wfx.Format.wBitsPerSample = wfx.Samples.wValidBitsPerSample = pImpl->masterBitDepth;
+    wfx.Format = pImpl->mOutputFormat;
     wfx.Format.cbSize = sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX);
 
-    wfx.Format.nChannels = pImpl->masterChannels;
-    wfx.Format.nSamplesPerSec = pImpl->masterRate;
+    wfx.Samples.wValidBitsPerSample = wfx.Format.wBitsPerSample;
     wfx.dwChannelMask = pImpl->masterChannelMask;
 
     wfx.Format.nBlockAlign = static_cast<WORD>(wfx.Format.nChannels * wfx.Format.wBitsPerSample / 8);
     wfx.Format.nAvgBytesPerSec = wfx.Format.nSamplesPerSec * wfx.Format.nBlockAlign;
 
-    static const GUID s_pcm = { WAVE_FORMAT_PCM, 0x0000, 0x0010, { 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71 } };
-    memcpy(&wfx.SubFormat, &s_pcm, sizeof(GUID));
+    static const GUID s_wfexBase = { 0x00000000, 0x0000, 0x0010, { 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71 } };
+    memcpy(&wfx.SubFormat, &s_wfexBase, sizeof(GUID));
+    wfx.SubFormat.Data1 = wfx.Format.wFormatTag;
 
     return wfx;
 }
@@ -1357,6 +1360,12 @@ WAVEFORMATEXTENSIBLE AudioEngine::GetOutputFormat() const noexcept
 uint32_t AudioEngine::GetChannelMask() const noexcept
 {
     return pImpl->masterChannelMask;
+}
+
+
+int AudioEngine::GetOutputSampleRate() const noexcept
+{
+    return static_cast<int>(pImpl->masterRate);
 }
 
 
@@ -1480,9 +1489,9 @@ X3DAUDIO_HANDLE& AudioEngine::Get3DHandle() const noexcept
 
 namespace
 {
-    uint16_t GetDeviceBitDepth(const wchar_t*)
+    void GetDeviceOutputFormat(const wchar_t*, WAVEFORMATEX&)
     {
-        return 16; // This is a guess as there's no way to get this data via the Windows Runtime APIs
+        // TODO - Windows Runtime property access
     }
 }
 
@@ -1577,9 +1586,9 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
 
 namespace
 {
-    uint16_t GetDeviceBitDepth(const wchar_t*)
+    void GetDeviceOutputFormat(const wchar_t*, WAVEFORMATEX& wfx)
     {
-        return 24;
+        wfx.wBitsPerSample = 24;
     }
 }
 
@@ -1615,25 +1624,23 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
 
 namespace
 {
-    uint16_t GetDeviceBitDepth(const wchar_t* deviceId)
+    void GetDeviceOutputFormat(const wchar_t* deviceId, WAVEFORMATEX& wfx)
     {
         ComPtr<IMMDeviceEnumerator> devEnum;
         if (FAILED(CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(devEnum.GetAddressOf()))))
-            return 0;
+            return;
 
         ComPtr<IMMDevice> endpoint;
         if (!deviceId)
         {
             if (FAILED(devEnum->GetDefaultAudioEndpoint(eRender, eConsole, endpoint.GetAddressOf())))
-                return 0;
+                return;
         }
         else
         {
             if (FAILED(devEnum->GetDevice(deviceId, endpoint.GetAddressOf())))
-                return 0;
+                return;
         }
-
-        uint16_t bitDepth = 16; // This is a guess.
 
         // Value matches Windows SDK header um\mmdeviceapi.h
         constexpr static PROPERTYKEY s_PKEY_AudioEngine_DeviceFormat = { { 0xf19f064d, 0x82c, 0x4e27, { 0xbc, 0x73, 0x68, 0x82, 0xa1, 0xbb, 0x8e, 0x4c } }, 0 };
@@ -1648,14 +1655,13 @@ namespace
             {
                 if (var.vt == VT_BLOB && var.blob.cbSize >= sizeof(WAVEFORMATEX))
                 {
-                    auto wfx = reinterpret_cast<const WAVEFORMATEX*>(var.blob.pBlobData);
-                    bitDepth = wfx->wBitsPerSample;
+                    auto devicefx = reinterpret_cast<const WAVEFORMATEX*>(var.blob.pBlobData);
+                    memcpy(&wfx, devicefx, sizeof(WAVEFORMATEX));
+                    wfx.wFormatTag = static_cast<WORD>(GetFormatTag(devicefx));
                 }
                 PropVariantClear(&var);
             }
         }
-
-        return bitDepth;
     }
 }
 
