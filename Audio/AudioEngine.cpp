@@ -1483,15 +1483,166 @@ X3DAUDIO_HANDLE& AudioEngine::Get3DHandle() const noexcept
 #pragma clang diagnostic ignored "-Wnonportable-system-include-path"
 #endif
 #include <Windows.Devices.Enumeration.h>
+#include <Windows.Media.Devices.h>
 #pragma warning(pop)
 
 #include <wrl.h>
 
 namespace
 {
-    void GetDeviceOutputFormat(const wchar_t*, WAVEFORMATEX&)
+    const wchar_t* c_PKEY_AudioEngine_DeviceFormat = L"{f19f064d-082c-4e27-bc73-6882a1bb8e4c} 0";
+
+    class PropertyIterator : public Microsoft::WRL::RuntimeClass<ABI::Windows::Foundation::Collections::IIterator<HSTRING>>
     {
-        // TODO - Windows Runtime property access
+        InspectableClass(L"AudioEngine.PropertyIterator", BaseTrust)
+
+    public:
+        HRESULT STDMETHODCALLTYPE get_Current(HSTRING *current) override
+        {
+            if (!current)
+                return E_INVALIDARG;
+
+            if (mFirst)
+            {
+                *current = Microsoft::WRL::Wrappers::HStringReference(c_PKEY_AudioEngine_DeviceFormat).Get();
+            }
+
+            return S_OK;
+        }
+
+        HRESULT STDMETHODCALLTYPE get_HasCurrent(boolean *hasCurrent) override
+        {
+            if (!hasCurrent)
+                return E_INVALIDARG;
+
+            *hasCurrent = (mFirst) ? TRUE : FALSE;
+            return S_OK;
+        }
+
+        HRESULT STDMETHODCALLTYPE MoveNext(boolean *hasCurrent) override
+        {
+            if (!hasCurrent)
+                return E_INVALIDARG;
+
+            *hasCurrent = FALSE;
+            mFirst = false;
+            return S_OK;
+        }
+
+    private:
+        bool mFirst = true;
+    };
+
+    class PropertyList : public Microsoft::WRL::RuntimeClass<ABI::Windows::Foundation::Collections::IIterable<HSTRING>>
+    {
+        InspectableClass(L"AudioEngine.PropertyList", BaseTrust)
+
+    public:
+        HRESULT STDMETHODCALLTYPE First(ABI::Windows::Foundation::Collections::IIterator<HSTRING> **first) override
+        {
+            if (!first)
+                return E_INVALIDARG;
+
+            ComPtr<PropertyIterator> p = Microsoft::WRL::Make<PropertyIterator>();
+            *first = p.Detach();
+            return S_OK;
+        }
+    };
+
+    void GetDeviceOutputFormat(const wchar_t* deviceId, WAVEFORMATEX& wfx)
+    {
+        using namespace Microsoft::WRL;
+        using namespace Microsoft::WRL::Wrappers;
+        using namespace ABI::Windows::Foundation;
+        using namespace ABI::Windows::Foundation::Collections;
+        using namespace ABI::Windows::Devices::Enumeration;
+
+    #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
+        RoInitializeWrapper initialize(RO_INIT_MULTITHREADED);
+        ThrowIfFailed(initialize);
+    #endif
+
+        ComPtr<IDeviceInformationStatics> diFactory;
+        HRESULT hr = GetActivationFactory(HStringReference(RuntimeClass_Windows_Devices_Enumeration_DeviceInformation).Get(), &diFactory);
+        ThrowIfFailed(hr);
+
+        HString id;
+        if (!deviceId)
+        {
+            using namespace ABI::Windows::Media::Devices;
+
+            ComPtr<IMediaDeviceStatics> mdStatics;
+            hr = GetActivationFactory(HStringReference(RuntimeClass_Windows_Media_Devices_MediaDevice).Get(), &mdStatics);
+            ThrowIfFailed(hr);
+
+            hr = mdStatics->GetDefaultAudioRenderId(AudioDeviceRole_Default, id.GetAddressOf());
+            ThrowIfFailed(hr);
+        }
+        else
+        {
+            id.Set(deviceId);
+        }
+
+        ComPtr<IAsyncOperation<DeviceInformation*>> operation;
+        ComPtr<IIterable<HSTRING>> props = Make<PropertyList>();
+
+        hr = diFactory->CreateFromIdAsyncAdditionalProperties(id.Get(), props.Get(), operation.GetAddressOf());
+        if (FAILED(hr))
+            return;
+
+        ComPtr<IAsyncInfo> asyncinfo;
+        hr = operation.As(&asyncinfo);
+        ThrowIfFailed(hr);
+
+        AsyncStatus status;
+        hr = asyncinfo->get_Status(&status);
+        ThrowIfFailed(hr);
+
+        while (status == ABI::Windows::Foundation::AsyncStatus::Started)
+        {
+            Sleep(100);
+            hr = asyncinfo->get_Status(&status);
+            ThrowIfFailed(hr);
+        }
+
+        if (status != ABI::Windows::Foundation::AsyncStatus::Completed)
+        {
+            throw std::runtime_error("CreateFromIdAsync");
+        }
+
+        ComPtr<IDeviceInformation> devInfo;
+        hr = operation->GetResults(devInfo.GetAddressOf());
+        ThrowIfFailed(hr);
+
+        ComPtr<IMapView<HSTRING, IInspectable*>> map;
+        hr = devInfo->get_Properties(map.GetAddressOf());
+        ThrowIfFailed(hr);
+
+        ComPtr<IInspectable> value;
+        hr = map->Lookup(HStringReference(c_PKEY_AudioEngine_DeviceFormat).Get(), value.GetAddressOf());
+        if (SUCCEEDED(hr))
+        {
+            ComPtr<IPropertyValue> pvalue;
+            if (SUCCEEDED(value.As(&pvalue)))
+            {
+                PropertyType ptype;
+                ThrowIfFailed(pvalue->get_Type(&ptype));
+
+                if (ptype == PropertyType_UInt8Array)
+                {
+                    UINT32 length = 0;
+                    BYTE* ptr;
+                    ThrowIfFailed(pvalue->GetUInt8Array(&length, &ptr));
+
+                    if (length >= sizeof(WAVEFORMATEX))
+                    {
+                        auto devicefx = reinterpret_cast<const WAVEFORMATEX*>(ptr);
+                        memcpy(&wfx, devicefx, sizeof(WAVEFORMATEX));
+                        wfx.wFormatTag = static_cast<WORD>(GetFormatTag(devicefx));
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -1500,7 +1651,6 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
     std::vector<RendererDetail> list;
 
     // Enumerating with WinRT using WRL (Win32 desktop app for Windows 8.x)
-    using namespace Microsoft::WRL;
     using namespace Microsoft::WRL::Wrappers;
     using namespace ABI::Windows::Foundation;
     using namespace ABI::Windows::Foundation::Collections;
