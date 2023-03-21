@@ -1499,9 +1499,15 @@ namespace
 
     class PropertyIterator : public Microsoft::WRL::RuntimeClass<ABI::Windows::Foundation::Collections::IIterator<HSTRING>>
     {
+    #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
+        InspectableClass(L"AudioEngine.PropertyIterator", FullTrust)
+    #else
         InspectableClass(L"AudioEngine.PropertyIterator", BaseTrust)
+    #endif
 
     public:
+        PropertyIterator() : mFirst(true), mString(c_PKEY_AudioEngine_DeviceFormat) {}
+
         HRESULT STDMETHODCALLTYPE get_Current(HSTRING *current) override
         {
             if (!current)
@@ -1509,7 +1515,7 @@ namespace
 
             if (mFirst)
             {
-                *current = Microsoft::WRL::Wrappers::HStringReference(c_PKEY_AudioEngine_DeviceFormat).Get();
+                *current = mString.Get();
             }
 
             return S_OK;
@@ -1535,12 +1541,19 @@ namespace
         }
 
     private:
-        bool mFirst = true;
+        bool mFirst;
+        Microsoft::WRL::Wrappers::HStringReference mString;
+
+        ~PropertyIterator() = default;
     };
 
     class PropertyList : public Microsoft::WRL::RuntimeClass<ABI::Windows::Foundation::Collections::IIterable<HSTRING>>
     {
+    #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
+        InspectableClass(L"AudioEngine.PropertyList", FullTrust)
+    #else
         InspectableClass(L"AudioEngine.PropertyList", BaseTrust)
+    #endif
 
     public:
         HRESULT STDMETHODCALLTYPE First(ABI::Windows::Foundation::Collections::IIterator<HSTRING> **first) override
@@ -1552,6 +1565,9 @@ namespace
             *first = p.Detach();
             return S_OK;
         }
+
+    private:
+        ~PropertyList() = default;
     };
 
     void GetDeviceOutputFormat(const wchar_t* deviceId, WAVEFORMATEX& wfx)
