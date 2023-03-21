@@ -1743,6 +1743,7 @@ namespace
 {
     void GetDeviceOutputFormat(const wchar_t*, WAVEFORMATEX& wfx)
     {
+        wfx.nSamplesPerSec = 48000;
         wfx.wBitsPerSample = 24;
     }
 }
