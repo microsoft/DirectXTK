@@ -242,13 +242,16 @@ namespace DirectX
             // Gathers audio engine statistics
 
         WAVEFORMATEXTENSIBLE __cdecl GetOutputFormat() const noexcept;
-            // Returns the format consumed by the mastering voice (which is the same as the device output if defaults are used)
+            // Returns the format of the audio output device associated with the mastering voice.
 
         uint32_t __cdecl GetChannelMask() const noexcept;
             // Returns the output channel mask
 
+        int __cdecl GetOutputSampleRate() const noexcept;
+            // Returns the sample rate going into the mastering voice
+
         unsigned int __cdecl GetOutputChannels() const noexcept;
-            // Returns the number of output channels
+            // Returns the number of channels going into the mastering voice
 
         bool __cdecl IsAudioDevicePresent() const noexcept;
             // Returns true if the audio graph is operating normally, false if in 'silent mode'
