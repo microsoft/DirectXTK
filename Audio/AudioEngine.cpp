@@ -1544,7 +1544,7 @@ namespace
         bool mFirst;
         Microsoft::WRL::Wrappers::HStringReference mString;
 
-        ~PropertyIterator() = default;
+        ~PropertyIterator() override = default;
     };
 
     class PropertyList : public Microsoft::WRL::RuntimeClass<ABI::Windows::Foundation::Collections::IIterable<HSTRING>>
@@ -1567,7 +1567,7 @@ namespace
         }
 
     private:
-        ~PropertyList() = default;
+        ~PropertyList() override = default;
     };
 
     void GetDeviceOutputFormat(const wchar_t* deviceId, WAVEFORMATEX& wfx)
