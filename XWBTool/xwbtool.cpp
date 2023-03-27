@@ -1104,7 +1104,7 @@ namespace
         PrintLogo(false);
 
         static const wchar_t* const s_usage =
-            L"Usage: xwbtool <options> [..] <wav-files>\n"
+            L"Usage: xwbtool <options> [--] <wav-files>\n"
             L"\n"
             L"   -r                  wildcard filename search is recursive\n"
             L"   -s                  creates a streaming wave bank,\n"
