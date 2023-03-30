@@ -12,12 +12,33 @@ schedules:
     include:
     - main
 
+trigger:
+  branches:
+    include:
+    - main
+  paths:
+    exclude:
+    - README.md
+    - HISTORY.md
+    - SECURITY.md
+    - LICENSE
+pr:
+  branches:
+    include:
+    - main
+  paths:
+    exclude:
+    - README.md
+    - HISTORY.md
+    - SECURITY.md
+    - LICENSE
+  drafts: false
+
 resources:
   repositories:
   - repository: self
     type: git
     ref: refs/heads/main
-    trigger: none
 
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 

@@ -13,12 +13,14 @@ schedules:
     - main
   always: true
 
+trigger: none
+pr: none
+
 resources:
   repositories:
   - repository: self
     type: git
     ref: refs/heads/main
-    trigger: none
 
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
@@ -33,7 +35,7 @@ pool:
 jobs:
 - job: DESKTOP_BUILD
   displayName: 'Win32 Desktop'
-  timeoutInMinutes: 120 
+  timeoutInMinutes: 120
   cancelTimeoutInMinutes: 1
   steps:
   - checkout: self

@@ -27,7 +27,7 @@
 #endif // !USING_XINPUT && !USING_GAMEINPUT && !USING_WINDOWS_GAMING_INPUT
 
 #ifdef USING_GAMEINPUT
-interface IGameInputDevice;
+#include <GameInput.h>
 #ifndef _GAMING_XBOX
 #pragma comment(lib,"gameinput.lib")
 #endif

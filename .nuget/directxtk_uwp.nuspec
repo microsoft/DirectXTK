@@ -7,7 +7,7 @@
         <authors>Microsoft</authors>
         <owners>microsoft,directxtk</owners>
         <summary>The DirectX Tool Kit (aka DirectXTK) is a collection of helper classes for writing Direct3D 11.x code in C++.</summary>
-        <description>This version is for Universal Windows Platform apps on Windows 10 / Windows 11 using Visual Studio 2019 or Visual Studio 2022.
+        <description>This version is for Universal Windows Platform apps on Windows 10 / Windows 11 using Visual Studio 2019 (16.11) or Visual Studio 2022.
 
 Features:
 Audio - low-level audio API using XAudio2
@@ -30,7 +30,7 @@ SpriteBatch - simple &amp; efficient 2D sprite rendering
 SpriteFont - bitmap based text rendering
 VertexTypes - structures for commonly used vertex data formats
 WICTextureLoader - WIC-based image file texture loader</description>
-        <releaseNotes>Matches the February 6, 2023 release on GitHub.</releaseNotes>
+        <releaseNotes>Matches the March 30, 2023 release on GitHub.</releaseNotes>
         <projectUrl>http://go.microsoft.com/fwlink/?LinkId=248929</projectUrl>
         <repository type="git" url="https://github.com/microsoft/DirectXTK.git" />
         <icon>images\icon.jpg</icon>

@@ -246,6 +246,8 @@ namespace
 
         return result.key;
     }
+
+    void GetDeviceOutputFormat(const wchar_t* deviceId, WAVEFORMATEX& wfx);
 }
 
 static_assert(static_cast<unsigned int>(std::size(gReverbPresets)) == Reverb_MAX, "AUDIO_ENGINE_REVERB enum mismatch");
@@ -279,6 +281,7 @@ public:
         mCriticalError(false),
         mReverbEnabled(false),
         mEngineFlags(AudioEngine_Default),
+        mOutputFormat{},
         mCategory(AudioCategory_GameEffects),
         mVoiceInstances(0)
     {
@@ -340,6 +343,7 @@ public:
     bool                                mReverbEnabled;
 
     AUDIO_ENGINE_FLAGS                  mEngineFlags;
+    WAVEFORMATEX                        mOutputFormat;
 
 private:
     using notifylist_t = std::set<IVoiceNotify*>;
@@ -395,6 +399,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
     assert(mReverbVoice == nullptr);
 
     masterChannelMask = masterChannels = masterRate = 0;
+    mOutputFormat = {};
 
     memset(&mX3DAudio, 0, X3DAUDIO_HANDLE_BYTESIZE);
 
@@ -480,6 +485,12 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
             return hr;
         }
     }
+
+    mOutputFormat.wFormatTag = WAVE_FORMAT_PCM;
+    mOutputFormat.nChannels = static_cast<WORD>(details.InputChannels);
+    mOutputFormat.nSamplesPerSec = details.InputSampleRate;
+    mOutputFormat.wBitsPerSample = 16;
+    GetDeviceOutputFormat(deviceId, mOutputFormat);
 
     //
     // Setup mastering volume limiter (optional)
@@ -663,6 +674,7 @@ void AudioEngine::Impl::Shutdown() noexcept
         xaudio2.Reset();
 
         masterChannelMask = masterChannels = masterRate = 0;
+        mOutputFormat = {};
 
         mCriticalError = false;
         mReverbEnabled = false;
@@ -1130,6 +1142,7 @@ AudioEngine::AudioEngine(
     HRESULT hr = pImpl->Initialize(flags, wfx, deviceId, category);
     if (FAILED(hr))
     {
+        const wchar_t* deviceName = (deviceId) ? deviceId : L"default";
         if (hr == HRESULT_FROM_WIN32(ERROR_NOT_FOUND))
         {
             if (flags & AudioEngine_ThrowOnNoAudioHW)
@@ -1142,11 +1155,22 @@ AudioEngine::AudioEngine(
                 DebugTrace("WARNING: AudioEngine found no default audio device; running in 'silent mode'\n");
             }
         }
+        else if (hr == AUDCLNT_E_DEVICE_IN_USE)
+        {
+            if (flags & AudioEngine_ThrowOnNoAudioHW)
+            {
+                DebugTrace("ERROR: AudioEngine audio device [%ls] was already in use\n", deviceName);
+                throw std::runtime_error("AudioEngineNoAudioHW");
+            }
+            else
+            {
+                DebugTrace("WARNING: AudioEngine audio device [%ls] already in use; running in 'silent mode'\n", deviceName);
+            }
+        }
         else
         {
             DebugTrace("ERROR: AudioEngine failed (%08X) to initialize using device [%ls]\n",
-                static_cast<unsigned int>(hr),
-                (deviceId) ? deviceId : L"default");
+                static_cast<unsigned int>(hr), deviceName);
             throw std::runtime_error("AudioEngine");
         }
     }
@@ -1187,6 +1211,7 @@ bool AudioEngine::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceId)
     HRESULT hr = pImpl->Reset(wfx, deviceId);
     if (FAILED(hr))
     {
+        const wchar_t* deviceName = (deviceId) ? deviceId : L"default";
         if (hr == HRESULT_FROM_WIN32(ERROR_NOT_FOUND))
         {
             if (pImpl->mEngineFlags & AudioEngine_ThrowOnNoAudioHW)
@@ -1200,10 +1225,23 @@ bool AudioEngine::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceId)
                 return false;
             }
         }
+        else if (hr == AUDCLNT_E_DEVICE_IN_USE)
+        {
+            if (pImpl->mEngineFlags & AudioEngine_ThrowOnNoAudioHW)
+            {
+                DebugTrace("ERROR: AudioEngine failed to initialize using device [%ls] because it was already in use.\n", deviceName);
+                throw std::runtime_error("AudioEngineNoAudioHW");
+            }
+            else
+            {
+                DebugTrace("WARNING: AudioEngine failed to initialize using device [%ls] because it was already in use.\n", deviceName);
+                return false;
+            }
+        }
         else
         {
             DebugTrace("ERROR: AudioEngine failed (%08X) to Reset using device [%ls]\n",
-                static_cast<unsigned int>(hr), (deviceId) ? deviceId : L"default");
+                static_cast<unsigned int>(hr), deviceName);
             throw std::runtime_error("AudioEngine::Reset");
         }
     }
@@ -1229,7 +1267,11 @@ void AudioEngine::Resume()
         return;
 
     HRESULT hr = pImpl->xaudio2->StartEngine();
-    ThrowIfFailed(hr);
+    if (FAILED(hr))
+    {
+        DebugTrace("WARNING: Resume of the audio engine failed; running in 'silent mode'\n");
+        pImpl->SetSilentMode();
+    }
 }
 
 
@@ -1298,19 +1340,19 @@ WAVEFORMATEXTENSIBLE AudioEngine::GetOutputFormat() const noexcept
     if (!pImpl->xaudio2)
         return wfx;
 
-    wfx.Format.wFormatTag = WAVE_FORMAT_EXTENSIBLE;
-    wfx.Format.wBitsPerSample = wfx.Samples.wValidBitsPerSample = 16; // This is a guess
+    wfx.Format = pImpl->mOutputFormat;
     wfx.Format.cbSize = sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX);
+    wfx.Format.wFormatTag = WAVE_FORMAT_EXTENSIBLE;
 
-    wfx.Format.nChannels = static_cast<WORD>(pImpl->masterChannels);
-    wfx.Format.nSamplesPerSec = pImpl->masterRate;
+    wfx.Samples.wValidBitsPerSample = wfx.Format.wBitsPerSample;
     wfx.dwChannelMask = pImpl->masterChannelMask;
 
     wfx.Format.nBlockAlign = static_cast<WORD>(wfx.Format.nChannels * wfx.Format.wBitsPerSample / 8);
     wfx.Format.nAvgBytesPerSec = wfx.Format.nSamplesPerSec * wfx.Format.nBlockAlign;
 
-    static const GUID s_pcm = { WAVE_FORMAT_PCM, 0x0000, 0x0010, { 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71 } };
-    memcpy(&wfx.SubFormat, &s_pcm, sizeof(GUID));
+    static const GUID s_wfexBase = { 0x00000000, 0x0000, 0x0010, { 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71 } };
+    memcpy(&wfx.SubFormat, &s_wfexBase, sizeof(GUID));
+    wfx.SubFormat.Data1 = wfx.Format.wFormatTag;
 
     return wfx;
 }
@@ -1319,6 +1361,12 @@ WAVEFORMATEXTENSIBLE AudioEngine::GetOutputFormat() const noexcept
 uint32_t AudioEngine::GetChannelMask() const noexcept
 {
     return pImpl->masterChannelMask;
+}
+
+
+int AudioEngine::GetOutputSampleRate() const noexcept
+{
+    return static_cast<int>(pImpl->masterRate);
 }
 
 
@@ -1420,15 +1468,15 @@ X3DAUDIO_HANDLE& AudioEngine::Get3DHandle() const noexcept
 
 
 // Static methods.
-#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)
-#include <mmdeviceapi.h>
-#elif defined(_XBOX_ONE)
-#include <Windows.Media.Devices.h>
-#include <wrl.h>
-#elif defined(USING_XAUDIO2_REDIST) || defined(_GAMING_DESKTOP)
-#include <mmdeviceapi.h>
-#include <functiondiscoverykeys_devpkey.h>
-#elif (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
+#if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)) || defined(USING_XAUDIO2_8)
+//--- Use Windows Runtime device enumeration ---
+
+// Note that this form of enumeration would also be needed for XAudio2.9 prior to Windows 10 (18362).
+//
+// If you care about supporting Windows 10 (17763), Windows Server 2019, or earlier Windows 10 builds,
+// you will need to modify the library to use this codepath for Windows desktop
+// -or- use XAudio2Redist -or- use XAudio 2.8.
+
 #pragma comment(lib,"runtimeobject.lib")
 #pragma warning(push)
 #pragma warning(disable: 4471 5204 5256)
@@ -1436,144 +1484,194 @@ X3DAUDIO_HANDLE& AudioEngine::Get3DHandle() const noexcept
 #pragma clang diagnostic ignored "-Wnonportable-system-include-path"
 #endif
 #include <Windows.Devices.Enumeration.h>
+#include <Windows.Media.Devices.h>
 #pragma warning(pop)
+
 #include <wrl.h>
+
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Wdeprecated-dynamic-exception-spec"
 #endif
+
+namespace
+{
+    const wchar_t* c_PKEY_AudioEngine_DeviceFormat = L"{f19f064d-082c-4e27-bc73-6882a1bb8e4c} 0";
+
+    class PropertyIterator : public Microsoft::WRL::RuntimeClass<ABI::Windows::Foundation::Collections::IIterator<HSTRING>>
+    {
+    #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
+        InspectableClass(L"AudioEngine.PropertyIterator", FullTrust)
+    #else
+        InspectableClass(L"AudioEngine.PropertyIterator", BaseTrust)
+    #endif
+
+    public:
+        PropertyIterator() : mFirst(true), mString(c_PKEY_AudioEngine_DeviceFormat) {}
+
+        HRESULT STDMETHODCALLTYPE get_Current(HSTRING *current) override
+        {
+            if (!current)
+                return E_INVALIDARG;
+
+            if (mFirst)
+            {
+                *current = mString.Get();
+            }
+
+            return S_OK;
+        }
+
+        HRESULT STDMETHODCALLTYPE get_HasCurrent(boolean *hasCurrent) override
+        {
+            if (!hasCurrent)
+                return E_INVALIDARG;
+
+            *hasCurrent = (mFirst) ? TRUE : FALSE;
+            return S_OK;
+        }
+
+        HRESULT STDMETHODCALLTYPE MoveNext(boolean *hasCurrent) override
+        {
+            if (!hasCurrent)
+                return E_INVALIDARG;
+
+            *hasCurrent = FALSE;
+            mFirst = false;
+            return S_OK;
+        }
+
+    private:
+        bool mFirst;
+        Microsoft::WRL::Wrappers::HStringReference mString;
+
+        ~PropertyIterator() override = default;
+    };
+
+    class PropertyList : public Microsoft::WRL::RuntimeClass<ABI::Windows::Foundation::Collections::IIterable<HSTRING>>
+    {
+    #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
+        InspectableClass(L"AudioEngine.PropertyList", FullTrust)
+    #else
+        InspectableClass(L"AudioEngine.PropertyList", BaseTrust)
+    #endif
+
+    public:
+        HRESULT STDMETHODCALLTYPE First(ABI::Windows::Foundation::Collections::IIterator<HSTRING> **first) override
+        {
+            if (!first)
+                return E_INVALIDARG;
+
+            ComPtr<PropertyIterator> p = Microsoft::WRL::Make<PropertyIterator>();
+            *first = p.Detach();
+            return S_OK;
+        }
+
+    private:
+        ~PropertyList() override = default;
+    };
+
+    void GetDeviceOutputFormat(const wchar_t* deviceId, WAVEFORMATEX& wfx)
+    {
+        using namespace Microsoft::WRL;
+        using namespace Microsoft::WRL::Wrappers;
+        using namespace ABI::Windows::Foundation;
+        using namespace ABI::Windows::Foundation::Collections;
+        using namespace ABI::Windows::Devices::Enumeration;
+
+    #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
+        RoInitializeWrapper initialize(RO_INIT_MULTITHREADED);
+        ThrowIfFailed(initialize);
+    #endif
+
+        ComPtr<IDeviceInformationStatics> diFactory;
+        HRESULT hr = GetActivationFactory(HStringReference(RuntimeClass_Windows_Devices_Enumeration_DeviceInformation).Get(), &diFactory);
+        ThrowIfFailed(hr);
+
+        HString id;
+        if (!deviceId)
+        {
+            using namespace ABI::Windows::Media::Devices;
+
+            ComPtr<IMediaDeviceStatics> mdStatics;
+            hr = GetActivationFactory(HStringReference(RuntimeClass_Windows_Media_Devices_MediaDevice).Get(), &mdStatics);
+            ThrowIfFailed(hr);
+
+            hr = mdStatics->GetDefaultAudioRenderId(AudioDeviceRole_Default, id.GetAddressOf());
+            ThrowIfFailed(hr);
+        }
+        else
+        {
+            id.Set(deviceId);
+        }
+
+        ComPtr<IAsyncOperation<DeviceInformation*>> operation;
+        ComPtr<IIterable<HSTRING>> props = Make<PropertyList>();
+
+        hr = diFactory->CreateFromIdAsyncAdditionalProperties(id.Get(), props.Get(), operation.GetAddressOf());
+        if (FAILED(hr))
+            return;
+
+        ComPtr<IAsyncInfo> asyncinfo;
+        hr = operation.As(&asyncinfo);
+        ThrowIfFailed(hr);
+
+        AsyncStatus status;
+        hr = asyncinfo->get_Status(&status);
+        ThrowIfFailed(hr);
+
+        while (status == ABI::Windows::Foundation::AsyncStatus::Started)
+        {
+            Sleep(100);
+            hr = asyncinfo->get_Status(&status);
+            ThrowIfFailed(hr);
+        }
+
+        if (status != ABI::Windows::Foundation::AsyncStatus::Completed)
+        {
+            throw std::runtime_error("CreateFromIdAsync");
+        }
+
+        ComPtr<IDeviceInformation> devInfo;
+        hr = operation->GetResults(devInfo.GetAddressOf());
+        ThrowIfFailed(hr);
+
+        ComPtr<IMapView<HSTRING, IInspectable*>> map;
+        hr = devInfo->get_Properties(map.GetAddressOf());
+        ThrowIfFailed(hr);
+
+        ComPtr<IInspectable> value;
+        hr = map->Lookup(HStringReference(c_PKEY_AudioEngine_DeviceFormat).Get(), value.GetAddressOf());
+        if (SUCCEEDED(hr))
+        {
+            ComPtr<IPropertyValue> pvalue;
+            if (SUCCEEDED(value.As(&pvalue)))
+            {
+                PropertyType ptype;
+                ThrowIfFailed(pvalue->get_Type(&ptype));
+
+                if (ptype == PropertyType_UInt8Array)
+                {
+                    UINT32 length = 0;
+                    BYTE* ptr;
+                    ThrowIfFailed(pvalue->GetUInt8Array(&length, &ptr));
+
+                    if (length >= sizeof(WAVEFORMATEX))
+                    {
+                        auto devicefx = reinterpret_cast<const WAVEFORMATEX*>(ptr);
+                        memcpy(&wfx, devicefx, sizeof(WAVEFORMATEX));
+                        wfx.wFormatTag = static_cast<WORD>(GetFormatTag(devicefx));
+                    }
+                }
+            }
+        }
+    }
+}
 
 std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
 {
     std::vector<RendererDetail> list;
 
-#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)
-
-    ComPtr<IMMDeviceEnumerator> devEnum;
-    HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(devEnum.GetAddressOf()));
-    ThrowIfFailed(hr);
-
-    ComPtr<IMMDeviceCollection> devices;
-    hr = devEnum->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &devices);
-    ThrowIfFailed(hr);
-
-    ComPtr<IMMDevice> endpoint;
-    ThrowIfFailed(devices->Item(0, endpoint.GetAddressOf()));
-
-    LPWSTR id = nullptr;
-    ThrowIfFailed(endpoint->GetId(&id));
-
-    RendererDetail device;
-    device.deviceId = id;
-    device.description = L"Default";
-
-    CoTaskMemFree(id);
-
-    list.emplace_back(device);
-
-#elif defined(_XBOX_ONE)
-
-    using namespace Microsoft::WRL;
-    using namespace Microsoft::WRL::Wrappers;
-    using namespace ABI::Windows::Foundation;
-    using namespace ABI::Windows::Media::Devices;
-
-    ComPtr<IMediaDeviceStatics> mdStatics;
-    HRESULT hr = GetActivationFactory(HStringReference(RuntimeClass_Windows_Media_Devices_MediaDevice).Get(), &mdStatics);
-    ThrowIfFailed(hr);
-
-    HString id;
-    hr = mdStatics->GetDefaultAudioRenderId(AudioDeviceRole_Default, id.GetAddressOf());
-    ThrowIfFailed(hr);
-
-    RendererDetail device;
-    device.deviceId = id.GetRawBuffer(nullptr);
-    device.description = L"Default";
-    list.emplace_back(device);
-
-#elif defined(USING_XAUDIO2_REDIST) || defined(_GAMING_DESKTOP)
-
-#ifdef __MINGW32__
-    // Value matches Windows SDK header shared\devpkey.h
-    constexpr static PROPERTYKEY PKEY_Device_FriendlyName = { { 0xa45c254e, 0xdf1c, 0x4efd, { 0x80, 0x20, 0x67, 0xd1, 0x46, 0xa8, 0x50, 0xe0 } }, 14 };
-#endif
-
-    ComPtr<IMMDeviceEnumerator> devEnum;
-    HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(devEnum.GetAddressOf()));
-    ThrowIfFailed(hr);
-
-    ComPtr<IMMDeviceCollection> devices;
-    hr = devEnum->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &devices);
-    ThrowIfFailed(hr);
-
-    UINT count = 0;
-    ThrowIfFailed(devices->GetCount(&count));
-
-    if (!count)
-        return list;
-
-    for (UINT j = 0; j < count; ++j)
-    {
-        ComPtr<IMMDevice> endpoint;
-        hr = devices->Item(j, endpoint.GetAddressOf());
-        ThrowIfFailed(hr);
-
-        LPWSTR id = nullptr;
-        ThrowIfFailed(endpoint->GetId(&id));
-
-        RendererDetail device;
-        device.deviceId = id;
-        CoTaskMemFree(id);
-
-        ComPtr<IPropertyStore> props;
-        if (SUCCEEDED(endpoint->OpenPropertyStore(STGM_READ, props.GetAddressOf())))
-        {
-            PROPVARIANT var;
-            PropVariantInit(&var);
-
-            if (SUCCEEDED(props->GetValue(PKEY_Device_FriendlyName, &var)))
-            {
-                if (var.vt == VT_LPWSTR)
-                {
-                    device.description = var.pwszVal;
-                }
-                PropVariantClear(&var);
-            }
-        }
-
-        list.emplace_back(device);
-    }
-
-#elif (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
-
-#if defined(__cplusplus_winrt)
-
-    // Enumerating with WinRT using C++/CX (Windows Store apps)
-    using Windows::Devices::Enumeration::DeviceClass;
-    using Windows::Devices::Enumeration::DeviceInformation;
-    using Windows::Devices::Enumeration::DeviceInformationCollection;
-
-    auto operation = DeviceInformation::FindAllAsync(DeviceClass::AudioRender);
-    while (operation->Status == Windows::Foundation::AsyncStatus::Started) { Sleep(100); }
-    if (operation->Status != Windows::Foundation::AsyncStatus::Completed)
-    {
-        throw std::runtime_error("FindAllAsync");
-    }
-
-    DeviceInformationCollection^ devices = operation->GetResults();
-
-    for (unsigned i = 0; i < devices->Size; ++i)
-    {
-        using Windows::Devices::Enumeration::DeviceInformation;
-
-        DeviceInformation^ d = devices->GetAt(i);
-
-        RendererDetail device;
-        device.deviceId = d->Id->Data();
-        device.description = d->Name->Data();
-        list.emplace_back(device);
-    }
-#else
-
     // Enumerating with WinRT using WRL (Win32 desktop app for Windows 8.x)
-    using namespace Microsoft::WRL;
     using namespace Microsoft::WRL::Wrappers;
     using namespace ABI::Windows::Foundation;
     using namespace ABI::Windows::Foundation::Collections;
@@ -1646,10 +1744,156 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
             list.emplace_back(device);
         }
     }
-#endif
-#else
-#error DirectX Tool Kit for Audio not supported on this platform
-#endif
 
     return list;
 }
+
+
+#elif defined(_XBOX_ONE)
+//--- Use legacy Xbox One XDK device enumeration ---
+
+#include <Windows.Media.Devices.h>
+#include <wrl.h>
+
+namespace
+{
+    void GetDeviceOutputFormat(const wchar_t*, WAVEFORMATEX& wfx)
+    {
+        wfx.nSamplesPerSec = 48000;
+        wfx.wBitsPerSample = 24;
+    }
+}
+
+std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
+{
+    std::vector<RendererDetail> list;
+
+    using namespace Microsoft::WRL;
+    using namespace Microsoft::WRL::Wrappers;
+    using namespace ABI::Windows::Foundation;
+    using namespace ABI::Windows::Media::Devices;
+
+    ComPtr<IMediaDeviceStatics> mdStatics;
+    HRESULT hr = GetActivationFactory(HStringReference(RuntimeClass_Windows_Media_Devices_MediaDevice).Get(), &mdStatics);
+    ThrowIfFailed(hr);
+
+    HString id;
+    hr = mdStatics->GetDefaultAudioRenderId(AudioDeviceRole_Default, id.GetAddressOf());
+    ThrowIfFailed(hr);
+
+    RendererDetail device;
+    device.deviceId = id.GetRawBuffer(nullptr);
+    device.description = L"Default";
+    list.emplace_back(device);
+
+    return list;
+}
+
+
+#elif defined(USING_XAUDIO2_9) || defined(USING_XAUDIO2_REDIST) || defined(_GAMING_DESKTOP)
+#include <mmdeviceapi.h>
+//--- Use WASAPI device enumeration ---
+
+namespace
+{
+    void GetDeviceOutputFormat(const wchar_t* deviceId, WAVEFORMATEX& wfx)
+    {
+        ComPtr<IMMDeviceEnumerator> devEnum;
+        if (FAILED(CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(devEnum.GetAddressOf()))))
+            return;
+
+        ComPtr<IMMDevice> endpoint;
+        if (!deviceId)
+        {
+            if (FAILED(devEnum->GetDefaultAudioEndpoint(eRender, eConsole, endpoint.GetAddressOf())))
+                return;
+        }
+        else
+        {
+            if (FAILED(devEnum->GetDevice(deviceId, endpoint.GetAddressOf())))
+                return;
+        }
+
+        // Value matches Windows SDK header um\mmdeviceapi.h
+        constexpr static PROPERTYKEY s_PKEY_AudioEngine_DeviceFormat = { { 0xf19f064d, 0x82c, 0x4e27, { 0xbc, 0x73, 0x68, 0x82, 0xa1, 0xbb, 0x8e, 0x4c } }, 0 };
+
+        ComPtr<IPropertyStore> props;
+        if (SUCCEEDED(endpoint->OpenPropertyStore(STGM_READ, props.GetAddressOf())))
+        {
+            PROPVARIANT var;
+            PropVariantInit(&var);
+
+            if (SUCCEEDED(props->GetValue(s_PKEY_AudioEngine_DeviceFormat, &var)))
+            {
+                if (var.vt == VT_BLOB && var.blob.cbSize >= sizeof(WAVEFORMATEX))
+                {
+                    auto devicefx = reinterpret_cast<const WAVEFORMATEX*>(var.blob.pBlobData);
+                    memcpy(&wfx, devicefx, sizeof(WAVEFORMATEX));
+                    wfx.wFormatTag = static_cast<WORD>(GetFormatTag(devicefx));
+                }
+                PropVariantClear(&var);
+            }
+        }
+    }
+}
+
+std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
+{
+    std::vector<RendererDetail> list;
+
+    // Value matches Windows SDK header shared\devpkey.h
+    constexpr static PROPERTYKEY s_PKEY_Device_FriendlyName = { { 0xa45c254e, 0xdf1c, 0x4efd, { 0x80, 0x20, 0x67, 0xd1, 0x46, 0xa8, 0x50, 0xe0 } }, 14 };
+
+    ComPtr<IMMDeviceEnumerator> devEnum;
+    HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(devEnum.GetAddressOf()));
+    ThrowIfFailed(hr);
+
+    ComPtr<IMMDeviceCollection> devices;
+    hr = devEnum->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &devices);
+    ThrowIfFailed(hr);
+
+    UINT count = 0;
+    ThrowIfFailed(devices->GetCount(&count));
+
+    if (!count)
+        return list;
+
+    for (UINT j = 0; j < count; ++j)
+    {
+        ComPtr<IMMDevice> endpoint;
+        hr = devices->Item(j, endpoint.GetAddressOf());
+        ThrowIfFailed(hr);
+
+        LPWSTR id = nullptr;
+        ThrowIfFailed(endpoint->GetId(&id));
+
+        RendererDetail device;
+        device.deviceId = id;
+        CoTaskMemFree(id);
+
+        ComPtr<IPropertyStore> props;
+        if (SUCCEEDED(endpoint->OpenPropertyStore(STGM_READ, props.GetAddressOf())))
+        {
+            PROPVARIANT var;
+            PropVariantInit(&var);
+
+            if (SUCCEEDED(props->GetValue(s_PKEY_Device_FriendlyName, &var)))
+            {
+                if (var.vt == VT_LPWSTR)
+                {
+                    device.description = var.pwszVal;
+                }
+                PropVariantClear(&var);
+            }
+        }
+
+        list.emplace_back(device);
+    }
+
+    return list;
+}
+
+
+#else
+#error DirectX Tool Kit for Audio not supported on this platform
+#endif
