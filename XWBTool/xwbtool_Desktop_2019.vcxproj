@@ -122,7 +122,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <OutDir>Bin\Desktop_2019\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>Bin\Desktop_2019\$(Platform)\$(Configuration)\</IntDir>
-    <TargetName>XWBTool</TargetName>
+    <TargetName>XWBTool_arm64</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
