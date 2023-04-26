@@ -129,3 +129,5 @@ Thanks to Garrett Serack for his help in creating the NuGet packages for DirectX
 Thanks to Roberto Sonnino for his help with the ``CMO``, DGSL rendering, and the VS Starter Kit animation.
 
 Thanks to Pete Lewis and Justin Saunders for the normal-mapped and PBR shaders implementation.
+
+Thanks to Andrew Farrier and Scott Matloff for their on-going help with code reviews.
