@@ -78,8 +78,8 @@ namespace DirectX
             }
         }
 
-        MapGuard(MapGuard&&) = default;
-        MapGuard& operator= (MapGuard&&) = default;
+        MapGuard(MapGuard&&) = delete;
+        MapGuard& operator= (MapGuard&&) = delete;
 
         MapGuard(MapGuard const&) = delete;
         MapGuard& operator= (MapGuard const&) = delete;
