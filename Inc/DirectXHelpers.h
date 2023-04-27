@@ -89,6 +89,12 @@ namespace DirectX
             mContext->Unmap(mResource, mSubresource);
         }
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunknown-warning-option"
+#pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
+
         uint8_t* get() const noexcept
         {
             return static_cast<uint8_t*>(pData);
@@ -106,6 +112,10 @@ namespace DirectX
         {
             return static_cast<uint8_t*>(pData) + (slice * DepthPitch) + (row * RowPitch);
         }
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
         template<typename T>
         void copy(_In_reads_(count) T const* data, size_t count) noexcept
