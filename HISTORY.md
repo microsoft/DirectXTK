@@ -6,6 +6,11 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### April 28, 2023
+* MapGuard in DirectXHelpers should not support the move ctor or move operator
+* CMake project updates and fixes for clang/LLVM v16 warnings
+* xwbtool: Windows on ARM64 version
+
 ### March 30, 2023
 * *DirectX Tool Kit for Audio* updates
   * Reworked audio device enumeration for XAudio 2.9 to use MMDeviceEnumerator rather than Windows Runtime APIs
