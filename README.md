@@ -6,7 +6,7 @@ http://go.microsoft.com/fwlink/?LinkId=248929
 
 Copyright (c) Microsoft Corporation.
 
-**March 30, 2023**
+**April 28, 2023**
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for writing Direct3D 11 C++ code for Universal Windows Platform (UWP) apps for Windows 11, Windows 10, Xbox One, and Win32 desktop applications for Windows 7 Service Pack 1 or later.
 
@@ -129,3 +129,5 @@ Thanks to Garrett Serack for his help in creating the NuGet packages for DirectX
 Thanks to Roberto Sonnino for his help with the ``CMO``, DGSL rendering, and the VS Starter Kit animation.
 
 Thanks to Pete Lewis and Justin Saunders for the normal-mapped and PBR shaders implementation.
+
+Thanks to Andrew Farrier and Scott Matloff for their on-going help with code reviews.
