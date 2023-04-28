@@ -136,6 +136,14 @@
       "hidden": true
     },
     {
+      "name": "Durango",
+      "cacheVariables": {
+        "XBOX_CONSOLE_TARGET": "durango",
+        "BUILD_TESTING": false
+      },
+      "hidden": true
+    },
+    {
       "name": "VCPKG",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": {
@@ -196,6 +204,9 @@
 
     { "name": "x64-Debug-GDK"   , "description": "MSVC for x64 (Debug) with Microsoft GDK", "inherits": [ "base", "x64", "Debug", "MSVC", "GDK" ] },
     { "name": "x64-Release-GDK" , "description": "MSVC for x64 (Release) with Microsoft GDK", "inherits": [ "base", "x64", "Release", "MSVC", "GDK" ] },
+
+    { "name": "x64-Debug-Durango"    , "description": "MSVC for x64 (Debug) for legacy Xbox One XDK", "inherits": [ "base", "x64", "Debug", "MSVC", "Durango" ] },
+    { "name": "x64-Release-Durango"  , "description": "MSVC for x64 (Release) for legacy Xbox One XDK", "inherits": [ "base", "x64", "Release", "MSVC", "Durango" ] },
 
     { "name": "x64-Debug-VCPKG"    , "description": "MSVC for x64 (Debug)", "inherits": [ "base", "x64", "Debug", "MSVC", "VCPKG" ] },
     { "name": "x64-Release-VCPKG"  , "description": "MSVC for x64 (Release)", "inherits": [ "base", "x64", "Release", "MSVC", "VCPKG" ] },

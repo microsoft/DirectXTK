@@ -5,6 +5,10 @@ cmake_minimum_required (VERSION 3.20)
 
 set(DIRECTXTK_VERSION 1.8.3)
 
+if(DEFINED XBOX_CONSOLE_TARGET)
+  set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
+endif()
+
 project (DirectXTK
   VERSION ${DIRECTXTK_VERSION}
   DESCRIPTION "DirectX Tool Kit for DirectX 11"
@@ -52,10 +56,18 @@ endif()
 
 include(GNUInstallDirs)
 
-if(WINDOWS_STORE)
-   set(BUILD_GAMEINPUT OFF)
-   set(USING_WINDOWS_GAMING_INPUT ON)
-   set(BUILD_TOOLS OFF)
+if(XBOX_CONSOLE_TARGET STREQUAL "durango")
+  set(BUILD_GAMEINPUT OFF)
+  set(BUILD_WGI OFF)
+  set(BUILD_XINPUT OFF)
+  set(BUILD_XBOXONE_SHADERS ON)
+  set(BUILD_XAUDIO_WIN10 OFF)
+  set(BUILD_XAUDIO_WIN8 ON)
+  set(BUILD_TOOLS OFF)
+elseif(WINDOWS_STORE)
+  set(BUILD_GAMEINPUT OFF)
+  set(BUILD_WGI ON)
+  set(BUILD_TOOLS OFF)
 endif()
 
 #--- Library
@@ -203,13 +215,21 @@ endif()
 set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
     ${COMPILED_SHADERS}/SpriteEffect_SpriteVertexShader.inc)
 
+if(BUILD_XBOXONE_SHADERS)
+    message(STATUS "Using Shader Model 5.0 for Xbox One for shaders")
+    set(ShaderOpts xbox)
+else()
+    message(STATUS "Using Shader Model 4.0/9.1 for shaders.")
+    set(ShaderOpts "")
+endif()
+
 if(NOT USE_PREBUILT_SHADERS)
     add_custom_command(
         OUTPUT "${COMPILED_SHADERS}/SpriteEffect_SpriteVertexShader.inc"
         MAIN_DEPENDENCY "${PROJECT_SOURCE_DIR}/Src/Shaders/CompileShaders.cmd"
         DEPENDS ${SHADER_SOURCES}
         COMMENT "Generating HLSL shaders..."
-        COMMAND ${CMAKE_COMMAND} -E env CompileShadersOutput="${COMPILED_SHADERS}" CompileShaders.cmd > "${COMPILED_SHADERS}/compileshaders.log"
+        COMMAND ${CMAKE_COMMAND} -E env CompileShadersOutput="${COMPILED_SHADERS}" CompileShaders.cmd ARGS ${ShaderOpts} > "${COMPILED_SHADERS}/compileshaders.log"
         WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/Src/Shaders"
         USES_TERMINAL)
 endif()
@@ -270,6 +290,22 @@ elseif(BUILD_WGI)
 elseif(BUILD_XINPUT)
     message(STATUS "Using XInput for GamePad.")
     target_compile_definitions(${PROJECT_NAME} PUBLIC USING_XINPUT)
+endif()
+
+if(DEFINED XBOX_CONSOLE_TARGET)
+    message(STATUS "Building for Xbox Console Target: ${XBOX_CONSOLE_TARGET}")
+    set(CMAKE_REQUIRED_QUIET ON)
+    CHECK_INCLUDE_FILE_CXX(xdk.h XDKLegacy_HEADER)
+    if(NOT XDKLegacy_HEADER)
+        message(FATAL_ERROR "Legacy Xbox One XDK required to build for Durango.")
+    endif()
+    if(XBOX_CONSOLE_TARGET STREQUAL "durango")
+        target_compile_definitions(${PROJECT_NAME} PUBLIC WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE _XBOX_ONE _TITLE MONOLITHIC=1)
+    else()
+        message(FATAL_ERROR "Unknown XBOX_CONSOLE_TARGET")
+    endif()
+elseif(WINDOWS_STORE)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC WINAPI_FAMILY=WINAPI_FAMILY_APP)
 endif()
 
 #--- Package
@@ -362,7 +398,9 @@ else()
     endforeach()
 endif()
 
-if(NOT ${DIRECTX_ARCH} MATCHES "^arm")
+if(XBOX_CONSOLE_TARGET MATCHES "durango")
+    target_compile_options(${PROJECT_NAME} PRIVATE $<IF:$<CXX_COMPILER_ID:MSVC>,/favor:AMD64 /arch:AVX,-march=btver2>)
+elseif(NOT ${DIRECTX_ARCH} MATCHES "^arm")
     if(CMAKE_SIZEOF_VOID_P EQUAL 4)
         set(ARCH_SSE2 $<$<CXX_COMPILER_ID:MSVC>:/arch:SSE2> $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-msse2>)
     else()
@@ -376,6 +414,9 @@ endif()
 
 if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
     set(WarningsLib "-Wpedantic" "-Wextra")
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 16.0)
+        list(APPEND WarningsLib "-Wno-unsafe-buffer-usage")
+    endif()
     target_compile_options(${PROJECT_NAME} PRIVATE ${WarningsLib})
 
     set(WarningsEXE ${WarningsLib} "-Wno-c++98-compat" "-Wno-c++98-compat-pedantic"
@@ -448,11 +489,9 @@ elseif( CMAKE_CXX_COMPILER_ID MATCHES "MSVC" )
 endif()
 
 if(WIN32)
-    if(WINDOWS_STORE)
-      target_compile_definitions(${PROJECT_NAME} PRIVATE WINAPI_FAMILY=WINAPI_FAMILY_APP)
-    endif()
-
-    if(WINDOWS_STORE OR BUILD_XAUDIO_WIN10)
+    if (XBOX_CONSOLE_TARGET STREQUAL "durango")
+        set(WINVER 0x0602)
+    elseif(WINDOWS_STORE OR BUILD_XAUDIO_WIN10)
         message(STATUS "Using DirectX Tool Kit for Audio on XAudio 2.9 (Windows 10/Windows 11).")
         set(WINVER 0x0A00)
     elseif((${DIRECTX_ARCH} MATCHES "^arm64") OR BUILD_GAMEINPUT OR BUILD_WGI)
