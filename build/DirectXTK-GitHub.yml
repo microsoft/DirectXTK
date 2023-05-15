@@ -44,6 +44,7 @@ name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
 variables:
   GUID_FEED: $(ADOFeedGUID)
+  Codeql.Enabled: true
 
 pool:
   vmImage: windows-2019
