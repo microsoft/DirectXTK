@@ -43,7 +43,8 @@ jobs:
     fetchTags: false
   - task: NuGetToolInstaller@1
     displayName: 'Use NuGet'
-    versionSpec: '6.5.x'
+    inputs:
+      versionSpec: '6.5.x'
   - task: NuGetCommand@2
     # We have to use a nuget.config to provide the feed for the 'nuget install' option.
     displayName: 'NuGet set package source to ADO feed'
