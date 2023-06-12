@@ -475,7 +475,7 @@ elseif( CMAKE_CXX_COMPILER_ID MATCHES "MSVC" )
 
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.35)
         foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
-          target_compile_options(${t} PRIVATE /Zc:templateScope /Zc:checkGwOdr)
+          target_compile_options(${t} PRIVATE /Zc:checkGwOdr $<$<VERSION_GREATER_EQUAL:${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION},10.0.22000>:/Zc:templateScope>)
         endforeach()
     endif()
 
