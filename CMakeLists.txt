@@ -348,6 +348,7 @@ if(BUILD_TOOLS AND WIN32)
   add_executable(xwbtool
     xwbtool/xwbtool.cpp
     xwbtool/xwbtool.rc
+    xwbtool/settings.manifest
     Audio/WAVFileReader.cpp
     Audio/WAVFileReader.h)
   target_include_directories(xwbtool PRIVATE Audio Src)
