@@ -806,7 +806,7 @@ static_assert(OPT_MAX <= 32, "dwOptions is a unsigned int bitfield");
 
 struct SConversion
 {
-    wchar_t szSrc[MAX_PATH];
+    std::wstring szSrc;
 };
 
 struct SValue
@@ -894,11 +894,11 @@ namespace
         return 0;
     }
 
-    void SearchForFiles(const wchar_t* path, std::list<SConversion>& files, bool recursive)
+    void SearchForFiles(const std::filesystem::path& path, std::list<SConversion>& files, bool recursive)
     {
         // Process files
         WIN32_FIND_DATAW findData = {};
-        ScopedFindHandle hFile(safe_handle(FindFirstFileExW(path,
+        ScopedFindHandle hFile(safe_handle(FindFirstFileExW(path.c_str(),
             FindExInfoBasic, &findData,
             FindExSearchNameMatch, nullptr,
             FIND_FIRST_EX_LARGE_FETCH)));
@@ -908,12 +908,8 @@ namespace
             {
                 if (!(findData.dwFileAttributes & (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_DIRECTORY)))
                 {
-                    wchar_t drive[_MAX_DRIVE] = {};
-                    wchar_t dir[_MAX_DIR] = {};
-                    _wsplitpath_s(path, drive, _MAX_DRIVE, dir, _MAX_DIR, nullptr, 0, nullptr, 0);
-
                     SConversion conv = {};
-                    _wmakepath_s(conv.szSrc, drive, dir, findData.cFileName, nullptr);
+                    conv.szSrc = path.parent_path().append(findData.cFileName).native();
                     files.push_back(conv);
                 }
 
@@ -925,15 +921,9 @@ namespace
         // Process directories
         if (recursive)
         {
-            wchar_t searchDir[MAX_PATH] = {};
-            {
-                wchar_t drive[_MAX_DRIVE] = {};
-                wchar_t dir[_MAX_DIR] = {};
-                _wsplitpath_s(path, drive, _MAX_DRIVE, dir, _MAX_DIR, nullptr, 0, nullptr, 0);
-                _wmakepath_s(searchDir, drive, dir, L"*", nullptr);
-            }
+            auto searchDir = path.parent_path().append(L"*");
 
-            hFile.reset(safe_handle(FindFirstFileExW(searchDir,
+            hFile.reset(safe_handle(FindFirstFileExW(searchDir.c_str(),
                 FindExInfoBasic, &findData,
                 FindExSearchLimitToDirectories, nullptr,
                 FIND_FIRST_EX_LARGE_FETCH)));
@@ -946,17 +936,7 @@ namespace
                 {
                     if (findData.cFileName[0] != L'.')
                     {
-                        wchar_t subdir[MAX_PATH] = {};
-
-                        {
-                            wchar_t drive[_MAX_DRIVE] = {};
-                            wchar_t dir[_MAX_DIR] = {};
-                            wchar_t fname[_MAX_FNAME] = {};
-                            wchar_t ext[_MAX_FNAME] = {};
-                            _wsplitpath_s(path, drive, dir, fname, ext);
-                            wcscat_s(dir, findData.cFileName);
-                            _wmakepath_s(subdir, drive, dir, fname, ext);
-                        }
+                        auto subdir = path.parent_path().append(findData.cFileName).append(path.filename().c_str());
 
                         SearchForFiles(subdir, files, recursive);
                     }
@@ -972,36 +952,38 @@ namespace
     {
         std::list<SConversion> flist;
         std::set<std::wstring> excludes;
-        wchar_t fname[1024] = {};
+
+        auto fname = std::make_unique<wchar_t[]>(32768);
         for (;;)
         {
-            inFile >> fname;
+            inFile >> fname.get();
             if (!inFile)
                 break;
 
-            if (*fname == L'#')
+            if (fname[0] == L'#')
             {
                 // Comment
             }
-            else if (*fname == L'-')
+            else if (fname[0] == L'-')
             {
                 if (flist.empty())
                 {
-                    wprintf(L"WARNING: Ignoring the line '%ls' in -flist\n", fname);
+                    wprintf(L"WARNING: Ignoring the line '%ls' in -flist\n", fname.get());
                 }
                 else
                 {
-                    std::filesystem::path path(fname + 1);
+                    std::filesystem::path path(fname.get() + 1);
                     auto& npath = path.make_preferred();
-                    if (wcspbrk(fname, L"?*") != nullptr)
+                    if (wcspbrk(fname.get(), L"?*") != nullptr)
                     {
                         std::list<SConversion> removeFiles;
-                        SearchForFiles(npath.c_str(), removeFiles, false);
+                        SearchForFiles(npath, removeFiles, false);
 
                         for (auto& it : removeFiles)
                         {
-                            _wcslwr_s(it.szSrc);
-                            excludes.insert(it.szSrc);
+                            std::wstring name = it.szSrc;
+                            std::transform(name.begin(), name.end(), name.begin(), towlower);
+                            excludes.insert(name);
                         }
                     }
                     else
@@ -1012,16 +994,16 @@ namespace
                     }
                 }
             }
-            else if (wcspbrk(fname, L"?*") != nullptr)
+            else if (wcspbrk(fname.get(), L"?*") != nullptr)
             {
-                std::filesystem::path path(fname);
-                SearchForFiles(path.make_preferred().c_str(), flist, false);
+                std::filesystem::path path(fname.get());
+                SearchForFiles(path.make_preferred(), flist, false);
             }
             else
             {
                 SConversion conv = {};
-                std::filesystem::path path(fname);
-                wcscpy_s(conv.szSrc, path.make_preferred().c_str());
+                std::filesystem::path path(fname.get());
+                conv.szSrc = path.make_preferred().native();
                 flist.push_back(conv);
             }
 
@@ -1231,8 +1213,8 @@ namespace
 int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
 {
     // Parameters and defaults
-    wchar_t szOutputFile[MAX_PATH] = {};
-    wchar_t szHeaderFile[MAX_PATH] = {};
+    std::wstring outputFile;
+    std::wstring headerFile;
 
     // Set locale for output since GetErrorDesc can get localized strings.
     std::locale::global(std::locale(""));
@@ -1316,14 +1298,14 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
             case OPT_OUTPUTFILE:
                 {
                     std::filesystem::path path(pValue);
-                    wcscpy_s(szOutputFile, path.make_preferred().c_str());
+                    outputFile = path.make_preferred().native();
                 }
                 break;
 
             case OPT_OUTPUTHEADER:
                 {
                     std::filesystem::path path(pValue);
-                    wcscpy_s(szHeaderFile, path.make_preferred().c_str());
+                    headerFile = path.make_preferred().native();
                 }
                 break;
 
@@ -1379,7 +1361,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         {
             size_t count = conversion.size();
             std::filesystem::path path(pArg);
-            SearchForFiles(path.make_preferred().c_str(), conversion, (dwOptions & (1 << OPT_RECURSIVE)) != 0);
+            SearchForFiles(path.make_preferred(), conversion, (dwOptions & (1 << OPT_RECURSIVE)) != 0);
             if (conversion.size() <= count)
             {
                 wprintf(L"No matching files found for %ls\n", pArg);
@@ -1390,7 +1372,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         {
             SConversion conv = {};
             std::filesystem::path path(pArg);
-            wcscpy_s(conv.szSrc, path.make_preferred().c_str());
+            conv.szSrc = path.make_preferred().native();
             conversion.push_back(conv);
         }
     }
@@ -1406,46 +1388,42 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         PrintLogo(false);
 
     // Determine output file name
-    if (!*szOutputFile)
+    if (outputFile.empty())
     {
-        auto pConv = conversion.begin();
+        std::filesystem::path curpath(conversion.front().szSrc);
 
-        wchar_t ext[_MAX_EXT] = {};
-        wchar_t fname[_MAX_FNAME] = {};
-        _wsplitpath_s(pConv->szSrc, nullptr, 0, nullptr, 0, fname, _MAX_FNAME, ext, _MAX_EXT);
-
-        if (_wcsicmp(ext, L".xwb") == 0)
+        if (_wcsicmp(curpath.extension().c_str(), L".xwb") == 0)
         {
             wprintf(L"ERROR: Need to specify output file via -o\n");
             return 1;
         }
 
-        _wmakepath_s(szOutputFile, nullptr, nullptr, fname, L".xwb");
+        outputFile = curpath.stem().concat(L".xwb").native();
     }
 
     if (dwOptions & (1 << OPT_TOLOWER))
     {
-        std::ignore = _wcslwr_s(szOutputFile);
+        std::transform(outputFile.begin(), outputFile.end(), outputFile.begin(), towlower);
 
-        if (*szHeaderFile)
+        if (!headerFile.empty())
         {
-            std::ignore = _wcslwr_s(szHeaderFile);
+            std::transform(headerFile.begin(), headerFile.end(), headerFile.begin(), towlower);
         }
     }
 
     if (~dwOptions & (1 << OPT_OVERWRITE))
     {
-        if (GetFileAttributesW(szOutputFile) != INVALID_FILE_ATTRIBUTES)
+        if (GetFileAttributesW(outputFile.c_str()) != INVALID_FILE_ATTRIBUTES)
         {
-            wprintf(L"ERROR: Output file %ls already exists, use -y to overwrite!\n", szOutputFile);
+            wprintf(L"ERROR: Output file %ls already exists, use -y to overwrite!\n", outputFile.c_str());
             return 1;
         }
 
-        if (*szHeaderFile)
+        if (!headerFile.empty())
         {
-            if (GetFileAttributesW(szHeaderFile) != INVALID_FILE_ATTRIBUTES)
+            if (GetFileAttributesW(headerFile.c_str()) != INVALID_FILE_ATTRIBUTES)
             {
-                wprintf(L"ERROR: Output header file %ls already exists!\n", szHeaderFile);
+                wprintf(L"ERROR: Output header file %ls already exists!\n", headerFile.c_str());
                 return 1;
             }
         }
@@ -1462,22 +1440,20 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     size_t index = 0;
     for (auto pConv = conversion.begin(); pConv != conversion.end(); ++pConv, ++index)
     {
-        wchar_t ext[_MAX_EXT] = {};
-        wchar_t fname[_MAX_FNAME] = {};
-        _wsplitpath_s(pConv->szSrc, nullptr, 0, nullptr, 0, fname, _MAX_FNAME, ext, _MAX_EXT);
-
         // Load source image
         if (pConv != conversion.begin())
             wprintf(L"\n");
 
-        wprintf(L"reading %ls", pConv->szSrc);
+        std::filesystem::path curpath(pConv->szSrc);
+
+        wprintf(L"reading %ls", curpath.c_str());
         fflush(stdout);
 
         WaveFile wave;
         wave.conv = index;
         std::unique_ptr<uint8_t[]> waveData;
 
-        HRESULT hr = DirectX::LoadWAVAudioFromFileEx(pConv->szSrc, waveData, wave.data);
+        HRESULT hr = DirectX::LoadWAVAudioFromFileEx(curpath.c_str(), waveData, wave.data);
         if (FAILED(hr))
         {
             wprintf(L"\nERROR: Failed to load file (%08X%ls)\n", static_cast<unsigned int>(hr), GetErrorDesc(hr));
@@ -1519,7 +1495,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         {
             auto cit = conversion.cbegin();
             advance(cit, it->conv);
-            wprintf(L"ERROR: Failed encoding %ls\n", cit->szSrc);
+            wprintf(L"ERROR: Failed encoding %ls\n", cit->szSrc.c_str());
             return 1;
         }
 
@@ -1667,8 +1643,10 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
             auto cit = conversion.cbegin();
             advance(cit, it->conv);
 
-            wchar_t wEntryName[_MAX_FNAME] = {};
-            _wsplitpath_s(cit->szSrc, nullptr, 0, nullptr, 0, wEntryName, _MAX_FNAME, nullptr, 0);
+            std::filesystem::path ename(cit->szSrc);
+
+            wchar_t wEntryName[ENTRYNAME_LENGTH] = {};
+            wcscpy_s(wEntryName, ename.stem().c_str());
 
             int result = WideCharToMultiByte(CP_UTF8, WC_NO_BEST_FIT_CHARS, wEntryName, -1, &entryNames[count * ENTRYNAME_LENGTH], ENTRYNAME_LENGTH, nullptr, nullptr);
             if (result <= 0)
@@ -1683,20 +1661,20 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     assert(count > 0 && count == waves.size());
 
     // Create wave bank
-    assert(*szOutputFile != 0);
+    assert(!outputFile.empty());
 
-    wprintf(L"writing %ls%ls wavebank %ls w/ %zu entries\n", (compact) ? L"compact " : L"", (dwOptions & (1 << OPT_STREAMING)) ? L"streaming" : L"in-memory", szOutputFile, waves.size());
+    wprintf(L"writing %ls%ls wavebank %ls w/ %zu entries\n", (compact) ? L"compact " : L"", (dwOptions & (1 << OPT_STREAMING)) ? L"streaming" : L"in-memory", outputFile.c_str(), waves.size());
     fflush(stdout);
 
     ScopedHandle hFile(safe_handle(CreateFileW(
-        szOutputFile,
+        outputFile.c_str(),
         GENERIC_WRITE, 0,
         nullptr,
         CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL,
         nullptr)));
     if (!hFile)
     {
-        wprintf(L"ERROR: Failed opening output file %ls, %lu\n", szOutputFile, GetLastError());
+        wprintf(L"ERROR: Failed opening output file %ls, %lu\n", outputFile.c_str(), GetLastError());
         return 1;
     }
 
@@ -1743,8 +1721,10 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     }
 
     {
-        wchar_t wBankName[_MAX_FNAME] = {};
-        _wsplitpath_s(szOutputFile, nullptr, 0, nullptr, 0, wBankName, _MAX_FNAME, nullptr, 0);
+        std::filesystem::path bname(outputFile);
+
+        wchar_t wBankName[BANKDATA::BANKNAME_LENGTH] = {};
+        wcscpy_s(wBankName, bname.stem().c_str());
 
         int result = WideCharToMultiByte(CP_UTF8, WC_NO_BEST_FIT_CHARS, wBankName, -1, data.szBankName, BANKDATA::BANKNAME_LENGTH, nullptr, nullptr);
         if (result <= 0)
@@ -1755,7 +1735,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
 
     if (SetFilePointer(hFile.get(), LONG(segmentOffset), nullptr, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
     {
-        wprintf(L"ERROR: Failed writing bank data to %ls, SFP %lu\n", szOutputFile, GetLastError());
+        wprintf(L"ERROR: Failed writing bank data to %ls, SFP %lu\n", outputFile.c_str(), GetLastError());
         return 1;
     }
 
@@ -1763,7 +1743,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     if (!WriteFile(hFile.get(), &data, sizeof(data), &bytesWritten, nullptr)
         || bytesWritten != sizeof(data))
     {
-        wprintf(L"ERROR: Failed writing bank data to %ls, %lu\n", szOutputFile, GetLastError());
+        wprintf(L"ERROR: Failed writing bank data to %ls, %lu\n", outputFile.c_str(), GetLastError());
         return 1;
     }
 
@@ -1776,7 +1756,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
 
     if (SetFilePointer(hFile.get(), LONG(segmentOffset), nullptr, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
     {
-        wprintf(L"ERROR: Failed writing entry metadata to %ls, SFP %lu\n", szOutputFile, GetLastError());
+        wprintf(L"ERROR: Failed writing entry metadata to %ls, SFP %lu\n", outputFile.c_str(), GetLastError());
         return 1;
     }
 
@@ -1784,7 +1764,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     if (!WriteFile(hFile.get(), entries.get(), entryBytes, &bytesWritten, nullptr)
         || bytesWritten != entryBytes)
     {
-        wprintf(L"ERROR: Failed writing entry metadata to %ls, %lu\n", szOutputFile, GetLastError());
+        wprintf(L"ERROR: Failed writing entry metadata to %ls, %lu\n", outputFile.c_str(), GetLastError());
         return 1;
     }
 
@@ -1805,7 +1785,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
 
         if (SetFilePointer(hFile.get(), LONG(segmentOffset), nullptr, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
         {
-            wprintf(L"ERROR: Failed writing seek tables to %ls, SFP %lu\n", szOutputFile, GetLastError());
+            wprintf(L"ERROR: Failed writing seek tables to %ls, SFP %lu\n", outputFile.c_str(), GetLastError());
             return 1;
         }
 
@@ -1852,7 +1832,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         if (!WriteFile(hFile.get(), seekTables.get(), seekLen, &bytesWritten, nullptr)
             || bytesWritten != seekLen)
         {
-            wprintf(L"ERROR: Failed writing seek tables to %ls, %lu\n", szOutputFile, GetLastError());
+            wprintf(L"ERROR: Failed writing seek tables to %ls, %lu\n", outputFile.c_str(), GetLastError());
             return 1;
         }
 
@@ -1872,7 +1852,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
 
         if (SetFilePointer(hFile.get(), LONG(segmentOffset), nullptr, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
         {
-            wprintf(L"ERROR: Failed writing friendly entry names to %ls, SFP %lu\n", szOutputFile, GetLastError());
+            wprintf(L"ERROR: Failed writing friendly entry names to %ls, SFP %lu\n", outputFile.c_str(), GetLastError());
             return 1;
         }
 
@@ -1880,7 +1860,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         if (!WriteFile(hFile.get(), entryNames.get(), entryNamesBytes, &bytesWritten, nullptr)
             || bytesWritten != entryNamesBytes)
         {
-            wprintf(L"ERROR: Failed writing friendly entry names to %ls, %lu\n", szOutputFile, GetLastError());
+            wprintf(L"ERROR: Failed writing friendly entry names to %ls, %lu\n", outputFile.c_str(), GetLastError());
             return 1;
         }
 
@@ -1899,14 +1879,14 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     {
         if (SetFilePointer(hFile.get(), LONG(segmentOffset), nullptr, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
         {
-            wprintf(L"ERROR: Failed writing audio data to %ls, SFP %lu\n", szOutputFile, GetLastError());
+            wprintf(L"ERROR: Failed writing audio data to %ls, SFP %lu\n", outputFile.c_str(), GetLastError());
             return 1;
         }
 
         if (!WriteFile(hFile.get(), it.data.startAudio, it.data.audioBytes, &bytesWritten, nullptr)
             || bytesWritten != it.data.audioBytes)
         {
-            wprintf(L"ERROR: Failed writing audio data to %ls, %lu\n", szOutputFile, GetLastError());
+            wprintf(L"ERROR: Failed writing audio data to %ls, %lu\n", outputFile.c_str(), GetLastError());
             return 1;
         }
 
@@ -1926,42 +1906,44 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     // Commit wave bank
     if (SetFilePointer(hFile.get(), LONG(segmentOffset), nullptr, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
     {
-        wprintf(L"ERROR: Failed committing output file %ls, EOF %lu\n", szOutputFile, GetLastError());
+        wprintf(L"ERROR: Failed committing output file %ls, EOF %lu\n", outputFile.c_str(), GetLastError());
         return 1;
     }
 
     if (!SetEndOfFile(hFile.get()))
     {
-        wprintf(L"ERROR: Failed committing output file %ls, EOF %lu\n", szOutputFile, GetLastError());
+        wprintf(L"ERROR: Failed committing output file %ls, EOF %lu\n", outputFile.c_str(), GetLastError());
         return 1;
     }
 
     if (SetFilePointer(hFile.get(), 0, nullptr, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
     {
-        wprintf(L"ERROR: Failed committing output file %ls, HDR %lu\n", szOutputFile, GetLastError());
+        wprintf(L"ERROR: Failed committing output file %ls, HDR %lu\n", outputFile.c_str(), GetLastError());
         return 1;
     }
 
     if (!WriteFile(hFile.get(), &header, sizeof(header), &bytesWritten, nullptr)
         || bytesWritten != sizeof(header))
     {
-        wprintf(L"ERROR: Failed committing output file %ls, HDR %lu\n", szOutputFile, GetLastError());
+        wprintf(L"ERROR: Failed committing output file %ls, HDR %lu\n", outputFile.c_str(), GetLastError());
         return 1;
     }
 
     // Write C header if requested
-    if (*szHeaderFile)
+    if (!headerFile.empty())
     {
-        wprintf(L"writing C header %ls\n", szHeaderFile);
+        wprintf(L"writing C header %ls\n", headerFile.c_str());
         fflush(stdout);
 
         FILE* file = nullptr;
-        if (!_wfopen_s(&file, szHeaderFile, L"wt"))
+        if (!_wfopen_s(&file, headerFile.c_str(), L"wt"))
         {
-            wchar_t wBankName[_MAX_FNAME] = {};
-            _wsplitpath_s(szOutputFile, nullptr, 0, nullptr, 0, wBankName, _MAX_FNAME, nullptr, 0);
+            std::filesystem::path bname(outputFile);
 
-            FileNameToIdentifier(wBankName, _MAX_FNAME);
+            wchar_t wBankName[BANKDATA::BANKNAME_LENGTH] = {};
+            wcscpy_s(wBankName, bname.stem().c_str());
+
+            FileNameToIdentifier(wBankName, BANKDATA::BANKNAME_LENGTH);
 
             fprintf_s(file, "#pragma once\n\nenum XACT_WAVEBANK_%ls : unsigned int\n{\n", wBankName);
 
@@ -1971,10 +1953,12 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
                 auto cit = conversion.cbegin();
                 advance(cit, it->conv);
 
-                wchar_t wEntryName[_MAX_FNAME] = {};
-                _wsplitpath_s(cit->szSrc, nullptr, 0, nullptr, 0, wEntryName, _MAX_FNAME, nullptr, 0);
+                std::filesystem::path ename(cit->szSrc);
 
-                FileNameToIdentifier(wEntryName, _MAX_FNAME);
+                wchar_t wEntryName[ENTRYNAME_LENGTH] = {};
+                wcscpy_s(wEntryName, ename.stem().c_str());
+
+                FileNameToIdentifier(wEntryName, ENTRYNAME_LENGTH);
 
                 fprintf_s(file, "    XACT_WAVEBANK_%ls_%ls = %zu,\n", wBankName, wEntryName, windex);
             }
@@ -1985,7 +1969,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
         }
         else
         {
-            wprintf(L"ERROR: Failed writing wave bank C header %ls\n", szHeaderFile);
+            wprintf(L"ERROR: Failed writing wave bank C header %ls\n", headerFile.c_str());
             return 1;
         }
     }
