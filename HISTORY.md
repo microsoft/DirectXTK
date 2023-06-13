@@ -6,6 +6,11 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### June 13, 2023
+* CMake project updates
+* xwbtool: Fix minor display issue with error messages
+* xwbtool: Supports Long Paths on Windows 10, Version 1607 or later
+
 ### April 28, 2023
 * MapGuard in DirectXHelpers should not support the move ctor or move operator
 * CMake project updates and fixes for clang/LLVM v16 warnings
