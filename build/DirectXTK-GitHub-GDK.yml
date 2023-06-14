@@ -65,12 +65,14 @@ jobs:
     fetchTags: false
   - task: NuGetToolInstaller@1
     displayName: 'Use NuGet'
+    inputs:
+      versionSpec: '6.5.x'
   - task: NuGetCommand@2
     # We have to use a nuget.config to provide the feed for the 'nuget install' option.
     displayName: 'NuGet set package source to ADO feed'
     inputs:
       command: custom
-      arguments: sources add -Name xboxgdk -Source $(URL_FEED) -ConfigFile NuGet.config
+      arguments: sources add -Name xboxgdk -Source $(URL_FEED) -ConfigFile $(Build.SourcesDirectory)\NuGet.config
   - task: PowerShell@2
     displayName: 'Set nuget.config to single source'
     inputs:
@@ -132,11 +134,13 @@ jobs:
       failOnStderr: true
   - task: NuGetToolInstaller@1
     displayName: 'Use NuGet'
+    inputs:
+      versionSpec: '6.5.x'
   - task: NuGetCommand@2
     displayName: 'NuGet set package source to ADO feed'
     inputs:
       command: custom
-      arguments: sources add -Name xboxgdk -Source $(URL_FEED) -ConfigFile NuGet.config
+      arguments: sources add -Name xboxgdk -Source $(URL_FEED) -ConfigFile $(Build.SourcesDirectory)\NuGet.config
   - task: PowerShell@2
     displayName: 'Set nuget.config to single source'
     inputs:

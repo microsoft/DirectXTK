@@ -8,6 +8,18 @@
     <ClInclude Include="..\Audio\WAVFileReader.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="xwbtool.rc" />
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{b97e6e90-0253-4558-b6d8-ce1701c2ecb0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="xwbtool.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="settings.manifest">
+      <Filter>Resource Files</Filter>
+    </Manifest>
   </ItemGroup>
 </Project>

@@ -256,6 +256,9 @@
   <ItemGroup>
     <ResourceCompile Include="xwbtool.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="settings.manifest" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
