@@ -11,7 +11,9 @@ if (BUILD_XAUDIO_WIN7 AND (NOT BUILD_XAUDIO_WIN10) AND (NOT BUILD_XAUDIO_WIN8) A
 endif()
 
 if(MINGW)
-    find_dependency(directxmath CONFIG)
+    find_dependency(directxmath)
+else()
+    find_package(directxmath CONFIG QUIET)
 endif()
 
 check_required_components("@PROJECT_NAME@")
