@@ -319,12 +319,12 @@ namespace DirectX
             static std::unique_ptr<Model> __cdecl CreateFromVBO(
                 _In_ ID3D11Device* device,
                 _In_reads_bytes_(dataSize) const uint8_t* meshData, _In_ size_t dataSize,
-                _In_opt_ std::shared_ptr<IEffect> ieffect = nullptr,
+                _In_ std::shared_ptr<IEffect> ieffect = nullptr,
                 ModelLoaderFlags flags = ModelLoader_Clockwise);
             static std::unique_ptr<Model> __cdecl CreateFromVBO(
                 _In_ ID3D11Device* device,
                 _In_z_ const wchar_t* szFileName,
-                _In_opt_ std::shared_ptr<IEffect> ieffect = nullptr,
+                _In_ std::shared_ptr<IEffect> ieffect = nullptr,
                 ModelLoaderFlags flags = ModelLoader_Clockwise);
 
 #if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
@@ -344,7 +344,7 @@ namespace DirectX
             static std::unique_ptr<Model> __cdecl CreateFromVBO(
                 _In_ ID3D11Device* device,
                 _In_z_ const __wchar_t* szFileName,
-                _In_opt_ std::shared_ptr<IEffect> ieffect = nullptr,
+                _In_ std::shared_ptr<IEffect> ieffect = nullptr,
                 ModelLoaderFlags flags = ModelLoader_Clockwise);
 #endif // !_NATIVE_WCHAR_T_DEFINED
 
