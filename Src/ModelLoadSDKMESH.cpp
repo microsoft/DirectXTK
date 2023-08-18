@@ -808,3 +808,22 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
 
     return model;
 }
+
+
+
+//--------------------------------------------------------------------------------------
+// Adapters for /Zc:wchar_t- clients
+
+#if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
+
+_Use_decl_annotations_
+std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
+    ID3D11Device* device,
+    const __wchar_t* szFileName,
+    IEffectFactory& fxFactory,
+    ModelLoaderFlags flags)
+{
+    return Model::CreateFromSDKMESH(device, reinterpret_cast<const unsigned short*>(szFileName), fxFactory, flags);
+}
+
+#endif

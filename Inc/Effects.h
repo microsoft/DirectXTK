@@ -9,6 +9,9 @@
 
 #pragma once
 
+#ifndef __DIRECTXTK_EFFECTS_H__
+#define __DIRECTXTK_EFFECTS_H__
+
 #if defined(_XBOX_ONE) && defined(_TITLE)
 #include <d3d11_x.h>
 #else
@@ -1027,3 +1030,5 @@ namespace DirectX
         };
     }
 }
+
+#endif // __DIRECTXTK_EFFECTS_H__

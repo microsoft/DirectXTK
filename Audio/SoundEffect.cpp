@@ -614,3 +614,16 @@ void SoundEffect::FillSubmitBuffer(_Out_ XAUDIO2_BUFFER& buffer) const
 }
 
 #endif
+
+
+//--------------------------------------------------------------------------------------
+// Adapters for /Zc:wchar_t- clients
+#if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
+
+_Use_decl_annotations_
+SoundEffect::SoundEffect(AudioEngine* engine, const __wchar_t* waveFileName) :
+    SoundEffect(engine, reinterpret_cast<const unsigned short*>(waveFileName))
+{
+}
+
+#endif // !_NATIVE_WCHAR_T_DEFINED
