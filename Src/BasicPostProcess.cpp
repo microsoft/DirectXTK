@@ -484,7 +484,7 @@ BasicPostProcess::~BasicPostProcess() = default;
 // IPostProcess methods.
 void BasicPostProcess::Process(
     _In_ ID3D11DeviceContext* deviceContext,
-    _In_opt_ std::function<void __cdecl()> setCustomState)
+    _In_ std::function<void __cdecl()> setCustomState)
 {
     pImpl->Process(deviceContext, setCustomState);
 }

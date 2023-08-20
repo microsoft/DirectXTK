@@ -1368,3 +1368,88 @@ HRESULT DirectX::CreateDDSTextureFromFileEx(
 
     return hr;
 }
+
+
+//--------------------------------------------------------------------------------------
+// Adapters for /Zc:wchar_t- clients
+
+#if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
+
+namespace DirectX
+{
+    HRESULT __cdecl CreateDDSTextureFromFile(
+        _In_ ID3D11Device* d3dDevice,
+        _In_z_ const __wchar_t* szFileName,
+        _Outptr_opt_ ID3D11Resource** texture,
+        _Outptr_opt_ ID3D11ShaderResourceView** textureView,
+        _In_ size_t maxsize,
+        _Out_opt_ DDS_ALPHA_MODE* alphaMode) noexcept
+    {
+        return CreateDDSTextureFromFile(d3dDevice,
+            reinterpret_cast<const unsigned short*>(szFileName),
+            texture, textureView, maxsize, alphaMode);
+    }
+
+    HRESULT __cdecl CreateDDSTextureFromFile(
+#if defined(_XBOX_ONE) && defined(_TITLE)
+        _In_ ID3D11DeviceX* d3dDevice,
+        _In_opt_ ID3D11DeviceContextX* d3dContext,
+#else
+        _In_ ID3D11Device* d3dDevice,
+        _In_opt_ ID3D11DeviceContext* d3dContext,
+#endif
+        _In_z_ const __wchar_t* szFileName,
+        _Outptr_opt_ ID3D11Resource** texture,
+        _Outptr_opt_ ID3D11ShaderResourceView** textureView,
+        _In_ size_t maxsize,
+        _Out_opt_ DDS_ALPHA_MODE* alphaMode) noexcept
+    {
+        return CreateDDSTextureFromFile(d3dDevice, d3dContext,
+            reinterpret_cast<const unsigned short*>(szFileName),
+            texture, textureView, maxsize, alphaMode);
+    }
+
+    HRESULT __cdecl CreateDDSTextureFromFileEx(
+        _In_ ID3D11Device* d3dDevice,
+        _In_z_ const __wchar_t* szFileName,
+        _In_ size_t maxsize,
+        _In_ D3D11_USAGE usage,
+        _In_ unsigned int bindFlags,
+        _In_ unsigned int cpuAccessFlags,
+        _In_ unsigned int miscFlags,
+        _In_ DDS_LOADER_FLAGS loadFlags,
+        _Outptr_opt_ ID3D11Resource** texture,
+        _Outptr_opt_ ID3D11ShaderResourceView** textureView,
+        _Out_opt_ DDS_ALPHA_MODE* alphaMode) noexcept
+    {
+        return CreateDDSTextureFromFileEx(d3dDevice,
+            reinterpret_cast<const unsigned short*>(szFileName),
+            maxsize, usage, bindFlags, cpuAccessFlags, miscFlags, loadFlags, texture, textureView, alphaMode);
+    }
+
+    HRESULT __cdecl CreateDDSTextureFromFileEx(
+#if defined(_XBOX_ONE) && defined(_TITLE)
+        _In_ ID3D11DeviceX* d3dDevice,
+        _In_opt_ ID3D11DeviceContextX* d3dContext,
+#else
+        _In_ ID3D11Device* d3dDevice,
+        _In_opt_ ID3D11DeviceContext* d3dContext,
+#endif
+        _In_z_ const __wchar_t* szFileName,
+        _In_ size_t maxsize,
+        _In_ D3D11_USAGE usage,
+        _In_ unsigned int bindFlags,
+        _In_ unsigned int cpuAccessFlags,
+        _In_ unsigned int miscFlags,
+        _In_ DDS_LOADER_FLAGS loadFlags,
+        _Outptr_opt_ ID3D11Resource** texture,
+        _Outptr_opt_ ID3D11ShaderResourceView** textureView,
+        _Out_opt_ DDS_ALPHA_MODE* alphaMode) noexcept
+    {
+        return CreateDDSTextureFromFileEx(d3dDevice, d3dContext,
+            reinterpret_cast<const unsigned short*>(szFileName),
+            maxsize, usage, bindFlags, cpuAccessFlags, miscFlags, loadFlags, texture, textureView, alphaMode);
+    }
+}
+
+#endif // !_NATIVE_WCHAR_T_DEFINED

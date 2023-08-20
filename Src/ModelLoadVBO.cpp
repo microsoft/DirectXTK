@@ -200,3 +200,21 @@ std::unique_ptr<Model> DirectX::Model::CreateFromVBO(
 
     return model;
 }
+
+
+//--------------------------------------------------------------------------------------
+// Adapters for /Zc:wchar_t- clients
+
+#if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
+
+_Use_decl_annotations_
+std::unique_ptr<Model> DirectX::Model::CreateFromVBO(
+    ID3D11Device* device,
+    const __wchar_t* szFileName,
+    std::shared_ptr<IEffect> ieffect,
+    ModelLoaderFlags flags)
+{
+    return Model::CreateFromVBO(device, reinterpret_cast<const unsigned short*>(szFileName), ieffect, flags);
+}
+
+#endif

@@ -36,7 +36,7 @@ namespace DirectX
             IPostProcess& operator=(const IPostProcess&) = delete;
 
             virtual void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext,
-                _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) = 0;
+                _In_ std::function<void __cdecl()> setCustomState = nullptr) = 0;
 
         protected:
             IPostProcess() = default;
@@ -76,7 +76,7 @@ namespace DirectX
             // IPostProcess methods.
             void __cdecl Process(
                 _In_ ID3D11DeviceContext* deviceContext,
-                _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) override;
+                _In_ std::function<void __cdecl()> setCustomState = nullptr) override;
 
             // Shader control
             void __cdecl SetEffect(Effect fx);
@@ -125,7 +125,7 @@ namespace DirectX
 
             // IPostProcess methods.
             void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext,
-                _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) override;
+                _In_ std::function<void __cdecl()> setCustomState = nullptr) override;
 
             // Shader control
             void __cdecl SetEffect(Effect fx);
@@ -192,7 +192,7 @@ namespace DirectX
 
             // IPostProcess methods.
             void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext,
-                _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) override;
+                _In_ std::function<void __cdecl()> setCustomState = nullptr) override;
 
             // Shader control
             void __cdecl SetOperator(Operator op);

@@ -202,3 +202,13 @@ jobs:
     inputs:
       cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --build out11 -v --config RelWithDebInfo
+  - task: CMake@1
+    displayName: 'CMake (NO_WCHAR_T): Config'
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -B out12 -DNO_WCHAR_T=ON -DCMAKE_SYSTEM_VERSION=$(WIN11_SDK)'
+  - task: CMake@1
+    displayName: 'CMake (NO_WCHAR_T): Build'
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --build out12 -v --config Debug

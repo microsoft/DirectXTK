@@ -64,7 +64,7 @@ namespace DirectX
                 _In_opt_ ID3D11SamplerState* samplerState = nullptr,
                 _In_opt_ ID3D11DepthStencilState* depthStencilState = nullptr,
                 _In_opt_ ID3D11RasterizerState* rasterizerState = nullptr,
-                _In_opt_ std::function<void __cdecl()> setCustomShaders = nullptr,
+                _In_ std::function<void __cdecl()> setCustomShaders = nullptr,
                 FXMMATRIX transformMatrix = MatrixIdentity);
             void __cdecl End();
 

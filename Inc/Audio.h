@@ -296,6 +296,16 @@ namespace DirectX
         static std::vector<RendererDetail> __cdecl GetRendererDetails();
             // Returns a list of valid audio endpoint devices
 
+#if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
+        explicit AudioEngine(
+            AUDIO_ENGINE_FLAGS flags = AudioEngine_Default,
+            _In_opt_ const WAVEFORMATEX* wfx = nullptr,
+            _In_opt_z_ const __wchar_t* deviceId = nullptr,
+            AUDIO_STREAM_CATEGORY category = AudioCategory_GameEffects) noexcept(false);
+
+        bool __cdecl Reset(_In_opt_ const WAVEFORMATEX* wfx = nullptr, _In_opt_z_ const __wchar_t* deviceId = nullptr);
+#endif
+
     private:
         // Private implementation.
         class Impl;
@@ -363,6 +373,10 @@ namespace DirectX
 
         bool __cdecl GetPrivateData(unsigned int index, _Out_writes_bytes_(datasize) void* data, size_t datasize);
 
+#if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
+        WaveBank(_In_ AudioEngine* engine, _In_z_ const __wchar_t* wbFileName);
+#endif
+
     private:
         // Private implementation.
         class Impl;
@@ -425,6 +439,10 @@ namespace DirectX
     #endif
 
         void __cdecl UnregisterInstance(_In_ IVoiceNotify* instance);
+
+#if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
+        SoundEffect(_In_ AudioEngine* engine, _In_z_ const __wchar_t* waveFileName);
+#endif
 
     private:
         // Private implementation.
@@ -730,7 +748,7 @@ namespace DirectX
     {
     public:
         DynamicSoundEffectInstance(_In_ AudioEngine* engine,
-            _In_opt_ std::function<void __cdecl(DynamicSoundEffectInstance*)> bufferNeeded,
+            _In_ std::function<void __cdecl(DynamicSoundEffectInstance*)> bufferNeeded,
             int sampleRate, int channels, int sampleBits = 16,
             SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default);
 

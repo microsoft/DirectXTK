@@ -74,20 +74,20 @@ namespace DirectX
                 FXMVECTOR color = Colors::White,
                 _In_opt_ ID3D11ShaderResourceView* texture = nullptr,
                 bool wireframe = false,
-                _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
+                _In_ std::function<void __cdecl()> setCustomState = nullptr) const;
 
             // Draw the primitive using a custom effect.
             void __cdecl Draw(_In_ IEffect* effect,
                 _In_ ID3D11InputLayout* inputLayout,
                 bool alpha = false, bool wireframe = false,
-                _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
+                _In_ std::function<void __cdecl()> setCustomState = nullptr) const;
 
             void __cdecl DrawInstanced(_In_ IEffect* effect,
                 _In_ ID3D11InputLayout* inputLayout,
                 uint32_t instanceCount,
                 bool alpha = false, bool wireframe = false,
                 uint32_t startInstanceLocation = 0,
-                _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
+                _In_ std::function<void __cdecl()> setCustomState = nullptr) const;
 
            // Create input layout for drawing with a custom effect.
             void __cdecl CreateInputLayout(_In_ IEffect* effect, _Outptr_ ID3D11InputLayout** inputLayout) const;
