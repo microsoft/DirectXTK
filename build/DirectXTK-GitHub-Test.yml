@@ -103,6 +103,12 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Release
+  - task: CmdLine@2
+    displayName: 'Reclaim diskspace'
+    inputs:
+      script: del *.pch /s
+      workingDirectory: $(Build.SourcesDirectory)
+      failOnStderr: false
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Tests_Desktop_2019_Win10.sln 32dbg
     inputs:
