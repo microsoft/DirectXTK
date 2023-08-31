@@ -23,9 +23,6 @@
   <Import Condition="'$(WSDKEnableBWOI)' == 'true' and '$(Platform)' == 'Win32'"
           Project="$(ExtractedFolder)SDK\Microsoft.Windows.SDK.cpp.x86\build\native\Microsoft.Windows.SDK.cpp.x86.props" />
 
-  <Import Condition="'$(WSDKEnableBWOI)' == 'true' and '$(Platform)' == 'ARM'"
-          Project="$(ExtractedFolder)SDK\Microsoft.Windows.SDK.cpp.arm\build\native\Microsoft.Windows.SDK.cpp.arm.props" />
-
   <Import Condition="'$(WSDKEnableBWOI)' == 'true' and '$(Platform)' == 'ARM64'"
           Project="$(ExtractedFolder)SDK\Microsoft.Windows.SDK.cpp.arm64\build\native\Microsoft.Windows.SDK.cpp.arm64.props" />
 
