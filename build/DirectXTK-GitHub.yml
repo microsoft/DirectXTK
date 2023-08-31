@@ -228,20 +228,6 @@ jobs:
       workingDirectory: $(Build.SourcesDirectory)
       failOnStderr: false
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2019.sln armdbg
-    inputs:
-      solution: DirectXTK_Windows10_2019.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: ARM
-      configuration: Debug
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2019.sln armrel
-    inputs:
-      solution: DirectXTK_Windows10_2019.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: ARM
-      configuration: Release
-  - task: VSBuild@1
     displayName: Build solution DirectXTK_Windows10_2019.sln arm64dbg
     inputs:
       solution: DirectXTK_Windows10_2019.sln

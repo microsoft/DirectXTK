@@ -300,43 +300,6 @@ jobs:
       platform: x86
       configuration: Release
 
-- job: UWP_BUILD_ARM
-  displayName: 'Universal Windows Platform (UWP) for ARM'
-  timeoutInMinutes: 120
-  steps:
-  - checkout: self
-    clean: true
-    fetchTags: false
-  - task: DeleteFiles@1
-    displayName: Delete files from Tests
-    inputs:
-      SourceFolder: Tests
-      Contents: '**'
-      RemoveSourceFolder: true
-      RemoveDotFiles: true
-  - task: CmdLine@2
-    displayName: Fetch Tests
-    inputs:
-      script: git clone --quiet https://%GITHUB_PAT%@github.com/walbourn/directxtktest.git Tests
-      workingDirectory: $(Build.SourcesDirectory)
-      failOnStderr: true
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Tests_Windows10.sln armdbg
-    inputs:
-      solution: Tests/DirectXTK_Tests_Windows10.sln
-      vsVersion: 16.0
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:AppxBundle=Never
-      platform: ARM
-      configuration: Debug
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Tests_Windows10.sln armrel
-    inputs:
-      solution: Tests/DirectXTK_Tests_Windows10.sln
-      vsVersion: 16.0
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:AppxBundle=Never
-      platform: ARM
-      configuration: Release
-
 - job: UWP_BUILD_ARM64
   displayName: 'Universal Windows Platform (UWP) for ARM64'
   timeoutInMinutes: 120
