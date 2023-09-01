@@ -6,6 +6,10 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### September 1, 2023
+* Retired ARM (32-bit) support for the UWP platform
+* CMake project updates
+
 ### June 13, 2023
 * CMake project updates
 * xwbtool: Fix minor display issue with error messages
