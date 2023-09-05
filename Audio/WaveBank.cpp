@@ -603,3 +603,16 @@ bool WaveBank::GetPrivateData(unsigned int index, void* data, size_t datasize)
             return false;
     }
 }
+
+
+//--------------------------------------------------------------------------------------
+// Adapters for /Zc:wchar_t- clients
+#if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
+
+_Use_decl_annotations_
+WaveBank::WaveBank(AudioEngine* engine, const __wchar_t* wbFileName) :
+    WaveBank(engine, reinterpret_cast<const unsigned short*>(wbFileName))
+{
+}
+
+#endif // !_NATIVE_WCHAR_T_DEFINED

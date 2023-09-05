@@ -145,6 +145,12 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Release
+  - task: CmdLine@2
+    displayName: 'Reclaim diskspace'
+    inputs:
+      script: del *.pch /s
+      workingDirectory: $(Build.SourcesDirectory)
+      failOnStderr: false
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2019.sln managed dbg
     inputs:
@@ -302,11 +308,6 @@ jobs:
         $doc.OuterXml | Set-Content $file
 
   - task: NuGetCommand@2
-    displayName: NuGet Install WSDK arm
-    inputs:
-      command: custom
-      arguments: install -prerelease Microsoft.Windows.SDK.CPP.arm -ExcludeVersion -OutputDirectory $(EXTRACTED_FOLDER)\SDK
-  - task: NuGetCommand@2
     displayName: NuGet Install WSDK arm64
     inputs:
       command: custom
@@ -317,20 +318,6 @@ jobs:
       SourceFolder: build
       Contents: 'Directory.Build.props'
       TargetFolder: $(Build.SourcesDirectory)
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2019.sln armdbg
-    inputs:
-      solution: DirectXTK_Windows10_2019.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: ARM
-      configuration: Debug
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2019.sln armrel
-    inputs:
-      solution: DirectXTK_Windows10_2019.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: ARM
-      configuration: Release
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Windows10_2019.sln arm64dbg
     inputs:

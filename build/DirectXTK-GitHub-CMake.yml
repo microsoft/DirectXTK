@@ -107,16 +107,6 @@ jobs:
       cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --build out4 -v
   - task: CMake@1
-    displayName: 'CMake (UWP): Config ARM'
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: '-G "$(VS_GENERATOR)" -A ARM -B out5 -DCMAKE_SYSTEM_NAME=WindowsStore -DCMAKE_SYSTEM_VERSION=10.0'
-  - task: CMake@1
-    displayName: 'CMake (UWP): Build ARM'
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --build out5 -v
-  - task: CMake@1
     displayName: 'CMake (ClangCl): Config x64'
     inputs:
       cwd: '$(Build.SourcesDirectory)'
@@ -202,3 +192,13 @@ jobs:
     inputs:
       cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --build out11 -v --config RelWithDebInfo
+  - task: CMake@1
+    displayName: 'CMake (NO_WCHAR_T): Config'
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -B out12 -DNO_WCHAR_T=ON -DCMAKE_SYSTEM_VERSION=$(WIN11_SDK)'
+  - task: CMake@1
+    displayName: 'CMake (NO_WCHAR_T): Build'
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --build out12 -v --config Debug

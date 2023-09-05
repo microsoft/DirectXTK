@@ -10,8 +10,10 @@ if (BUILD_XAUDIO_WIN7 AND (NOT BUILD_XAUDIO_WIN10) AND (NOT BUILD_XAUDIO_WIN8) A
     find_dependency(xaudio2redist CONFIG)
 endif()
 
-if(MINGW OR VCPKG_TOOLCHAIN)
-    find_dependency(directxmath CONFIG)
+if(MINGW)
+    find_dependency(directxmath)
+else()
+    find_package(directxmath CONFIG QUIET)
 endif()
 
 check_required_components("@PROJECT_NAME@")

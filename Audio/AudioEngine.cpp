@@ -1897,3 +1897,26 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
 #else
 #error DirectX Tool Kit for Audio not supported on this platform
 #endif
+
+
+//--------------------------------------------------------------------------------------
+// Adapters for /Zc:wchar_t- clients
+#if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
+
+_Use_decl_annotations_
+AudioEngine::AudioEngine(
+    AUDIO_ENGINE_FLAGS flags,
+    const WAVEFORMATEX* wfx,
+    const __wchar_t* deviceId,
+    AUDIO_STREAM_CATEGORY category) noexcept(false) :
+        AudioEngine(flags, wfx, reinterpret_cast<const unsigned short*>(deviceId), category)
+{
+}
+
+_Use_decl_annotations_
+bool AudioEngine::Reset(const WAVEFORMATEX* wfx, const __wchar_t* deviceId)
+{
+    return Reset(wfx, reinterpret_cast<const unsigned short*>(deviceId));
+}
+
+#endif // !_NATIVE_WCHAR_T_DEFINED

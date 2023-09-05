@@ -110,6 +110,12 @@ jobs:
       platform: x64
       configuration: Release
       msbuildArchitecture: x64
+  - task: CmdLine@2
+    displayName: 'Reclaim diskspace'
+    inputs:
+      script: del *.pch /s
+      workingDirectory: $(Build.SourcesDirectory)
+      failOnStderr: false
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2022.sln managed dbg
     inputs:
@@ -215,22 +221,12 @@ jobs:
       platform: x64
       configuration: Release
       msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2022.sln armdbg
+  - task: CmdLine@2
+    displayName: 'Reclaim diskspace'
     inputs:
-      solution: DirectXTK_Windows10_2022.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: ARM
-      configuration: Debug
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2022.sln armrel
-    inputs:
-      solution: DirectXTK_Windows10_2022.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: ARM
-      configuration: Release
-      msbuildArchitecture: x64
+      script: del *.pch /s
+      workingDirectory: $(Build.SourcesDirectory)
+      failOnStderr: false
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Windows10_2022.sln arm64dbg
     inputs:

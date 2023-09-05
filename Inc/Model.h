@@ -132,7 +132,7 @@ namespace DirectX
                 _In_ ID3D11DeviceContext* deviceContext,
                 _In_ IEffect* ieffect,
                 _In_ ID3D11InputLayout* iinputLayout,
-                _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
+                _In_ std::function<void __cdecl()> setCustomState = nullptr) const;
 
             void __cdecl DrawInstanced(
                 _In_ ID3D11DeviceContext* deviceContext,
@@ -140,7 +140,7 @@ namespace DirectX
                 _In_ ID3D11InputLayout* iinputLayout,
                 uint32_t instanceCount,
                 uint32_t startInstanceLocation = 0,
-                _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
+                _In_ std::function<void __cdecl()> setCustomState = nullptr) const;
 
            // Create input layout for drawing with a custom effect.
             void __cdecl CreateInputLayout(_In_ ID3D11Device* device, _In_ IEffect* ieffect, _Outptr_ ID3D11InputLayout** iinputLayout) const;
@@ -188,7 +188,7 @@ namespace DirectX
                 _In_ ID3D11DeviceContext* deviceContext,
                 FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection,
                 bool alpha = false,
-                _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
+                _In_ std::function<void __cdecl()> setCustomState = nullptr) const;
 
             // Draw the mesh using model bones
             void XM_CALLCONV Draw(
@@ -196,7 +196,7 @@ namespace DirectX
                 size_t nbones, _In_reads_(nbones) const XMMATRIX* boneTransforms,
                 FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection,
                 bool alpha = false,
-                _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
+                _In_ std::function<void __cdecl()> setCustomState = nullptr) const;
 
             // Draw the mesh using skinning
             void XM_CALLCONV DrawSkinned(
@@ -204,7 +204,7 @@ namespace DirectX
                 size_t nbones, _In_reads_(nbones) const XMMATRIX* boneTransforms,
                 FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection,
                 bool alpha = false,
-                _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
+                _In_ std::function<void __cdecl()> setCustomState = nullptr) const;
 
             static void SetDepthBufferMode(bool reverseZ)
             {
@@ -243,7 +243,7 @@ namespace DirectX
                 const CommonStates& states,
                 FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection,
                 bool wireframe = false,
-                _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
+                _In_ std::function<void __cdecl()> setCustomState = nullptr) const;
 
             // Draw all the meshes using model bones
             void XM_CALLCONV Draw(
@@ -252,7 +252,7 @@ namespace DirectX
                 size_t nbones, _In_reads_(nbones) const XMMATRIX* boneTransforms,
                 FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection,
                 bool wireframe = false,
-                _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
+                _In_ std::function<void __cdecl()> setCustomState = nullptr) const;
 
             // Draw all the meshes using skinning
             void XM_CALLCONV DrawSkinned(
@@ -261,7 +261,7 @@ namespace DirectX
                 size_t nbones, _In_reads_(nbones) const XMMATRIX* boneTransforms,
                 FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection,
                 bool wireframe = false,
-                _In_opt_ std::function<void __cdecl()> setCustomState = nullptr) const;
+                _In_ std::function<void __cdecl()> setCustomState = nullptr) const;
 
             // Compute bone positions based on heirarchy and transform matrices
             void __cdecl CopyAbsoluteBoneTransformsTo(
@@ -319,13 +319,34 @@ namespace DirectX
             static std::unique_ptr<Model> __cdecl CreateFromVBO(
                 _In_ ID3D11Device* device,
                 _In_reads_bytes_(dataSize) const uint8_t* meshData, _In_ size_t dataSize,
-                _In_opt_ std::shared_ptr<IEffect> ieffect = nullptr,
+                _In_ std::shared_ptr<IEffect> ieffect = nullptr,
                 ModelLoaderFlags flags = ModelLoader_Clockwise);
             static std::unique_ptr<Model> __cdecl CreateFromVBO(
                 _In_ ID3D11Device* device,
                 _In_z_ const wchar_t* szFileName,
-                _In_opt_ std::shared_ptr<IEffect> ieffect = nullptr,
+                _In_ std::shared_ptr<IEffect> ieffect = nullptr,
                 ModelLoaderFlags flags = ModelLoader_Clockwise);
+
+#if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
+            static std::unique_ptr<Model> __cdecl CreateFromCMO(
+                _In_ ID3D11Device* device,
+                _In_z_ const __wchar_t* szFileName,
+                _In_ IEffectFactory& fxFactory,
+                ModelLoaderFlags flags = ModelLoader_CounterClockwise,
+                _Out_opt_ size_t* animsOffset = nullptr);
+
+            static std::unique_ptr<Model> __cdecl CreateFromSDKMESH(
+                _In_ ID3D11Device* device,
+                _In_z_ const __wchar_t* szFileName,
+                _In_ IEffectFactory& fxFactory,
+                ModelLoaderFlags flags = ModelLoader_Clockwise);
+
+            static std::unique_ptr<Model> __cdecl CreateFromVBO(
+                _In_ ID3D11Device* device,
+                _In_z_ const __wchar_t* szFileName,
+                _In_ std::shared_ptr<IEffect> ieffect = nullptr,
+                ModelLoaderFlags flags = ModelLoader_Clockwise);
+#endif // !_NATIVE_WCHAR_T_DEFINED
 
         private:
             std::set<IEffect*>  mEffectCache;
