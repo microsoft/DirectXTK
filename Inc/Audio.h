@@ -650,6 +650,16 @@ namespace DirectX
 
         // Set default volume, LFE, LPF, and reverb curves.
         void __cdecl EnableDefaultCurves() noexcept;
+        void __cdecl EnableLinearCurves() noexcept;
+
+        void __cdecl EnableInverseSquareCurves() noexcept
+        {
+            pVolumeCurve = nullptr;
+            pLFECurve = nullptr;
+            pLPFDirectCurve = nullptr;
+            pLPFReverbCurve = nullptr;
+            pReverbCurve = nullptr;
+        }
     };
 
 

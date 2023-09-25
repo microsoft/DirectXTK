@@ -951,11 +951,22 @@ namespace
     // **Note these match the defaults from xact3d3.h in the legacy DirectX SDK**
     constexpr X3DAUDIO_DISTANCE_CURVE_POINT c_defaultCurvePoints[2] = { { 0.0f, 1.0f }, { 1.0f, 1.0f } };
     constexpr X3DAUDIO_DISTANCE_CURVE c_defaultCurve = { const_cast<X3DAUDIO_DISTANCE_CURVE_POINT*>(c_defaultCurvePoints), 2 };
+
+    // **Note these match X3DAudioDefault_LinearCurvePoints from x3daudio.h**
+    constexpr X3DAUDIO_DISTANCE_CURVE_POINT c_linearCurvePoints[2] = { { 0.0f, 1.0f }, { 1.0f, 0.0f } };
+    constexpr X3DAUDIO_DISTANCE_CURVE c_linearCurve = { const_cast<X3DAUDIO_DISTANCE_CURVE_POINT*>(c_linearCurvePoints), 2 };
 }
 
 void AudioEmitter::EnableDefaultCurves() noexcept
 {
     pVolumeCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_defaultCurve);
     pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_defaultCurve);
+    pLPFDirectCurve = pLPFReverbCurve = pReverbCurve = nullptr;
+}
+
+void AudioEmitter::EnableLinearCurves() noexcept
+{
+    pVolumeCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_linearCurve);
+    pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_linearCurve);
     pLPFDirectCurve = pLPFReverbCurve = pReverbCurve = nullptr;
 }
