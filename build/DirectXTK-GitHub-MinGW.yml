@@ -75,6 +75,23 @@ jobs:
         echo ##vso[task.setvariable variable=VCPKG_DEFAULT_HOST_TRIPLET;]x86-mingw-static
 
       workingDirectory: $(Build.SourcesDirectory)\vcpkg
+  - task: PowerShell@2
+    displayName: Setup for Shader Compilation
+    inputs:
+      targetType: inline
+      script: |
+        $ProgressPreference = 'SilentlyContinue'
+        $sdkroot = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows Kits\Installed Roots' | Select-Object -ExpandProperty KitsRoot10
+        $windows11sdk = "{0}bin\$(WIN11_SDK)\" -f $sdkroot
+        $windows11x64sdk = "{0}bin\$(WIN11_SDK)\x64" -f $sdkroot
+        if (Test-Path "$windows11sdk") {
+            Write-Host "##vso[task.setvariable variable=WindowsSdkVerBinPath;]$windows11sdk"
+            Write-Host "##vso[task.prependpath]$windows11x64sdk"
+        }
+        else {
+            Write-Error -Message "##[error]Can't find Windows SDK ($(WIN11_SDK))" -ErrorAction Stop
+        }
+
   - task: CmdLine@2
     displayName: GCC version
     inputs:
@@ -138,6 +155,23 @@ jobs:
         echo ##vso[task.setvariable variable=VCPKG_DEFAULT_HOST_TRIPLET;]x64-mingw-static
 
       workingDirectory: $(Build.SourcesDirectory)\vcpkg
+  - task: PowerShell@2
+    displayName: Setup for Shader Compilation
+    inputs:
+      targetType: inline
+      script: |
+        $ProgressPreference = 'SilentlyContinue'
+        $sdkroot = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows Kits\Installed Roots' | Select-Object -ExpandProperty KitsRoot10
+        $windows11sdk = "{0}bin\$(WIN11_SDK)\" -f $sdkroot
+        $windows11x64sdk = "{0}bin\$(WIN11_SDK)\x64" -f $sdkroot
+        if (Test-Path "$windows11sdk") {
+            Write-Host "##vso[task.setvariable variable=WindowsSdkVerBinPath;]$windows11sdk"
+            Write-Host "##vso[task.prependpath]$windows11x64sdk"
+        }
+        else {
+            Write-Error -Message "##[error]Can't find Windows SDK ($(WIN11_SDK))" -ErrorAction Stop
+        }
+
   - task: BatchScript@1
     displayName: CompileShaders
     inputs:
