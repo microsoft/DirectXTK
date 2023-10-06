@@ -953,10 +953,10 @@ namespace
         std::list<SConversion> flist;
         std::set<std::wstring> excludes;
 
-        auto fname = std::make_unique<wchar_t[]>(32768);
         for (;;)
         {
-            inFile >> fname.get();
+            std::wstring fname;
+            std::getline(inFile, fname);
             if (!inFile)
                 break;
 
@@ -968,13 +968,13 @@ namespace
             {
                 if (flist.empty())
                 {
-                    wprintf(L"WARNING: Ignoring the line '%ls' in -flist\n", fname.get());
+                    wprintf(L"WARNING: Ignoring the line '%ls' in -flist\n", fname.c_str());
                 }
                 else
                 {
-                    std::filesystem::path path(fname.get() + 1);
+                    std::filesystem::path path(fname.c_str() + 1);
                     auto& npath = path.make_preferred();
-                    if (wcspbrk(fname.get(), L"?*") != nullptr)
+                    if (wcspbrk(fname.c_str(), L"?*") != nullptr)
                     {
                         std::list<SConversion> removeFiles;
                         SearchForFiles(npath, removeFiles, false);
@@ -994,20 +994,18 @@ namespace
                     }
                 }
             }
-            else if (wcspbrk(fname.get(), L"?*") != nullptr)
+            else if (wcspbrk(fname.c_str(), L"?*") != nullptr)
             {
-                std::filesystem::path path(fname.get());
+                std::filesystem::path path(fname.c_str());
                 SearchForFiles(path.make_preferred(), flist, false);
             }
             else
             {
                 SConversion conv = {};
-                std::filesystem::path path(fname.get());
+                std::filesystem::path path(fname.c_str());
                 conv.szSrc = path.make_preferred().native();
                 flist.push_back(conv);
             }
-
-            inFile.ignore(1000, '\n');
         }
 
         inFile.close();
