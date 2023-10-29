@@ -6,6 +6,10 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### October 28, 2023
+* Additional methods for *DirectX Tool Kit for Audio* emitter for linear and inverse-square falloff curves
+* xwbtool: -flist option updated to support filenames with spaces
+
 ### September 1, 2023
 * Retired ARM (32-bit) support for the UWP platform
 * CMake project updates
