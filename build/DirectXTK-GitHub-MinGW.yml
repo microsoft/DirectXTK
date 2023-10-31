@@ -51,8 +51,6 @@ variables:
   WIN11_SDK: '10.0.22000.0'
   URL_MINGW32: https://github.com/brechtsanders/winlibs_mingw/releases/download/12.2.0-14.0.6-10.0.0-ucrt-r2/winlibs-i686-posix-dwarf-gcc-12.2.0-llvm-14.0.6-mingw-w64ucrt-10.0.0-r2.zip
   HASH_MINGW32: 'fcd1e11b896190da01c83d5b5fb0d37b7c61585e53446c2dab0009debc3915e757213882c35e35396329338de6f0222ba012e23a5af86932db45186a225d1272'
-  URL_MINGW64: https://github.com/brechtsanders/winlibs_mingw/releases/download/12.2.0-14.0.6-10.0.0-ucrt-r2/winlibs-x86_64-posix-seh-gcc-12.2.0-llvm-14.0.6-mingw-w64ucrt-10.0.0-r2.zip
-  HASH_MINGW64: '6694e552d73195b57f283645ab78cb0180f4d957b5501a83e6b4f2679dfad13a8e85e1df6f7b061ea4431fbd2bb0c8f2ac3a1dd810489c1a8d1665b226df8092'
 
 jobs:
 - job: MINGW32_BUILD
@@ -80,8 +78,7 @@ jobs:
 
       workingDirectory: $(Build.SourcesDirectory)\vcpkg
   - task: PowerShell@2
-    # We install GCC 12.2 as the MS Hosted only offers 11.2
-    displayName: Install MinGW32
+    displayName: Install MinGW32 and setup FXC for Shader Compilation
     inputs:
       targetType: inline
       script: |
@@ -174,35 +171,22 @@ jobs:
 
       workingDirectory: $(Build.SourcesDirectory)\vcpkg
   - task: PowerShell@2
-    displayName: Install MinGW-W64
+    displayName: Setup for Shader Compilation
     inputs:
       targetType: inline
       script: |
         $ProgressPreference = 'SilentlyContinue'
-        Write-Host "Downloading winlibs..."
-        Invoke-WebRequest -Uri "$(URL_MINGW64)" -OutFile "gw64.zip"
-        Write-Host "Downloaded."
-        $fileHash = Get-FileHash -Algorithm SHA512 gw64.zip | ForEach { $_.Hash} | Out-String
-        $filehash = $fileHash.Trim()
-        Write-Host "##[debug]SHA512: " $fileHash
-        if ($fileHash -ne '$(HASH_MINGW64)') {
-            Write-Error -Message "##[error]Computed hash does not match!" -ErrorAction Stop
-        }
-        Write-Host "Extracting winlibs..."
-        Expand-Archive -LiteralPath 'gw64.zip'
-        Write-Host "Extracted."
-        Write-Host "Added to path: $env:BUILD_SOURCESDIRECTORY\gw64\mingw64\bin"
-        Write-Host "##vso[task.prependpath]$env:BUILD_SOURCESDIRECTORY\gw64\mingw64\bin"
         $sdkroot = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows Kits\Installed Roots' | Select-Object -ExpandProperty KitsRoot10
         $windows11sdk = "{0}bin\$(WIN11_SDK)\" -f $sdkroot
+        $windows11x64sdk = "{0}bin\$(WIN11_SDK)\x64" -f $sdkroot
         if (Test-Path "$windows11sdk") {
             Write-Host "##vso[task.setvariable variable=WindowsSdkVerBinPath;]$windows11sdk"
+            Write-Host "##vso[task.prependpath]$windows11x64sdk"
         }
         else {
             Write-Error -Message "##[error]Can't find Windows SDK ($(WIN11_SDK))" -ErrorAction Stop
         }
 
-      workingDirectory: $(Build.SourcesDirectory)
   - task: BatchScript@1
     displayName: CompileShaders
     inputs:

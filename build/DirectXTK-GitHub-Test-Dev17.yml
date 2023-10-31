@@ -240,6 +240,11 @@ jobs:
       script: git clone --quiet https://%GITHUB_PAT%@github.com/walbourn/directxtktest.git Tests
       workingDirectory: $(Build.SourcesDirectory)
       failOnStderr: true
+  - task: ChocolateyCommand@0
+    displayName: Install Ninja
+    inputs:
+      command: 'install'
+      installPackageId: 'ninja'
   - task: CmdLine@2
     displayName: Setup environment for CMake to use VS
     inputs:
