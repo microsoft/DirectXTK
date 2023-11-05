@@ -25,8 +25,8 @@
         "Org": "microsoft",
         "Project": "OS",
         "AssignedTo": "chuckw@microsoft.com",
-        "AreaPath": "OS\Core\SiGMa\GRFX-Graphics",
-        "IterationPath": "OS\Future"
+        "AreaPath": "OS\\Core\\SiGMa\\GRFX-Graphics",
+        "IterationPath": "OS/Future"
       }
     }
   ]
