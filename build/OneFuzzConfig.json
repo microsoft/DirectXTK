@@ -11,8 +11,8 @@
       "RebootAfterSetup": false,
       "OneFuzzJobs": [
         {
-          "ProjectName": "DirectXTK",
-          "TargetName": "fuzzloader"
+          "ProjectName": "Direct3D",
+          "TargetName": "DirectXTK"
         }
       ],
       "JobDependencies": [
