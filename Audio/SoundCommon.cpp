@@ -22,6 +22,16 @@ namespace
         while (x) { ++bitCount; x &= (x - 1); }
         return bitCount;
     }
+
+    constexpr int MSADPCM_HEADER_LENGTH = 7;
+
+    constexpr uint16_t MSADPCM_FORMAT_EXTRA_BYTES = 32;
+
+    constexpr uint16_t MSADPCM_BITS_PER_SAMPLE = 4;
+    constexpr uint16_t MSADPCM_NUM_COEFFICIENTS = 7;
+
+    constexpr uint16_t MSADPCM_MIN_SAMPLES_PER_BLOCK = 4;
+    constexpr uint16_t MSADPCM_MAX_SAMPLES_PER_BLOCK = 64000;
 }
 
 
@@ -125,13 +135,13 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
             return false;
         }
 
-        if (wfx->wBitsPerSample != 4 /*MSADPCM_BITS_PER_SAMPLE*/)
+        if (wfx->wBitsPerSample != MSADPCM_BITS_PER_SAMPLE)
         {
             DebugTrace("ERROR: Wave format ADPCM must have 4 bits per sample (%u)\n", wfx->wBitsPerSample);
             return false;
         }
 
-        if (wfx->cbSize != 32 /*MSADPCM_FORMAT_EXTRA_BYTES*/)
+        if (wfx->cbSize != MSADPCM_FORMAT_EXTRA_BYTES)
         {
             DebugTrace("ERROR: Wave format ADPCM must have cbSize = 32 (%u)\n", wfx->cbSize);
             return false;
@@ -140,14 +150,14 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
         {
             auto wfadpcm = reinterpret_cast<const ADPCMWAVEFORMAT*>(wfx);
 
-            if (wfadpcm->wNumCoef != 7 /*MSADPCM_NUM_COEFFICIENTS*/)
+            if (wfadpcm->wNumCoef != MSADPCM_NUM_COEFFICIENTS)
             {
                 DebugTrace("ERROR: Wave format ADPCM must have 7 coefficients (%u)\n", wfadpcm->wNumCoef);
                 return false;
             }
 
             bool valid = true;
-            for (int j = 0; j < 7 /*MSADPCM_NUM_COEFFICIENTS*/; ++j)
+            for (size_t j = 0; j < MSADPCM_NUM_COEFFICIENTS; ++j)
             {
                 // Microsoft ADPCM standard encoding coefficients
                 static const short g_pAdpcmCoefficients1[] = { 256,  512, 0, 192, 240,  460,  392 };
@@ -166,8 +176,8 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
                 return false;
             }
 
-            if ((wfadpcm->wSamplesPerBlock < 4 /*MSADPCM_MIN_SAMPLES_PER_BLOCK*/)
-                || (wfadpcm->wSamplesPerBlock > 64000 /*MSADPCM_MAX_SAMPLES_PER_BLOCK*/))
+            if ((wfadpcm->wSamplesPerBlock < MSADPCM_MIN_SAMPLES_PER_BLOCK)
+                || (wfadpcm->wSamplesPerBlock > MSADPCM_MAX_SAMPLES_PER_BLOCK))
             {
                 DebugTrace("ERROR: Wave format ADPCM wSamplesPerBlock must be 4..64000 (%u)\n", wfadpcm->wSamplesPerBlock);
                 return false;
@@ -179,8 +189,8 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
                 return false;
             }
 
-            const int nHeaderBytes = 7 /*MSADPCM_HEADER_LENGTH*/ * wfx->nChannels;
-            const int nBitsPerFrame = 4 /*MSADPCM_BITS_PER_SAMPLE*/ * wfx->nChannels;
+            const int nHeaderBytes = MSADPCM_HEADER_LENGTH * wfx->nChannels;
+            const int nBitsPerFrame = MSADPCM_BITS_PER_SAMPLE * wfx->nChannels;
             const int nPcmFramesPerBlock = (wfx->nBlockAlign - nHeaderBytes) * 8 / nBitsPerFrame + 2;
 
             if (wfadpcm->wSamplesPerBlock != nPcmFramesPerBlock)
@@ -553,10 +563,10 @@ void DirectX::CreateADPCM(
     int channels,
     int samplesPerBlock) noexcept(false)
 {
-    if (wfxSize < (sizeof(WAVEFORMATEX) + 32 /*MSADPCM_FORMAT_EXTRA_BYTES*/))
+    if (wfxSize < (sizeof(WAVEFORMATEX) + MSADPCM_FORMAT_EXTRA_BYTES))
     {
         DebugTrace("CreateADPCM needs at least %zu bytes for the result\n",
-            (sizeof(WAVEFORMATEX) + 32 /*MSADPCM_FORMAT_EXTRA_BYTES*/));
+            (sizeof(WAVEFORMATEX) + MSADPCM_FORMAT_EXTRA_BYTES));
         throw std::invalid_argument("ADPCMWAVEFORMAT");
     }
 
@@ -566,20 +576,20 @@ void DirectX::CreateADPCM(
         throw std::invalid_argument("ADPCMWAVEFORMAT");
     }
 
-    const int blockAlign = (7 /*MSADPCM_HEADER_LENGTH*/) * channels
-        + (samplesPerBlock - 2) * (4 /* MSADPCM_BITS_PER_SAMPLE */) * channels / 8;
+    const int blockAlign = MSADPCM_HEADER_LENGTH * channels
+        + (samplesPerBlock - 2) * MSADPCM_BITS_PER_SAMPLE * channels / 8;
 
     wfx->wFormatTag = WAVE_FORMAT_ADPCM;
     wfx->nChannels = static_cast<WORD>(channels);
     wfx->nSamplesPerSec = static_cast<DWORD>(sampleRate);
     wfx->nAvgBytesPerSec = static_cast<DWORD>(blockAlign * sampleRate / samplesPerBlock);
     wfx->nBlockAlign = static_cast<WORD>(blockAlign);
-    wfx->wBitsPerSample = 4 /* MSADPCM_BITS_PER_SAMPLE */;
-    wfx->cbSize = 32 /*MSADPCM_FORMAT_EXTRA_BYTES*/;
+    wfx->wBitsPerSample = MSADPCM_BITS_PER_SAMPLE;
+    wfx->cbSize = MSADPCM_FORMAT_EXTRA_BYTES;
 
     auto adpcm = reinterpret_cast<ADPCMWAVEFORMAT*>(wfx);
     adpcm->wSamplesPerBlock = static_cast<WORD>(samplesPerBlock);
-    adpcm->wNumCoef = 7 /* MSADPCM_NUM_COEFFICIENTS */;
+    adpcm->wNumCoef = MSADPCM_NUM_COEFFICIENTS;
 
     static ADPCMCOEFSET aCoef[7] = { { 256, 0}, {512, -256}, {0,0}, {192,64}, {240,0}, {460, -208}, {392,-232} };
     memcpy(&adpcm->aCoef, aCoef, sizeof(aCoef));
@@ -634,14 +644,14 @@ void DirectX::CreateXMA2(
         throw std::invalid_argument("XMA2WAVEFORMATEX");
     }
 
-    int blockAlign = (channels * (16 /*XMA_OUTPUT_SAMPLE_BITS*/) / 8);
+    int blockAlign = (channels * XMA_OUTPUT_SAMPLE_BITS) / 8;
 
     wfx->wFormatTag = WAVE_FORMAT_XMA2;
     wfx->nChannels = static_cast<WORD>(channels);
     wfx->nSamplesPerSec = static_cast<WORD>(sampleRate);
     wfx->nAvgBytesPerSec = static_cast<DWORD>(blockAlign * sampleRate);
     wfx->nBlockAlign = static_cast<WORD>(blockAlign);
-    wfx->wBitsPerSample = 16 /* XMA_OUTPUT_SAMPLE_BITS */;
+    wfx->wBitsPerSample = XMA_OUTPUT_SAMPLE_BITS;
     wfx->cbSize = sizeof(XMA2WAVEFORMATEX) - sizeof(WAVEFORMATEX);
 
     auto xmaFmt = reinterpret_cast<XMA2WAVEFORMATEX*>(wfx);

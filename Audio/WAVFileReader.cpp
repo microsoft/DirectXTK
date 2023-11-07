@@ -34,6 +34,8 @@ namespace
 
     constexpr size_t SIZEOF_XMA2WAVEFORMATEX = 52;
 
+    constexpr uint16_t MSADPCM_FORMAT_EXTRA_BYTES = 32;
+
 #pragma pack(push,1)
     struct RIFFChunk
     {
@@ -264,12 +266,12 @@ namespace
                     break;
 
                 case WAVE_FORMAT_ADPCM:
-                    if ((fmtChunk->size < (sizeof(WAVEFORMATEX) + 32)) || (wfx->cbSize < 32 /*MSADPCM_FORMAT_EXTRA_BYTES*/))
+                    if ((fmtChunk->size < (sizeof(WAVEFORMATEX) + MSADPCM_FORMAT_EXTRA_BYTES)) || (wfx->cbSize < MSADPCM_FORMAT_EXTRA_BYTES))
                     {
                         return E_FAIL;
                     }
 
-                    if ((ptr + sizeof(WAVEFORMATEX) + 32) > wavEnd)
+                    if ((ptr + sizeof(WAVEFORMATEX) + MSADPCM_FORMAT_EXTRA_BYTES) > wavEnd)
                     {
                         return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
                     }
