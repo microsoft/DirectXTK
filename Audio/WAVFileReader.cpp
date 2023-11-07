@@ -32,6 +32,8 @@ namespace
     constexpr uint32_t FOURCC_XWMA_DPDS = MAKEFOURCC('d', 'p', 'd', 's');
     constexpr uint32_t FOURCC_XMA_SEEK = MAKEFOURCC('s', 'e', 'e', 'k');
 
+    constexpr size_t SIZEOF_XMA2WAVEFORMATEX = 52;
+
 #pragma pack(push,1)
     struct RIFFChunk
     {
@@ -133,7 +135,7 @@ namespace
 
             ptr += static_cast<size_t>(offset);
 
-            if (ptr > upperBound)
+            if (ptr >= upperBound)
                 return nullptr;
         }
 
@@ -170,6 +172,11 @@ namespace
             return E_FAIL;
         }
 
+        if ((reinterpret_cast<const uint8_t*>(riffChunk) + sizeof(RIFFChunkHeader)) > wavEnd)
+        {
+            return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
+        }
+
         auto riffHeader = reinterpret_cast<const RIFFChunkHeader*>(riffChunk);
         if (riffHeader->riff != FOURCC_WAVE_FILE_TAG && riffHeader->riff != FOURCC_XWMA_FILE_TAG)
         {
@@ -195,6 +202,11 @@ namespace
             return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
         }
 
+        if ((ptr + sizeof(PCMWAVEFORMAT)) > wavEnd)
+        {
+            return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
+        }
+
         auto wf = reinterpret_cast<const WAVEFORMAT*>(ptr);
 
         // Validate WAVEFORMAT (focused on chunk size and format tag, not other data that XAUDIO2 will validate)
@@ -213,11 +225,21 @@ namespace
                     return E_FAIL;
                 }
 
+                if ((ptr + sizeof(WAVEFORMATEX)) > wavEnd)
+                {
+                    return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
+                }
+
                 auto wfx = reinterpret_cast<const WAVEFORMATEX*>(ptr);
 
                 if (fmtChunk->size < (sizeof(WAVEFORMATEX) + wfx->cbSize))
                 {
                     return E_FAIL;
+                }
+
+                if ((ptr + (sizeof(WAVEFORMATEX) + wfx->cbSize)) > wavEnd)
+                {
+                    return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
                 }
 
                 switch (wfx->wFormatTag)
@@ -227,11 +249,17 @@ namespace
                     dpds = true;
                     break;
 
-                case  0x166 /*WAVE_FORMAT_XMA2*/: // XMA2 is supported by Xbox One
-                    if ((fmtChunk->size < 52 /*sizeof(XMA2WAVEFORMATEX)*/) || (wfx->cbSize < 34 /*( sizeof(XMA2WAVEFORMATEX) - sizeof(WAVEFORMATEX) )*/))
+                case  0x166 /*WAVE_FORMAT_XMA2*/: // XMA2 is supported by Xbox One & Xbox Series X|S
+                    if ((fmtChunk->size < SIZEOF_XMA2WAVEFORMATEX) || (wfx->cbSize < (SIZEOF_XMA2WAVEFORMATEX - sizeof(WAVEFORMATEX))))
                     {
                         return E_FAIL;
                     }
+
+                    if ((ptr + SIZEOF_XMA2WAVEFORMATEX) > wavEnd)
+                    {
+                        return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
+                    }
+
                     seek = true;
                     break;
 
@@ -239,6 +267,11 @@ namespace
                     if ((fmtChunk->size < (sizeof(WAVEFORMATEX) + 32)) || (wfx->cbSize < 32 /*MSADPCM_FORMAT_EXTRA_BYTES*/))
                     {
                         return E_FAIL;
+                    }
+
+                    if ((ptr + sizeof(WAVEFORMATEX) + 32) > wavEnd)
+                    {
+                        return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
                     }
                     break;
 
@@ -250,6 +283,11 @@ namespace
                     else
                     {
                         static const GUID s_wfexBase = { 0x00000000, 0x0000, 0x0010, { 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71 } };
+
+                        if ((ptr + sizeof(WAVEFORMATEXTENSIBLE)) > wavEnd)
+                        {
+                            return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
+                        }
 
                         auto wfex = reinterpret_cast<const WAVEFORMATEXTENSIBLE*>(ptr);
 
