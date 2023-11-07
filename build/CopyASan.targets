@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="CopyASanFiles" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <TargetFolder Condition="'$(TargetFolder)'==''">.drop</TargetFolder>
+
+    <VSInstallDir>$(VsInstallRoot)\</VSInstallDir>
+    <VCInstallDir>$(VSInstallDir)VC\</VCInstallDir>
+    <VCToolsVersionProps>$(VCInstallDir)Auxiliary\Build\Microsoft.VCToolsVersion.default.props</VCToolsVersionProps>
+  </PropertyGroup>
+
+  <Import Project="$(VCToolsVersionProps)" Condition="Exists('$(VCToolsVersionProps)')" />
+
+  <ItemGroup>
+     <ASanFiles Include="$(VCInstallDir)Tools\MSVC\$(VCToolsVersion)\bin\HostX64\x64\clang_rt.*.dll" />
+     <ASanFiles Include="$(VSInstallDir)Common7\IDE\msdia140.dll" />
+  </ItemGroup>
+
+  <Target Name="CopyASanFiles">
+    <Message Text="VCToolsVersion: $(VCToolsVersion)" />
+    <Copy SourceFiles="@(ASanFiles)" DestinationFolder="$(TargetFolder)" />
+  </Target>
+  
+</Project>
