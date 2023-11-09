@@ -1270,8 +1270,8 @@ private:
     {
         assert(mWindow != nullptr);
 
-        RECT rect;
-        GetClientRect(mWindow, &rect);
+        RECT rect = {};
+        std::ignore = GetClientRect(mWindow, &rect);
 
         POINT ul;
         ul.x = rect.left;
