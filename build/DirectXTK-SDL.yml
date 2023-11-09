@@ -101,7 +101,7 @@ jobs:
     displayName: 'Run BinSkim'
     inputs:
       AnalyzeTargetBinskim: ''
-      AnalyzeTargetGlob: +:file|out\bin\**\RelWithDebInfo\*.exe;**\bin\**\Release\*.exe
+      AnalyzeTargetGlob: +:file|out\bin\**\RelWithDebInfo\*.exe;MakeSpriteFont\bin\**\Release\*.exe
       AnalyzeVerbose: true
   - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@2
     displayName: 'Post Analysis'
