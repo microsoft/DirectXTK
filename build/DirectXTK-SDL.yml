@@ -59,18 +59,6 @@ jobs:
       cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -B out -DENABLE_SPECTRE_MITIGATION=ON'
   - task: Semmle@1
-    displayName: 'Run CodeQL (Semmle) (C++)'
-    env:
-      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-    inputs:
-      sourceCodeDirectory: '$(Build.SourcesDirectory)'
-      language: 'cpp'
-      querySuite: 'Recommended'
-      timeout: '1800'
-      ram: '16384'
-      addProjectDirToScanningExclusionList: true
-      buildCommandsString: '"%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsMSBuildCmd.bat" && msbuild $(Build.SourcesDirectory)/out/DirectXTK.sln /p:Configuration=Release'
-  - task: Semmle@1
     displayName: 'Run CodeQL (Semmle) (C#)'
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
@@ -82,6 +70,25 @@ jobs:
       ram: '16384'
       addProjectDirToScanningExclusionList: true
       buildCommandsString: '"%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsMSBuildCmd.bat" && msbuild MakeSpriteFont\MakeSpriteFont.csproj /p:Platform=AnyCPU /p:Configuration=Release'
+  - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@2
+    displayName: 'Post Analysis (C#)'
+    inputs:
+      GdnBreakAllTools: false
+      GdnBreakGdnToolSemmle: true
+      GdnBreakPolicy: 'Microsoft'
+      GdnBreakPolicyMinSev: 'Error'
+  - task: Semmle@1
+    displayName: 'Run CodeQL (Semmle) (C++)'
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    inputs:
+      sourceCodeDirectory: '$(Build.SourcesDirectory)'
+      language: 'cpp'
+      querySuite: 'Recommended'
+      timeout: '1800'
+      ram: '16384'
+      addProjectDirToScanningExclusionList: true
+      buildCommandsString: '"%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsMSBuildCmd.bat" && msbuild $(Build.SourcesDirectory)/out/DirectXTK.sln /p:Configuration=Release'
   - task: CMake@1
     displayName: 'CMake (MSVC): Build x64 Release'
     inputs:
