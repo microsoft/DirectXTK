@@ -1219,7 +1219,14 @@ HRESULT WaveBankReader::Impl::GetMetadata(uint32_t index, Metadata& metadata) co
         if (m_seekData)
         {
             auto seekTable = FindSeekTable(index, m_seekData.get(), m_header, m_data);
-            metadata.duration = entry.GetDuration(dwLength, m_data, seekTable);
+            if (seekTable)
+            {
+                metadata.duration = entry.GetDuration(dwLength, m_data, seekTable);
+            }
+            else
+            {
+                metadata.duration = entry.GetDuration(dwLength, m_data, nullptr);
+            }
         }
         else
         {
