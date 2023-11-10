@@ -1216,8 +1216,15 @@ HRESULT WaveBankReader::Impl::GetMetadata(uint32_t index, Metadata& metadata) co
         DWORD dwOffset, dwLength;
         entry.ComputeLocations(dwOffset, dwLength, index, m_header, m_data, reinterpret_cast<const ENTRYCOMPACT*>(m_entries.get()));
 
-        auto seekTable = FindSeekTable(index, m_seekData.get(), m_header, m_data);
-        metadata.duration = entry.GetDuration(dwLength, m_data, seekTable);
+        if (m_seekData)
+        {
+            auto seekTable = FindSeekTable(index, m_seekData.get(), m_header, m_data);
+            metadata.duration = entry.GetDuration(dwLength, m_data, seekTable);
+        }
+        else
+        {
+            metadata.duration = entry.GetDuration(dwLength, m_data, nullptr);
+        }
         metadata.loopStart = metadata.loopLength = 0;
         metadata.offsetBytes = dwOffset;
         metadata.lengthBytes = dwLength;
