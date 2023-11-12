@@ -125,14 +125,20 @@ namespace
         const uint8_t* ptr = data;
         const uint8_t* end = data + sizeBytes;
 
+        uint64_t current = 0;
+
         while (end > (ptr + sizeof(RIFFChunk)))
         {
+            if ((current + sizeof(RIFFChunk)) >= sizeBytes)
+                return nullptr;
+
             auto header = reinterpret_cast<const RIFFChunk*>(ptr);
             if (header->tag == tag)
                 return header;
 
-            const uint64_t offset = static_cast<uint64_t>(header->size) + sizeof(RIFFChunk);
-            if (offset >= UINT32_MAX)
+            const uint64_t offset = static_cast<const uint64_t>(header->size) + sizeof(RIFFChunk);
+            current += offset;
+            if (current >= sizeBytes)
                 return nullptr;
 
             ptr += static_cast<size_t>(offset);
@@ -187,10 +193,6 @@ namespace
 
         // Locate 'fmt '
         auto ptr = reinterpret_cast<const uint8_t*>(riffHeader) + sizeof(RIFFChunkHeader);
-        if ((ptr + sizeof(RIFFChunk)) > wavEnd)
-        {
-            return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
-        }
 
         auto fmtChunk = FindChunk(ptr, riffHeader->size, wavEnd, FOURCC_FORMAT_TAG);
         if (!fmtChunk || fmtChunk->size < sizeof(PCMWAVEFORMAT))
@@ -198,13 +200,13 @@ namespace
             return E_FAIL;
         }
 
-        ptr = reinterpret_cast<const uint8_t*>(fmtChunk) + sizeof(RIFFChunk);
-        if (ptr + fmtChunk->size > wavEnd)
+        if ((reinterpret_cast<const uint8_t*>(fmtChunk) + sizeof(RIFFChunk) + sizeof(PCMWAVEFORMAT)) > wavEnd)
         {
             return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
         }
 
-        if ((ptr + sizeof(PCMWAVEFORMAT)) > wavEnd)
+        ptr = reinterpret_cast<const uint8_t*>(fmtChunk) + sizeof(RIFFChunk);
+        if (ptr + fmtChunk->size > wavEnd)
         {
             return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
         }
