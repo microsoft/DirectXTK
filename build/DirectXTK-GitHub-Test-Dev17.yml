@@ -272,6 +272,9 @@ jobs:
     inputs:
       cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --build out/build/x64-Debug -v
+  - task: DeleteFiles@1
+    inputs:
+      Contents: 'out'
   - task: CMake@1
     displayName: CMake (MSVC; x64-Release) Config
     inputs:
