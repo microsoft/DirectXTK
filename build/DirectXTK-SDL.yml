@@ -58,30 +58,28 @@ jobs:
     inputs:
       cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -B out -DENABLE_SPECTRE_MITIGATION=ON'
-  - task: Semmle@1
-    displayName: 'Run CodeQL (Semmle) (C++)'
-    env:
-      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+  - task: CodeQL3000Init@0
     inputs:
-      sourceCodeDirectory: '$(Build.SourcesDirectory)'
-      language: 'cpp'
-      querySuite: 'Recommended'
-      timeout: '1800'
-      ram: '16384'
-      addProjectDirToScanningExclusionList: true
-      buildCommandsString: '"%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsMSBuildCmd.bat" && msbuild $(Build.SourcesDirectory)/out/DirectXTK.sln /p:Configuration=Release'
-  - task: Semmle@1
-    displayName: 'Run CodeQL (Semmle) (C#)'
-    env:
-      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+      Enabled: true
+  - task: VSBuild@1
+    displayName: 'Build C++ with CodeQL'
     inputs:
-      sourceCodeDirectory: '$(Build.SourcesDirectory)'
-      language: 'csharp'
-      querySuite: 'Recommended'
-      timeout: '1800'
-      ram: '16384'
-      addProjectDirToScanningExclusionList: true
-      buildCommandsString: '"%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsMSBuildCmd.bat" && msbuild MakeSpriteFont\MakeSpriteFont.csproj /p:Platform=AnyCPU /p:Configuration=Release'
+      solution: '$(Build.SourcesDirectory)/out/DirectXTK.sln'
+      vsVersion: 17.0
+      platform: x64
+      configuration: Release
+      msbuildArchitecture: x64
+  - task: VSBuild@1
+    displayName: 'Build C# with CodeQL'
+    inputs:
+      solution: '$(Build.SourcesDirectory)/MakeSpriteFont/MakeSpriteFont.csproj'
+      vsVersion: 17.0
+      platform: AnyCPU
+      configuration: Release
+      msbuildArchitecture: x64
+      msbuildArgs: /p:CompilerGeneratedFilesOutputPath=$(Build.SourcesDirectory)/roslyn/.
+  - task: CodeQL3000Finalize@0
+    condition: always()
   - task: CMake@1
     displayName: 'CMake (MSVC): Build x64 Release'
     inputs:
