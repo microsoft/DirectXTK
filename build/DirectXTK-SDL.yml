@@ -77,6 +77,7 @@ jobs:
       platform: AnyCPU
       configuration: Release
       msbuildArchitecture: x64
+      msbuildArgs: /p:CompilerGeneratedFilesOutputPath=$(Build.SourcesDirectory)/roslyn/.
   - task: CodeQL3000Finalize@0
     condition: always()
   - task: CMake@1
