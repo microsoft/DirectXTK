@@ -116,7 +116,7 @@ namespace
         _In_ const uint8_t* upperBound,
         _In_ uint32_t tag) noexcept
     {
-        if (!data)
+        if (!data || !upperBound)
             return nullptr;
 
         if (sizeBytes < sizeof(RIFFChunk))
@@ -124,6 +124,9 @@ namespace
 
         const uint8_t* ptr = data;
         const uint8_t* end = data + sizeBytes;
+
+        if (end > upperBound)
+            return nullptr;
 
         uint64_t current = 0;
 
@@ -194,7 +197,7 @@ namespace
         // Locate 'fmt '
         auto ptr = reinterpret_cast<const uint8_t*>(riffHeader) + sizeof(RIFFChunkHeader);
 
-        auto fmtChunk = FindChunk(ptr, riffHeader->size, wavEnd, FOURCC_FORMAT_TAG);
+        auto fmtChunk = FindChunk(ptr, riffChunk->size - 4, wavEnd, FOURCC_FORMAT_TAG);
         if (!fmtChunk || fmtChunk->size < sizeof(PCMWAVEFORMAT))
         {
             return E_FAIL;
@@ -334,7 +337,7 @@ namespace
             return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
         }
 
-        auto dataChunk = FindChunk(ptr, riffChunk->size, wavEnd, FOURCC_DATA_TAG);
+        auto dataChunk = FindChunk(ptr, riffChunk->size - 4, wavEnd, FOURCC_DATA_TAG);
         if (!dataChunk || !dataChunk->size)
         {
             return HRESULT_FROM_WIN32(ERROR_INVALID_DATA);
@@ -399,7 +402,7 @@ namespace
             return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
         }
 
-        auto dlsChunk = FindChunk(ptr, riffChunk->size, wavEnd, FOURCC_DLS_SAMPLE);
+        auto dlsChunk = FindChunk(ptr, riffChunk->size - 4, wavEnd, FOURCC_DLS_SAMPLE);
         if (dlsChunk)
         {
             ptr = reinterpret_cast<const uint8_t*>(dlsChunk) + sizeof(RIFFChunk);
@@ -430,7 +433,7 @@ namespace
         }
 
         // Locate 'smpl' (Sample Chunk)
-        auto midiChunk = FindChunk(ptr, riffChunk->size, wavEnd, FOURCC_MIDI_SAMPLE);
+        auto midiChunk = FindChunk(ptr, riffChunk->size - 4, wavEnd, FOURCC_MIDI_SAMPLE);
         if (midiChunk)
         {
             ptr = reinterpret_cast<const uint8_t*>(midiChunk) + sizeof(RIFFChunk);
@@ -505,7 +508,7 @@ namespace
             return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
         }
 
-        auto tableChunk = FindChunk(ptr, riffChunk->size, wavEnd, tag);
+        auto tableChunk = FindChunk(ptr, riffChunk->size - 4, wavEnd, tag);
         if (tableChunk)
         {
             ptr = reinterpret_cast<const uint8_t*>(tableChunk) + sizeof(RIFFChunk);
