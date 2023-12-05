@@ -118,6 +118,13 @@ jobs:
       OverWrite: true
       flattenFolders: true
 
+  - task: PowerShell@2
+    displayName: Copy OneFuzz setup script
+    inputs:
+      targetType: 'inline'
+      script: |
+        Copy-Item -Path .\build\onefuzz-setup.ps1 -Destination .drop/setup.ps1
+
   - task: MSBuild@1
     displayName: 'Copy ASan binaries'
     inputs:
