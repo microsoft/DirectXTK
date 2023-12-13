@@ -7,23 +7,6 @@ function Execute-Setup {
     # Exclude any uploaded DLL from known DLLs
     gci -filter '*.dll' | Exclude-Library
 
-    # Update environment values for ASAN_OPTIONS.
-    # These environment variables affect how the ASan runtime operates. 
-    # Use the 'allocator_may_return_null=1' environment variable if you have compiled
-    # your fuzzer using clang with the ASan flags
-    #
-    # Use 'windows_hook_rtl_allocators=true:allocator_may_return_null=1' if your fuzzer has
-    # been compiled using MSVC with the ASan flags
-    # 
-    # $AsanOptions = 'windows_hook_rtl_allocators=true:allocator_may_return_null=1'
-    # $AsanOptions = 'allocator_may_return_null=1'
-
-    $AsanOptions = 'windows_hook_rtl_allocators=true:allocator_may_return_null=1'
-
-    # Use the 'machine' scope to make this permanent because the machine will reboot  
-    [Environment]::SetEnvironmentVariable('ASAN_OPTIONS', $AsanOptions, 'Machine')
-    Write-Log "Set ASAN_OPTIONS to $AsanOptions"
-
     # Done. Useful to know that the script did not prematurely error out
     Write-Log 'Setup script finished successfully'
 }
