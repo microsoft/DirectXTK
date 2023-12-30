@@ -6,7 +6,7 @@ http://go.microsoft.com/fwlink/?LinkId=248929
 
 Copyright (c) Microsoft Corporation.
 
-**October 28, 2023**
+**December 31, 2023**
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for writing Direct3D 11 C++ code for Universal Windows Platform (UWP) apps for Windows 11, Windows 10, Xbox One, and Win32 desktop applications for Windows 7 Service Pack 1 or later.
 
