@@ -68,7 +68,7 @@ jobs:
       version: 2.1.x
   - task: NuGetToolInstaller@1
     displayName: 'Use NuGet'
-  - task: NuGetAuthenticate@0
+  - task: NuGetAuthenticate@1
     displayName: 'NuGet authentication'
   - task: NuGetCommand@2
     displayName: 'NuGet restore'
@@ -299,7 +299,7 @@ jobs:
       version: 2.1.x
   - task: NuGetToolInstaller@1
     displayName: 'Use NuGet'
-  - task: NuGetAuthenticate@0
+  - task: NuGetAuthenticate@1
     displayName: 'NuGet authentication'
   - task: VSBuild@1
     displayName: 'Build solution DirectXTK_Windows10_2019.sln 32dbg'
