@@ -1,0 +1,151 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# http://go.microsoft.com/fwlink/?LinkId=248929
+
+# Builds the library using CMake and submit for file fuzzing
+
+schedules:
+- cron: "0 12 * * 0"
+  displayName: 'Submit for File Fuzzing'
+  branches:
+    include:
+    - main
+  always: true
+
+trigger: none
+pr: none
+
+resources:
+  repositories:
+  - repository: self
+    type: git
+    ref: refs/heads/main
+
+name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
+
+variables:
+  VS_GENERATOR: 'Visual Studio 17 2022'
+  WIN11_SDK: '10.0.22000.0'
+  BUGFILING_PAT: $(BugFilingPAT)
+  GITHUB_PAT: $(GITHUBPUBLICTOKEN)
+  ONEFUZZ_PAT: $(OneFuzzPAT)
+
+pool:
+  vmImage: windows-2022
+
+jobs:
+- job: FUZZ_BUILD
+  displayName: 'Build for file fuzzing'
+  steps:
+  - checkout: self
+    clean: true
+    fetchTags: false
+  - task: DeleteFiles@1
+    displayName: Delete files from Tests
+    inputs:
+      SourceFolder: Tests
+      Contents: '**'
+      RemoveSourceFolder: true
+      RemoveDotFiles: true
+  - task: CmdLine@2
+    displayName: Fetch Tests
+    inputs:
+      script: git clone --quiet --no-tags https://%GITHUB_PAT%@github.com/walbourn/directxtktest.git Tests
+      workingDirectory: $(Build.SourcesDirectory)
+      failOnStderr: true
+  - task: CMake@1
+    displayName: 'CMake (MSVC): Config with ASan'
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -B out -DCMAKE_SYSTEM_VERSION=$(WIN11_SDK) -DBUILD_TOOLS=OFF -DBUILD_XAUDIO_WIN10=ON -DBUILD_FUZZING=ON -DBUILD_TESTING=OFF'
+  - task: CMake@1
+    displayName: 'CMake (MSVC): Build with ASan'
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --build out -v --config RelWithDebInfo
+  - task: CopyFiles@2
+    displayName: Copy fuzzer
+    inputs:
+      Contents: |
+        build\OneFuzzConfig.json
+        out\bin\CMake\RelWithDebInfo\fuzzloaders.exe
+      TargetFolder: .drop
+      OverWrite: true
+      flattenFolders: true
+  - task: CopyFiles@2
+    displayName: Copy symbols
+    inputs:
+      Contents: |
+        out\bin\CMake\RelWithDebInfo\fuzzloaders.pdb
+      TargetFolder: .drop\symbols
+      OverWrite: true
+      flattenFolders: true
+  - task: PowerShell@2
+    displayName: Download seed files
+    inputs:
+      targetType: inline
+      script: |
+        $seedfiles = "AlphaEdge.dds",
+            "cubea8r8g8b8.dds",
+            "default_texture_nm.dds",
+            "dx5_logo.dds",
+            "hdrtest.dds",
+            "normalmap.dds";
+
+        New-Item -ItemType Directory -Force -Path .drop\seeds\
+
+        foreach($filename in $seedfiles)
+        {
+            Write-Host "Fetching: $filename"
+            $url = "https://raw.githubusercontent.com/walbourn/directxtexmedia/main/" + $filename
+            $target = [System.IO.Path]::Combine(".drop\seeds\", $filename)
+            Invoke-WebRequest $url -o $target
+        }
+
+  - task: CopyFiles@2
+    displayName: Copy audio seed files
+    inputs:
+      Contents: |
+        Tests\BasicAudioTest\Alarm01.wav
+        Tests\BasicAudioTest\Alarm01_adpcm.wav
+        Tests\BasicAudioTest\Alarm01_float.wav
+        Tests\BasicAudioTest\Alarm01_xwma.wav
+        Tests\BasicAudioTest\ADPCMdroid.xwb
+        Tests\BasicAudioTest\wavebank.xwb
+        Tests\BasicAudioTest\xwmadroid.xwb
+      TargetFolder: .drop\seeds
+      OverWrite: true
+      flattenFolders: true
+
+  - task: PowerShell@2
+    displayName: Copy OneFuzz setup script
+    inputs:
+      targetType: 'inline'
+      script: |
+        Copy-Item -Path .\build\onefuzz-setup.ps1 -Destination .drop/setup.ps1
+
+  - task: MSBuild@1
+    displayName: 'Copy ASan binaries'
+    inputs:
+      solution: build/CopyASAN.targets
+      msbuildArguments: /p:TargetFolder=$(Build.SourcesDirectory)\.drop
+      msbuildVersion: 17.0
+      msbuildArchitecture: x64
+  - task: PowerShell@2
+    displayName: List drop files
+    inputs:
+      targetType: inline
+      script: |
+        Get-ChildItem ".drop" -Recurse | select FullName
+
+  - task: onefuzz-task@0
+    displayName: 'Submit to OneFuzz'
+    inputs:
+      onefuzzOSes: 'Windows'
+    env:
+      onefuzzDropDirectory: $(Build.SourcesDirectory)\.drop
+      onefuzzDropPAT: $(ONEFUZZ_PAT)
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+      onefuzzBugFilingPAT: $(BUGFILING_PAT)
+  

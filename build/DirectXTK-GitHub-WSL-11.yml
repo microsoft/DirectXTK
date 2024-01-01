@@ -43,7 +43,7 @@ jobs:
   - task: CmdLine@2
     displayName: Fetch directx-headers
     inputs:
-      script: git clone --quiet https://%GITHUB_PAT%@github.com/microsoft/DirectX-Headers.git directx-headers
+      script: git clone --quiet --no-tags https://%GITHUB_PAT%@github.com/microsoft/DirectX-Headers.git directx-headers
   - task: CMake@1
     displayName: CMake DirectX-Headers
     inputs:
@@ -62,7 +62,7 @@ jobs:
   - task: CmdLine@2
     displayName: Fetch directxmath
     inputs:
-      script: git clone --quiet https://%GITHUB_PAT%@github.com/microsoft/DirectXMath.git directxmath
+      script: git clone --quiet --no-tags https://%GITHUB_PAT%@github.com/microsoft/DirectXMath.git directxmath
   - task: CMake@1
     displayName: CMake DirectXMath
     inputs:
@@ -81,7 +81,7 @@ jobs:
   - task: CmdLine@2
     displayName: Fetch Tests
     inputs:
-      script: git clone --quiet https://%GITHUB_PAT%@github.com/walbourn/directxtktest.git Tests
+      script: git clone --quiet --no-tags https://%GITHUB_PAT%@github.com/walbourn/directxtktest.git Tests
       workingDirectory: $(Build.SourcesDirectory)
       failOnStderr: true
   - task: PowerShell@2

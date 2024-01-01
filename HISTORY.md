@@ -6,6 +6,11 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### December 31, 2023
+* Fix WAVFileReader bugs with bounds checking
+* CMake project updates
+* Code review
+
 ### October 28, 2023
 * Additional methods for *DirectX Tool Kit for Audio* emitter for linear and inverse-square falloff curves
 * xwbtool: -flist option updated to support filenames with spaces

@@ -30,6 +30,9 @@ namespace
 {
 #pragma pack(push, 1)
 
+    constexpr uint16_t MSADPCM_FORMAT_EXTRA_BYTES = 32;
+    constexpr uint16_t MSADPCM_NUM_COEFFICIENTS = 7;
+
     constexpr size_t DVD_SECTOR_SIZE = 2048;
     constexpr size_t DVD_BLOCK_SIZE = DVD_SECTOR_SIZE * 16;
 
@@ -236,7 +239,7 @@ namespace
         void AdpcmFillCoefficientTable(ADPCMWAVEFORMAT *fmt) const noexcept
         {
             // These are fixed since we are always using MS ADPCM
-            fmt->wNumCoef = 7 /* MSADPCM_NUM_COEFFICIENTS */;
+            fmt->wNumCoef = MSADPCM_NUM_COEFFICIENTS;
 
             static ADPCMCOEFSET aCoef[7] = { { 256, 0}, {512, -256}, {0,0}, {192,64}, {240,0}, {460, -208}, {392,-232} };
             memcpy(&fmt->aCoef, aCoef, sizeof(aCoef));
@@ -342,7 +345,7 @@ namespace
             }
         }
 
-        static uint32_t GetDuration(DWORD length, const BANKDATA& data, const uint32_t* seekTable) noexcept
+        static uint32_t GetDuration(DWORD length, const BANKDATA& data, _In_opt_ const uint32_t* seekTable) noexcept
         {
             switch (data.CompactFormat.wFormatTag)
             {
@@ -389,7 +392,7 @@ namespace
 
 #pragma pack(pop)
 
-    inline const uint32_t* FindSeekTable(uint32_t index, const uint8_t* seekTable, const HEADER& header, const BANKDATA& data) noexcept
+    inline const uint32_t* FindSeekTable(uint32_t index, _In_opt_ const uint8_t* seekTable, const HEADER& header, const BANKDATA& data) noexcept
     {
         if (!seekTable || index >= data.dwEntryCount)
             return nullptr;
@@ -983,11 +986,11 @@ HRESULT WaveBankReader::Impl::GetFormat(uint32_t index, WAVEFORMATEX* pFormat, s
         break;
 
     case MINIWAVEFORMAT::TAG_ADPCM:
-        if (maxsize < (sizeof(WAVEFORMATEX) + 32 /*MSADPCM_FORMAT_EXTRA_BYTES*/))
+        if (maxsize < (sizeof(WAVEFORMATEX) + MSADPCM_FORMAT_EXTRA_BYTES))
             return HRESULT_FROM_WIN32(ERROR_MORE_DATA);
 
         pFormat->wFormatTag = WAVE_FORMAT_ADPCM;
-        pFormat->cbSize = 32 /*MSADPCM_FORMAT_EXTRA_BYTES*/;
+        pFormat->cbSize = MSADPCM_FORMAT_EXTRA_BYTES;
         {
             auto adpcmFmt = reinterpret_cast<ADPCMWAVEFORMAT*>(pFormat);
             adpcmFmt->wSamplesPerBlock = static_cast<WORD>(miniFmt.AdpcmSamplesPerBlock());
@@ -1213,8 +1216,22 @@ HRESULT WaveBankReader::Impl::GetMetadata(uint32_t index, Metadata& metadata) co
         DWORD dwOffset, dwLength;
         entry.ComputeLocations(dwOffset, dwLength, index, m_header, m_data, reinterpret_cast<const ENTRYCOMPACT*>(m_entries.get()));
 
-        auto seekTable = FindSeekTable(index, m_seekData.get(), m_header, m_data);
-        metadata.duration = entry.GetDuration(dwLength, m_data, seekTable);
+        if (m_seekData)
+        {
+            auto seekTable = FindSeekTable(index, m_seekData.get(), m_header, m_data);
+            if (seekTable)
+            {
+                metadata.duration = entry.GetDuration(dwLength, m_data, seekTable);
+            }
+            else
+            {
+                metadata.duration = entry.GetDuration(dwLength, m_data, nullptr);
+            }
+        }
+        else
+        {
+            metadata.duration = entry.GetDuration(dwLength, m_data, nullptr);
+        }
         metadata.loopStart = metadata.loopLength = 0;
         metadata.offsetBytes = dwOffset;
         metadata.lengthBytes = dwLength;

@@ -32,6 +32,10 @@ namespace
     constexpr uint32_t FOURCC_XWMA_DPDS = MAKEFOURCC('d', 'p', 'd', 's');
     constexpr uint32_t FOURCC_XMA_SEEK = MAKEFOURCC('s', 'e', 'e', 'k');
 
+    constexpr size_t SIZEOF_XMA2WAVEFORMATEX = 52;
+
+    constexpr uint16_t MSADPCM_FORMAT_EXTRA_BYTES = 32;
+
 #pragma pack(push,1)
     struct RIFFChunk
     {
@@ -112,7 +116,7 @@ namespace
         _In_ const uint8_t* upperBound,
         _In_ uint32_t tag) noexcept
     {
-        if (!data)
+        if (!data || !upperBound)
             return nullptr;
 
         if (sizeBytes < sizeof(RIFFChunk))
@@ -121,19 +125,28 @@ namespace
         const uint8_t* ptr = data;
         const uint8_t* end = data + sizeBytes;
 
+        if (end > upperBound)
+            return nullptr;
+
+        uint64_t current = 0;
+
         while (end > (ptr + sizeof(RIFFChunk)))
         {
+            if ((current + sizeof(RIFFChunk)) >= sizeBytes)
+                return nullptr;
+
             auto header = reinterpret_cast<const RIFFChunk*>(ptr);
             if (header->tag == tag)
                 return header;
 
-            const uint64_t offset = static_cast<uint64_t>(header->size) + sizeof(RIFFChunk);
-            if (offset >= UINT32_MAX)
+            const uint64_t offset = static_cast<const uint64_t>(header->size) + sizeof(RIFFChunk);
+            current += offset;
+            if (current >= sizeBytes)
                 return nullptr;
 
             ptr += static_cast<size_t>(offset);
 
-            if (ptr > upperBound)
+            if (ptr >= upperBound)
                 return nullptr;
         }
 
@@ -170,6 +183,11 @@ namespace
             return E_FAIL;
         }
 
+        if ((reinterpret_cast<const uint8_t*>(riffChunk) + sizeof(RIFFChunkHeader)) > wavEnd)
+        {
+            return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
+        }
+
         auto riffHeader = reinterpret_cast<const RIFFChunkHeader*>(riffChunk);
         if (riffHeader->riff != FOURCC_WAVE_FILE_TAG && riffHeader->riff != FOURCC_XWMA_FILE_TAG)
         {
@@ -178,15 +196,16 @@ namespace
 
         // Locate 'fmt '
         auto ptr = reinterpret_cast<const uint8_t*>(riffHeader) + sizeof(RIFFChunkHeader);
-        if ((ptr + sizeof(RIFFChunk)) > wavEnd)
-        {
-            return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
-        }
 
-        auto fmtChunk = FindChunk(ptr, riffHeader->size, wavEnd, FOURCC_FORMAT_TAG);
+        auto fmtChunk = FindChunk(ptr, riffChunk->size - 4, wavEnd, FOURCC_FORMAT_TAG);
         if (!fmtChunk || fmtChunk->size < sizeof(PCMWAVEFORMAT))
         {
             return E_FAIL;
+        }
+
+        if ((reinterpret_cast<const uint8_t*>(fmtChunk) + sizeof(RIFFChunk) + sizeof(PCMWAVEFORMAT)) > wavEnd)
+        {
+            return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
         }
 
         ptr = reinterpret_cast<const uint8_t*>(fmtChunk) + sizeof(RIFFChunk);
@@ -213,11 +232,21 @@ namespace
                     return E_FAIL;
                 }
 
+                if ((ptr + sizeof(WAVEFORMATEX)) > wavEnd)
+                {
+                    return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
+                }
+
                 auto wfx = reinterpret_cast<const WAVEFORMATEX*>(ptr);
 
                 if (fmtChunk->size < (sizeof(WAVEFORMATEX) + wfx->cbSize))
                 {
                     return E_FAIL;
+                }
+
+                if ((ptr + (sizeof(WAVEFORMATEX) + wfx->cbSize)) > wavEnd)
+                {
+                    return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
                 }
 
                 switch (wfx->wFormatTag)
@@ -227,18 +256,29 @@ namespace
                     dpds = true;
                     break;
 
-                case  0x166 /*WAVE_FORMAT_XMA2*/: // XMA2 is supported by Xbox One
-                    if ((fmtChunk->size < 52 /*sizeof(XMA2WAVEFORMATEX)*/) || (wfx->cbSize < 34 /*( sizeof(XMA2WAVEFORMATEX) - sizeof(WAVEFORMATEX) )*/))
+                case  0x166 /*WAVE_FORMAT_XMA2*/: // XMA2 is supported by Xbox One & Xbox Series X|S
+                    if ((fmtChunk->size < SIZEOF_XMA2WAVEFORMATEX) || (wfx->cbSize < (SIZEOF_XMA2WAVEFORMATEX - sizeof(WAVEFORMATEX))))
                     {
                         return E_FAIL;
                     }
+
+                    if ((ptr + SIZEOF_XMA2WAVEFORMATEX) > wavEnd)
+                    {
+                        return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
+                    }
+
                     seek = true;
                     break;
 
                 case WAVE_FORMAT_ADPCM:
-                    if ((fmtChunk->size < (sizeof(WAVEFORMATEX) + 32)) || (wfx->cbSize < 32 /*MSADPCM_FORMAT_EXTRA_BYTES*/))
+                    if ((fmtChunk->size < (sizeof(WAVEFORMATEX) + MSADPCM_FORMAT_EXTRA_BYTES)) || (wfx->cbSize < MSADPCM_FORMAT_EXTRA_BYTES))
                     {
                         return E_FAIL;
+                    }
+
+                    if ((ptr + sizeof(WAVEFORMATEX) + MSADPCM_FORMAT_EXTRA_BYTES) > wavEnd)
+                    {
+                        return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
                     }
                     break;
 
@@ -250,6 +290,11 @@ namespace
                     else
                     {
                         static const GUID s_wfexBase = { 0x00000000, 0x0000, 0x0010, { 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71 } };
+
+                        if ((ptr + sizeof(WAVEFORMATEXTENSIBLE)) > wavEnd)
+                        {
+                            return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
+                        }
 
                         auto wfex = reinterpret_cast<const WAVEFORMATEXTENSIBLE*>(ptr);
 
@@ -292,7 +337,7 @@ namespace
             return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
         }
 
-        auto dataChunk = FindChunk(ptr, riffChunk->size, wavEnd, FOURCC_DATA_TAG);
+        auto dataChunk = FindChunk(ptr, riffChunk->size - 4, wavEnd, FOURCC_DATA_TAG);
         if (!dataChunk || !dataChunk->size)
         {
             return HRESULT_FROM_WIN32(ERROR_INVALID_DATA);
@@ -357,7 +402,7 @@ namespace
             return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
         }
 
-        auto dlsChunk = FindChunk(ptr, riffChunk->size, wavEnd, FOURCC_DLS_SAMPLE);
+        auto dlsChunk = FindChunk(ptr, riffChunk->size - 4, wavEnd, FOURCC_DLS_SAMPLE);
         if (dlsChunk)
         {
             ptr = reinterpret_cast<const uint8_t*>(dlsChunk) + sizeof(RIFFChunk);
@@ -388,7 +433,7 @@ namespace
         }
 
         // Locate 'smpl' (Sample Chunk)
-        auto midiChunk = FindChunk(ptr, riffChunk->size, wavEnd, FOURCC_MIDI_SAMPLE);
+        auto midiChunk = FindChunk(ptr, riffChunk->size - 4, wavEnd, FOURCC_MIDI_SAMPLE);
         if (midiChunk)
         {
             ptr = reinterpret_cast<const uint8_t*>(midiChunk) + sizeof(RIFFChunk);
@@ -463,7 +508,7 @@ namespace
             return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
         }
 
-        auto tableChunk = FindChunk(ptr, riffChunk->size, wavEnd, tag);
+        auto tableChunk = FindChunk(ptr, riffChunk->size - 4, wavEnd, tag);
         if (tableChunk)
         {
             ptr = reinterpret_cast<const uint8_t*>(tableChunk) + sizeof(RIFFChunk);

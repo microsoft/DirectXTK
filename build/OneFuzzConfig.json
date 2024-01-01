@@ -1,0 +1,40 @@
+{
+  "ConfigVersion": 3,
+  "Entries": [
+    {
+      "JobNotificationEmail": "directxtkdev@microsoft.com",
+      "Skip": false,
+      "Fuzzer": {
+        "$type": "libfuzzer",
+        "FuzzingHarnessExecutableName": "fuzzloaders.exe"
+      },
+      "RebootAfterSetup": false,
+      "OneFuzzJobs": [
+        {
+          "ProjectName": "Direct3D",
+          "TargetName": "DirectXTK",
+          "TargetOptions": [
+             " -rss_limit_mb=4096"
+          ],
+          "TargetEnv": {
+            "ASAN_OPTIONS": "allocator_may_return_null=1"
+          }
+        }
+      ],
+      "JobDependencies": [
+        "fuzzloaders.exe",
+        "fuzzloaders.pdb",
+        "clang_rt.asan_dynamic-x86_64.dll",
+        "msdia140.dll",
+        "setup.ps1"
+      ],
+      "AdoTemplate": {
+        "Org": "microsoft",
+        "Project": "OS",
+        "AssignedTo": "chuckw@microsoft.com",
+        "AreaPath": "OS\\Core\\SiGMa\\GRFX-Graphics",
+        "IterationPath": "OS\\Future"
+      }
+    }
+  ]
+}

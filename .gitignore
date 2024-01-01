@@ -25,6 +25,7 @@ packages
 /ipch
 /MakeSpriteFont/obj
 /Tests
+/Testing
 /wiki
 /out
 /CMakeUserPresets.json

@@ -510,6 +510,8 @@ HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
     }
 
     HANDLE async = mWaveBank->GetAsyncHandle();
+    if (!async)
+        return E_POINTER;
 
     const uint32_t readBuffer = mCurrentDiskReadBuffer;
     for (uint32_t j = 0; j < MAX_BUFFER_COUNT; ++j)
@@ -566,6 +568,8 @@ HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
 HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
 {
     HANDLE async = mWaveBank->GetAsyncHandle();
+    if (!async)
+        return E_POINTER;
 
     for (uint32_t j = 0; j < MAX_BUFFER_COUNT; ++j)
     {
