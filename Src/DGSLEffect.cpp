@@ -899,6 +899,10 @@ void DGSLEffect::SetTexture(int whichTexture, _In_opt_ ID3D11ShaderResourceView*
 // SkinnedDGSLEffect
 //--------------------------------------------------------------------------------------
 
+SkinnedDGSLEffect::~SkinnedDGSLEffect()
+{
+}
+
 // Animation settings.
 void SkinnedDGSLEffect::SetWeightsPerVertex(int value)
 {
