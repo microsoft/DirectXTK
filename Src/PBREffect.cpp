@@ -682,6 +682,10 @@ void PBREffect::SetRenderTargetSizeInPixels(int width, int height)
 // SkinnedPBREffect
 //--------------------------------------------------------------------------------------
 
+SkinnedPBREffect::~SkinnedPBREffect()
+{
+}
+
 // Animation settings.
 void SkinnedPBREffect::SetWeightsPerVertex(int value)
 {
