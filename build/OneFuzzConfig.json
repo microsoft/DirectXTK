@@ -2,6 +2,7 @@
   "ConfigVersion": 3,
   "Entries": [
     {
+      "MinAvailableMemoryMB": 50,
       "JobNotificationEmail": "directxtkdev@microsoft.com",
       "Skip": false,
       "Fuzzer": {
