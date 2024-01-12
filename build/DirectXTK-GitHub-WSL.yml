@@ -139,10 +139,10 @@ jobs:
   - task: CmdLine@2
     displayName: Run tests dbg
     inputs:
-      script: ./out/bin/CMake/simplemathtest
+      script: ./out/bin/simplemathtest
       workingDirectory: Tests/SimpleMathTest
   - task: CmdLine@2
     displayName: Run tests rel
     inputs:
-      script: ./out2/bin/CMake/simplemathtest
+      script: ./out2/bin/simplemathtest
       workingDirectory: Tests/SimpleMathTest
