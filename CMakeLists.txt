@@ -381,7 +381,7 @@ if(MSVC)
       target_link_options(${t} PRIVATE /DYNAMICBASE /NXCOMPAT /INCREMENTAL:NO)
     endforeach()
 
-    if((CMAKE_SIZEOF_VOID_P EQUAL 4) AND (NOT ${DIRECTX_ARCH} MATCHES "^arm"))
+    if((CMAKE_SIZEOF_VOID_P EQUAL 4) AND (NOT (${DIRECTX_ARCH} MATCHES "^arm")))
       foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
         target_link_options(${t} PRIVATE /SAFESEH)
       endforeach()
