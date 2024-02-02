@@ -100,7 +100,7 @@ jobs:
             Write-Host "Fetching: $filename"
             $url = "https://raw.githubusercontent.com/walbourn/directxtexmedia/main/" + $filename
             $target = [System.IO.Path]::Combine(".drop\seeds\", $filename)
-            Invoke-WebRequest $url -o $target
+            Invoke-WebRequest -Uri $url -OutFile $target
         }
 
   - task: CopyFiles@2
