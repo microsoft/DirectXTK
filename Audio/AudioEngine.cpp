@@ -950,6 +950,9 @@ void AudioEngine::Impl::AllocateVoice(
                         CreateXMA2(wfmt, sizeof(buff), defaultRate, wfx->nChannels, 65536, 2, 0);
                         break;
                     #endif
+
+                    default:
+                        throw std::invalid_argument("Unsupported wave format");
                     }
 
                 #ifdef VERBOSE_TRACE

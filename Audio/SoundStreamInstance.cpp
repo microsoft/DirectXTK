@@ -237,6 +237,7 @@ public:
         HANDLE events[] = { mBufferRead.get(), mBufferEnd.get() };
         switch (WaitForMultipleObjectsEx(static_cast<DWORD>(std::size(events)), events, FALSE, 0, FALSE))
         {
+        default:
         case WAIT_TIMEOUT:
             break;
 

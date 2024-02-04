@@ -571,6 +571,9 @@ void Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
             vk = LOWORD(MapVirtualKeyW(static_cast<UINT>(scanCode), MAPVK_VSC_TO_VK_EX));
         }
         break;
+
+    default:
+        break;
     }
 
     if (down)
