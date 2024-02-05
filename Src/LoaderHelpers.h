@@ -781,6 +781,9 @@ namespace DirectX
 
                     // No 3:3:2 or paletted DXGI formats aka D3DFMT_R3G3B2, D3DFMT_P8
                     break;
+
+                default:
+                    return DXGI_FORMAT_UNKNOWN;
                 }
             }
             else if (ddpf.flags & DDS_LUMINANCE)
@@ -811,6 +814,9 @@ namespace DirectX
                         return DXGI_FORMAT_R8G8_UNORM; // Some DDS writers assume the bitcount should be 8 instead of 16
                     }
                     break;
+
+                default:
+                    return DXGI_FORMAT_UNKNOWN;
                 }
             }
             else if (ddpf.flags & DDS_ALPHA)
@@ -843,6 +849,9 @@ namespace DirectX
                         return DXGI_FORMAT_R8G8_SNORM; // D3DX10/11 writes this out as DX10 extension
                     }
                     break;
+
+                default:
+                    return DXGI_FORMAT_UNKNOWN;
                 }
 
                 // No DXGI format maps to DDPF_BUMPLUMINANCE aka D3DFMT_L6V5U5, D3DFMT_X8L8V8U8
@@ -943,6 +952,9 @@ namespace DirectX
                     return DXGI_FORMAT_R32G32B32A32_FLOAT;
 
                 // No DXGI format maps to D3DFMT_CxV8U8
+
+                default:
+                    return DXGI_FORMAT_UNKNOWN;
                 }
             }
 

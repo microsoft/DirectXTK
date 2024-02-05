@@ -184,6 +184,9 @@ namespace
                         return aWMABlockAlign[dwBlockAlignIndex];
                 }
                 break;
+
+            default:
+                break;
             }
 
             return 0;
@@ -224,6 +227,9 @@ namespace
                     if (dwBytesPerSecIndex < 7)
                         return aWMAAvgBytesPerSec[dwBytesPerSecIndex];
                 }
+                break;
+
+            default:
                 break;
             }
 

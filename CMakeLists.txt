@@ -377,7 +377,7 @@ endif()
 # Model uses dynamic_cast, so we need /GR (Enable RTTI)
 if(MSVC)
     foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
-      target_compile_options(${t} PRIVATE /Wall /GR /fp:fast "$<$<NOT:$<CONFIG:DEBUG>>:/guard:cf>")
+      target_compile_options(${t} PRIVATE /Wall /GR "$<$<NOT:$<CONFIG:DEBUG>>:/guard:cf>")
       target_link_options(${t} PRIVATE /DYNAMICBASE /NXCOMPAT /INCREMENTAL:NO)
     endforeach()
 
@@ -452,7 +452,7 @@ if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
     endif()
     target_compile_options(${PROJECT_NAME} PRIVATE ${WarningsLib})
 
-    set(WarningsEXE ${WarningsLib} "-Wno-c++98-compat" "-Wno-c++98-compat-pedantic"
+    set(WarningsEXE ${WarningsLib} "-Wno-c++98-compat" "-Wno-c++98-compat-pedantic" "-Wno-switch-default"
         "-Wno-double-promotion" "-Wno-exit-time-destructors" "-Wno-gnu-anonymous-struct"
         "-Wno-missing-prototypes" "-Wno-nested-anon-types" "-Wno-unused-const-variable")
     foreach(t IN LISTS TOOL_EXES)
@@ -464,7 +464,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     endforeach()
 elseif( CMAKE_CXX_COMPILER_ID MATCHES "MSVC" )
     foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
-      target_compile_options(${t} PRIVATE /sdl /permissive- /JMC- /Zc:__cplusplus /Zc:inline)
+      target_compile_options(${t} PRIVATE /sdl /permissive- /JMC- /Zc:__cplusplus /Zc:inline /fp:fast)
     endforeach()
 
     if(ENABLE_CODE_ANALYSIS)

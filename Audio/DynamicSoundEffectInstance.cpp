@@ -214,6 +214,7 @@ void DynamicSoundEffectInstance::Impl::OnUpdate()
     const DWORD result = WaitForSingleObjectEx(mBufferEvent.get(), 0, FALSE);
     switch (result)
     {
+    default:
     case WAIT_TIMEOUT:
         break;
 
