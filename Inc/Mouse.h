@@ -24,7 +24,7 @@
 
 #endif // !USING_XINPUT && !USING_GAMEINPUT && !USING_WINDOWS_GAMING_INPUT
 
-#if defined(USING_GAMEINPUT) && !defined(_GAMING_XBOX)
+#if defined(USING_GAMEINPUT) && !defined(_GAMING_XBOX) && defined(_MSC_VER)
 #pragma comment(lib,"gameinput.lib")
 #endif
 

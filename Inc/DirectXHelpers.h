@@ -15,9 +15,11 @@
 #include <d3d11_1.h>
 #endif
 
+#ifdef _MSC_VER
 #if !defined(NO_D3D11_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
 #if !defined(_XBOX_ONE) || !defined(_TITLE)
 #pragma comment(lib,"dxguid.lib")
+#endif
 #endif
 #endif
 

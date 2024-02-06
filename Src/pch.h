@@ -9,6 +9,7 @@
 
 #pragma once
 
+#ifdef _MSC_VER
 // Off by default warnings
 #pragma warning(disable : 4619 4616 4061 4265 4365 4571 4623 4625 4626 4628 4668 4710 4711 4746 4774 4820 4987 5026 5027 5031 5032 5039 5045 5219 5264 26812)
 // C4619/4616 #pragma warning warnings
@@ -47,6 +48,7 @@
 #pragma warning(disable : 4643 5043)
 // C4643 Forward declaring in namespace std is not permitted by the C++ Standard
 // C5043 exception specification does not match previous declaration
+#endif
 
 #ifdef __INTEL_COMPILER
 #pragma warning(disable : 161 2960 3280)
