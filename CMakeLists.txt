@@ -38,7 +38,7 @@ option(NO_WCHAR_T "Use legacy wide-character as unsigned short" OFF)
 
 option(BUILD_FUZZING "Build for fuzz testing" OFF)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -463,6 +463,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
     foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
       target_compile_options(${t} PRIVATE /Zc:__cplusplus /Zc:inline /fp:fast /Qdiag-disable:161)
     endforeach()
+    set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 14)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
       target_compile_options(${t} PRIVATE /sdl /permissive- /JMC- /Zc:__cplusplus /Zc:inline /fp:fast)
