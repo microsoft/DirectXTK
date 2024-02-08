@@ -1541,7 +1541,9 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 #endif
 #pragma endregion
 
+#ifdef _MSC_VER
 #pragma warning( disable : 4355 )
+#endif
 
 // Public constructor.
 Mouse::Mouse() noexcept(false)

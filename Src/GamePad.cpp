@@ -420,10 +420,14 @@ bool GamePad::GetDevice(int player, _Outptr_ IGameInputDevice * *device) noexcep
 // Windows::Gaming::Input (Windows 10)
 //======================================================================================
 
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4471 5204 5256)
+#endif
 #include <windows.gaming.input.h>
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 
 class GamePad::Impl
 {
@@ -1624,7 +1628,9 @@ GamePad::Impl* GamePad::Impl::s_gamePad = nullptr;
 #endif
 #pragma endregion
 
+#ifdef _MSC_VER
 #pragma warning( disable : 4355 )
+#endif
 
 // Public constructor.
 GamePad::GamePad() noexcept(false)

@@ -29,7 +29,9 @@ using namespace DirectX;
 #pragma clang diagnostic ignored "-Wcovered-switch-default"
 #endif
 
+#ifdef _MSC_VER
 #pragma warning(disable : 4061 4062)
+#endif
 
 //#define VERBOSE_TRACE
 
