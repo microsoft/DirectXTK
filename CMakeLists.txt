@@ -38,7 +38,7 @@ option(NO_WCHAR_T "Use legacy wide-character as unsigned short" OFF)
 
 option(BUILD_FUZZING "Build for fuzz testing" OFF)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -370,6 +370,7 @@ if(BUILD_TOOLS AND WIN32)
     xwbtool/settings.manifest
     Audio/WAVFileReader.cpp
     Audio/WAVFileReader.h)
+  target_compile_features(xwbtool PRIVATE cxx_std_17)
   target_include_directories(xwbtool PRIVATE Audio Src)
   target_link_libraries(xwbtool PRIVATE version.lib)
   source_group(xwbtool REGULAR_EXPRESSION XWBTool/*.*)

@@ -170,7 +170,8 @@
       "name": "Intel",
       "hidden": true,
       "cacheVariables": {
-        "CMAKE_CXX_COMPILER": "icl.exe"
+        "CMAKE_CXX_COMPILER": "icl.exe",
+        "BUILD_TOOLS": false
       },
       "toolset": {
         "value": "host=x64",
@@ -295,6 +296,9 @@
     { "name": "x64-Release-MinGW"  , "configurePreset": "x64-Release-MinGW" },
     { "name": "x86-Debug-MinGW"    , "configurePreset": "x86-Debug-MinGW" },
     { "name": "x86-Release-MinGW"  , "configurePreset": "x86-Release-MinGW" },
+
+    { "name": "x64-Debug-ICC"  , "configurePreset": "x64-Debug-ICC" },
+    { "name": "x64-Release-ICC", "configurePreset": "x64-Release-ICC" },
 
     { "name": "x64-Debug-ICX"  , "configurePreset": "x64-Debug-ICX" },
     { "name": "x64-Release-ICX", "configurePreset": "x64-Release-ICX" }
