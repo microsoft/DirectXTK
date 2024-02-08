@@ -538,7 +538,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
       target_compile_options(${t} PRIVATE ${WarningsEXE})
     endforeach()
 
-    if (BUILD_FUZZING
+    if(BUILD_FUZZING
         AND (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.32)
         AND (NOT WINDOWS_STORE))
           foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
@@ -549,7 +549,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 endif()
 
 if(WIN32)
-    if (XBOX_CONSOLE_TARGET STREQUAL "durango")
+    if(XBOX_CONSOLE_TARGET STREQUAL "durango")
         set(WINVER 0x0602)
     elseif(WINDOWS_STORE OR BUILD_XAUDIO_WIN10)
         message(STATUS "Using DirectX Tool Kit for Audio on XAudio 2.9 (Windows 10/Windows 11).")
