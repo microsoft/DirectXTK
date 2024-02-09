@@ -66,8 +66,6 @@ elseif(CMAKE_VS_PLATFORM_NAME_DEFAULT MATCHES "^[Aa][Rr][Mm]64$")
     set(DIRECTX_ARCH arm64)
 endif()
 
-include(GNUInstallDirs)
-
 if(XBOX_CONSOLE_TARGET STREQUAL "durango")
   set(BUILD_GAMEINPUT OFF)
   set(BUILD_WGI OFF)
@@ -81,6 +79,8 @@ elseif(WINDOWS_STORE)
   set(BUILD_WGI ON)
   set(BUILD_TOOLS OFF)
 endif()
+
+include(GNUInstallDirs)
 
 #--- Library
 set(LIBRARY_HEADERS
@@ -162,6 +162,14 @@ set(LIBRARY_HEADERS ${LIBRARY_HEADERS}
     Inc/SimpleMath.inl)
 
 set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
+    Src/BinaryReader.cpp
+    Src/GamePad.cpp
+    Src/Geometry.cpp
+    Src/Keyboard.cpp
+    Src/Mouse.cpp
+    Src/SimpleMath.cpp)
+
+set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
     Src/AlignedNew.h
     Src/Bezier.h
     Src/BinaryReader.h
@@ -173,13 +181,7 @@ set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
     Src/SDKMesh.h
     Src/SharedResourcePool.h
     Src/vbo.h
-    Src/TeapotData.inc
-    Src/BinaryReader.cpp
-    Src/GamePad.cpp
-    Src/Geometry.cpp
-    Src/Keyboard.cpp
-    Src/Mouse.cpp
-    Src/SimpleMath.cpp)
+    Src/TeapotData.inc)
 
 set(SHADER_SOURCES ${SHADER_SOURCES}
     Src/Shaders/Common.fxh
@@ -195,7 +197,9 @@ if(MINGW)
    set(BUILD_XAUDIO_WIN8 OFF)
 endif()
 
-if(WINDOWS_STORE OR BUILD_XAUDIO_WIN10 OR BUILD_XAUDIO_WIN8 OR BUILD_XAUDIO_WIN7)
+if(WINDOWS_STORE
+   OR BUILD_XAUDIO_WIN10 OR BUILD_XAUDIO_WIN8
+   OR BUILD_XAUDIO_WIN7)
     set(LIBRARY_HEADERS ${LIBRARY_HEADERS}
         Inc/Audio.h)
 
@@ -264,7 +268,9 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_11)
 
-if(WINDOWS_STORE OR BUILD_XAUDIO_WIN10 OR BUILD_XAUDIO_WIN8 OR BUILD_XAUDIO_WIN7)
+if(WINDOWS_STORE
+   OR BUILD_XAUDIO_WIN10 OR BUILD_XAUDIO_WIN8
+   OR BUILD_XAUDIO_WIN7)
     target_include_directories(${PROJECT_NAME} PRIVATE Audio)
 endif()
 
@@ -279,7 +285,8 @@ if(directxmath_FOUND)
     target_link_libraries(${PROJECT_NAME} PUBLIC Microsoft::DirectXMath)
 endif()
 
-if(BUILD_XAUDIO_WIN7 AND (NOT BUILD_XAUDIO_WIN10) AND (NOT BUILD_XAUDIO_WIN8) AND (NOT WINDOWS_STORE))
+if(BUILD_XAUDIO_WIN7
+   AND (NOT BUILD_XAUDIO_WIN10) AND (NOT BUILD_XAUDIO_WIN8) AND (NOT WINDOWS_STORE))
     message(STATUS "Using XAudio2Redist for DirectX Tool Kit for Audio on Windows 7.")
     find_package(xaudio2redist CONFIG REQUIRED)
     target_link_libraries(${PROJECT_NAME} PUBLIC Microsoft::XAudio2Redist)
@@ -307,11 +314,11 @@ endif()
 if(DEFINED XBOX_CONSOLE_TARGET)
     message(STATUS "Building for Xbox Console Target: ${XBOX_CONSOLE_TARGET}")
     set(CMAKE_REQUIRED_QUIET ON)
-    CHECK_INCLUDE_FILE_CXX(xdk.h XDKLegacy_HEADER)
-    if(NOT XDKLegacy_HEADER)
-        message(FATAL_ERROR "Legacy Xbox One XDK required to build for Durango.")
-    endif()
     if(XBOX_CONSOLE_TARGET STREQUAL "durango")
+        CHECK_INCLUDE_FILE_CXX(xdk.h XDKLegacy_HEADER)
+        if(NOT XDKLegacy_HEADER)
+            message(FATAL_ERROR "Legacy Xbox One XDK required to build for Durango.")
+        endif()
         target_compile_definitions(${PROJECT_NAME} PUBLIC WINAPI_FAMILY=WINAPI_FAMILY_TV_TITLE _XBOX_ONE _TITLE MONOLITHIC=1)
     else()
         message(FATAL_ERROR "Unknown XBOX_CONSOLE_TARGET")
@@ -346,7 +353,7 @@ install(EXPORT ${PROJECT_NAME}-targets
   DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PACKAGE_NAME})
 
 install(FILES ${LIBRARY_HEADERS}
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/directxtk)
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/directxtk)
 
 install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}-config.cmake
@@ -363,21 +370,22 @@ if(BUILD_TOOLS AND WIN32)
     xwbtool/settings.manifest
     Audio/WAVFileReader.cpp
     Audio/WAVFileReader.h)
+  target_compile_features(xwbtool PRIVATE cxx_std_17)
   target_include_directories(xwbtool PRIVATE Audio Src)
   target_link_libraries(xwbtool PRIVATE version.lib)
   source_group(xwbtool REGULAR_EXPRESSION XWBTool/*.*)
 endif()
 
 if(directxmath_FOUND)
-  foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
-    target_link_libraries(${t} PUBLIC Microsoft::DirectXMath)
-  endforeach()
+    foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+      target_link_libraries(${t} PUBLIC Microsoft::DirectXMath)
+    endforeach()
 endif()
 
 # Model uses dynamic_cast, so we need /GR (Enable RTTI)
 if(MSVC)
     foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
-      target_compile_options(${t} PRIVATE /Wall /GR "$<$<NOT:$<CONFIG:DEBUG>>:/guard:cf>")
+      target_compile_options(${t} PRIVATE /Wall /EHsc /GR "$<$<NOT:$<CONFIG:DEBUG>>:/guard:cf>")
       target_link_options(${t} PRIVATE /DYNAMICBASE /NXCOMPAT /INCREMENTAL:NO)
     endforeach()
 
@@ -387,30 +395,13 @@ if(MSVC)
       endforeach()
     endif()
 
-    if(ENABLE_SPECTRE_MITIGATION
-       AND (MSVC_VERSION GREATER_EQUAL 1913)
-       AND (NOT WINDOWS_STORE)
-       AND (NOT (CMAKE_CXX_COMPILER_ID MATCHES "Clang")))
-      message(STATUS "Building Spectre-mitigated libraries.")
-      foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
-        target_compile_options(${t} PRIVATE "/Qspectre")
-      endforeach()
-    endif()
-
-    if((MSVC_VERSION GREATER_EQUAL 1924)
-       AND ((NOT (CMAKE_CXX_COMPILER_ID MATCHES "Clang")) OR (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 16.0)))
-      foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
-        target_compile_options(${t} PRIVATE /ZH:SHA_256)
-      endforeach()
-    endif()
-
     if((MSVC_VERSION GREATER_EQUAL 1928)
        AND (CMAKE_SIZEOF_VOID_P EQUAL 8)
-       AND ((NOT (CMAKE_CXX_COMPILER_ID MATCHES "Clang")) OR (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 13.0)))
-      foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
-        target_compile_options(${t} PRIVATE "$<$<NOT:$<CONFIG:DEBUG>>:/guard:ehcont>")
-        target_link_options(${t} PRIVATE "$<$<NOT:$<CONFIG:DEBUG>>:/guard:ehcont>")
-      endforeach()
+       AND ((NOT (CMAKE_CXX_COMPILER_ID MATCHES "Clang|IntelLLVM")) OR (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 13.0)))
+        foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+          target_compile_options(${t} PRIVATE "$<$<NOT:$<CONFIG:DEBUG>>:/guard:ehcont>")
+          target_link_options(${t} PRIVATE "$<$<NOT:$<CONFIG:DEBUG>>:/guard:ehcont>")
+        endforeach()
     endif()
 
     if(NO_WCHAR_T)
@@ -429,9 +420,9 @@ if(XBOX_CONSOLE_TARGET MATCHES "durango")
     target_compile_options(${PROJECT_NAME} PRIVATE $<IF:$<CXX_COMPILER_ID:MSVC>,/favor:AMD64 /arch:AVX,-march=btver2>)
 elseif(NOT (${DIRECTX_ARCH} MATCHES "^arm"))
     if(CMAKE_SIZEOF_VOID_P EQUAL 4)
-        set(ARCH_SSE2 $<$<CXX_COMPILER_ID:MSVC>:/arch:SSE2> $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-msse2>)
+        set(ARCH_SSE2 $<$<CXX_COMPILER_ID:MSVC,Intel>:/arch:SSE2> $<$<NOT:$<CXX_COMPILER_ID:MSVC,Intel>>:-msse2>)
     else()
-        set(ARCH_SSE2 $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-msse2>)
+        set(ARCH_SSE2 $<$<NOT:$<CXX_COMPILER_ID:MSVC,Intel>>:-msse2>)
     endif()
 
     foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
@@ -445,8 +436,14 @@ if(MINGW)
     endforeach()
 endif()
 
-if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
-    set(WarningsLib "-Wpedantic" "-Wextra")
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|IntelLLVM")
+    if(MSVC AND (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 16.0))
+      foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+        target_compile_options(${t} PRIVATE /ZH:SHA_256)
+      endforeach()
+    endif()
+
+    set(WarningsLib -Wall -Wpedantic -Wextra)
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 16.0)
         list(APPEND WarningsLib "-Wno-unsafe-buffer-usage")
     endif()
@@ -462,7 +459,12 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
       target_compile_options(${t} PRIVATE "-Wno-ignored-attributes" "-Walloc-size-larger-than=4GB")
     endforeach()
-elseif( CMAKE_CXX_COMPILER_ID MATCHES "MSVC" )
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
+    foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+      target_compile_options(${t} PRIVATE /Zc:__cplusplus /Zc:inline /fp:fast /Qdiag-disable:161)
+    endforeach()
+    set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 14)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
       target_compile_options(${t} PRIVATE /sdl /permissive- /JMC- /Zc:__cplusplus /Zc:inline /fp:fast)
     endforeach()
@@ -480,55 +482,76 @@ elseif( CMAKE_CXX_COMPILER_ID MATCHES "MSVC" )
       endforeach()
     endif()
 
-    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.26)
+    if(ENABLE_SPECTRE_MITIGATION
+       AND (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.13)
+       AND (NOT WINDOWS_STORE))
+        message(STATUS "Building Spectre-mitigated libraries")
         foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
-          target_compile_options(${t} PRIVATE /Zc:preprocessor /wd5105)
+          target_compile_options(${t} PRIVATE "/Qspectre")
         endforeach()
+    endif()
+
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.24)
+      foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+        target_compile_options(${t} PRIVATE /ZH:SHA_256)
+      endforeach()
+    endif()
+
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.26)
+      foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+        target_compile_options(${t} PRIVATE /Zc:preprocessor /wd5105)
+      endforeach()
     endif()
 
     if((CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.27) AND (NOT (${DIRECTX_ARCH} MATCHES "^arm")))
-        foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
-          target_link_options(${t} PRIVATE /CETCOMPAT)
-        endforeach()
+      foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+        target_link_options(${t} PRIVATE /CETCOMPAT)
+      endforeach()
     endif()
 
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.28)
-        foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
-          target_compile_options(${t} PRIVATE /Zc:lambda)
-        endforeach()
+      foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+        target_compile_options(${t} PRIVATE /Zc:lambda)
+      endforeach()
+    endif()
+
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.34)
+      target_compile_options(${PROJECT_NAME} PRIVATE /wd5262)
     endif()
 
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.35)
-        foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
-          target_compile_options(${t} PRIVATE /Zc:checkGwOdr)
-        endforeach()
+      foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+        target_compile_options(${t} PRIVATE /Zc:checkGwOdr)
+      endforeach()
 
-        if(NOT (DEFINED XBOX_CONSOLE_TARGET))
-          foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
-            target_compile_options(${t} PRIVATE $<$<VERSION_GREATER_EQUAL:${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION},10.0.22000>:/Zc:templateScope>)
-          endforeach()
-        endif()
+      if(NOT (DEFINED XBOX_CONSOLE_TARGET))
+        foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+          target_compile_options(${t} PRIVATE $<$<VERSION_GREATER_EQUAL:${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION},10.0.22000>:/Zc:templateScope>)
+        endforeach()
+      endif()
     endif()
 
     set(WarningsEXE "/wd4365" "/wd4514" "/wd4625" "/wd4626" "/wd4627" "/wd4710" "/wd4711" "/wd4820" "/wd5026" "/wd5027" "/wd5039" "/wd5045")
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.34)
-        list(APPEND WarningsEXE "/wd5262" "/wd5264")
-        target_compile_options(${PROJECT_NAME} PRIVATE "/wd5262")
+      list(APPEND WarningsEXE "/wd5262" "/wd5264")
+      target_compile_options(${PROJECT_NAME} PRIVATE "/wd5262")
     endif()
     foreach(t IN LISTS TOOL_EXES)
       target_compile_options(${t} PRIVATE ${WarningsEXE})
     endforeach()
 
-    if (BUILD_FUZZING AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.32)
-        foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
-           target_compile_options(${t} PRIVATE /fsanitize=address /fsanitize-coverage=inline-8bit-counters /fsanitize-coverage=edge /fsanitize-coverage=trace-cmp /fsanitize-coverage=trace-div)
-           target_link_libraries(${t} PRIVATE sancov.lib)
-        endforeach()
+    if(BUILD_FUZZING
+        AND (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.32)
+        AND (NOT WINDOWS_STORE))
+          foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+            target_compile_options(${t} PRIVATE /fsanitize=address /fsanitize-coverage=inline-8bit-counters /fsanitize-coverage=edge /fsanitize-coverage=trace-cmp /fsanitize-coverage=trace-div)
+            target_link_libraries(${t} PRIVATE sancov.lib)
+          endforeach()
     endif()
 endif()
 
 if(WIN32)
-    if (XBOX_CONSOLE_TARGET STREQUAL "durango")
+    if(XBOX_CONSOLE_TARGET STREQUAL "durango")
         set(WINVER 0x0602)
     elseif(WINDOWS_STORE OR BUILD_XAUDIO_WIN10)
         message(STATUS "Using DirectX Tool Kit for Audio on XAudio 2.9 (Windows 10/Windows 11).")
@@ -560,7 +583,7 @@ if(WIN32)
 endif()
 
 if(BUILD_TOOLS AND WIN32)
-  set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT xwbtool)
+    set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT xwbtool)
 endif()
 
 if(BUILD_TOOLS AND (NOT VCPKG_TOOLCHAIN))

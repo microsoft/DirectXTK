@@ -465,8 +465,14 @@ namespace DirectX
             State released;
             State pressed;
 
-        #pragma prefast(suppress: 26495, "Reset() performs the initialization")
+        #ifdef _PREFAST_
+        #pragma prefast(push)
+        #pragma prefast(disable : 26495, "Reset() performs the initialization")
+        #endif
             KeyboardStateTracker() noexcept { Reset(); }
+        #ifdef _PREFAST_
+        #pragma prefast(pop)
+        #endif
 
             void __cdecl Update(const State& state) noexcept;
 
