@@ -324,6 +324,29 @@ install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}-config-version.cmake
   DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PACKAGE_NAME})
 
+# Create pkg-config file
+include(build/JoinPaths.cmake)
+# from: https://github.com/jtojnar/cmake-snips#concatenating-paths-when-building-pkg-config-files
+join_paths(DIRECTXTK_INCLUDEDIR_FOR_PKG_CONFIG "\${prefix}" "${CMAKE_INSTALL_INCLUDEDIR}")
+join_paths(DIRECTXTK_LIBDIR_FOR_PKG_CONFIG "\${prefix}"     "${CMAKE_INSTALL_LIBDIR}")
+
+set(DIRECTXTK_DEP_L "")
+if(directxmath_FOUND)
+  list(APPEND DIRECTXTK_DEP_L "DirectXMath")
+endif()
+list(LENGTH DIRECTXTK_DEP_L DEP_L)
+if(DEP_L)
+  string(REPLACE ";" ", " DIRECTXTK_DEP " ${DIRECTXTK_DEP_L}")
+endif()
+
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/build/DirectXTK.pc.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/DirectXTK.pc" @ONLY)
+
+# Install the pkg-config file
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/DirectXTK.pc"
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+
 #--- Command-line tools
 if(BUILD_TOOLS AND WIN32)
   set(TOOL_EXES xwbtool)
