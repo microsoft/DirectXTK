@@ -19,6 +19,9 @@ trigger:
   paths:
     include:
     - CMakeLists.txt
+    - build/CompilerAndLinker.cmake
+    - build/JoinPaths.cmake
+
 pr:
   branches:
     include:
@@ -26,6 +29,8 @@ pr:
   paths:
     include:
     - CMakeLists.txt
+    - build/CompilerAndLinker.cmake
+    - build/JoinPaths.cmake
 
 resources:
   repositories:
