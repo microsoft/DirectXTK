@@ -950,6 +950,9 @@ void AudioEngine::Impl::AllocateVoice(
                         CreateXMA2(wfmt, sizeof(buff), defaultRate, wfx->nChannels, 65536, 2, 0);
                         break;
                     #endif
+
+                    default:
+                        throw std::invalid_argument("Unsupported wave format");
                     }
 
                 #ifdef VERBOSE_TRACE
@@ -1477,15 +1480,19 @@ X3DAUDIO_HANDLE& AudioEngine::Get3DHandle() const noexcept
 // you will need to modify the library to use this codepath for Windows desktop
 // -or- use XAudio2Redist -or- use XAudio 2.8.
 
+#ifdef _MSC_VER
 #pragma comment(lib,"runtimeobject.lib")
 #pragma warning(push)
 #pragma warning(disable: 4471 5204 5256)
+#endif
 #ifdef __clang__
 #pragma clang diagnostic ignored "-Wnonportable-system-include-path"
 #endif
 #include <Windows.Devices.Enumeration.h>
 #include <Windows.Media.Devices.h>
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 
 #include <wrl.h>
 

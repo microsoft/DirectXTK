@@ -28,24 +28,27 @@
 
 #ifdef USING_GAMEINPUT
 #include <GameInput.h>
-#ifndef _GAMING_XBOX
+#if !defined(_GAMING_XBOX) && defined(_MSC_VER)
 #pragma comment(lib,"gameinput.lib")
 #endif
 
 #elif defined(USING_WINDOWS_GAMING_INPUT)
+#ifdef _MSC_VER
 #pragma comment(lib,"runtimeobject.lib")
+#endif
 #include <string>
 
 #elif defined(_XBOX_ONE)
 // Legacy Xbox One XDK uses Windows::Xbox::Input
 
 #elif defined(USING_XINPUT)
+#ifdef _MSC_VER
 #if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/ )
 #pragma comment(lib,"xinput.lib")
 #else
 #pragma comment(lib,"xinput9_1_0.lib")
 #endif
-
+#endif
 #endif
 
 #include <cstdint>
@@ -268,8 +271,14 @@ namespace DirectX
             ButtonState leftTrigger;
             ButtonState rightTrigger;
 
-        #pragma prefast(suppress: 26495, "Reset() performs the initialization")
+        #ifdef _PREFAST_
+        #pragma prefast(push)
+        #pragma prefast(disable : 26495, "Reset() performs the initialization")
+        #endif
             ButtonStateTracker() noexcept { Reset(); }
+        #ifdef _PREFAST_
+        #pragma prefast(pop)
+        #endif
 
             void __cdecl Update(const State& state) noexcept;
 

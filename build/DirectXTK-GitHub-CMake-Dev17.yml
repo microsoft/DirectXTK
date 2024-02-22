@@ -12,8 +12,26 @@ schedules:
     include:
     - main
 
-trigger: none
-pr: none
+trigger:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - CMakeLists.txt
+    - build/CompilerAndLinker.cmake
+    - build/JoinPaths.cmake
+
+pr:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - CMakeLists.txt
+    - build/CompilerAndLinker.cmake
+    - build/JoinPaths.cmake
+  drafts: false
 
 resources:
   repositories:

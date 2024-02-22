@@ -25,7 +25,9 @@
 
 #if (defined(_XBOX_ONE) && defined(_TITLE)) || defined(_GAMING_XBOX)
 #include <xma2defs.h>
+#ifdef _MSC_VER
 #pragma comment(lib,"acphal.lib")
+#endif
 #endif
 
 #ifndef XAUDIO2_HELPER_FUNCTIONS
@@ -45,14 +47,18 @@
 #include <xaudio2.h>
 #include <xaudio2fx.h>
 
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4619 4616 5246)
+#endif
 #include <x3daudio.h>
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 
 #include <xapofx.h>
 
-#ifndef USING_XAUDIO2_REDIST
+#if !defined(USING_XAUDIO2_REDIST) && defined(_MSC_VER)
 #if defined(USING_XAUDIO2_8) && defined(NTDDI_WIN10) && !defined(_M_IX86)
 // The xaudio2_8.lib in the Windows 10 SDK for x86 is incorrectly annotated as __cdecl instead of __stdcall, so avoid using it in this case.
 #pragma comment(lib,"xaudio2_8.lib")

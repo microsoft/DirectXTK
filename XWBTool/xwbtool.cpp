@@ -14,8 +14,10 @@
 // http://go.microsoft.com/fwlink/?LinkId=248929
 //--------------------------------------------------------------------------------------
 
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4005)
+#endif
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #define NODRAWTEXT
@@ -24,7 +26,9 @@
 #define NOMCX
 #define NOSERVICE
 #define NOHELP
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 
 #include <Windows.h>
 
@@ -170,7 +174,9 @@ namespace
         REGION      Segments[SEGIDX_COUNT]; // Segment lookup table
     };
 
+#ifdef _MSC_VER
 #pragma warning( disable : 4201 4203 )
+#endif
 
     union MINIWAVEFORMAT
     {

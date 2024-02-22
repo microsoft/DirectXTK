@@ -571,6 +571,9 @@ void Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
             vk = LOWORD(MapVirtualKeyW(static_cast<UINT>(scanCode), MAPVK_VSC_TO_VK_EX));
         }
         break;
+
+    default:
+        break;
     }
 
     if (down)
@@ -586,7 +589,9 @@ void Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 #endif
 #pragma endregion
 
+#ifdef _MSC_VER
 #pragma warning( disable : 4355 )
+#endif
 
 // Public constructor.
 Keyboard::Keyboard() noexcept(false)

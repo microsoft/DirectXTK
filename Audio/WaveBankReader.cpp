@@ -100,7 +100,9 @@ namespace
         }
     };
 
+#ifdef _MSC_VER
 #pragma warning( disable : 4201 4203 )
+#endif
 
     union MINIWAVEFORMAT
     {
@@ -184,6 +186,9 @@ namespace
                         return aWMABlockAlign[dwBlockAlignIndex];
                 }
                 break;
+
+            default:
+                break;
             }
 
             return 0;
@@ -224,6 +229,9 @@ namespace
                     if (dwBytesPerSecIndex < 7)
                         return aWMAAvgBytesPerSec[dwBytesPerSecIndex];
                 }
+                break;
+
+            default:
                 break;
             }
 

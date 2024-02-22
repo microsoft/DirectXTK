@@ -29,7 +29,9 @@ using namespace DirectX;
 #pragma clang diagnostic ignored "-Wcovered-switch-default"
 #endif
 
+#ifdef _MSC_VER
 #pragma warning(disable : 4061 4062)
+#endif
 
 //#define VERBOSE_TRACE
 
@@ -237,6 +239,7 @@ public:
         HANDLE events[] = { mBufferRead.get(), mBufferEnd.get() };
         switch (WaitForMultipleObjectsEx(static_cast<DWORD>(std::size(events)), events, FALSE, 0, FALSE))
         {
+        default:
         case WAIT_TIMEOUT:
             break;
 

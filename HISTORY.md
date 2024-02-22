@@ -6,6 +6,11 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### February 21, 2024
+* Project updates for GDK validation
+* CMake project updates and refactor including pkg-config file generation
+* Minor code review for Clang, MinGW, and Intel compilers
+
 ### December 31, 2023
 * Fix WAVFileReader bugs with bounds checking
 * CMake project updates

@@ -90,7 +90,7 @@ jobs:
       targetType: inline
       script: |
         $ProgressPreference = 'SilentlyContinue'
-        Invoke-WebRequest -Uri https://raw.githubusercontent.com/dotnet/corert/master/src/Native/inc/unix/sal.h -o $(DEST_DIR)usr/local/include/sal.h
+        Invoke-WebRequest -Uri https://raw.githubusercontent.com/dotnet/corert/master/src/Native/inc/unix/sal.h -OutFile $(DEST_DIR)usr/local/include/sal.h
         $fileHash = Get-FileHash -Algorithm SHA512 $(DEST_DIR)usr/local/include/sal.h | ForEach { $_.Hash} | Out-String
         $filehash = $fileHash.Trim()
         Write-Host "##[debug]SHA512: " $filehash
@@ -121,12 +121,12 @@ jobs:
   - task: CmdLine@2
     displayName: Run tests dbg
     inputs:
-      script: ./out/bin/CMake/simplemathtest
+      script: ./out/bin/simplemathtest
       workingDirectory: Tests/SimpleMathTest
   - task: CmdLine@2
     # This is disabled due to a failure in Vector3 reflect in release mode.
     displayName: Run tests rel
     enabled: false
     inputs:
-      script: ./out2/bin/CMake/simplemathtest
+      script: ./out2/bin/simplemathtest
       workingDirectory: Tests/SimpleMathTest

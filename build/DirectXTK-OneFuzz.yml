@@ -6,8 +6,8 @@
 # Builds the library using CMake and submit for file fuzzing
 
 schedules:
-- cron: "0 12 * * 0"
-  displayName: 'Submit for File Fuzzing'
+- cron: "0 11 1 * *"
+  displayName: 'Submit for File Fuzzing (Monthly)'
   branches:
     include:
     - main
@@ -69,7 +69,7 @@ jobs:
     inputs:
       Contents: |
         build\OneFuzzConfig.json
-        out\bin\CMake\RelWithDebInfo\fuzzloaders.exe
+        out\bin\RelWithDebInfo\fuzzloaders.exe
       TargetFolder: .drop
       OverWrite: true
       flattenFolders: true
@@ -77,7 +77,7 @@ jobs:
     displayName: Copy symbols
     inputs:
       Contents: |
-        out\bin\CMake\RelWithDebInfo\fuzzloaders.pdb
+        out\bin\RelWithDebInfo\fuzzloaders.pdb
       TargetFolder: .drop\symbols
       OverWrite: true
       flattenFolders: true
@@ -100,7 +100,7 @@ jobs:
             Write-Host "Fetching: $filename"
             $url = "https://raw.githubusercontent.com/walbourn/directxtexmedia/main/" + $filename
             $target = [System.IO.Path]::Combine(".drop\seeds\", $filename)
-            Invoke-WebRequest $url -o $target
+            Invoke-WebRequest -Uri $url -OutFile $target
         }
 
   - task: CopyFiles@2

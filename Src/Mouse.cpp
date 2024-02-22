@@ -1497,6 +1497,9 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
         case XBUTTON2:
             pImpl->mState.xButton2 = true;
             break;
+
+        default:
+            break;
         }
         break;
 
@@ -1509,6 +1512,9 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 
         case XBUTTON2:
             pImpl->mState.xButton2 = false;
+            break;
+
+        default:
             break;
         }
         break;
@@ -1535,7 +1541,9 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 #endif
 #pragma endregion
 
+#ifdef _MSC_VER
 #pragma warning( disable : 4355 )
+#endif
 
 // Public constructor.
 Mouse::Mouse() noexcept(false)

@@ -214,6 +214,7 @@ void DynamicSoundEffectInstance::Impl::OnUpdate()
     const DWORD result = WaitForSingleObjectEx(mBufferEvent.get(), 0, FALSE);
     switch (result)
     {
+    default:
     case WAIT_TIMEOUT:
         break;
 
@@ -236,7 +237,9 @@ void DynamicSoundEffectInstance::Impl::OnUpdate()
 // DynamicSoundEffectInstance
 //--------------------------------------------------------------------------------------
 
+#ifdef _MSC_VER
 #pragma warning( disable : 4355 )
+#endif
 
 // Public constructors
 _Use_decl_annotations_
