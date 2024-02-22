@@ -81,12 +81,12 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 
     if(CMAKE_INTERPROCEDURAL_OPTIMIZATION)
       message(STATUS "Building using Whole Program Optimization")
-      list(APPEND /Gy /Gw)
+      list(APPEND COMPILER_SWITCHES /Gy /Gw)
     endif()
 
     if(OpenMP_CXX_FOUND)
       # OpenMP in MSVC is not compatible with /permissive- unless you disable two-phase lookup
-      list(APPEND /Zc:twoPhase-)
+      list(APPEND COMPILER_SWITCHES /Zc:twoPhase-)
     endif()
 
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.24)
