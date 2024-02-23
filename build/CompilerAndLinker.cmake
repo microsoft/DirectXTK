@@ -45,6 +45,7 @@ if(MSVC)
 
     if((MSVC_VERSION GREATER_EQUAL 1928)
        AND (CMAKE_SIZEOF_VOID_P EQUAL 8)
+       AND (NOT (TARGET OpenEXR::OpenEXR))
        AND ((NOT (CMAKE_CXX_COMPILER_ID MATCHES "Clang|IntelLLVM")) OR (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 13.0)))
           list(APPEND COMPILER_SWITCHES "$<$<NOT:$<CONFIG:DEBUG>>:/guard:ehcont>")
           list(APPEND LINKER_SWITCHES "$<$<NOT:$<CONFIG:DEBUG>>:/guard:ehcont>")
@@ -80,12 +81,12 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 
     if(CMAKE_INTERPROCEDURAL_OPTIMIZATION)
       message(STATUS "Building using Whole Program Optimization")
-      list(APPEND /Gy /Gw)
+      list(APPEND COMPILER_SWITCHES /Gy /Gw)
     endif()
 
     if(OpenMP_CXX_FOUND)
       # OpenMP in MSVC is not compatible with /permissive- unless you disable two-phase lookup
-      list(APPEND /Zc:twoPhase-)
+      list(APPEND COMPILER_SWITCHES /Zc:twoPhase-)
     endif()
 
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.24)
@@ -94,9 +95,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 
     if((CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.26)
        AND (NOT (XBOX_CONSOLE_TARGET STREQUAL "durango")))
-        foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
-          target_compile_options(${t} PRIVATE /Zc:preprocessor /wd5104 /wd5105)
-        endforeach()
+        list(APPEND COMPILER_SWITCHES /Zc:preprocessor /wd5104 /wd5105)
     endif()
 
     if((CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.27) AND (NOT (${DIRECTX_ARCH} MATCHES "^arm")))
@@ -109,10 +108,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 
     if((CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.31)
        AND (XBOX_CONSOLE_TARGET STREQUAL "durango"))
-
-        foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
-        target_compile_options(${t} PRIVATE /Zc:static_assert-)
-      endforeach()
+        list(APPEND COMPILER_SWITCHES /Zc:static_assert-)
     endif()
 
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.35)
