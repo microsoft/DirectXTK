@@ -1,0 +1,399 @@
+# Copyright(c) Microsoft Corporation. All rights reserved.
+#
+# https://mscodehub.visualstudio.com/DirectXTK
+
+# Builds and code-signs the DirectXTK NuGet package for nuget.org using OneBranch.
+
+resources:
+  repositories:
+  - repository: self
+    type: git
+    ref: refs/heads/release
+    trigger:
+      branches:
+        include:
+          - release
+        exclude:
+          - main
+  - repository: templates
+    type: git
+    name: OneBranch.Pipelines/GovernedTemplates
+    ref: refs/heads/main
+
+name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
+
+parameters: # Parameters appear in the ADO UI when a build is queued
+- name: 'debug'
+  displayName: 'Enable debug output'
+  type: boolean
+  default: false
+
+variables:
+  CDP_DEFINITION_BUILD_COUNT: $[counter('', 0)] # needed for onebranch.pipeline.version task https://aka.ms/obpipelines/versioning
+  system.debug: ${{ parameters.debug }}
+  ENABLE_PRS_DELAYSIGN: 1
+  ROOT: $(Build.SourcesDirectory)
+  REPOROOT: $(Build.SourcesDirectory)
+  OUTPUTROOT: $(REPOROOT)\out
+  NUGET_XMLDOC_MODE: none
+  GUID_FEED: $(ADOFeedGUID)
+
+  # Docker image which is used to build the project https://aka.ms/obpipelines/containers
+  WindowsContainerImage: 'onebranch.azurecr.io/windows/ltsc2022/vse2022:latest'
+
+  Codeql.Enabled: true #  CodeQL once every 3 days on the default branch for all languages its applicable to in that pipeline.
+
+  Packaging.EnableSBOMSigning: true
+  NUGET_PLUGIN_HANDSHAKE_TIMEOUT_IN_SECONDS: 60
+  NUGET_PLUGIN_REQUEST_TIMEOUT_IN_SECONDS: 60
+  RELEASE_TYPE: Release
+
+extends:
+  template: v2/Microsoft.Official.yml@templates # https://aka.ms/obpipelines/templates
+  parameters:
+    platform:
+      name: 'windows_undocked'
+
+    featureFlags:
+      WindowsHostVersion: '1ESWindows2022'
+
+    cloudvault: # Please refer the wiki for more information: https://aka.ms/obpipelines/cloudvault
+      enabled: false
+
+    # Refer the wiki for more options in this parameter: https://aka.ms/obpipelines/sdl
+    # Refer to https://onebranch.visualstudio.com/OneBranch/_wiki/wikis/OneBranch.wiki/4640/Suppress-SDL-issues on how to suppress issues
+    globalSdl:
+      # Baselines holds a snapshot of current hits and is here to ensure we don't add more. New hits that are not
+      # in the baselines will be flagged as issues and bugs will be filed.
+      baseline:
+        suppressionSet: default
+
+      # Suppressions identify false positives and other tool findings that do not need to be fixed. If new issues are
+      # detected, a suppression file will be generated which contains entries for the new issues. Instructions on how
+      # to add new suppressions or baselines is linked above.
+      suppression:
+        suppressionSet: default
+
+      tsa:
+        enabled: true
+
+    stages:
+    - stage: Build
+      jobs:
+      - job: Build
+        pool:
+          type: windows
+
+        variables:
+        # binaries scanning tools are run on this directory ( https://onebranch.visualstudio.com/OneBranch/_wiki/wikis/OneBranch.wiki/4634/SDL-(Static-Analysis)-for-Containerized-Workflows ) and
+        # this directory is uploaded to pipeline artifacts. More info at https://aka.ms/obpipelines/artifacts
+          ob_outputDirectory: '$(Build.BinariesDirectory)'
+          ob_artifactBaseName: DirectXTK_Binaries_
+          ob_artifactSuffix: '$(BuildConfiguration)_$(BuildPlatform)'
+          ob_symbolsPublishing_enabled: false
+
+        strategy:
+          maxParallel: 8
+          matrix:
+            Release_x64:
+              BuildPlatform: x64
+              BuildConfiguration: Release
+            Debug_x64:
+              BuildPlatform: x64
+              BuildConfiguration: Debug
+            Release_x86:
+              BuildPlatform: x86
+              BuildConfiguration: Release
+            Debug_x86:
+              BuildPlatform: x86
+              BuildConfiguration: Debug
+            Release_ARM64:
+              BuildPlatform: ARM64
+              BuildConfiguration: Release
+            Debug_ARM64:
+              BuildPlatform: ARM64
+              BuildConfiguration: Debug
+        steps:
+
+        - checkout: self
+          env:
+            ob_restore_phase: true
+          fetchDepth: 1
+          fetchTags: false
+          path: s
+
+        - task: NuGetToolInstaller@1
+          displayName: 'Setup NuGet Tools'
+          env:
+            ob_restore_phase: true
+
+        - task: NuGetAuthenticate@1
+
+        - task: NuGetCommand@2
+          displayName: 'Restore NuGet Packages'
+          env:
+            ob_restore_phase: true
+          inputs:
+            command: 'restore'
+            restoreSolution: '**/packages.config'
+            feedRestore: $(GUID_FEED)
+            includeNuGetOrg: false
+            nugetConfigPath: 'nuget.config'
+
+        # By default OneBranch Pipelines doesn't upload binaries files
+        # (exe, dll, sys, nupkg, zip, pdb, cat, vhd, vhdx, cspkg etc)
+        # to artifacts in failed builds.
+        # To change the behavior we put an empty .artifactignore in the root
+        # of the output directory.
+        #
+        # The .artifactignore is a text file that controls what files are
+        # uploaded when you publish Pipeline Artifact. .artifactignore is typically
+        # checked into the root of the repository or generated during the build in
+        # the root of the output directory.
+        #
+        # Example:
+        #
+        # **/*
+        # !src/MyApp/bin/Release/**.*
+        #
+
+        - task: PowerShell@2
+          displayName: 'Overwrite artifactignore on failure'
+          env:
+            ob_restore_phase: true
+          condition: always()
+          continueOnError: true
+          inputs:
+            targetType: 'inline'
+            script: |
+              $path = "$(ob_outputDirectory)"
+              New-Item -Path $path -Force -ItemType Directory
+              # create empty file in the root of output
+              "" | Out-File -FilePath "$path\.artifactignore" -Encoding ascii
+
+        - task: PowerShell@2
+          displayName: 'Stamp tool version info'
+          inputs:
+            filePath: build/versioninfo.ps1
+            arguments: $(Build.BuildNumber)
+
+        - task: VSBuild@1
+          displayName: 'Build solution DirectXTK_Desktop_2019.sln'
+          env:
+            ob_restore_phase: true
+          inputs:
+            solution: 'DirectXTK_Desktop_2019.sln'
+            vsVersion: 17.0
+            msbuildArgs: '/fl /flp:LogFile=$(XES_MsBuildLogDir)\MsBuild.log;Verbosity=diagnostic /p:UseNativeEnvironment=True'
+            platform: '$(BuildPlatform)'
+            configuration: '$(BuildConfiguration)'
+            clean: true
+            maximumCpuCount: true
+            msbuildArchitecture: 'x64'
+          condition: ne(variables['BuildPlatform'], 'ARM64')
+
+        - task: VSBuild@1
+          displayName: 'Build solution DirectXTK_Desktop_2019_Win10.sln'
+          env:
+            ob_restore_phase: true
+          inputs:
+            solution: 'DirectXTK_Desktop_2019_Win10.sln'
+            vsVersion: 17.0
+            msbuildArgs: '/fl /flp:LogFile=$(XES_MsBuildLogDir)\MsBuild.log;Verbosity=diagnostic /p:UseNativeEnvironment=True'
+            platform: '$(BuildPlatform)'
+            configuration: '$(BuildConfiguration)'
+            clean: true
+            maximumCpuCount: true
+            msbuildArchitecture: 'x64'
+
+        - task: VSBuild@1
+          displayName: 'Build solution DirectXTK_Desktop_2019_Win7.sln'
+          env:
+            ob_restore_phase: true
+          inputs:
+            solution: 'DirectXTK_Desktop_2019_Win7.sln'
+            vsVersion: 17.0
+            msbuildArgs: '/fl /flp:LogFile=$(XES_MsBuildLogDir)\MsBuild.log;Verbosity=diagnostic /p:UseNativeEnvironment=True'
+            platform: '$(BuildPlatform)'
+            configuration: '$(BuildConfiguration)'
+            clean: true
+            maximumCpuCount: true
+            msbuildArchitecture: 'x64'
+          condition: ne(variables['BuildPlatform'], 'ARM64')
+
+        - task: VSBuild@1
+          displayName: 'Build solution DirectXTK_Windows10_2019.sln'
+          env:
+            ob_restore_phase: true
+          inputs:
+            solution: 'DirectXTK_Windows10_2019.sln'
+            vsVersion: 17.0
+            msbuildArgs: '/fl /flp:LogFile=$(XES_MsBuildLogDir)\MsBuild.log;Verbosity=diagnostic /p:UseNativeEnvironment=True'
+            platform: '$(BuildPlatform)'
+            configuration: '$(BuildConfiguration)'
+            clean: true
+            maximumCpuCount: true
+            msbuildArchitecture: 'x64'
+
+        # Useful help documentation:
+        # https://onebranch.visualstudio.com/Pipeline/_git/OneBranch.Pipeline.Toolset?path=/src/onebranch.pipeline.signing/README.md&_a=preview&anchor=onebranch.pipeline.signing
+        #
+        # The following environment variable 'ob_restore_phase' must be set on ALL tasks that occur before the actual signing task.
+        # This is a workaround for the Signing FileWatcher failing to create a signal file.
+        # See documentation: https://onebranch.visualstudio.com/OneBranch/_wiki/wikis/OneBranch.wiki/6473/FileWatcher
+        #
+        # env:
+        #    ob_restore_phase: true
+        #
+        - task: onebranch.pipeline.signing@1
+          displayName: 'Sign Files'
+          inputs:
+            command: 'sign'
+            signing_environment: 'azure-ado'
+            cp_code: 'CP-231522'
+            files_to_sign: '**/xwbtool.exe;**/xwbtool_arm64.exe;**/MakeSpriteFont.exe;'
+            search_root: '$(Build.BinariesDirectory)/bin'
+            use_testsign: false
+          condition: ne(variables['BuildConfiguration'], 'Release')
+
+        - task: UseDotNet@2
+          inputs:
+            version: 6.x
+
+        - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+          displayName: 'Generation Task'
+          inputs:
+              BuildDropPath: '$(Build.BinariesDirectory)/bin'
+
+    - stage: PostBuild
+      dependsOn: [Build]
+      jobs:
+      - job: Pack
+        pool:
+            type: windows
+
+        variables:
+          ob_outputDirectory: '$(Build.BinariesDirectory)'
+          ob_artifactBaseName: DirectXTK_
+          ob_artifactSuffix: Packages
+
+        steps:
+
+          - task: NuGetToolInstaller@1
+            displayName: 'Setup NuGet Tools'
+            env:
+              ob_restore_phase: true
+
+          - task: NuGetAuthenticate@1
+
+          # Download all required build artifacts which will be collected and added to the nuget package.
+          # This used to be done via DownloadBuildArtifacts@0 but that has been depricated.
+          # A separate download task must be issued for each architecture. DownloadPipelineArtifact@2 will
+          # not automatically create a directory based on the artifact name like DownloadBuildArtifacts@0
+          # used to.
+
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download x64 artifacts (Debug)'
+            env:
+              ob_restore_phase: true
+            inputs:
+              buildType: 'current'
+              itemPattern: |
+                **/*.lib
+                **/*.pdb
+              artifactName: DirectXTK_Binaries_Debug_x64
+              targetPath: $(Pipeline.Workspace)/artifacts
+
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download x64 artifacts (Release)'
+            env:
+              ob_restore_phase: true
+            inputs:
+              buildType: 'current'
+              itemPattern: |
+                **/*.exe
+                **/*.lib
+                **/*.pdb
+              artifactName: DirectXTK_Binaries_Release_x64
+              targetPath: $(Pipeline.Workspace)/artifacts
+
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download x86 artifacts (Debug)'
+            env:
+              ob_restore_phase: true
+            inputs:
+              buildType: 'current'
+              itemPattern: |
+                **/*.lib
+                **/*.pdb
+              artifactName: DirectXTK_Binaries_Debug_x86
+              targetPath: $(Pipeline.Workspace)/artifacts
+
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download x86 artifacts (Release)'
+            env:
+              ob_restore_phase: true
+            inputs:
+              buildType: 'current'
+              itemPattern: |
+                **/*.exe
+                **/*.lib
+                **/*.pdb
+              artifactName: DirectXTK_Binaries_Release_x86
+              targetPath: $(Pipeline.Workspace)/artifacts
+
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download ARM64 artifacts (Debug)'
+            env:
+              ob_restore_phase: true
+            inputs:
+              buildType: 'current'
+              itemPattern: |
+                **/*.lib
+                **/*.pdb
+              artifactName: DirectXTK_Binaries_Debug_ARM64
+              targetPath: $(Pipeline.Workspace)/artifacts
+
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download ARM64 artifacts (Release)'
+            env:
+              ob_restore_phase: true
+            inputs:
+              buildType: 'current'
+              itemPattern: |
+                **/*.exe
+                **/*.lib
+                **/*.pdb
+              artifactName: DirectXTK_Binaries_Release_ARM64
+              targetPath: $(Pipeline.Workspace)/artifacts
+
+          - powershell: |
+              Copy-Item -Path "$(Build.SourcesDirectory)/README.md" -Destination "$(Pipeline.Workspace)/artifacts"
+              Copy-Item -Path "$(Build.SourcesDirectory)/.nuget/*.targets" -Destination "$(Pipeline.Workspace)/artifacts/.nuget"
+              Copy-Item -Path "$(Build.SourcesDirectory)/.nuget/*.jpg" -Destination "$(Pipeline.Workspace)/artifacts/.nuget"
+              Get-ChildItem -Path "$(Pipeline.Workspace)/artifacts" -Recurse
+            displayName: 'Copy build files'
+            env:
+              ob_restore_phase: true
+
+          - task: NuGetCommand@2
+            displayName: 'NuGet pack'
+            env:
+              ob_restore_phase: true
+            inputs:
+              command: pack
+              searchPatternPack: .nuget/directxtk_desktop_2019.nuspec;.nuget/directxtk_desktop_win10.nuspec;.nuget/directxtk_uwp.nuspec
+              configurationToPack: ''
+              versioningScheme: byBuildNumber
+              verbosityPack: Detailed
+              basePath: $(Pipeline.Workspace)/artifacts/
+              packDestination: $(Build.BinariesDirectory)/packages
+
+          - task: onebranch.pipeline.signing@1
+            displayName: 'Sign Files'
+            inputs:
+              command: 'sign'
+              cp_code: 'CP-401405'
+              files_to_sign: '**/*.nupkg'
+              search_root: '$(Build.BinariesDirectory)/packages'
+              use_testsign: false
