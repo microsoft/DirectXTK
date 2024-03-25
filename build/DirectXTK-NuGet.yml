@@ -63,17 +63,6 @@ extends:
     # Refer the wiki for more options in this parameter: https://aka.ms/obpipelines/sdl
     # Refer to https://onebranch.visualstudio.com/OneBranch/_wiki/wikis/OneBranch.wiki/4640/Suppress-SDL-issues on how to suppress issues
     globalSdl:
-      # Baselines holds a snapshot of current hits and is here to ensure we don't add more. New hits that are not
-      # in the baselines will be flagged as issues and bugs will be filed.
-      baseline:
-        suppressionSet: default
-
-      # Suppressions identify false positives and other tool findings that do not need to be fixed. If new issues are
-      # detected, a suppression file will be generated which contains entries for the new issues. Instructions on how
-      # to add new suppressions or baselines is linked above.
-      suppression:
-        suppressionSet: default
-
       tsa:
         enabled: true
 

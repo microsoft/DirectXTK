@@ -1,0 +1,8 @@
+{
+	"instanceUrl": "https://microsoft.visualstudio.com",
+	"projectName": "OS",
+	"areaPath": "OS\\Core\\SiGMa\\GRFX-Graphics",
+	"iterationPath": "OS\\Future",
+	"notificationAliases": ["directxtkdev@microsoft.com"],
+	"ignoreBranchName": true
+}
