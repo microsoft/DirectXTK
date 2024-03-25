@@ -211,11 +211,11 @@ extends:
           condition: ne(variables['BuildPlatform'], 'ARM64')
 
         - task: VSBuild@1
-          displayName: 'Build solution DirectXTK_Windows10_2019.sln'
+          displayName: 'Build solution DirectXTK_Windows10_2022.sln'
           env:
             ob_restore_phase: true
           inputs:
-            solution: 'DirectXTK_Windows10_2019.sln'
+            solution: 'DirectXTK_Windows10_2022.sln'
             vsVersion: 17.0
             msbuildArgs: '/fl /flp:LogFile=$(XES_MsBuildLogDir)\MsBuild.log;Verbosity=diagnostic /p:UseNativeEnvironment=True'
             platform: '$(BuildPlatform)'
@@ -240,10 +240,10 @@ extends:
             command: 'sign'
             signing_environment: 'azure-ado'
             cp_code: 'CP-231522'
-            files_to_sign: '**/xwbtool.exe;**/xwbtool_arm64.exe;**/MakeSpriteFont.exe;'
+            files_to_sign: '**/*.exe'
             search_root: '$(Build.BinariesDirectory)/bin'
             use_testsign: false
-          condition: ne(variables['BuildConfiguration'], 'Release')
+          condition: eq(variables['BuildConfiguration'], 'Release')
 
         - task: UseDotNet@2
           inputs:
