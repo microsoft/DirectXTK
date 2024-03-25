@@ -127,7 +127,7 @@ extends:
             restoreSolution: '**/packages.config'
             feedRestore: $(GUID_FEED)
             includeNuGetOrg: false
-            nugetConfigPath: 'nuget.config'
+            restoreDirectory: '$(Build.SourcesDirectory)/packages'
 
         # By default OneBranch Pipelines doesn't upload binaries files
         # (exe, dll, sys, nupkg, zip, pdb, cat, vhd, vhdx, cspkg etc)
