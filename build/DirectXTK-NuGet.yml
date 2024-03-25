@@ -76,7 +76,7 @@ extends:
         variables:
         # binaries scanning tools are run on this directory ( https://onebranch.visualstudio.com/OneBranch/_wiki/wikis/OneBranch.wiki/4634/SDL-(Static-Analysis)-for-Containerized-Workflows ) and
         # this directory is uploaded to pipeline artifacts. More info at https://aka.ms/obpipelines/artifacts
-          ob_outputDirectory: '$(Build.SourceDirectory)/bin'
+          ob_outputDirectory: '$(Build.SourcesDirectory)/bin'
           ob_artifactBaseName: DirectXTK_Binaries_
           ob_artifactSuffix: '$(BuildConfiguration)_$(BuildPlatform)'
           ob_symbolsPublishing_enabled: false
