@@ -76,7 +76,7 @@ extends:
         variables:
         # binaries scanning tools are run on this directory ( https://onebranch.visualstudio.com/OneBranch/_wiki/wikis/OneBranch.wiki/4634/SDL-(Static-Analysis)-for-Containerized-Workflows ) and
         # this directory is uploaded to pipeline artifacts. More info at https://aka.ms/obpipelines/artifacts
-          ob_outputDirectory: '$(Build.SourcesDirectory)/bin'
+          ob_outputDirectory: '$(Build.BinariesDirectory)'
           ob_artifactBaseName: DirectXTK_Binaries_
           ob_artifactSuffix: '$(BuildConfiguration)_$(BuildPlatform)'
           ob_symbolsPublishing_enabled: false
@@ -234,6 +234,33 @@ extends:
         # env:
         #    ob_restore_phase: true
         #
+        - powershell: |
+            function Copy-Filtered {
+                param (
+                    [string] $Source,
+                    [string] $Target,
+                    [string[]] $Filter
+                )
+                $ResolvedSource = Resolve-Path $Source
+                $NormalizedSource = $ResolvedSource.Path.TrimEnd([IO.Path]::DirectorySeparatorChar) + [IO.Path]::DirectorySeparatorChar
+                Get-ChildItem $Source -Include $Filter -Recurse | ForEach-Object {
+                    $RelativeItemSource = $_.FullName.Replace($NormalizedSource, '')
+                    $ItemTarget = Join-Path $Target $RelativeItemSource
+                    $ItemTargetDir = Split-Path $ItemTarget
+                    if (!(Test-Path $ItemTargetDir)) {
+                        [void](New-Item $ItemTargetDir -Type Directory)
+                    }
+                    Copy-Item $_.FullName $ItemTarget
+                }
+            }
+            $exts = @(("*.exe"),("*.lib"),("*.pdb"))
+            $folders = @((""),("\Audio"),("\XWBTool"),("\MakeSpriteFont"))
+            $folders | ForEach-Object { Copy-Filtered -Source ("$(Build.SourcesDirectory)" + $_ + "\Bin") -Target ("$(Build.BinariesDirectory)" + $_ + "\Bin") -Filter $exts }
+
+          displayName: 'Stage binaries'
+          env:
+            ob_restore_phase: true
+
         - task: onebranch.pipeline.signing@1
           displayName: 'Sign Files'
           inputs:
@@ -241,7 +268,7 @@ extends:
             signing_environment: 'azure-ado'
             cp_code: 'CP-231522'
             files_to_sign: '**/*.exe'
-            search_root: '$(Build.SourcesDirectory)/bin'
+            search_root: '$(Build.BinariesDirectory)'
             use_testsign: false
           condition: eq(variables['BuildConfiguration'], 'Release')
 
@@ -252,7 +279,7 @@ extends:
         - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
           displayName: 'Generation Task'
           inputs:
-              BuildDropPath: '$(Build.SourcesDirectory)/bin'
+              BuildDropPath: '$(Build.BinariesDirectory)'
 
     - stage: PostBuild
       dependsOn: [Build]
@@ -361,6 +388,7 @@ extends:
               Copy-Item -Path "$(Build.SourcesDirectory)/.nuget/*.targets" -Destination "$(Pipeline.Workspace)/artifacts/.nuget"
               Copy-Item -Path "$(Build.SourcesDirectory)/.nuget/*.jpg" -Destination "$(Pipeline.Workspace)/artifacts/.nuget"
               Get-ChildItem -Path "$(Pipeline.Workspace)/artifacts" -Recurse
+
             displayName: 'Copy build files'
             env:
               ob_restore_phase: true
