@@ -80,6 +80,7 @@ extends:
           ob_artifactBaseName: DirectXTK_Binaries_
           ob_artifactSuffix: '$(BuildConfiguration)_$(BuildPlatform)'
           ob_symbolsPublishing_enabled: false
+          ob_sdl_codeSignValidation_excludes: -|**\Debug\**.exe
 
         strategy:
           maxParallel: 8
@@ -266,7 +267,8 @@ extends:
           inputs:
             command: 'sign'
             signing_environment: 'azure-ado'
-            cp_code: 'CP-231522'
+            # really want to use cp_code: 'CP-231522' instead.
+            signing_profile: 'external_distribution'
             files_to_sign: '**/*.exe'
             search_root: '$(Build.BinariesDirectory)'
             use_testsign: false
