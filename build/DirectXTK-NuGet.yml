@@ -390,9 +390,10 @@ extends:
 
           - powershell: |
               Copy-Item -Path "$(Build.SourcesDirectory)/README.md" -Destination "$(Pipeline.Workspace)/artifacts"
+              Copy-Item -Path "$(Build.SourcesDirectory)/Inc/*.*" -Destination "$(Pipeline.Workspace)/artifacts/Inc"
               Copy-Item -Path "$(Build.SourcesDirectory)/.nuget/*.targets" -Destination "$(Pipeline.Workspace)/artifacts/.nuget"
               Copy-Item -Path "$(Build.SourcesDirectory)/.nuget/*.jpg" -Destination "$(Pipeline.Workspace)/artifacts/.nuget"
-              Get-ChildItem -Path "$(Pipeline.Workspace)/artifacts" -Recurse
+              Get-ChildItem -Path "$(Pipeline.Workspace)/artifacts" -Recurse | % { $_.FullName }
 
             displayName: 'Copy build files'
             env:
