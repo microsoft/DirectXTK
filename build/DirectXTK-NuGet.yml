@@ -235,6 +235,7 @@ extends:
         # env:
         #    ob_restore_phase: true
         #
+
         - powershell: |
             function Copy-Filtered {
                 param (
@@ -409,8 +410,8 @@ extends:
               configurationToPack: ''
               versioningScheme: byBuildNumber
               verbosityPack: Detailed
-              basePath: $(Pipeline.Workspace)/artifacts/
-              packDestination: $(Build.BinariesDirectory)/packages
+              basePath: $(Pipeline.Workspace)\artifacts\
+              packDestination: $(Build.BinariesDirectory)\packages
 
           - task: onebranch.pipeline.signing@1
             displayName: 'Sign Files'
