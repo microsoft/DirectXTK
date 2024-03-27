@@ -242,16 +242,19 @@ extends:
                     [string] $Target,
                     [string[]] $Filter
                 )
-                $ResolvedSource = Resolve-Path $Source
-                $NormalizedSource = $ResolvedSource.Path.TrimEnd([IO.Path]::DirectorySeparatorChar) + [IO.Path]::DirectorySeparatorChar
-                Get-ChildItem $Source -Include $Filter -Recurse | ForEach-Object {
-                    $RelativeItemSource = $_.FullName.Replace($NormalizedSource, '')
-                    $ItemTarget = Join-Path $Target $RelativeItemSource
-                    $ItemTargetDir = Split-Path $ItemTarget
-                    if (!(Test-Path $ItemTargetDir)) {
-                        [void](New-Item $ItemTargetDir -Type Directory)
-                    }
-                    Copy-Item $_.FullName $ItemTarget
+                if (Test-Path -Path $Source)
+                {
+                  $ResolvedSource = Resolve-Path $Source
+                  $NormalizedSource = $ResolvedSource.Path.TrimEnd([IO.Path]::DirectorySeparatorChar) + [IO.Path]::DirectorySeparatorChar
+                  Get-ChildItem $Source -Include $Filter -Recurse | ForEach-Object {
+                      $RelativeItemSource = $_.FullName.Replace($NormalizedSource, '')
+                      $ItemTarget = Join-Path $Target $RelativeItemSource
+                      $ItemTargetDir = Split-Path $ItemTarget
+                      if (!(Test-Path $ItemTargetDir)) {
+                          [void](New-Item $ItemTargetDir -Type Directory)
+                      }
+                      Copy-Item $_.FullName $ItemTarget
+                  }
                 }
             }
             $exts = @(("*.exe"),("*.lib"),("*.pdb"))
@@ -267,8 +270,8 @@ extends:
           inputs:
             command: 'sign'
             signing_environment: 'azure-ado'
-            # really want to use cp_code: 'CP-231522' instead.
             signing_profile: 'external_distribution'
+            # cp_code: 'CP-231522'
             files_to_sign: '**/*.exe'
             search_root: '$(Build.BinariesDirectory)'
             use_testsign: false
