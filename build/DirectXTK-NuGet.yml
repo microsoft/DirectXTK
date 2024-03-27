@@ -266,6 +266,8 @@ extends:
             $exts = @(("*.exe"),("*.lib"),("*.pdb"))
             $folders = @((""),("\Audio"),("\XWBTool"),("\MakeSpriteFont"))
             $folders | ForEach-Object { Copy-Filtered -Source ("$(Build.SourcesDirectory)" + $_ + "\Bin") -Target ("$(Build.BinariesDirectory)" + $_ + "\Bin") -Filter $exts }
+            Get-ChildItem "$(Build.BinariesDirectory)" -Include "xapo*.pdb" -Recurse | ForEach-Object { Remove-Item $_.FullName }
+            Get-ChildItem "$(Build.BinariesDirectory)" -Include "x*redist*.pdb" -Recurse | ForEach-Object { Remove-Item $_.FullName }
 
           displayName: 'Stage binaries'
           env:
