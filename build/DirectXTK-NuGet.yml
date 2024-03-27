@@ -41,7 +41,7 @@ variables:
   # Docker image which is used to build the project https://aka.ms/obpipelines/containers
   WindowsContainerImage: 'onebranch.azurecr.io/windows/ltsc2022/vse2022:latest'
 
-  Codeql.Enabled: true #  CodeQL once every 3 days on the default branch for all languages its applicable to in that pipeline.
+  Codeql.Enabled: false #  CodeQL is run by a different pipeline for both the main (GitHub) and release (ADO) branches.
 
   Packaging.EnableSBOMSigning: true
   NUGET_PLUGIN_HANDSHAKE_TIMEOUT_IN_SECONDS: 60
@@ -63,6 +63,7 @@ extends:
     # Refer the wiki for more options in this parameter: https://aka.ms/obpipelines/sdl
     # Refer to https://onebranch.visualstudio.com/OneBranch/_wiki/wikis/OneBranch.wiki/4640/Suppress-SDL-issues on how to suppress issues
     globalSdl:
+      runXFGCheck: false
       tsa:
         enabled: true
 
@@ -248,13 +249,16 @@ extends:
                   $ResolvedSource = Resolve-Path $Source
                   $NormalizedSource = $ResolvedSource.Path.TrimEnd([IO.Path]::DirectorySeparatorChar) + [IO.Path]::DirectorySeparatorChar
                   Get-ChildItem $Source -Include $Filter -Recurse | ForEach-Object {
-                      $RelativeItemSource = $_.FullName.Replace($NormalizedSource, '')
-                      $ItemTarget = Join-Path $Target $RelativeItemSource
-                      $ItemTargetDir = Split-Path $ItemTarget
-                      if (!(Test-Path $ItemTargetDir)) {
-                          [void](New-Item $ItemTargetDir -Type Directory)
+                      if ($_.FullName -notmatch ".*Debug.*\.exe")
+                      {
+                        $RelativeItemSource = $_.FullName.Replace($NormalizedSource, '')
+                        $ItemTarget = Join-Path $Target $RelativeItemSource
+                        $ItemTargetDir = Split-Path $ItemTarget
+                        if (!(Test-Path $ItemTargetDir)) {
+                            [void](New-Item $ItemTargetDir -Type Directory)
+                        }
+                        Copy-Item $_.FullName $ItemTarget
                       }
-                      Copy-Item $_.FullName $ItemTarget
                   }
                 }
             }
