@@ -278,8 +278,7 @@ extends:
           inputs:
             command: 'sign'
             signing_environment: 'azure-ado'
-            signing_profile: 'external_distribution'
-            # cp_code: 'CP-231522'
+            cp_code: '135020002' # CP-231522
             files_to_sign: '**/*.exe'
             search_root: '$(Build.BinariesDirectory)'
             use_testsign: false
