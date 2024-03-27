@@ -60,12 +60,13 @@ extends:
     cloudvault: # Please refer the wiki for more information: https://aka.ms/obpipelines/cloudvault
       enabled: false
 
-    # Refer the wiki for more options in this parameter: https://aka.ms/obpipelines/sdl
     # Refer to https://onebranch.visualstudio.com/OneBranch/_wiki/wikis/OneBranch.wiki/4640/Suppress-SDL-issues on how to suppress issues
-    globalSdl:
+    globalSdl: # https://aka.ms/obpipelines/sdl
       runXFGCheck: false
       tsa:
         enabled: true
+      asyncSdl: # https://aka.ms/obpipelines/asyncsdl
+        enabled: false
 
     stages:
     - stage: Build
