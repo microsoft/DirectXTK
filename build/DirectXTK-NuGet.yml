@@ -391,6 +391,7 @@ extends:
 
           - powershell: |
               Copy-Item -Path "$(Build.SourcesDirectory)/README.md" -Destination "$(Pipeline.Workspace)/artifacts"
+              New-Item -Path "$(Pipeline.Workspace)/artifacts/Inc","$(Pipeline.Workspace)/artifacts/.nuget" -Type Directory
               Copy-Item -Path "$(Build.SourcesDirectory)/Inc/*.*" -Destination "$(Pipeline.Workspace)/artifacts/Inc"
               Copy-Item -Path "$(Build.SourcesDirectory)/.nuget/*.targets" -Destination "$(Pipeline.Workspace)/artifacts/.nuget"
               Copy-Item -Path "$(Build.SourcesDirectory)/.nuget/*.jpg" -Destination "$(Pipeline.Workspace)/artifacts/.nuget"
