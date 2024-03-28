@@ -43,7 +43,7 @@ resources:
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
 pool:
-  vmImage: windows-2019
+  vmImage: windows-2022
 
 variables:
   GITHUB_PAT: $(GITHUBPUBLICTOKEN)

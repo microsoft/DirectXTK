@@ -47,7 +47,7 @@ variables:
   Codeql.Enabled: true
 
 pool:
-  vmImage: windows-2019
+  vmImage: windows-2022
 
 jobs:
 - job: DESKTOP_BUILD
@@ -194,30 +194,30 @@ jobs:
     clean: true
     fetchTags: false
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2019.sln 32dbg
+    displayName: Build solution DirectXTK_Windows10_2022.sln 32dbg
     inputs:
-      solution: DirectXTK_Windows10_2019.sln
+      solution: DirectXTK_Windows10_2022.sln
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x86
       configuration: Debug
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2019.sln 32rel
+    displayName: Build solution DirectXTK_Windows10_2022.sln 32rel
     inputs:
-      solution: DirectXTK_Windows10_2019.sln
+      solution: DirectXTK_Windows10_2022.sln
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x86
       configuration: Release
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2019.sln 64dbg
+    displayName: Build solution DirectXTK_Windows10_2022.sln 64dbg
     inputs:
-      solution: DirectXTK_Windows10_2019.sln
+      solution: DirectXTK_Windows10_2022.sln
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Debug
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2019.sln 64rel
+    displayName: Build solution DirectXTK_Windows10_2022.sln 64rel
     inputs:
-      solution: DirectXTK_Windows10_2019.sln
+      solution: DirectXTK_Windows10_2022.sln
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Release
@@ -228,16 +228,16 @@ jobs:
       workingDirectory: $(Build.SourcesDirectory)
       failOnStderr: false
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2019.sln arm64dbg
+    displayName: Build solution DirectXTK_Windows10_2022.sln arm64dbg
     inputs:
-      solution: DirectXTK_Windows10_2019.sln
+      solution: DirectXTK_Windows10_2022.sln
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: ARM64
       configuration: Debug
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2019.sln arm64rel
+    displayName: Build solution DirectXTK_Windows10_2022.sln arm64rel
     inputs:
-      solution: DirectXTK_Windows10_2019.sln
+      solution: DirectXTK_Windows10_2022.sln
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: ARM64
       configuration: Release
