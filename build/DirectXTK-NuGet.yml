@@ -83,6 +83,10 @@ extends:
           ob_outputDirectory: '$(Build.BinariesDirectory)'
           ob_artifactBaseName: DirectXTK_Binaries_
           ob_artifactSuffix: '$(BuildConfiguration)_$(BuildPlatform)'
+          ob_git_fetchDepth: 1
+          ob_git_fetchTags: false
+          ob_git_lfs: false
+          ob_git_submodules: false
           ob_symbolsPublishing_enabled: false
           ob_sdl_binskim_break: true
           ob_sdl_binskim_scanOutputDirectoryOnly: true
@@ -112,13 +116,6 @@ extends:
               BuildPlatform: ARM64
               BuildConfiguration: Debug
         steps:
-
-        - checkout: self
-          env:
-            ob_restore_phase: true
-          fetchDepth: 1
-          fetchTags: false
-          path: s
 
         - task: NuGetToolInstaller@1
           displayName: 'Setup NuGet Tools'
@@ -312,6 +309,10 @@ extends:
           ob_outputDirectory: '$(Build.BinariesDirectory)'
           ob_artifactBaseName: DirectXTK_
           ob_artifactSuffix: Packages
+          ob_git_fetchDepth: 1
+          ob_git_fetchTags: false
+          ob_git_lfs: false
+          ob_git_submodules: false
 
         steps:
 
