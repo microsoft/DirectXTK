@@ -62,9 +62,11 @@ extends:
 
     # Refer to https://onebranch.visualstudio.com/OneBranch/_wiki/wikis/OneBranch.wiki/4640/Suppress-SDL-issues on how to suppress issues
     globalSdl: # https://aka.ms/obpipelines/sdl
-      runXFGCheck: false
+      #suppression:
+      #  suppressionFile: $(Build.SourcesDirectory)\.gdn\global.gdnsuppress
+      #  suppressionSet: default
       tsa:
-        enabled: true
+        enabled: false
       asyncSdl: # https://aka.ms/obpipelines/asyncsdl
         enabled: false
 
@@ -82,7 +84,11 @@ extends:
           ob_artifactBaseName: DirectXTK_Binaries_
           ob_artifactSuffix: '$(BuildConfiguration)_$(BuildPlatform)'
           ob_symbolsPublishing_enabled: false
+          ob_sdl_binskim_break: true
+          ob_sdl_binskim_scanOutputDirectoryOnly: true
           ob_sdl_codeSignValidation_excludes: -|**\Debug\**.exe
+          ob_sdl_xfgcheck_enabled: false
+          ob_sdl_sdtReport_enabled: true
 
         strategy:
           maxParallel: 8
@@ -165,6 +171,8 @@ extends:
 
         - task: PowerShell@2
           displayName: 'Stamp tool version info'
+          env:
+            ob_restore_phase: true
           inputs:
             filePath: build/versioninfo.ps1
             arguments: $(Build.BuildNumber)
