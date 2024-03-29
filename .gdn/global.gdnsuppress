@@ -1,0 +1,108 @@
+{
+  "version": "1.0.0",
+  "suppressionSets": {
+    "default": {
+      "name": "default",
+      "createdDate": "2024-03-28 22:48:56Z",
+      "lastUpdatedDate": "2024-03-28 22:48:56Z"
+    }
+  },
+  "results": {
+    "550065f9d972084e8af1201e370b7e35c5b21561b276a3a73eb6ca271a425c38": {
+      "signature": "550065f9d972084e8af1201e370b7e35c5b21561b276a3a73eb6ca271a425c38",
+      "target" :"XWBTool/Bin/Desktop_2019/Win32/Release/XWBTool.exe",
+      "alternativeSignatures": [
+        "8484c6df114bdec2aba6bbd5d15ddb01d3d94c82035bd1daf58d6e50c8393ea0"
+      ],
+      "memberOf": [
+        "default"
+      ],
+      "justification": "SHA256 is missing from MSVC libraries for VS 2019",
+      "expirationDate": null,
+      "tool": "binskim",
+      "ruleId": "BA2004.EnableSecureSourceCodeHashing",
+      "type": null,
+      "createdDate": "2024-03-28 22:48:56Z"
+    },
+    "248fde359b37cf2b89e11a297c689060277071c3f6a4c25e1c77735f2f7eef99": {
+      "signature": "248fde359b37cf2b89e11a297c689060277071c3f6a4c25e1c77735f2f7eef99",
+      "target": "XWBTool/Bin/Desktop_2019/Win32/Release/XWBTool.exe",
+      "alternativeSignatures": [
+        "9310bd3954af8ce1968e47d8854a8deb667cbf1ea74f9cd1f65d74ddd1c24eb8"
+      ],
+      "memberOf": [
+        "default"
+      ],
+      "justification": null,
+      "expirationDate": null,
+      "tool": "binskim",
+      "ruleId": "BA2024.EnableSpectreMitigations",
+      "type": null,
+      "createdDate": "2024-03-28 22:48:56Z"
+    },
+    "11e3a85961e541151e6312bb7c12e97d1d514df1d4f5f66089efeb69e4149be8": {
+      "signature": "11e3a85961e541151e6312bb7c12e97d1d514df1d4f5f66089efeb69e4149be8",
+      "target": "XWBTool/Bin/Desktop_2019/x64/Release/XWBTool.exe",
+      "alternativeSignatures": [
+        "905e8081be2ac05decd4dc177965ebc866a75fa69efae619abcb64a5c146454c"
+      ],
+      "memberOf": [
+        "default"
+      ],
+      "justification": "SHA256 is missing from MSVC libraries for VS 2019",
+      "expirationDate": null,
+      "tool": "binskim",
+      "ruleId": "BA2004.EnableSecureSourceCodeHashing",
+      "type": null,
+      "createdDate": "2024-03-28 22:47:25Z"
+    },
+    "f0baa187c106f3b3d568d62d2a74d9cc2eee3121abb0fb1e8dd31d51dfeeb2a4": {
+      "signature": "f0baa187c106f3b3d568d62d2a74d9cc2eee3121abb0fb1e8dd31d51dfeeb2a4",
+      "target": "XWBTool/Bin/Desktop_2019/x64/Release/XWBTool.exe",
+      "alternativeSignatures": [
+        "624c312100f072fb8f7ab8865eadc1d9ca9c595cd5e95fcfd05c154bf5cc5fee"
+      ],
+      "memberOf": [
+        "default"
+      ],
+      "justification": null,
+      "expirationDate": null,
+      "tool": "binskim",
+      "ruleId": "BA2024.EnableSpectreMitigations",
+      "type": null,
+      "createdDate": "2024-03-28 22:47:25Z"
+    },
+    "60292fd192b89d6d0eee301f7367f81bc3cca850ee56353241a29d7276e05ba1": {
+      "signature": "60292fd192b89d6d0eee301f7367f81bc3cca850ee56353241a29d7276e05ba1",
+      "target": "XWBTool/Bin/Desktop_2019/ARM64/Release/XWBTool_arm64.exe",
+      "alternativeSignatures": [
+        "16bf0bb8b31561a75a43b3d78788b3a707b6b30ddc5a5ff6f68e710d9782b43f"
+      ],
+      "memberOf": [
+        "default"
+      ],
+      "justification": "SHA256 is missing from MSVC libraries for VS 2019",
+      "expirationDate": null,
+      "tool": "binskim",
+      "ruleId": "BA2004.EnableSecureSourceCodeHashing",
+      "type": null,
+      "createdDate": "2024-03-28 22:48:42Z"
+    },
+    "e4a170b000b31990c4300c6e570674566aea97e869821551d2805b902a0b75b9": {
+      "signature": "e4a170b000b31990c4300c6e570674566aea97e869821551d2805b902a0b75b9",
+      "target": "XWBTool/Bin/Desktop_2019/ARM64/Release/XWBTool_arm64.exe",
+      "alternativeSignatures": [
+        "164d0f4468c510b5bab5868f5aabfc63fbeab642de039e83617df86f3cc5abce"
+      ],
+      "memberOf": [
+        "default"
+      ],
+      "justification": null,
+      "expirationDate": null,
+      "tool": "binskim",
+      "ruleId": "BA2024.EnableSpectreMitigations",
+      "type": null,
+      "createdDate": "2024-03-28 22:48:42Z"
+    }
+  }
+}

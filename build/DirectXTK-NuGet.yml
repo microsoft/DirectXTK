@@ -62,9 +62,9 @@ extends:
 
     # Refer to https://onebranch.visualstudio.com/OneBranch/_wiki/wikis/OneBranch.wiki/4640/Suppress-SDL-issues on how to suppress issues
     globalSdl: # https://aka.ms/obpipelines/sdl
-      #suppression:
-      #  suppressionFile: $(Build.SourcesDirectory)\.gdn\global.gdnsuppress
-      #  suppressionSet: default
+      suppression:
+        suppressionFile: $(Build.SourcesDirectory)\.gdn\global.gdnsuppress
+        suppressionSet: default
       tsa:
         enabled: false
       asyncSdl: # https://aka.ms/obpipelines/asyncsdl
