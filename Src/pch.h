@@ -167,7 +167,7 @@
 #endif
 
 #pragma warning(push)
-#pragma warning(disable : 4467 5038 5204 5220)
+#pragma warning(disable : 4467 4986 5038 5204 5220)
 #ifdef __MINGW32__
 #include <wrl/client.h>
 #else

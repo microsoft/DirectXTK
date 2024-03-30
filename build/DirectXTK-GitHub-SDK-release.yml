@@ -28,6 +28,7 @@ variables:
   EXTRACTED_FOLDER: $(ExtractedFolder)
   WSDKEnableBWOI: true
   URL_FEED: $(ADOFeedURL)
+  skipNugetSecurityAnalysis: true # We explicitly call this task so we don't need it to be auto-injected
 
 pool:
   vmImage: windows-2022
@@ -62,6 +63,8 @@ jobs:
         $clearadd = $doc.configuration.packageSources.PrependChild($newelement)
         $doc.OuterXml | Set-Content $file
 
+  - task: nuget-security-analysis@0
+    displayName: 'Secure Supply Chain Analysis'
   - task: NuGetCommand@2
     displayName: NuGet Install WSDK x64
     inputs:
@@ -236,6 +239,8 @@ jobs:
         $clearadd = $doc.configuration.packageSources.PrependChild($newelement)
         $doc.OuterXml | Set-Content $file
 
+  - task: nuget-security-analysis@0
+    displayName: 'Secure Supply Chain Analysis'
   - task: NuGetCommand@2
     displayName: NuGet Install WSDK x64
     inputs:
@@ -307,6 +312,8 @@ jobs:
         $clearadd = $doc.configuration.packageSources.PrependChild($newelement)
         $doc.OuterXml | Set-Content $file
 
+  - task: nuget-security-analysis@0
+    displayName: 'Secure Supply Chain Analysis'
   - task: NuGetCommand@2
     displayName: NuGet Install WSDK arm64
     inputs:
