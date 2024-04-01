@@ -7,7 +7,10 @@
       "Skip": false,
       "Fuzzer": {
         "$type": "libfuzzer",
-        "FuzzingHarnessExecutableName": "fuzzloaders.exe"
+        "FuzzingHarnessExecutableName": "fuzzloaders.exe",
+        "FuzzingTargetBinaries": [
+          "fuzzloaders.exe"
+        ]
       },
       "RebootAfterSetup": false,
       "OneFuzzJobs": [
@@ -35,6 +38,11 @@
         "AssignedTo": "chuckw@microsoft.com",
         "AreaPath": "OS\\Core\\SiGMa\\GRFX-Graphics",
         "IterationPath": "OS\\Future"
+      },
+      "CodeCoverage": {
+        "Org": "mscodehub",
+        "Project": "DirectXTK",
+        "PipelineId": "1"
       }
     }
   ]

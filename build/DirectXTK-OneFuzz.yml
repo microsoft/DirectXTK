@@ -30,6 +30,7 @@ variables:
   BUGFILING_PAT: $(BugFilingPAT)
   GITHUB_PAT: $(GITHUBPUBLICTOKEN)
   ONEFUZZ_PAT: $(OneFuzzPAT)
+  CODECOV_PAT: $(CodeCoveragePAT)
 
 pool:
   vmImage: windows-2022
@@ -148,4 +149,5 @@ jobs:
       onefuzzDropPAT: $(ONEFUZZ_PAT)
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
       onefuzzBugFilingPAT: $(BUGFILING_PAT)
-  
+      onefuzzCodeCoveragePAT: $(CODECOV_PAT)
+

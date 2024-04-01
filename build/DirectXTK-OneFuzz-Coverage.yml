@@ -1,0 +1,81 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# http://go.microsoft.com/fwlink/?LinkId=248929
+
+# OneFuzz code coverage pipeline
+
+pr: none
+trigger: none
+
+pool:
+  vmImage: windows-latest
+
+parameters:
+  - name: sasUrl
+    type: string
+    displayName: SAS URL
+  - name: branch
+    type: string
+    displayName: Branch
+  - name: jobID
+    type: string
+    displayName: OneFuzz Job ID
+  - name: buildDate
+    type: string
+    displayName: Build Date
+  - name: commitID
+    type: string
+    displayName: Commit ID
+
+variables:
+  - name: coverage-file
+    value: cobertura-coverage.xml
+  - name: job-ID 
+    value: ${{ parameters.jobID }}
+  - name: build-date 
+    value: ${{ parameters.buildDate }}
+  - name: branch
+    value: ${{ parameters.branch }}
+  - name: sas-url
+    value: ${{ parameters.sasUrl }}
+  - name: commit-ID
+    value: ${{ parameters.commitID }}
+
+jobs:
+- job: prod
+  displayName: Prod Task
+  workspace:
+    clean: all
+  steps:
+  - task: CmdLine@2
+    displayName: 'Fetch source'
+    inputs:
+      script: |
+        git clone --quiet --no-tags https://%GITHUBPUBLICTOKEN%@github.com/microsoft/DirectXTK.git
+        cd DirectXTK
+        git checkout $(commit-ID)
+        git clone --quiet --no-tags https://%GITHUBPUBLICTOKEN%@github.com/walbourn/directxtktest.git Tests
+      workingDirectory: $(Build.SourcesDirectory)
+      failOnStderr: true
+
+  - powershell: |
+      Write-Host "Job ID: $(job-ID), Build Date: $(build-date), Branch: $(branch)"
+      $SASUrl = [System.Uri]::new("$(sas-url)")
+      azcopy cp $SASUrl.AbsoluteUri ./ --recursive
+      $ContainerName = $SASURL.LocalPath.Split("/")[1]
+      Write-Host "##vso[task.setvariable variable=container-name;]$ContainerName"
+      cd $ContainerName
+      $size = ((Get-Item .\$(coverage-file)).length)
+      if ($size -eq 0) {
+        Write-Host "Cobertura coverage XML is empty."
+        exit 1
+      }
+    displayName: 'Get code coverage from OneFuzz'
+
+  - task: PublishCodeCoverageResults@1
+    inputs:
+      codeCoverageTool: 'Cobertura'
+      summaryFileLocation: ./$(container-name)\$(coverage-file)
+      pathToSources: $(Build.SourcesDirectory)
+    displayName: 'Generate coverage report'
