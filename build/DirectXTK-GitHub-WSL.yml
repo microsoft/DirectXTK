@@ -18,20 +18,29 @@ trigger:
     - main
   paths:
     exclude:
-    - README.md
-    - HISTORY.md
-    - SECURITY.md
+    - *.md
     - LICENSE
+    - .nuget/*
+    - build/*
+    - !build/CompilerAndLinker.cmake
+    - !build/DirectXTK-GitHub-WSL.yml
+    - !build/DirectXTK.pc.in
+    - !build/JoinPaths.cmake
+
 pr:
   branches:
     include:
     - main
   paths:
     exclude:
-    - README.md
-    - HISTORY.md
-    - SECURITY.md
+    - *.md
     - LICENSE
+    - .nuget/*
+    - build/*
+    - !build/CompilerAndLinker.cmake
+    - !build/DirectXTK-GitHub-WSL.yml
+    - !build/DirectXTK.pc.in
+    - !build/JoinPaths.cmake
   drafts: false
 
 resources:
