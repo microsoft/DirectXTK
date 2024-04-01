@@ -18,9 +18,9 @@ trigger:
     - main
   paths:
     exclude:
-    - *.md
+    - '*.md'
     - LICENSE
-    - .nuget/*
+    - '.nuget/*'
     - build/*
     - !build/CompilerAndLinker.cmake
     - !build/DirectXTK-GitHub-WSL.yml
@@ -33,9 +33,9 @@ pr:
     - main
   paths:
     exclude:
-    - *.md
+    - '*.md'
     - LICENSE
-    - .nuget/*
+    - '.nuget/*'
     - build/*
     - !build/CompilerAndLinker.cmake
     - !build/DirectXTK-GitHub-WSL.yml
