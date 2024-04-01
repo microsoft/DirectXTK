@@ -38,6 +38,11 @@
         "AssignedTo": "chuckw@microsoft.com",
         "AreaPath": "OS\\Core\\SiGMa\\GRFX-Graphics",
         "IterationPath": "OS\\Future"
+      },
+      "CodeCoverage": {
+        "Org": "mscodehub",
+        "Project": "DirectXTK",
+        "PipelineId": "3033"
       }
     }
   ]

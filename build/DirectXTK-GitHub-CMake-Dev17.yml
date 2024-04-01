@@ -17,20 +17,29 @@ trigger:
     include:
     - main
   paths:
-    include:
-    - CMakeLists.txt
-    - build/CompilerAndLinker.cmake
-    - build/JoinPaths.cmake
+    exclude:
+    - *.md
+    - LICENSE
+    - .nuget/*
+    - build/*
+    - !build/CompilerAndLinker.cmake
+    - !build/DirectXTK-GitHub-CMake-Dev17.yml
+    - !build/DirectXTK.pc.in
+    - !build/JoinPaths.cmake
 
 pr:
   branches:
     include:
     - main
   paths:
-    include:
-    - CMakeLists.txt
-    - build/CompilerAndLinker.cmake
-    - build/JoinPaths.cmake
+    - *.md
+    - LICENSE
+    - .nuget/*
+    - build/*
+    - !build/CompilerAndLinker.cmake
+    - !build/DirectXTK-GitHub-CMake-Dev17.yml
+    - !build/DirectXTK.pc.in
+    - !build/JoinPaths.cmake
   drafts: false
 
 resources:

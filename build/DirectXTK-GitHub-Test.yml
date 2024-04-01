@@ -18,20 +18,25 @@ trigger:
     - main
   paths:
     exclude:
-    - README.md
-    - HISTORY.md
-    - SECURITY.md
+    - *.md
     - LICENSE
+    - CMake*
+    - .nuget/*
+    - build/*
+    - !build/DirectXTK-GitHub-Test.yml
+
 pr:
   branches:
     include:
     - main
   paths:
     exclude:
-    - README.md
-    - HISTORY.md
-    - SECURITY.md
+    - *.md
     - LICENSE
+    - CMake*
+    - .nuget/*
+    - build/*
+    - !build/DirectXTK-GitHub-Test.yml
   drafts: false
 
 resources:
