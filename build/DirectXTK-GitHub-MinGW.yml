@@ -21,11 +21,10 @@ trigger:
     - '*.md'
     - LICENSE
     - '.nuget/*'
-    - build/*
-    - !build/CompilerAndLinker.cmake
-    - !build/DirectXTK-GitHub-MinGW.yml
-    - !build/DirectXTK.pc.in
-    - !build/JoinPaths.cmake
+    - build/*.json
+    - build/*.props
+    - build/*.ps1
+    - build/*.targets
 
 pr:
   branches:
@@ -36,11 +35,10 @@ pr:
     - '*.md'
     - LICENSE
     - '.nuget/*'
-    - build/*
-    - !build/CompilerAndLinker.cmake
-    - !build/DirectXTK-GitHub-MinGW.yml
-    - !build/DirectXTK.pc.in
-    - !build/JoinPaths.cmake
+    - build/*.json
+    - build/*.props
+    - build/*.ps1
+    - build/*.targets
   drafts: false
 
 resources:

@@ -22,8 +22,12 @@ trigger:
     - LICENSE
     - CMake*
     - '.nuget/*'
-    - build/*
-    - !build/DirectXTK-GitHub.yml
+    - build/*.cmake
+    - build/*.in
+    - build/*.json
+    - build/*.props
+    - build/*.ps1
+    - build/*.targets
 
 pr:
   branches:
@@ -35,8 +39,12 @@ pr:
     - LICENSE
     - CMake*
     - '.nuget/*'
-    - build/*
-    - !build/DirectXTK-GitHub.yml
+    - build/*.cmake
+    - build/*.in
+    - build/*.json
+    - build/*.props
+    - build/*.ps1
+    - build/*.targets
   drafts: false
 
 resources:

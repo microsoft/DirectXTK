@@ -24,10 +24,10 @@ trigger:
     - LICENSE
     - CMake*
     - '.nuget/*'
-    - build/*
-    - !build/DirectXTK-GitHub-GDK.yml
-    - !build/Directory.Build.props
-    - !build/SetupBWOI.targets
+    - build/*.cmake
+    - build/*.in
+    - build/*.json
+    - build/*.ps1
 
 pr:
   branches:
@@ -39,10 +39,10 @@ pr:
     - LICENSE
     - CMake*
     - '.nuget/*'
-    - build/*
-    - !build/DirectXTK-GitHub-GDK.yml
-    - !build/Directory.Build.props
-    - !build/SetupBWOI.targets
+    - build/*.cmake
+    - build/*.in
+    - build/*.json
+    - build/*.ps1
   drafts: false
 
 resources:
