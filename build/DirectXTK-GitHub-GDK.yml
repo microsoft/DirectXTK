@@ -20,10 +20,10 @@ trigger:
     - main
   paths:
     exclude:
-    - *.md
+    - '*.md'
     - LICENSE
     - CMake*
-    - .nuget/*
+    - '.nuget/*'
     - build/*
     - !build/DirectXTK-GitHub-GDK.yml
     - !build/Directory.Build.props
@@ -35,10 +35,10 @@ pr:
     - main
   paths:
     exclude:
-    - *.md
+    - '*.md'
     - LICENSE
     - CMake*
-    - .nuget/*
+    - '.nuget/*'
     - build/*
     - !build/DirectXTK-GitHub-GDK.yml
     - !build/Directory.Build.props

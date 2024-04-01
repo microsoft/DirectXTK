@@ -18,10 +18,10 @@ trigger:
     - main
   paths:
     exclude:
-    - *.md
+    - '*.md'
     - LICENSE
     - CMake*
-    - .nuget/*
+    - '.nuget/*'
     - build/*
     - !build/DirectXTK-GitHub-Test.yml
 
@@ -31,10 +31,10 @@ pr:
     - main
   paths:
     exclude:
-    - *.md
+    - '*.md'
     - LICENSE
     - CMake*
-    - .nuget/*
+    - '.nuget/*'
     - build/*
     - !build/DirectXTK-GitHub-Test.yml
   drafts: false
