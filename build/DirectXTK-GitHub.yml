@@ -18,12 +18,16 @@ trigger:
     - main
   paths:
     exclude:
-    - *.md
+    - '*.md'
     - LICENSE
     - CMake*
-    - .nuget/*
-    - build/*
-    - !build/DirectXTK-GitHub.yml
+    - '.nuget/*'
+    - build/*.cmake
+    - build/*.in
+    - build/*.json
+    - build/*.props
+    - build/*.ps1
+    - build/*.targets
 
 pr:
   branches:
@@ -31,12 +35,16 @@ pr:
     - main
   paths:
     exclude:
-    - *.md
+    - '*.md'
     - LICENSE
     - CMake*
-    - .nuget/*
-    - build/*
-    - !build/DirectXTK-GitHub.yml
+    - '.nuget/*'
+    - build/*.cmake
+    - build/*.in
+    - build/*.json
+    - build/*.props
+    - build/*.ps1
+    - build/*.targets
   drafts: false
 
 resources:
