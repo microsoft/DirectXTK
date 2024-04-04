@@ -29,7 +29,7 @@ pool:
 
 variables:
   GITHUB_PAT: $(GITHUBPUBLICTOKEN)
-  DEST_DIR: $(DESTDIR)
+  LOCAL_PKG_DIR: '$(Agent.BuildDirectory)/install/'
 
 jobs:
 - job: BUILD_SIMPLEMATH
@@ -48,7 +48,7 @@ jobs:
     displayName: CMake DirectX-Headers
     inputs:
       cwd: directx-headers
-      cmakeArgs: . -DDXHEADERS_BUILD_TEST=OFF -DDXHEADERS_BUILD_GOOGLE_TEST=OFF
+      cmakeArgs: . -DDXHEADERS_BUILD_TEST=OFF -DDXHEADERS_BUILD_GOOGLE_TEST=OFF -DCMAKE_INSTALL_PREFIX=$(LOCAL_PKG_DIR)
   - task: CMake@1
     displayName: CMake DirectX-Headers (Build)
     inputs:
@@ -67,7 +67,7 @@ jobs:
     displayName: CMake DirectXMath
     inputs:
       cwd: directxmath
-      cmakeArgs: .
+      cmakeArgs: . -DCMAKE_INSTALL_PREFIX=$(LOCAL_PKG_DIR)
   - task: CMake@1
     displayName: CMake DirectXMath (Build)
     inputs:
@@ -90,8 +90,8 @@ jobs:
       targetType: inline
       script: |
         $ProgressPreference = 'SilentlyContinue'
-        Invoke-WebRequest -Uri https://raw.githubusercontent.com/dotnet/corert/master/src/Native/inc/unix/sal.h -OutFile $(DEST_DIR)usr/local/include/sal.h
-        $fileHash = Get-FileHash -Algorithm SHA512 $(DEST_DIR)usr/local/include/sal.h | ForEach { $_.Hash} | Out-String
+        Invoke-WebRequest -Uri https://raw.githubusercontent.com/dotnet/corert/master/src/Native/inc/unix/sal.h -OutFile $(LOCAL_PKG_DIR)/include/sal.h
+        $fileHash = Get-FileHash -Algorithm SHA512 $(LOCAL_PKG_DIR)/include/sal.h | ForEach { $_.Hash} | Out-String
         $filehash = $fileHash.Trim()
         Write-Host "##[debug]SHA512: " $filehash
         if ($fileHash -ne "1643571673195d9eb892d2f2ac76eac7113ef7aa0ca116d79f3e4d3dc9df8a31600a9668b7e7678dfbe5a76906f9e0734ef8d6db0903ccc68fc742dd8238d8b0") {
@@ -102,7 +102,7 @@ jobs:
     displayName: CMake SimpleMath (Config) dbg
     inputs:
       cwd: Tests/SimpleMathTest
-      cmakeArgs: -B out -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=$(DEST_DIR)usr/local/share;$(DEST_DIR)usr/local/cmake
+      cmakeArgs: -B out -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=$(LOCAL_PKG_DIR)/share;$(LOCAL_PKG_DIR)/cmake
   - task: CMake@1
     displayName: CMake SimpleMath (Build) dbg
     inputs:
@@ -112,7 +112,7 @@ jobs:
     displayName: CMake SimpleMath (Config) rel
     inputs:
       cwd: Tests/SimpleMathTest
-      cmakeArgs: -B out2 -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$(DEST_DIR)usr/local/share;$(DEST_DIR)usr/local/cmake
+      cmakeArgs: -B out2 -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$(LOCAL_PKG_DIR)/share;$(LOCAL_PKG_DIR)/cmake
   - task: CMake@1
     displayName: CMake SimpleMath (Build) rel
     inputs:
