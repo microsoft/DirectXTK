@@ -13,13 +13,21 @@ schedules:
     - main
 
 trigger: none
-pr: none
+
+pr:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - build/DirectXTK-GitHub-Dev17.yml
 
 resources:
   repositories:
   - repository: self
     type: git
     ref: refs/heads/main
+    trigger: none
 
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
