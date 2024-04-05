@@ -66,6 +66,10 @@ elseif(NOT (${DIRECTX_ARCH} MATCHES "^arm"))
         set(ARCH_SSE2 $<$<NOT:$<CXX_COMPILER_ID:MSVC,Intel>>:-msse2>)
     endif()
 
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+        list(APPEND ARCH_SSE2 -mfpmath=sse)
+    endif()
+
     list(APPEND COMPILER_SWITCHES ${ARCH_SSE2})
 endif()
 
