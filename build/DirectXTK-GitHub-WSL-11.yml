@@ -13,7 +13,17 @@ schedules:
     - main
 
 trigger: none
-pr: none
+
+pr:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - CMake*
+    - build/*.cmake
+    - build/*.in
+    - build/DirectXTK-GitHub-WSL-11.yml
 
 resources:
   repositories:
