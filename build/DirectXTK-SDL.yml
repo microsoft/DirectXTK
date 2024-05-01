@@ -45,17 +45,11 @@ jobs:
     inputs:
       command: custom
       arguments: sources add -Name xboxgdk -Source $(URL_FEED) -ConfigFile $(Build.SourcesDirectory)\NuGet.config
-  - task: PowerShell@2
+  - task: NuGetCommand@2
     displayName: 'Set nuget.config to single source'
     inputs:
-      targetType: inline
-      script: |
-        $file = '.\NuGet.Config'
-        $doc = [xml](Get-Content $file)
-        $newelement = $doc.CreateElement("clear")
-        $clearadd = $doc.configuration.packageSources.PrependChild($newelement)
-        $doc.OuterXml | Set-Content $file
-
+      command: custom
+      arguments: sources remove -Name nuget.org -ConfigFile $(Build.SourcesDirectory)\NuGet.config
   - task: nuget-security-analysis@0
     displayName: 'Secure Supply Chain Analysis'
   - task: NodeTool@0
