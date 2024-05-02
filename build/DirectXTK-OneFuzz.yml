@@ -27,10 +27,7 @@ name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 variables:
   VS_GENERATOR: 'Visual Studio 17 2022'
   WIN11_SDK: '10.0.22000.0'
-  BUGFILING_PAT: $(BugFilingPAT)
   GITHUB_PAT: $(GITHUBPUBLICTOKEN)
-  ONEFUZZ_PAT: $(OneFuzzPAT)
-  CODECOV_PAT: $(CodeCoveragePAT)
 
 pool:
   vmImage: windows-2022
@@ -146,8 +143,4 @@ jobs:
       onefuzzOSes: 'Windows'
     env:
       onefuzzDropDirectory: $(Build.SourcesDirectory)\.drop
-      onefuzzDropPAT: $(ONEFUZZ_PAT)
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-      onefuzzBugFilingPAT: $(BUGFILING_PAT)
-      onefuzzCodeCoveragePAT: $(CODECOV_PAT)
-
