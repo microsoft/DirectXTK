@@ -54,17 +54,27 @@ jobs:
     displayName: 'Use NuGet'
     inputs:
       versionSpec: '6.5.x'
+  - task: PowerShell@2
+    displayName: 'Create nuget.config with single source'
+    inputs:
+      targetType: inline
+      script: |
+        $xml = @'
+        <?xml version="1.0" encoding="utf-8"?>
+        <configuration>
+          <packageSources>
+            <clear />
+          </packageSources>
+        </configuration>
+        '@
+        $xml | Set-Content -Path "$(Build.SourcesDirectory)\NuGet.config"
+
   - task: NuGetCommand@2
     # We have to use a nuget.config to provide the feed for the 'nuget install' option.
     displayName: 'NuGet set package source to ADO feed'
     inputs:
       command: custom
       arguments: sources add -Name xboxgdk -Source $(URL_FEED) -ConfigFile $(Build.SourcesDirectory)\NuGet.config
-  - task: NuGetCommand@2
-    displayName: 'Set nuget.config to single source'
-    inputs:
-      command: custom
-      arguments: sources remove -Name nuget.org -ConfigFile $(Build.SourcesDirectory)\NuGet.config
   - task: nuget-security-analysis@0
     displayName: 'Secure Supply Chain Analysis'
   - task: NuGetCommand@2
