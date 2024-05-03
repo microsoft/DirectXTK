@@ -644,12 +644,12 @@ void DirectX::CreateXMA2(
         throw std::invalid_argument("XMA2WAVEFORMATEX");
     }
 
-    int blockAlign = (channels * XMA_OUTPUT_SAMPLE_BITS) / 8;
+    unsigned int blockAlign = (static_cast<unsigned int>(channels) * XMA_OUTPUT_SAMPLE_BITS) / 8u;
 
     wfx->wFormatTag = WAVE_FORMAT_XMA2;
     wfx->nChannels = static_cast<WORD>(channels);
     wfx->nSamplesPerSec = static_cast<WORD>(sampleRate);
-    wfx->nAvgBytesPerSec = static_cast<DWORD>(blockAlign * sampleRate);
+    wfx->nAvgBytesPerSec = static_cast<DWORD>(blockAlign * static_cast<unsigned int>(sampleRate));
     wfx->nBlockAlign = static_cast<WORD>(blockAlign);
     wfx->wBitsPerSample = XMA_OUTPUT_SAMPLE_BITS;
     wfx->cbSize = sizeof(XMA2WAVEFORMATEX) - sizeof(WAVEFORMATEX);

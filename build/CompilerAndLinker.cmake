@@ -57,7 +57,7 @@ endif()
 #--- Target architecture switches
 if(XBOX_CONSOLE_TARGET STREQUAL "scarlett")
     list(APPEND COMPILER_SWITCHES $<IF:$<CXX_COMPILER_ID:MSVC>,/favor:AMD64 /arch:AVX2,-march=znver2>)
-elseif(XBOX_CONSOLE_TARGET STREQUAL "xboxone|durago")
+elseif(XBOX_CONSOLE_TARGET MATCHES "xboxone|durango")
     list(APPEND COMPILER_SWITCHES  $<IF:$<CXX_COMPILER_ID:MSVC>,/favor:AMD64 /arch:AVX,-march=btver2>)
 elseif(NOT (${DIRECTX_ARCH} MATCHES "^arm"))
     if((${DIRECTX_ARCH} MATCHES "x86") OR (CMAKE_SIZEOF_VOID_P EQUAL 4))
