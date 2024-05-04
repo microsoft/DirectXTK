@@ -20,7 +20,11 @@ pr:
     - main
   paths:
     include:
+    - CMakeList.txt
     - build/DirectXTK-GitHub-GDK-Dev17.yml
+    - build/*.in
+    - build/*.cmake
+    - build/SetupBWOI.*
 
 resources:
   repositories:
@@ -39,6 +43,7 @@ variables:
   GDK_EDITION: $(GDKEditionNumber)
   GDKEnableBWOI: true
   URL_FEED: $(ADOFeedURL)
+  VC_PATH: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC'
   skipNugetSecurityAnalysis: true # We explicitly call this task so we don't need it to be auto-injected
 
 jobs:
@@ -54,17 +59,27 @@ jobs:
     displayName: 'Use NuGet'
     inputs:
       versionSpec: '6.5.x'
+  - task: PowerShell@2
+    displayName: 'Create nuget.config with single source'
+    inputs:
+      targetType: inline
+      script: |
+        $xml = @'
+        <?xml version="1.0" encoding="utf-8"?>
+        <configuration>
+          <packageSources>
+            <clear />
+          </packageSources>
+        </configuration>
+        '@
+        $xml | Set-Content -Path "$(Build.SourcesDirectory)\NuGet.config"
+
   - task: NuGetCommand@2
     # We have to use a nuget.config to provide the feed for the 'nuget install' option.
     displayName: 'NuGet set package source to ADO feed'
     inputs:
       command: custom
       arguments: sources add -Name xboxgdk -Source $(URL_FEED) -ConfigFile $(Build.SourcesDirectory)\NuGet.config
-  - task: NuGetCommand@2
-    displayName: 'Set nuget.config to single source'
-    inputs:
-      command: custom
-      arguments: sources remove -Name nuget.org -ConfigFile $(Build.SourcesDirectory)\NuGet.config
   - task: nuget-security-analysis@0
     displayName: 'Secure Supply Chain Analysis'
   - task: NuGetCommand@2
@@ -86,6 +101,7 @@ jobs:
       msbuildArchitecture: x64
   - task: VSBuild@1
     displayName: Build solution DirectXTK_GDK_2022 pcdbg
+    continueOnError: True
     inputs:
       solution: DirectXTK_GDK_2022.sln
       vsVersion: 17.0
@@ -94,9 +110,110 @@ jobs:
       msbuildArchitecture: x64
   - task: VSBuild@1
     displayName: Build solution DirectXTK_GDK_2022 pcrel
+    continueOnError: True
     inputs:
       solution: DirectXTK_GDK_2022.sln
       vsVersion: 17.0
       platform: Gaming.Desktop.x64
       configuration: Release
       msbuildArchitecture: x64
+
+- job: BUILD_GDK_CMAKE
+  displayName: 'Microsoft Game Development Kit (GDK) using CMake'
+  timeoutInMinutes: 120
+  cancelTimeoutInMinutes: 1
+  steps:
+  - checkout: self
+    clean: true
+    fetchTags: false
+  - task: NuGetToolInstaller@1
+    displayName: 'Use NuGet'
+    inputs:
+      versionSpec: '6.5.x'
+  - task: PowerShell@2
+    displayName: 'Create nuget.config with single source'
+    inputs:
+      targetType: inline
+      script: |
+        $xml = @'
+        <?xml version="1.0" encoding="utf-8"?>
+        <configuration>
+          <packageSources>
+            <clear />
+          </packageSources>
+        </configuration>
+        '@
+        $xml | Set-Content -Path "$(Build.SourcesDirectory)\NuGet.config"
+
+  - task: NuGetCommand@2
+    # We have to use a nuget.config to provide the feed for the 'nuget install' option.
+    displayName: 'NuGet set package source to ADO feed'
+    inputs:
+      command: custom
+      arguments: sources add -Name xboxgdk -Source $(URL_FEED) -ConfigFile $(Build.SourcesDirectory)\NuGet.config
+  - task: nuget-security-analysis@0
+    displayName: 'Secure Supply Chain Analysis'
+  - task: NuGetCommand@2
+    displayName: NuGet install PGDK
+    inputs:
+      command: custom
+      arguments: install -prerelease Microsoft.GDK.PC.$(GDK_EDITION) -ExcludeVersion -OutputDirectory $(EXTRACTED_FOLDER)\GDK
+  - task: CmdLine@2
+    displayName: Setup BWOI for GDK command-line
+    inputs:
+      script: |
+        call "$(VC_PATH)\Auxiliary\Build\vcvars64.bat"
+        echo ##vso[task.setvariable variable=WindowsSdkVerBinPath;]%WindowsSdkVerBinPath%
+        echo ##vso[task.prependpath]%VSINSTALLDIR%Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja
+        echo ##vso[task.prependpath]%VCINSTALLDIR%Tools\Llvm\x64\bin
+        echo ##vso[task.prependpath]%WindowsSdkBinPath%x64
+        echo ##vso[task.prependpath]%WindowsSdkVerBinPath%x64
+        echo ##vso[task.prependpath]%VCToolsInstallDir%bin\HostX64\x64
+        call $(Build.SourcesDirectory)\build\SetupBWOI.cmd $(EXTRACTED_FOLDER)\GDK $(GDK_EDITION) PC
+        echo ##vso[task.setvariable variable=GameDKLatest;]%GameDKLatest%
+        echo ##vso[task.setvariable variable=GRDKLatest;]%GRDKLatest%
+        echo ##vso[task.setvariable variable=INCLUDE;]%INCLUDE%
+        echo ##vso[task.setvariable variable=LIB;]%LIB%
+        echo ##vso[task.prependpath]%ADDBIN%
+
+      failOnStderr: true
+  - task: CMake@1
+    displayName: 'CMake (MSVC): Config Debug'
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --preset=x64-Debug-GDK
+  - task: CMake@1
+    displayName: 'CMake (MSVC): Build Debug'
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --build out\build\x64-Debug-GDK
+  - task: CMake@1
+    displayName: 'CMake (MSVC): Config Release'
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --preset=x64-Release-GDK
+  - task: CMake@1
+    displayName: 'CMake (MSVC): Build Release'
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --build out\build\x64-Release-GDK
+  - task: CMake@1
+    displayName: 'CMake (Clang): Config Debug'
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --preset=x64-Debug-GDK-Clang
+  - task: CMake@1
+    displayName: 'CMake (Clang): Build Debug'
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --build out\build\x64-Debug-GDK-Clang
+  - task: CMake@1
+    displayName: 'CMake (Clang): Config Release'
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --preset=x64-Release-GDK-Clang
+  - task: CMake@1
+    displayName: 'CMake (Clang): Build Release'
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --build out\build\x64-Release-GDK-Clang

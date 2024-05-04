@@ -21,6 +21,7 @@ trigger:
     - '*.md'
     - LICENSE
     - '.nuget/*'
+    - build/*.cmd
     - build/*.json
     - build/*.props
     - build/*.ps1
@@ -35,6 +36,7 @@ pr:
     - '*.md'
     - LICENSE
     - '.nuget/*'
+    - build/*.cmd
     - build/*.json
     - build/*.props
     - build/*.ps1
