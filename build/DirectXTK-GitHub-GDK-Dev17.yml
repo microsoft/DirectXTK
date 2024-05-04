@@ -197,3 +197,23 @@ jobs:
     inputs:
       cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --build out\build\x64-Release-GDK
+  - task: CMake@1
+    displayName: 'CMake (Clang): Config Debug'
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --preset=x64-Debug-GDK-Clang
+  - task: CMake@1
+    displayName: 'CMake (Clang): Build Debug'
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --build out\build\x64-Debug-GDK-Clang
+  - task: CMake@1
+    displayName: 'CMake (Clang): Config Release'
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --preset=x64-Release-GDK-Clang
+  - task: CMake@1
+    displayName: 'CMake (Clang): Build Release'
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --build out\build\x64-Release-GDK-Clang
