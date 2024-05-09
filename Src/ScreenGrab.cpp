@@ -347,7 +347,7 @@ namespace DirectX
 {
     inline namespace DX11
     {
-        namespace Internal
+        namespace ToolKitInternal
         {
             extern bool IsWIC2() noexcept;
             extern IWICImagingFactory* GetWIC() noexcept;
@@ -365,7 +365,7 @@ HRESULT DirectX::SaveWICTextureToFile(
     std::function<void(IPropertyBag2*)> setCustomProps,
     bool forceSRGB)
 {
-    using namespace DX11::Internal;
+    using namespace DX11::ToolKitInternal;
 
     if (!fileName)
         return E_INVALIDARG;

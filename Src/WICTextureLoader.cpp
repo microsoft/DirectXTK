@@ -194,7 +194,7 @@ namespace DirectX
 {
     inline namespace DX11
     {
-        namespace Internal
+        namespace ToolKitInternal
         {
             bool IsWIC2() noexcept;
             IWICImagingFactory* GetWIC() noexcept;
@@ -203,12 +203,12 @@ namespace DirectX
     }
 }
 
-bool DirectX::DX11::Internal::IsWIC2() noexcept
+bool DirectX::DX11::ToolKitInternal::IsWIC2() noexcept
 {
     return g_WIC2;
 }
 
-IWICImagingFactory* DirectX::DX11::Internal::GetWIC() noexcept
+IWICImagingFactory* DirectX::DX11::ToolKitInternal::GetWIC() noexcept
 {
     static INIT_ONCE s_initOnce = INIT_ONCE_STATIC_INIT;
 
@@ -225,7 +225,7 @@ IWICImagingFactory* DirectX::DX11::Internal::GetWIC() noexcept
     return factory;
 }
 
-using namespace DirectX::DX11::Internal;
+using namespace DirectX::DX11::ToolKitInternal;
 
 namespace
 {
