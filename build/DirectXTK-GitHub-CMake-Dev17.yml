@@ -52,6 +52,7 @@ resources:
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
 variables:
+  Codeql.Enabled: false
   VS_GENERATOR: 'Visual Studio 17 2022'
   REDIST_DIR: $(xaudio2redist_DIR)
   WIN10_SDK: '10.0.19041.0'

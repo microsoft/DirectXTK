@@ -35,6 +35,7 @@ pool:
   vmImage: windows-2022
 
 variables:
+  Codeql.Enabled: false
   GITHUB_PAT: $(GITHUBPUBLICTOKEN)
   GUID_FEED: $(ADOFeedGUID)
 

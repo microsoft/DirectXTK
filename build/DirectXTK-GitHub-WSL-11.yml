@@ -38,6 +38,7 @@ pool:
   vmImage: ubuntu-22.04
 
 variables:
+  Codeql.Enabled: false
   GITHUB_PAT: $(GITHUBPUBLICTOKEN)
   LOCAL_PKG_DIR: '$(Agent.BuildDirectory)/install/'
 

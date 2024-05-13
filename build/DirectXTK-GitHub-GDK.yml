@@ -59,6 +59,7 @@ pool:
   vmImage: windows-2019
 
 variables:
+  Codeql.Enabled: false
   EXTRACTED_FOLDER: $(ExtractedFolder)
   GDK_EDITION: $(GDKEditionNumber)
   GDKEnableBWOI: true

@@ -55,6 +55,7 @@ pool:
   vmImage: windows-2022
 
 variables:
+  Codeql.Enabled: false
   VCPKG_CMAKE_DIR: '$(VCPKG_ROOT)/scripts/buildsystems/vcpkg.cmake'
   GITHUB_PAT: $(GITHUBPUBLICTOKEN)
   WIN11_SDK: '10.0.22000.0'
