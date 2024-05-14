@@ -24,6 +24,9 @@ resources:
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
 variables:
+  Codeql.Enabled: true
+  Codeql.Language: cpp,csharp
+  Codeql.ExcludePathPatterns: packages
   VS_GENERATOR: 'Visual Studio 17 2022'
   URL_FEED: $(ADOFeedURL)
   skipNugetSecurityAnalysis: true # We explicitly call this task so we don't need it to be auto-injected

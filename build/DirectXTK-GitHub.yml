@@ -58,8 +58,8 @@ resources:
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
 variables:
+  Codeql.Enabled: false
   GUID_FEED: $(ADOFeedGUID)
-  Codeql.Enabled: true
 
 pool:
   vmImage: windows-2022

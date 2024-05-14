@@ -25,6 +25,7 @@ resources:
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
 variables:
+  Codeql.Enabled: false
   VS_GENERATOR: 'Visual Studio 17 2022'
   WIN11_SDK: '10.0.22000.0'
   GITHUB_PAT: $(GITHUBPUBLICTOKEN)
