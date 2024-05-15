@@ -1483,7 +1483,7 @@ X3DAUDIO_HANDLE& AudioEngine::Get3DHandle() const noexcept
 #ifdef _MSC_VER
 #pragma comment(lib,"runtimeobject.lib")
 #pragma warning(push)
-#pragma warning(disable: 4471 5204 5256)
+#pragma warning(disable: 4471 5204 5256 6553)
 #endif
 #ifdef __clang__
 #pragma clang diagnostic ignored "-Wnonportable-system-include-path"
