@@ -74,6 +74,10 @@ For the latest version of DirectXTK, bug reports, etc. please visit the project 
 
 ## Release Notes
 
+FOR SECURITY ADVISORIES, see [GitHub](https://github.com/microsoft/DirectXTK/security/advisories).
+
+For a full change history, see [CHANGELOG.md](https://github.com/microsoft/DirectXTK/blob/main/CHANGELOG.md).
+
 * Starting with the February 2023 release, the Mouse class implementation of relative mouse movement was updated to accumulate changes between calls to ``GetState``. By default, each time you call ``GetState`` the deltas are reset which works for scenarios where you use relative movement but only call the method once per frame. If you call it more than once per frame, then add an explicit call to ``EndOfInputFrame`` to use an explicit reset model instead.
 
 * As of the September 2022 release, the library makes use of C++11 inline namespaces for differing types that have the same names in the DirectX 11 and DirectX 12 version of the *DirectX Tool Kit*. This provides a link-unique name such as ``DirectX::DX11::SpriteBatch`` that will appear in linker output messages. In most use cases, however, there is no need to add explicit ``DX11`` namespace resolution in client code.
@@ -107,6 +111,8 @@ For bug reports and feature requests, please use GitHub [issues](https://github.
 This project welcomes contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
 
 When you submit a pull request, a CLA bot will automatically determine whether you need to provide a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions provided by the bot. You will only need to do this once across all repos using our CLA.
+
+Tests for new features should also be submitted as a PR to the [Test Suite](https://github.com/walbourn/directxtktest/wiki) repository.
 
 ## Code of Conduct
 

@@ -13,7 +13,14 @@ schedules:
     - main
 
 trigger: none
-pr: none
+
+pr:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - build/DirectXTK-SDL.yml
 
 resources:
   repositories:
@@ -27,6 +34,7 @@ variables:
   Codeql.Enabled: true
   Codeql.Language: cpp,csharp
   Codeql.ExcludePathPatterns: packages
+  VC_PATH: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC'
   VS_GENERATOR: 'Visual Studio 17 2022'
   URL_FEED: $(ADOFeedURL)
   skipNugetSecurityAnalysis: true # We explicitly call this task so we don't need it to be auto-injected
@@ -138,3 +146,37 @@ jobs:
       GdnBreakPolicyMinSev: 'Error'
   - task: ComponentGovernanceComponentDetection@0
     displayName: Component Detection
+
+- job: VC_PREFAST
+  displayName: 'Build using /analyze (PREFAST)'
+  workspace:
+    clean: all
+  steps:
+  - checkout: self
+    clean: true
+    fetchTags: false
+  - task: CmdLine@2
+    displayName: Setup environment for CMake to use VS
+    inputs:
+      script: |
+        call "$(VC_PATH)\Auxiliary\Build\vcvars64.bat"
+        echo ##vso[task.setvariable variable=WindowsSdkVerBinPath;]%WindowsSdkVerBinPath%
+        echo ##vso[task.prependpath]%VSINSTALLDIR%Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja
+        echo ##vso[task.prependpath]%VCINSTALLDIR%Tools\Llvm\x64\bin
+        echo ##vso[task.prependpath]%WindowsSdkBinPath%x64
+        echo ##vso[task.prependpath]%WindowsSdkVerBinPath%x64
+        echo ##vso[task.prependpath]%VCToolsInstallDir%bin\Hostx64\x64
+        echo ##vso[task.setvariable variable=EXTERNAL_INCLUDE;]%EXTERNAL_INCLUDE%
+        echo ##vso[task.setvariable variable=INCLUDE;]%INCLUDE%
+        echo ##vso[task.setvariable variable=LIB;]%LIB%
+
+  - task: CMake@1
+    displayName: CMake Config
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --preset=x64-Debug -DENABLE_CODE_ANALYSIS=ON
+  - task: CMake@1
+    displayName: CMake Build
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --build out/build/x64-Debug

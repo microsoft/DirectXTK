@@ -419,7 +419,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     if(ENABLE_CODE_ANALYSIS)
       foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
-        target_compile_options(${t} PRIVATE /analyze)
+        target_compile_options(${t} PRIVATE /analyze /WX)
       endforeach()
     endif()
 
