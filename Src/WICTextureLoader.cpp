@@ -754,22 +754,13 @@ namespace
         if (texture || textureView)
         {
         #if defined(_XBOX_ONE) && defined(_TITLE)
-            const wchar_t* pstrName = wcsrchr(fileName, '\\');
-            if (!pstrName)
-            {
-                pstrName = fileName;
-            }
-            else
-            {
-                pstrName++;
-            }
             if (texture && *texture)
             {
-                (*texture)->SetName(pstrName);
+                (*texture)->SetName(fileName);
             }
             if (textureView && *textureView)
             {
-                (*textureView)->SetName(pstrName);
+                (*textureView)->SetName(fileName);
             }
         #else
             CHAR strFileA[MAX_PATH];
@@ -784,29 +775,19 @@ namespace
             );
             if (result > 0)
             {
-                const char* pstrName = strrchr(strFileA, '\\');
-                if (!pstrName)
-                {
-                    pstrName = strFileA;
-                }
-                else
-                {
-                    pstrName++;
-                }
-
                 if (texture && *texture)
                 {
                     (*texture)->SetPrivateData(WKPDID_D3DDebugObjectName,
-                        static_cast<UINT>(strnlen_s(pstrName, MAX_PATH)),
-                        pstrName
+                        static_cast<UINT>(result),
+                        strFileA
                     );
                 }
 
                 if (textureView && *textureView)
                 {
                     (*textureView)->SetPrivateData(WKPDID_D3DDebugObjectName,
-                        static_cast<UINT>(strnlen_s(pstrName, MAX_PATH)),
-                        pstrName
+                        static_cast<UINT>(result),
+                        strFileA
                     );
                 }
             }

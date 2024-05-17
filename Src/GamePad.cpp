@@ -422,7 +422,7 @@ bool GamePad::GetDevice(int player, _Outptr_ IGameInputDevice * *device) noexcep
 
 #ifdef _MSC_VER
 #pragma warning(push)
-#pragma warning(disable : 4471 5204 5256)
+#pragma warning(disable : 4471 5204 5256 6553)
 #endif
 #include <windows.gaming.input.h>
 #ifdef _MSC_VER
