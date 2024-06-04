@@ -6,6 +6,11 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### June 4, 2024
+* Renamed Internal namespace to ToolKitInternal for some conformance issues
+* CMake project updates
+* Retired VS 2019 projects for the UWP platform
+
 ### February 21, 2024
 * Project updates for GDK validation
 * CMake project updates and refactor including pkg-config file generation
