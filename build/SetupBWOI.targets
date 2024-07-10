@@ -16,18 +16,17 @@
       If any of these folders is not present then we assume that the VCTargets has not been setup
   -->
   <ItemGroup>
-    <BWOIVCFolders Include="$(ExtractedFolder)VCTargets150\" />
-    <BWOIVCFolders Include="$(ExtractedFolder)VCTargets150\Platforms\" />
-    <BWOIVCFolders Include="$(ExtractedFolder)VCTargets150\Platforms\gaming.desktop.x64" />
     <BWOIVCFolders Include="$(ExtractedFolder)VCTargets160\" />
     <BWOIVCFolders Include="$(ExtractedFolder)VCTargets160\Platforms\" />
     <BWOIVCFolders Include="$(ExtractedFolder)VCTargets160\Platforms\gaming.desktop.x64" />
+    <BWOIVCFolders Include="$(ExtractedFolder)VCTargets160\Platforms\gaming.xbox.xboxone.x64" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(VisualStudioVersion)' == '17.0'">
     <BWOIVCFolders Include="$(ExtractedFolder)VCTargets170\" />
     <BWOIVCFolders Include="$(ExtractedFolder)VCTargets170\Platforms\" />
     <BWOIVCFolders Include="$(ExtractedFolder)VCTargets170\Platforms\gaming.desktop.x64" />
+    <BWOIVCFolders Include="$(ExtractedFolder)VCTargets170\Platforms\gaming.xbox.xboxone.x64" />
   </ItemGroup>
 
   <!--
@@ -83,6 +82,8 @@ SixtyFourBit = (IntPtr.Size == 8) ? true : false;
         Text="GDKEditionNumber property is required" />
     <Error Condition="!Exists('$(ExtractedFolder)GDK\Microsoft.GDK.PC.$(GDKEditionNumber)')"
         Text="NuGet package Microsoft.GDK.PC.$(GDKEditionNumber) not found in $(ExtractedFolder)GDK" />
+    <Error Condition="!Exists('$(ExtractedFolder)GDK\Microsoft.GDK.Xbox.$(GDKEditionNumber)')"
+        Text="NuGet package Microsoft.GDK.Xbox.$(GDKEditionNumber) not found in $(ExtractedFolder)GDK" />
 
     <PropertyGroup>
       <_VSFolder Condition="'$(VisualStudioVersion)' == '17.0'">VS2022</_VSFolder>
@@ -93,16 +94,17 @@ SixtyFourBit = (IntPtr.Size == 8) ? true : false;
         Text="Only supports VS 2019 or VS 2022" />
 
     <!-- Set up files for v141 platform toolset projects -->
-    <ItemGroup>
+    <ItemGroup Condition="'$(GDKEditionNumber)' &lt; '241000'">
       <SourceVCTargetsFilesV150 Include="$(MSBuildExtensionsPath32)\Microsoft\VC\v150\**" />
     </ItemGroup>
 
-    <ItemGroup>
+    <ItemGroup Condition="'$(GDKEditionNumber)' &lt; '241000'">
       <GDKVCTargetsFilesV150 Include="$(ExtractedFolder)GDK\Microsoft.GDK.PC.$(GDKEditionNumber)\native\$(GDKEditionNumber)\GRDK\$(_VSFolder)\flatDeployment\MSBuild\Microsoft\VC\v150\**" />
+      <GDKVCTargetsFilesV150 Include="$(ExtractedFolder)GDK\Microsoft.GDK.Xbox.$(GDKEditionNumber)\native\$(GDKEditionNumber)\GXDK\$(_VSFolder)\flatDeployment\MSBuild\Microsoft\VC\v150\**" />
     </ItemGroup>
 
-    <Copy SkipUnchangedFiles="true" SourceFiles="@(SourceVCTargetsFilesV150)" DestinationFolder="$(ExtractedFolder)VCTargets150\%(RecursiveDir)/" />
-    <Copy SourceFiles="@(GDKVCTargetsFilesV150)" DestinationFolder="$(ExtractedFolder)VCTargets150\%(RecursiveDir)/" />
+    <Copy Condition="'$(GDKEditionNumber)' &lt; '241000'" SkipUnchangedFiles="true" SourceFiles="@(SourceVCTargetsFilesV150)" DestinationFolder="$(ExtractedFolder)VCTargets150\%(RecursiveDir)/" />
+    <Copy Condition="'$(GDKEditionNumber)' &lt; '241000'" SourceFiles="@(GDKVCTargetsFilesV150)" DestinationFolder="$(ExtractedFolder)VCTargets150\%(RecursiveDir)/" />
 
     <!-- Set up files for v142 platform toolset projects -->
     <ItemGroup>
@@ -111,6 +113,7 @@ SixtyFourBit = (IntPtr.Size == 8) ? true : false;
 
     <ItemGroup>
       <GDKVCTargetsFilesV160 Include="$(ExtractedFolder)GDK\Microsoft.GDK.PC.$(GDKEditionNumber)\native\$(GDKEditionNumber)\GRDK\$(_VSFolder)\flatDeployment\MSBuild\Microsoft\VC\v160\**" />
+      <GDKVCTargetsFilesV160 Include="$(ExtractedFolder)GDK\Microsoft.GDK.Xbox.$(GDKEditionNumber)\native\$(GDKEditionNumber)\GXDK\$(_VSFolder)\flatDeployment\MSBuild\Microsoft\VC\v160\**" />
     </ItemGroup>
 
     <Copy SkipUnchangedFiles="true" SourceFiles="@(SourceVCTargetsFilesV160)" DestinationFolder="$(ExtractedFolder)VCTargets160\%(RecursiveDir)/" />
@@ -123,6 +126,7 @@ SixtyFourBit = (IntPtr.Size == 8) ? true : false;
 
     <ItemGroup Condition="'$(VisualStudioVersion)' == '17.0'">
       <GDKVCTargetsFilesV170 Include="$(ExtractedFolder)GDK\Microsoft.GDK.PC.$(GDKEditionNumber)\native\$(GDKEditionNumber)\GRDK\$(_VSFolder)\flatDeployment\MSBuild\Microsoft\VC\v170\**" />
+      <GDKVCTargetsFilesV170 Include="$(ExtractedFolder)GDK\Microsoft.GDK.Xbox.$(GDKEditionNumber)\native\$(GDKEditionNumber)\GXDK\$(_VSFolder)\flatDeployment\MSBuild\Microsoft\VC\v170\**" />
     </ItemGroup>
 
     <Copy SkipUnchangedFiles="true" SourceFiles="@(SourceVCTargetsFilesV170)" DestinationFolder="$(ExtractedFolder)VCTargets170\%(RecursiveDir)/" />
@@ -132,4 +136,3 @@ SixtyFourBit = (IntPtr.Size == 8) ? true : false;
 
   <Target Name="SetupVCTargets" DependsOnTargets="_CheckMSBuild64;_ProbeForExtractedVCTargets;_CreateVCTargetsFolder" />
 </Project>
-

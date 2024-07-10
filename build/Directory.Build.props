@@ -7,7 +7,7 @@
 
     <_AlternativeVCTargetsPath170>$(ExtractedFolder)VCTargets170\</_AlternativeVCTargetsPath170>
     <_AlternativeVCTargetsPath160>$(ExtractedFolder)VCTargets160\</_AlternativeVCTargetsPath160>
-    <_AlternativeVCTargetsPath150>$(ExtractedFolder)VCTargets150\</_AlternativeVCTargetsPath150>
+    <_AlternativeVCTargetsPath150 Condition="'$(GDKEditionNumber)' != '' AND '$(GDKEditionNumber)' &lt; '241000'">$(ExtractedFolder)VCTargets150\</_AlternativeVCTargetsPath150>
 
     <!-- Workaround for VS bug -->
     <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
@@ -30,11 +30,28 @@
   <Import Condition="'$(GDKEnableBWOI)' == 'true' and $(Platform.Contains('x64')) and Exists('$(ExtractedFolder)GDK\Microsoft.GDK.PC.$(GDKEditionNumber)\build\Microsoft.GDK.PC.$(GDKEditionNumber).props')"
           Project="$(ExtractedFolder)GDK\Microsoft.GDK.PC.$(GDKEditionNumber)\build\Microsoft.GDK.PC.$(GDKEditionNumber).props" />
 
+  <Import Condition="'$(GDKEnableBWOI)' == 'true' and $(Platform.Contains('x64'))"
+          Project="$(ExtractedFolder)GDK\Microsoft.GDK.Xbox.$(GDKEditionNumber)\build\Microsoft.GDK.Xbox.$(GDKEditionNumber).props" />
+
   <!--
   ****************************************************************************************************
   VCTargetsPath redirection (VS 2019)
   ****************************************************************************************************
   -->
+  <PropertyGroup Condition="'$(Platform)' == 'Gaming.Xbox.XboxOne.x64' and '$(VisualStudioVersion)' == '16.0'">
+    <AdditionalVCTargetsPath>$(_AlternativeVCTargetsPath160)</AdditionalVCTargetsPath>
+    <DisableInstalledVCTargetsUse>true</DisableInstalledVCTargetsUse>
+    <VCTargetsPath15 Condition="'$(_AlternativeVCTargetsPath150)'!=''">$(_AlternativeVCTargetsPath150)</VCTargetsPath15>
+    <VCTargetsPath16>$(_AlternativeVCTargetsPath160)</VCTargetsPath16>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)' == 'Gaming.Xbox.Scarlett.x64' and '$(VisualStudioVersion)' == '16.0'">
+    <AdditionalVCTargetsPath>$(_AlternativeVCTargetsPath160)</AdditionalVCTargetsPath>
+    <DisableInstalledVCTargetsUse>true</DisableInstalledVCTargetsUse>
+    <VCTargetsPath15 Condition="'$(_AlternativeVCTargetsPath150)'!=''">$(_AlternativeVCTargetsPath150)</VCTargetsPath15>
+    <VCTargetsPath16>$(_AlternativeVCTargetsPath160)</VCTargetsPath16>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Platform)' == 'Gaming.Desktop.x64' and '$(VisualStudioVersion)' == '16.0'">
     <AdditionalVCTargetsPath>$(_AlternativeVCTargetsPath160)</AdditionalVCTargetsPath>
     <DisableInstalledVCTargetsUse>true</DisableInstalledVCTargetsUse>
@@ -47,6 +64,20 @@
   VCTargetsPath redirection (VS 2022)
   ****************************************************************************************************
   -->
+  <PropertyGroup Condition="'$(Platform)' == 'Gaming.Xbox.XboxOne.x64' and '$(VisualStudioVersion)' == '17.0'">
+    <DisableInstalledVCTargetsUse>true</DisableInstalledVCTargetsUse>
+    <VCTargetsPath15 Condition="'$(_AlternativeVCTargetsPath150)'!=''">$(_AlternativeVCTargetsPath150)</VCTargetsPath15>
+    <VCTargetsPath16 Condition="'$(_AlternativeVCTargetsPath160)'!=''">$(_AlternativeVCTargetsPath160)</VCTargetsPath16>
+    <VCTargetsPath17>$(_AlternativeVCTargetsPath170)</VCTargetsPath17>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)' == 'Gaming.Xbox.Scarlett.x64' and '$(VisualStudioVersion)' == '17.0'">
+    <DisableInstalledVCTargetsUse>true</DisableInstalledVCTargetsUse>
+    <VCTargetsPath15 Condition="'$(_AlternativeVCTargetsPath150)'!=''">$(_AlternativeVCTargetsPath150)</VCTargetsPath15>
+    <VCTargetsPath16 Condition="'$(_AlternativeVCTargetsPath160)'!=''">$(_AlternativeVCTargetsPath160)</VCTargetsPath16>
+    <VCTargetsPath17>$(_AlternativeVCTargetsPath170)</VCTargetsPath17>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Platform)' == 'Gaming.Desktop.x64' and '$(VisualStudioVersion)' == '17.0'">
     <DisableInstalledVCTargetsUse>true</DisableInstalledVCTargetsUse>
     <VCTargetsPath15 Condition="'$(_AlternativeVCTargetsPath150)'!=''">$(_AlternativeVCTargetsPath150)</VCTargetsPath15>
