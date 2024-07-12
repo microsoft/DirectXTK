@@ -7,7 +7,7 @@
 
     <_AlternativeVCTargetsPath170>$(ExtractedFolder)VCTargets170\</_AlternativeVCTargetsPath170>
     <_AlternativeVCTargetsPath160>$(ExtractedFolder)VCTargets160\</_AlternativeVCTargetsPath160>
-    <_AlternativeVCTargetsPath150>$(ExtractedFolder)VCTargets150\</_AlternativeVCTargetsPath150>
+    <_AlternativeVCTargetsPath150 Condition="'$(GDKEditionNumber)' != '' AND '$(GDKEditionNumber)' &lt; '241000'">$(ExtractedFolder)VCTargets150\</_AlternativeVCTargetsPath150>
 
     <!-- Workaround for VS bug -->
     <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
