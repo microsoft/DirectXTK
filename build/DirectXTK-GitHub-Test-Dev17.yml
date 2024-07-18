@@ -234,8 +234,8 @@ jobs:
       configuration: Debug
       msbuildArchitecture: x64
 
-- job: CMAKE_BUILD
-  displayName: 'CMake BUILD_TESTING=ON'
+- job: CMAKE_BUILD_X64
+  displayName: 'CMake for X64 BUILD_TESTING=ON'
   timeoutInMinutes: 60
   workspace:
     clean: all
@@ -320,16 +320,70 @@ jobs:
     inputs:
       cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --build out/build/x64-Release-Clang -v
+
+- job: CMAKE_BUILD_ARM64
+  displayName: 'CMake for ARM64 BUILD_TESTING=ON'
+  timeoutInMinutes: 60
+  workspace:
+    clean: all
+  steps:
+  - checkout: self
+    clean: true
+    fetchTags: false
   - task: DeleteFiles@1
+    displayName: Delete files from Tests
     inputs:
-      Contents: 'out'
+      SourceFolder: Tests
+      Contents: '**'
+      RemoveSourceFolder: true
+      RemoveDotFiles: true
   - task: CmdLine@2
-    displayName: Switch compiler to ARM64
+    displayName: Fetch Tests
+    inputs:
+      script: git clone --quiet --no-tags https://%GITHUB_PAT%@github.com/walbourn/directxtktest.git Tests
+      workingDirectory: $(Build.SourcesDirectory)
+      failOnStderr: true
+  - task: CmdLine@2
+    displayName: Setup environment for CMake to use VS
     inputs:
       script: |
         call "$(VC_PATH)\Auxiliary\Build\vcvarsamd64_arm64.bat"
+        echo ##vso[task.setvariable variable=WindowsSdkVerBinPath;]%WindowsSdkVerBinPath%
+        echo ##vso[task.prependpath]%VSINSTALLDIR%Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja
+        echo ##vso[task.prependpath]%VCINSTALLDIR%Tools\Llvm\x64\bin
+        echo ##vso[task.prependpath]%WindowsSdkBinPath%x64
+        echo ##vso[task.prependpath]%WindowsSdkVerBinPath%x64
+        echo ##vso[task.prependpath]%VCToolsInstallDir%bin\Hostx64\arm64
+        echo ##vso[task.setvariable variable=EXTERNAL_INCLUDE;]%EXTERNAL_INCLUDE%
+        echo ##vso[task.setvariable variable=INCLUDE;]%INCLUDE%
         echo ##vso[task.setvariable variable=LIB;]%LIB%
 
+  - task: CMake@1
+    displayName: CMake (MSVC; arm64-Debug) Config
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --preset=arm64-Debug-Win10
+  - task: CMake@1
+    displayName: CMake (MSVC; arm64-Debug) Build
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --build out/build/arm64-Debug-Win10 -v
+  - task: DeleteFiles@1
+    inputs:
+      Contents: 'out'
+  - task: CMake@1
+    displayName: CMake (MSVC; arm64-Release) Config
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --preset=arm64-Release-Win10
+  - task: CMake@1
+    displayName: CMake (MSVC; arm64-Release) Build
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --build out/build/arm64-Release-Win10 -v
+  - task: DeleteFiles@1
+    inputs:
+      Contents: 'out'
   - task: CMake@1
     displayName: CMake (clang/LLVM; arm64-Debug) Config
     inputs:
@@ -353,3 +407,29 @@ jobs:
     inputs:
       cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --build out/build/arm64-Release-Win10-Clang -v
+  - task: DeleteFiles@1
+    inputs:
+      Contents: 'out'
+  - task: CMake@1
+    displayName: CMake (MSVC; arm64ec-Debug) Config
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --preset=arm64ec-Debug-Win10
+  - task: CMake@1
+    displayName: CMake (MSVC; arm64ec-Debug) Build
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --build out/build/arm64ec-Debug-Win10 -v
+  - task: DeleteFiles@1
+    inputs:
+      Contents: 'out'
+  - task: CMake@1
+    displayName: CMake (MSVC; arm64ec-Release) Config
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --preset=arm64ec-Release-Win10
+  - task: CMake@1
+    displayName: CMake (MSVC; arm64ec-Release) Build
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --build out/build/arm64ec-Release-Win10 -v
