@@ -350,6 +350,7 @@ jobs:
         call "$(VC_PATH)\Auxiliary\Build\vcvarsamd64_arm64.bat"
         echo ##vso[task.setvariable variable=WindowsSdkVerBinPath;]%WindowsSdkVerBinPath%
         echo ##vso[task.prependpath]%VSINSTALLDIR%Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja
+        echo ##vso[task.prependpath]%VCToolsInstallDir%\bin\Hostx64\arm64
         echo ##vso[task.prependpath]%VCINSTALLDIR%Tools\Llvm\x64\bin
         echo ##vso[task.prependpath]%WindowsSdkBinPath%x64
         echo ##vso[task.prependpath]%WindowsSdkVerBinPath%x64
