@@ -1,0 +1,89 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# http://go.microsoft.com/fwlink/?LinkId=248929
+
+name: 'CMake (Windows)'
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+    paths-ignore:
+      - '*.md'
+      - LICENSE
+      - '.nuget/*'
+      - build/*.cmd
+      - build/*.json
+      - build/*.props      
+      - build/*.ps1
+      - build/*.targets
+      - build/*.yml
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        os: [windows-2019, windows-2022]
+        build_type: [x64-Debug, x64-Release, x64-Debug-Clang, x64-Release-Clang]
+        arch: [amd64]
+        include:
+          - os: windows-2019
+            build_type: x86-Debug
+            arch: amd64_x86
+          - os: windows-2019
+            build_type: x86-Release
+            arch: amd64_x86
+          - os: windows-2019
+            build_type: x86-Debug-Clang
+            arch: amd64_x86
+          - os: windows-2019
+            build_type: x86-Release-Clang
+            arch: amd64_x86
+          - os: windows-2022
+            build_type: x86-Debug
+            arch: amd64_x86
+          - os: windows-2022
+            build_type: x86-Release
+            arch: amd64_x86
+          - os: windows-2022
+            build_type: x86-Debug-Clang
+            arch: amd64_x86
+          - os: windows-2022
+            build_type: x86-Release-Clang
+            arch: amd64_x86
+          - os: windows-2022
+            build_type: arm64-Debug-Win10
+            arch: amd64_arm64
+          - os: windows-2022
+            build_type: arm64-Release-Win10
+            arch: amd64_arm64
+          - os: windows-2022
+            build_type: arm64ec-Debug-Win10
+            arch: amd64_arm64
+          - os: windows-2022
+            build_type: arm64ec-Release-Win10
+            arch: amd64_arm64
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: 'Install Ninja'
+      run: choco install ninja
+
+    - uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: ${{ matrix.arch }}
+
+    - name: 'Configure CMake'
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: cmake --preset=${{ matrix.build_type }}
+
+    - name: 'Build'
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: cmake --build out\build\${{ matrix.build_type }}
