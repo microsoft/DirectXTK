@@ -1,0 +1,61 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# http://go.microsoft.com/fwlink/?LinkId=248929
+
+name: "CodeQL"
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+    paths-ignore:
+      - '*.md'
+      - LICENSE
+      - '.nuget/*'
+      - build/*.cmd
+      - build/*.json
+      - build/*.props
+      - build/*.ps1
+      - build/*.targets
+      - build/*.yml
+  schedule:
+    - cron: '31 2 * * 5'
+
+jobs:
+  analyze:
+    name: Analyze (C/C++)
+    runs-on: windows-latest
+    timeout-minutes: 360
+    permissions:
+      security-events: write
+      packages: read
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: 'Install Ninja'
+      run: choco install ninja
+
+    - uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: c-cpp
+        build-mode: manual
+
+    - name: 'Configure CMake'
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: cmake --preset=x64-Debug
+
+    - name: 'Build'
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: cmake --build out\build\x64-Debug
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:c-cpp"
