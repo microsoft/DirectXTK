@@ -16,7 +16,7 @@ on:
       - '.nuget/*'
       - build/*.cmd
       - build/*.json
-      - build/*.props      
+      - build/*.props
       - build/*.ps1
       - build/*.targets
       - build/*.yml

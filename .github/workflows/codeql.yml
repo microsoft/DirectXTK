@@ -48,11 +48,11 @@ jobs:
         build-mode: manual
 
     - name: 'Configure CMake'
-      working-directory: ${{env.GITHUB_WORKSPACE}}
+      working-directory: ${{ github.workspace }}
       run: cmake --preset=x64-Debug
 
     - name: 'Build'
-      working-directory: ${{env.GITHUB_WORKSPACE}}
+      working-directory: ${{ github.workspace }}
       run: cmake --build out\build\x64-Debug
 
     - name: Perform CodeQL Analysis
