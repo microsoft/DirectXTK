@@ -287,12 +287,12 @@
     { "name": "x64-Fuzzing"  , "description": "MSVC for x64 (Release) with ASan", "inherits": [ "base", "x64", "Release", "MSVC", "Win10", "Fuzzing" ] }
   ],
   "testPresets": [
-    { "name": "x64-Debug"    , "configurePreset": "x64-Debug" },
-    { "name": "x64-Release"  , "configurePreset": "x64-Release" },
-    { "name": "x86-Debug"    , "configurePreset": "x86-Debug" },
-    { "name": "x86-Release"  , "configurePreset": "x86-Release" },
-    { "name": "arm64-Debug"  , "configurePreset": "arm64-Debug-Win10" },
-    { "name": "arm64-Release", "configurePreset": "arm64-Release-Win10" },
+    { "name": "x64-Debug"      , "configurePreset": "x64-Debug" },
+    { "name": "x64-Release"    , "configurePreset": "x64-Release" },
+    { "name": "x86-Debug"      , "configurePreset": "x86-Debug" },
+    { "name": "x86-Release"    , "configurePreset": "x86-Release" },
+    { "name": "arm64-Debug"    , "configurePreset": "arm64-Debug-Win10" },
+    { "name": "arm64-Release"  , "configurePreset": "arm64-Release-Win10" },
     { "name": "arm64ec-Debug"  , "configurePreset": "arm64ec-Debug-Win10" },
     { "name": "arm64ec-Release", "configurePreset": "arm64ec-Release-Win10" },
 
