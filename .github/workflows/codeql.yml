@@ -25,18 +25,24 @@ on:
 
 jobs:
   analyze:
-    name: Analyze (C/C++)
+    name: Analyze (${{ matrix.language }})
     runs-on: windows-latest
     timeout-minutes: 360
     permissions:
       security-events: write
       packages: read
 
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [c-cpp, csharp]
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: 'Install Ninja'
+    - if: matrix.language == 'c-cpp'
+      name: 'Install Ninja'
       run: choco install ninja
 
     - uses: ilammy/msvc-dev-cmd@v1
@@ -44,18 +50,25 @@ jobs:
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v3
       with:
-        languages: c-cpp
+        languages: ${{ matrix.language }}
         build-mode: manual
 
-    - name: 'Configure CMake'
+    - if: matrix.language == 'c-cpp'
+      name: 'Configure CMake (C/C++)'
       working-directory: ${{ github.workspace }}
       run: cmake --preset=x64-Debug
 
-    - name: 'Build'
+    - if: matrix.language == 'c-cpp'
+      name: 'Build (C/C++)'
       working-directory: ${{ github.workspace }}
       run: cmake --build out\build\x64-Debug
+
+    - if: matrix.language == 'csharp'
+      name: 'Build (C#)'
+      working-directory: ./MakeSpriteFont
+      run: msbuild MakeSpriteFont.csproj /p:Configuration=Debug /p:Platform=AnyCPU
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
       with:
-        category: "/language:c-cpp"
+        category: "/language:${{ matrix.language }}"
