@@ -12,8 +12,8 @@ schedules:
     include:
     - main
 
+# GitHub Actions handles test suite for CI/PR
 trigger: none
-
 pr:
   branches:
     include:
