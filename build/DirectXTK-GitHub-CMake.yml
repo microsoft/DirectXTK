@@ -3,7 +3,7 @@
 #
 # http://go.microsoft.com/fwlink/?LinkId=248929
 
-# Builds the library using CMake.
+# Builds the library using CMake with VS Generator (GitHub Actions covers Ninja).
 
 schedules:
 - cron: "0 4 * * *"

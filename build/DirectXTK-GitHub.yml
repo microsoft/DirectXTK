@@ -12,44 +12,15 @@ schedules:
     include:
     - main
 
-trigger:
-  branches:
-    include:
-    - main
-  paths:
-    exclude:
-    - '*.md'
-    - LICENSE
-    - CMake*
-    - '.github/*'
-    - '.nuget/*'
-    - build/*.cmake
-    - build/*.cmd
-    - build/*.in
-    - build/*.json
-    - build/*.props
-    - build/*.ps1
-    - build/*.targets
-
+# GitHub Actions handles MSBuild for CI/PR
+trigger: none
 pr:
   branches:
     include:
     - main
   paths:
-    exclude:
-    - '*.md'
-    - LICENSE
-    - CMake*
-    - '.github/*'
-    - '.nuget/*'
-    - build/*.cmake
-    - build/*.cmd
-    - build/*.in
-    - build/*.json
-    - build/*.props
-    - build/*.ps1
-    - build/*.targets
-  drafts: false
+    include:
+    - build/DirectXTK-GitHub.yml
 
 resources:
   repositories:
