@@ -58,16 +58,16 @@ jobs:
             build_type: x86-Release-Clang
             arch: amd64_x86
           - os: windows-2022
-            build_type: arm64-Debug-Win10
+            build_type: arm64-Debug
             arch: amd64_arm64
           - os: windows-2022
-            build_type: arm64-Release-Win10
+            build_type: arm64-Release
             arch: amd64_arm64
           - os: windows-2022
-            build_type: arm64ec-Debug-Win10
+            build_type: arm64ec-Debug
             arch: amd64_arm64
           - os: windows-2022
-            build_type: arm64ec-Release-Win10
+            build_type: arm64ec-Release
             arch: amd64_arm64
 
     steps:
