@@ -362,12 +362,12 @@ jobs:
     displayName: CMake (MSVC; arm64-Debug) Config
     inputs:
       cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --preset=arm64-Debug-Win10
+      cmakeArgs: --preset=arm64-Debug
   - task: CMake@1
     displayName: CMake (MSVC; arm64-Debug) Build
     inputs:
       cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --build out/build/arm64-Debug-Win10 -v
+      cmakeArgs: --build out/build/arm64-Debug -v
   - task: DeleteFiles@1
     inputs:
       Contents: 'out'
@@ -375,12 +375,12 @@ jobs:
     displayName: CMake (MSVC; arm64-Release) Config
     inputs:
       cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --preset=arm64-Release-Win10
+      cmakeArgs: --preset=arm64-Release
   - task: CMake@1
     displayName: CMake (MSVC; arm64-Release) Build
     inputs:
       cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --build out/build/arm64-Release-Win10 -v
+      cmakeArgs: --build out/build/arm64-Release -v
   - task: DeleteFiles@1
     inputs:
       Contents: 'out'
@@ -388,12 +388,12 @@ jobs:
     displayName: CMake (clang/LLVM; arm64-Debug) Config
     inputs:
       cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --preset=arm64-Debug-Win10-Clang
+      cmakeArgs: --preset=arm64-Debug-Clang
   - task: CMake@1
     displayName: CMake (clang/LLVM; arm64-Debug) Build
     inputs:
       cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --build out/build/arm64-Debug-Win10-Clang -v
+      cmakeArgs: --build out/build/arm64-Debug-Clang -v
   - task: DeleteFiles@1
     inputs:
       Contents: 'out'
@@ -401,12 +401,12 @@ jobs:
     displayName: CMake (clang/LLVM; arm64-Release) Config
     inputs:
       cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --preset=arm64-Release-Win10-Clang
+      cmakeArgs: --preset=arm64-Release-Clang
   - task: CMake@1
     displayName: CMake (clang/LLVM; arm64-Release) Build
     inputs:
       cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --build out/build/arm64-Release-Win10-Clang -v
+      cmakeArgs: --build out/build/arm64-Release-Clang -v
   - task: DeleteFiles@1
     inputs:
       Contents: 'out'
@@ -414,12 +414,12 @@ jobs:
     displayName: CMake (MSVC; arm64ec-Debug) Config
     inputs:
       cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --preset=arm64ec-Debug-Win10
+      cmakeArgs: --preset=arm64ec-Debug
   - task: CMake@1
     displayName: CMake (MSVC; arm64ec-Debug) Build
     inputs:
       cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --build out/build/arm64ec-Debug-Win10 -v
+      cmakeArgs: --build out/build/arm64ec-Debug -v
   - task: DeleteFiles@1
     inputs:
       Contents: 'out'
@@ -427,9 +427,9 @@ jobs:
     displayName: CMake (MSVC; arm64ec-Release) Config
     inputs:
       cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --preset=arm64ec-Release-Win10
+      cmakeArgs: --preset=arm64ec-Release
   - task: CMake@1
     displayName: CMake (MSVC; arm64ec-Release) Build
     inputs:
       cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --build out/build/arm64ec-Release-Win10 -v
+      cmakeArgs: --build out/build/arm64ec-Release -v
