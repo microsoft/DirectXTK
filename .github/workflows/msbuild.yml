@@ -1,0 +1,72 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# http://go.microsoft.com/fwlink/?LinkId=248929
+
+name: MSBuild
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+    paths-ignore:
+      - '*.md'
+      - LICENSE
+      - '.nuget/*'
+      - build/*
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-${{ matrix.vs }}
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        vs: [2019, 2022]
+        build_type: [Debug, Release]
+        platform: [x86, x64, ARM64]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v2
+
+    - if: matrix.platform != 'ARM64'
+      name: Build
+      working-directory: ${{ github.workspace }}
+      run: msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=${{ matrix.platform }} ./DirectXTK_Desktop_${{ matrix.vs }}.sln
+
+    - name: 'Build (Windows 10)'
+      working-directory: ${{ github.workspace }}
+      run: msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=${{ matrix.platform }} ./DirectXTK_Desktop_${{ matrix.vs }}_Win10.sln
+
+    - if: matrix.platform != 'ARM64'
+      name: Restore NuGet packages
+      working-directory: ${{ github.workspace }}
+      run: nuget restore ./DirectXTK_Desktop_${{ matrix.vs }}_Win7.sln
+
+    - if: matrix.platform != 'ARM64'
+      name: 'Build (Windows 7)'
+      working-directory: ${{ github.workspace }}
+      run: msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=${{ matrix.platform }} ./DirectXTK_Desktop_${{ matrix.vs }}_Win7.sln
+
+    - if: matrix.vs == '2022'
+      name: 'Build (UWP)'
+      working-directory: ${{ github.workspace }}
+      run: msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=${{ matrix.platform }} ./DirectXTK_Windows10_2022.sln
+
+    - if: matrix.platform != 'ARM64'
+      name: 'Build (Spectre)'
+      working-directory: ${{ github.workspace }}
+      run: msbuild /m /p:SpectreMitigation=Spectre /p:Configuration=${{ matrix.build_type }} /p:Platform=${{ matrix.platform }} ./DirectXTK_Desktop_${{ matrix.vs }}.sln
+
+    - if: matrix.platform != 'ARM64'
+      name: 'Build (Spectre Windows 10)'
+      working-directory: ${{ github.workspace }}
+      run: msbuild /m /p:SpectreMitigation=Spectre /p:Configuration=${{ matrix.build_type }} /p:Platform=${{ matrix.platform }} ./DirectXTK_Desktop_${{ matrix.vs }}_Win10.sln

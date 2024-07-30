@@ -3,7 +3,7 @@
 #
 # http://go.microsoft.com/fwlink/?LinkId=248929
 
-# Builds the library using CMake.
+# Builds the library using CMake with VS Generator (GitHub Actions covers Ninja).
 
 schedules:
 - cron: "0 4 * * *"
@@ -20,6 +20,7 @@ trigger:
     exclude:
     - '*.md'
     - LICENSE
+    - '.github/*'
     - '.nuget/*'
     - build/*.cmd
     - build/*.json
@@ -35,6 +36,7 @@ pr:
     exclude:
     - '*.md'
     - LICENSE
+    - '.github/*'
     - '.nuget/*'
     - build/*.cmd
     - build/*.json
