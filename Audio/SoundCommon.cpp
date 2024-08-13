@@ -997,8 +997,11 @@ bool AudioEmitter::IsValid() const
     if (ChannelCount == 0 || ChannelCount > XAUDIO2_MAX_AUDIO_CHANNELS)
         return false;
 
-    if (pChannelAzimuths)
+    if (ChannelCount > 1)
     {
+        if (!pChannelAzimuths)
+            return false;
+
         for (uint32_t j = 0; j < ChannelCount; ++j)
         {
             if (pChannelAzimuths[j] < 0.f || pChannelAzimuths[j] > X3DAUDIO_2PI)
