@@ -869,6 +869,33 @@ namespace
 
         return true;
     }
+
+    inline bool IsValid(const X3DAUDIO_DISTANCE_CURVE& curve) noexcept
+    {
+        // These match the validation ranges in X3DAudio.
+        if (!curve.pPoints)
+            return false;
+
+        if (curve.PointCount < 2)
+            return false;
+
+        if (curve.pPoints[0].Distance != 0.f)
+            return false;
+
+        if (curve.pPoints[curve.PointCount - 1].Distance != 1.f)
+            return false;
+
+        for (uint32_t j = 0; j < curve.PointCount; ++j)
+        {
+            if (curve.pPoints[j].Distance < 0.f || curve.pPoints[j].Distance > 1.f)
+                return false;
+
+            if (!std::isfinite(curve.pPoints[j].DSPSetting))
+                return false;
+        }
+
+        return true;
+    }
 }
 
 void AudioListener::SetCone(const X3DAUDIO_CONE& listenerCone)
@@ -880,6 +907,44 @@ void AudioListener::SetCone(const X3DAUDIO_CONE& listenerCone)
     pCone = &ListenerCone;
 }
 
+bool AudioListener::IsValid() const
+{
+    if (!std::isfinite(OrientFront.x))
+        return false;
+    if (!std::isfinite(OrientFront.y))
+        return false;
+    if (!std::isfinite(OrientFront.z))
+        return false;
+
+    if (!std::isfinite(OrientTop.x))
+        return false;
+    if (!std::isfinite(OrientTop.y))
+        return false;
+    if (!std::isfinite(OrientTop.z))
+        return false;
+
+    if (!std::isfinite(Position.x))
+        return false;
+    if (!std::isfinite(Position.y))
+        return false;
+    if (!std::isfinite(Position.z))
+
+    if (!std::isfinite(Velocity.x))
+        return false;
+    if (!std::isfinite(Velocity.y))
+        return false;
+    if (!std::isfinite(Velocity.z))
+        return false;
+
+    if (pCone)
+    {
+        if (!::IsValid(*pCone))
+            return false;
+    }
+
+    return true;
+}
+
 void AudioEmitter::SetCone(const X3DAUDIO_CONE& emitterCone)
 {
     if (!::IsValid(emitterCone))
@@ -887,6 +952,98 @@ void AudioEmitter::SetCone(const X3DAUDIO_CONE& emitterCone)
 
     EmitterCone = emitterCone;
     pCone = &EmitterCone;
+}
+
+bool AudioEmitter::IsValid() const
+{
+    if (!std::isfinite(OrientFront.x))
+        return false;
+    if (!std::isfinite(OrientFront.y))
+        return false;
+    if (!std::isfinite(OrientFront.z))
+        return false;
+
+    if (!std::isfinite(OrientTop.x))
+        return false;
+    if (!std::isfinite(OrientTop.y))
+        return false;
+    if (!std::isfinite(OrientTop.z))
+        return false;
+
+    if (!std::isfinite(Position.x))
+        return false;
+    if (!std::isfinite(Position.y))
+        return false;
+    if (!std::isfinite(Position.z))
+
+    if (!std::isfinite(Velocity.x))
+        return false;
+    if (!std::isfinite(Velocity.y))
+        return false;
+    if (!std::isfinite(Velocity.z))
+        return false;
+
+    if (pCone)
+    {
+        if (!::IsValid(*pCone))
+            return false;
+    }
+
+    if (!std::isfinite(InnerRadius))
+        return false;
+    if (!std::isfinite(InnerRadiusAngle))
+        return false;
+
+    if ((ChannelCount == 0) || (ChannelCount > XAUDIO2_MAX_AUDIO_CHANNELS))
+        return false;
+
+    if (pChannelAzimuths)
+    {
+        for (uint32_t j = 0; j < ChannelCount; ++j)
+        {
+            if (!std::isfinite(pChannelAzimuths[j]))
+                return false;
+        }
+    }
+
+    if (!std::isfinite(ChannelRadius))
+        return false;
+    if (!std::isfinite(CurveDistanceScaler))
+        return false;
+    if (!std::isfinite(DopplerScaler))
+        return false;
+
+    if (pVolumeCurve)
+    {
+        if (!::IsValid(*pVolumeCurve))
+            return false;
+    }
+
+    if (pLFECurve)
+    {
+        if (!::IsValid(*pLFECurve))
+            return false;
+    }
+
+    if (pLPFDirectCurve)
+    {
+        if (!::IsValid(*pLPFDirectCurve))
+            return false;
+    }
+
+    if (pLPFReverbCurve)
+    {
+        if (!::IsValid(*pLPFReverbCurve))
+            return false;
+    }
+
+    if (pReverbCurve)
+    {
+        if (!::IsValid(*pReverbCurve))
+            return false;
+    }
+
+    return true;
 }
 
 namespace
