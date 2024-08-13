@@ -994,14 +994,14 @@ bool AudioEmitter::IsValid() const
     if (!std::isfinite(InnerRadiusAngle))
         return false;
 
-    if ((ChannelCount == 0) || (ChannelCount > XAUDIO2_MAX_AUDIO_CHANNELS))
+    if (ChannelCount == 0 || ChannelCount > XAUDIO2_MAX_AUDIO_CHANNELS)
         return false;
 
     if (pChannelAzimuths)
     {
         for (uint32_t j = 0; j < ChannelCount; ++j)
         {
-            if (!std::isfinite(pChannelAzimuths[j]))
+            if (pChannelAzimuths[j] < 0.f || pChannelAzimuths[j] > X3DAUDIO_2PI)
                 return false;
         }
     }
