@@ -41,31 +41,6 @@ namespace
         XALLOC_ALIGNMENT_64K);
 
     //--------------------------------------------------------------------------------------
-    // DDS file structure definitions
-    //
-    // See DDS.h in the 'Texconv' sample and the 'DirectXTex' library
-    //--------------------------------------------------------------------------------------
-    #pragma pack(push,1)
-
-    struct DDS_HEADER_XBOX
-        // Must match structure defined in xtexconv tool
-    {
-        DXGI_FORMAT dxgiFormat;
-        uint32_t    resourceDimension;
-        uint32_t    miscFlag; // see DDS_RESOURCE_MISC_FLAG
-        uint32_t    arraySize;
-        uint32_t    miscFlags2; // see DDS_MISC_FLAGS2
-        uint32_t    tileMode; // see XG_TILE_MODE
-        uint32_t    baseAlignment;
-        uint32_t    dataSize;
-        uint32_t    xdkVer; // matching _XDK_VER
-    };
-
-    static_assert(sizeof(DDS_HEADER_XBOX) == 36, "DDS XBOX Header size mismatch");
-
-    #pragma pack(pop)
-
-    //--------------------------------------------------------------------------------------
     HRESULT LoadTextureDataFromFile(_In_z_ const wchar_t* fileName,
         std::unique_ptr<uint8_t[]>& ddsData,
         DDS_HEADER** header,
@@ -105,7 +80,7 @@ namespace
         }
 
         // Need at least enough data to fill the header and magic number to be a valid DDS
-        if (FileSize.LowPart < (sizeof(DDS_HEADER) + sizeof(uint32_t)))
+        if (FileSize.LowPart < DDS_MIN_HEADER_SIZE)
         {
             return E_FAIL;
         }
@@ -159,14 +134,14 @@ namespace
         }
 
         // Must be long enough for both headers and magic value
-        if (FileSize.LowPart < (sizeof(DDS_HEADER) + sizeof(uint32_t) + sizeof(DDS_HEADER_XBOX)))
+        if (FileSize.LowPart < DDS_XBOX_HEADER_SIZE)
         {
             return E_FAIL;
         }
 
         // setup the pointers in the process request
         *header = hdr;
-        auto offset = sizeof(uint32_t) + sizeof(DDS_HEADER) + sizeof(DDS_HEADER_XBOX);
+        auto offset = DDS_XBOX_HEADER_SIZE;
         *bitData = ddsData.get() + offset;
         *bitSize = FileSize.LowPart - offset;
 
@@ -643,7 +618,7 @@ HRESULT Xbox::CreateDDSTextureFromMemory(
     }
 
     // Validate DDS file in memory
-    if (ddsDataSize < (sizeof(uint32_t) + sizeof(DDS_HEADER)))
+    if (ddsDataSize < DDS_MIN_HEADER_SIZE)
     {
         return E_FAIL;
     }
@@ -654,7 +629,7 @@ HRESULT Xbox::CreateDDSTextureFromMemory(
         return E_FAIL;
     }
 
-    auto header = reinterpret_cast<const DDS_HEADER*>( ddsData + sizeof( uint32_t ) );
+    auto header = reinterpret_cast<const DDS_HEADER*>(ddsData + sizeof(uint32_t));
 
     // Verify header to validate DDS file
     if (header->size != sizeof(DDS_HEADER) ||
@@ -672,12 +647,12 @@ HRESULT Xbox::CreateDDSTextureFromMemory(
     }
 
     // Must be long enough for both headers and magic value
-    if (ddsDataSize < (sizeof(DDS_HEADER) + sizeof(uint32_t) + sizeof(DDS_HEADER_XBOX)))
+    if (ddsDataSize < DDS_XBOX_HEADER_SIZE)
     {
         return E_FAIL;
     }
 
-    auto offset = sizeof( uint32_t ) + sizeof( DDS_HEADER ) + sizeof( DDS_HEADER_XBOX );
+    auto offset = DDS_XBOX_HEADER_SIZE;
 
     HRESULT hr = CreateTextureFromDDS( d3dDevice, header,
                                        ddsData + offset, ddsDataSize - offset, forceSRGB,

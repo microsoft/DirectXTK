@@ -39,17 +39,18 @@ namespace DirectX
         uint32_t    ABitMask;
     };
 
-#define DDS_FOURCC      0x00000004  // DDPF_FOURCC
-#define DDS_RGB         0x00000040  // DDPF_RGB
-#define DDS_RGBA        0x00000041  // DDPF_RGB | DDPF_ALPHAPIXELS
-#define DDS_LUMINANCE   0x00020000  // DDPF_LUMINANCE
-#define DDS_LUMINANCEA  0x00020001  // DDPF_LUMINANCE | DDPF_ALPHAPIXELS
-#define DDS_ALPHAPIXELS 0x00000001  // DDPF_ALPHAPIXELS
-#define DDS_ALPHA       0x00000002  // DDPF_ALPHA
-#define DDS_PAL8        0x00000020  // DDPF_PALETTEINDEXED8
-#define DDS_PAL8A       0x00000021  // DDPF_PALETTEINDEXED8 | DDPF_ALPHAPIXELS
-#define DDS_BUMPDUDV    0x00080000  // DDPF_BUMPDUDV
-// DDS_BUMPLUMINANCE 0x00040000
+#define DDS_FOURCC        0x00000004  // DDPF_FOURCC
+#define DDS_RGB           0x00000040  // DDPF_RGB
+#define DDS_RGBA          0x00000041  // DDPF_RGB | DDPF_ALPHAPIXELS
+#define DDS_LUMINANCE     0x00020000  // DDPF_LUMINANCE
+#define DDS_LUMINANCEA    0x00020001  // DDPF_LUMINANCE | DDPF_ALPHAPIXELS
+#define DDS_ALPHAPIXELS   0x00000001  // DDPF_ALPHAPIXELS
+#define DDS_ALPHA         0x00000002  // DDPF_ALPHA
+#define DDS_PAL8          0x00000020  // DDPF_PALETTEINDEXED8
+#define DDS_PAL8A         0x00000021  // DDPF_PALETTEINDEXED8 | DDPF_ALPHAPIXELS
+#define DDS_BUMPLUMINANCE 0x00040000  // DDPF_BUMPLUMINANCE
+#define DDS_BUMPDUDV      0x00080000  // DDPF_BUMPDUDV
+#define DDS_BUMPDUDVA     0x00080001  // DDPF_BUMPDUDV | DDPF_ALPHAPIXELS
 
 #ifndef MAKEFOURCC
 #define MAKEFOURCC(ch0, ch1, ch2, ch3) \
@@ -187,10 +188,13 @@ namespace DirectX
     DDSGLOBALCONST DDS_PIXELFORMAT DDSPF_A2B10G10R10 =
     { sizeof(DDS_PIXELFORMAT), DDS_RGBA, 0, 32, 0x3ff00000, 0x000ffc00, 0x000003ff, 0xc0000000 };
 
-// We do not support the following legacy Direct3D 9 formats:
-// DDSPF_A2W10V10U10 = { sizeof(DDS_PIXELFORMAT), DDS_BUMPDUDV, 0, 32, 0x3ff00000, 0x000ffc00, 0x000003ff, 0xc0000000 };
-// DDSPF_L6V5U5 = { sizeof(DDS_PIXELFORMAT), DDS_BUMPLUMINANCE, 0, 16, 0x001f, 0x03e0, 0xfc00, 0 };
-// DDSPF_X8L8V8U8 = { sizeof(DDS_PIXELFORMAT), DDS_BUMPLUMINANCE, 0, 32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0 };
+// The following legacy Direct3D 9 formats use 'mixed' signed & unsigned channels so requires special handling
+    DDSGLOBALCONST DDS_PIXELFORMAT DDSPF_A2W10V10U10 =
+    { sizeof(DDS_PIXELFORMAT), DDS_BUMPDUDVA, 0, 32, 0x3ff00000, 0x000ffc00, 0x000003ff, 0xc0000000 };
+    DDSGLOBALCONST DDS_PIXELFORMAT DDSPF_L6V5U5 =
+    { sizeof(DDS_PIXELFORMAT), DDS_BUMPLUMINANCE, 0, 16, 0x001f, 0x03e0, 0xfc00, 0 };
+    DDSGLOBALCONST DDS_PIXELFORMAT DDSPF_X8L8V8U8 =
+    { sizeof(DDS_PIXELFORMAT), DDS_BUMPLUMINANCE, 0, 32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0 };
 
 // This indicates the DDS_HEADER_DXT10 extension is present (the format is in dxgiFormat)
     DDSGLOBALCONST DDS_PIXELFORMAT DDSPF_DX10 =
@@ -288,4 +292,39 @@ namespace DirectX
     static_assert(sizeof(DDS_HEADER) == 124, "DDS Header size mismatch");
     static_assert(sizeof(DDS_HEADER_DXT10) == 20, "DDS DX10 Extended Header size mismatch");
 
+    constexpr size_t DDS_MIN_HEADER_SIZE = sizeof(uint32_t) + sizeof(DDS_HEADER);
+    constexpr size_t DDS_DX10_HEADER_SIZE = sizeof(uint32_t) + sizeof(DDS_HEADER) + sizeof(DDS_HEADER_DXT10);
+    static_assert(DDS_DX10_HEADER_SIZE > DDS_MIN_HEADER_SIZE, "DDS DX10 Header should be larger than standard header");
+
+} // namespace
+
+namespace Xbox
+{
+    DDSGLOBALCONST DirectX::DDS_PIXELFORMAT DDSPF_XBOX =
+    { sizeof(DirectX::DDS_PIXELFORMAT), DDS_FOURCC, MAKEFOURCC('X','B','O','X'), 0, 0, 0, 0, 0 };
+
+#pragma pack(push,1)
+
+    struct DDS_HEADER_XBOX
+        // Must match structure in XboxDDSTextureLoader module
+    {
+        DXGI_FORMAT dxgiFormat;
+        uint32_t    resourceDimension;
+        uint32_t    miscFlag; // see DDS_RESOURCE_MISC_FLAG
+        uint32_t    arraySize;
+        uint32_t    miscFlags2; // see DDS_MISC_FLAGS2
+        uint32_t    tileMode; // see XG_TILE_MODE / XG_SWIZZLE_MODE
+        uint32_t    baseAlignment;
+        uint32_t    dataSize;
+        uint32_t    xdkVer; // matching _XDK_VER / _GXDK_VER
+    };
+
+#pragma pack(pop)
+
+    static_assert(sizeof(DDS_HEADER_XBOX) == 36, "DDS XBOX Header size mismatch");
+    static_assert(sizeof(DDS_HEADER_XBOX) > sizeof(DirectX::DDS_HEADER_DXT10), "DDS XBOX Header should be larger than DX10 header");
+
+    constexpr size_t DDS_XBOX_HEADER_SIZE = sizeof(uint32_t) + sizeof(DirectX::DDS_HEADER) + sizeof(DDS_HEADER_XBOX);
+
+    constexpr uint32_t XBOX_TILEMODE_SCARLETT = 0x1000000;
 } // namespace

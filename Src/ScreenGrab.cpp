@@ -204,13 +204,12 @@ HRESULT DirectX::SaveDDSTextureToFile(
     auto_delete_file delonfail(hFile.get());
 
     // Setup header
-    constexpr size_t MAX_HEADER_SIZE = sizeof(uint32_t) + sizeof(DDS_HEADER) + sizeof(DDS_HEADER_DXT10);
-    uint8_t fileHeader[MAX_HEADER_SIZE] = {};
+    uint8_t fileHeader[DDS_DX10_HEADER_SIZE] = {};
 
     *reinterpret_cast<uint32_t*>(&fileHeader[0]) = DDS_MAGIC;
 
     auto header = reinterpret_cast<DDS_HEADER*>(&fileHeader[0] + sizeof(uint32_t));
-    size_t headerSize = sizeof(uint32_t) + sizeof(DDS_HEADER);
+    size_t headerSize = DDS_MIN_HEADER_SIZE;
     header->size = sizeof(DDS_HEADER);
     header->flags = DDS_HEADER_FLAGS_TEXTURE | DDS_HEADER_FLAGS_MIPMAP;
     header->height = desc.Height;
@@ -268,7 +267,7 @@ HRESULT DirectX::SaveDDSTextureToFile(
         memcpy(&header->ddspf, &DDSPF_DX10, sizeof(DDS_PIXELFORMAT));
 
         headerSize += sizeof(DDS_HEADER_DXT10);
-        extHeader = reinterpret_cast<DDS_HEADER_DXT10*>(fileHeader + sizeof(uint32_t) + sizeof(DDS_HEADER));
+        extHeader = reinterpret_cast<DDS_HEADER_DXT10*>(fileHeader + DDS_MIN_HEADER_SIZE);
         extHeader->dxgiFormat = desc.Format;
         extHeader->resourceDimension = D3D11_RESOURCE_DIMENSION_TEXTURE2D;
         extHeader->arraySize = 1;
