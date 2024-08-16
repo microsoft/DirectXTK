@@ -92,9 +92,18 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
       list(APPEND COMPILER_SWITCHES $<$<NOT:$<CONFIG:Debug>>:/Gy /Gw>)
     endif()
 
-    if(OpenMP_CXX_FOUND)
+    if(OpenMP_CXX_FOUND
+       OR (XBOX_CONSOLE_TARGET STREQUAL "durango"))
       # OpenMP in MSVC is not compatible with /permissive- unless you disable two-phase lookup
       list(APPEND COMPILER_SWITCHES /Zc:twoPhase-)
+    endif()
+
+    if((CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.20)
+       AND (XBOX_CONSOLE_TARGET STREQUAL "durango"))
+        list(APPEND COMPILER_SWITCHES /d2FH4-)
+        if(CMAKE_INTERPROCEDURAL_OPTIMIZATION)
+          list(APPEND LINKER_SWITCHES -d2:-FH4-)
+        endif()
     endif()
 
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.24)
