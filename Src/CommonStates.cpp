@@ -27,6 +27,12 @@ public:
     {
     }
 
+    Impl(const Impl&) = delete;
+    Impl& operator=(const Impl&) = delete;
+
+    Impl(Impl&&) = default;
+    Impl& operator=(Impl&&) = default;
+
     HRESULT CreateBlendState(D3D11_BLEND srcBlend, D3D11_BLEND destBlend, _Outptr_ ID3D11BlendState** pResult);
     HRESULT CreateDepthStencilState(bool enable, bool writeEnable, bool reverseZ, _Outptr_ ID3D11DepthStencilState** pResult);
     HRESULT CreateRasterizerState(D3D11_CULL_MODE cullMode, D3D11_FILL_MODE fillMode, _Outptr_ ID3D11RasterizerState** pResult);

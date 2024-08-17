@@ -56,6 +56,12 @@ public:
         s_graphicsMemory = nullptr;
     }
 
+    Impl(const Impl&) = delete;
+    Impl& operator=(const Impl&) = delete;
+
+    Impl(Impl&&) = default;
+    Impl& operator=(Impl&&) = default;
+
     void Initialize(_In_ ID3D11DeviceX* device, unsigned int backBufferCount)
     {
         assert(device != nullptr);

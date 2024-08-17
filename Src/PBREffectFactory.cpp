@@ -97,6 +97,12 @@ public:
         mForceSRGB(false)
     {}
 
+    Impl(const Impl&) = delete;
+    Impl& operator=(const Impl&) = delete;
+
+    Impl(Impl&&) = default;
+    Impl& operator=(Impl&&) = default;
+
     std::shared_ptr<IEffect> CreateEffect(
         _In_ IEffectFactory* factory,
         _In_ const IEffectFactory::EffectInfo& info,
