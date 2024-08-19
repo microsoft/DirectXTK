@@ -81,6 +81,12 @@ namespace
             mMutex{}
         { }
 
+        DeviceResources(const DeviceResources&) = delete;
+        DeviceResources& operator=(const DeviceResources&) = delete;
+
+        DeviceResources(DeviceResources&&) = default;
+        DeviceResources& operator=(DeviceResources&&) = default;
+
         // Gets or lazily creates the vertex shader.
         ID3D11VertexShader* GetVertexShader()
         {

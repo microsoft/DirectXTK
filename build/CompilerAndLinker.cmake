@@ -85,16 +85,38 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|IntelLLVM")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
     list(APPEND COMPILER_SWITCHES /Zc:__cplusplus /Zc:inline /fp:fast /Qdiag-disable:161)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    list(APPEND COMPILER_SWITCHES /sdl /permissive- /JMC- /Zc:__cplusplus /Zc:inline /fp:fast)
+    list(APPEND COMPILER_SWITCHES /sdl /Zc:inline /fp:fast)
 
     if(CMAKE_INTERPROCEDURAL_OPTIMIZATION)
       message(STATUS "Building using Whole Program Optimization")
       list(APPEND COMPILER_SWITCHES $<$<NOT:$<CONFIG:Debug>>:/Gy /Gw>)
     endif()
 
-    if(OpenMP_CXX_FOUND)
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.10)
+      list(APPEND COMPILER_SWITCHES /permissive-)
+    endif()
+
+    if((CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.11)
+       AND (OpenMP_CXX_FOUND
+           OR (XBOX_CONSOLE_TARGET STREQUAL "durango")))
       # OpenMP in MSVC is not compatible with /permissive- unless you disable two-phase lookup
       list(APPEND COMPILER_SWITCHES /Zc:twoPhase-)
+    endif()
+
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.14)
+      list(APPEND COMPILER_SWITCHES /Zc:__cplusplus)
+    endif()
+
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.15)
+      list(APPEND COMPILER_SWITCHES /JMC-)
+    endif()
+
+    if((CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.20)
+       AND (XBOX_CONSOLE_TARGET STREQUAL "durango"))
+        list(APPEND COMPILER_SWITCHES /d2FH4-)
+        if(CMAKE_INTERPROCEDURAL_OPTIMIZATION)
+          list(APPEND LINKER_SWITCHES -d2:-FH4-)
+        endif()
     endif()
 
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.24)
@@ -112,6 +134,10 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.28)
       list(APPEND COMPILER_SWITCHES /Zc:lambda)
+    endif()
+
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.29)
+      list(APPEND COMPILER_SWITCHES /external:W4)
     endif()
 
     if((CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.31)
