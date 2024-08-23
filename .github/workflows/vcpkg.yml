@@ -33,6 +33,8 @@ jobs:
           - os: windows-2022
             build_type: x86-Debug-VCPKG
             arch: amd64_x86
+        exclude:
+          # vcpkg.json references xaudio2redist which is not support for arm64
           - os: windows-2022
             build_type: arm64-Debug-VCPKG
             arch: amd64_arm64
