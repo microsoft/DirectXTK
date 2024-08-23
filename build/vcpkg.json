@@ -1,0 +1,14 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+    "dependencies": [
+      "directxmath",
+      {
+        "name": "directx-dxc",
+        "host": true
+      },
+      {
+        "name": "xaudio2redist",
+        "platform": "windows & !arm"
+      }
+    ]
+  }
