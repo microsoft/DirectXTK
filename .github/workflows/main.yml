@@ -30,7 +30,7 @@ jobs:
 
       matrix:
         os: [windows-2019, windows-2022]
-        build_type: [x64-Debug, x64-Release, x64-Debug-Clang, x64-Release-Clang]
+        build_type: [x64-Debug, x64-Release]
         arch: [amd64]
         include:
           - os: windows-2019
@@ -39,18 +39,18 @@ jobs:
           - os: windows-2019
             build_type: x86-Release
             arch: amd64_x86
-          - os: windows-2019
-            build_type: x86-Debug-Clang
-            arch: amd64_x86
-          - os: windows-2019
-            build_type: x86-Release-Clang
-            arch: amd64_x86
           - os: windows-2022
             build_type: x86-Debug
             arch: amd64_x86
           - os: windows-2022
             build_type: x86-Release
             arch: amd64_x86
+          - os: windows-2022
+            build_type: x64-Debug-Clang
+            arch: amd64
+          - os: windows-2022
+            build_type: x64-Release-Clang
+            arch: amd64
           - os: windows-2022
             build_type: x86-Debug-Clang
             arch: amd64_x86

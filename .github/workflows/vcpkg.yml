@@ -1,0 +1,92 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# https://go.microsoft.com/fwlink/?LinkID=324981
+
+name: 'CMake (Windows using VCPKG)'
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+    paths-ignore:
+      - '*.md'
+      - LICENSE
+      - build/*
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        os: [windows-2019, windows-2022]
+        build_type: [x64-Debug-VCPKG]
+        arch: [amd64]
+        include:
+          - os: windows-2022
+            build_type: x64-Debug-Clang-VCPKG
+            arch: amd64
+          - os: windows-2022
+            build_type: x86-Debug-VCPKG
+            arch: amd64_x86
+          - os: windows-2022
+            build_type: arm64-Debug-VCPKG
+            arch: amd64_arm64
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: 'Install Ninja'
+      run: choco install ninja
+
+    - uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: ${{ matrix.arch }}
+
+    - name: 'Set triplet'
+      shell: pwsh
+      run: |
+        if ("${{ matrix.arch }}" -eq "amd64")
+        {
+            echo "VCPKG_DEFAULT_TRIPLET=x64-windows" >> $env:GITHUB_ENV
+        }
+        elseif ("${{ matrix.arch }}" -eq "amd64_x86")
+        {
+            echo "VCPKG_DEFAULT_TRIPLET=x86-windows" >> $env:GITHUB_ENV
+        }
+        elseif ("${{ matrix.arch }}" -eq "amd64_arm64")
+        {
+            if ("${{ matrix.build_type }}" -match "^arm64ec")
+            {
+                echo "VCPKG_DEFAULT_TRIPLET=arm64ec-windows" >> $env:GITHUB_ENV
+            }
+            else
+            {
+                echo "VCPKG_DEFAULT_TRIPLET=arm64-windows" >> $env:GITHUB_ENV
+            }
+        }
+        else
+        {
+            echo "::error Unknown architecture/build-type triplet mapping"
+        }
+
+    - uses: lukka/run-vcpkg@v11
+      with:
+        runVcpkgInstall: true
+        vcpkgJsonGlob: '**/build/vcpkg.json'
+        vcpkgGitCommitId: '7516a02de04e8f8ff4e4beb8f5bac0565f9bf9da'
+
+    - name: 'Configure CMake'
+      working-directory: ${{ github.workspace }}
+      run: >
+        cmake --preset=${{ matrix.build_type }} -DBUILD_TESTING=OFF -DBUILD_XAUDIO_WIN10=OFF -DBUILD_XAUDIO_WIN8=OFF -DBUILD_XAUDIO_WIN7=ON
+        -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_MANIFEST_DIR="${{ github.workspace }}/build"
+        -DVCPKG_TARGET_TRIPLET="${env:VCPKG_DEFAULT_TRIPLET}"
+
+    - name: 'Build'
+      working-directory: ${{ github.workspace }}
+      run: cmake --build out\build\${{ matrix.build_type }}
