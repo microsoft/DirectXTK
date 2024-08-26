@@ -100,8 +100,8 @@ public:
     Impl(const Impl&) = delete;
     Impl& operator=(const Impl&) = delete;
 
-    Impl(Impl&&) = default;
-    Impl& operator=(Impl&&) = default;
+    Impl(Impl&&) = delete;
+    Impl& operator=(Impl&&) = delete;
 
     std::shared_ptr<IEffect> CreateEffect(
         _In_ IEffectFactory* factory,
