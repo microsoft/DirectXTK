@@ -70,6 +70,12 @@ class NormalMapEffect::Impl : public EffectBase<NormalMapEffectTraits>
 public:
     explicit Impl(_In_ ID3D11Device* device);
 
+    Impl(const Impl&) = delete;
+    Impl& operator=(const Impl&) = delete;
+
+    Impl(Impl&&) = default;
+    Impl& operator=(Impl&&) = default;
+
     void Initialize(_In_ ID3D11Device* device, bool enableSkinning);
 
     ComPtr<ID3D11ShaderResourceView> normalTexture;

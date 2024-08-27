@@ -33,6 +33,12 @@ public:
         size_t glyphCount,
         float lineSpacing) noexcept(false);
 
+    Impl(const Impl&) = delete;
+    Impl& operator=(const Impl&) = delete;
+
+    Impl(Impl&&) = default;
+    Impl& operator=(Impl&&) = default;
+
     Glyph const* FindGlyph(wchar_t character) const;
 
     void SetDefaultCharacter(wchar_t character);

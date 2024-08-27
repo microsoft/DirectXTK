@@ -60,6 +60,12 @@ class EnvironmentMapEffect::Impl : public EffectBase<EnvironmentMapEffectTraits>
 public:
     explicit Impl(_In_ ID3D11Device* device);
 
+    Impl(const Impl&) = delete;
+    Impl& operator=(const Impl&) = delete;
+
+    Impl(Impl&&) = default;
+    Impl& operator=(Impl&&) = default;
+
     bool preferPerPixelLighting;
     bool fresnelEnabled;
     bool specularEnabled;
