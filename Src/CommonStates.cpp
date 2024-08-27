@@ -30,8 +30,8 @@ public:
     Impl(const Impl&) = delete;
     Impl& operator=(const Impl&) = delete;
 
-    Impl(Impl&&) = default;
-    Impl& operator=(Impl&&) = default;
+    Impl(Impl&&) = delete;
+    Impl& operator=(Impl&&) = delete;
 
     HRESULT CreateBlendState(D3D11_BLEND srcBlend, D3D11_BLEND destBlend, _Outptr_ ID3D11BlendState** pResult);
     HRESULT CreateDepthStencilState(bool enable, bool writeEnable, bool reverseZ, _Outptr_ ID3D11DepthStencilState** pResult);
