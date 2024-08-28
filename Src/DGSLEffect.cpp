@@ -246,6 +246,12 @@ public:
         static_assert(MaxDirectionalLights == 4, "Mismatch with DGSL pipline");
     }
 
+    Impl(const Impl&) = delete;
+    Impl& operator=(const Impl&) = delete;
+
+    Impl(Impl&&) = default;
+    Impl& operator=(Impl&&) = default;
+
     void Initialize(_In_ ID3D11Device* device, bool enableSkinning)
     {
         weightsPerVertex = enableSkinning ? 4 : 0;

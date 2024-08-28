@@ -54,6 +54,12 @@ class BasicEffect::Impl : public EffectBase<BasicEffectTraits>
 public:
     explicit Impl(_In_ ID3D11Device* device);
 
+    Impl(const Impl&) = delete;
+    Impl& operator=(const Impl&) = delete;
+
+    Impl(Impl&&) = default;
+    Impl& operator=(Impl&&) = default;
+
     bool lightingEnabled;
     bool preferPerPixelLighting;
     bool vertexColorEnabled;

@@ -44,6 +44,12 @@ class DebugEffect::Impl : public EffectBase<DebugEffectTraits>
 public:
     explicit Impl(_In_ ID3D11Device* device);
 
+    Impl(const Impl&) = delete;
+    Impl& operator=(const Impl&) = delete;
+
+    Impl(Impl&&) = default;
+    Impl& operator=(Impl&&) = default;
+
     bool vertexColorEnabled;
     bool biasedVertexNormals;
     bool instancing;

@@ -43,6 +43,12 @@ class AlphaTestEffect::Impl : public EffectBase<AlphaTestEffectTraits>
 public:
     explicit Impl(_In_ ID3D11Device* device);
 
+    Impl(const Impl&) = delete;
+    Impl& operator=(const Impl&) = delete;
+
+    Impl(Impl&&) = default;
+    Impl& operator=(Impl&&) = default;
+
     D3D11_COMPARISON_FUNC alphaFunction;
     int referenceAlpha;
 
