@@ -32,6 +32,13 @@ elseif(CMAKE_VS_PLATFORM_NAME_DEFAULT MATCHES "^[Aa][Rr][Mm]64EC$")
     set(DIRECTX_ARCH arm64ec)
 endif()
 
+#--- Determines host architecture
+if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "[Aa][Rr][Mm]64|aarch64|arm64")
+    set(DIRECTX_HOST_ARCH arm64)
+else()
+    set(DIRECTX_HOST_ARCH x64)
+endif()
+
 #--- Build with Unicode Win32 APIs per "UTF-8 Everywhere"
 if(WIN32)
   list(APPEND COMPILER_DEFINES _UNICODE UNICODE)

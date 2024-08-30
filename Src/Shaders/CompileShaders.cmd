@@ -32,6 +32,7 @@ goto continue
 
 :continuepc
 
+if defined LegacyShaderCompiler goto fxcviaenv
 set PCFXC="%WindowsSdkVerBinPath%%FXCARCH%\fxc.exe"
 if exist %PCFXC% goto continue
 set PCFXC="%WindowsSdkBinPath%%WindowsSDKVersion%\%FXCARCH%\fxc.exe"
@@ -40,6 +41,12 @@ set PCFXC="%WindowsSdkDir%bin\%WindowsSDKVersion%\%FXCARCH%\fxc.exe"
 if exist %PCFXC% goto continue
 
 set PCFXC=fxc.exe
+goto continue
+
+:fxcviaenv
+set PCFXC="%LegacyShaderCompiler%"
+if not exist %PCFXC% goto needfxc
+goto continue
 
 :continue
 if not defined CompileShadersOutput set CompileShadersOutput=Compiled
@@ -329,6 +336,11 @@ echo %fxc%
 %fxc% || set error=1
 exit /b
 
+:needfxc
+echo ERROR: CompileShaders requires FXC.EXE
+exit /b 1
+
 :needxdk
 echo ERROR: CompileShaders xbox requires the Microsoft Xbox One XDK
 echo        (try re-running from the XDK Command Prompt)
+exit /b 1
