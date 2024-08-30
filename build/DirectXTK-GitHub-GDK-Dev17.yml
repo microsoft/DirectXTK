@@ -25,6 +25,7 @@ pr:
     - build/*.in
     - build/*.cmake
     - build/SetupBWOI.*
+    - Src/Shaders/CompileShaders.cmd
 
 resources:
   repositories:

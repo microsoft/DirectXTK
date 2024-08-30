@@ -21,6 +21,7 @@ pr:
   paths:
     include:
     - build/DirectXTK-GitHub.yml
+    - Src/Shaders/CompileShaders.cmd
 
 resources:
   repositories:
