@@ -6,6 +6,14 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### September 4, 2024
+* *DirectX Tool Kit for Audio* update
+  * Added ``IsValid`` method to **AudioEmitter** and **AudioListener**
+* Sync'd DDS.H with latest changes from DirectXTex
+* CMake project updates including support for ARM64EC
+* Minor code review
+* Added GitHub Actions YAML files
+
 ### June 4, 2024
 * Renamed Internal namespace to ToolKitInternal for some conformance issues
 * CMake project updates

@@ -1,3 +1,8 @@
+<#
+Copyright (c) Microsoft Corporation.
+Licensed under the MIT License.
+#>
+
 function Execute-Setup {
     # Temporary work-around while OneFuzz does not run script from setup dir
     Set-Location -Path $PSScriptRoot
