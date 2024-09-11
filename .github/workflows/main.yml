@@ -21,6 +21,9 @@ on:
       - build/*.targets
       - build/*.yml
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
