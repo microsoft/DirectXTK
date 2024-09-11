@@ -56,7 +56,6 @@ name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 variables:
   Codeql.Enabled: false
   VS_GENERATOR: 'Visual Studio 17 2022'
-  REDIST_DIR: $(xaudio2redist_DIR)
   WIN10_SDK: '10.0.19041.0'
   WIN11_SDK: '10.0.22000.0'
 
@@ -160,27 +159,7 @@ jobs:
     inputs:
       cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --build out8 -v
-  - task: NuGetToolInstaller@1
-    displayName: 'Use NuGet'
-    enabled: False
-  - task: NuGetCommand@2
-    displayName: Install Microsoft.XAudio2.Redist
-    enabled: False
-    inputs:
-      command: custom
-      arguments: install Microsoft.XAudio2.Redist -ExcludeVersion -OutputDirectory $(REDIST_DIR)
-  - task: CMake@1
-    displayName: 'CMake (ClangCl Win7): Config'
-    enabled: False
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -T clangcl -B out9 -DBUILD_XAUDIO_WIN7=ON -DBUILD_XAUDIO_WIN8=OFF -DBUILD_TOOLS=OFF -Dxaudio2redist_DIR=$(REDIST_DIR)\Microsoft.XAudio2.Redist'
-  - task: CMake@1
-    displayName: 'CMake (Build Win7): Build'
-    enabled: False
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --build out9 -v
+  # removed out9 case
   - task: CMake@1
     displayName: 'CMake (MSVC Spectre): Config x64'
     inputs:
