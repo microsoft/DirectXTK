@@ -7,6 +7,10 @@ name: 'Publish to NuGet.org'
 
 on:
   workflow_dispatch:
+    inputs:
+      enablepublish:
+        description: "Publish to nuget.org"
+        default: "on"
 
 permissions:
   contents: read
@@ -45,7 +49,8 @@ jobs:
       working-directory: ${{ github.workspace }}
       run: for /R %1 in (directxtk*.nupkg) do nuget verify -All -Signatures -Verbosity quiet %1
 
-    - name: 'Publish NuGet packages'
+    - if: github.event.inputs.enablepublish == 'on'
+      name: 'Publish NuGet packages'
       working-directory: ${{ github.workspace }}
       run: for /R %1 in (directxtk*.nupkg) do nuget push %1 -Source https://api.nuget.org/v3/index.json -ApiKey %APIKEY% -SkipDuplicate
       env:
