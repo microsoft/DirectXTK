@@ -41,12 +41,12 @@ jobs:
             arch: amd64_arm64
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
     - name: 'Install Ninja'
       run: choco install ninja
 
-    - uses: ilammy/msvc-dev-cmd@v1
+    - uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
       with:
         arch: ${{ matrix.arch }}
 
@@ -77,7 +77,7 @@ jobs:
             echo "::error Unknown architecture/build-type triplet mapping"
         }
 
-    - uses: lukka/run-vcpkg@v11
+    - uses: lukka/run-vcpkg@7d259227a1fb6471a0253dd5ab7419835228f7d7 # v11
       with:
         runVcpkgInstall: true
         vcpkgJsonGlob: '**/build/vcpkg.json'
