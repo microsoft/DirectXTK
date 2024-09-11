@@ -80,8 +80,6 @@ jobs:
     fetchTags: false
   - task: NuGetToolInstaller@1
     displayName: 'Use NuGet'
-    inputs:
-      versionSpec: '6.5.x'
   - task: PowerShell@2
     displayName: 'Create nuget.config with single source'
     inputs:
@@ -105,6 +103,8 @@ jobs:
       arguments: sources add -Name xboxgdk -Source $(URL_FEED) -ConfigFile $(Build.SourcesDirectory)\NuGet.config
   - task: nuget-security-analysis@0
     displayName: 'Secure Supply Chain Analysis'
+  - task: NuGetAuthenticate@1
+    displayName: 'NuGet Auth'
   - task: NuGetCommand@2
     displayName: NuGet install PGDK
     inputs:
@@ -155,8 +155,6 @@ jobs:
       failOnStderr: true
   - task: NuGetToolInstaller@1
     displayName: 'Use NuGet'
-    inputs:
-      versionSpec: '6.5.x'
   - task: PowerShell@2
     displayName: 'Create nuget.config with single source'
     inputs:
@@ -179,6 +177,8 @@ jobs:
       arguments: sources add -Name xboxgdk -Source $(URL_FEED) -ConfigFile $(Build.SourcesDirectory)\NuGet.config
   - task: nuget-security-analysis@0
     displayName: 'Secure Supply Chain Analysis'
+  - task: NuGetAuthenticate@1
+    displayName: 'NuGet Auth'
   - task: NuGetCommand@2
     displayName: NuGet install PGDK
     inputs:
