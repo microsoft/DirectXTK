@@ -31,27 +31,26 @@ jobs:
       run: nuget install Microsoft.XAudio2.Redist -Source https://api.nuget.org/v3/index.json -OutputDirectory ${{ github.workspace }}
 
     - name: 'Fetch NuGet package 1 from Release view'
-      run: nuget install ${{ env.DESKTOP_NUGET }} -Source %URL% -OutputDirectory ${{ github.workspace }}
+      run: nuget install ${{ env.DESKTOP_NUGET }} -Source $env:URL -OutputDirectory ${{ github.workspace }}
       env:
         URL: ${{ vars.ADO_FEED_URL }}
 
     - name: 'Fetch NuGet package 2 from Release view'
-      run: nuget install ${{ env.WIN10_NUGET }} -Source %URL% -OutputDirectory ${{ github.workspace }}
+      run: nuget install ${{ env.WIN10_NUGET }} -Source $env:URL -OutputDirectory ${{ github.workspace }}
       env:
         URL: ${{ vars.ADO_FEED_URL }}
 
     - name: 'Fetch NuGet package 3 from Release view'
-      run: nuget install ${{ env.UWP_NUGET }} -Source %URL% -OutputDirectory ${{ github.workspace }}
+      run: nuget install ${{ env.UWP_NUGET }} -Source $env:URL -OutputDirectory ${{ github.workspace }}
       env:
         URL: ${{ vars.ADO_FEED_URL }}
 
     - name: 'Verify NuGet packages'
-      working-directory: ${{ github.workspace }}
-      run: for /R %1 in (directxtk*.nupkg) do nuget verify -All -Signatures -Verbosity quiet %1
+      run: Get-ChildItem -Path ${{ github.workspace }} -Filter directxtk*.nupkg -Recurse | Foreach-Object { nuget verify -All -Signatures -Verbosity quiet $_.Fullname }
 
     - if: github.event.inputs.enablepublish == 'on'
       name: 'Publish NuGet packages'
       working-directory: ${{ github.workspace }}
-      run: for /R %1 in (directxtk*.nupkg) do nuget push %1 -Source https://api.nuget.org/v3/index.json -ApiKey %APIKEY% -SkipDuplicate
+      run: Get-ChildItem -Path ${{ github.workspace }} -Filter directxtk*.nupkg -Recurse | Foreach-Object { nuget push $_.Fullname -Source https://api.nuget.org/v3/index.json -ApiKey $env:APIKEY -SkipDuplicate }
       env:
         APIKEY: ${{ secrets.NUGET_APIKEY }}
