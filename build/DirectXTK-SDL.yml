@@ -78,7 +78,7 @@ jobs:
   - task: NodeTool@0
     displayName: 'NPM install'
     inputs:
-      versionSpec: 14.x    
+      versionSpec: 14.x
   - task: securedevelopmentteam.vss-secure-development-tools.build-task-credscan.CredScan@3
     displayName: 'Run Credential Scanner'
     inputs:
