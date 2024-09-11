@@ -1,0 +1,51 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# http://go.microsoft.com/fwlink/?LinkId=248929
+
+name: 'Publish to NuGet.org'
+
+on: workflow_dispatch
+
+permissions:
+  contents: read
+
+env:
+  DESKTOP_NUGET: directxtk_desktop_2019
+  WIN10_NUGET: directxtk_desktop_win10
+  UWP_NUGET: directxtk_uwp
+
+jobs:
+  deploy:
+    runs-on: windows-latest
+    environment: production
+    steps:
+    - uses: nuget/setup-nuget@a21f25cd3998bf370fde17e3f1b4c12c175172f9 # v2
+
+    - name: 'Fetch XAudio2Redist from NuGet.org'
+      run: nuget install Microsoft.XAudio2.Redist -Source https://api.nuget.org/v3/index.json -OutputDirectory ${{ github.workspace }}
+
+    - name: 'Fetch NuGet package 1 from Release view'
+      run: nuget install ${{ env.DESKTOP_NUGET }} -Source %URL% -OutputDirectory ${{ github.workspace }}
+      env:
+        URL: ${{ vars.ADO_FEED_URL }}
+
+    - name: 'Fetch NuGet package 2 from Release view'
+      run: nuget install ${{ env.WIN10_NUGET }} -Source %URL% -OutputDirectory ${{ github.workspace }}
+      env:
+        URL: ${{ vars.ADO_FEED_URL }}
+
+    - name: 'Fetch NuGet package 3 from Release view'
+      run: nuget install ${{ env.UWP_NUGET }} -Source %URL% -OutputDirectory ${{ github.workspace }}
+      env:
+        URL: ${{ vars.ADO_FEED_URL }}
+
+    - name: 'Verify NuGet packages'
+      working-directory: ${{ github.workspace }}
+      run: for /R %1 in (directxtk*.nupkg) do nuget verify -All -Signatures -Verbosity quiet %1
+
+    - name: 'Publish NuGet packages'
+      working-directory: ${{ github.workspace }}
+      run: for /R %1 in (directxtk*.nupkg) do nuget push %1 -Source https://api.nuget.org/v3/index.json -ApiKey %APIKEY% -SkipDuplicate
+      env:
+        APIKEY: ${{ secrets.NUGET_APIKEY }}
