@@ -18,6 +18,18 @@
     <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(GDKEditionNumber)' &lt; '220300'">
+    <_PCNuGetPackage>Microsoft.PGDK</_PCNuGetPackage>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(GDKEditionNumber)' &gt;= '220300'">
+    <_PCNuGetPackage>Microsoft.GDK.PC</_PCNuGetPackage>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(GDKEditionNumber)' &lt; '241000'">
+    <_PCNuGetPackage>$(_PCNuGetPackage).$(GDKEditionNumber)</_PCNuGetPackage>
+  </PropertyGroup>
+
   <!-- Windows 10 SDK NuGet -->
   <Import Condition="'$(WSDKEnableBWOI)' == 'true'"
           Project="$(ExtractedFolder)SDK\Microsoft.Windows.SDK.cpp\build\Microsoft.Windows.SDK.cpp.props" />
@@ -32,8 +44,8 @@
           Project="$(ExtractedFolder)SDK\Microsoft.Windows.SDK.cpp.arm64\build\native\Microsoft.Windows.SDK.cpp.arm64.props" />
 
   <!-- Microsoft GDK NuGet -->
-  <Import Condition="'$(GDKEnableBWOI)' == 'true' and $(Platform.Contains('x64')) and Exists('$(ExtractedFolder)GDK\Microsoft.GDK.PC.$(GDKEditionNumber)\build\Microsoft.GDK.PC.$(GDKEditionNumber).props')"
-          Project="$(ExtractedFolder)GDK\Microsoft.GDK.PC.$(GDKEditionNumber)\build\Microsoft.GDK.PC.$(GDKEditionNumber).props" />
+  <Import Condition="'$(GDKEnableBWOI)' == 'true' and $(Platform.Contains('x64')) and Exists('$(ExtractedFolder)GDK\$(_PCNuGetPackage)\build\$(_PCNuGetPackage).props')"
+          Project="$(ExtractedFolder)GDK\$(_PCNuGetPackage)\build\$(_PCNuGetPackage).props" />
 
   <!--
   ****************************************************************************************************
