@@ -74,17 +74,17 @@ jobs:
     displayName: NuGet Install WSDK x64
     inputs:
       command: custom
-      arguments: install -prerelease Microsoft.Windows.SDK.CPP.x64 -ExcludeVersion -OutputDirectory $(EXTRACTED_FOLDER)\SDK
+      arguments: install -prerelease Microsoft.Windows.SDK.CPP.x64 -ExcludeVersion -OutputDirectory $(EXTRACTED_FOLDER)
   - task: NuGetCommand@2
     displayName: NuGet Install WSDK x86
     inputs:
       command: custom
-      arguments: install -prerelease Microsoft.Windows.SDK.CPP.x86 -ExcludeVersion -OutputDirectory $(EXTRACTED_FOLDER)\SDK
+      arguments: install -prerelease Microsoft.Windows.SDK.CPP.x86 -ExcludeVersion -OutputDirectory $(EXTRACTED_FOLDER)
   - task: NuGetCommand@2
     displayName: NuGet Install WSDK arm64
     inputs:
       command: custom
-      arguments: install -prerelease Microsoft.Windows.SDK.CPP.arm64 -ExcludeVersion -OutputDirectory $(EXTRACTED_FOLDER)\SDK
+      arguments: install -prerelease Microsoft.Windows.SDK.CPP.arm64 -ExcludeVersion -OutputDirectory $(EXTRACTED_FOLDER)
   - task: CopyFiles@2
     displayName: Set up Directory.Build.props
     inputs:
@@ -254,12 +254,12 @@ jobs:
     displayName: NuGet Install WSDK x64
     inputs:
       command: custom
-      arguments: install -prerelease Microsoft.Windows.SDK.CPP.x64 -ExcludeVersion -OutputDirectory $(EXTRACTED_FOLDER)\SDK
+      arguments: install -prerelease Microsoft.Windows.SDK.CPP.x64 -ExcludeVersion -OutputDirectory $(EXTRACTED_FOLDER)
   - task: NuGetCommand@2
     displayName: NuGet Install WSDK x86
     inputs:
       command: custom
-      arguments: install -prerelease Microsoft.Windows.SDK.CPP.x86 -ExcludeVersion -OutputDirectory $(EXTRACTED_FOLDER)\SDK
+      arguments: install -prerelease Microsoft.Windows.SDK.CPP.x86 -ExcludeVersion -OutputDirectory $(EXTRACTED_FOLDER)
   - task: CopyFiles@2
     displayName: Set up Directory.Build.props
     inputs:
@@ -332,7 +332,7 @@ jobs:
     displayName: NuGet Install WSDK arm64
     inputs:
       command: custom
-      arguments: install -prerelease Microsoft.Windows.SDK.CPP.arm64 -ExcludeVersion -OutputDirectory $(EXTRACTED_FOLDER)\SDK
+      arguments: install -prerelease Microsoft.Windows.SDK.CPP.arm64 -ExcludeVersion -OutputDirectory $(EXTRACTED_FOLDER)
   - task: CopyFiles@2
     displayName: Set up Directory.Build.props
     inputs:
