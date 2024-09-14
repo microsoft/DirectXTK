@@ -30,7 +30,7 @@
     <_PCNuGetPackage>$(_PCNuGetPackage).$(GDKEditionNumber)</_PCNuGetPackage>
   </PropertyGroup>
 
-  <!-- Windows 10 SDK NuGet -->
+  <!-- Windows SDK NuGet -->
   <Import Condition="'$(WSDKEnableBWOI)' == 'true'"
           Project="$(ExtractedFolder)Microsoft.Windows.SDK.cpp\build\Microsoft.Windows.SDK.cpp.props" />
 
