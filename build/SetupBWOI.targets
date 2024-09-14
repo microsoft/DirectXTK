@@ -78,7 +78,7 @@ SixtyFourBit = (IntPtr.Size == 8) ? true : false;
           Condition="'@(_MissingBWOIVCFolders)' != ''">
     <Error Condition="'$(GDKEditionNumber)'==''"
         Text="GDKEditionNumber property is required" />
-    <Error Condition="!Exists('$(ExtractedFolder)GDK\Microsoft.GDK.PC.$(GDKEditionNumber)')"
+    <Error Condition="!Exists('$(ExtractedFolder)Microsoft.GDK.PC.$(GDKEditionNumber)')"
         Text="NuGet package Microsoft.GDK.PC.$(GDKEditionNumber) not found in $(ExtractedFolder)GDK" />
 
     <PropertyGroup>
@@ -95,7 +95,7 @@ SixtyFourBit = (IntPtr.Size == 8) ? true : false;
     </ItemGroup>
 
     <ItemGroup Condition="'$(GDKEditionNumber)' &lt; '241000'">
-      <GDKVCTargetsFilesV150 Include="$(ExtractedFolder)GDK\Microsoft.GDK.PC.$(GDKEditionNumber)\native\$(GDKEditionNumber)\GRDK\$(_VSFolder)\flatDeployment\MSBuild\Microsoft\VC\v150\**" />
+      <GDKVCTargetsFilesV150 Include="$(ExtractedFolder)Microsoft.GDK.PC.$(GDKEditionNumber)\native\$(GDKEditionNumber)\GRDK\$(_VSFolder)\flatDeployment\MSBuild\Microsoft\VC\v150\**" />
     </ItemGroup>
 
     <Copy Condition="'$(GDKEditionNumber)' &lt; '241000'" SkipUnchangedFiles="true" SourceFiles="@(SourceVCTargetsFilesV150)" DestinationFolder="$(ExtractedFolder)VCTargets150\%(RecursiveDir)/" />
@@ -107,7 +107,7 @@ SixtyFourBit = (IntPtr.Size == 8) ? true : false;
     </ItemGroup>
 
     <ItemGroup>
-      <GDKVCTargetsFilesV160 Include="$(ExtractedFolder)GDK\Microsoft.GDK.PC.$(GDKEditionNumber)\native\$(GDKEditionNumber)\GRDK\$(_VSFolder)\flatDeployment\MSBuild\Microsoft\VC\v160\**" />
+      <GDKVCTargetsFilesV160 Include="$(ExtractedFolder)Microsoft.GDK.PC.$(GDKEditionNumber)\native\$(GDKEditionNumber)\GRDK\$(_VSFolder)\flatDeployment\MSBuild\Microsoft\VC\v160\**" />
     </ItemGroup>
 
     <Copy SkipUnchangedFiles="true" SourceFiles="@(SourceVCTargetsFilesV160)" DestinationFolder="$(ExtractedFolder)VCTargets160\%(RecursiveDir)/" />
@@ -119,7 +119,7 @@ SixtyFourBit = (IntPtr.Size == 8) ? true : false;
     </ItemGroup>
 
     <ItemGroup Condition="'$(VisualStudioVersion)' == '17.0'">
-      <GDKVCTargetsFilesV170 Include="$(ExtractedFolder)GDK\Microsoft.GDK.PC.$(GDKEditionNumber)\native\$(GDKEditionNumber)\GRDK\$(_VSFolder)\flatDeployment\MSBuild\Microsoft\VC\v170\**" />
+      <GDKVCTargetsFilesV170 Include="$(ExtractedFolder)Microsoft.GDK.PC.$(GDKEditionNumber)\native\$(GDKEditionNumber)\GRDK\$(_VSFolder)\flatDeployment\MSBuild\Microsoft\VC\v170\**" />
     </ItemGroup>
 
     <Copy SkipUnchangedFiles="true" SourceFiles="@(SourceVCTargetsFilesV170)" DestinationFolder="$(ExtractedFolder)VCTargets170\%(RecursiveDir)/" />
