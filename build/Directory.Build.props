@@ -18,34 +18,34 @@
     <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(GDKEditionNumber)' &lt; '220300'">
+  <PropertyGroup Condition="'$(GDKEditionNumber)' != '' AND '$(GDKEditionNumber)' &lt; '220300'">
     <_PCNuGetPackage>Microsoft.PGDK</_PCNuGetPackage>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(GDKEditionNumber)' &gt;= '220300'">
+  <PropertyGroup Condition="'$(GDKEditionNumber)' != '' AND '$(GDKEditionNumber)' &gt;= '220300'">
     <_PCNuGetPackage>Microsoft.GDK.PC</_PCNuGetPackage>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(GDKEditionNumber)' &lt; '241000'">
+  <PropertyGroup Condition="'$(GDKEditionNumber)' != '' AND '$(GDKEditionNumber)' &lt; '241000'">
     <_PCNuGetPackage>$(_PCNuGetPackage).$(GDKEditionNumber)</_PCNuGetPackage>
   </PropertyGroup>
 
-  <!-- Windows 10 SDK NuGet -->
+  <!-- Windows SDK NuGet -->
   <Import Condition="'$(WSDKEnableBWOI)' == 'true'"
-          Project="$(ExtractedFolder)SDK\Microsoft.Windows.SDK.cpp\build\Microsoft.Windows.SDK.cpp.props" />
+          Project="$(ExtractedFolder)Microsoft.Windows.SDK.cpp\build\Microsoft.Windows.SDK.cpp.props" />
 
   <Import Condition="'$(WSDKEnableBWOI)' == 'true' and $(Platform.Contains('x64'))"
-          Project="$(ExtractedFolder)SDK\Microsoft.Windows.SDK.cpp.x64\build\native\Microsoft.Windows.SDK.cpp.x64.props" />
+          Project="$(ExtractedFolder)Microsoft.Windows.SDK.cpp.x64\build\native\Microsoft.Windows.SDK.cpp.x64.props" />
 
   <Import Condition="'$(WSDKEnableBWOI)' == 'true' and '$(Platform)' == 'Win32'"
-          Project="$(ExtractedFolder)SDK\Microsoft.Windows.SDK.cpp.x86\build\native\Microsoft.Windows.SDK.cpp.x86.props" />
+          Project="$(ExtractedFolder)Microsoft.Windows.SDK.cpp.x86\build\native\Microsoft.Windows.SDK.cpp.x86.props" />
 
   <Import Condition="'$(WSDKEnableBWOI)' == 'true' and '$(Platform)' == 'ARM64'"
-          Project="$(ExtractedFolder)SDK\Microsoft.Windows.SDK.cpp.arm64\build\native\Microsoft.Windows.SDK.cpp.arm64.props" />
+          Project="$(ExtractedFolder)Microsoft.Windows.SDK.cpp.arm64\build\native\Microsoft.Windows.SDK.cpp.arm64.props" />
 
   <!-- Microsoft GDK NuGet -->
-  <Import Condition="'$(GDKEnableBWOI)' == 'true' and $(Platform.Contains('x64')) and Exists('$(ExtractedFolder)GDK\$(_PCNuGetPackage)\build\$(_PCNuGetPackage).props')"
-          Project="$(ExtractedFolder)GDK\$(_PCNuGetPackage)\build\$(_PCNuGetPackage).props" />
+  <Import Condition="'$(GDKEnableBWOI)' == 'true' and $(Platform.Contains('x64')) and Exists('$(ExtractedFolder)$(_PCNuGetPackage)\build\$(_PCNuGetPackage).props')"
+          Project="$(ExtractedFolder)$(_PCNuGetPackage)\build\$(_PCNuGetPackage).props" />
 
   <!--
   ****************************************************************************************************
