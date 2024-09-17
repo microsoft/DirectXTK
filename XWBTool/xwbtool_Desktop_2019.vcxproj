@@ -256,6 +256,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Audio\WAVFileReader.h" />
+    <ClInclude Include="CmdLineHelpers.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="xwbtool.rc" />

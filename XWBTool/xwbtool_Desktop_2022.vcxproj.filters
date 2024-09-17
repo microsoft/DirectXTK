@@ -6,6 +6,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Audio\WAVFileReader.h" />
+    <ClInclude Include="CmdLineHelpers.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource Files">
