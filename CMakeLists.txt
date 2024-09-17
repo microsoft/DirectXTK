@@ -367,6 +367,7 @@ if(BUILD_TOOLS AND WIN32)
     xwbtool/xwbtool.cpp
     xwbtool/xwbtool.rc
     xwbtool/settings.manifest
+    xwbtool/CmdLineHelpers.h
     Audio/WAVFileReader.cpp
     Audio/WAVFileReader.h)
   target_compile_features(xwbtool PRIVATE cxx_std_17)
