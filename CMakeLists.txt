@@ -383,7 +383,7 @@ if(directxmath_FOUND)
 endif()
 
 if(TOOL_EXES)
-  message("INFO: Building tools: ${TOOL_EXES}")
+  message(STATUS "Building tools: ${TOOL_EXES}")
 endif()
 
 # Model uses dynamic_cast, so we need /GR (Enable RTTI)
