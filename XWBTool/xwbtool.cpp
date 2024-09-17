@@ -57,6 +57,8 @@
 #include <vector>
 
 #include "WAVFileReader.h"
+
+#define TOOL_VERSION 0
 #include "CmdLineHelpers.h"
 
 using namespace Helpers;
