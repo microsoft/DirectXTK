@@ -199,6 +199,7 @@
     <ClInclude Include="Src\AlignedNew.h" />
     <ClInclude Include="Src\Bezier.h" />
     <ClInclude Include="Src\BinaryReader.h" />
+    <ClInclude Include="Src\CMO.h" />
     <ClInclude Include="Src\DemandCreate.h" />
     <ClInclude Include="Src\EffectCommon.h" />
     <ClInclude Include="Src\Geometry.h" />
