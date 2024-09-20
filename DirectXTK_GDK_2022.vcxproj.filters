@@ -137,6 +137,9 @@
     <ClInclude Include="Inc\BufferHelpers.h">
       <Filter>Inc</Filter>
     </ClInclude>
+    <ClInclude Include="Src\CMO.h">
+      <Filter>Src\Shared</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\CommonStates.cpp">
