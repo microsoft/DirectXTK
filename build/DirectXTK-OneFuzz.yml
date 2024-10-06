@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 #
-# http://go.microsoft.com/fwlink/?LinkId=248929
+# https://go.microsoft.com/fwlink/?LinkId=248929
 
 # Builds the library using CMake and submit for file fuzzing
 
@@ -21,6 +21,11 @@ resources:
   - repository: self
     type: git
     ref: refs/heads/main
+  - repository: testRepo
+    name: walbourn/directxtktest
+    type: github
+    endpoint: microsoft
+    ref: refs/heads/main
 
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
@@ -28,7 +33,6 @@ variables:
   Codeql.Enabled: false
   VS_GENERATOR: 'Visual Studio 17 2022'
   WIN11_SDK: '10.0.22000.0'
-  GITHUB_PAT: $(GITHUBPUBLICTOKEN)
 
 pool:
   vmImage: windows-2022
@@ -40,28 +44,23 @@ jobs:
   - checkout: self
     clean: true
     fetchTags: false
-  - task: DeleteFiles@1
-    displayName: Delete files from Tests
-    inputs:
-      SourceFolder: Tests
-      Contents: '**'
-      RemoveSourceFolder: true
-      RemoveDotFiles: true
-  - task: CmdLine@2
+    fetchDepth: 1
+    path: 's'
+  - checkout: testRepo
     displayName: Fetch Tests
-    inputs:
-      script: git clone --quiet --no-tags https://%GITHUB_PAT%@github.com/walbourn/directxtktest.git Tests
-      workingDirectory: $(Build.SourcesDirectory)
-      failOnStderr: true
+    clean: true
+    fetchTags: false
+    fetchDepth: 1
+    path: 's/Tests'
   - task: CMake@1
     displayName: 'CMake (MSVC): Config with ASan'
     inputs:
-      cwd: '$(Build.SourcesDirectory)'
+      cwd: $(Build.SourcesDirectory)
       cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -B out -DCMAKE_SYSTEM_VERSION=$(WIN11_SDK) -DBUILD_TOOLS=OFF -DBUILD_XAUDIO_WIN10=ON -DBUILD_FUZZING=ON -DBUILD_TESTING=OFF'
   - task: CMake@1
     displayName: 'CMake (MSVC): Build with ASan'
     inputs:
-      cwd: '$(Build.SourcesDirectory)'
+      cwd: $(Build.SourcesDirectory)
       cmakeArgs: --build out -v --config RelWithDebInfo
   - task: CopyFiles@2
     displayName: Copy fuzzer
