@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 #
-# http://go.microsoft.com/fwlink/?LinkId=248929
+# https://go.microsoft.com/fwlink/?LinkId=248929
 
 # Builds the library and test suite using the Microsoft GDK.
 
@@ -54,6 +54,11 @@ resources:
   - repository: self
     type: git
     ref: refs/heads/main
+  - repository: testRepo
+    name: walbourn/directxtktest
+    type: github
+    endpoint: microsoft
+    ref: refs/heads/main
 
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
@@ -65,7 +70,6 @@ variables:
   EXTRACTED_FOLDER: $(ExtractedFolder)
   GDK_EDITION: $(GDKEditionNumber)
   GDKEnableBWOI: true
-  GITHUB_PAT: $(GITHUBPUBLICTOKEN)
   URL_FEED: $(ADOFeedURL)
   skipNugetSecurityAnalysis: true # We explicitly call this task so we don't need it to be auto-injected
 
@@ -78,6 +82,7 @@ jobs:
   - checkout: self
     clean: true
     fetchTags: false
+    fetchDepth: 1
   - task: NuGetToolInstaller@1
     displayName: 'Use NuGet'
   - task: PowerShell@2
@@ -147,12 +152,14 @@ jobs:
   - checkout: self
     clean: true
     fetchTags: false
-  - task: CmdLine@2
+    fetchDepth: 1
+    path: 's'
+  - checkout: testRepo
     displayName: Fetch Tests
-    inputs:
-      script: git clone --quiet --no-tags https://%GITHUB_PAT%@github.com/walbourn/directxtktest.git Tests
-      workingDirectory: $(Build.SourcesDirectory)
-      failOnStderr: true
+    clean: true
+    fetchTags: false
+    fetchDepth: 1
+    path: 's/Tests'
   - task: NuGetToolInstaller@1
     displayName: 'Use NuGet'
   - task: PowerShell@2

@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 #
-# http://go.microsoft.com/fwlink/?LinkId=248929
+# https://go.microsoft.com/fwlink/?LinkId=248929
 
 # OneFuzz code coverage pipeline
 
@@ -10,6 +10,17 @@ trigger: none
 
 pool:
   vmImage: windows-latest
+
+resources:
+  repositories:
+  - repository: self
+    type: git
+    ref: refs/heads/main
+  - repository: testRepo
+    name: walbourn/directxtktest
+    type: github
+    endpoint: microsoft
+    ref: refs/heads/main
 
 parameters:
   - name: sasUrl
@@ -48,17 +59,17 @@ jobs:
   workspace:
     clean: all
   steps:
-  - task: CmdLine@2
-    displayName: 'Fetch source'
-    inputs:
-      script: |
-        git clone --quiet --no-tags https://%GITHUBPUBLICTOKEN%@github.com/microsoft/DirectXTK.git
-        cd DirectXTK
-        git checkout $(commit-ID)
-        git clone --quiet --no-tags https://%GITHUBPUBLICTOKEN%@github.com/walbourn/directxtktest.git Tests
-      workingDirectory: $(Build.SourcesDirectory)
-      failOnStderr: true
-
+  - checkout: self
+    clean: true
+    fetchTags: false
+    fetchDepth: 1
+    path: 's'
+  - checkout: testRepo
+    displayName: Fetch Tests
+    clean: true
+    fetchTags: false
+    fetchDepth: 1
+    path: 's/Tests'
   - powershell: |
       Write-Host "Job ID: $(job-ID), Build Date: $(build-date), Branch: $(branch)"
       $SASUrl = [System.Uri]::new("$(sas-url)")

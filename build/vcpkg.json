@@ -6,6 +6,7 @@
         "name": "directx-dxc",
         "host": true
       },
+      "directx-headers",
       {
         "name": "xaudio2redist",
         "platform": "windows & !arm"

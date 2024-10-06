@@ -458,13 +458,16 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
       target_compile_options(${t} PRIVATE ${WarningsEXE})
     endforeach()
 
-    if(BUILD_FUZZING
-        AND (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.32)
-        AND (NOT WINDOWS_STORE))
-          foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
-            target_compile_options(${t} PRIVATE ${ASAN_SWITCHES})
-            target_link_libraries(${t} PRIVATE ${ASAN_LIBS})
-          endforeach()
+    if(BUILD_FUZZING AND (NOT WINDOWS_STORE))
+      string(REPLACE "/DNDEBUG" "" CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
+      string(REPLACE "/DNDEBUG" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO ${CMAKE_CXX_FLAGS_RELWITHDEBINFO})
+
+      if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.32)
+        foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
+          target_compile_options(${t} PRIVATE ${ASAN_SWITCHES})
+          target_link_libraries(${t} PRIVATE ${ASAN_LIBS})
+        endforeach()
+      endif()
     endif()
 endif()
 

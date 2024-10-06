@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 #
-# http://go.microsoft.com/fwlink/?LinkId=248929
+# https://go.microsoft.com/fwlink/?LinkId=248929
 
 # Builds the SimpleMath module for Windows Subsystem for Linux (WSL)
 
@@ -31,6 +31,21 @@ resources:
     type: git
     ref: refs/heads/main
     trigger: none
+  - repository: dxHeadersRepo
+    name: Microsoft/DirectX-Headers
+    type: github
+    endpoint: microsoft
+    ref: refs/heads/main
+  - repository: dxMathRepo
+    name: Microsoft/DirectXMath
+    type: github
+    endpoint: microsoft
+    ref: refs/heads/main
+  - repository: testRepo
+    name: walbourn/directxtktest
+    type: github
+    endpoint: microsoft
+    ref: refs/heads/main
 
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
@@ -39,7 +54,6 @@ pool:
 
 variables:
   Codeql.Enabled: false
-  GITHUB_PAT: $(GITHUBPUBLICTOKEN)
   LOCAL_PKG_DIR: '$(Agent.BuildDirectory)/install/'
 
 jobs:
@@ -51,10 +65,26 @@ jobs:
   - checkout: self
     clean: true
     fetchTags: false
-  - task: CmdLine@2
-    displayName: Fetch directx-headers
-    inputs:
-      script: git clone --quiet --no-tags https://%GITHUB_PAT%@github.com/microsoft/DirectX-Headers.git directx-headers
+    fetchDepth: 1
+    path: 's'
+  - checkout: dxHeadersRepo
+    displayName: Fetch DirectX-Headers
+    clean: true
+    fetchTags: false
+    fetchDepth: 1
+    path: 's/directx-headers'
+  - checkout: dxMathRepo
+    displayName: Fetch DirectX-Math
+    clean: true
+    fetchTags: false
+    fetchDepth: 1
+    path: 's/directxmath'
+  - checkout: testRepo
+    displayName: Fetch Tests
+    clean: true
+    fetchTags: false
+    fetchDepth: 1
+    path: 's/Tests'
   - task: CMake@1
     displayName: CMake DirectX-Headers
     inputs:
@@ -70,10 +100,6 @@ jobs:
     inputs:
       cwd: directx-headers
       cmakeArgs: --install .
-  - task: CmdLine@2
-    displayName: Fetch directxmath
-    inputs:
-      script: git clone --quiet --no-tags https://%GITHUB_PAT%@github.com/microsoft/DirectXMath.git directxmath
   - task: CMake@1
     displayName: CMake DirectXMath
     inputs:
@@ -89,12 +115,6 @@ jobs:
     inputs:
       cwd: directxmath
       cmakeArgs: --install .
-  - task: CmdLine@2
-    displayName: Fetch Tests
-    inputs:
-      script: git clone --quiet --no-tags https://%GITHUB_PAT%@github.com/walbourn/directxtktest.git Tests
-      workingDirectory: $(Build.SourcesDirectory)
-      failOnStderr: true
   - task: PowerShell@2
     displayName: Fetch SAL.H
     inputs:
