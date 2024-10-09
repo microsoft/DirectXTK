@@ -198,6 +198,24 @@
         "strategy": "external"
       }
     },
+
+    {
+      "name": "Analyze",
+      "cacheVariables":
+      {
+        "ENABLE_CODE_ANALYSIS": true
+      },
+      "hidden": true
+    },
+    {
+      "name": "Coverage",
+      "cacheVariables":
+      {
+        "BUILD_TOOLS": false,
+        "ENABLE_CODE_COVERAGE": true
+      },
+      "hidden": true
+    },
     {
       "name": "Fuzzing",
       "cacheVariables": {
@@ -294,9 +312,11 @@
     { "name": "x64-Debug-ICX"    , "description": "Intel oneAPI Compiler (Debug) for Windows 8", "inherits": [ "base", "x64", "Debug", "IntelLLVM" ] },
     { "name": "x64-Release-ICX"  , "description": "Intel oneAPI Compiler (Release) for Windows 8", "inherits": [ "base", "x64", "Release", "IntelLLVM" ] },
 
-    { "name": "x64-Fuzzing"       , "description": "MSVC for x64 (Release) with ASan", "inherits": [ "base", "x64", "Release", "MSVC", "Win10", "Fuzzing" ] },
-    { "name": "x64-Analyze"       , "description": "MSVC for x64 (Debug) for Windows 8 using /analyze", "inherits": [ "base", "x64", "Debug", "MSVC" ], "cacheVariables": { "ENABLE_CODE_ANALYSIS": true } },
-    { "name": "x64-Analyze-Win10" , "description": "MSVC for x64 (Debug) for Windows 10 using /analyze", "inherits": [ "base", "x64", "Debug", "MSVC", "Win10" ], "cacheVariables": { "ENABLE_CODE_ANALYSIS": true } }
+    { "name": "x64-Analyze"       , "description": "MSVC for x64 (Debug) for Windows 8 using /analyze", "inherits": [ "base", "x64", "Debug", "MSVC", "Analyze" ] },
+    { "name": "x64-Analyze-Win10" , "description": "MSVC for x64 (Debug) for Windows 10 using /analyze", "inherits": [ "base", "x64", "Debug", "MSVC", "Win10", "Analyze" ] },
+    { "name": "x64-Coverage"      , "description": "MSVC for x64 (Debug) w/ Code Coverage", "inherits": [ "base", "x64", "Debug", "MSVC", "Coverage" ] },
+    { "name": "x64-Coverage-Clang", "description": "Clang/LLVM for x64 (Debug) w/ Code Coverage", "inherits": [ "base", "x64", "Debug", "Clang", "Coverage" ] },
+    { "name": "x64-Fuzzing"       , "description": "MSVC for x64 (Release) with ASan", "inherits": [ "base", "x64", "Release", "MSVC", "Win10", "Fuzzing" ] }
   ],
   "testPresets": [
     { "name": "x64-Debug"      , "configurePreset": "x64-Debug" },
