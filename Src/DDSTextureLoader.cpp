@@ -164,6 +164,11 @@ namespace
             format = MakeLinear(format);
         }
 
+        if (loadFlags & DDS_LOADER_IGNORE_MIPS)
+        {
+            mipCount = 1;
+        }
+
         switch (resDim)
         {
         case D3D11_RESOURCE_DIMENSION_TEXTURE1D:
