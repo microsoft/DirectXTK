@@ -403,7 +403,7 @@ namespace
         bool isCubeMap = false;
 
         size_t mipCount = header->mipMapCount;
-        if (0 == mipCount)
+        if ((0 == mipCount) || (loadFlags & DDS_LOADER_IGNORE_MIPS))
         {
             mipCount = 1;
         }
