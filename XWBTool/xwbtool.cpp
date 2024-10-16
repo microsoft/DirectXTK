@@ -824,7 +824,6 @@ namespace
         WaveFile& operator= (WaveFile&) = delete;
 
         WaveFile(WaveFile&&) = default;
-        WaveFile& operator= (WaveFile&&) = default;
     };
 
     void FileNameToIdentifier(_Inout_updates_all_(count) wchar_t* str, size_t count)
