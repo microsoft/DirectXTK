@@ -363,7 +363,7 @@ namespace DirectX
     #pragma clang diagnostic ignored "-Wdeprecated-dynamic-exception-spec"
     #endif
 
-        DEFINE_ENUM_FLAG_OPERATORS(ModelLoaderFlags);
+        DEFINE_ENUM_FLAG_OPERATORS(ModelLoaderFlags)
 
     #ifdef __clang__
     #pragma clang diagnostic pop

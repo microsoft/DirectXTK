@@ -19,6 +19,7 @@
 #endif
 
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 
 #include <DirectXMath.h>
@@ -324,7 +325,7 @@ namespace DirectX
         class EnvironmentMapEffect : public IEffect, public IEffectMatrices, public IEffectLights, public IEffectFog
         {
         public:
-            enum Mapping
+            enum Mapping : uint32_t
             {
                 Mapping_Cube = 0,       // Cubic environment map
                 Mapping_Sphere,         // Spherical environment map
@@ -790,7 +791,7 @@ namespace DirectX
         class DebugEffect : public IEffect, public IEffectMatrices
         {
         public:
-            enum Mode
+            enum Mode : uint32_t
             {
                 Mode_Default = 0,   // Hemispherical ambient lighting
                 Mode_Normals,       // RGB normals

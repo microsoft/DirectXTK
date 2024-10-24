@@ -28,7 +28,7 @@ namespace DirectX
 {
     inline namespace DX11
     {
-        enum SpriteSortMode
+        enum SpriteSortMode : uint32_t
         {
             SpriteSortMode_Deferred,
             SpriteSortMode_Immediate,

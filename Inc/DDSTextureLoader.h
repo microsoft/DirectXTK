@@ -174,7 +174,7 @@ namespace DirectX
 
     inline namespace DX11
     {
-        DEFINE_ENUM_FLAG_OPERATORS(DDS_LOADER_FLAGS);
+        DEFINE_ENUM_FLAG_OPERATORS(DDS_LOADER_FLAGS)
     }
 
 #ifdef __clang__
