@@ -159,7 +159,7 @@ namespace DirectX
         SoundEffectInstance_UseRedirectLFE = 0x10000,
     };
 
-    enum AUDIO_ENGINE_REVERB : unsigned int
+    enum AUDIO_ENGINE_REVERB : uint32_t
     {
         Reverb_Off,
         Reverb_Default,
@@ -195,7 +195,7 @@ namespace DirectX
         Reverb_MAX
     };
 
-    enum SoundState
+    enum SoundState : uint32_t
     {
         STOPPED = 0,
         PLAYING,
@@ -823,8 +823,8 @@ namespace DirectX
 #pragma clang diagnostic ignored "-Wdeprecated-dynamic-exception-spec"
 #endif
 
-    DEFINE_ENUM_FLAG_OPERATORS(AUDIO_ENGINE_FLAGS);
-    DEFINE_ENUM_FLAG_OPERATORS(SOUND_EFFECT_INSTANCE_FLAGS);
+    DEFINE_ENUM_FLAG_OPERATORS(AUDIO_ENGINE_FLAGS)
+    DEFINE_ENUM_FLAG_OPERATORS(SOUND_EFFECT_INSTANCE_FLAGS)
 
 #ifdef __clang__
 #pragma clang diagnostic pop

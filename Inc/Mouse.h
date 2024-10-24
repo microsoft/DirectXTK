@@ -28,6 +28,7 @@
 #pragma comment(lib,"gameinput.lib")
 #endif
 
+#include <cstdint>
 #include <memory>
 
 #ifdef USING_COREWINDOW
@@ -55,7 +56,7 @@ namespace DirectX
 
         virtual ~Mouse();
 
-        enum Mode
+        enum Mode : uint32_t
         {
             MODE_ABSOLUTE = 0,
             MODE_RELATIVE,
@@ -77,7 +78,7 @@ namespace DirectX
         class ButtonStateTracker
         {
         public:
-            enum ButtonState
+            enum ButtonState : uint32_t
             {
                 UP = 0,         // Button is up
                 HELD = 1,       // Button is held down

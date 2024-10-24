@@ -15,6 +15,7 @@
 #include <d3d11_1.h>
 #endif
 
+#include <cstdint>
 #include <memory>
 #include <functional>
 
@@ -50,7 +51,7 @@ namespace DirectX
         class BasicPostProcess : public IPostProcess
         {
         public:
-            enum Effect : unsigned int
+            enum Effect : uint32_t
             {
                 Copy,
                 Monochrome,
@@ -106,7 +107,7 @@ namespace DirectX
         class DualPostProcess : public IPostProcess
         {
         public:
-            enum Effect : unsigned int
+            enum Effect : uint32_t
             {
                 Merge,
                 BloomCombine,
@@ -154,7 +155,7 @@ namespace DirectX
         {
         public:
             // Tone-mapping operator
-            enum Operator : unsigned int
+            enum Operator : uint32_t
             {
                 None,               // Pass-through
                 Saturate,           // Clamp [0,1]
@@ -164,7 +165,7 @@ namespace DirectX
             };
 
             // Electro-Optical Transfer Function (EOTF)
-            enum TransferFunction : unsigned int
+            enum TransferFunction : uint32_t
             {
                 Linear,             // Pass-through
                 SRGB,               // sRGB (Rec.709 and approximate sRGB display curve)
@@ -173,7 +174,7 @@ namespace DirectX
             };
 
             // Color Rotation Transform for HDR10
-            enum ColorPrimaryRotation : unsigned int
+            enum ColorPrimaryRotation : uint32_t
             {
                 HDTV_to_UHDTV,       // Rec.709 to Rec.2020
                 DCI_P3_D65_to_UHDTV, // DCI-P3-D65 (a.k.a Display P3 or P3D65) to Rec.2020
