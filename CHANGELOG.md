@@ -6,6 +6,16 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### October 28, 2024
+* All enums now use ``uint32_t`` as the underlying type rather than ``unsigned long`` or ``int``.
+* Added `DDS_LOADER_INGNORE_MIPS` flag to DDSTextureLoader
+* Refactored CMO structures into their own header
+* xwbool:
+  * Add "GNU-style" *--long-options* to the command-line tools (all existing switches are still supported)
+  * Refactored code to use shared header
+* MakeSpriteFont: supports `--version` and `--help` and accepts either `/` or `-` style command-line parameters.
+* CMake and MSBuild project updates
+
 ### September 4, 2024
 * *DirectX Tool Kit for Audio* update
   * Added ``IsValid`` method to **AudioEmitter** and **AudioListener**
