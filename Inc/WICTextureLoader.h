@@ -161,6 +161,74 @@ namespace DirectX
         _Outptr_opt_ ID3D11Resource** texture,
         _Outptr_opt_ ID3D11ShaderResourceView** textureView) noexcept;
 
+#ifdef __cpp_lib_byte
+    inline HRESULT __cdecl CreateWICTextureFromMemory(
+        _In_ ID3D11Device* d3dDevice,
+        _In_reads_bytes_(wicDataSize) const std::byte* wicData,
+        _In_ size_t wicDataSize,
+        _Outptr_opt_ ID3D11Resource** texture,
+        _Outptr_opt_ ID3D11ShaderResourceView** textureView,
+        _In_ size_t maxsize = 0) noexcept
+    {
+        return CreateWICTextureFromMemory(d3dDevice, reinterpret_cast<const uint8_t*>(wicData), wicDataSize, texture, textureView, maxsize);
+    }
+
+    inline HRESULT __cdecl CreateWICTextureFromMemory(
+    #if defined(_XBOX_ONE) && defined(_TITLE)
+        _In_ ID3D11DeviceX* d3dDevice,
+        _In_opt_ ID3D11DeviceContextX* d3dContext,
+    #else
+        _In_ ID3D11Device* d3dDevice,
+        _In_opt_ ID3D11DeviceContext* d3dContext,
+    #endif
+        _In_reads_bytes_(wicDataSize) const std::byte* wicData,
+        _In_ size_t wicDataSize,
+        _Outptr_opt_ ID3D11Resource** texture,
+        _Outptr_opt_ ID3D11ShaderResourceView** textureView,
+        _In_ size_t maxsize = 0) noexcept
+    {
+        return CreateWICTextureFromMemory(d3dDevice, d3dContext, reinterpret_cast<const uint8_t*>(wicData), wicDataSize, texture, textureView, maxsize);
+    }
+
+    inline HRESULT __cdecl CreateWICTextureFromMemoryEx(
+        _In_ ID3D11Device* d3dDevice,
+        _In_reads_bytes_(wicDataSize) const std::byte* wicData,
+        _In_ size_t wicDataSize,
+        _In_ size_t maxsize,
+        _In_ D3D11_USAGE usage,
+        _In_ unsigned int bindFlags,
+        _In_ unsigned int cpuAccessFlags,
+        _In_ unsigned int miscFlags,
+        _In_ WIC_LOADER_FLAGS loadFlags,
+        _Outptr_opt_ ID3D11Resource** texture,
+        _Outptr_opt_ ID3D11ShaderResourceView** textureView) noexcept
+    {
+        return CreateWICTextureFromMemoryEx(d3dDevice, reinterpret_cast<const uint8_t*>(wicData), wicDataSize, maxsize, usage, bindFlags, cpuAccessFlags, miscFlags, loadFlags, texture, textureView);
+    }
+
+    inline HRESULT __cdecl CreateWICTextureFromMemoryEx(
+    #if defined(_XBOX_ONE) && defined(_TITLE)
+        _In_ ID3D11DeviceX* d3dDevice,
+        _In_opt_ ID3D11DeviceContextX* d3dContext,
+    #else
+        _In_ ID3D11Device* d3dDevice,
+        _In_opt_ ID3D11DeviceContext* d3dContext,
+    #endif
+        _In_reads_bytes_(wicDataSize) const std::byte* wicData,
+        _In_ size_t wicDataSize,
+        _In_ size_t maxsize,
+        _In_ D3D11_USAGE usage,
+        _In_ unsigned int bindFlags,
+        _In_ unsigned int cpuAccessFlags,
+        _In_ unsigned int miscFlags,
+        _In_ WIC_LOADER_FLAGS loadFlags,
+        _Outptr_opt_ ID3D11Resource** texture,
+        _Outptr_opt_ ID3D11ShaderResourceView** textureView) noexcept
+    {
+        return CreateWICTextureFromMemoryEx(d3dDevice, d3dContext, reinterpret_cast<const uint8_t*>(wicData), wicDataSize, maxsize, usage, bindFlags, cpuAccessFlags, miscFlags, loadFlags, texture, textureView);
+    }
+#endif // __cpp_lib_byte
+
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-dynamic-exception-spec"

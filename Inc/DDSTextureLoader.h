@@ -167,6 +167,78 @@ namespace DirectX
         _Outptr_opt_ ID3D11ShaderResourceView** textureView,
         _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr) noexcept;
 
+#ifdef __cpp_lib_byte
+    inline HRESULT __cdecl CreateDDSTextureFromMemory(
+        _In_ ID3D11Device* d3dDevice,
+        _In_reads_bytes_(ddsDataSize) const std::byte* ddsData,
+        _In_ size_t ddsDataSize,
+        _Outptr_opt_ ID3D11Resource** texture,
+        _Outptr_opt_ ID3D11ShaderResourceView** textureView,
+        _In_ size_t maxsize = 0,
+        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr) noexcept
+    {
+        return CreateDDSTextureFromMemory(d3dDevice, reinterpret_cast<const uint8_t*>(ddsData), ddsDataSize, texture, textureView, maxsize, alphaMode);
+    }
+
+    inline HRESULT __cdecl CreateDDSTextureFromMemory(
+    #if defined(_XBOX_ONE) && defined(_TITLE)
+        _In_ ID3D11DeviceX* d3dDevice,
+        _In_opt_ ID3D11DeviceContextX* d3dContext,
+    #else
+        _In_ ID3D11Device* d3dDevice,
+        _In_opt_ ID3D11DeviceContext* d3dContext,
+    #endif
+        _In_reads_bytes_(ddsDataSize) const std::byte* ddsData,
+        _In_ size_t ddsDataSize,
+        _Outptr_opt_ ID3D11Resource** texture,
+        _Outptr_opt_ ID3D11ShaderResourceView** textureView,
+        _In_ size_t maxsize = 0,
+        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr) noexcept
+    {
+        return CreateDDSTextureFromMemory(d3dDevice, d3dContext, reinterpret_cast<const uint8_t*>(ddsData), ddsDataSize, texture, textureView, maxsize, alphaMode);
+    }
+
+    inline HRESULT __cdecl CreateDDSTextureFromMemoryEx(
+        _In_ ID3D11Device* d3dDevice,
+        _In_reads_bytes_(ddsDataSize) const std::byte* ddsData,
+        _In_ size_t ddsDataSize,
+        _In_ size_t maxsize,
+        _In_ D3D11_USAGE usage,
+        _In_ unsigned int bindFlags,
+        _In_ unsigned int cpuAccessFlags,
+        _In_ unsigned int miscFlags,
+        _In_ DDS_LOADER_FLAGS loadFlags,
+        _Outptr_opt_ ID3D11Resource** texture,
+        _Outptr_opt_ ID3D11ShaderResourceView** textureView,
+        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr) noexcept
+    {
+        return CreateDDSTextureFromMemoryEx(d3dDevice, reinterpret_cast<const uint8_t*>(ddsData), ddsDataSize, maxsize, usage, bindFlags, cpuAccessFlags, miscFlags, loadFlags, texture, textureView, alphaMode);
+    }
+
+    inline HRESULT __cdecl CreateDDSTextureFromMemoryEx(
+    #if defined(_XBOX_ONE) && defined(_TITLE)
+        _In_ ID3D11DeviceX* d3dDevice,
+        _In_opt_ ID3D11DeviceContextX* d3dContext,
+    #else
+        _In_ ID3D11Device* d3dDevice,
+        _In_opt_ ID3D11DeviceContext* d3dContext,
+    #endif
+        _In_reads_bytes_(ddsDataSize) const std::byte* ddsData,
+        _In_ size_t ddsDataSize,
+        _In_ size_t maxsize,
+        _In_ D3D11_USAGE usage,
+        _In_ unsigned int bindFlags,
+        _In_ unsigned int cpuAccessFlags,
+        _In_ unsigned int miscFlags,
+        _In_ DDS_LOADER_FLAGS loadFlags,
+        _Outptr_opt_ ID3D11Resource** texture,
+        _Outptr_opt_ ID3D11ShaderResourceView** textureView,
+        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr) noexcept
+    {
+        return CreateDDSTextureFromMemoryEx(d3dDevice, d3dContext, reinterpret_cast<const uint8_t*>(ddsData), ddsDataSize, maxsize, usage, bindFlags, cpuAccessFlags, miscFlags, loadFlags, texture, textureView, alphaMode);
+    }
+#endif // __cpp_lib_byte
+
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-dynamic-exception-spec"
