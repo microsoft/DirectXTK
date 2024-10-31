@@ -64,4 +64,19 @@ namespace Xbox
         _In_ bool forceSRGB = false) noexcept;
 
     void FreeDDSTextureMemory( _In_opt_ void* grfxMemory ) noexcept;
+
+#ifdef __cpp_lib_byte
+    HRESULT __cdecl CreateDDSTextureFromMemory(
+        _In_ ID3D11DeviceX* d3dDevice,
+        _In_reads_bytes_(ddsDataSize) const uint8_t* ddsData,
+        _In_ size_t ddsDataSize,
+        _Outptr_opt_ ID3D11Resource** texture,
+        _Outptr_opt_ ID3D11ShaderResourceView** textureView,
+        _Outptr_ void** grfxMemory,
+        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr,
+        _In_ bool forceSRGB = false) noexcept
+    {
+        return CreateDDSTextureFromMemory(d3dDevice, reinterpret_cast<const uint8_t*>(ddsData), ddsDataSize, texture, textureView, grfxMemory, alphaMode, forceSRGB);
+    }
+#endif // __cpp_lib_byte
 }

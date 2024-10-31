@@ -327,6 +327,36 @@ namespace DirectX
                 _In_ std::shared_ptr<IEffect> ieffect = nullptr,
                 ModelLoaderFlags flags = ModelLoader_Clockwise);
 
+#ifdef __cpp_lib_byte
+            static std::unique_ptr<Model> __cdecl CreateFromCMO(
+                _In_ ID3D11Device* device,
+                _In_reads_bytes_(dataSize) const std::byte* meshData, size_t dataSize,
+                _In_ IEffectFactory& fxFactory,
+                ModelLoaderFlags flags = ModelLoader_CounterClockwise,
+                _Out_opt_ size_t* animsOffset = nullptr)
+            {
+                return CreateFromCMO(device, reinterpret_cast<const uint8_t*>(meshData), dataSize, fxFactory, flags, animsOffset);
+            }
+
+            static std::unique_ptr<Model> __cdecl CreateFromSDKMESH(
+                _In_ ID3D11Device* device,
+                _In_reads_bytes_(dataSize) const std::byte* meshData, _In_ size_t dataSize,
+                _In_ IEffectFactory& fxFactory,
+                ModelLoaderFlags flags = ModelLoader_Clockwise)
+            {
+                return CreateFromSDKMESH(device, reinterpret_cast<const uint8_t*>(meshData), dataSize, fxFactory, flags);
+            }
+
+            static std::unique_ptr<Model> __cdecl CreateFromVBO(
+                _In_ ID3D11Device* device,
+                _In_reads_bytes_(dataSize) const std::byte* meshData, _In_ size_t dataSize,
+                _In_ std::shared_ptr<IEffect> ieffect = nullptr,
+                ModelLoaderFlags flags = ModelLoader_Clockwise)
+            {
+                return CreateFromVBO(device, reinterpret_cast<const uint8_t*>(meshData), dataSize, ieffect, flags);
+            }
+#endif // __cpp_lib_byte
+
 #if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
             static std::unique_ptr<Model> __cdecl CreateFromCMO(
                 _In_ ID3D11Device* device,
