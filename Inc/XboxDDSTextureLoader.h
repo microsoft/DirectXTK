@@ -66,7 +66,7 @@ namespace Xbox
     void FreeDDSTextureMemory( _In_opt_ void* grfxMemory ) noexcept;
 
 #ifdef __cpp_lib_byte
-    HRESULT __cdecl CreateDDSTextureFromMemory(
+    inline HRESULT __cdecl CreateDDSTextureFromMemory(
         _In_ ID3D11DeviceX* d3dDevice,
         _In_reads_bytes_(ddsDataSize) const uint8_t* ddsData,
         _In_ size_t ddsDataSize,
