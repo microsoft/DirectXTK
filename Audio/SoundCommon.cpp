@@ -928,6 +928,7 @@ bool AudioListener::IsValid() const
     if (!std::isfinite(Position.y))
         return false;
     if (!std::isfinite(Position.z))
+        return false;
 
     if (!std::isfinite(Velocity.x))
         return false;
@@ -975,6 +976,7 @@ bool AudioEmitter::IsValid() const
     if (!std::isfinite(Position.y))
         return false;
     if (!std::isfinite(Position.z))
+        return false;
 
     if (!std::isfinite(Velocity.x))
         return false;
