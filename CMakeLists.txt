@@ -271,6 +271,7 @@ endif()
 
 if(MINGW)
     find_package(directxmath CONFIG REQUIRED)
+    target_link_libraries(${PROJECT_NAME} PUBLIC Microsoft::DirectXMath)
 else()
     find_package(directxmath CONFIG QUIET)
 endif()
