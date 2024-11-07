@@ -523,6 +523,9 @@ namespace DirectX
             size_t bpe = 0;
             switch (fmt)
             {
+            case DXGI_FORMAT_UNKNOWN:
+                return E_INVALIDARG;
+
             case DXGI_FORMAT_BC1_TYPELESS:
             case DXGI_FORMAT_BC1_UNORM:
             case DXGI_FORMAT_BC1_UNORM_SRGB:
