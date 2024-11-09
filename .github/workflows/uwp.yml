@@ -1,0 +1,72 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# http://go.microsoft.com/fwlink/?LinkId=248929
+
+name: 'CMake (UWP)'
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+    paths-ignore:
+      - '*.md'
+      - LICENSE
+      - '.nuget/*'
+      - build/*.cmd
+      - build/*.json
+      - build/*.props
+      - build/*.ps1
+      - build/*.targets
+      - build/*.yml
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        build_type: [x64-Debug-UWP, x64-Release-UWP, x64-Debug-UWP-Clang, x64-Release-UWP-Clang]
+        arch: [amd64]
+        include:
+          - build_type: x86-Debug-UWP
+            arch: amd64_x86
+          - build_type: x86-Release-UWP
+            arch: amd64_x86
+          - build_type: x86-Debug-UWP-Clang
+            arch: amd64_x86
+          - build_type: x86-Release-UWP-Clang
+            arch: amd64_x86
+          - build_type: arm64-Debug-UWP
+            arch: amd64_arm64
+          - build_type: arm64-Release-UWP
+            arch: amd64_arm64
+          - build_type: arm64-Debug-UWP-Clang
+            arch: amd64_arm64
+          - build_type: arm64-Release-UWP-Clang
+            arch: amd64_arm64
+
+    steps:
+    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+    - name: 'Install Ninja'
+      run: choco install ninja
+
+    - uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
+      with:
+        arch: ${{ matrix.arch }}
+        uwp: true
+
+    - name: 'Configure CMake'
+      working-directory: ${{ github.workspace }}
+      run: cmake --preset=${{ matrix.build_type }}
+
+    - name: 'Build'
+      working-directory: ${{ github.workspace }}
+      run: cmake --build out\build\${{ matrix.build_type }}
