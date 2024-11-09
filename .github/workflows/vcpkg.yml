@@ -64,7 +64,14 @@ jobs:
       run: |
         if ("${{ matrix.arch }}" -eq "amd64")
         {
-            echo "VCPKG_DEFAULT_TRIPLET=x64-windows" >> $env:GITHUB_ENV
+            if ("${{ matrix.build_type }}" -match "MinGW")
+            {
+                echo "VCPKG_DEFAULT_TRIPLET=x64-mingw-static" >> $env:GITHUB_ENV
+            }
+            else
+            {
+                echo "VCPKG_DEFAULT_TRIPLET=x64-windows" >> $env:GITHUB_ENV
+            }
         }
         elseif ("${{ matrix.arch }}" -eq "amd64_x86")
         {
