@@ -39,6 +39,15 @@ jobs:
           - os: windows-2022
             build_type: arm64-Debug-VCPKG
             arch: amd64_arm64
+          - os: windows-2022
+            build_type: arm64ec-Debug-VCPKG
+            arch: amd64_arm64
+          - os: windows-2022
+            build_type: x64-Debug-MinGW
+            arch: amd64
+          - os: windows-2022
+            build_type: x64-Release-MinGW
+            arch: amd64
 
     steps:
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -55,7 +64,14 @@ jobs:
       run: |
         if ("${{ matrix.arch }}" -eq "amd64")
         {
-            echo "VCPKG_DEFAULT_TRIPLET=x64-windows" >> $env:GITHUB_ENV
+            if ("${{ matrix.build_type }}" -match "MinGW")
+            {
+                echo "VCPKG_DEFAULT_TRIPLET=x64-mingw-static" >> $env:GITHUB_ENV
+            }
+            else
+            {
+                echo "VCPKG_DEFAULT_TRIPLET=x64-windows" >> $env:GITHUB_ENV
+            }
         }
         elseif ("${{ matrix.arch }}" -eq "amd64_x86")
         {
