@@ -415,12 +415,6 @@ foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
   target_link_options(${t} PRIVATE ${LINKER_SWITCHES})
 endforeach()
 
-if(MINGW)
-    foreach(t IN LISTS TOOL_EXES)
-      target_link_options(${t} PRIVATE -municode)
-    endforeach()
-endif()
-
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|IntelLLVM")
     set(WarningsLib -Wall -Wpedantic -Wextra)
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 16.0)
