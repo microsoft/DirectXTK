@@ -139,11 +139,9 @@ namespace
         { GUID_WICPixelFormat40bppCMYKAlpha,        GUID_WICPixelFormat32bppRGBA }, // DXGI_FORMAT_R8G8B8A8_UNORM
         { GUID_WICPixelFormat80bppCMYKAlpha,        GUID_WICPixelFormat64bppRGBA }, // DXGI_FORMAT_R16G16B16A16_UNORM
 
-    #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
         { GUID_WICPixelFormat32bppRGB,              GUID_WICPixelFormat32bppRGBA }, // DXGI_FORMAT_R8G8B8A8_UNORM
         { GUID_WICPixelFormat64bppRGB,              GUID_WICPixelFormat64bppRGBA }, // DXGI_FORMAT_R16G16B16A16_UNORM
         { GUID_WICPixelFormat64bppPRGBAHalf,        GUID_WICPixelFormat64bppRGBAHalf }, // DXGI_FORMAT_R16G16B16A16_FLOAT
-    #endif
 
         // We don't support n-channel formats
     };
@@ -152,7 +150,6 @@ namespace
 
     BOOL WINAPI InitializeWICFactory(PINIT_ONCE, PVOID, PVOID *ifactory) noexcept
     {
-    #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
         HRESULT hr = CoCreateInstance(
             CLSID_WICImagingFactory2,
             nullptr,
@@ -178,14 +175,6 @@ namespace
             );
             return SUCCEEDED(hr) ? TRUE : FALSE;
         }
-    #else
-        return SUCCEEDED(CoCreateInstance(
-            CLSID_WICImagingFactory,
-            nullptr,
-            CLSCTX_INPROC_SERVER,
-            __uuidof(IWICImagingFactory),
-            ifactory)) ? TRUE : FALSE;
-    #endif
     }
 }
 
@@ -238,13 +227,11 @@ namespace
                 return g_WICFormats[i].format;
         }
 
-    #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
         if (g_WIC2)
         {
             if (memcmp(&GUID_WICPixelFormat96bppRGBFloat, &guid, sizeof(GUID)) == 0)
                 return DXGI_FORMAT_R32G32B32_FLOAT;
         }
-    #endif
 
         return DXGI_FORMAT_UNKNOWN;
     }
@@ -380,7 +367,6 @@ namespace
         {
             if (memcmp(&GUID_WICPixelFormat96bppRGBFixedPoint, &pixelFormat, sizeof(WICPixelFormatGUID)) == 0)
             {
-            #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
                 if (g_WIC2)
                 {
                     memcpy_s(&convertGUID, sizeof(WICPixelFormatGUID), &GUID_WICPixelFormat96bppRGBFloat, sizeof(GUID));
@@ -388,7 +374,6 @@ namespace
                     bpp = 96;
                 }
                 else
-                #endif
                 {
                     memcpy_s(&convertGUID, sizeof(WICPixelFormatGUID), &GUID_WICPixelFormat128bppRGBAFloat, sizeof(GUID));
                     format = DXGI_FORMAT_R32G32B32A32_FLOAT;
@@ -425,7 +410,6 @@ namespace
             bpp = WICBitsPerPixel(pixelFormat);
         }
 
-    #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
         if ((format == DXGI_FORMAT_R32G32B32_FLOAT) && d3dContext && textureView)
         {
             // Special case test for optional device support for autogen mipchains for R32G32B32_FLOAT
@@ -439,7 +423,6 @@ namespace
                 bpp = 128;
             }
         }
-    #endif
 
         if (loadFlags & WIC_LOADER_FORCE_RGBA32)
         {
