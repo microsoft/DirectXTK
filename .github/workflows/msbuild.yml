@@ -46,16 +46,6 @@ jobs:
       working-directory: ${{ github.workspace }}
       run: msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=${{ matrix.platform }} ./DirectXTK_Desktop_${{ matrix.vs }}_Win10.sln
 
-    - if: matrix.platform != 'ARM64'
-      name: Restore NuGet packages
-      working-directory: ${{ github.workspace }}
-      run: nuget restore ./DirectXTK_Desktop_${{ matrix.vs }}_Win7.sln
-
-    - if: matrix.platform != 'ARM64'
-      name: 'Build (Windows 7)'
-      working-directory: ${{ github.workspace }}
-      run: msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=${{ matrix.platform }} ./DirectXTK_Desktop_${{ matrix.vs }}_Win7.sln
-
     - if: matrix.vs == '2022'
       name: 'Build (UWP)'
       working-directory: ${{ github.workspace }}

@@ -91,12 +91,6 @@ jobs:
       SourceFolder: build
       Contents: 'Directory.Build.props'
       TargetFolder: $(Build.SourcesDirectory)
-  - task: NuGetCommand@2
-    displayName: NuGet restore
-    inputs:
-      solution: DirectXTK_Desktop_2019_Win7.sln
-      selectOrConfig: config
-      nugetConfigPath: NuGet.Config
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2019.sln 32dbg
     inputs:
@@ -122,34 +116,6 @@ jobs:
     displayName: Build solution DirectXTK_Desktop_2019.sln 64rel
     inputs:
       solution: DirectXTK_Desktop_2019.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x64
-      configuration: Release
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2019_Win7.sln 32dbg
-    inputs:
-      solution: DirectXTK_Desktop_2019_Win7.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x86
-      configuration: Debug
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2019_Win7.sln 32rel
-    inputs:
-      solution: DirectXTK_Desktop_2019_Win7.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x86
-      configuration: Release
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2019.sln 64dbg
-    inputs:
-      solution: DirectXTK_Desktop_2019_Win7.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x64
-      configuration: Debug
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2019_Win7.sln 64rel
-    inputs:
-      solution: DirectXTK_Desktop_2019_Win7.sln
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Release

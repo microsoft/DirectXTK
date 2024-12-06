@@ -47,16 +47,6 @@ jobs:
   - checkout: self
     clean: true
     fetchTags: false
-  - task: NuGetToolInstaller@1
-    displayName: 'Use NuGet'
-  - task: NuGetAuthenticate@1
-    displayName: 'NuGet Auth'
-  - task: NuGetCommand@2
-    displayName: NuGet restore
-    inputs:
-      solution: DirectXTK_Desktop_2022_Win7.sln
-      feedRestore: $(GUID_FEED)
-      includeNuGetOrg: false
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2022.sln 32dbg
     inputs:
@@ -85,38 +75,6 @@ jobs:
     displayName: Build solution DirectXTK_Desktop_2022.sln 64rel
     inputs:
       solution: DirectXTK_Desktop_2022.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x64
-      configuration: Release
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022_Win7.sln 32dbg
-    inputs:
-      solution: DirectXTK_Desktop_2022_Win7.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x86
-      configuration: Debug
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022_Win7.sln 32rel
-    inputs:
-      solution: DirectXTK_Desktop_2022_Win7.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x86
-      configuration: Release
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022_Win7.sln 64dbg
-    inputs:
-      solution: DirectXTK_Desktop_2022_Win7.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x64
-      configuration: Debug
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022_Win7.sln 64rel
-    inputs:
-      solution: DirectXTK_Desktop_2022_Win7.sln
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Release

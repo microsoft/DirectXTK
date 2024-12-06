@@ -185,19 +185,10 @@ HRESULT DirectX::SaveDDSTextureToFile(
         return hr;
 
     // Create file
-#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
     ScopedHandle hFile(safe_handle(CreateFile2(
         fileName,
         GENERIC_WRITE | DELETE, 0, CREATE_ALWAYS,
         nullptr)));
-#else
-    ScopedHandle hFile(safe_handle(CreateFileW(
-        fileName,
-        GENERIC_WRITE | DELETE, 0,
-        nullptr,
-        CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL,
-        nullptr)));
-#endif
     if (!hFile)
         return HRESULT_FROM_WIN32(GetLastError());
 
@@ -495,7 +486,6 @@ HRESULT DirectX::SaveWICTextureToFile(
         // Screenshots don't typically include the alpha channel of the render target
         switch (desc.Format)
         {
-        #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
         case DXGI_FORMAT_R32G32B32A32_FLOAT:
         case DXGI_FORMAT_R16G16B16A16_FLOAT:
             if (IsWIC2())
@@ -507,7 +497,6 @@ HRESULT DirectX::SaveWICTextureToFile(
                 targetGuid = GUID_WICPixelFormat24bppBGR;
             }
             break;
-        #endif
 
         case DXGI_FORMAT_R16G16B16A16_UNORM: targetGuid = GUID_WICPixelFormat48bppBGR; break;
         case DXGI_FORMAT_B5G5R5A1_UNORM:     targetGuid = GUID_WICPixelFormat16bppBGR555; break;

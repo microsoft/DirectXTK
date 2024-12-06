@@ -526,7 +526,6 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
         return HRESULT_FROM_WIN32(GetLastError());
     }
 
-#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
     CREATEFILE2_EXTENDED_PARAMETERS params = { sizeof(CREATEFILE2_EXTENDED_PARAMETERS), 0, 0, 0, {}, nullptr };
     params.dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
     params.dwFileFlags = FILE_FLAG_OVERLAPPED | FILE_FLAG_SEQUENTIAL_SCAN;
@@ -534,15 +533,6 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
         szFileName,
         GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING,
         &params)));
-#else
-    ScopedHandle hFile(safe_handle(CreateFileW(
-        szFileName,
-        GENERIC_READ, FILE_SHARE_READ,
-        nullptr,
-        OPEN_EXISTING, FILE_FLAG_OVERLAPPED | FILE_FLAG_SEQUENTIAL_SCAN,
-        nullptr)));
-#endif
-
     if (!hFile)
     {
         return HRESULT_FROM_WIN32(GetLastError());
@@ -552,29 +542,15 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
     OVERLAPPED request = {};
     request.hEvent = m_event.get();
 
-    bool wait = false;
     if (!ReadFile(hFile.get(), &m_header, sizeof(m_header), nullptr, &request))
     {
         const DWORD error = GetLastError();
         if (error != ERROR_IO_PENDING)
             return HRESULT_FROM_WIN32(error);
-        wait = true;
     }
 
     DWORD bytes;
-#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
-    std::ignore = wait;
-
     BOOL result = GetOverlappedResultEx(hFile.get(), &request, &bytes, INFINITE, FALSE);
-#else
-    if (wait)
-    {
-        std::ignore = WaitForSingleObject(m_event.get(), INFINITE);
-    }
-
-    BOOL result = GetOverlappedResult(hFile.get(), &request, &bytes, FALSE);
-#endif
-
     if (!result || (bytes != sizeof(m_header)))
     {
         return HRESULT_FROM_WIN32(GetLastError());
@@ -602,26 +578,14 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
     request.Offset = m_header.Segments[HEADER::SEGIDX_BANKDATA].dwOffset;
     request.hEvent = m_event.get();
 
-    wait = false;
     if (!ReadFile(hFile.get(), &m_data, sizeof(m_data), nullptr, &request))
     {
         const DWORD error = GetLastError();
         if (error != ERROR_IO_PENDING)
             return HRESULT_FROM_WIN32(error);
-        wait = true;
     }
 
-#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
     result = GetOverlappedResultEx(hFile.get(), &request, &bytes, INFINITE, FALSE);
-#else
-    if (wait)
-    {
-        std::ignore = WaitForSingleObject(m_event.get(), INFINITE);
-    }
-
-    result = GetOverlappedResult(hFile.get(), &request, &bytes, FALSE);
-#endif
-
     if (!result || (bytes != sizeof(m_data)))
     {
         return HRESULT_FROM_WIN32(GetLastError());
@@ -688,26 +652,14 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
             request.Offset = m_header.Segments[HEADER::SEGIDX_ENTRYNAMES].dwOffset;
             request.hEvent = m_event.get();
 
-            wait = false;
             if (!ReadFile(hFile.get(), temp.get(), namesBytes, nullptr, &request))
             {
                 const DWORD error = GetLastError();
                 if (error != ERROR_IO_PENDING)
                     return HRESULT_FROM_WIN32(error);
-                wait = true;
             }
 
-        #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
             result = GetOverlappedResultEx(hFile.get(), &request, &bytes, INFINITE, FALSE);
-        #else
-            if (wait)
-            {
-                std::ignore = WaitForSingleObject(m_event.get(), INFINITE);
-            }
-
-            result = GetOverlappedResult(hFile.get(), &request, &bytes, FALSE);
-        #endif
-
             if (!result || (namesBytes != bytes))
             {
                 return HRESULT_FROM_WIN32(GetLastError());
@@ -741,26 +693,14 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
     request.Offset = m_header.Segments[HEADER::SEGIDX_ENTRYMETADATA].dwOffset;
     request.hEvent = m_event.get();
 
-    wait = false;
     if (!ReadFile(hFile.get(), m_entries.get(), metadataBytes, nullptr, &request))
     {
         const DWORD error = GetLastError();
         if (error != ERROR_IO_PENDING)
             return HRESULT_FROM_WIN32(error);
-        wait = true;
     }
 
-#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
     result = GetOverlappedResultEx(hFile.get(), &request, &bytes, INFINITE, FALSE);
-#else
-    if (wait)
-    {
-        std::ignore = WaitForSingleObject(m_event.get(), INFINITE);
-    }
-
-    result = GetOverlappedResult(hFile.get(), &request, &bytes, FALSE);
-#endif
-
     if (!result || (metadataBytes != bytes))
     {
         return HRESULT_FROM_WIN32(GetLastError());
@@ -794,26 +734,14 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
         request.Offset = m_header.Segments[HEADER::SEGIDX_SEEKTABLES].dwOffset;
         request.hEvent = m_event.get();
 
-        wait = false;
         if (!ReadFile(hFile.get(), m_seekData.get(), seekLen, nullptr, &request))
         {
             const DWORD error = GetLastError();
             if (error != ERROR_IO_PENDING)
                 return HRESULT_FROM_WIN32(error);
-            wait = true;
         }
 
-    #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
         result = GetOverlappedResultEx(hFile.get(), &request, &bytes, INFINITE, FALSE);
-    #else
-        if (wait)
-        {
-            std::ignore = WaitForSingleObject(m_event.get(), INFINITE);
-        }
-
-        result = GetOverlappedResult(hFile.get(), &request, &bytes, FALSE);
-    #endif
-
         if (!result || (seekLen != bytes))
         {
             return HRESULT_FROM_WIN32(GetLastError());
@@ -840,25 +768,13 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
         // If streaming, reopen without buffering
         hFile.reset();
 
-    #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
         CREATEFILE2_EXTENDED_PARAMETERS params2 = { sizeof(CREATEFILE2_EXTENDED_PARAMETERS), 0, 0, 0, {}, nullptr };
         params2.dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
         params2.dwFileFlags = FILE_FLAG_OVERLAPPED | FILE_FLAG_NO_BUFFERING;
-        m_async = CreateFile2(szFileName,
-            GENERIC_READ,
-            FILE_SHARE_READ,
-            OPEN_EXISTING,
+        m_async = CreateFile2(
+            szFileName,
+            GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING,
             &params2);
-    #else
-        m_async = CreateFileW(szFileName,
-            GENERIC_READ,
-            FILE_SHARE_READ,
-            nullptr,
-            OPEN_EXISTING,
-            FILE_FLAG_OVERLAPPED | FILE_FLAG_NO_BUFFERING,
-            nullptr);
-    #endif
-
         if (m_async == INVALID_HANDLE_VALUE)
         {
             return HRESULT_FROM_WIN32(GetLastError());
@@ -942,13 +858,7 @@ void WaveBankReader::Impl::Close() noexcept
         if (m_request.hEvent)
         {
             DWORD bytes;
-        #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
             std::ignore = GetOverlappedResultEx(m_async, &m_request, &bytes, INFINITE, FALSE);
-        #else
-            std::ignore = WaitForSingleObject(m_request.hEvent, INFINITE);
-
-            std::ignore = GetOverlappedResult(m_async, &m_request, &bytes, FALSE);
-        #endif
         }
 
         CloseHandle(m_async);
@@ -1279,12 +1189,8 @@ bool WaveBankReader::Impl::UpdatePrepared() noexcept
     if (m_request.hEvent)
     {
 
-    #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
         DWORD bytes;
         const BOOL result = GetOverlappedResultEx(m_async, &m_request, &bytes, 0, FALSE);
-    #else
-        const bool result = HasOverlappedIoCompleted(&m_request);
-    #endif
         if (result)
         {
             m_prepared = true;
