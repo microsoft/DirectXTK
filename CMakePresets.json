@@ -118,11 +118,11 @@
     },
 
     {
-      "name": "Win7",
+      "name": "XAudio2Redist",
       "cacheVariables": {
         "BUILD_XAUDIO_WIN10": false,
         "BUILD_XAUDIO_WIN8": false,
-        "BUILD_XAUDIO_WIN7": true,
+        "BUILD_XAUDIO_REDIST": true,
         "BUILD_XINPUT": true
       },
       "hidden": true
@@ -132,7 +132,7 @@
       "cacheVariables": {
         "BUILD_XAUDIO_WIN10": true,
         "BUILD_XAUDIO_WIN8": false,
-        "BUILD_XAUDIO_WIN7": false,
+        "BUILD_XAUDIO_REDIST": false,
         "BUILD_WGI": true
       },
       "hidden": true
@@ -150,7 +150,7 @@
       "cacheVariables": {
         "BUILD_XAUDIO_WIN10": true,
         "BUILD_XAUDIO_WIN8": false,
-        "BUILD_XAUDIO_WIN7": false,
+        "BUILD_XAUDIO_REDIST": false,
         "BUILD_GAMEINPUT": true
       },
       "hidden": true
@@ -267,10 +267,10 @@
     { "name": "arm64-Debug-UWP"  , "description": "MSVC for ARM64 (Debug) for UWP", "inherits": [ "base", "ARM64", "Debug", "MSVC", "UWP" ] },
     { "name": "arm64-Release-UWP", "description": "MSVC for ARM64 (Release) for UWP", "inherits": [ "base", "ARM64", "Release", "MSVC", "UWP" ] },
 
-    { "name": "x64-Debug-Win7"  , "description": "MSVC for x64 (Debug) for Windows 7 w/ XAudio2Redist", "inherits": [ "base", "x64", "Debug", "MSVC", "Win7", "VCPKG" ] },
-    { "name": "x64-Release-Win7", "description": "MSVC for x64 (Release) for Windows 7 w/ XAudio2Redist", "inherits": [ "base", "x64", "Release", "MSVC", "Win7", "VCPKG" ] },
-    { "name": "x86-Debug-Win7"  , "description": "MSVC for x86 (Debug) for Windows 7 w/ XAudio2Redist", "inherits": [ "base", "x86", "Debug", "MSVC", "Win7", "VCPKG" ] },
-    { "name": "x86-Release-Win7", "description": "MSVC for x86 (Release) for Windows 7 w/ XAudio2Redist", "inherits": [ "base", "x86", "Release", "MSVC", "Win7", "VCPKG" ] },
+    { "name": "x64-Debug-Redist"  , "description": "MSVC for x64 (Debug) with XAudio2Redist", "inherits": [ "base", "x64", "Debug", "MSVC", "XAudio2Redist", "VCPKG" ] },
+    { "name": "x64-Release-Redist", "description": "MSVC for x64 (Release) with XAudio2Redist", "inherits": [ "base", "x64", "Release", "MSVC", "XAudio2Redist", "VCPKG" ] },
+    { "name": "x86-Debug-Redist"  , "description": "MSVC for x86 (Debug) with XAudio2Redist", "inherits": [ "base", "x86", "Debug", "MSVC", "XAudio2Redist", "VCPKG" ] },
+    { "name": "x86-Release-Redist", "description": "MSVC for x86 (Release) with XAudio2Redist", "inherits": [ "base", "x86", "Release", "MSVC", "XAudio2Redist", "VCPKG" ] },
 
     { "name": "x64-Debug-GDK"   , "description": "MSVC for x64 (Debug) with Microsoft GDK", "inherits": [ "base", "x64", "Debug", "MSVC", "GDK" ] },
     { "name": "x64-Release-GDK" , "description": "MSVC for x64 (Release) with Microsoft GDK", "inherits": [ "base", "x64", "Release", "MSVC", "GDK" ] },
@@ -308,10 +308,10 @@
     { "name": "arm64-Debug-UWP-Clang"  , "description": "Clang/LLVM for AArch64 (Debug) for UWP", "inherits": [ "base", "ARM64", "Debug", "Clang", "Clang-AArch64", "UWP" ] },
     { "name": "arm64-Release-UWP-Clang", "description": "Clang/LLVM for AArch64 (Release) for UWP", "inherits": [ "base", "ARM64", "Release", "Clang", "Clang-AArch64", "UWP" ] },
 
-    { "name": "x64-Debug-Win7-Clang"  , "description": "Clang/LLVM for x64 (Debug) for Windows 7 w/ XAudio2Redist", "inherits": [ "base", "x64", "Debug", "Clang", "Win7", "VCPKG" ] },
-    { "name": "x64-Release-Win7-Clang", "description": "Clang/LLVM for x64 (Release) for Windows 7 w/ XAudio2Redist", "inherits": [ "base", "x64", "Release", "Clang", "Win7", "VCPKG" ] },
-    { "name": "x86-Debug-Win7-Clang"  , "description": "Clang/LLVM for x86 (Debug) for Windows 7 w/ XAudio2Redist", "inherits": [ "base", "x86", "Debug", "Clang", "Clang-X86", "Win7", "VCPKG" ] },
-    { "name": "x86-Release-Win7-Clang", "description": "Clang/LLVM for x86 (Release) for Windows 7 w/ XAudio2Redist", "inherits": [ "base", "x86", "Release", "Clang", "Clang-X86", "Win7", "VCPKG" ] },
+    { "name": "x64-Debug-Redist-Clang"  , "description": "Clang/LLVM for x64 (Debug) with XAudio2Redist", "inherits": [ "base", "x64", "Debug", "Clang", "XAudio2Redist", "VCPKG" ] },
+    { "name": "x64-Release-Redist-Clang", "description": "Clang/LLVM for x64 (Release) with XAudio2Redist", "inherits": [ "base", "x64", "Release", "Clang", "XAudio2Redist", "VCPKG" ] },
+    { "name": "x86-Debug-Redist-Clang"  , "description": "Clang/LLVM for x86 (Debug) with XAudio2Redist", "inherits": [ "base", "x86", "Debug", "Clang", "Clang-X86", "XAudio2Redist", "VCPKG" ] },
+    { "name": "x86-Release-Redist-Clang", "description": "Clang/LLVM for x86 (Release) with XAudio2Redist", "inherits": [ "base", "x86", "Release", "Clang", "Clang-X86", "XAudio2Redist", "VCPKG" ] },
 
     { "name": "x64-Debug-Clang-VCPKG"     , "description": "Clang/LLVM for x64 (Debug) using VCPKG", "inherits": [ "base", "x64", "Debug", "Clang", "VCPKG" ] },
     { "name": "x64-Release-Clang-VCPKG"   , "description": "Clang/LLVM for x64 (Release) using VCPKG", "inherits": [ "base", "x64", "Release", "Clang", "VCPKG" ] },
@@ -321,10 +321,10 @@
     { "name": "x64-Debug-GDK-Clang"   , "description": "Clang/LLVM for x64 (Debug) with Microsoft GDK", "inherits": [ "base", "x64", "Debug", "Clang", "GDK" ] },
     { "name": "x64-Release-GDK-Clang" , "description": "Clang/LLVM for x64 (Release) with Microsoft GDK", "inherits": [ "base", "x64", "Release", "Clang", "GDK" ] },
 
-    { "name": "x64-Debug-MinGW"  , "description": "MinG-W64 (Debug)", "inherits": [ "base", "x64", "Debug", "GNUC", "VCPKG", "MinGW64", "Win7" ] },
-    { "name": "x64-Release-MinGW", "description": "MinG-W64 (Release)", "inherits": [ "base", "x64", "Release", "GNUC", "VCPKG", "MinGW64", "Win7" ] },
-    { "name": "x86-Debug-MinGW"  , "description": "MinG-W32 (Debug)", "inherits": [ "base", "x86", "Debug", "GNUC", "VCPKG", "MinGW32", "Win7" ] },
-    { "name": "x86-Release-MinGW", "description": "MinG-W32 (Release)", "inherits": [ "base", "x86", "Release", "GNUC", "VCPKG", "MinGW32", "Win7" ] },
+    { "name": "x64-Debug-MinGW"  , "description": "MinG-W64 (Debug)", "inherits": [ "base", "x64", "Debug", "GNUC", "VCPKG", "MinGW64", "XAudio2Redist" ] },
+    { "name": "x64-Release-MinGW", "description": "MinG-W64 (Release)", "inherits": [ "base", "x64", "Release", "GNUC", "VCPKG", "MinGW64", "XAudio2Redist" ] },
+    { "name": "x86-Debug-MinGW"  , "description": "MinG-W32 (Debug)", "inherits": [ "base", "x86", "Debug", "GNUC", "VCPKG", "MinGW32", "XAudio2Redist" ] },
+    { "name": "x86-Release-MinGW", "description": "MinG-W32 (Release)", "inherits": [ "base", "x86", "Release", "GNUC", "VCPKG", "MinGW32", "XAudio2Redist" ] },
 
     { "name": "x64-Debug-ICC"     , "description": "Intel Classic Compiler (Debug) for Windows 8", "inherits": [ "base", "x64", "Debug", "Intel" ] },
     { "name": "x64-Release-ICC"   , "description": "Intel Classic Compiler (Release) for Windows 8", "inherits": [ "base", "x64", "Release", "Intel" ] },
@@ -349,10 +349,10 @@
     { "name": "arm64ec-Debug"  , "configurePreset": "arm64ec-Debug" },
     { "name": "arm64ec-Release", "configurePreset": "arm64ec-Release" },
 
-    { "name": "x64-Debug-Win7"    , "configurePreset": "x64-Debug-Win7" },
-    { "name": "x64-Release-Win7"  , "configurePreset": "x64-Release-Win7" },
-    { "name": "x86-Debug-Win7"    , "configurePreset": "x86-Debug-Win7" },
-    { "name": "x86-Release-Win7"  , "configurePreset": "x86-Release-Win7" },
+    { "name": "x64-Debug-Redist"    , "configurePreset": "x64-Debug-Redist" },
+    { "name": "x64-Release-Redist"  , "configurePreset": "x64-Release-Redist" },
+    { "name": "x86-Debug-Redist"    , "configurePreset": "x86-Debug-Redist" },
+    { "name": "x86-Release-Redist"  , "configurePreset": "x86-Release-Redist" },
 
     { "name": "x64-Debug-Clang"    , "configurePreset": "x64-Debug-Clang" },
     { "name": "x64-Release-Clang"  , "configurePreset": "x64-Release-Clang" },
