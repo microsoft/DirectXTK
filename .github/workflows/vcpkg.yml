@@ -37,6 +37,12 @@ jobs:
             build_type: x86-Debug-VCPKG
             arch: amd64_x86
           - os: windows-2022
+            build_type: x64-Debug-Redist
+            arch: amd64
+          - os: windows-2022
+            build_type: x64-Release-Redist
+            arch: amd64
+          - os: windows-2022
             build_type: arm64-Debug-VCPKG
             arch: amd64_arm64
           - os: windows-2022
