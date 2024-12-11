@@ -51,23 +51,15 @@ DirectX Tool Kit for Audio in this package uses XAudio 2.8 to support Windows 8.
 
         <file target="native\lib\x86\Debug" src="Bin\Desktop_2019\Win32\Debug\*.lib" />
         <file target="native\lib\x86\Debug" src="Bin\Desktop_2019\Win32\Debug\*.pdb" />
-        <file target="native\lib\x86\Debug" src="Audio\Bin\Desktop_2019_Win8\Win32\Debug\*.lib" />
-        <file target="native\lib\x86\Debug" src="Audio\Bin\Desktop_2019_Win8\Win32\Debug\*.pdb" />
 
         <file target="native\lib\x86\Release" src="Bin\Desktop_2019\Win32\Release\*.lib" />
         <file target="native\lib\x86\Release" src="Bin\Desktop_2019\Win32\Release\*.pdb" />
-        <file target="native\lib\x86\Release" src="Audio\Bin\Desktop_2019_Win8\Win32\Release\*.lib" />
-        <file target="native\lib\x86\Release" src="Audio\Bin\Desktop_2019_Win8\Win32\Release\*.pdb" />
 
         <file target="native\lib\x64\Debug" src="Bin\Desktop_2019\x64\Debug\*.lib" />
         <file target="native\lib\x64\Debug" src="Bin\Desktop_2019\x64\Debug\*.pdb" />
-        <file target="native\lib\x64\Debug" src="Audio\Bin\Desktop_2019_Win8\x64\Debug\*.lib" />
-        <file target="native\lib\x64\Debug" src="Audio\Bin\Desktop_2019_Win8\x64\Debug\*.pdb" />
 
         <file target="native\lib\x64\Release" src="Bin\Desktop_2019\x64\Release\*.lib" />
         <file target="native\lib\x64\Release" src="Bin\Desktop_2019\x64\Release\*.pdb" />
-        <file target="native\lib\x64\Release" src="Audio\Bin\Desktop_2019_Win8\x64\Release\*.lib" />
-        <file target="native\lib\x64\Release" src="Audio\Bin\Desktop_2019_Win8\x64\Release\*.pdb" />
 
         <file src=".nuget/directxtk_desktop_2019.targets" target="build\native" />
 
