@@ -36,7 +36,7 @@
 
 #if defined(USING_XAUDIO2_REDIST) || (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/) || defined(_XBOX_ONE)
 #define USING_XAUDIO2_9
-#elif (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
+#elif (_WIN32_WINNT >= 0x0603 /*_WIN32_WINNT_WINBLUE*/)
 #define USING_XAUDIO2_8
 #else
 #error DirectX Tool Kit for Audio not supported on this platform

@@ -78,6 +78,12 @@ FOR SECURITY ADVISORIES, see [GitHub](https://github.com/microsoft/DirectXTK/sec
 
 For a full change history, see [CHANGELOG.md](https://github.com/microsoft/DirectXTK/blob/main/CHANGELOG.md).
 
+* Starting with the December 2024 release, Windows 7 and Windows 8.0 support has been retired. For *DirectX ToolKit for Audio* this means that `DirectXTKAudio_Desktop_*_Win7` has been removed, and `DirectXTKAudio_Desktop_*_Win8` has been integrated into the `DirectXTK_Desktop_*` vcxproj which uses XAudio 2.8 for Windows 8.1 compatibility.
+
+  * Remove any References to or use of `DirectXTKAudio_Desktop_*_Win8.vcxproj` or `DirectXTKAudio_Desktop_*_Win7`. If using `DirectXTK_Desktop_*.vcxproj` you will be using XAudio 2.8 and no longer use the XAudio2Redist NuGet package. Client code will need to build with `_WIN32_WINNT=0x0603`.
+
+  * If you want to use XAudio2Redist with Windows 8.1, the CMake project supports this with the build option `BUILD_XAUDIO_REDIST`. The CMake build option `BUILD_XAUDIO_WIN7` was renamed.
+
 * Starting with the February 2023 release, the Mouse class implementation of relative mouse movement was updated to accumulate changes between calls to ``GetState``. By default, each time you call ``GetState`` the deltas are reset which works for scenarios where you use relative movement but only call the method once per frame. If you call it more than once per frame, then add an explicit call to ``EndOfInputFrame`` to use an explicit reset model instead.
 
 * As of the September 2022 release, the library makes use of C++11 inline namespaces for differing types that have the same names in the DirectX 11 and DirectX 12 version of the *DirectX Tool Kit*. This provides a link-unique name such as ``DirectX::DX11::SpriteBatch`` that will appear in linker output messages. In most use cases, however, there is no need to add explicit ``DX11`` namespace resolution in client code.
