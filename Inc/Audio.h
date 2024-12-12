@@ -36,10 +36,8 @@
 
 #if defined(USING_XAUDIO2_REDIST) || (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/) || defined(_XBOX_ONE)
 #define USING_XAUDIO2_9
-#elif (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
+#elif (_WIN32_WINNT >= 0x0603 /*_WIN32_WINNT_WINBLUE*/)
 #define USING_XAUDIO2_8
-#elif (_WIN32_WINNT >= 0x0601 /*_WIN32_WINNT_WIN7*/)
-#error Windows 7 SP1 requires the XAudio2Redist NuGet package https://aka.ms/xaudio2redist
 #else
 #error DirectX Tool Kit for Audio not supported on this platform
 #endif

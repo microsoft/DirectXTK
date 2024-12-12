@@ -154,7 +154,7 @@ jobs:
     inputs:
       cwd: $(Build.SourcesDirectory)
       cmakeArgs: >
-        -B out -DCMAKE_BUILD_TYPE="Debug" -DDIRECTX_ARCH=x86 -DBUILD_XAUDIO_WIN7=ON
+        -B out -DCMAKE_BUILD_TYPE="Debug" -DDIRECTX_ARCH=x86 -DBUILD_XAUDIO_REDIST=ON
         -DCMAKE_CXX_COMPILER="g++.exe" -G "MinGW Makefiles"
         -DUSE_PREBUILT_SHADERS=ON -DCOMPILED_SHADERS=$(CompileShadersOutput)
         -DCMAKE_TOOLCHAIN_FILE="$(VCPKG_CMAKE_DIR)" -DVCPKG_MANIFEST_DIR="$(VCPKG_MANIFEST_DIR)" -DVCPKG_TARGET_TRIPLET=x86-mingw-static
@@ -231,7 +231,7 @@ jobs:
     inputs:
       cwd: $(Build.SourcesDirectory)
       cmakeArgs: >
-        -B out -DCMAKE_BUILD_TYPE="Debug" -DDIRECTX_ARCH=x64 -DBUILD_XAUDIO_WIN7=ON
+        -B out -DCMAKE_BUILD_TYPE="Debug" -DDIRECTX_ARCH=x64 -DBUILD_XAUDIO_REDIST=ON
         -DCMAKE_CXX_COMPILER="g++.exe" -G "MinGW Makefiles"
         -DUSE_PREBUILT_SHADERS=ON -DCOMPILED_SHADERS=$(CompileShadersOutput)
         -DCMAKE_TOOLCHAIN_FILE="$(VCPKG_CMAKE_DIR)" -DVCPKG_MANIFEST_DIR="$(VCPKG_MANIFEST_DIR)" -DVCPKG_TARGET_TRIPLET=x64-mingw-static
