@@ -80,7 +80,9 @@ For a full change history, see [CHANGELOG.md](https://github.com/microsoft/Direc
 
 * Starting with the December 2024 release, Windows 7 and Windows 8.0 support has been retired. For *DirectX ToolKit for Audio* this means that `DirectXTKAudio_Desktop_*_Win7` has been removed, and `DirectXTKAudio_Desktop_*_Win8` has been integrated into the `DirectXTK_Desktop_*` vcxproj which uses XAudio 2.8 for Windows 8.1 compatibility.
 
-  * Remove any References to or use of `DirectXTKAudio_Desktop_*_Win8.vcxproj` or `DirectXTKAudio_Desktop_*_Win7`. If using `DirectXTK_Desktop_*.vcxproj` you will be using XAudio 2.8 and no longer use the XAudio2Redist NuGet package. Client code will need to build with `_WIN32_WINNT=0x0603`.
+  * Remove any References to or use of `DirectXTKAudio_Desktop_*_Win8.vcxproj` or `DirectXTKAudio_Desktop_*_Win7`. If using `DirectXTK_Desktop_*.vcxproj` you will be using XAudio 2.8 as before. Client code will need to build with `_WIN32_WINNT=0x0603`.
+
+  * With the `directxtk_desktop_2019` NuGet package, you will be using XAudio 2.8 and no longer use the XAudio2Redist NuGet package. Client code will build with `_WIN32_WINNT=0x0603`.
 
   * If you want to use XAudio2Redist with Windows 8.1, the CMake project supports this with the build option `BUILD_XAUDIO_REDIST`. The CMake build option `BUILD_XAUDIO_WIN7` was renamed.
 

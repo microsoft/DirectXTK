@@ -121,6 +121,11 @@
 
 #include <d3d11_x.h>
 #else
+
+#if (_WIN32_WINNT < 0x0603 /*_WIN32_WINNT_WINBLUE*/)
+#error DirectX Tool Kit for Direct3D 11 requires Windows 8.1 or later
+#endif
+
 #include <d3d11_1.h>
 #endif
 
