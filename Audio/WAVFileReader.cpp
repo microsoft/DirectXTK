@@ -540,20 +540,10 @@ namespace
             return E_INVALIDARG;
 
         // open the file
-    #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
         ScopedHandle hFile(safe_handle(CreateFile2(
             szFileName,
             GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING,
             nullptr)));
-    #else
-        ScopedHandle hFile(safe_handle(CreateFileW(
-            szFileName,
-            GENERIC_READ, FILE_SHARE_READ,
-            nullptr,
-            OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,
-            nullptr)));
-    #endif
-
         if (!hFile)
         {
             return HRESULT_FROM_WIN32(GetLastError());

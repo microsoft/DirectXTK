@@ -38,7 +38,7 @@ jobs:
       uses: microsoft/setup-msbuild@6fb02220983dee41ce7ae257b6f4d8f9bf5ed4ce # v2.0.0
 
     - if: matrix.platform != 'ARM64'
-      name: Build
+      name: Build (Windows 8.1)
       working-directory: ${{ github.workspace }}
       run: msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=${{ matrix.platform }} ./DirectXTK_Desktop_${{ matrix.vs }}.sln
 
@@ -46,23 +46,13 @@ jobs:
       working-directory: ${{ github.workspace }}
       run: msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=${{ matrix.platform }} ./DirectXTK_Desktop_${{ matrix.vs }}_Win10.sln
 
-    - if: matrix.platform != 'ARM64'
-      name: Restore NuGet packages
-      working-directory: ${{ github.workspace }}
-      run: nuget restore ./DirectXTK_Desktop_${{ matrix.vs }}_Win7.sln
-
-    - if: matrix.platform != 'ARM64'
-      name: 'Build (Windows 7)'
-      working-directory: ${{ github.workspace }}
-      run: msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=${{ matrix.platform }} ./DirectXTK_Desktop_${{ matrix.vs }}_Win7.sln
-
     - if: matrix.vs == '2022'
       name: 'Build (UWP)'
       working-directory: ${{ github.workspace }}
       run: msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=${{ matrix.platform }} ./DirectXTK_Windows10_2022.sln
 
     - if: matrix.platform != 'ARM64'
-      name: 'Build (Spectre)'
+      name: 'Build (Windows 8.1 w/ Spectre)'
       working-directory: ${{ github.workspace }}
       run: msbuild /m /p:SpectreMitigation=Spectre /p:Configuration=${{ matrix.build_type }} /p:Platform=${{ matrix.platform }} ./DirectXTK_Desktop_${{ matrix.vs }}.sln
 

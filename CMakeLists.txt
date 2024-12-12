@@ -19,7 +19,7 @@ option(BUILD_TOOLS "Build XWBTool" ON)
 
 option(BUILD_XAUDIO_WIN10 "Build for XAudio 2.9" OFF)
 option(BUILD_XAUDIO_WIN8 "Build for XAudio 2.8" ON)
-option(BUILD_XAUDIO_WIN7 "Build for XAudio2Redist" OFF)
+option(BUILD_XAUDIO_REDIST "Build for XAudio2Redist" OFF)
 
 option(BUILD_GAMEINPUT "Build for GameInput" OFF)
 option(BUILD_WGI "Build for Windows.Gaming.Input" OFF)
@@ -182,12 +182,12 @@ if(MINGW)
 endif()
 
 if(${DIRECTX_ARCH} MATCHES "^arm")
-  set(BUILD_XAUDIO_WIN7 OFF)
+  set(BUILD_XAUDIO_REDIST OFF)
 endif()
 
 if(WINDOWS_STORE
    OR BUILD_XAUDIO_WIN10 OR BUILD_XAUDIO_WIN8
-   OR BUILD_XAUDIO_WIN7)
+   OR BUILD_XAUDIO_REDIST)
     set(LIBRARY_HEADERS ${LIBRARY_HEADERS}
         Inc/Audio.h)
 
@@ -265,7 +265,7 @@ target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_11)
 
 if(WINDOWS_STORE
    OR BUILD_XAUDIO_WIN10 OR BUILD_XAUDIO_WIN8
-   OR BUILD_XAUDIO_WIN7)
+   OR BUILD_XAUDIO_REDIST)
     target_include_directories(${PROJECT_NAME} PRIVATE Audio)
 endif()
 
@@ -281,9 +281,9 @@ if(directxmath_FOUND)
     target_link_libraries(${PROJECT_NAME} PRIVATE Microsoft::DirectXMath)
 endif()
 
-if(BUILD_XAUDIO_WIN7
+if(BUILD_XAUDIO_REDIST
    AND (NOT BUILD_XAUDIO_WIN10) AND (NOT BUILD_XAUDIO_WIN8) AND (NOT WINDOWS_STORE))
-    message(STATUS "Using XAudio2Redist for DirectX Tool Kit for Audio on Windows 7.")
+    message(STATUS "Using XAudio2Redist for DirectX Tool Kit for Audio.")
     find_package(xaudio2redist CONFIG REQUIRED)
     target_link_libraries(${PROJECT_NAME} PUBLIC Microsoft::XAudio2Redist)
     target_compile_definitions(${PROJECT_NAME} PUBLIC USING_XAUDIO2_REDIST)
@@ -483,15 +483,11 @@ if(WIN32)
         message(STATUS "Building for Windows 10/Windows 11.")
         set(WINVER 0x0A00)
     elseif(BUILD_XAUDIO_WIN8)
-        message(STATUS "Using DirectX Tool Kit for Audio on XAudio 2.8 (Windows 8).")
-        set(WINVER 0x0602)
-    elseif(${DIRECTX_ARCH} MATCHES "^arm")
-        message(STATUS "Building for Windows 8.")
-        set(WINVER 0x0602)
+        message(STATUS "Using DirectX Tool Kit for Audio on XAudio 2.8 (Windows 8.1).")
+        set(WINVER 0x0603)
     else()
-        message(STATUS "Building for Windows 7.")
-        set(WINVER 0x0601)
-        target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN7_PLATFORM_UPDATE)
+        message(STATUS "Building for Windows 8.1")
+        set(WINVER 0x0603)
     endif()
 
     foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})

@@ -37,6 +37,12 @@ jobs:
             build_type: x86-Debug-VCPKG
             arch: amd64_x86
           - os: windows-2022
+            build_type: x64-Debug-Redist
+            arch: amd64
+          - os: windows-2022
+            build_type: x64-Release-Redist
+            arch: amd64
+          - os: windows-2022
             build_type: arm64-Debug-VCPKG
             arch: amd64_arm64
           - os: windows-2022
@@ -102,7 +108,7 @@ jobs:
     - name: 'Configure CMake'
       working-directory: ${{ github.workspace }}
       run: >
-        cmake --preset=${{ matrix.build_type }} -DBUILD_TESTING=OFF -DBUILD_XAUDIO_WIN10=OFF -DBUILD_XAUDIO_WIN8=OFF -DBUILD_XAUDIO_WIN7=ON
+        cmake --preset=${{ matrix.build_type }} -DBUILD_TESTING=OFF -DBUILD_XAUDIO_WIN10=OFF -DBUILD_XAUDIO_WIN8=OFF -DBUILD_XAUDIO_REDIST=ON
         -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_MANIFEST_DIR="${{ github.workspace }}/build"
         -DVCPKG_TARGET_TRIPLET="${env:VCPKG_DEFAULT_TRIPLET}"
 

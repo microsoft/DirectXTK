@@ -32,7 +32,7 @@ VertexTypes - structures for commonly used vertex data formats
 WICTextureLoader - WIC-based image file texture loader</description>
         <releaseNotes>Matches the October 28, 2024 release on GitHub.
 
-DirectX Tool Kit for Audio in this package uses XAudio2Redist NuGet package to support Windows 7 or later.</releaseNotes>
+DirectX Tool Kit for Audio in this package uses XAudio 2.8 to support Windows 8.1.</releaseNotes>
         <projectUrl>http://go.microsoft.com/fwlink/?LinkId=248929</projectUrl>
         <repository type="git" url="https://github.com/microsoft/DirectXTK.git" />
         <icon>images\icon.jpg</icon>
@@ -41,9 +41,6 @@ DirectX Tool Kit for Audio in this package uses XAudio2Redist NuGet package to s
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <copyright>&#169; Microsoft Corporation. All rights reserved.</copyright>
         <tags>DirectX DirectXTK native nativepackage</tags>
-        <dependencies>
-            <dependency id="Microsoft.XAudio2.Redist" version="1.2.11" />
-        </dependencies>
     </metadata>
 
     <files>
@@ -54,23 +51,15 @@ DirectX Tool Kit for Audio in this package uses XAudio2Redist NuGet package to s
 
         <file target="native\lib\x86\Debug" src="Bin\Desktop_2019\Win32\Debug\*.lib" />
         <file target="native\lib\x86\Debug" src="Bin\Desktop_2019\Win32\Debug\*.pdb" />
-        <file target="native\lib\x86\Debug" src="Audio\Bin\Desktop_2019_Win7\Win32\Debug\*.lib" />
-        <file target="native\lib\x86\Debug" src="Audio\Bin\Desktop_2019_Win7\Win32\Debug\*.pdb" />
 
         <file target="native\lib\x86\Release" src="Bin\Desktop_2019\Win32\Release\*.lib" />
         <file target="native\lib\x86\Release" src="Bin\Desktop_2019\Win32\Release\*.pdb" />
-        <file target="native\lib\x86\Release" src="Audio\Bin\Desktop_2019_Win7\Win32\Release\*.lib" />
-        <file target="native\lib\x86\Release" src="Audio\Bin\Desktop_2019_Win7\Win32\Release\*.pdb" />
 
         <file target="native\lib\x64\Debug" src="Bin\Desktop_2019\x64\Debug\*.lib" />
         <file target="native\lib\x64\Debug" src="Bin\Desktop_2019\x64\Debug\*.pdb" />
-        <file target="native\lib\x64\Debug" src="Audio\Bin\Desktop_2019_Win7\x64\Debug\*.lib" />
-        <file target="native\lib\x64\Debug" src="Audio\Bin\Desktop_2019_Win7\x64\Debug\*.pdb" />
 
         <file target="native\lib\x64\Release" src="Bin\Desktop_2019\x64\Release\*.lib" />
         <file target="native\lib\x64\Release" src="Bin\Desktop_2019\x64\Release\*.pdb" />
-        <file target="native\lib\x64\Release" src="Audio\Bin\Desktop_2019_Win7\x64\Release\*.lib" />
-        <file target="native\lib\x64\Release" src="Audio\Bin\Desktop_2019_Win7\x64\Release\*.pdb" />
 
         <file src=".nuget/directxtk_desktop_2019.targets" target="build\native" />
 

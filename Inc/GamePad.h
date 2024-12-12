@@ -43,11 +43,7 @@
 
 #elif defined(USING_XINPUT)
 #ifdef _MSC_VER
-#if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/ )
 #pragma comment(lib,"xinput.lib")
-#else
-#pragma comment(lib,"xinput9_1_0.lib")
-#endif
 #endif
 #endif
 
