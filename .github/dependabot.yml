@@ -1,13 +1,6 @@
 version: 2
 updates:
-  - package-ecosystem: nuget
-    directory: "/Audio"
-    schedule:
-      interval: weekly
-    commit-message:
-      prefix: "[nuget] "
-
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
