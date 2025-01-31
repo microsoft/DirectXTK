@@ -99,11 +99,28 @@ jobs:
             echo "::error Unknown architecture/build-type triplet mapping"
         }
 
+    - name: Get vcpkg commit hash
+      shell: pwsh
+      run: |
+        if ($Env:vcpkgRelease) {
+            echo "Using vcpkg commit from repo variable..."
+            $VCPKG_COMMIT_ID = $Env:vcpkgRelease
+        }
+        else {
+            echo "Fetching latest vcpkg commit hash..."
+            $commit = (git ls-remote https://github.com/microsoft/vcpkg.git HEAD | Select-String -Pattern '([a-f0-9]{40})').Matches.Value
+            $VCPKG_COMMIT_ID = $commit
+        }
+        Write-Host "VCPKG_COMMIT_ID=$VCPKG_COMMIT_ID"
+        echo "VCPKG_COMMIT_ID=$VCPKG_COMMIT_ID" >> $env:GITHUB_ENV
+      env:
+        vcpkgRelease: '${{ vars.VCPKG_COMMIT_ID }}'
+
     - uses: lukka/run-vcpkg@7d259227a1fb6471a0253dd5ab7419835228f7d7 # v11
       with:
         runVcpkgInstall: true
         vcpkgJsonGlob: '**/build/vcpkg.json'
-        vcpkgGitCommitId: '${{ vars.VCPKG_COMMIT_ID }}'
+        vcpkgGitCommitId: '${{ env.VCPKG_COMMIT_ID }}'
 
     - name: 'Configure CMake'
       working-directory: ${{ github.workspace }}
