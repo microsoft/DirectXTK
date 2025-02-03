@@ -72,13 +72,13 @@ jobs:
     clean: true
     fetchTags: false
     fetchDepth: 1
-    path: 's/directx-headers'
+    path: 's/DirectX-Headers'
   - checkout: dxMathRepo
     displayName: Fetch DirectX-Math
     clean: true
     fetchTags: false
     fetchDepth: 1
-    path: 's/directxmath'
+    path: 's/DirectXMath'
   - checkout: testRepo
     displayName: Fetch Tests
     clean: true
@@ -88,32 +88,32 @@ jobs:
   - task: CMake@1
     displayName: CMake DirectX-Headers
     inputs:
-      cwd: directx-headers
+      cwd: DirectX-Headers
       cmakeArgs: . -DDXHEADERS_BUILD_TEST=OFF -DDXHEADERS_BUILD_GOOGLE_TEST=OFF -DCMAKE_INSTALL_PREFIX=$(LOCAL_PKG_DIR)
   - task: CMake@1
     displayName: CMake DirectX-Headers (Build)
     inputs:
-      cwd: directx-headers
+      cwd: DirectX-Headers
       cmakeArgs: --build . -v
   - task: CMake@1
     displayName: CMake DirectX-Headers (Install)
     inputs:
-      cwd: directx-headers
+      cwd: DirectX-Headers
       cmakeArgs: --install .
   - task: CMake@1
     displayName: CMake DirectXMath
     inputs:
-      cwd: directxmath
+      cwd: DirectXMath
       cmakeArgs: . -DCMAKE_INSTALL_PREFIX=$(LOCAL_PKG_DIR)
   - task: CMake@1
     displayName: CMake DirectXMath (Build)
     inputs:
-      cwd: directxmath
+      cwd: DirectXMath
       cmakeArgs: --build . -v
   - task: CMake@1
     displayName: CMake DirectXMath (Install)
     inputs:
-      cwd: directxmath
+      cwd: DirectXMath
       cmakeArgs: --install .
   - task: PowerShell@2
     displayName: Fetch SAL.H
