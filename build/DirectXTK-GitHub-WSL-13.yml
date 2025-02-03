@@ -12,14 +12,7 @@ schedules:
     include:
     - main
 
-trigger:
-  branches:
-    include:
-    - main
-  paths:
-    include:
-    - Inc\SimpleMath.*
-    - Src\SimpleMath.*
+trigger: none
 
 pr:
   branches:
@@ -27,9 +20,10 @@ pr:
     - main
   paths:
     include:
-    - Inc\SimpleMath.*
-    - Src\SimpleMath.*
-  drafts: false
+    - CMake*
+    - build/*.cmake
+    - build/*.in
+    - build/DirectXTK-GitHub-WSL-11.yml
 
 resources:
   repositories:
@@ -56,7 +50,7 @@ resources:
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
 pool:
-  vmImage: ubuntu-20.04
+  vmImage: ubuntu-24.04
 
 variables:
   Codeql.Enabled: false
