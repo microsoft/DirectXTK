@@ -478,7 +478,7 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
 
             if (wfex->dwChannelMask)
             {
-                auto const channelBits = ChannelsSpecifiedInMask(wfex->dwChannelMask);
+                const auto channelBits = ChannelsSpecifiedInMask(wfex->dwChannelMask);
                 if (channelBits != wfx->nChannels)
                 {
                     DebugTrace("ERROR: WAVEFORMATEXTENSIBLE: nChannels=%u but ChannelMask has %u bits set\n",

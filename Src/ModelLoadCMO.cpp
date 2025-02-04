@@ -297,7 +297,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
                     throw std::runtime_error("IB too large for DirectX 11");
             }
 
-            auto const ibBytes = static_cast<size_t>(sizeInBytes);
+            const auto ibBytes = static_cast<size_t>(sizeInBytes);
 
             auto indexes = reinterpret_cast<const uint16_t*>(meshData + usedSize);
             usedSize += ibBytes;

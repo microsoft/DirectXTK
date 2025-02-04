@@ -307,7 +307,7 @@ void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indi
             uint16_t iv20; // index of v20
 
             // Function that, when given the index of two vertices, creates a new vertex at the midpoint of those vertices.
-            auto const divideEdge = [&](uint16_t i0, uint16_t i1, XMFLOAT3& outVertex, uint16_t& outIndex)
+            const auto divideEdge = [&](uint16_t i0, uint16_t i1, XMFLOAT3& outVertex, uint16_t& outIndex)
             {
                 const UndirectedEdge edge = makeUndirectedEdge(i0, i1);
 
@@ -372,8 +372,8 @@ void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indi
     vertices.reserve(vertexPositions.size());
     for (const auto& it : vertexPositions)
     {
-        auto const normal = XMVector3Normalize(XMLoadFloat3(&it));
-        auto const pos = XMVectorScale(normal, radius);
+        const auto normal = XMVector3Normalize(XMLoadFloat3(&it));
+        const auto pos = XMVectorScale(normal, radius);
 
         XMFLOAT3 normalFloat3;
         XMStoreFloat3(&normalFloat3, normal);
@@ -385,7 +385,7 @@ void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indi
         const float u = longitude / XM_2PI + 0.5f;
         const float v = latitude / XM_PI;
 
-        auto const texcoord = XMVectorSet(1.0f - u, v, 0.0f, 0.0f);
+        const auto texcoord = XMVectorSet(1.0f - u, v, 0.0f, 0.0f);
         vertices.push_back(VertexPositionNormalTexture(pos, normal, texcoord));
     }
 
@@ -468,7 +468,7 @@ void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indi
     // onto a single point. In general there's no real way to do that right. But to match the behavior of non-geodesic
     // spheres, we need to duplicate the pole vertex for every triangle that uses it. This will introduce seams near the
     // poles, but reduce stretching.
-    auto const fixPole = [&](size_t poleIndex)
+    const auto fixPole = [&](size_t poleIndex)
     {
         const auto& poleVertex = vertices[poleIndex];
         bool overwrittenPoleVertex = false; // overwriting the original pole vertex saves us one vertex
