@@ -641,7 +641,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
         mesh->meshParts.reserve(mh.NumSubsets);
         for (size_t j = 0; j < mh.NumSubsets; ++j)
         {
-            auto const sIndex = subsets[j];
+            const auto sIndex = subsets[j];
             if (sIndex >= header->NumTotalSubsets)
                 throw std::out_of_range("Invalid mesh found");
 

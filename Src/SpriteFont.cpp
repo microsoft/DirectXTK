@@ -486,7 +486,7 @@ XMVECTOR XM_CALLCONV SpriteFont::MeasureString(_In_z_ wchar_t const* text, bool 
         {
             UNREFERENCED_PARAMETER(advance);
 
-            auto const w = static_cast<float>(glyph->Subrect.right - glyph->Subrect.left);
+            const auto w = static_cast<float>(glyph->Subrect.right - glyph->Subrect.left);
             auto h = static_cast<float>(glyph->Subrect.bottom - glyph->Subrect.top) + glyph->YOffset;
 
             h = iswspace(wchar_t(glyph->Character)) ?
@@ -506,9 +506,9 @@ RECT SpriteFont::MeasureDrawBounds(_In_z_ wchar_t const* text, XMFLOAT2 const& p
 
     pImpl->ForEachGlyph(text, [&](Glyph const* glyph, float x, float y, float advance) noexcept
         {
-            auto const isWhitespace = iswspace(wchar_t(glyph->Character));
-            auto const w = static_cast<float>(glyph->Subrect.right - glyph->Subrect.left);
-            auto const h = isWhitespace ?
+            const auto isWhitespace = iswspace(wchar_t(glyph->Character));
+            const auto w = static_cast<float>(glyph->Subrect.right - glyph->Subrect.left);
+            const auto h = isWhitespace ?
                 pImpl->lineSpacing :
                 static_cast<float>(glyph->Subrect.bottom - glyph->Subrect.top);
 

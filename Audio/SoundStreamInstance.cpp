@@ -524,7 +524,7 @@ HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
         {
             if (mCurrentPosition < mLengthInBytes)
             {
-                auto const cbValid = static_cast<uint32_t>(std::min(mPacketSize, mLengthInBytes - mCurrentPosition));
+                const auto cbValid = static_cast<uint32_t>(std::min(mPacketSize, mLengthInBytes - mCurrentPosition));
 
                 mPackets[entry].valid = cbValid;
                 mPackets[entry].audioBytes = 0;

@@ -23,7 +23,7 @@ pr:
     - CMake*
     - build/*.cmake
     - build/*.in
-    - build/DirectXTK-GitHub-WSL-11.yml
+    - build/DirectXTK-GitHub-WSL-13.yml
 
 resources:
   repositories:

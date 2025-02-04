@@ -530,8 +530,8 @@ namespace
         if (rowBytes > UINT32_MAX || numBytes > UINT32_MAX)
             return HRESULT_FROM_WIN32(ERROR_ARITHMETIC_OVERFLOW);
 
-        auto const rowPitch = static_cast<size_t>(rowBytes);
-        auto const imageSize = static_cast<size_t>(numBytes);
+        const auto rowPitch = static_cast<size_t>(rowBytes);
+        const auto imageSize = static_cast<size_t>(numBytes);
 
         std::unique_ptr<uint8_t[]> temp(new (std::nothrow) uint8_t[imageSize]);
         if (!temp)

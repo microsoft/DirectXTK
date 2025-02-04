@@ -93,7 +93,7 @@ namespace DirectX
             {
                 const std::lock_guard<std::mutex> lock(mResourceMap->mutex);
 
-                auto const pos = mResourceMap->find(mKey);
+                const auto pos = mResourceMap->find(mKey);
 
                 // Check for weak reference expiry before erasing, in case DemandCreate runs on
                 // a different thread at the same time as a previous instance is being destroyed.
