@@ -36,6 +36,16 @@
 #pragma comment(lib,"uuid.lib")
 #endif
 
+#ifndef DIRECTX_TOOLKIT_API
+#ifdef DIRECTX_TOOLKIT_EXPORT
+#define DIRECTX_TOOLKIT_API __declspec(dllexport)
+#elif defined(DIRECTX_TOOLKIT_IMPORT)
+#define DIRECTX_TOOLKIT_API __declspec(dllimport)
+#else
+#define DIRECTX_TOOLKIT_API
+#endif
+#endif
+
 
 namespace DirectX
 {
@@ -54,6 +64,7 @@ namespace DirectX
     }
 
     // Standard version
+    DIRECTX_TOOLKIT_API
     HRESULT __cdecl CreateWICTextureFromMemory(
         _In_ ID3D11Device* d3dDevice,
         _In_reads_bytes_(wicDataSize) const uint8_t* wicData,
@@ -62,6 +73,7 @@ namespace DirectX
         _Outptr_opt_ ID3D11ShaderResourceView** textureView,
         _In_ size_t maxsize = 0) noexcept;
 
+    DIRECTX_TOOLKIT_API
     HRESULT __cdecl CreateWICTextureFromFile(
         _In_ ID3D11Device* d3dDevice,
         _In_z_ const wchar_t* szFileName,
@@ -70,6 +82,7 @@ namespace DirectX
         _In_ size_t maxsize = 0) noexcept;
 
     // Standard version with optional auto-gen mipmap support
+    DIRECTX_TOOLKIT_API
     HRESULT __cdecl CreateWICTextureFromMemory(
     #if defined(_XBOX_ONE) && defined(_TITLE)
         _In_ ID3D11DeviceX* d3dDevice,
@@ -84,6 +97,7 @@ namespace DirectX
         _Outptr_opt_ ID3D11ShaderResourceView** textureView,
         _In_ size_t maxsize = 0) noexcept;
 
+    DIRECTX_TOOLKIT_API
     HRESULT __cdecl CreateWICTextureFromFile(
     #if defined(_XBOX_ONE) && defined(_TITLE)
         _In_ ID3D11DeviceX* d3dDevice,
@@ -98,6 +112,7 @@ namespace DirectX
         _In_ size_t maxsize = 0) noexcept;
 
     // Extended version
+    DIRECTX_TOOLKIT_API
     HRESULT __cdecl CreateWICTextureFromMemoryEx(
         _In_ ID3D11Device* d3dDevice,
         _In_reads_bytes_(wicDataSize) const uint8_t* wicData,
@@ -111,6 +126,7 @@ namespace DirectX
         _Outptr_opt_ ID3D11Resource** texture,
         _Outptr_opt_ ID3D11ShaderResourceView** textureView) noexcept;
 
+    DIRECTX_TOOLKIT_API
     HRESULT __cdecl CreateWICTextureFromFileEx(
         _In_ ID3D11Device* d3dDevice,
         _In_z_ const wchar_t* szFileName,
@@ -124,6 +140,7 @@ namespace DirectX
         _Outptr_opt_ ID3D11ShaderResourceView** textureView) noexcept;
 
     // Extended version with optional auto-gen mipmap support
+    DIRECTX_TOOLKIT_API
     HRESULT __cdecl CreateWICTextureFromMemoryEx(
     #if defined(_XBOX_ONE) && defined(_TITLE)
         _In_ ID3D11DeviceX* d3dDevice,
@@ -143,6 +160,7 @@ namespace DirectX
         _Outptr_opt_ ID3D11Resource** texture,
         _Outptr_opt_ ID3D11ShaderResourceView** textureView) noexcept;
 
+    DIRECTX_TOOLKIT_API
     HRESULT __cdecl CreateWICTextureFromFileEx(
     #if defined(_XBOX_ONE) && defined(_TITLE)
         _In_ ID3D11DeviceX* d3dDevice,
@@ -162,6 +180,7 @@ namespace DirectX
         _Outptr_opt_ ID3D11ShaderResourceView** textureView) noexcept;
 
 #ifdef __cpp_lib_byte
+    DIRECTX_TOOLKIT_API
     inline HRESULT __cdecl CreateWICTextureFromMemory(
         _In_ ID3D11Device* d3dDevice,
         _In_reads_bytes_(wicDataSize) const std::byte* wicData,
@@ -173,6 +192,7 @@ namespace DirectX
         return CreateWICTextureFromMemory(d3dDevice, reinterpret_cast<const uint8_t*>(wicData), wicDataSize, texture, textureView, maxsize);
     }
 
+    DIRECTX_TOOLKIT_API
     inline HRESULT __cdecl CreateWICTextureFromMemory(
     #if defined(_XBOX_ONE) && defined(_TITLE)
         _In_ ID3D11DeviceX* d3dDevice,
@@ -190,6 +210,7 @@ namespace DirectX
         return CreateWICTextureFromMemory(d3dDevice, d3dContext, reinterpret_cast<const uint8_t*>(wicData), wicDataSize, texture, textureView, maxsize);
     }
 
+    DIRECTX_TOOLKIT_API
     inline HRESULT __cdecl CreateWICTextureFromMemoryEx(
         _In_ ID3D11Device* d3dDevice,
         _In_reads_bytes_(wicDataSize) const std::byte* wicData,
@@ -206,6 +227,7 @@ namespace DirectX
         return CreateWICTextureFromMemoryEx(d3dDevice, reinterpret_cast<const uint8_t*>(wicData), wicDataSize, maxsize, usage, bindFlags, cpuAccessFlags, miscFlags, loadFlags, texture, textureView);
     }
 
+    DIRECTX_TOOLKIT_API
     inline HRESULT __cdecl CreateWICTextureFromMemoryEx(
     #if defined(_XBOX_ONE) && defined(_TITLE)
         _In_ ID3D11DeviceX* d3dDevice,

@@ -33,6 +33,17 @@
 #include <cstring>
 #include <exception>
 
+#ifndef DIRECTX_TOOLKIT_API
+#ifdef DIRECTX_TOOLKIT_EXPORT
+#define DIRECTX_TOOLKIT_API __declspec(dllexport)
+#elif defined(DIRECTX_TOOLKIT_IMPORT)
+#define DIRECTX_TOOLKIT_API __declspec(dllimport)
+#else
+#define DIRECTX_TOOLKIT_API
+#endif
+#endif
+
+
 //
 // The core Direct3D headers provide the following helper C++ classes
 //  CD3D11_RECT
@@ -66,7 +77,7 @@ namespace DirectX
     class MapGuard : public D3D11_MAPPED_SUBRESOURCE
     {
     public:
-        MapGuard(_In_ ID3D11DeviceContext* context,
+        DIRECTX_TOOLKIT_API MapGuard(_In_ ID3D11DeviceContext* context,
             _In_ ID3D11Resource *resource,
             _In_ unsigned int subresource,
             _In_ D3D11_MAP mapType,
@@ -86,7 +97,7 @@ namespace DirectX
         MapGuard(MapGuard const&) = delete;
         MapGuard& operator= (MapGuard const&) = delete;
 
-        ~MapGuard()
+        DIRECTX_TOOLKIT_API ~MapGuard()
         {
             mContext->Unmap(mResource, mSubresource);
         }
@@ -97,20 +108,20 @@ namespace DirectX
 #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
 #endif
 
-        uint8_t* get() const noexcept
+        DIRECTX_TOOLKIT_API uint8_t* get() const noexcept
         {
             return static_cast<uint8_t*>(pData);
         }
-        uint8_t* get(size_t slice) const noexcept
+        DIRECTX_TOOLKIT_API uint8_t* get(size_t slice) const noexcept
         {
             return static_cast<uint8_t*>(pData) + (slice * DepthPitch);
         }
 
-        uint8_t* scanline(size_t row) const noexcept
+        DIRECTX_TOOLKIT_API uint8_t* scanline(size_t row) const noexcept
         {
             return static_cast<uint8_t*>(pData) + (row * RowPitch);
         }
-        uint8_t* scanline(size_t slice, size_t row) const noexcept
+        DIRECTX_TOOLKIT_API uint8_t* scanline(size_t slice, size_t row) const noexcept
         {
             return static_cast<uint8_t*>(pData) + (slice * DepthPitch) + (row * RowPitch);
         }
@@ -216,7 +227,9 @@ namespace DirectX
     }
 
     // Helper for creating a Direct3D input layout to match a shader from an IEffect
-    HRESULT __cdecl CreateInputLayoutFromEffect(_In_ ID3D11Device* device,
+    DIRECTX_TOOLKIT_API
+    HRESULT __cdecl CreateInputLayoutFromEffect(
+        _In_ ID3D11Device* device,
         _In_ IEffect* effect,
         _In_reads_(count) const D3D11_INPUT_ELEMENT_DESC* desc,
         size_t count,

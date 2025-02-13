@@ -17,6 +17,8 @@ project (DirectXTK
 
 option(BUILD_TOOLS "Build XWBTool" ON)
 
+option(BUILD_SHARED_LIBS "Build DirectXTK as a shared library" OFF)
+
 option(BUILD_XAUDIO_WIN10 "Build for XAudio 2.9" OFF)
 option(BUILD_XAUDIO_WIN8 "Build for XAudio 2.8" ON)
 option(BUILD_XAUDIO_REDIST "Build for XAudio2Redist" OFF)
@@ -245,7 +247,20 @@ if(NOT USE_PREBUILT_SHADERS)
         USES_TERMINAL)
 endif()
 
-add_library(${PROJECT_NAME} STATIC ${LIBRARY_SOURCES} ${LIBRARY_HEADERS})
+if(WIN32 AND BUILD_SHARED_LIBS)
+  message(STATUS "Build library as a DLL")
+
+  configure_file(
+      "${CMAKE_CURRENT_SOURCE_DIR}/build/DirectXTK.rc.in"
+      "${CMAKE_CURRENT_BINARY_DIR}/DirectXTK.rc" @ONLY)
+
+  add_library(${PROJECT_NAME} SHARED ${LIBRARY_SOURCES} ${LIBRARY_HEADERS} "${CMAKE_CURRENT_BINARY_DIR}/DirectXTK.rc")
+
+  target_compile_definitions(${PROJECT_NAME} PRIVATE DIRECTX_TOOLKIT_EXPORT)
+  target_compile_definitions(${PROJECT_NAME} INTERFACE DIRECTX_TOOLKIT_IMPORT)
+else()
+  add_library(${PROJECT_NAME} ${LIBRARY_SOURCES} ${LIBRARY_HEADERS})
+endif()
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${COMPILED_SHADERS} Src)
 
@@ -435,6 +450,10 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
     set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 14)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    if(BUILD_SHARED_LIBS)
+      target_compile_options(${PROJECT_NAME} PRIVATE "/wd4251" "/wd4275")
+    endif()
+
     if(ENABLE_CODE_ANALYSIS)
       message(STATUS "Building with Code Analysis (PREFIX)")
       foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})

@@ -27,6 +27,21 @@
 #include <DirectXPackedVector.h>
 #include <DirectXCollision.h>
 
+#ifndef DIRECTX_TOOLKIT_API
+#ifdef DIRECTX_TOOLKIT_EXPORT
+#define DIRECTX_TOOLKIT_API __declspec(dllexport)
+#elif defined(DIRECTX_TOOLKIT_IMPORT)
+#define DIRECTX_TOOLKIT_API __declspec(dllimport)
+#else
+#define DIRECTX_TOOLKIT_API
+#endif
+#endif
+
+#if defined(DIRECTX_TOOLKIT_IMPORT) && defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4251 4275)
+#endif
+
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wfloat-equal"
@@ -47,7 +62,7 @@ namespace DirectX
 
         //------------------------------------------------------------------------------
         // 2D rectangle
-        struct Rectangle
+        struct DIRECTX_TOOLKIT_API Rectangle
         {
             long x;
             long y;
@@ -112,7 +127,7 @@ namespace DirectX
 
         //------------------------------------------------------------------------------
         // 2D vector
-        struct Vector2 : public XMFLOAT2
+        struct DIRECTX_TOOLKIT_API Vector2 : public XMFLOAT2
         {
             Vector2() noexcept : XMFLOAT2(0.f, 0.f) {}
             constexpr explicit Vector2(float ix) noexcept : XMFLOAT2(ix, ix) {}
@@ -215,17 +230,17 @@ namespace DirectX
         };
 
         // Binary operators
-        Vector2 operator+ (const Vector2& V1, const Vector2& V2) noexcept;
-        Vector2 operator- (const Vector2& V1, const Vector2& V2) noexcept;
-        Vector2 operator* (const Vector2& V1, const Vector2& V2) noexcept;
-        Vector2 operator* (const Vector2& V, float S) noexcept;
-        Vector2 operator/ (const Vector2& V1, const Vector2& V2) noexcept;
-        Vector2 operator/ (const Vector2& V, float S) noexcept;
-        Vector2 operator* (float S, const Vector2& V) noexcept;
+        DIRECTX_TOOLKIT_API Vector2 operator+ (const Vector2& V1, const Vector2& V2) noexcept;
+        DIRECTX_TOOLKIT_API Vector2 operator- (const Vector2& V1, const Vector2& V2) noexcept;
+        DIRECTX_TOOLKIT_API Vector2 operator* (const Vector2& V1, const Vector2& V2) noexcept;
+        DIRECTX_TOOLKIT_API Vector2 operator* (const Vector2& V, float S) noexcept;
+        DIRECTX_TOOLKIT_API Vector2 operator/ (const Vector2& V1, const Vector2& V2) noexcept;
+        DIRECTX_TOOLKIT_API Vector2 operator/ (const Vector2& V, float S) noexcept;
+        DIRECTX_TOOLKIT_API Vector2 operator* (float S, const Vector2& V) noexcept;
 
         //------------------------------------------------------------------------------
         // 3D vector
-        struct Vector3 : public XMFLOAT3
+        struct DIRECTX_TOOLKIT_API Vector3 : public XMFLOAT3
         {
             Vector3() noexcept : XMFLOAT3(0.f, 0.f, 0.f) {}
             constexpr explicit Vector3(float ix) noexcept : XMFLOAT3(ix, ix, ix) {}
@@ -335,17 +350,17 @@ namespace DirectX
         };
 
         // Binary operators
-        Vector3 operator+ (const Vector3& V1, const Vector3& V2) noexcept;
-        Vector3 operator- (const Vector3& V1, const Vector3& V2) noexcept;
-        Vector3 operator* (const Vector3& V1, const Vector3& V2) noexcept;
-        Vector3 operator* (const Vector3& V, float S) noexcept;
-        Vector3 operator/ (const Vector3& V1, const Vector3& V2) noexcept;
-        Vector3 operator/ (const Vector3& V, float S) noexcept;
-        Vector3 operator* (float S, const Vector3& V) noexcept;
+        DIRECTX_TOOLKIT_API Vector3 operator+ (const Vector3& V1, const Vector3& V2) noexcept;
+        DIRECTX_TOOLKIT_API Vector3 operator- (const Vector3& V1, const Vector3& V2) noexcept;
+        DIRECTX_TOOLKIT_API Vector3 operator* (const Vector3& V1, const Vector3& V2) noexcept;
+        DIRECTX_TOOLKIT_API Vector3 operator* (const Vector3& V, float S) noexcept;
+        DIRECTX_TOOLKIT_API Vector3 operator/ (const Vector3& V1, const Vector3& V2) noexcept;
+        DIRECTX_TOOLKIT_API Vector3 operator/ (const Vector3& V, float S) noexcept;
+        DIRECTX_TOOLKIT_API Vector3 operator* (float S, const Vector3& V) noexcept;
 
         //------------------------------------------------------------------------------
         // 4D vector
-        struct Vector4 : public XMFLOAT4
+        struct DIRECTX_TOOLKIT_API Vector4 : public XMFLOAT4
         {
             Vector4() noexcept : XMFLOAT4(0.f, 0.f, 0.f, 0.f) {}
             constexpr explicit Vector4(float ix) noexcept : XMFLOAT4(ix, ix, ix, ix) {}
@@ -449,17 +464,17 @@ namespace DirectX
         };
 
         // Binary operators
-        Vector4 operator+ (const Vector4& V1, const Vector4& V2) noexcept;
-        Vector4 operator- (const Vector4& V1, const Vector4& V2) noexcept;
-        Vector4 operator* (const Vector4& V1, const Vector4& V2) noexcept;
-        Vector4 operator* (const Vector4& V, float S) noexcept;
-        Vector4 operator/ (const Vector4& V1, const Vector4& V2) noexcept;
-        Vector4 operator/ (const Vector4& V, float S) noexcept;
-        Vector4 operator* (float S, const Vector4& V) noexcept;
+        DIRECTX_TOOLKIT_API Vector4 operator+ (const Vector4& V1, const Vector4& V2) noexcept;
+        DIRECTX_TOOLKIT_API Vector4 operator- (const Vector4& V1, const Vector4& V2) noexcept;
+        DIRECTX_TOOLKIT_API Vector4 operator* (const Vector4& V1, const Vector4& V2) noexcept;
+        DIRECTX_TOOLKIT_API Vector4 operator* (const Vector4& V, float S) noexcept;
+        DIRECTX_TOOLKIT_API Vector4 operator/ (const Vector4& V1, const Vector4& V2) noexcept;
+        DIRECTX_TOOLKIT_API Vector4 operator/ (const Vector4& V, float S) noexcept;
+        DIRECTX_TOOLKIT_API Vector4 operator* (float S, const Vector4& V) noexcept;
 
         //------------------------------------------------------------------------------
         // 4x4 Matrix (assumes right-handed cooordinates)
-        struct Matrix : public XMFLOAT4X4
+        struct DIRECTX_TOOLKIT_API Matrix : public XMFLOAT4X4
         {
             Matrix() noexcept
                 : XMFLOAT4X4(1.f, 0, 0, 0,
@@ -616,19 +631,19 @@ namespace DirectX
         };
 
         // Binary operators
-        Matrix operator+ (const Matrix& M1, const Matrix& M2) noexcept;
-        Matrix operator- (const Matrix& M1, const Matrix& M2) noexcept;
-        Matrix operator* (const Matrix& M1, const Matrix& M2) noexcept;
-        Matrix operator* (const Matrix& M, float S) noexcept;
-        Matrix operator/ (const Matrix& M, float S) noexcept;
-        Matrix operator/ (const Matrix& M1, const Matrix& M2) noexcept;
+        DIRECTX_TOOLKIT_API Matrix operator+ (const Matrix& M1, const Matrix& M2) noexcept;
+        DIRECTX_TOOLKIT_API Matrix operator- (const Matrix& M1, const Matrix& M2) noexcept;
+        DIRECTX_TOOLKIT_API Matrix operator* (const Matrix& M1, const Matrix& M2) noexcept;
+        DIRECTX_TOOLKIT_API Matrix operator* (const Matrix& M, float S) noexcept;
+        DIRECTX_TOOLKIT_API Matrix operator/ (const Matrix& M, float S) noexcept;
+        DIRECTX_TOOLKIT_API Matrix operator/ (const Matrix& M1, const Matrix& M2) noexcept;
             // Element-wise divide
-        Matrix operator* (float S, const Matrix& M) noexcept;
+            DIRECTX_TOOLKIT_API Matrix operator* (float S, const Matrix& M) noexcept;
 
 
         //-----------------------------------------------------------------------------
         // Plane
-        struct Plane : public XMFLOAT4
+        struct DIRECTX_TOOLKIT_API Plane : public XMFLOAT4
         {
             Plane() noexcept : XMFLOAT4(0.f, 1.f, 0.f, 0.f) {}
             constexpr Plane(float ix, float iy, float iz, float iw) noexcept : XMFLOAT4(ix, iy, iz, iw) {}
@@ -682,7 +697,7 @@ namespace DirectX
 
         //------------------------------------------------------------------------------
         // Quaternion
-        struct Quaternion : public XMFLOAT4
+        struct DIRECTX_TOOLKIT_API Quaternion : public XMFLOAT4
         {
             Quaternion() noexcept : XMFLOAT4(0, 0, 0, 1.f) {}
             constexpr Quaternion(float ix, float iy, float iz, float iw) noexcept : XMFLOAT4(ix, iy, iz, iw) {}
@@ -770,16 +785,16 @@ namespace DirectX
         };
 
         // Binary operators
-        Quaternion operator+ (const Quaternion& Q1, const Quaternion& Q2) noexcept;
-        Quaternion operator- (const Quaternion& Q1, const Quaternion& Q2) noexcept;
-        Quaternion operator* (const Quaternion& Q1, const Quaternion& Q2) noexcept;
-        Quaternion operator* (const Quaternion& Q, float S) noexcept;
-        Quaternion operator/ (const Quaternion& Q1, const Quaternion& Q2) noexcept;
-        Quaternion operator* (float S, const Quaternion& Q) noexcept;
+        DIRECTX_TOOLKIT_API Quaternion operator+ (const Quaternion& Q1, const Quaternion& Q2) noexcept;
+        DIRECTX_TOOLKIT_API Quaternion operator- (const Quaternion& Q1, const Quaternion& Q2) noexcept;
+        DIRECTX_TOOLKIT_API Quaternion operator* (const Quaternion& Q1, const Quaternion& Q2) noexcept;
+        DIRECTX_TOOLKIT_API Quaternion operator* (const Quaternion& Q, float S) noexcept;
+        DIRECTX_TOOLKIT_API Quaternion operator/ (const Quaternion& Q1, const Quaternion& Q2) noexcept;
+        DIRECTX_TOOLKIT_API Quaternion operator* (float S, const Quaternion& Q) noexcept;
 
         //------------------------------------------------------------------------------
         // Color
-        struct Color : public XMFLOAT4
+        struct DIRECTX_TOOLKIT_API Color : public XMFLOAT4
         {
             Color() noexcept : XMFLOAT4(0, 0, 0, 1.f) {}
             constexpr Color(float _r, float _g, float _b) noexcept : XMFLOAT4(_r, _g, _b, 1.f) {}
@@ -868,16 +883,16 @@ namespace DirectX
         };
 
         // Binary operators
-        Color operator+ (const Color& C1, const Color& C2) noexcept;
-        Color operator- (const Color& C1, const Color& C2) noexcept;
-        Color operator* (const Color& C1, const Color& C2) noexcept;
-        Color operator* (const Color& C, float S) noexcept;
-        Color operator/ (const Color& C1, const Color& C2) noexcept;
-        Color operator* (float S, const Color& C) noexcept;
+        DIRECTX_TOOLKIT_API Color operator+ (const Color& C1, const Color& C2) noexcept;
+        DIRECTX_TOOLKIT_API Color operator- (const Color& C1, const Color& C2) noexcept;
+        DIRECTX_TOOLKIT_API Color operator* (const Color& C1, const Color& C2) noexcept;
+        DIRECTX_TOOLKIT_API Color operator* (const Color& C, float S) noexcept;
+        DIRECTX_TOOLKIT_API Color operator/ (const Color& C1, const Color& C2) noexcept;
+        DIRECTX_TOOLKIT_API Color operator* (float S, const Color& C) noexcept;
 
         //------------------------------------------------------------------------------
         // Ray
-        class Ray
+        class DIRECTX_TOOLKIT_API Ray
         {
         public:
             Vector3 position;
@@ -905,7 +920,7 @@ namespace DirectX
 
         //------------------------------------------------------------------------------
         // Viewport
-        class Viewport
+        class DIRECTX_TOOLKIT_API Viewport
         {
         public:
             float x;
@@ -1139,4 +1154,8 @@ namespace std
 
 #ifdef __clang__
 #pragma clang diagnostic pop
+#endif
+
+#if defined(DIRECTX_TOOLKIT_IMPORT) && defined(_MSC_VER)
+#pragma warning(pop)
 #endif
