@@ -767,7 +767,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
 
             auto& mat = materials[sm.MaterialIndex];
 
-            auto part = new ModelMeshPart();
+            auto part = std::make_unique<ModelMeshPart>();
 
             if (mat.pMaterial->Diffuse.w < 1)
                 part->isAlpha = true;
@@ -781,7 +781,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
             part->effect = mat.effect;
             part->vbDecl = enableSkinning ? g_vbdeclSkinning : g_vbdecl;
 
-            mesh->meshParts.emplace_back(part);
+            mesh->meshParts.emplace_back(std::move(part));
         }
 
         model->meshes.emplace_back(mesh);

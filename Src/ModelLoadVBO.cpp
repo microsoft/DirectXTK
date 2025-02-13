@@ -152,7 +152,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromVBO(
 
     SetDebugObjectName(il.Get(), "ModelVBO");
 
-    auto part = new ModelMeshPart();
+    auto part = std::make_unique<ModelMeshPart>();
     part->indexCount = header->numIndices;
     part->startIndex = 0;
     part->vertexStride = static_cast<UINT>(sizeof(VertexPositionNormalTexture));
@@ -167,9 +167,11 @@ std::unique_ptr<Model> DirectX::Model::CreateFromVBO(
     mesh->pmalpha = (flags & ModelLoader_PremultipledAlpha) != 0;
     BoundingSphere::CreateFromPoints(mesh->boundingSphere, header->numVertices, &verts->position, sizeof(VertexPositionNormalTexture));
     BoundingBox::CreateFromPoints(mesh->boundingBox, header->numVertices, &verts->position, sizeof(VertexPositionNormalTexture));
-    mesh->meshParts.emplace_back(part);
+    mesh->meshParts.reserve(1);
+    mesh->meshParts.emplace_back(std::move(part));
 
     auto model = std::make_unique<Model>();
+    model->meshes.reserve(1);
     model->meshes.emplace_back(mesh);
 
     return model;
