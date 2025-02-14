@@ -704,7 +704,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
 
             SetDebugObjectName(il.Get(), "ModelSDKMESH");
 
-            auto part = new ModelMeshPart();
+            auto part = std::make_unique<ModelMeshPart>();
             part->isAlpha = mat.alpha;
 
             part->indexCount = static_cast<uint32_t>(subset.IndexCount);
@@ -719,7 +719,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
             part->effect = mat.effect;
             part->vbDecl = vbDecls[mh.VertexBuffers[0]];
 
-            mesh->meshParts.emplace_back(part);
+            mesh->meshParts.emplace_back(std::move(part));
         }
 
         model->meshes.emplace_back(mesh);
