@@ -65,6 +65,11 @@
 #pragma clang diagnostic ignored "-Wunknown-pragmas"
 #endif
 
+#if defined(DIRECTX_TOOLKIT_IMPORT) && defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
 
 namespace DirectX
 {
@@ -338,4 +343,8 @@ namespace DirectX
 
 #ifdef __clang__
 #pragma clang diagnostic pop
+#endif
+
+#if defined(DIRECTX_TOOLKIT_IMPORT) && defined(_MSC_VER)
+#pragma warning(pop)
 #endif
