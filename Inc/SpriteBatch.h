@@ -133,8 +133,8 @@ namespace DirectX
 
             std::unique_ptr<Impl> pImpl;
 
-            static const XMMATRIX MatrixIdentity;
-            static const XMFLOAT2 Float2Zero;
+            DIRECTX_TOOLKIT_API static const XMMATRIX MatrixIdentity;
+            DIRECTX_TOOLKIT_API static const XMFLOAT2 Float2Zero;
         };
     }
 }

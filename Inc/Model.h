@@ -175,8 +175,8 @@ namespace DirectX
             ModelMesh(ModelMesh&&) = default;
             ModelMesh& operator= (ModelMesh&&) = default;
 
-            ModelMesh(ModelMesh const&) = default;
-            ModelMesh& operator= (ModelMesh const&) = default;
+            ModelMesh(ModelMesh const&) = delete;
+            ModelMesh& operator= (ModelMesh const&) = delete;
 
             virtual ~ModelMesh();
 

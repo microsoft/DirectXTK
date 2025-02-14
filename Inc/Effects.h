@@ -420,8 +420,8 @@ namespace DirectX
             std::unique_ptr<Impl> pImpl;
 
             // Unsupported interface methods.
-            void __cdecl SetLightingEnabled(bool value) override;
-            void XM_CALLCONV SetLightSpecularColor(int whichLight, FXMVECTOR value) override;
+            DIRECTX_TOOLKIT_API void __cdecl SetLightingEnabled(bool value) override;
+            DIRECTX_TOOLKIT_API void XM_CALLCONV SetLightSpecularColor(int whichLight, FXMVECTOR value) override;
         };
 
 
@@ -579,7 +579,7 @@ namespace DirectX
             DGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader, bool skinningEnabled);
 
             // Unsupported interface methods.
-            void __cdecl SetPerPixelLighting(bool value) override;
+            DIRECTX_TOOLKIT_API void __cdecl SetPerPixelLighting(bool value) override;
         };
 
         class SkinnedDGSLEffect : public DGSLEffect, public IEffectSkinning
