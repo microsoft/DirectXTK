@@ -60,18 +60,6 @@ jobs:
           - os: windows-2022
             build_type: x86-Release-Clang
             arch: amd64_x86
-          - os: windows-2022
-            build_type: arm64-Debug
-            arch: amd64_arm64
-          - os: windows-2022
-            build_type: arm64-Release
-            arch: amd64_arm64
-          - os: windows-2022
-            build_type: arm64ec-Debug
-            arch: amd64_arm64
-          - os: windows-2022
-            build_type: arm64ec-Release
-            arch: amd64_arm64
 
     steps:
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -95,18 +83,15 @@ jobs:
       working-directory: ${{ github.workspace }}
       run: Remove-Item -Path out -Recurse -Force
 
-    - if: matrix.arch != 'amd64_arm64'
-      name: 'Configure CMake (Spectre)'
+    - name: 'Configure CMake (Spectre)'
       working-directory: ${{ github.workspace }}
       run: cmake --preset=${{ matrix.build_type }} -DENABLE_SPECTRE_MITIGATION=ON
 
-    - if: matrix.arch != 'amd64_arm64'
-      name: 'Build (Spectre)'
+    - name: 'Build (Spectre)'
       working-directory: ${{ github.workspace }}
       run: cmake --build out\build\${{ matrix.build_type }}
 
-    - if: matrix.arch != 'amd64_arm64'
-      name: 'Clean up'
+    - name: 'Clean up'
       working-directory: ${{ github.workspace }}
       run: Remove-Item -Path out -Recurse -Force
 
