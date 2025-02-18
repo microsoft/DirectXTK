@@ -74,10 +74,10 @@ namespace DirectX
     }
 
     // simliar to std::lock_guard for exception-safe Direct3D resource locking
-    class MapGuard : public D3D11_MAPPED_SUBRESOURCE
+    class DIRECTX_TOOLKIT_API MapGuard : public D3D11_MAPPED_SUBRESOURCE
     {
     public:
-        DIRECTX_TOOLKIT_API MapGuard(_In_ ID3D11DeviceContext* context,
+        MapGuard(_In_ ID3D11DeviceContext* context,
             _In_ ID3D11Resource *resource,
             _In_ unsigned int subresource,
             _In_ D3D11_MAP mapType,
@@ -97,7 +97,7 @@ namespace DirectX
         MapGuard(MapGuard const&) = delete;
         MapGuard& operator= (MapGuard const&) = delete;
 
-        DIRECTX_TOOLKIT_API ~MapGuard()
+        ~MapGuard()
         {
             mContext->Unmap(mResource, mSubresource);
         }
@@ -108,20 +108,20 @@ namespace DirectX
 #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
 #endif
 
-        DIRECTX_TOOLKIT_API uint8_t* get() const noexcept
+        uint8_t* get() const noexcept
         {
             return static_cast<uint8_t*>(pData);
         }
-        DIRECTX_TOOLKIT_API uint8_t* get(size_t slice) const noexcept
+        uint8_t* get(size_t slice) const noexcept
         {
             return static_cast<uint8_t*>(pData) + (slice * DepthPitch);
         }
 
-        DIRECTX_TOOLKIT_API uint8_t* scanline(size_t row) const noexcept
+        uint8_t* scanline(size_t row) const noexcept
         {
             return static_cast<uint8_t*>(pData) + (row * RowPitch);
         }
-        DIRECTX_TOOLKIT_API uint8_t* scanline(size_t slice, size_t row) const noexcept
+        uint8_t* scanline(size_t slice, size_t row) const noexcept
         {
             return static_cast<uint8_t*>(pData) + (slice * DepthPitch) + (row * RowPitch);
         }

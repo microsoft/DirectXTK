@@ -505,7 +505,7 @@ namespace DirectX
         class DGSLEffect : public IEffect, public IEffectMatrices, public IEffectLights
         {
         public:
-            DIRECTX_TOOLKIT_API explicit DGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader = nullptr) :
+            DIRECTX_TOOLKIT_API inline explicit DGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader = nullptr) :
                 DGSLEffect(device, pixelShader, false)
             {
             }
@@ -576,32 +576,32 @@ namespace DirectX
 
             std::unique_ptr<Impl> pImpl;
 
-            DGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader, bool skinningEnabled);
+            DIRECTX_TOOLKIT_API DGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader, bool skinningEnabled);
 
             // Unsupported interface methods.
             DIRECTX_TOOLKIT_API void __cdecl SetPerPixelLighting(bool value) override;
         };
 
-        class SkinnedDGSLEffect : public DGSLEffect, public IEffectSkinning
+        class DIRECTX_TOOLKIT_API SkinnedDGSLEffect : public DGSLEffect, public IEffectSkinning
         {
         public:
-            DIRECTX_TOOLKIT_API explicit SkinnedDGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader = nullptr) :
+            explicit SkinnedDGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader = nullptr) :
                 DGSLEffect(device, pixelShader, true)
             {
             }
 
-            DIRECTX_TOOLKIT_API SkinnedDGSLEffect(SkinnedDGSLEffect&&) = default;
-            DIRECTX_TOOLKIT_API SkinnedDGSLEffect& operator= (SkinnedDGSLEffect&&) = default;
+            SkinnedDGSLEffect(SkinnedDGSLEffect&&) = default;
+            SkinnedDGSLEffect& operator= (SkinnedDGSLEffect&&) = default;
 
             SkinnedDGSLEffect(SkinnedDGSLEffect const&) = delete;
             SkinnedDGSLEffect& operator= (SkinnedDGSLEffect const&) = delete;
 
-            DIRECTX_TOOLKIT_API ~SkinnedDGSLEffect() override;
+            ~SkinnedDGSLEffect() override;
 
             // Animation setting.
-            DIRECTX_TOOLKIT_API void __cdecl SetWeightsPerVertex(int value) override;
-            DIRECTX_TOOLKIT_API void __cdecl SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, size_t count) override;
-            DIRECTX_TOOLKIT_API void __cdecl ResetBoneTransforms() override;
+            void __cdecl SetWeightsPerVertex(int value) override;
+            void __cdecl SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, size_t count) override;
+            void __cdecl ResetBoneTransforms() override;
         };
 
         //------------------------------------------------------------------------------
@@ -609,7 +609,7 @@ namespace DirectX
         class NormalMapEffect : public IEffect, public IEffectMatrices, public IEffectLights, public IEffectFog
         {
         public:
-            DIRECTX_TOOLKIT_API explicit NormalMapEffect(_In_ ID3D11Device* device) :
+            DIRECTX_TOOLKIT_API inline explicit NormalMapEffect(_In_ ID3D11Device* device) :
                 NormalMapEffect(device, false)
             {
             }
@@ -687,26 +687,26 @@ namespace DirectX
             DIRECTX_TOOLKIT_API void __cdecl SetPerPixelLighting(bool value) override;
         };
 
-        class SkinnedNormalMapEffect : public NormalMapEffect, public IEffectSkinning
+        class DIRECTX_TOOLKIT_API SkinnedNormalMapEffect : public NormalMapEffect, public IEffectSkinning
         {
         public:
-            DIRECTX_TOOLKIT_API explicit SkinnedNormalMapEffect(_In_ ID3D11Device* device) :
+            explicit SkinnedNormalMapEffect(_In_ ID3D11Device* device) :
                 NormalMapEffect(device, true)
             {
             }
 
-            DIRECTX_TOOLKIT_API SkinnedNormalMapEffect(SkinnedNormalMapEffect&&) = default;
-            DIRECTX_TOOLKIT_API SkinnedNormalMapEffect& operator= (SkinnedNormalMapEffect&&) = default;
+            SkinnedNormalMapEffect(SkinnedNormalMapEffect&&) = default;
+            SkinnedNormalMapEffect& operator= (SkinnedNormalMapEffect&&) = default;
 
             SkinnedNormalMapEffect(SkinnedNormalMapEffect const&) = delete;
             SkinnedNormalMapEffect& operator= (SkinnedNormalMapEffect const&) = delete;
 
-            DIRECTX_TOOLKIT_API ~SkinnedNormalMapEffect() override;
+            ~SkinnedNormalMapEffect() override;
 
             // Animation settings.
-            DIRECTX_TOOLKIT_API void __cdecl SetWeightsPerVertex(int value) override;
-            DIRECTX_TOOLKIT_API void __cdecl SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, size_t count) override;
-            DIRECTX_TOOLKIT_API void __cdecl ResetBoneTransforms() override;
+            void __cdecl SetWeightsPerVertex(int value) override;
+            void __cdecl SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, size_t count) override;
+            void __cdecl ResetBoneTransforms() override;
         };
 
         //------------------------------------------------------------------------------
@@ -714,7 +714,7 @@ namespace DirectX
         class PBREffect : public IEffect, public IEffectMatrices, public IEffectLights
         {
         public:
-            DIRECTX_TOOLKIT_API explicit PBREffect(_In_ ID3D11Device* device) :
+            DIRECTX_TOOLKIT_API inline explicit PBREffect(_In_ ID3D11Device* device) :
                 PBREffect(device, false)
             {
             }
@@ -797,26 +797,26 @@ namespace DirectX
             DIRECTX_TOOLKIT_API void XM_CALLCONV SetLightSpecularColor(int whichLight, FXMVECTOR value) override;
         };
 
-        class SkinnedPBREffect : public PBREffect, public IEffectSkinning
+        class DIRECTX_TOOLKIT_API SkinnedPBREffect : public PBREffect, public IEffectSkinning
         {
         public:
-            DIRECTX_TOOLKIT_API explicit SkinnedPBREffect(_In_ ID3D11Device* device) :
+            explicit SkinnedPBREffect(_In_ ID3D11Device* device) :
                 PBREffect(device, true)
             {
             }
 
-            DIRECTX_TOOLKIT_API SkinnedPBREffect(SkinnedPBREffect&&) = default;
-            DIRECTX_TOOLKIT_API SkinnedPBREffect& operator= (SkinnedPBREffect&&) = default;
+            SkinnedPBREffect(SkinnedPBREffect&&) = default;
+            SkinnedPBREffect& operator= (SkinnedPBREffect&&) = default;
 
             SkinnedPBREffect(SkinnedPBREffect const&) = delete;
             SkinnedPBREffect& operator= (SkinnedPBREffect const&) = delete;
 
-            DIRECTX_TOOLKIT_API ~SkinnedPBREffect() override;
+            ~SkinnedPBREffect() override;
 
             // Animation settings.
-            DIRECTX_TOOLKIT_API void __cdecl SetWeightsPerVertex(int value) override;
-            DIRECTX_TOOLKIT_API void __cdecl SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, size_t count) override;
-            DIRECTX_TOOLKIT_API void __cdecl ResetBoneTransforms() override;
+            void __cdecl SetWeightsPerVertex(int value) override;
+            void __cdecl SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, size_t count) override;
+            void __cdecl ResetBoneTransforms() override;
         };
 
         //------------------------------------------------------------------------------
@@ -878,10 +878,10 @@ namespace DirectX
 
         //------------------------------------------------------------------------------
         // Abstract interface to factory for sharing effects and texture resources
-        class IEffectFactory
+        class DIRECTX_TOOLKIT_API IEffectFactory
         {
         public:
-            DIRECTX_TOOLKIT_API virtual ~IEffectFactory() = default;
+            virtual ~IEffectFactory() = default;
 
             IEffectFactory(const IEffectFactory&) = delete;
             IEffectFactory& operator=(const IEffectFactory&) = delete;
@@ -926,19 +926,19 @@ namespace DirectX
                 }
             };
 
-            DIRECTX_TOOLKIT_API virtual std::shared_ptr<IEffect> __cdecl CreateEffect(
+            virtual std::shared_ptr<IEffect> __cdecl CreateEffect(
                 _In_ const EffectInfo& info,
                 _In_opt_ ID3D11DeviceContext* deviceContext) = 0;
 
-            DIRECTX_TOOLKIT_API virtual void __cdecl CreateTexture(
+            virtual void __cdecl CreateTexture(
                 _In_z_ const wchar_t* name,
                 _In_opt_ ID3D11DeviceContext* deviceContext,
                 _Outptr_ ID3D11ShaderResourceView** textureView) = 0;
 
         protected:
-            DIRECTX_TOOLKIT_API IEffectFactory() = default;
-            DIRECTX_TOOLKIT_API IEffectFactory(IEffectFactory&&) = default;
-            DIRECTX_TOOLKIT_API IEffectFactory& operator=(IEffectFactory&&) = default;
+            IEffectFactory() = default;
+            IEffectFactory(IEffectFactory&&) = default;
+            IEffectFactory& operator=(IEffectFactory&&) = default;
         };
 
 

@@ -38,22 +38,22 @@ namespace DirectX
     {
         //------------------------------------------------------------------------------
         // Abstract interface representing a post-process pass
-        class IPostProcess
+        class DIRECTX_TOOLKIT_API IPostProcess
         {
         public:
-            DIRECTX_TOOLKIT_API virtual ~IPostProcess() = default;
+            virtual ~IPostProcess() = default;
 
             IPostProcess(const IPostProcess&) = delete;
             IPostProcess& operator=(const IPostProcess&) = delete;
 
-            DIRECTX_TOOLKIT_API virtual void __cdecl Process(
+            virtual void __cdecl Process(
                 _In_ ID3D11DeviceContext* deviceContext,
                 _In_ std::function<void __cdecl()> setCustomState = nullptr) = 0;
 
         protected:
-            DIRECTX_TOOLKIT_API IPostProcess() = default;
-            DIRECTX_TOOLKIT_API IPostProcess(IPostProcess&&) = default;
-            DIRECTX_TOOLKIT_API IPostProcess& operator=(IPostProcess&&) = default;
+            IPostProcess() = default;
+            IPostProcess(IPostProcess&&) = default;
+            IPostProcess& operator=(IPostProcess&&) = default;
         };
 
 

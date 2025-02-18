@@ -39,8 +39,8 @@ namespace DirectX
         class GeometricPrimitive
         {
         public:
-            DIRECTX_TOOLKIT_API GeometricPrimitive(GeometricPrimitive&&) = default;
-            DIRECTX_TOOLKIT_API GeometricPrimitive& operator= (GeometricPrimitive&&) = default;
+            GeometricPrimitive(GeometricPrimitive&&) = default;
+            GeometricPrimitive& operator= (GeometricPrimitive&&) = default;
 
             GeometricPrimitive(GeometricPrimitive const&) = delete;
             GeometricPrimitive& operator= (GeometricPrimitive const&) = delete;
@@ -193,13 +193,13 @@ namespace DirectX
                 _In_ IEffect* effect,
                 _Outptr_ ID3D11InputLayout** inputLayout) const;
 
-            DIRECTX_TOOLKIT_API static void SetDepthBufferMode(bool reverseZ)
+            DIRECTX_TOOLKIT_API static inline void SetDepthBufferMode(bool reverseZ)
             {
                 s_reversez = reverseZ;
             }
 
         private:
-            static bool s_reversez;
+            DIRECTX_TOOLKIT_API static bool s_reversez;
 
             DIRECTX_TOOLKIT_API GeometricPrimitive() noexcept(false);
 

@@ -509,14 +509,14 @@ namespace DirectX
     #ifdef USING_COREWINDOW
         DIRECTX_TOOLKIT_API void __cdecl SetWindow(ABI::Windows::UI::Core::ICoreWindow* window);
     #ifdef __cplusplus_winrt
-        DIRECTX_TOOLKIT_API void __cdecl SetWindow(Windows::UI::Core::CoreWindow^ window)
+        DIRECTX_TOOLKIT_API inline void __cdecl SetWindow(Windows::UI::Core::CoreWindow^ window)
         {
             // See https://msdn.microsoft.com/en-us/library/hh755802.aspx
             SetWindow(reinterpret_cast<ABI::Windows::UI::Core::ICoreWindow*>(window));
         }
     #endif
     #ifdef CPPWINRT_VERSION
-        DIRECTX_TOOLKIT_API void __cdecl SetWindow(winrt::Windows::UI::Core::CoreWindow window)
+        DIRECTX_TOOLKIT_API inline void __cdecl SetWindow(winrt::Windows::UI::Core::CoreWindow window)
         {
             // See https://docs.microsoft.com/en-us/windows/uwp/cpp-and-winrt-apis/interop-winrt-abi
             SetWindow(reinterpret_cast<ABI::Windows::UI::Core::ICoreWindow*>(winrt::get_abi(window)));
