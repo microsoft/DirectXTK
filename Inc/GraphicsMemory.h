@@ -38,7 +38,7 @@ namespace DirectX
         public:
             DIRECTX_TOOLKIT_API
         #if defined(_XBOX_ONE) && defined(_TITLE)
-            DIRECTX_TOOLKIT_API GraphicsMemory(
+            GraphicsMemory(
                 _In_ ID3D11DeviceX* device,
                 unsigned int backBufferCount = 2);
         #else

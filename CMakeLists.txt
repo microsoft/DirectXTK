@@ -15,6 +15,10 @@ project (DirectXTK
   HOMEPAGE_URL "https://go.microsoft.com/fwlink/?LinkId=248929"
   LANGUAGES CXX)
 
+if(DEFINED XBOX_CONSOLE_TARGET)
+  set(CMAKE_CXX_STANDARD_LIBRARIES "")
+endif()
+
 option(BUILD_TOOLS "Build XWBTool" ON)
 
 option(BUILD_SHARED_LIBS "Build DirectXTK as a shared library" OFF)
@@ -258,6 +262,10 @@ if(WIN32 AND BUILD_SHARED_LIBS)
 
   target_compile_definitions(${PROJECT_NAME} PRIVATE DIRECTX_TOOLKIT_EXPORT)
   target_compile_definitions(${PROJECT_NAME} INTERFACE DIRECTX_TOOLKIT_IMPORT)
+
+  if(XBOX_CONSOLE_TARGET MATCHES "durango")
+    target_link_libraries(${PROJECT_NAME} PRIVATE kernelx.lib combase.lib d3d12_x.lib xi.lib)
+  endif()
 
   if(MINGW)
     target_link_libraries(${PROJECT_NAME} PRIVATE xinput1_4.lib)
