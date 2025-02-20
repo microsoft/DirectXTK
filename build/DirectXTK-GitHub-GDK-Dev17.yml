@@ -219,3 +219,16 @@ jobs:
     inputs:
       cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --build out\build\x64-Release-GDK-Clang
+  - task: DeleteFiles@1
+    inputs:
+      Contents: 'out/build'
+  - task: CMake@1
+    displayName: 'CMake (MSVC, DLL): Config Debug'
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --preset=x64-Debug-GDK -DBUILD_SHARED_LIBS=ON
+  - task: CMake@1
+    displayName: 'CMake (MSVC, DLL): Build Debug'
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --build out\build\x64-Debug-GDK
