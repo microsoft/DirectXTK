@@ -18,6 +18,16 @@
 #include <cstddef>
 #include <memory>
 
+#ifndef DIRECTX_TOOLKIT_API
+#ifdef DIRECTX_TOOLKIT_EXPORT
+#define DIRECTX_TOOLKIT_API __declspec(dllexport)
+#elif defined(DIRECTX_TOOLKIT_IMPORT)
+#define DIRECTX_TOOLKIT_API __declspec(dllimport)
+#else
+#define DIRECTX_TOOLKIT_API
+#endif
+#endif
+
 
 namespace DirectX
 {
@@ -26,26 +36,34 @@ namespace DirectX
         class GraphicsMemory
         {
         public:
+            DIRECTX_TOOLKIT_API
         #if defined(_XBOX_ONE) && defined(_TITLE)
-            GraphicsMemory(_In_ ID3D11DeviceX* device, unsigned int backBufferCount = 2);
+            GraphicsMemory(
+                _In_ ID3D11DeviceX* device,
+                unsigned int backBufferCount = 2);
         #else
-            GraphicsMemory(_In_ ID3D11Device* device, unsigned int backBufferCount = 2);
+            GraphicsMemory(
+                _In_ ID3D11Device* device,
+                unsigned int backBufferCount = 2);
         #endif
 
-            GraphicsMemory(GraphicsMemory&&) noexcept;
-            GraphicsMemory& operator= (GraphicsMemory&&) noexcept;
+            DIRECTX_TOOLKIT_API GraphicsMemory(GraphicsMemory&&) noexcept;
+            DIRECTX_TOOLKIT_API GraphicsMemory& operator= (GraphicsMemory&&) noexcept;
 
             GraphicsMemory(GraphicsMemory const&) = delete;
             GraphicsMemory& operator=(GraphicsMemory const&) = delete;
 
-            virtual ~GraphicsMemory();
+            DIRECTX_TOOLKIT_API virtual ~GraphicsMemory();
 
-            void* __cdecl Allocate(_In_opt_ ID3D11DeviceContext* context, size_t size, int alignment);
+            DIRECTX_TOOLKIT_API void* __cdecl Allocate(
+                _In_opt_ ID3D11DeviceContext* context,
+                size_t size,
+                int alignment);
 
-            void __cdecl Commit();
+            DIRECTX_TOOLKIT_API void __cdecl Commit();
 
             // Singleton
-            static GraphicsMemory& __cdecl Get();
+            DIRECTX_TOOLKIT_API static GraphicsMemory& __cdecl Get();
 
         private:
             // Private implementation.

@@ -26,6 +26,16 @@
 #include <cstddef>
 #include <cstdint>
 
+#ifndef DIRECTX_TOOLKIT_API
+#ifdef DIRECTX_TOOLKIT_EXPORT
+#define DIRECTX_TOOLKIT_API __declspec(dllexport)
+#elif defined(DIRECTX_TOOLKIT_IMPORT)
+#define DIRECTX_TOOLKIT_API __declspec(dllimport)
+#else
+#define DIRECTX_TOOLKIT_API
+#endif
+#endif
+
 #ifndef DDS_ALPHA_MODE_DEFINED
 #define DDS_ALPHA_MODE_DEFINED
 namespace DirectX
@@ -41,10 +51,12 @@ namespace DirectX
 }
 #endif
 
+
 namespace Xbox
 {
     using DirectX::DDS_ALPHA_MODE;
 
+    DIRECTX_TOOLKIT_API
     HRESULT __cdecl CreateDDSTextureFromMemory(
         _In_ ID3D11DeviceX* d3dDevice,
         _In_reads_bytes_(ddsDataSize) const uint8_t* ddsData,
@@ -55,7 +67,9 @@ namespace Xbox
         _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr,
         _In_ bool forceSRGB = false) noexcept;
 
-    HRESULT __cdecl CreateDDSTextureFromFile( _In_ ID3D11DeviceX* d3dDevice,
+    DIRECTX_TOOLKIT_API
+    HRESULT __cdecl CreateDDSTextureFromFile(
+            _In_ ID3D11DeviceX* d3dDevice,
         _In_z_ const wchar_t* szFileName,
         _Outptr_opt_ ID3D11Resource** texture,
         _Outptr_opt_ ID3D11ShaderResourceView** textureView,
@@ -63,9 +77,11 @@ namespace Xbox
         _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr,
         _In_ bool forceSRGB = false) noexcept;
 
+    DIRECTX_TOOLKIT_API
     void FreeDDSTextureMemory( _In_opt_ void* grfxMemory ) noexcept;
 
 #ifdef __cpp_lib_byte
+    DIRECTX_TOOLKIT_API
     inline HRESULT __cdecl CreateDDSTextureFromMemory(
         _In_ ID3D11DeviceX* d3dDevice,
         _In_reads_bytes_(ddsDataSize) const uint8_t* ddsData,

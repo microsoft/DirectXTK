@@ -35,14 +35,26 @@
 #pragma comment(lib,"uuid.lib")
 #endif
 
+#ifndef DIRECTX_TOOLKIT_API
+#ifdef DIRECTX_TOOLKIT_EXPORT
+#define DIRECTX_TOOLKIT_API __declspec(dllexport)
+#elif defined(DIRECTX_TOOLKIT_IMPORT)
+#define DIRECTX_TOOLKIT_API __declspec(dllimport)
+#else
+#define DIRECTX_TOOLKIT_API
+#endif
+#endif
+
 
 namespace DirectX
 {
+    DIRECTX_TOOLKIT_API
     HRESULT __cdecl SaveDDSTextureToFile(
         _In_ ID3D11DeviceContext* pContext,
         _In_ ID3D11Resource* pSource,
         _In_z_ const wchar_t* fileName) noexcept;
 
+    DIRECTX_TOOLKIT_API
     HRESULT __cdecl SaveWICTextureToFile(
         _In_ ID3D11DeviceContext* pContext,
         _In_ ID3D11Resource* pSource,

@@ -21,6 +21,16 @@
 
 #include <DirectXMath.h>
 
+#ifndef DIRECTX_TOOLKIT_API
+#ifdef DIRECTX_TOOLKIT_EXPORT
+#define DIRECTX_TOOLKIT_API __declspec(dllexport)
+#elif defined(DIRECTX_TOOLKIT_IMPORT)
+#define DIRECTX_TOOLKIT_API __declspec(dllimport)
+#else
+#define DIRECTX_TOOLKIT_API
+#endif
+#endif
+
 
 namespace DirectX
 {
@@ -28,7 +38,7 @@ namespace DirectX
     {
         //------------------------------------------------------------------------------
         // Abstract interface representing a post-process pass
-        class IPostProcess
+        class DIRECTX_TOOLKIT_API IPostProcess
         {
         public:
             virtual ~IPostProcess() = default;
@@ -36,7 +46,8 @@ namespace DirectX
             IPostProcess(const IPostProcess&) = delete;
             IPostProcess& operator=(const IPostProcess&) = delete;
 
-            virtual void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext,
+            virtual void __cdecl Process(
+                _In_ ID3D11DeviceContext* deviceContext,
                 _In_ std::function<void __cdecl()> setCustomState = nullptr) = 0;
 
         protected:
@@ -64,35 +75,35 @@ namespace DirectX
                 Effect_Max
             };
 
-            explicit BasicPostProcess(_In_ ID3D11Device* device);
+            DIRECTX_TOOLKIT_API explicit BasicPostProcess(_In_ ID3D11Device* device);
 
-            BasicPostProcess(BasicPostProcess&&) noexcept;
-            BasicPostProcess& operator= (BasicPostProcess&&) noexcept;
+            DIRECTX_TOOLKIT_API BasicPostProcess(BasicPostProcess&&) noexcept;
+            DIRECTX_TOOLKIT_API BasicPostProcess& operator= (BasicPostProcess&&) noexcept;
 
             BasicPostProcess(BasicPostProcess const&) = delete;
             BasicPostProcess& operator= (BasicPostProcess const&) = delete;
 
-            ~BasicPostProcess() override;
+            DIRECTX_TOOLKIT_API ~BasicPostProcess() override;
 
             // IPostProcess methods.
-            void __cdecl Process(
+            DIRECTX_TOOLKIT_API void __cdecl Process(
                 _In_ ID3D11DeviceContext* deviceContext,
                 _In_ std::function<void __cdecl()> setCustomState = nullptr) override;
 
             // Shader control
-            void __cdecl SetEffect(Effect fx);
+            DIRECTX_TOOLKIT_API void __cdecl SetEffect(Effect fx);
 
             // Properties
-            void __cdecl SetSourceTexture(_In_opt_ ID3D11ShaderResourceView* value);
+            DIRECTX_TOOLKIT_API void __cdecl SetSourceTexture(_In_opt_ ID3D11ShaderResourceView* value);
 
             // Sets multiplier for GaussianBlur_5x5
-            void __cdecl SetGaussianParameter(float multiplier);
+            DIRECTX_TOOLKIT_API void __cdecl SetGaussianParameter(float multiplier);
 
             // Sets parameters for BloomExtract
-            void __cdecl SetBloomExtractParameter(float threshold);
+            DIRECTX_TOOLKIT_API void __cdecl SetBloomExtractParameter(float threshold);
 
             // Sets parameters for BloomBlur
-            void __cdecl SetBloomBlurParameters(bool horizontal, float size, float brightness);
+            DIRECTX_TOOLKIT_API void __cdecl SetBloomBlurParameters(bool horizontal, float size, float brightness);
 
         private:
             // Private implementation.
@@ -114,32 +125,33 @@ namespace DirectX
                 Effect_Max
             };
 
-            explicit DualPostProcess(_In_ ID3D11Device* device);
+            DIRECTX_TOOLKIT_API explicit DualPostProcess(_In_ ID3D11Device* device);
 
-            DualPostProcess(DualPostProcess&&) noexcept;
-            DualPostProcess& operator= (DualPostProcess&&) noexcept;
+            DIRECTX_TOOLKIT_API DualPostProcess(DualPostProcess&&) noexcept;
+            DIRECTX_TOOLKIT_API DualPostProcess& operator= (DualPostProcess&&) noexcept;
 
             DualPostProcess(DualPostProcess const&) = delete;
             DualPostProcess& operator= (DualPostProcess const&) = delete;
 
-            ~DualPostProcess() override;
+            DIRECTX_TOOLKIT_API ~DualPostProcess() override;
 
             // IPostProcess methods.
-            void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext,
+            DIRECTX_TOOLKIT_API void __cdecl Process(
+                _In_ ID3D11DeviceContext* deviceContext,
                 _In_ std::function<void __cdecl()> setCustomState = nullptr) override;
 
             // Shader control
-            void __cdecl SetEffect(Effect fx);
+            DIRECTX_TOOLKIT_API void __cdecl SetEffect(Effect fx);
 
             // Properties
-            void __cdecl SetSourceTexture(_In_opt_ ID3D11ShaderResourceView* value);
-            void __cdecl SetSourceTexture2(_In_opt_ ID3D11ShaderResourceView* value);
+            DIRECTX_TOOLKIT_API void __cdecl SetSourceTexture(_In_opt_ ID3D11ShaderResourceView* value);
+            DIRECTX_TOOLKIT_API void __cdecl SetSourceTexture2(_In_opt_ ID3D11ShaderResourceView* value);
 
             // Sets parameters for Merge
-            void __cdecl SetMergeParameters(float weight1, float weight2);
+            DIRECTX_TOOLKIT_API void __cdecl SetMergeParameters(float weight1, float weight2);
 
             // Sets parameters for BloomCombine
-            void __cdecl SetBloomCombineParameters(float bloom, float base, float bloomSaturation, float baseSaturation);
+            DIRECTX_TOOLKIT_API void __cdecl SetBloomCombineParameters(float bloom, float base, float bloomSaturation, float baseSaturation);
 
         private:
             // Private implementation.
@@ -181,42 +193,43 @@ namespace DirectX
                 HDTV_to_DCI_P3_D65,  // Rec.709 to DCI-P3-D65 (a.k.a Display P3 or P3D65)
             };
 
-            explicit ToneMapPostProcess(_In_ ID3D11Device* device);
+            DIRECTX_TOOLKIT_API explicit ToneMapPostProcess(_In_ ID3D11Device* device);
 
-            ToneMapPostProcess(ToneMapPostProcess&&) noexcept;
-            ToneMapPostProcess& operator= (ToneMapPostProcess&&) noexcept;
+            DIRECTX_TOOLKIT_API ToneMapPostProcess(ToneMapPostProcess&&) noexcept;
+            DIRECTX_TOOLKIT_API ToneMapPostProcess& operator= (ToneMapPostProcess&&) noexcept;
 
             ToneMapPostProcess(ToneMapPostProcess const&) = delete;
             ToneMapPostProcess& operator= (ToneMapPostProcess const&) = delete;
 
-            ~ToneMapPostProcess() override;
+            DIRECTX_TOOLKIT_API ~ToneMapPostProcess() override;
 
             // IPostProcess methods.
-            void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext,
+            DIRECTX_TOOLKIT_API void __cdecl Process(
+                _In_ ID3D11DeviceContext* deviceContext,
                 _In_ std::function<void __cdecl()> setCustomState = nullptr) override;
 
             // Shader control
-            void __cdecl SetOperator(Operator op);
+            DIRECTX_TOOLKIT_API void __cdecl SetOperator(Operator op);
 
-            void __cdecl SetTransferFunction(TransferFunction func);
+            DIRECTX_TOOLKIT_API void __cdecl SetTransferFunction(TransferFunction func);
 
         #if defined(_XBOX_ONE) && defined(_TITLE)
             // Uses Multiple Render Targets to generate both HDR10 and GameDVR SDR signals
-            void __cdecl SetMRTOutput(bool value = true);
+            DIRECTX_TOOLKIT_API void __cdecl SetMRTOutput(bool value = true);
         #endif
 
             // Properties
-            void __cdecl SetHDRSourceTexture(_In_opt_ ID3D11ShaderResourceView* value);
+            DIRECTX_TOOLKIT_API void __cdecl SetHDRSourceTexture(_In_opt_ ID3D11ShaderResourceView* value);
 
             // Sets the Color Rotation Transform for HDR10 signal output
-            void __cdecl SetColorRotation(ColorPrimaryRotation value);
-            void __cdecl SetColorRotation(CXMMATRIX value);
+            DIRECTX_TOOLKIT_API void __cdecl SetColorRotation(ColorPrimaryRotation value);
+            DIRECTX_TOOLKIT_API void __cdecl SetColorRotation(CXMMATRIX value);
 
             // Sets exposure value for LDR tonemap operators
-            void __cdecl SetExposure(float exposureValue);
+            DIRECTX_TOOLKIT_API void __cdecl SetExposure(float exposureValue);
 
             // Sets ST.2084 parameter for how bright white should be in nits
-            void __cdecl SetST2084Parameter(float paperWhiteNits);
+            DIRECTX_TOOLKIT_API void __cdecl SetST2084Parameter(float paperWhiteNits);
 
         private:
             // Private implementation.

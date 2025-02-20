@@ -25,6 +25,17 @@
 #define DIRECTX_ENABLE_SEEK_TABLES
 #endif
 
+#ifndef DIRECTX_TOOLKIT_API
+#ifdef DIRECTX_TOOLKIT_EXPORT
+#define DIRECTX_TOOLKIT_API __declspec(dllexport)
+#elif defined(DIRECTX_TOOLKIT_IMPORT)
+#define DIRECTX_TOOLKIT_API __declspec(dllimport)
+#else
+#define DIRECTX_TOOLKIT_API
+#endif
+#endif
+
+
 namespace DirectX
 {
     // Helper for getting a format tag from a WAVEFORMATEX
@@ -55,11 +66,11 @@ namespace DirectX
 
 
     // Helper for validating wave format structure
-    bool __cdecl IsValid(_In_ const WAVEFORMATEX* wfx) noexcept;
+    DIRECTX_TOOLKIT_API bool __cdecl IsValid(_In_ const WAVEFORMATEX* wfx) noexcept;
 
 
     // Helper for getting a default channel mask from channels
-    uint32_t __cdecl GetDefaultChannelMask(int channels) noexcept;
+    DIRECTX_TOOLKIT_API uint32_t __cdecl GetDefaultChannelMask(int channels) noexcept;
 
 
     // Helpers for creating various wave format structures

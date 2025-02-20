@@ -67,6 +67,16 @@
 
 #include <DirectXMath.h>
 
+#ifndef DIRECTX_TOOLKIT_API
+#ifdef DIRECTX_TOOLKIT_EXPORT
+#define DIRECTX_TOOLKIT_API __declspec(dllexport)
+#elif defined(DIRECTX_TOOLKIT_IMPORT)
+#define DIRECTX_TOOLKIT_API __declspec(dllimport)
+#else
+#define DIRECTX_TOOLKIT_API
+#endif
+#endif
+
 
 namespace DirectX
 {
@@ -92,7 +102,7 @@ namespace DirectX
 
 
     //----------------------------------------------------------------------------------
-    class IVoiceNotify
+    class DIRECTX_TOOLKIT_API IVoiceNotify
     {
     public:
         virtual ~IVoiceNotify() = default;
@@ -205,90 +215,93 @@ namespace DirectX
     class AudioEngine
     {
     public:
-        explicit AudioEngine(
+        DIRECTX_TOOLKIT_API explicit AudioEngine(
             AUDIO_ENGINE_FLAGS flags = AudioEngine_Default,
             _In_opt_ const WAVEFORMATEX* wfx = nullptr,
             _In_opt_z_ const wchar_t* deviceId = nullptr,
             AUDIO_STREAM_CATEGORY category = AudioCategory_GameEffects) noexcept(false);
 
-        AudioEngine(AudioEngine&&) noexcept;
-        AudioEngine& operator= (AudioEngine&&) noexcept;
+        DIRECTX_TOOLKIT_API AudioEngine(AudioEngine&&) noexcept;
+        DIRECTX_TOOLKIT_API AudioEngine& operator= (AudioEngine&&) noexcept;
 
         AudioEngine(AudioEngine const&) = delete;
         AudioEngine& operator= (AudioEngine const&) = delete;
 
-        virtual ~AudioEngine();
+        DIRECTX_TOOLKIT_API virtual ~AudioEngine();
 
-        bool __cdecl Update();
+        DIRECTX_TOOLKIT_API bool __cdecl Update();
             // Performs per-frame processing for the audio engine, returns false if in 'silent mode'
 
-        bool __cdecl Reset(_In_opt_ const WAVEFORMATEX* wfx = nullptr, _In_opt_z_ const wchar_t* deviceId = nullptr);
+        DIRECTX_TOOLKIT_API bool __cdecl Reset(
+            _In_opt_ const WAVEFORMATEX* wfx = nullptr,
+            _In_opt_z_ const wchar_t* deviceId = nullptr);
             // Reset audio engine from critical error/silent mode using a new device; can also 'migrate' the graph
             // Returns true if succesfully reset, false if in 'silent mode' due to no default device
             // Note: One shots are lost, all SoundEffectInstances are in the STOPPED state after successful reset
 
-        void __cdecl Suspend() noexcept;
-        void __cdecl Resume();
+        DIRECTX_TOOLKIT_API void __cdecl Suspend() noexcept;
+        DIRECTX_TOOLKIT_API void __cdecl Resume();
             // Suspend/resumes audio processing (i.e. global pause/resume)
 
-        float __cdecl GetMasterVolume() const noexcept;
-        void __cdecl SetMasterVolume(float volume);
+        DIRECTX_TOOLKIT_API float __cdecl GetMasterVolume() const noexcept;
+        DIRECTX_TOOLKIT_API void __cdecl SetMasterVolume(float volume);
             // Master volume property for all sounds
 
-        void __cdecl SetReverb(AUDIO_ENGINE_REVERB reverb);
-        void __cdecl SetReverb(_In_opt_ const XAUDIO2FX_REVERB_PARAMETERS* native);
+        DIRECTX_TOOLKIT_API void __cdecl SetReverb(AUDIO_ENGINE_REVERB reverb);
+        DIRECTX_TOOLKIT_API void __cdecl SetReverb(_In_opt_ const XAUDIO2FX_REVERB_PARAMETERS* native);
             // Sets environmental reverb for 3D positional audio (if active)
 
-        void __cdecl SetMasteringLimit(int release, int loudness);
+        DIRECTX_TOOLKIT_API void __cdecl SetMasteringLimit(int release, int loudness);
             // Sets the mastering volume limiter properties (if active)
 
-        AudioStatistics __cdecl GetStatistics() const;
+        DIRECTX_TOOLKIT_API AudioStatistics __cdecl GetStatistics() const;
             // Gathers audio engine statistics
 
-        WAVEFORMATEXTENSIBLE __cdecl GetOutputFormat() const noexcept;
+        DIRECTX_TOOLKIT_API WAVEFORMATEXTENSIBLE __cdecl GetOutputFormat() const noexcept;
             // Returns the format of the audio output device associated with the mastering voice.
 
-        uint32_t __cdecl GetChannelMask() const noexcept;
+        DIRECTX_TOOLKIT_API uint32_t __cdecl GetChannelMask() const noexcept;
             // Returns the output channel mask
 
-        int __cdecl GetOutputSampleRate() const noexcept;
+        DIRECTX_TOOLKIT_API int __cdecl GetOutputSampleRate() const noexcept;
             // Returns the sample rate going into the mastering voice
 
-        unsigned int __cdecl GetOutputChannels() const noexcept;
+        DIRECTX_TOOLKIT_API unsigned int __cdecl GetOutputChannels() const noexcept;
             // Returns the number of channels going into the mastering voice
 
-        bool __cdecl IsAudioDevicePresent() const noexcept;
+        DIRECTX_TOOLKIT_API bool __cdecl IsAudioDevicePresent() const noexcept;
             // Returns true if the audio graph is operating normally, false if in 'silent mode'
 
-        bool __cdecl IsCriticalError() const noexcept;
+        DIRECTX_TOOLKIT_API bool __cdecl IsCriticalError() const noexcept;
             // Returns true if the audio graph is halted due to a critical error (which also places the engine into 'silent mode')
 
         // Voice pool management.
-        void __cdecl SetDefaultSampleRate(int sampleRate);
+        DIRECTX_TOOLKIT_API void __cdecl SetDefaultSampleRate(int sampleRate);
             // Sample rate for voices in the reuse pool (defaults to 44100)
 
-        void __cdecl SetMaxVoicePool(size_t maxOneShots, size_t maxInstances);
+        DIRECTX_TOOLKIT_API void __cdecl SetMaxVoicePool(size_t maxOneShots, size_t maxInstances);
             // Maximum number of voices to allocate for one-shots and instances
             // Note: one-shots over this limit are ignored; too many instance voices throws an exception
 
-        void __cdecl TrimVoicePool();
+        DIRECTX_TOOLKIT_API void __cdecl TrimVoicePool();
             // Releases any currently unused voices
 
         // Internal-use functions
         void __cdecl AllocateVoice(_In_ const WAVEFORMATEX* wfx,
-            SOUND_EFFECT_INSTANCE_FLAGS flags, bool oneshot, _Outptr_result_maybenull_ IXAudio2SourceVoice** voice);
+            SOUND_EFFECT_INSTANCE_FLAGS flags, bool oneshot,
+            _Outptr_result_maybenull_ IXAudio2SourceVoice** voice);
 
-        void __cdecl DestroyVoice(_In_ IXAudio2SourceVoice* voice) noexcept;
+        DIRECTX_TOOLKIT_API void __cdecl DestroyVoice(_In_ IXAudio2SourceVoice* voice) noexcept;
             // Should only be called for instance voices, not one-shots
 
-        void __cdecl RegisterNotify(_In_ IVoiceNotify* notify, bool usesUpdate);
+        DIRECTX_TOOLKIT_API void __cdecl RegisterNotify(_In_ IVoiceNotify* notify, bool usesUpdate);
         void __cdecl UnregisterNotify(_In_ IVoiceNotify* notify, bool usesOneShots, bool usesUpdate);
 
         // XAudio2 interface access
-        IXAudio2* __cdecl GetInterface() const noexcept;
-        IXAudio2MasteringVoice* __cdecl GetMasterVoice() const noexcept;
-        IXAudio2SubmixVoice* __cdecl GetReverbVoice() const noexcept;
-        X3DAUDIO_HANDLE& __cdecl Get3DHandle() const noexcept;
+        DIRECTX_TOOLKIT_API IXAudio2* __cdecl GetInterface() const noexcept;
+        DIRECTX_TOOLKIT_API IXAudio2MasteringVoice* __cdecl GetMasterVoice() const noexcept;
+        DIRECTX_TOOLKIT_API IXAudio2SubmixVoice* __cdecl GetReverbVoice() const noexcept;
+        DIRECTX_TOOLKIT_API X3DAUDIO_HANDLE& __cdecl Get3DHandle() const noexcept;
 
         // Static functions
         struct RendererDetail
@@ -297,17 +310,19 @@ namespace DirectX
             std::wstring description;
         };
 
-        static std::vector<RendererDetail> __cdecl GetRendererDetails();
+        DIRECTX_TOOLKIT_API static std::vector<RendererDetail> __cdecl GetRendererDetails();
             // Returns a list of valid audio endpoint devices
 
 #if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
-        explicit AudioEngine(
+        DIRECTX_TOOLKIT_API explicit AudioEngine(
             AUDIO_ENGINE_FLAGS flags = AudioEngine_Default,
             _In_opt_ const WAVEFORMATEX* wfx = nullptr,
             _In_opt_z_ const __wchar_t* deviceId = nullptr,
             AUDIO_STREAM_CATEGORY category = AudioCategory_GameEffects) noexcept(false);
 
-        bool __cdecl Reset(_In_opt_ const WAVEFORMATEX* wfx = nullptr, _In_opt_z_ const __wchar_t* deviceId = nullptr);
+        DIRECTX_TOOLKIT_API bool __cdecl Reset(
+            _In_opt_ const WAVEFORMATEX* wfx = nullptr,
+            _In_opt_z_ const __wchar_t* deviceId = nullptr);
 #endif
 
     private:
@@ -321,64 +336,85 @@ namespace DirectX
     class WaveBank
     {
     public:
-        WaveBank(_In_ AudioEngine* engine, _In_z_ const wchar_t* wbFileName);
+        DIRECTX_TOOLKIT_API WaveBank(
+            _In_ AudioEngine* engine,
+            _In_z_ const wchar_t* wbFileName);
 
-        WaveBank(WaveBank&&) noexcept;
-        WaveBank& operator= (WaveBank&&) noexcept;
+        DIRECTX_TOOLKIT_API WaveBank(WaveBank&&) noexcept;
+        DIRECTX_TOOLKIT_API WaveBank& operator= (WaveBank&&) noexcept;
 
         WaveBank(WaveBank const&) = delete;
         WaveBank& operator= (WaveBank const&) = delete;
 
-        virtual ~WaveBank();
+        DIRECTX_TOOLKIT_API virtual ~WaveBank();
 
-        void __cdecl Play(unsigned int index);
-        void __cdecl Play(unsigned int index, float volume, float pitch, float pan);
+        DIRECTX_TOOLKIT_API void __cdecl Play(unsigned int index);
+        DIRECTX_TOOLKIT_API void __cdecl Play(
+            unsigned int index,
+            float volume, float pitch, float pan);
 
-        void __cdecl Play(_In_z_ const char* name);
-        void __cdecl Play(_In_z_ const char* name, float volume, float pitch, float pan);
+        DIRECTX_TOOLKIT_API void __cdecl Play(_In_z_ const char* name);
+        DIRECTX_TOOLKIT_API void __cdecl Play(
+            _In_z_ const char* name,
+            float volume, float pitch, float pan);
 
-        std::unique_ptr<SoundEffectInstance> __cdecl CreateInstance(unsigned int index,
+        DIRECTX_TOOLKIT_API std::unique_ptr<SoundEffectInstance> __cdecl CreateInstance(
+            unsigned int index,
             SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default);
-        std::unique_ptr<SoundEffectInstance> __cdecl CreateInstance(_In_z_ const char* name,
+        DIRECTX_TOOLKIT_API std::unique_ptr<SoundEffectInstance> __cdecl CreateInstance(
+            _In_z_ const char* name,
             SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default);
 
-        std::unique_ptr<SoundStreamInstance> __cdecl CreateStreamInstance(unsigned int index,
+        DIRECTX_TOOLKIT_API std::unique_ptr<SoundStreamInstance> __cdecl CreateStreamInstance(
+            unsigned int index,
             SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default);
-        std::unique_ptr<SoundStreamInstance> __cdecl CreateStreamInstance(_In_z_ const char* name,
+        DIRECTX_TOOLKIT_API std::unique_ptr<SoundStreamInstance> __cdecl CreateStreamInstance(
+            _In_z_ const char* name,
             SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default);
 
-        bool __cdecl IsPrepared() const noexcept;
-        bool __cdecl IsInUse() const noexcept;
-        bool __cdecl IsStreamingBank() const noexcept;
-        bool __cdecl IsAdvancedFormat() const noexcept;
+        DIRECTX_TOOLKIT_API bool __cdecl IsPrepared() const noexcept;
+        DIRECTX_TOOLKIT_API bool __cdecl IsInUse() const noexcept;
+        DIRECTX_TOOLKIT_API bool __cdecl IsStreamingBank() const noexcept;
+        DIRECTX_TOOLKIT_API bool __cdecl IsAdvancedFormat() const noexcept;
 
-        size_t __cdecl GetSampleSizeInBytes(unsigned int index) const noexcept;
+        DIRECTX_TOOLKIT_API size_t __cdecl GetSampleSizeInBytes(unsigned int index) const noexcept;
         // Returns size of wave audio data
 
-        size_t __cdecl GetSampleDuration(unsigned int index) const noexcept;
+        DIRECTX_TOOLKIT_API size_t __cdecl GetSampleDuration(unsigned int index) const noexcept;
         // Returns the duration in samples
 
-        size_t __cdecl GetSampleDurationMS(unsigned int index) const noexcept;
+        DIRECTX_TOOLKIT_API size_t __cdecl GetSampleDurationMS(unsigned int index) const noexcept;
         // Returns the duration in milliseconds
 
-        const WAVEFORMATEX* __cdecl GetFormat(unsigned int index, _Out_writes_bytes_(maxsize) WAVEFORMATEX* wfx, size_t maxsize) const noexcept;
+        DIRECTX_TOOLKIT_API const WAVEFORMATEX* __cdecl GetFormat(
+            unsigned int index,
+            _Out_writes_bytes_(maxsize) WAVEFORMATEX* wfx, size_t maxsize) const noexcept;
 
-        int __cdecl Find(_In_z_ const char* name) const;
+        DIRECTX_TOOLKIT_API int __cdecl Find(_In_z_ const char* name) const;
 
     #ifdef USING_XAUDIO2_9
-        bool __cdecl FillSubmitBuffer(unsigned int index, _Out_ XAUDIO2_BUFFER& buffer, _Out_ XAUDIO2_BUFFER_WMA& wmaBuffer) const;
+        DIRECTX_TOOLKIT_API bool __cdecl FillSubmitBuffer(
+            unsigned int index,
+            _Out_ XAUDIO2_BUFFER& buffer,
+            _Out_ XAUDIO2_BUFFER_WMA& wmaBuffer) const;
     #else
-        void __cdecl FillSubmitBuffer(unsigned int index, _Out_ XAUDIO2_BUFFER& buffer) const;
+        DIRECTX_TOOLKIT_API void __cdecl FillSubmitBuffer(
+            unsigned int index,
+            _Out_ XAUDIO2_BUFFER& buffer) const;
     #endif
 
-        void __cdecl UnregisterInstance(_In_ IVoiceNotify* instance);
+        DIRECTX_TOOLKIT_API void __cdecl UnregisterInstance(_In_ IVoiceNotify* instance);
 
-        HANDLE __cdecl GetAsyncHandle() const noexcept;
+        DIRECTX_TOOLKIT_API HANDLE __cdecl GetAsyncHandle() const noexcept;
 
-        bool __cdecl GetPrivateData(unsigned int index, _Out_writes_bytes_(datasize) void* data, size_t datasize);
+        DIRECTX_TOOLKIT_API bool __cdecl GetPrivateData(
+            unsigned int index,
+            _Out_writes_bytes_(datasize) void* data, size_t datasize);
 
 #if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
-        WaveBank(_In_ AudioEngine* engine, _In_z_ const __wchar_t* wbFileName);
+        DIRECTX_TOOLKIT_API WaveBank(
+            _In_ AudioEngine* engine,
+            _In_z_ const __wchar_t* wbFileName);
 #endif
 
     private:
@@ -393,59 +429,74 @@ namespace DirectX
     class SoundEffect
     {
     public:
-        SoundEffect(_In_ AudioEngine* engine, _In_z_ const wchar_t* waveFileName);
+        DIRECTX_TOOLKIT_API SoundEffect(
+            _In_ AudioEngine* engine,
+            _In_z_ const wchar_t* waveFileName);
 
-        SoundEffect(_In_ AudioEngine* engine, _Inout_ std::unique_ptr<uint8_t[]>& wavData,
-            _In_ const WAVEFORMATEX* wfx, _In_reads_bytes_(audioBytes) const uint8_t* startAudio, size_t audioBytes);
+        DIRECTX_TOOLKIT_API SoundEffect(
+            _In_ AudioEngine* engine,
+            _Inout_ std::unique_ptr<uint8_t[]>& wavData,
+            _In_ const WAVEFORMATEX* wfx,
+            _In_reads_bytes_(audioBytes) const uint8_t* startAudio, size_t audioBytes);
 
-        SoundEffect(_In_ AudioEngine* engine, _Inout_ std::unique_ptr<uint8_t[]>& wavData,
-            _In_ const WAVEFORMATEX* wfx, _In_reads_bytes_(audioBytes) const uint8_t* startAudio, size_t audioBytes,
+        DIRECTX_TOOLKIT_API SoundEffect(
+            _In_ AudioEngine* engine,
+            _Inout_ std::unique_ptr<uint8_t[]>& wavData,
+            _In_ const WAVEFORMATEX* wfx,
+            _In_reads_bytes_(audioBytes) const uint8_t* startAudio, size_t audioBytes,
             uint32_t loopStart, uint32_t loopLength);
 
     #ifdef USING_XAUDIO2_9
 
-        SoundEffect(_In_ AudioEngine* engine, _Inout_ std::unique_ptr<uint8_t[]>& wavData,
-            _In_ const WAVEFORMATEX* wfx, _In_reads_bytes_(audioBytes) const uint8_t* startAudio, size_t audioBytes,
+        DIRECTX_TOOLKIT_API SoundEffect(
+            _In_ AudioEngine* engine,
+            _Inout_ std::unique_ptr<uint8_t[]>& wavData,
+            _In_ const WAVEFORMATEX* wfx,
+            _In_reads_bytes_(audioBytes) const uint8_t* startAudio, size_t audioBytes,
             _In_reads_(seekCount) const uint32_t* seekTable, size_t seekCount);
 
     #endif
 
-        SoundEffect(SoundEffect&&) noexcept;
-        SoundEffect& operator= (SoundEffect&&) noexcept;
+        DIRECTX_TOOLKIT_API SoundEffect(SoundEffect&&) noexcept;
+        DIRECTX_TOOLKIT_API SoundEffect& operator= (SoundEffect&&) noexcept;
 
         SoundEffect(SoundEffect const&) = delete;
         SoundEffect& operator= (SoundEffect const&) = delete;
 
-        virtual ~SoundEffect();
+        DIRECTX_TOOLKIT_API virtual ~SoundEffect();
 
-        void __cdecl Play();
-        void __cdecl Play(float volume, float pitch, float pan);
+        DIRECTX_TOOLKIT_API void __cdecl Play();
+        DIRECTX_TOOLKIT_API void __cdecl Play(float volume, float pitch, float pan);
 
-        std::unique_ptr<SoundEffectInstance> __cdecl CreateInstance(SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default);
+        DIRECTX_TOOLKIT_API std::unique_ptr<SoundEffectInstance> __cdecl CreateInstance(SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default);
 
-        bool __cdecl IsInUse() const noexcept;
+        DIRECTX_TOOLKIT_API bool __cdecl IsInUse() const noexcept;
 
-        size_t __cdecl GetSampleSizeInBytes() const noexcept;
+        DIRECTX_TOOLKIT_API size_t __cdecl GetSampleSizeInBytes() const noexcept;
         // Returns size of wave audio data
 
-        size_t __cdecl GetSampleDuration() const noexcept;
+        DIRECTX_TOOLKIT_API size_t __cdecl GetSampleDuration() const noexcept;
         // Returns the duration in samples
 
-        size_t __cdecl GetSampleDurationMS() const noexcept;
+        DIRECTX_TOOLKIT_API size_t __cdecl GetSampleDurationMS() const noexcept;
         // Returns the duration in milliseconds
 
-        const WAVEFORMATEX* __cdecl GetFormat() const noexcept;
+        DIRECTX_TOOLKIT_API const WAVEFORMATEX* __cdecl GetFormat() const noexcept;
 
     #ifdef USING_XAUDIO2_9
-        bool __cdecl FillSubmitBuffer(_Out_ XAUDIO2_BUFFER& buffer, _Out_ XAUDIO2_BUFFER_WMA& wmaBuffer) const;
+        DIRECTX_TOOLKIT_API bool __cdecl FillSubmitBuffer(
+            _Out_ XAUDIO2_BUFFER& buffer,
+            _Out_ XAUDIO2_BUFFER_WMA& wmaBuffer) const;
     #else
-        void __cdecl FillSubmitBuffer(_Out_ XAUDIO2_BUFFER& buffer) const;
+        DIRECTX_TOOLKIT_API void __cdecl FillSubmitBuffer(_Out_ XAUDIO2_BUFFER& buffer) const;
     #endif
 
-        void __cdecl UnregisterInstance(_In_ IVoiceNotify* instance);
+        DIRECTX_TOOLKIT_API void __cdecl UnregisterInstance(_In_ IVoiceNotify* instance);
 
 #if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
-        SoundEffect(_In_ AudioEngine* engine, _In_z_ const __wchar_t* waveFileName);
+        DIRECTX_TOOLKIT_API SoundEffect(
+            _In_ AudioEngine* engine,
+            _In_z_ const __wchar_t* waveFileName);
 #endif
 
     private:
@@ -457,7 +508,7 @@ namespace DirectX
 
 
     //----------------------------------------------------------------------------------
-    struct AudioListener : public X3DAUDIO_LISTENER
+    struct DIRECTX_TOOLKIT_API AudioListener : public X3DAUDIO_LISTENER
     {
         X3DAUDIO_CONE   ListenerCone;
 
@@ -551,7 +602,7 @@ namespace DirectX
 
 
     //----------------------------------------------------------------------------------
-    struct AudioEmitter : public X3DAUDIO_EMITTER
+    struct DIRECTX_TOOLKIT_API AudioEmitter : public X3DAUDIO_EMITTER
     {
         X3DAUDIO_CONE   EmitterCone;
         float           EmitterAzimuths[XAUDIO2_MAX_AUDIO_CHANNELS];
@@ -675,32 +726,34 @@ namespace DirectX
     class SoundEffectInstance
     {
     public:
-        SoundEffectInstance(SoundEffectInstance&&) noexcept;
-        SoundEffectInstance& operator= (SoundEffectInstance&&) noexcept;
+        DIRECTX_TOOLKIT_API SoundEffectInstance(SoundEffectInstance&&) noexcept;
+        DIRECTX_TOOLKIT_API SoundEffectInstance& operator= (SoundEffectInstance&&) noexcept;
 
         SoundEffectInstance(SoundEffectInstance const&) = delete;
         SoundEffectInstance& operator= (SoundEffectInstance const&) = delete;
 
-        virtual ~SoundEffectInstance();
+        DIRECTX_TOOLKIT_API virtual ~SoundEffectInstance();
 
-        void __cdecl Play(bool loop = false);
-        void __cdecl Stop(bool immediate = true) noexcept;
-        void __cdecl Pause() noexcept;
-        void __cdecl Resume();
+        DIRECTX_TOOLKIT_API void __cdecl Play(bool loop = false);
+        DIRECTX_TOOLKIT_API void __cdecl Stop(bool immediate = true) noexcept;
+        DIRECTX_TOOLKIT_API void __cdecl Pause() noexcept;
+        DIRECTX_TOOLKIT_API void __cdecl Resume();
 
-        void __cdecl SetVolume(float volume);
-        void __cdecl SetPitch(float pitch);
-        void __cdecl SetPan(float pan);
+        DIRECTX_TOOLKIT_API void __cdecl SetVolume(float volume);
+        DIRECTX_TOOLKIT_API void __cdecl SetPitch(float pitch);
+        DIRECTX_TOOLKIT_API void __cdecl SetPan(float pan);
 
-        void __cdecl Apply3D(const X3DAUDIO_LISTENER& listener, const X3DAUDIO_EMITTER& emitter, bool rhcoords = true);
+        DIRECTX_TOOLKIT_API void __cdecl Apply3D(
+            const X3DAUDIO_LISTENER& listener,
+            const X3DAUDIO_EMITTER& emitter, bool rhcoords = true);
 
-        bool __cdecl IsLooped() const noexcept;
+        DIRECTX_TOOLKIT_API bool __cdecl IsLooped() const noexcept;
 
-        SoundState __cdecl GetState() noexcept;
+        DIRECTX_TOOLKIT_API SoundState __cdecl GetState() noexcept;
 
-        unsigned int __cdecl GetChannelCount() const noexcept;
+        DIRECTX_TOOLKIT_API unsigned int __cdecl GetChannelCount() const noexcept;
 
-        IVoiceNotify* __cdecl GetVoiceNotify() const noexcept;
+        DIRECTX_TOOLKIT_API IVoiceNotify* __cdecl GetVoiceNotify() const noexcept;
 
     private:
         // Private implementation.
@@ -709,8 +762,8 @@ namespace DirectX
         std::unique_ptr<Impl> pImpl;
 
         // Private constructors
-        SoundEffectInstance(_In_ AudioEngine* engine, _In_ SoundEffect* effect, SOUND_EFFECT_INSTANCE_FLAGS flags);
-        SoundEffectInstance(_In_ AudioEngine* engine, _In_ WaveBank* effect, unsigned int index, SOUND_EFFECT_INSTANCE_FLAGS flags);
+        DIRECTX_TOOLKIT_API SoundEffectInstance(_In_ AudioEngine* engine, _In_ SoundEffect* effect, SOUND_EFFECT_INSTANCE_FLAGS flags);
+        DIRECTX_TOOLKIT_API SoundEffectInstance(_In_ AudioEngine* engine, _In_ WaveBank* effect, unsigned int index, SOUND_EFFECT_INSTANCE_FLAGS flags);
 
         friend std::unique_ptr<SoundEffectInstance> __cdecl SoundEffect::CreateInstance(SOUND_EFFECT_INSTANCE_FLAGS);
         friend std::unique_ptr<SoundEffectInstance> __cdecl WaveBank::CreateInstance(unsigned int, SOUND_EFFECT_INSTANCE_FLAGS);
@@ -721,32 +774,34 @@ namespace DirectX
     class SoundStreamInstance
     {
     public:
-        SoundStreamInstance(SoundStreamInstance&&) noexcept;
-        SoundStreamInstance& operator= (SoundStreamInstance&&) noexcept;
+        DIRECTX_TOOLKIT_API SoundStreamInstance(SoundStreamInstance&&) noexcept;
+        DIRECTX_TOOLKIT_API SoundStreamInstance& operator= (SoundStreamInstance&&) noexcept;
 
         SoundStreamInstance(SoundStreamInstance const&) = delete;
         SoundStreamInstance& operator= (SoundStreamInstance const&) = delete;
 
-        virtual ~SoundStreamInstance();
+        DIRECTX_TOOLKIT_API virtual ~SoundStreamInstance();
 
-        void __cdecl Play(bool loop = false);
-        void __cdecl Stop(bool immediate = true) noexcept;
-        void __cdecl Pause() noexcept;
-        void __cdecl Resume();
+        DIRECTX_TOOLKIT_API void __cdecl Play(bool loop = false);
+        DIRECTX_TOOLKIT_API void __cdecl Stop(bool immediate = true) noexcept;
+        DIRECTX_TOOLKIT_API void __cdecl Pause() noexcept;
+        DIRECTX_TOOLKIT_API void __cdecl Resume();
 
-        void __cdecl SetVolume(float volume);
-        void __cdecl SetPitch(float pitch);
-        void __cdecl SetPan(float pan);
+        DIRECTX_TOOLKIT_API void __cdecl SetVolume(float volume);
+        DIRECTX_TOOLKIT_API void __cdecl SetPitch(float pitch);
+        DIRECTX_TOOLKIT_API void __cdecl SetPan(float pan);
 
-        void __cdecl Apply3D(const X3DAUDIO_LISTENER& listener, const X3DAUDIO_EMITTER& emitter, bool rhcoords = true);
+        DIRECTX_TOOLKIT_API void __cdecl Apply3D(
+            const X3DAUDIO_LISTENER& listener,
+            const X3DAUDIO_EMITTER& emitter, bool rhcoords = true);
 
-        bool __cdecl IsLooped() const noexcept;
+        DIRECTX_TOOLKIT_API bool __cdecl IsLooped() const noexcept;
 
-        SoundState __cdecl GetState() noexcept;
+        DIRECTX_TOOLKIT_API SoundState __cdecl GetState() noexcept;
 
-        unsigned int __cdecl GetChannelCount() const noexcept;
+        DIRECTX_TOOLKIT_API unsigned int __cdecl GetChannelCount() const noexcept;
 
-        IVoiceNotify* __cdecl GetVoiceNotify() const noexcept;
+        DIRECTX_TOOLKIT_API IVoiceNotify* __cdecl GetVoiceNotify() const noexcept;
 
     private:
         // Private implementation.
@@ -755,7 +810,7 @@ namespace DirectX
         std::unique_ptr<Impl> pImpl;
 
         // Private constructors
-        SoundStreamInstance(_In_ AudioEngine* engine, _In_ WaveBank* effect, unsigned int index, SOUND_EFFECT_INSTANCE_FLAGS flags);
+        DIRECTX_TOOLKIT_API SoundStreamInstance(_In_ AudioEngine* engine, _In_ WaveBank* effect, unsigned int index, SOUND_EFFECT_INSTANCE_FLAGS flags);
 
         friend std::unique_ptr<SoundStreamInstance> __cdecl WaveBank::CreateStreamInstance(unsigned int, SOUND_EFFECT_INSTANCE_FLAGS);
     };
@@ -765,49 +820,56 @@ namespace DirectX
     class DynamicSoundEffectInstance
     {
     public:
-        DynamicSoundEffectInstance(_In_ AudioEngine* engine,
+        DIRECTX_TOOLKIT_API DynamicSoundEffectInstance(
+            _In_ AudioEngine* engine,
             _In_ std::function<void __cdecl(DynamicSoundEffectInstance*)> bufferNeeded,
             int sampleRate, int channels, int sampleBits = 16,
             SOUND_EFFECT_INSTANCE_FLAGS flags = SoundEffectInstance_Default);
 
-        DynamicSoundEffectInstance(DynamicSoundEffectInstance&&) noexcept;
-        DynamicSoundEffectInstance& operator= (DynamicSoundEffectInstance&&) noexcept;
+        DIRECTX_TOOLKIT_API DynamicSoundEffectInstance(DynamicSoundEffectInstance&&) noexcept;
+        DIRECTX_TOOLKIT_API DynamicSoundEffectInstance& operator= (DynamicSoundEffectInstance&&) noexcept;
 
         DynamicSoundEffectInstance(DynamicSoundEffectInstance const&) = delete;
         DynamicSoundEffectInstance& operator= (DynamicSoundEffectInstance const&) = delete;
 
-        virtual ~DynamicSoundEffectInstance();
+        DIRECTX_TOOLKIT_API virtual ~DynamicSoundEffectInstance();
 
-        void __cdecl Play();
-        void __cdecl Stop(bool immediate = true) noexcept;
-        void __cdecl Pause() noexcept;
-        void __cdecl Resume();
+        DIRECTX_TOOLKIT_API void __cdecl Play();
+        DIRECTX_TOOLKIT_API void __cdecl Stop(bool immediate = true) noexcept;
+        DIRECTX_TOOLKIT_API void __cdecl Pause() noexcept;
+        DIRECTX_TOOLKIT_API void __cdecl Resume();
 
-        void __cdecl SetVolume(float volume);
-        void __cdecl SetPitch(float pitch);
-        void __cdecl SetPan(float pan);
+        DIRECTX_TOOLKIT_API void __cdecl SetVolume(float volume);
+        DIRECTX_TOOLKIT_API void __cdecl SetPitch(float pitch);
+        DIRECTX_TOOLKIT_API void __cdecl SetPan(float pan);
 
-        void __cdecl Apply3D(const X3DAUDIO_LISTENER& listener, const X3DAUDIO_EMITTER& emitter, bool rhcoords = true);
+        DIRECTX_TOOLKIT_API void __cdecl Apply3D(
+            const X3DAUDIO_LISTENER& listener,
+            const X3DAUDIO_EMITTER& emitter, bool rhcoords = true);
 
-        void __cdecl SubmitBuffer(_In_reads_bytes_(audioBytes) const uint8_t* pAudioData, size_t audioBytes);
-        void __cdecl SubmitBuffer(_In_reads_bytes_(audioBytes) const uint8_t* pAudioData, uint32_t offset, size_t audioBytes);
+        DIRECTX_TOOLKIT_API void __cdecl SubmitBuffer(
+            _In_reads_bytes_(audioBytes) const uint8_t* pAudioData, size_t audioBytes);
+        DIRECTX_TOOLKIT_API void __cdecl SubmitBuffer(
+            _In_reads_bytes_(audioBytes) const uint8_t* pAudioData,
+            uint32_t offset,
+            size_t audioBytes);
 
-        SoundState __cdecl GetState() noexcept;
+        DIRECTX_TOOLKIT_API SoundState __cdecl GetState() noexcept;
 
-        size_t __cdecl GetSampleDuration(size_t bytes) const noexcept;
+        DIRECTX_TOOLKIT_API size_t __cdecl GetSampleDuration(size_t bytes) const noexcept;
         // Returns duration in samples of a buffer of a given size
 
-        size_t __cdecl GetSampleDurationMS(size_t bytes) const noexcept;
+        DIRECTX_TOOLKIT_API size_t __cdecl GetSampleDurationMS(size_t bytes) const noexcept;
         // Returns duration in milliseconds of a buffer of a given size
 
-        size_t __cdecl GetSampleSizeInBytes(uint64_t duration) const noexcept;
+        DIRECTX_TOOLKIT_API size_t __cdecl GetSampleSizeInBytes(uint64_t duration) const noexcept;
         // Returns size of a buffer for a duration given in milliseconds
 
-        int __cdecl GetPendingBufferCount() const noexcept;
+        DIRECTX_TOOLKIT_API int __cdecl GetPendingBufferCount() const noexcept;
 
-        const WAVEFORMATEX* __cdecl GetFormat() const noexcept;
+        DIRECTX_TOOLKIT_API const WAVEFORMATEX* __cdecl GetFormat() const noexcept;
 
-        unsigned int __cdecl GetChannelCount() const noexcept;
+        DIRECTX_TOOLKIT_API unsigned int __cdecl GetChannelCount() const noexcept;
 
     private:
         // Private implementation.

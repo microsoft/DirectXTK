@@ -35,6 +35,16 @@
 namespace ABI { namespace Windows { namespace UI { namespace Core { struct ICoreWindow; } } } }
 #endif
 
+#ifndef DIRECTX_TOOLKIT_API
+#ifdef DIRECTX_TOOLKIT_EXPORT
+#define DIRECTX_TOOLKIT_API __declspec(dllexport)
+#elif defined(DIRECTX_TOOLKIT_IMPORT)
+#define DIRECTX_TOOLKIT_API __declspec(dllimport)
+#else
+#define DIRECTX_TOOLKIT_API
+#endif
+#endif
+
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunknown-pragmas"
@@ -46,15 +56,15 @@ namespace DirectX
     class Mouse
     {
     public:
-        Mouse() noexcept(false);
+        DIRECTX_TOOLKIT_API Mouse() noexcept(false);
 
-        Mouse(Mouse&&) noexcept;
-        Mouse& operator= (Mouse&&) noexcept;
+        DIRECTX_TOOLKIT_API Mouse(Mouse&&) noexcept;
+        DIRECTX_TOOLKIT_API Mouse& operator= (Mouse&&) noexcept;
 
         Mouse(Mouse const&) = delete;
         Mouse& operator=(Mouse const&) = delete;
 
-        virtual ~Mouse();
+        DIRECTX_TOOLKIT_API virtual ~Mouse();
 
         enum Mode : uint32_t
         {
@@ -75,7 +85,7 @@ namespace DirectX
             Mode    positionMode;
         };
 
-        class ButtonStateTracker
+        class DIRECTX_TOOLKIT_API ButtonStateTracker
         {
         public:
             enum ButtonState : uint32_t
@@ -112,35 +122,35 @@ namespace DirectX
         };
 
         // Retrieve the current state of the mouse
-        State __cdecl GetState() const;
+        DIRECTX_TOOLKIT_API State __cdecl GetState() const;
 
         // Resets the accumulated scroll wheel value
-        void __cdecl ResetScrollWheelValue() noexcept;
+        DIRECTX_TOOLKIT_API void __cdecl ResetScrollWheelValue() noexcept;
 
         // Sets mouse mode (defaults to absolute)
-        void __cdecl SetMode(Mode mode);
+        DIRECTX_TOOLKIT_API void __cdecl SetMode(Mode mode);
 
         // Signals the end of frame (recommended, but optional)
-        void __cdecl EndOfInputFrame() noexcept;
+        DIRECTX_TOOLKIT_API void __cdecl EndOfInputFrame() noexcept;
 
         // Feature detection
-        bool __cdecl IsConnected() const;
+        DIRECTX_TOOLKIT_API bool __cdecl IsConnected() const;
 
         // Cursor visibility
-        bool __cdecl IsVisible() const noexcept;
-        void __cdecl SetVisible(bool visible);
+        DIRECTX_TOOLKIT_API bool __cdecl IsVisible() const noexcept;
+        DIRECTX_TOOLKIT_API void __cdecl SetVisible(bool visible);
 
     #ifdef USING_COREWINDOW
-        void __cdecl SetWindow(ABI::Windows::UI::Core::ICoreWindow* window);
+        DIRECTX_TOOLKIT_API void __cdecl SetWindow(ABI::Windows::UI::Core::ICoreWindow* window);
     #ifdef __cplusplus_winrt
-        void __cdecl SetWindow(Windows::UI::Core::CoreWindow^ window)
+        DIRECTX_TOOLKIT_API void __cdecl SetWindow(Windows::UI::Core::CoreWindow^ window)
         {
             // See https://msdn.microsoft.com/en-us/library/hh755802.aspx
             SetWindow(reinterpret_cast<ABI::Windows::UI::Core::ICoreWindow*>(window));
         }
     #endif
     #ifdef CPPWINRT_VERSION
-        void __cdecl SetWindow(winrt::Windows::UI::Core::CoreWindow window)
+        DIRECTX_TOOLKIT_API void __cdecl SetWindow(winrt::Windows::UI::Core::CoreWindow window)
         {
             // See https://docs.microsoft.com/en-us/windows/uwp/cpp-and-winrt-apis/interop-winrt-abi
             SetWindow(reinterpret_cast<ABI::Windows::UI::Core::ICoreWindow*>(winrt::get_abi(window)));
@@ -149,16 +159,16 @@ namespace DirectX
 
         static void __cdecl SetDpi(float dpi);
     #elif defined(WM_USER)
-        void __cdecl SetWindow(HWND window);
-        static void __cdecl ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam);
+        DIRECTX_TOOLKIT_API void __cdecl SetWindow(HWND window);
+        DIRECTX_TOOLKIT_API static void __cdecl ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam);
 
     #ifdef _GAMING_XBOX
-        static void __cdecl SetResolution(float scale);
+        DIRECTX_TOOLKIT_API static void __cdecl SetResolution(float scale);
     #endif
     #endif
 
         // Singleton
-        static Mouse& __cdecl Get();
+        DIRECTX_TOOLKIT_API static Mouse& __cdecl Get();
 
     private:
         // Private implementation.

@@ -15,7 +15,13 @@ project (DirectXTK
   HOMEPAGE_URL "https://go.microsoft.com/fwlink/?LinkId=248929"
   LANGUAGES CXX)
 
+if(DEFINED XBOX_CONSOLE_TARGET)
+  set(CMAKE_CXX_STANDARD_LIBRARIES "")
+endif()
+
 option(BUILD_TOOLS "Build XWBTool" ON)
+
+option(BUILD_SHARED_LIBS "Build DirectXTK as a shared library" OFF)
 
 option(BUILD_XAUDIO_WIN10 "Build for XAudio 2.9" OFF)
 option(BUILD_XAUDIO_WIN8 "Build for XAudio 2.8" ON)
@@ -245,7 +251,28 @@ if(NOT USE_PREBUILT_SHADERS)
         USES_TERMINAL)
 endif()
 
-add_library(${PROJECT_NAME} STATIC ${LIBRARY_SOURCES} ${LIBRARY_HEADERS})
+if(WIN32 AND BUILD_SHARED_LIBS)
+  message(STATUS "Build library as a DLL")
+
+  configure_file(
+      "${CMAKE_CURRENT_SOURCE_DIR}/build/DirectXTK.rc.in"
+      "${CMAKE_CURRENT_BINARY_DIR}/DirectXTK.rc" @ONLY)
+
+  add_library(${PROJECT_NAME} SHARED ${LIBRARY_SOURCES} ${LIBRARY_HEADERS} "${CMAKE_CURRENT_BINARY_DIR}/DirectXTK.rc")
+
+  target_compile_definitions(${PROJECT_NAME} PRIVATE DIRECTX_TOOLKIT_EXPORT)
+  target_compile_definitions(${PROJECT_NAME} INTERFACE DIRECTX_TOOLKIT_IMPORT)
+
+  if(XBOX_CONSOLE_TARGET MATCHES "durango")
+    target_link_libraries(${PROJECT_NAME} PRIVATE kernelx.lib combase.lib d3d12_x.lib xi.lib)
+  endif()
+
+  if(MINGW)
+    target_link_libraries(${PROJECT_NAME} PRIVATE xinput1_4.lib)
+  endif()
+else()
+  add_library(${PROJECT_NAME} ${LIBRARY_SOURCES} ${LIBRARY_HEADERS})
+endif()
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${COMPILED_SHADERS} Src)
 
@@ -431,10 +458,18 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|IntelLLVM")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
       target_compile_options(${t} PRIVATE "-Wno-ignored-attributes" "-Walloc-size-larger-than=4GB")
+
+      if(BUILD_SHARED_LIBS)
+        target_compile_options(${t} PRIVATE "-Wno-attributes")
+      endif()
     endforeach()
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
     set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 14)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    if(BUILD_SHARED_LIBS)
+      target_compile_options(${PROJECT_NAME} PRIVATE "/wd4251" "/wd4275")
+    endif()
+
     if(ENABLE_CODE_ANALYSIS)
       message(STATUS "Building with Code Analysis (PREFIX)")
       foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})

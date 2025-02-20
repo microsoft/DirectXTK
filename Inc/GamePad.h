@@ -50,9 +50,24 @@
 #include <cstdint>
 #include <memory>
 
+#ifndef DIRECTX_TOOLKIT_API
+#ifdef DIRECTX_TOOLKIT_EXPORT
+#define DIRECTX_TOOLKIT_API __declspec(dllexport)
+#elif defined(DIRECTX_TOOLKIT_IMPORT)
+#define DIRECTX_TOOLKIT_API __declspec(dllimport)
+#else
+#define DIRECTX_TOOLKIT_API
+#endif
+#endif
+
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunknown-pragmas"
+#endif
+
+#if defined(DIRECTX_TOOLKIT_IMPORT) && defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4251)
 #endif
 
 
@@ -61,15 +76,15 @@ namespace DirectX
     class GamePad
     {
     public:
-        GamePad() noexcept(false);
+        DIRECTX_TOOLKIT_API GamePad() noexcept(false);
 
-        GamePad(GamePad&&) noexcept;
-        GamePad& operator= (GamePad&&) noexcept;
+        DIRECTX_TOOLKIT_API GamePad(GamePad&&) noexcept;
+        DIRECTX_TOOLKIT_API GamePad& operator= (GamePad&&) noexcept;
 
         GamePad(GamePad const&) = delete;
         GamePad& operator=(GamePad const&) = delete;
 
-        virtual ~GamePad();
+        DIRECTX_TOOLKIT_API virtual ~GamePad();
 
     #if defined(USING_GAMEINPUT) || defined(USING_WINDOWS_GAMING_INPUT) || defined(_XBOX_ONE)
         static constexpr int MAX_PLAYER_COUNT = 8;
@@ -134,7 +149,7 @@ namespace DirectX
             float right;
         };
 
-        struct State
+        struct DIRECTX_TOOLKIT_API State
         {
             bool        connected;
             uint64_t    packet;
@@ -181,7 +196,7 @@ namespace DirectX
             bool __cdecl IsRightTriggerPressed() const noexcept { return (triggers.right > 0.5f) != 0; }
         };
 
-        struct Capabilities
+        struct DIRECTX_TOOLKIT_API Capabilities
         {
             enum Type : uint32_t
             {
@@ -215,7 +230,7 @@ namespace DirectX
             bool __cdecl IsConnected() const noexcept { return connected; }
         };
 
-        class ButtonStateTracker
+        class DIRECTX_TOOLKIT_API ButtonStateTracker
         {
         public:
             enum ButtonState : uint32_t
@@ -287,30 +302,36 @@ namespace DirectX
         };
 
         // Retrieve the current state of the gamepad of the associated player index
-        State __cdecl GetState(int player, DeadZone deadZoneMode = DEAD_ZONE_INDEPENDENT_AXES);
+        DIRECTX_TOOLKIT_API State __cdecl GetState(
+            int player,
+            DeadZone deadZoneMode = DEAD_ZONE_INDEPENDENT_AXES);
 
         // Retrieve the current capabilities of the gamepad of the associated player index
-        Capabilities __cdecl GetCapabilities(int player);
+        DIRECTX_TOOLKIT_API Capabilities __cdecl GetCapabilities(int player);
 
         // Set the vibration motor speeds of the gamepad
-        bool __cdecl SetVibration(int player, float leftMotor, float rightMotor, float leftTrigger = 0.f, float rightTrigger = 0.f) noexcept;
+        DIRECTX_TOOLKIT_API bool __cdecl SetVibration(
+            int player,
+            float leftMotor, float rightMotor,
+            float leftTrigger = 0.f, float rightTrigger = 0.f) noexcept;
 
         // Handle suspending/resuming
-        void __cdecl Suspend() noexcept;
-        void __cdecl Resume() noexcept;
+        DIRECTX_TOOLKIT_API void __cdecl Suspend() noexcept;
+        DIRECTX_TOOLKIT_API void __cdecl Resume() noexcept;
 
     #ifdef USING_GAMEINPUT
-        void __cdecl RegisterEvents(void* ctrlChanged) noexcept;
+        DIRECTX_TOOLKIT_API void __cdecl RegisterEvents(void* ctrlChanged) noexcept;
 
         // Underlying device access
         _Success_(return)
-            bool __cdecl GetDevice(int player, _Outptr_ IGameInputDevice * *device) noexcept;
+        DIRECTX_TOOLKIT_API
+        bool __cdecl GetDevice(int player, _Outptr_ IGameInputDevice * *device) noexcept;
     #elif defined(USING_WINDOWS_GAMING_INPUT) || defined(_XBOX_ONE)
-        void __cdecl RegisterEvents(void* ctrlChanged, void* userChanged) noexcept;
+        DIRECTX_TOOLKIT_API void __cdecl RegisterEvents(void* ctrlChanged, void* userChanged) noexcept;
     #endif
 
         // Singleton
-        static GamePad& __cdecl Get();
+        DIRECTX_TOOLKIT_API static GamePad& __cdecl Get();
 
     private:
         // Private implementation.
@@ -322,4 +343,8 @@ namespace DirectX
 
 #ifdef __clang__
 #pragma clang diagnostic pop
+#endif
+
+#if defined(DIRECTX_TOOLKIT_IMPORT) && defined(_MSC_VER)
+#pragma warning(pop)
 #endif

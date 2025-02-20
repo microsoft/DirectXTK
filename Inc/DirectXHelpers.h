@@ -33,6 +33,17 @@
 #include <cstring>
 #include <exception>
 
+#ifndef DIRECTX_TOOLKIT_API
+#ifdef DIRECTX_TOOLKIT_EXPORT
+#define DIRECTX_TOOLKIT_API __declspec(dllexport)
+#elif defined(DIRECTX_TOOLKIT_IMPORT)
+#define DIRECTX_TOOLKIT_API __declspec(dllimport)
+#else
+#define DIRECTX_TOOLKIT_API
+#endif
+#endif
+
+
 //
 // The core Direct3D headers provide the following helper C++ classes
 //  CD3D11_RECT
@@ -63,7 +74,7 @@ namespace DirectX
     }
 
     // simliar to std::lock_guard for exception-safe Direct3D resource locking
-    class MapGuard : public D3D11_MAPPED_SUBRESOURCE
+    class DIRECTX_TOOLKIT_API MapGuard : public D3D11_MAPPED_SUBRESOURCE
     {
     public:
         MapGuard(_In_ ID3D11DeviceContext* context,
@@ -216,7 +227,9 @@ namespace DirectX
     }
 
     // Helper for creating a Direct3D input layout to match a shader from an IEffect
-    HRESULT __cdecl CreateInputLayoutFromEffect(_In_ ID3D11Device* device,
+    DIRECTX_TOOLKIT_API
+    HRESULT __cdecl CreateInputLayoutFromEffect(
+        _In_ ID3D11Device* device,
         _In_ IEffect* effect,
         _In_reads_(count) const D3D11_INPUT_ELEMENT_DESC* desc,
         size_t count,
