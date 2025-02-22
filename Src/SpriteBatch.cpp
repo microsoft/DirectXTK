@@ -329,6 +329,8 @@ SpriteBatch::Impl::ContextResources::ContextResources(_In_ ID3D11DeviceContext* 
     deviceContext = context;
 #endif
 
+    SetDebugObjectName(constantBuffer.GetBuffer(), "DirectXTK::SpriteBatch");
+
     CreateVertexBuffer();
 }
 
