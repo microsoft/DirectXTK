@@ -53,7 +53,7 @@ jobs:
     - uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@dd746615b3b9d728a6a37ca2045b68ca76d4841a # v3.28.8
+      uses: github/codeql-action/init@b56ba49b26e50535fa1e7f7db0f4f7b4bf65d80d # v3.28.10
       with:
         languages: ${{ matrix.language }}
         build-mode: manual
@@ -74,6 +74,6 @@ jobs:
       run: msbuild MakeSpriteFont.csproj /p:Configuration=Debug /p:Platform=AnyCPU
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@dd746615b3b9d728a6a37ca2045b68ca76d4841a # v3.28.8
+      uses: github/codeql-action/analyze@b56ba49b26e50535fa1e7f7db0f4f7b4bf65d80d # v3.28.10
       with:
         category: "/language:${{ matrix.language }}"
