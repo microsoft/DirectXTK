@@ -40,6 +40,7 @@ pool:
 
 variables:
   Codeql.Enabled: false
+  VC_PATH: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC'
   GUID_FEED: $(ADOFeedGUID)
 
 jobs:
