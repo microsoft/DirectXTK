@@ -36,7 +36,7 @@ resources:
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
 pool:
-  vmImage: windows-2022
+  vmImage: windows-2019
 
 variables:
   Codeql.Enabled: false
@@ -131,27 +131,12 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Release
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Tests_Desktop_2019_Win10.sln arm64dbg
-    inputs:
-      solution: Tests/DirectXTK_Tests_Desktop_2019_Win10.sln
-      vsVersion: 16.0
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: ARM64
-      configuration: Debug
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Tests_Desktop_2019_Win10.sln arm64rel
-    inputs:
-      solution: Tests/DirectXTK_Tests_Desktop_2019_Win10.sln
-      vsVersion: 16.0
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: ARM64
-      configuration: Release
 
-- job: UWP_BUILD_X64
-  displayName: 'Universal Windows Platform (UWP) for x64'
-  timeoutInMinutes: 120
-  cancelTimeoutInMinutes: 1
+- job: CMAKE_BUILD_X64
+  displayName: 'CMake for X64 BUILD_TESTING=ON'
+  timeoutInMinutes: 60
+  workspace:
+    clean: all
   steps:
   - checkout: self
     clean: true
@@ -164,83 +149,67 @@ jobs:
     fetchTags: false
     fetchDepth: 1
     path: 's/Tests'
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Tests_Windows10.sln 64dbg
+  - task: CmdLine@2
+    displayName: Setup environment for CMake to use VS
     inputs:
-      solution: Tests/DirectXTK_Tests_Windows10.sln
-      vsVersion: 16.0
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:AppxBundle=Never
-      platform: x64
-      configuration: Debug
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Tests_Windows10.sln 64rel
-    inputs:
-      solution: Tests/DirectXTK_Tests_Windows10.sln
-      vsVersion: 16.0
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:AppxBundle=Never
-      platform: x64
-      configuration: Release
+      script: |
+        call "$(VC_PATH)\Auxiliary\Build\vcvars64.bat"
+        echo ##vso[task.setvariable variable=WindowsSdkVerBinPath;]%WindowsSdkVerBinPath%
+        echo ##vso[task.prependpath]%VSINSTALLDIR%Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja
+        echo ##vso[task.prependpath]%VCINSTALLDIR%Tools\Llvm\x64\bin
+        echo ##vso[task.prependpath]%WindowsSdkBinPath%x64
+        echo ##vso[task.prependpath]%WindowsSdkVerBinPath%x64
+        echo ##vso[task.prependpath]%VCToolsInstallDir%bin\Hostx64\x64
+        echo ##vso[task.setvariable variable=EXTERNAL_INCLUDE;]%EXTERNAL_INCLUDE%
+        echo ##vso[task.setvariable variable=INCLUDE;]%INCLUDE%
+        echo ##vso[task.setvariable variable=LIB;]%LIB%
 
-- job: UWP_BUILD_X86
-  displayName: 'Universal Windows Platform (UWP) for x86'
-  timeoutInMinutes: 120
-  steps:
-  - checkout: self
-    clean: true
-    fetchTags: false
-    fetchDepth: 1
-    path: 's'
-  - checkout: testRepo
-    displayName: Fetch Tests
-    clean: true
-    fetchTags: false
-    fetchDepth: 1
-    path: 's/Tests'
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Tests_Windows10.sln 32dbg
+  - task: CMake@1
+    displayName: CMake (MSVC; x64-Debug) Config
     inputs:
-      solution: Tests/DirectXTK_Tests_Windows10.sln
-      vsVersion: 16.0
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:AppxBundle=Never
-      platform: x86
-      configuration: Debug
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Tests_Windows10.sln 32rel
+      cwd: $(Build.SourcesDirectory)
+      cmakeArgs: --preset=x64-Debug
+  - task: CMake@1
+    displayName: CMake (MSVC; x64-Debug) Build
     inputs:
-      solution: Tests/DirectXTK_Tests_Windows10.sln
-      vsVersion: 16.0
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:AppxBundle=Never
-      platform: x86
-      configuration: Release
-
-- job: UWP_BUILD_ARM64
-  displayName: 'Universal Windows Platform (UWP) for ARM64'
-  timeoutInMinutes: 120
-  steps:
-  - checkout: self
-    clean: true
-    fetchTags: false
-    fetchDepth: 1
-    path: 's'
-  - checkout: testRepo
-    displayName: Fetch Tests
-    clean: true
-    fetchTags: false
-    fetchDepth: 1
-    path: 's/Tests'
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Tests_Windows10.sln arm64dbg
+      cwd: $(Build.SourcesDirectory)
+      cmakeArgs: --build out/build/x64-Debug -v
+  - task: DeleteFiles@1
     inputs:
-      solution: Tests/DirectXTK_Tests_Windows10.sln
-      vsVersion: 16.0
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:AppxBundle=Never
-      platform: ARM64
-      configuration: Debug
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Tests_Windows10.sln arm64rel
+      Contents: 'out'
+  - task: CMake@1
+    displayName: CMake (MSVC; x64-Release) Config
     inputs:
-      solution: Tests/DirectXTK_Tests_Windows10.sln
-      vsVersion: 16.0
-      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:AppxBundle=Never
-      platform: ARM64
-      configuration: Release
+      cwd: $(Build.SourcesDirectory)
+      cmakeArgs: --preset=x64-Release
+  - task: CMake@1
+    displayName: CMake (MSVC; x64-Release) Build
+    inputs:
+      cwd: $(Build.SourcesDirectory)
+      cmakeArgs: --build out/build/x64-Release -v
+  - task: DeleteFiles@1
+    inputs:
+      Contents: 'out'
+  - task: CMake@1
+    displayName: CMake (clang/LLVM; x64-Debug) Config
+    inputs:
+      cwd: $(Build.SourcesDirectory)
+      cmakeArgs: --preset=x64-Debug-Clang
+  - task: CMake@1
+    displayName: CMake (clang/LLVM; x64-Debug) Build
+    inputs:
+      cwd: $(Build.SourcesDirectory)
+      cmakeArgs: --build out/build/x64-Debug-Clang -v
+  - task: DeleteFiles@1
+    inputs:
+      Contents: 'out'
+  - task: CMake@1
+    displayName: CMake (clang/LLVM; x64-Release) Config
+    inputs:
+      cwd: $(Build.SourcesDirectory)
+      cmakeArgs: --preset=x64-Release-Clang
+  - task: CMake@1
+    displayName: CMake (clang/LLVM; x64-Release) Build
+    inputs:
+      cwd: $(Build.SourcesDirectory)
+      cmakeArgs: --build out/build/x64-Release-Clang -v

@@ -160,6 +160,103 @@ jobs:
       configuration: Release
       msbuildArchitecture: x64
 
+- job: UWP_BUILD_X64
+  displayName: 'Universal Windows Platform (UWP) for x64'
+  timeoutInMinutes: 120
+  cancelTimeoutInMinutes: 1
+  steps:
+  - checkout: self
+    clean: true
+    fetchTags: false
+    fetchDepth: 1
+    path: 's'
+  - checkout: testRepo
+    displayName: Fetch Tests
+    clean: true
+    fetchTags: false
+    fetchDepth: 1
+    path: 's/Tests'
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Windows10.sln 64dbg
+    inputs:
+      solution: Tests/DirectXTK_Tests_Windows10.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:AppxBundle=Never
+      platform: x64
+      configuration: Debug
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Windows10.sln 64rel
+    inputs:
+      solution: Tests/DirectXTK_Tests_Windows10.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:AppxBundle=Never
+      platform: x64
+      configuration: Release
+
+- job: UWP_BUILD_X86
+  displayName: 'Universal Windows Platform (UWP) for x86'
+  timeoutInMinutes: 120
+  steps:
+  - checkout: self
+    clean: true
+    fetchTags: false
+    fetchDepth: 1
+    path: 's'
+  - checkout: testRepo
+    displayName: Fetch Tests
+    clean: true
+    fetchTags: false
+    fetchDepth: 1
+    path: 's/Tests'
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Windows10.sln 32dbg
+    inputs:
+      solution: Tests/DirectXTK_Tests_Windows10.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:AppxBundle=Never
+      platform: x86
+      configuration: Debug
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Windows10.sln 32rel
+    inputs:
+      solution: Tests/DirectXTK_Tests_Windows10.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:AppxBundle=Never
+      platform: x86
+      configuration: Release
+
+- job: UWP_BUILD_ARM64
+  displayName: 'Universal Windows Platform (UWP) for ARM64'
+  timeoutInMinutes: 120
+  steps:
+  - checkout: self
+    clean: true
+    fetchTags: false
+    fetchDepth: 1
+    path: 's'
+  - checkout: testRepo
+    displayName: Fetch Tests
+    clean: true
+    fetchTags: false
+    fetchDepth: 1
+    path: 's/Tests'
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Windows10.sln arm64dbg
+    inputs:
+      solution: Tests/DirectXTK_Tests_Windows10.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:AppxBundle=Never
+      platform: ARM64
+      configuration: Debug
+  - task: VSBuild@1
+    displayName: Build solution DirectXTK_Tests_Windows10.sln arm64rel
+    inputs:
+      solution: Tests/DirectXTK_Tests_Windows10.sln
+      vsVersion: 16.0
+      msbuildArgs: /p:PreferredToolArchitecture=x64 /p:AppxBundle=Never
+      platform: ARM64
+      configuration: Release
+
 - job: CMAKE_BUILD_X64
   displayName: 'CMake for X64 BUILD_TESTING=ON'
   timeoutInMinutes: 60
