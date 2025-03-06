@@ -191,3 +191,26 @@ jobs:
   - task: DeleteFiles@1
     inputs:
       Contents: 'out'
+  - task: CMake@1
+    displayName: CMake (clang/LLVM; x64-Debug) Config
+    inputs:
+      cwd: $(Build.SourcesDirectory)
+      cmakeArgs: --preset=x64-Debug-Clang
+  - task: CMake@1
+    displayName: CMake (clang/LLVM; x64-Debug) Build
+    inputs:
+      cwd: $(Build.SourcesDirectory)
+      cmakeArgs: --build out/build/x64-Debug-Clang -v
+  - task: DeleteFiles@1
+    inputs:
+      Contents: 'out'
+  - task: CMake@1
+    displayName: CMake (clang/LLVM; x64-Release) Config
+    inputs:
+      cwd: $(Build.SourcesDirectory)
+      cmakeArgs: --preset=x64-Release-Clang
+  - task: CMake@1
+    displayName: CMake (clang/LLVM; x64-Release) Build
+    inputs:
+      cwd: $(Build.SourcesDirectory)
+      cmakeArgs: --build out/build/x64-Release-Clang -v
