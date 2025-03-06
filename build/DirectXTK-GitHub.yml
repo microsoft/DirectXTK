@@ -123,17 +123,3 @@ jobs:
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Release
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2019_Win10.sln arm64dbg
-    inputs:
-      solution: DirectXTK_Desktop_2019_Win10.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: ARM64
-      configuration: Debug
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2019_Win10.sln arm64rel
-    inputs:
-      solution: DirectXTK_Desktop_2019_Win10.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: ARM64
-      configuration: Release
