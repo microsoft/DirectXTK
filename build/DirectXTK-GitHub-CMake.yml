@@ -73,7 +73,10 @@ jobs:
     displayName: 'CMake (MSVC): Config x64'
     inputs:
       cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -B out -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK) -DBUILD_XAUDIO_WIN8=ON -DBUILD_TOOLS=ON'
+      cmakeArgs: >
+        -G "$(VS_GENERATOR)" -A x64 -B out
+        -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)
+        -DBUILD_XAUDIO_WIN8=ON -DBUILD_TOOLS=ON
   - task: CMake@1
     displayName: 'CMake (MSVC): Build x64 Debug'
     inputs:
@@ -88,7 +91,10 @@ jobs:
     displayName: 'CMake (MSVC): Config x86'
     inputs:
       cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: '-G "$(VS_GENERATOR)" -A Win32 -B out2 -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK) -DBUILD_XAUDIO_WIN8=ON -DBUILD_TOOLS=ON'
+      cmakeArgs: >
+        -G "$(VS_GENERATOR)" -A Win32 -B out2
+        -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)
+        -DBUILD_XAUDIO_WIN8=ON -DBUILD_TOOLS=ON
   - task: CMake@1
     displayName: 'CMake (MSVC): Build x86 Debug'
     inputs:
@@ -103,7 +109,9 @@ jobs:
     displayName: 'CMake (UWP): Config x64'
     inputs:
       cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -B out3 -DCMAKE_SYSTEM_NAME=WindowsStore -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON -DCMAKE_SYSTEM_VERSION=10.0'
+      cmakeArgs: >
+        -G "$(VS_GENERATOR)" -A x64 -B out3
+        -DCMAKE_SYSTEM_NAME=WindowsStore -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON -DCMAKE_SYSTEM_VERSION=10.0
   - task: CMake@1
     displayName: 'CMake (UWP): Build x64'
     inputs:
@@ -113,7 +121,9 @@ jobs:
     displayName: 'CMake (ClangCl): Config x64'
     inputs:
       cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -T clangcl -B out4 -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK) -DBUILD_XAUDIO_WIN8=ON -DBUILD_TOOLS=ON'
+      cmakeArgs: >
+        -G "$(VS_GENERATOR)" -A x64 -T clangcl -B out4
+        -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK) -DBUILD_XAUDIO_WIN8=ON -DBUILD_TOOLS=ON
   - task: CMake@1
     displayName: 'CMake (ClangCl): Build x64 Debug'
     inputs:
@@ -128,18 +138,23 @@ jobs:
     displayName: 'CMake (Win10): Config'
     inputs:
       cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -B out5 -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK) -DBUILD_XAUDIO_WIN10=ON -DBUILD_TOOLS=OFF'
+      cmakeArgs: >
+        -G "$(VS_GENERATOR)" -A x64 -B out5
+        -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
+        -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK) -DBUILD_XAUDIO_WIN10=ON -DBUILD_TOOLS=OFF
   - task: CMake@1
     displayName: 'CMake (Win10): Build'
     inputs:
       cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --build out5 -v
-  # removed out9 case
   - task: CMake@1
     displayName: 'CMake (MSVC Spectre): Config x64'
     inputs:
       cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -B out6 -DENABLE_SPECTRE_MITIGATION=ON -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK) -DBUILD_XAUDIO_WIN8=ON -DBUILD_TOOLS=ON'
+      cmakeArgs: >
+        -G "$(VS_GENERATOR)" -A x64 -B out6
+        -DENABLE_SPECTRE_MITIGATION=ON -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
+        -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK) -DBUILD_XAUDIO_WIN8=ON -DBUILD_TOOLS=ON
   - task: CMake@1
     displayName: 'CMake (MSVC Spectre): Build x64 Debug'
     inputs:
@@ -154,9 +169,29 @@ jobs:
     displayName: 'CMake (NO_WCHAR_T): Config'
     inputs:
       cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -B out7 -DNO_WCHAR_T=ON -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON -DCMAKE_SYSTEM_VERSION=$(WIN11_SDK)'
+      cmakeArgs: >
+        -G "$(VS_GENERATOR)" -A x64 -B out7
+        -DNO_WCHAR_T=ON -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON -DCMAKE_SYSTEM_VERSION=$(WIN11_SDK)'
   - task: CMake@1
     displayName: 'CMake (NO_WCHAR_T): Build'
     inputs:
       cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --build out7 -v --config Debug
+  - task: CMake@1
+    displayName: 'CMake (DLL): Config x64'
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: >
+        -G "$(VS_GENERATOR)" -A x64 -B out8
+        -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)
+        -DBUILD_XAUDIO_WIN8=ON -DBUILD_TOOLS=ON -DBUILD_SHARED_LIBS=ON'
+  - task: CMake@1
+    displayName: 'CMake (DLL): Build x64 Debug'
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --build out8 -v --config Debug
+  - task: CMake@1
+    displayName: 'CMake (DLL): Build x64 Release'
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --build out8 -v --config RelWithDebInfo
