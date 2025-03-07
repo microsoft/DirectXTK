@@ -123,7 +123,8 @@ jobs:
       cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: >
         -G "$(VS_GENERATOR)" -A x64 -T clangcl -B out4
-        -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK) -DBUILD_XAUDIO_WIN8=ON -DBUILD_TOOLS=ON
+        -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)
+        -DBUILD_XAUDIO_WIN8=ON -DBUILD_TOOLS=ON
   - task: CMake@1
     displayName: 'CMake (ClangCl): Build x64 Debug'
     inputs:
@@ -141,7 +142,8 @@ jobs:
       cmakeArgs: >
         -G "$(VS_GENERATOR)" -A x64 -B out5
         -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
-        -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK) -DBUILD_XAUDIO_WIN10=ON -DBUILD_TOOLS=OFF
+        -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)
+        -DBUILD_XAUDIO_WIN10=ON -DBUILD_TOOLS=OFF
   - task: CMake@1
     displayName: 'CMake (Win10): Build'
     inputs:
@@ -154,7 +156,8 @@ jobs:
       cmakeArgs: >
         -G "$(VS_GENERATOR)" -A x64 -B out6
         -DENABLE_SPECTRE_MITIGATION=ON -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
-        -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK) -DBUILD_XAUDIO_WIN8=ON -DBUILD_TOOLS=ON
+        -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)
+        -DBUILD_XAUDIO_WIN8=ON -DBUILD_TOOLS=ON
   - task: CMake@1
     displayName: 'CMake (MSVC Spectre): Build x64 Debug'
     inputs:
@@ -171,7 +174,8 @@ jobs:
       cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: >
         -G "$(VS_GENERATOR)" -A x64 -B out7
-        -DNO_WCHAR_T=ON -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON -DCMAKE_SYSTEM_VERSION=$(WIN11_SDK)'
+        -DNO_WCHAR_T=ON
+        -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON -DCMAKE_SYSTEM_VERSION=$(WIN11_SDK)'
   - task: CMake@1
     displayName: 'CMake (NO_WCHAR_T): Build'
     inputs:
@@ -184,7 +188,8 @@ jobs:
       cmakeArgs: >
         -G "$(VS_GENERATOR)" -A x64 -B out8
         -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)
-        -DBUILD_XAUDIO_WIN8=ON -DBUILD_TOOLS=ON -DBUILD_SHARED_LIBS=ON'
+        -DBUILD_XAUDIO_WIN8=ON -DBUILD_TOOLS=ON
+        -DBUILD_SHARED_LIBS=ON
   - task: CMake@1
     displayName: 'CMake (DLL): Build x64 Debug'
     inputs:

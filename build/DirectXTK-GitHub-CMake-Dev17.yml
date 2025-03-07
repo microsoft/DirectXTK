@@ -239,7 +239,8 @@ jobs:
         -G "$(VS_GENERATOR)" -A x64 -B out11
         -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
         -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)
-        -DBUILD_XAUDIO_WIN8=ON -DBUILD_TOOLS=ON -DBUILD_SHARED_LIBS=ON
+        -DBUILD_XAUDIO_WIN8=ON -DBUILD_TOOLS=ON
+        -DBUILD_SHARED_LIBS=ON
   - task: CMake@1
     displayName: 'CMake (DLL): Build x64 Debug'
     inputs:
