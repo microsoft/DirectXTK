@@ -977,20 +977,6 @@ inline Vector4& Vector4::operator/= (float S) noexcept
 }
 
 //------------------------------------------------------------------------------
-// Urnary operators
-//------------------------------------------------------------------------------
-
-inline Vector4 Vector4::operator- () const noexcept
-{
-    using namespace DirectX;
-    const XMVECTOR v1 = XMLoadFloat4(this);
-    const XMVECTOR X = XMVectorNegate(v1);
-    Vector4 R;
-    XMStoreFloat4(&R, X);
-    return R;
-}
-
-//------------------------------------------------------------------------------
 // Binary operators
 //------------------------------------------------------------------------------
 
@@ -2564,20 +2550,6 @@ inline Quaternion& Quaternion::operator/= (const Quaternion& q) noexcept
 }
 
 //------------------------------------------------------------------------------
-// Urnary operators
-//------------------------------------------------------------------------------
-
-inline Quaternion Quaternion::operator- () const noexcept
-{
-    using namespace DirectX;
-    const XMVECTOR q = XMLoadFloat4(this);
-
-    Quaternion R;
-    XMStoreFloat4(&R, XMVectorNegate(q));
-    return R;
-}
-
-//------------------------------------------------------------------------------
 // Binary operators
 //------------------------------------------------------------------------------
 
@@ -2996,19 +2968,6 @@ inline Color& Color::operator/= (const Color& c) noexcept
     const XMVECTOR c2 = XMLoadFloat4(&c);
     XMStoreFloat4(this, XMVectorDivide(c1, c2));
     return *this;
-}
-
-//------------------------------------------------------------------------------
-// Urnary operators
-//------------------------------------------------------------------------------
-
-inline Color Color::operator- () const noexcept
-{
-    using namespace DirectX;
-    const XMVECTOR c = XMLoadFloat4(this);
-    Color R;
-    XMStoreFloat4(&R, XMVectorNegate(c));
-    return R;
 }
 
 //------------------------------------------------------------------------------

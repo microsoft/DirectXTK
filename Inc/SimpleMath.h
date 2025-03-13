@@ -393,7 +393,7 @@ namespace DirectX
 
             // Unary operators
             Vector4 operator+ () const noexcept { return *this; }
-            Vector4 operator- () const noexcept;
+            Vector4 operator- () const noexcept { return Vector4(-x, -y, -z, -w); }
 
             // Vector operations
             bool InBounds(const Vector4& Bounds) const noexcept;
@@ -731,7 +731,7 @@ namespace DirectX
 
             // Unary operators
             Quaternion operator+ () const  noexcept { return *this; }
-            Quaternion operator- () const noexcept;
+            Quaternion operator- () const noexcept { return Quaternion(-x, -y, -z, -w); }
 
             // Quaternion operations
             float Length() const noexcept;
@@ -838,7 +838,7 @@ namespace DirectX
 
             // Unary operators
             Color operator+ () const noexcept { return *this; }
-            Color operator- () const noexcept;
+            Color operator- () const noexcept { return Color(-x, -y, -z, -w); }
 
             // Properties
             float R() const noexcept { return x; }
