@@ -15,6 +15,7 @@
 #endif
 
 #include <cassert>
+#include <cmath>
 #include <cstddef>
 #include <cstring>
 #include <functional>
@@ -146,16 +147,16 @@ namespace DirectX
             operator XMVECTOR() const noexcept { return XMLoadFloat2(this); }
 
             // Comparison operators
-            bool operator == (const Vector2& V) const noexcept;
-            bool operator != (const Vector2& V) const noexcept;
+            bool operator == (const Vector2& V) const noexcept { return ((x == V.x) && (y == V.y)); }
+            bool operator != (const Vector2& V) const noexcept { return ((x != V.x) || (y != V.y)); }
 
             // Assignment operators
             Vector2& operator= (const XMVECTORF32& F) noexcept { x = F.f[0]; y = F.f[1]; return *this; }
-            Vector2& operator+= (const Vector2& V) noexcept;
-            Vector2& operator-= (const Vector2& V) noexcept;
-            Vector2& operator*= (const Vector2& V) noexcept;
-            Vector2& operator*= (float S) noexcept;
-            Vector2& operator/= (float S) noexcept;
+            Vector2& operator+= (const Vector2& V) noexcept { x += V.x; y += V.y; return *this; }
+            Vector2& operator-= (const Vector2& V) noexcept { x -= V.x; y -= V.y; return *this; }
+            Vector2& operator*= (const Vector2& V) noexcept { x *= V.x; y *= V.y; return *this; }
+            Vector2& operator*= (float S) noexcept { x *= S; y *= S; return *this; }
+            Vector2& operator/= (float S) noexcept { x /= S; y /= S; return *this; }
 
             // Unary operators
             Vector2 operator+ () const noexcept { return *this; }
@@ -164,12 +165,12 @@ namespace DirectX
             // Vector operations
             bool InBounds(const Vector2& Bounds) const noexcept;
 
-            float Length() const noexcept;
-            float LengthSquared() const noexcept;
+            float Length() const noexcept { return std::sqrt((x * x) + (y * y)); }
+            float LengthSquared() const noexcept { return (x * x) + (y * y); }
 
-            float Dot(const Vector2& V) const noexcept;
-            void Cross(const Vector2& V, Vector2& result) const noexcept;
-            Vector2 Cross(const Vector2& V) const noexcept;
+            float Dot(const Vector2& V) const noexcept { return (x * V.x) + (y * V.y); }
+            void Cross(const Vector2& V, Vector2& result) const noexcept { result.x = result.y = (x * V.y) - (y * V.x); }
+            Vector2 Cross(const Vector2& V) const noexcept { float c = (x * V.y) - (y * V.x); return Vector2(c, c); }
 
             void Normalize() noexcept;
             void Normalize(Vector2& result) const noexcept;
@@ -230,13 +231,13 @@ namespace DirectX
         };
 
         // Binary operators
-        DIRECTX_TOOLKIT_API Vector2 operator+ (const Vector2& V1, const Vector2& V2) noexcept;
-        DIRECTX_TOOLKIT_API Vector2 operator- (const Vector2& V1, const Vector2& V2) noexcept;
-        DIRECTX_TOOLKIT_API Vector2 operator* (const Vector2& V1, const Vector2& V2) noexcept;
-        DIRECTX_TOOLKIT_API Vector2 operator* (const Vector2& V, float S) noexcept;
-        DIRECTX_TOOLKIT_API Vector2 operator/ (const Vector2& V1, const Vector2& V2) noexcept;
-        DIRECTX_TOOLKIT_API Vector2 operator/ (const Vector2& V, float S) noexcept;
-        DIRECTX_TOOLKIT_API Vector2 operator* (float S, const Vector2& V) noexcept;
+        DIRECTX_TOOLKIT_API inline Vector2 operator+ (const Vector2& V1, const Vector2& V2) noexcept { return Vector2(V1.x + V2.x, V1.y + V2.y); }
+        DIRECTX_TOOLKIT_API inline Vector2 operator- (const Vector2& V1, const Vector2& V2) noexcept { return Vector2(V1.x - V2.x, V1.y - V2.y); }
+        DIRECTX_TOOLKIT_API inline Vector2 operator* (const Vector2& V1, const Vector2& V2) noexcept { return Vector2(V1.x * V2.x, V1.y * V2.y); }
+        DIRECTX_TOOLKIT_API inline Vector2 operator* (const Vector2& V, float S) noexcept { return Vector2(V.x * S, V.y * S); }
+        DIRECTX_TOOLKIT_API inline Vector2 operator/ (const Vector2& V1, const Vector2& V2) noexcept { return Vector2(V1.x / V2.x, V1.y / V2.y); }
+        DIRECTX_TOOLKIT_API inline Vector2 operator/ (const Vector2& V, float S) noexcept { return Vector2(V.x / S, V.y / S); }
+        DIRECTX_TOOLKIT_API inline Vector2 operator* (float S, const Vector2& V) noexcept { return Vector2(S / V.x, S / V.y); };
 
         //------------------------------------------------------------------------------
         // 3D vector
