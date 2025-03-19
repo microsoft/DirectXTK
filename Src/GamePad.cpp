@@ -198,7 +198,7 @@ public:
             {
                 state.connected = true;
             #if defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION == 1)
-                state.packet = mGameInput->GetCurrentTimestamp();
+                state.packet = reading->GetTimestamp();
             #else
                 state.packet = reading->GetSequenceNumber(GameInputKindGamepad);
             #endif
