@@ -256,9 +256,6 @@ public:
                     caps.id = deviceInfo->deviceId;
                     caps.vid = deviceInfo->vendorId;
                     caps.pid = deviceInfo->productId;
-                #if defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION == 1)
-                    // TODO - How do I free deviceInfo?
-                #endif
                     return;
                 }
                 else
