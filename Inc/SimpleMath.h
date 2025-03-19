@@ -379,7 +379,7 @@ namespace DirectX
             Vector4(Vector4&&) = default;
             Vector4& operator=(Vector4&&) = default;
 
-            operator XMVECTOR() const  noexcept { return XMLoadFloat4(this); }
+            operator XMVECTOR() const noexcept { return XMLoadFloat4(this); }
 
             // Comparison operators
             bool operator == (const Vector4& V) const noexcept;
@@ -550,7 +550,7 @@ namespace DirectX
             Vector3 Up() const noexcept { return Vector3(_21, _22, _23); }
             void Up(const Vector3& v) noexcept { _21 = v.x; _22 = v.y; _23 = v.z; }
 
-            Vector3 Down() const  noexcept { return Vector3(-_21, -_22, -_23); }
+            Vector3 Down() const noexcept { return Vector3(-_21, -_22, -_23); }
             void Down(const Vector3& v) noexcept { _21 = -v.x; _22 = -v.y; _23 = -v.z; }
 
             Vector3 Right() const noexcept { return Vector3(_11, _12, _13); }
@@ -565,7 +565,7 @@ namespace DirectX
             Vector3 Backward() const noexcept { return Vector3(_31, _32, _33); }
             void Backward(const Vector3& v) noexcept { _31 = v.x; _32 = v.y; _33 = v.z; }
 
-            Vector3 Translation() const  noexcept { return Vector3(_41, _42, _43); }
+            Vector3 Translation() const noexcept { return Vector3(_41, _42, _43); }
             void Translation(const Vector3& v) noexcept { _41 = v.x; _42 = v.y; _43 = v.z; }
 
             // Matrix operations
@@ -733,7 +733,7 @@ namespace DirectX
             Quaternion& operator/= (const Quaternion& q) noexcept;
 
             // Unary operators
-            Quaternion operator+ () const  noexcept { return *this; }
+            Quaternion operator+ () const noexcept { return *this; }
             Quaternion operator- () const noexcept { return Quaternion(-x, -y, -z, -w); }
 
             // Quaternion operations
@@ -860,8 +860,8 @@ namespace DirectX
             DirectX::PackedVector::XMCOLOR BGRA() const noexcept;
             DirectX::PackedVector::XMUBYTEN4 RGBA() const noexcept;
 
-            Vector3 ToVector3() const noexcept;
-            Vector4 ToVector4() const noexcept;
+            Vector3 ToVector3() const noexcept { return Vector3(x, y, z); }
+            Vector4 ToVector4() const noexcept { return Vector4(x, y, z, w); }
 
             void Negate() noexcept;
             void Negate(Color& result) const noexcept;

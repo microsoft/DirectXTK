@@ -3090,16 +3090,6 @@ inline DirectX::PackedVector::XMUBYTEN4 Color::RGBA() const noexcept
     return Packed;
 }
 
-inline Vector3 Color::ToVector3() const noexcept
-{
-    return Vector3(x, y, z);
-}
-
-inline Vector4 Color::ToVector4() const noexcept
-{
-    return Vector4(x, y, z, w);
-}
-
 inline void Color::Negate() noexcept
 {
     using namespace DirectX;
