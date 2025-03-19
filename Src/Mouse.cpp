@@ -21,6 +21,10 @@ using Microsoft::WRL::ComPtr;
 
 #include <GameInput.h>
 
+#if defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION == 1)
+using namespace GameInput::v1;
+#endif
+
 //======================================================================================
 // Win32 + GameInput implementation
 //======================================================================================
@@ -121,7 +125,11 @@ public:
         {
             if (mGameInput)
             {
+            #if defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION == 1)
+                if (!mGameInput->UnregisterCallback(mDeviceToken))
+            #else
                 if (!mGameInput->UnregisterCallback(mDeviceToken, UINT64_MAX))
+            #endif
                 {
                     DebugTrace("ERROR: GameInput::UnregisterCallback [mouse] failed");
                 }
