@@ -16,10 +16,6 @@
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
-#if defined(USING_GAMEINPUT) && defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION == 1)
-using namespace GameInput::v1;
-#endif
-
 
 namespace
 {
@@ -87,6 +83,10 @@ namespace
 
 #pragma region Implementations
 #ifdef USING_GAMEINPUT
+
+#if defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION == 1)
+using namespace GameInput::v1;
+#endif
 
 //======================================================================================
 // GameInput
