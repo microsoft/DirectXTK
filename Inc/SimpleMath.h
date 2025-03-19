@@ -235,9 +235,10 @@ namespace DirectX
         DIRECTX_TOOLKIT_API inline Vector2 operator- (const Vector2& V1, const Vector2& V2) noexcept { return Vector2(V1.x - V2.x, V1.y - V2.y); }
         DIRECTX_TOOLKIT_API inline Vector2 operator* (const Vector2& V1, const Vector2& V2) noexcept { return Vector2(V1.x * V2.x, V1.y * V2.y); }
         DIRECTX_TOOLKIT_API inline Vector2 operator* (const Vector2& V, float S) noexcept { return Vector2(V.x * S, V.y * S); }
+        DIRECTX_TOOLKIT_API inline Vector2 operator* (float S, const Vector2& V) noexcept { return Vector2(S * V.x, S * V.y); }
         DIRECTX_TOOLKIT_API inline Vector2 operator/ (const Vector2& V1, const Vector2& V2) noexcept { return Vector2(V1.x / V2.x, V1.y / V2.y); }
         DIRECTX_TOOLKIT_API inline Vector2 operator/ (const Vector2& V, float S) noexcept { return Vector2(V.x / S, V.y / S); }
-        DIRECTX_TOOLKIT_API inline Vector2 operator* (float S, const Vector2& V) noexcept { return Vector2(S / V.x, S / V.y); };
+        DIRECTX_TOOLKIT_API inline Vector2 operator/ (float S, const Vector2& V) noexcept { return Vector2(S / V.x, S / V.y); };
 
         //------------------------------------------------------------------------------
         // 3D vector
@@ -355,9 +356,10 @@ namespace DirectX
         DIRECTX_TOOLKIT_API inline Vector3 operator- (const Vector3& V1, const Vector3& V2) noexcept { return Vector3(V1.x - V2.x, V1.y - V2.y, V1.z - V2.z); }
         DIRECTX_TOOLKIT_API inline Vector3 operator* (const Vector3& V1, const Vector3& V2) noexcept { return Vector3(V1.x * V2.x, V1.y * V2.y, V1.z * V2.z); }
         DIRECTX_TOOLKIT_API inline Vector3 operator* (const Vector3& V, float S) noexcept  { return Vector3(V.x * S, V.y * S, V.z * S); }
+        DIRECTX_TOOLKIT_API inline Vector3 operator* (float S, const Vector3& V) noexcept  { return Vector3(S * V.x, S * V.y, S * V.z); }
         DIRECTX_TOOLKIT_API inline Vector3 operator/ (const Vector3& V1, const Vector3& V2) noexcept { return Vector3(V1.x / V2.x, V1.y / V2.y, V1.z / V2.z); }
         DIRECTX_TOOLKIT_API inline Vector3 operator/ (const Vector3& V, float S) noexcept { return Vector3(V.x / S, V.y / S, V.z / S); }
-        DIRECTX_TOOLKIT_API inline Vector3 operator* (float S, const Vector3& V) noexcept { return Vector3(S / V.x, S / V.y, S / V.z); }
+        DIRECTX_TOOLKIT_API inline Vector3 operator/ (float S, const Vector3& V) noexcept { return Vector3(S / V.x, S / V.y, S / V.z); }
 
         //------------------------------------------------------------------------------
         // 4D vector
@@ -377,7 +379,7 @@ namespace DirectX
             Vector4(Vector4&&) = default;
             Vector4& operator=(Vector4&&) = default;
 
-            operator XMVECTOR() const  noexcept { return XMLoadFloat4(this); }
+            operator XMVECTOR() const noexcept { return XMLoadFloat4(this); }
 
             // Comparison operators
             bool operator == (const Vector4& V) const noexcept;
@@ -469,9 +471,10 @@ namespace DirectX
         DIRECTX_TOOLKIT_API Vector4 operator- (const Vector4& V1, const Vector4& V2) noexcept;
         DIRECTX_TOOLKIT_API Vector4 operator* (const Vector4& V1, const Vector4& V2) noexcept;
         DIRECTX_TOOLKIT_API Vector4 operator* (const Vector4& V, float S) noexcept;
+        DIRECTX_TOOLKIT_API Vector4 operator* (float S, const Vector4& V) noexcept;
         DIRECTX_TOOLKIT_API Vector4 operator/ (const Vector4& V1, const Vector4& V2) noexcept;
         DIRECTX_TOOLKIT_API Vector4 operator/ (const Vector4& V, float S) noexcept;
-        DIRECTX_TOOLKIT_API Vector4 operator* (float S, const Vector4& V) noexcept;
+        DIRECTX_TOOLKIT_API Vector4 operator/ (float S, const Vector4& V) noexcept;
 
         //------------------------------------------------------------------------------
         // 4x4 Matrix (assumes right-handed cooordinates)
@@ -547,7 +550,7 @@ namespace DirectX
             Vector3 Up() const noexcept { return Vector3(_21, _22, _23); }
             void Up(const Vector3& v) noexcept { _21 = v.x; _22 = v.y; _23 = v.z; }
 
-            Vector3 Down() const  noexcept { return Vector3(-_21, -_22, -_23); }
+            Vector3 Down() const noexcept { return Vector3(-_21, -_22, -_23); }
             void Down(const Vector3& v) noexcept { _21 = -v.x; _22 = -v.y; _23 = -v.z; }
 
             Vector3 Right() const noexcept { return Vector3(_11, _12, _13); }
@@ -562,7 +565,7 @@ namespace DirectX
             Vector3 Backward() const noexcept { return Vector3(_31, _32, _33); }
             void Backward(const Vector3& v) noexcept { _31 = v.x; _32 = v.y; _33 = v.z; }
 
-            Vector3 Translation() const  noexcept { return Vector3(_41, _42, _43); }
+            Vector3 Translation() const noexcept { return Vector3(_41, _42, _43); }
             void Translation(const Vector3& v) noexcept { _41 = v.x; _42 = v.y; _43 = v.z; }
 
             // Matrix operations
@@ -636,11 +639,11 @@ namespace DirectX
         DIRECTX_TOOLKIT_API Matrix operator- (const Matrix& M1, const Matrix& M2) noexcept;
         DIRECTX_TOOLKIT_API Matrix operator* (const Matrix& M1, const Matrix& M2) noexcept;
         DIRECTX_TOOLKIT_API Matrix operator* (const Matrix& M, float S) noexcept;
+        DIRECTX_TOOLKIT_API Matrix operator* (float S, const Matrix& M) noexcept;
         DIRECTX_TOOLKIT_API Matrix operator/ (const Matrix& M, float S) noexcept;
         DIRECTX_TOOLKIT_API Matrix operator/ (const Matrix& M1, const Matrix& M2) noexcept;
             // Element-wise divide
-            DIRECTX_TOOLKIT_API Matrix operator* (float S, const Matrix& M) noexcept;
-
+        DIRECTX_TOOLKIT_API Matrix operator/ (float S, const Matrix& M) noexcept;
 
         //-----------------------------------------------------------------------------
         // Plane
@@ -730,7 +733,7 @@ namespace DirectX
             Quaternion& operator/= (const Quaternion& q) noexcept;
 
             // Unary operators
-            Quaternion operator+ () const  noexcept { return *this; }
+            Quaternion operator+ () const noexcept { return *this; }
             Quaternion operator- () const noexcept { return Quaternion(-x, -y, -z, -w); }
 
             // Quaternion operations
@@ -790,8 +793,8 @@ namespace DirectX
         DIRECTX_TOOLKIT_API Quaternion operator- (const Quaternion& Q1, const Quaternion& Q2) noexcept;
         DIRECTX_TOOLKIT_API Quaternion operator* (const Quaternion& Q1, const Quaternion& Q2) noexcept;
         DIRECTX_TOOLKIT_API Quaternion operator* (const Quaternion& Q, float S) noexcept;
-        DIRECTX_TOOLKIT_API Quaternion operator/ (const Quaternion& Q1, const Quaternion& Q2) noexcept;
         DIRECTX_TOOLKIT_API Quaternion operator* (float S, const Quaternion& Q) noexcept;
+        DIRECTX_TOOLKIT_API Quaternion operator/ (const Quaternion& Q1, const Quaternion& Q2) noexcept;
 
         //------------------------------------------------------------------------------
         // Color
@@ -857,8 +860,8 @@ namespace DirectX
             DirectX::PackedVector::XMCOLOR BGRA() const noexcept;
             DirectX::PackedVector::XMUBYTEN4 RGBA() const noexcept;
 
-            Vector3 ToVector3() const noexcept;
-            Vector4 ToVector4() const noexcept;
+            Vector3 ToVector3() const noexcept { return Vector3(x, y, z); }
+            Vector4 ToVector4() const noexcept { return Vector4(x, y, z, w); }
 
             void Negate() noexcept;
             void Negate(Color& result) const noexcept;
@@ -888,8 +891,8 @@ namespace DirectX
         DIRECTX_TOOLKIT_API Color operator- (const Color& C1, const Color& C2) noexcept;
         DIRECTX_TOOLKIT_API Color operator* (const Color& C1, const Color& C2) noexcept;
         DIRECTX_TOOLKIT_API Color operator* (const Color& C, float S) noexcept;
-        DIRECTX_TOOLKIT_API Color operator/ (const Color& C1, const Color& C2) noexcept;
         DIRECTX_TOOLKIT_API Color operator* (float S, const Color& C) noexcept;
+        DIRECTX_TOOLKIT_API Color operator/ (const Color& C1, const Color& C2) noexcept;
 
         //------------------------------------------------------------------------------
         // Ray

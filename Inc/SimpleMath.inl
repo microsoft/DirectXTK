@@ -960,8 +960,8 @@ inline Vector4& Vector4::operator*= (const Vector4& V) noexcept
 inline Vector4& Vector4::operator*= (float S) noexcept
 {
     using namespace DirectX;
-    const XMVECTOR v1 = XMLoadFloat4(this);
-    const XMVECTOR X = XMVectorScale(v1, S);
+    const XMVECTOR v = XMLoadFloat4(this);
+    const XMVECTOR X = XMVectorScale(v, S);
     XMStoreFloat4(this, X);
     return *this;
 }
@@ -970,8 +970,8 @@ inline Vector4& Vector4::operator/= (float S) noexcept
 {
     using namespace DirectX;
     assert(S != 0.0f);
-    const XMVECTOR v1 = XMLoadFloat4(this);
-    const XMVECTOR X = XMVectorScale(v1, 1.f / S);
+    const XMVECTOR v = XMLoadFloat4(this);
+    const XMVECTOR X = XMVectorScale(v, 1.f / S);
     XMStoreFloat4(this, X);
     return *this;
 }
@@ -1016,8 +1016,18 @@ inline Vector4 operator* (const Vector4& V1, const Vector4& V2) noexcept
 inline Vector4 operator* (const Vector4& V, float S) noexcept
 {
     using namespace DirectX;
-    const XMVECTOR v1 = XMLoadFloat4(&V);
-    const XMVECTOR X = XMVectorScale(v1, S);
+    const XMVECTOR v = XMLoadFloat4(&V);
+    const XMVECTOR X = XMVectorScale(v, S);
+    Vector4 R;
+    XMStoreFloat4(&R, X);
+    return R;
+}
+
+inline Vector4 operator* (float S, const Vector4& V) noexcept
+{
+    using namespace DirectX;
+    const XMVECTOR v = XMLoadFloat4(&V);
+    const XMVECTOR X = XMVectorScale(v, S);
     Vector4 R;
     XMStoreFloat4(&R, X);
     return R;
@@ -1037,21 +1047,23 @@ inline Vector4 operator/ (const Vector4& V1, const Vector4& V2) noexcept
 inline Vector4 operator/ (const Vector4& V, float S) noexcept
 {
     using namespace DirectX;
-    const XMVECTOR v1 = XMLoadFloat4(&V);
-    const XMVECTOR X = XMVectorScale(v1, 1.f / S);
+    const XMVECTOR v = XMLoadFloat4(&V);
+    const XMVECTOR X = XMVectorScale(v, 1.f / S);
     Vector4 R;
     XMStoreFloat4(&R, X);
     return R;
 }
 
-inline Vector4 operator* (float S, const Vector4& V) noexcept
+inline Vector4 operator/ (float S, const Vector4& V) noexcept
 {
     using namespace DirectX;
-    const XMVECTOR v1 = XMLoadFloat4(&V);
-    const XMVECTOR X = XMVectorScale(v1, S);
+    const XMVECTOR v1 = XMVectorReplicate(S);
+    const XMVECTOR v2 = XMLoadFloat4(&V);
+    const XMVECTOR X = XMVectorDivide(v1, v2);
     Vector4 R;
     XMStoreFloat4(&R, X);
     return R;
+
 }
 
 //------------------------------------------------------------------------------
@@ -1804,6 +1816,28 @@ inline Matrix operator* (const Matrix& M, float S) noexcept
     return R;
 }
 
+inline Matrix operator* (float S, const Matrix& M) noexcept
+{
+    using namespace DirectX;
+
+    XMVECTOR x1 = XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(&M._11));
+    XMVECTOR x2 = XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(&M._21));
+    XMVECTOR x3 = XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(&M._31));
+    XMVECTOR x4 = XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(&M._41));
+
+    x1 = XMVectorScale(x1, S);
+    x2 = XMVectorScale(x2, S);
+    x3 = XMVectorScale(x3, S);
+    x4 = XMVectorScale(x4, S);
+
+    Matrix R;
+    XMStoreFloat4(reinterpret_cast<XMFLOAT4*>(&R._11), x1);
+    XMStoreFloat4(reinterpret_cast<XMFLOAT4*>(&R._21), x2);
+    XMStoreFloat4(reinterpret_cast<XMFLOAT4*>(&R._31), x3);
+    XMStoreFloat4(reinterpret_cast<XMFLOAT4*>(&R._41), x4);
+    return R;
+}
+
 inline Matrix operator/ (const Matrix& M, float S) noexcept
 {
     using namespace DirectX;
@@ -1855,7 +1889,7 @@ inline Matrix operator/ (const Matrix& M1, const Matrix& M2) noexcept
     return R;
 }
 
-inline Matrix operator* (float S, const Matrix& M) noexcept
+inline Matrix operator/ (float S, const Matrix& M) noexcept
 {
     using namespace DirectX;
 
@@ -1864,10 +1898,12 @@ inline Matrix operator* (float S, const Matrix& M) noexcept
     XMVECTOR x3 = XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(&M._31));
     XMVECTOR x4 = XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(&M._41));
 
-    x1 = XMVectorScale(x1, S);
-    x2 = XMVectorScale(x2, S);
-    x3 = XMVectorScale(x3, S);
-    x4 = XMVectorScale(x4, S);
+    XMVECTOR vs = XMVectorReplicate(S);
+
+    x1 = XMVectorDivide(vs, x1);
+    x2 = XMVectorDivide(vs, x2);
+    x3 = XMVectorDivide(vs, x3);
+    x4 = XMVectorDivide(vs, x4);
 
     Matrix R;
     XMStoreFloat4(reinterpret_cast<XMFLOAT4*>(&R._11), x1);
@@ -2596,6 +2632,16 @@ inline Quaternion operator* (const Quaternion& Q, float S) noexcept
     return R;
 }
 
+inline Quaternion operator* (float S, const Quaternion& Q) noexcept
+{
+    using namespace DirectX;
+    const XMVECTOR q1 = XMLoadFloat4(&Q);
+
+    Quaternion R;
+    XMStoreFloat4(&R, XMVectorScale(q1, S));
+    return R;
+}
+
 inline Quaternion operator/ (const Quaternion& Q1, const Quaternion& Q2) noexcept
 {
     using namespace DirectX;
@@ -2605,16 +2651,6 @@ inline Quaternion operator/ (const Quaternion& Q1, const Quaternion& Q2) noexcep
 
     Quaternion R;
     XMStoreFloat4(&R, XMQuaternionMultiply(q1, q2));
-    return R;
-}
-
-inline Quaternion operator* (float S, const Quaternion& Q) noexcept
-{
-    using namespace DirectX;
-    const XMVECTOR q1 = XMLoadFloat4(&Q);
-
-    Quaternion R;
-    XMStoreFloat4(&R, XMVectorScale(q1, S));
     return R;
 }
 
@@ -3013,6 +3049,15 @@ inline Color operator* (const Color& C, float S) noexcept
     return R;
 }
 
+inline Color operator* (float S, const Color& C) noexcept
+{
+    using namespace DirectX;
+    const XMVECTOR c1 = XMLoadFloat4(&C);
+    Color R;
+    XMStoreFloat4(&R, XMVectorScale(c1, S));
+    return R;
+}
+
 inline Color operator/ (const Color& C1, const Color& C2) noexcept
 {
     using namespace DirectX;
@@ -3020,15 +3065,6 @@ inline Color operator/ (const Color& C1, const Color& C2) noexcept
     const XMVECTOR c2 = XMLoadFloat4(&C2);
     Color R;
     XMStoreFloat4(&R, XMVectorDivide(c1, c2));
-    return R;
-}
-
-inline Color operator* (float S, const Color& C) noexcept
-{
-    using namespace DirectX;
-    const XMVECTOR c1 = XMLoadFloat4(&C);
-    Color R;
-    XMStoreFloat4(&R, XMVectorScale(c1, S));
     return R;
 }
 
@@ -3052,16 +3088,6 @@ inline DirectX::PackedVector::XMUBYTEN4 Color::RGBA() const noexcept
     PackedVector::XMUBYTEN4 Packed;
     PackedVector::XMStoreUByteN4(&Packed, clr);
     return Packed;
-}
-
-inline Vector3 Color::ToVector3() const noexcept
-{
-    return Vector3(x, y, z);
-}
-
-inline Vector4 Color::ToVector4() const noexcept
-{
-    return Vector4(x, y, z, w);
 }
 
 inline void Color::Negate() noexcept
