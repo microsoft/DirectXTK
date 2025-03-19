@@ -188,6 +188,15 @@
 #include <OCIdl.h>
 #endif
 
+#if defined(USING_GAMEINPUT) && defined(__MINGW32__)
+namespace GameInput { namespace v1 { interface IGameInput; } }
+template<> inline auto __mingw_uuidof<GameInput::v1::IGameInput>() -> GUID const&
+{
+    static constexpr GUID the_uuid = { 0x40ffb7e4,0x6150,0x407a,0xb4,0x39,0x13,0x2b,0xad,0xc0,0x8d,0x2d };
+    return the_uuid;
+}
+#endif
+
 #if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)) || (defined(_XBOX_ONE) && defined(_TITLE))
 #pragma warning(push)
 #pragma warning(disable: 4471 5204 5256)

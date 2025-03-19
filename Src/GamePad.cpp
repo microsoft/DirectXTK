@@ -84,6 +84,10 @@ namespace
 #pragma region Implementations
 #ifdef USING_GAMEINPUT
 
+#if defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION == 1)
+using namespace GameInput::v1;
+#endif
+
 //======================================================================================
 // GameInput
 //======================================================================================
@@ -141,7 +145,11 @@ public:
         {
             if (mGameInput)
             {
+            #if defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION == 1)
+                if (!mGameInput->UnregisterCallback(mDeviceToken))
+            #else
                 if (!mGameInput->UnregisterCallback(mDeviceToken, UINT64_MAX))
+            #endif
                 {
                     DebugTrace("ERROR: GameInput::UnregisterCallback [gamepad] failed");
                 }
@@ -189,7 +197,11 @@ public:
             if (reading->GetGamepadState(&pad))
             {
                 state.connected = true;
+            #if defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION == 1)
+                state.packet = reading->GetTimestamp();
+            #else
                 state.packet = reading->GetSequenceNumber(GameInputKindGamepad);
+            #endif
 
                 state.buttons.a = (pad.buttons & GameInputGamepadA) != 0;
                 state.buttons.b = (pad.buttons & GameInputGamepadB) != 0;
@@ -233,7 +245,12 @@ public:
             {
                 if (device->GetDeviceStatus() & GameInputDeviceConnected)
                 {
+                #if defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION == 1)
+                    const GameInputDeviceInfo* deviceInfo = nullptr;
+                    device->GetDeviceInfo(&deviceInfo);
+                #else
                     auto deviceInfo = device->GetDeviceInfo();
+                #endif
                     caps.connected = true;
                     caps.gamepadType = Capabilities::GAMEPAD;
                     caps.id = deviceInfo->deviceId;
