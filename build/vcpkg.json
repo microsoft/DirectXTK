@@ -1,11 +1,18 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
-    "dependencies": [
-      "directxmath",
-      "directx-headers",
-      {
-        "name": "xaudio2redist",
-        "platform": "windows & !arm"
-      }
-    ]
-  }
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "dependencies": [
+    {
+      "name": "directx-headers",
+      "platform": "windows & mingw"
+    },
+    "directxmath",
+    {
+      "name": "gameinput",
+      "platform": "windows & x64"
+    },
+    {
+      "name": "xaudio2redist",
+      "platform": "windows & !arm"
+    }
+  ]
+}

@@ -158,8 +158,7 @@
     {
       "name": "Durango",
       "cacheVariables": {
-        "XBOX_CONSOLE_TARGET": "durango",
-        "BUILD_TESTING": false
+        "XBOX_CONSOLE_TARGET": "durango"
       },
       "hidden": true
     },
@@ -321,10 +320,10 @@
     { "name": "x64-Debug-GDK-Clang"   , "description": "Clang/LLVM for x64 (Debug) with Microsoft GDK", "inherits": [ "base", "x64", "Debug", "Clang", "GDK" ] },
     { "name": "x64-Release-GDK-Clang" , "description": "Clang/LLVM for x64 (Release) with Microsoft GDK", "inherits": [ "base", "x64", "Release", "Clang", "GDK" ] },
 
-    { "name": "x64-Debug-MinGW"  , "description": "MinG-W64 (Debug)", "inherits": [ "base", "x64", "Debug", "GNUC", "VCPKG", "MinGW64", "XAudio2Redist" ] },
-    { "name": "x64-Release-MinGW", "description": "MinG-W64 (Release)", "inherits": [ "base", "x64", "Release", "GNUC", "VCPKG", "MinGW64", "XAudio2Redist" ] },
-    { "name": "x86-Debug-MinGW"  , "description": "MinG-W32 (Debug)", "inherits": [ "base", "x86", "Debug", "GNUC", "VCPKG", "MinGW32", "XAudio2Redist" ] },
-    { "name": "x86-Release-MinGW", "description": "MinG-W32 (Release)", "inherits": [ "base", "x86", "Release", "GNUC", "VCPKG", "MinGW32", "XAudio2Redist" ] },
+    { "name": "x64-Debug-MinGW"  , "description": "MinG-W64 (Debug)", "inherits": [ "base", "x64", "Debug", "GNUC", "VCPKG", "XAudio2Redist", "MinGW64" ] },
+    { "name": "x64-Release-MinGW", "description": "MinG-W64 (Release)", "inherits": [ "base", "x64", "Release", "GNUC", "VCPKG", "XAudio2Redist", "MinGW64" ] },
+    { "name": "x86-Debug-MinGW"  , "description": "MinG-W32 (Debug)", "inherits": [ "base", "x86", "Debug", "GNUC", "VCPKG", "XAudio2Redist", "MinGW32" ] },
+    { "name": "x86-Release-MinGW", "description": "MinG-W32 (Release)", "inherits": [ "base", "x86", "Release", "GNUC", "VCPKG", "XAudio2Redist", "MinGW32" ] },
 
     { "name": "x64-Debug-ICC"     , "description": "Intel Classic Compiler (Debug) for Windows 8", "inherits": [ "base", "x64", "Debug", "Intel" ] },
     { "name": "x64-Release-ICC"   , "description": "Intel Classic Compiler (Release) for Windows 8", "inherits": [ "base", "x64", "Release", "Intel" ] },
@@ -353,6 +352,9 @@
     { "name": "x64-Release-Redist"  , "configurePreset": "x64-Release-Redist" },
     { "name": "x86-Debug-Redist"    , "configurePreset": "x86-Debug-Redist" },
     { "name": "x86-Release-Redist"  , "configurePreset": "x86-Release-Redist" },
+
+    { "name": "x64-Debug-VCPKG"    , "configurePreset": "x64-Debug-VCPKG" },
+    { "name": "x64-Release-VCPKG"  , "configurePreset": "x64-Release-VCPKG" },
 
     { "name": "x64-Debug-Clang"    , "configurePreset": "x64-Debug-Clang" },
     { "name": "x64-Release-Clang"  , "configurePreset": "x64-Release-Clang" },
