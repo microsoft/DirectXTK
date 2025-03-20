@@ -6,11 +6,15 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
-### March 19, 2025
+### March 20, 2025
 * C++17 `std::byte` support for `FromMemory` functions
-* *DirectX Tool Kit for Audio* bug fixes for recent ``IsValid`` methods
 * GamePad, Keyboard, and Mouse _GameInput_ implementation now supports both v0 and v1 of the API
 * SimpleMath changes for Vector2/Vector3 operators to speed up performance particularly in debug builds
+* *DirectX Tool Kit for Audio* changes:
+  * Added more audio engine flags to control X3DAudio usage: `AudioEngine_DisableLFERedirect`, `AudioEngine_DisableDopplerEffect`, `AudioEngine_ZeroCenter3D`
+  * Repurposed `SoundEffectInstance_UseRedirectLFE` from an internal flag to a per voice override
+  * Added `SoundEffectInstance_ZeroCenter3D` as a per voice override
+  * Bug fixes for recent ``IsValid`` methods
 * Retired support for Windows 7 and Windows 8.0
 * Minor code review
 * CMake project updates including support for BUILD_SHARED_LIBS (i.e. DLL vs. static library)
