@@ -165,9 +165,8 @@ namespace DirectX
         SoundEffectInstance_Use3D = 0x1,
         SoundEffectInstance_ReverbUseFilters = 0x2,
         SoundEffectInstance_NoSetPitch = 0x4,
-
-        SoundEffectInstance_UseRedirectLFE = 0x10000,
-        SoundEffectInstance_ZeroCenter3D = 0x20000,
+        SoundEffectInstance_UseRedirectLFE = 0x8,
+        SoundEffectInstance_ZeroCenter3D = 0x10,
     };
 
     enum AUDIO_ENGINE_REVERB : uint32_t
