@@ -758,6 +758,7 @@ void SoundEffectInstanceBase::Apply3D(const X3DAUDIO_LISTENER& listener, const X
     float matrix[XAUDIO2_MAX_AUDIO_CHANNELS * 8] = {};
     assert(mDSPSettings.SrcChannelCount <= XAUDIO2_MAX_AUDIO_CHANNELS);
     assert(mDSPSettings.DstChannelCount <= 8);
+    mDSPSettings.DopplerFactor = 1.f;
     mDSPSettings.pMatrixCoefficients = matrix;
 
     assert(engine != nullptr);

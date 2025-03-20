@@ -136,7 +136,7 @@ namespace
         XAUDIO2FX_I3DL2_PRESET_PLATE,               // Reverb_Plate
     };
 
-    constexpr uint32_t c_XAudio3DCalculateDefault = X3DAUDIO_CALCULATE_MATRIX | X3DAUDIO_CALCULATE_DOPPLER | X3DAUDIO_CALCULATE_LPF_DIRECT;
+    constexpr uint32_t c_XAudio3DCalculateDefault = X3DAUDIO_CALCULATE_MATRIX | X3DAUDIO_CALCULATE_LPF_DIRECT;
 
     inline unsigned int makeVoiceKey(_In_ const WAVEFORMATEX* wfx) noexcept
     {
@@ -606,6 +606,11 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
     if (mEngineFlags & AudioEngine_ZeroCenter3D)
     {
         mX3DCalcFlags |= X3DAUDIO_CALCULATE_ZEROCENTER;
+    }
+
+    if (!(mEngineFlags & AudioEngine_DisableDopplerEffect))
+    {
+        mX3DCalcFlags |= X3DAUDIO_CALCULATE_DOPPLER;
     }
 
     //

@@ -151,7 +151,8 @@ namespace DirectX
         AudioEngine_ReverbUseFilters = 0x2,
         AudioEngine_UseMasteringLimiter = 0x4,
         AudioEngine_DisableLFERedirect = 0x8,
-        AudioEngine_ZeroCenter3D = 0x10,
+        AudioEngine_DisableDopplerEffect = 0x10,
+        AudioEngine_ZeroCenter3D = 0x20,
 
         AudioEngine_Debug = 0x10000,
         AudioEngine_ThrowOnNoAudioHW = 0x20000,
