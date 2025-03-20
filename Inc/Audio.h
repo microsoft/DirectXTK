@@ -150,6 +150,9 @@ namespace DirectX
         AudioEngine_EnvironmentalReverb = 0x1,
         AudioEngine_ReverbUseFilters = 0x2,
         AudioEngine_UseMasteringLimiter = 0x4,
+        AudioEngine_DisableLFERedirect = 0x8,
+        AudioEngine_DisableDopplerEffect = 0x10,
+        AudioEngine_ZeroCenter3D = 0x20,
 
         AudioEngine_Debug = 0x10000,
         AudioEngine_ThrowOnNoAudioHW = 0x20000,
@@ -163,8 +166,8 @@ namespace DirectX
         SoundEffectInstance_Use3D = 0x1,
         SoundEffectInstance_ReverbUseFilters = 0x2,
         SoundEffectInstance_NoSetPitch = 0x4,
-
-        SoundEffectInstance_UseRedirectLFE = 0x10000,
+        SoundEffectInstance_UseRedirectLFE = 0x8,
+        SoundEffectInstance_ZeroCenter3D = 0x10,
     };
 
     enum AUDIO_ENGINE_REVERB : uint32_t
@@ -301,7 +304,10 @@ namespace DirectX
         DIRECTX_TOOLKIT_API IXAudio2* __cdecl GetInterface() const noexcept;
         DIRECTX_TOOLKIT_API IXAudio2MasteringVoice* __cdecl GetMasterVoice() const noexcept;
         DIRECTX_TOOLKIT_API IXAudio2SubmixVoice* __cdecl GetReverbVoice() const noexcept;
+
+        // X3DAudio interface access
         DIRECTX_TOOLKIT_API X3DAUDIO_HANDLE& __cdecl Get3DHandle() const noexcept;
+        DIRECTX_TOOLKIT_API uint32_t __cdecl Get3DCalculateFlags() const noexcept;
 
         // Static functions
         struct RendererDetail
