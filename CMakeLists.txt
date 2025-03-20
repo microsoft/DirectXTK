@@ -139,6 +139,15 @@ set(SHADER_SOURCES
     Src/Shaders/SpriteEffect.fx
     Src/Shaders/ToneMap.fx)
 
+# Xbox-specific extensions
+if(DEFINED XBOX_CONSOLE_TARGET)
+  set(LIBRARY_HEADERS ${LIBRARY_HEADERS}
+      Inc/XboxDDSTextureLoader.h)
+
+  set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
+      Src/XboxDDSTextureLoader.cpp)
+endif()
+
 # These source files are identical in both DX11 and DX12 version.
 set(LIBRARY_HEADERS ${LIBRARY_HEADERS}
     Inc/GamePad.h
