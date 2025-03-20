@@ -110,7 +110,7 @@ For a full change history, see [CHANGELOG.md](https://github.com/microsoft/Direc
 
 * As of the October 2024 release, the xwbtool command-line tool also supports GNU-style long options using ``--``. All existing switches continue to function. MakeSpriteFont supports only `--version` and ``--help`` for POSIX-style parameters.
 
-* Xbox One support for DirectX 11 requires the legacy Xbox One XDK. See February 2023 or earlier releases of *DirectX Tool Kit* for the required MSBuild project files. It can also be built using the current CMake project from an *Xbox One XDK Developer Command Prompt* with the addition of CMake 3.19 or later to the path via the `x64-Debug-Durango` or `x64-Release-Durango` CMake preset.
+* Xbox One support for DirectX 11 requires the legacy Xbox One XDK. See February 2023 or earlier releases of *DirectX Tool Kit* for the required MSBuild project files. It can also be built using the current CMake project from an *Xbox One XDK Developer Command Prompt* with the addition of CMake 3.20 or later to the path via the `x64-Debug-Durango` or `x64-Release-Durango` CMake preset.
 
 ## Support
 
