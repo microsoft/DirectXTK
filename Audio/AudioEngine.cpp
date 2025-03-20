@@ -136,6 +136,8 @@ namespace
         XAUDIO2FX_I3DL2_PRESET_PLATE,               // Reverb_Plate
     };
 
+    constexpr uint32_t c_XAudio3DCalculateDefault = X3DAUDIO_CALCULATE_MATRIX | X3DAUDIO_CALCULATE_DOPPLER | X3DAUDIO_CALCULATE_LPF_DIRECT;
+
     inline unsigned int makeVoiceKey(_In_ const WAVEFORMATEX* wfx) noexcept
     {
         assert(IsValid(wfx));
@@ -278,6 +280,7 @@ public:
         maxVoiceInstances(SIZE_MAX),
         mMasterVolume(1.f),
         mX3DAudio{},
+        mX3DCalcFlags(c_XAudio3DCalculateDefault),
         mCriticalError(false),
         mReverbEnabled(false),
         mEngineFlags(AudioEngine_Default),
@@ -338,6 +341,7 @@ public:
     float                               mMasterVolume;
 
     X3DAUDIO_HANDLE                     mX3DAudio;
+    uint32_t                            mX3DCalcFlags;
 
     bool                                mCriticalError;
     bool                                mReverbEnabled;
@@ -402,6 +406,7 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
     mOutputFormat = {};
 
     memset(&mX3DAudio, 0, X3DAUDIO_HANDLE_BYTESIZE);
+    mX3DCalcFlags = c_XAudio3DCalculateDefault;
 
     mCriticalError = false;
     mReverbEnabled = false;
@@ -572,6 +577,8 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
         }
 
         DebugTrace("INFO: I3DL2 reverb effect enabled for 3D positional audio\n");
+
+        mX3DCalcFlags |= X3DAUDIO_CALCULATE_LPF_REVERB | X3DAUDIO_CALCULATE_REVERB;
     }
 
     //
@@ -588,6 +595,17 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
         mVolumeLimiter.Reset();
         xaudio2.Reset();
         return hr;
+    }
+
+    if ((masterChannelMask & SPEAKER_LOW_FREQUENCY) && !(mEngineFlags & AudioEngine_DisableLFERedirect))
+    {
+        // On devices with an LFE channel, allow the mono source data to be routed to the LFE destination channel.
+        mX3DCalcFlags |= X3DAUDIO_CALCULATE_REDIRECT_TO_LFE;
+    }
+
+    if (mEngineFlags & AudioEngine_ZeroCenter3D)
+    {
+        mX3DCalcFlags |= X3DAUDIO_CALCULATE_ZEROCENTER;
     }
 
     //
@@ -1469,6 +1487,11 @@ X3DAUDIO_HANDLE& AudioEngine::Get3DHandle() const noexcept
     return pImpl->mX3DAudio;
 }
 
+
+uint32_t AudioEngine::Get3DCalculateFlags() const noexcept
+{
+    return pImpl->mX3DCalcFlags;
+}
 
 // Static methods.
 #if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)) || defined(USING_XAUDIO2_8)

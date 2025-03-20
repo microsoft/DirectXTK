@@ -105,6 +105,7 @@ namespace DirectX
             mFreqRatio(1.f),
             mPan(0.f),
             mFlags(SoundEffectInstance_Default),
+            mX3DCalcFlags(0),
             mDirectVoice(nullptr),
             mReverbVoice(nullptr),
             mDSPSettings{}
@@ -126,13 +127,12 @@ namespace DirectX
         {
             assert(eng != nullptr);
             engine = eng;
+            mFlags = flags;
+
+            UpdateCalculateFlags();
+
             mDirectVoice = eng->GetMasterVoice();
             mReverbVoice = eng->GetReverbVoice();
-
-            if (eng->GetChannelMask() & SPEAKER_LOW_FREQUENCY)
-                mFlags = flags | SoundEffectInstance_UseRedirectLFE;
-            else
-                mFlags = flags & ~SoundEffectInstance_UseRedirectLFE;
 
             memset(&mDSPSettings, 0, sizeof(X3DAUDIO_DSP_SETTINGS));
             assert(wfx != nullptr);
@@ -333,10 +333,7 @@ namespace DirectX
             mDirectVoice = engine->GetMasterVoice();
             mReverbVoice = engine->GetReverbVoice();
 
-            if (engine->GetChannelMask() & SPEAKER_LOW_FREQUENCY)
-                mFlags = mFlags | SoundEffectInstance_UseRedirectLFE;
-            else
-                mFlags = mFlags & ~SoundEffectInstance_UseRedirectLFE;
+            UpdateCalculateFlags();
 
             mDSPSettings.DstChannelCount = engine->GetOutputChannels();
         }
@@ -390,9 +387,25 @@ namespace DirectX
         float                       mFreqRatio;
         float                       mPan;
         SOUND_EFFECT_INSTANCE_FLAGS mFlags;
+        uint32_t                    mX3DCalcFlags;
         IXAudio2Voice*              mDirectVoice;
         IXAudio2Voice*              mReverbVoice;
         X3DAUDIO_DSP_SETTINGS       mDSPSettings;
+
+        void UpdateCalculateFlags()
+        {
+            assert(engine != nullptr);
+            mX3DCalcFlags = engine->Get3DCalculateFlags();
+            if ((engine->GetChannelMask() & SPEAKER_LOW_FREQUENCY) && (mFlags & SoundEffectInstance_UseRedirectLFE))
+            {
+                mX3DCalcFlags |= X3DAUDIO_CALCULATE_REDIRECT_TO_LFE;
+            }
+
+            if (mFlags & SoundEffectInstance_ZeroCenter3D)
+            {
+                mX3DCalcFlags |= X3DAUDIO_CALCULATE_ZEROCENTER;
+            }
+        }
     };
 
     struct WaveBankSeekData
