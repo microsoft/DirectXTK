@@ -3,7 +3,7 @@
     <metadata minClientVersion="2.8.6">
         <id>directxtk_uwp</id>
         <version>0.0.0-SpecifyVersionOnCommandline</version>
-        <title>DirectX Tool Kit (UWP)</title>
+        <title>DirectX Tool Kit for DirectX 11 (UWP)</title>
         <authors>Microsoft</authors>
         <owners>microsoft,directxtk</owners>
         <summary>The DirectX Tool Kit (aka DirectXTK) is a collection of helper classes for writing Direct3D 11.x code in C++.</summary>
@@ -38,7 +38,7 @@ WICTextureLoader - WIC-based image file texture loader</description>
         <license type="expression">MIT</license>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <copyright>&#169; Microsoft Corporation. All rights reserved.</copyright>
-        <tags>DirectX DirectXTK native nativepackage</tags>
+        <tags>DirectX DirectXTK native nativepackage  ARM64</tags>
     </metadata>
 
     <files>

@@ -3,11 +3,11 @@
     <metadata minClientVersion="2.8.6">
         <id>directxtk_desktop_2019</id>
         <version>0.0.0-SpecifyVersionOnCommandline</version>
-        <title>DirectX Tool Kit (VS 2019/2022 Win32)</title>
+        <title>DirectX Tool Kit for DirectX 11 (VS 2019/2022 Win32)</title>
         <authors>Microsoft</authors>
         <owners>microsoft,directxtk</owners>
         <summary>The DirectX Tool Kit (aka DirectXTK) is a collection of helper classes for writing Direct3D 11.x code in C++.</summary>
-        <description>This version is for Windows desktop applications using Visual Studio 2019 (16.11) or Visual Studio 2022.
+        <description>This version is for Windows desktop applications using Visual Studio 2019 (16.11) or Visual Studio 2022 on Windows 8.1 or later.
 
 Features:
 Audio - low-level audio API using XAudio2
