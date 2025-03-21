@@ -603,14 +603,14 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
         mX3DCalcFlags |= X3DAUDIO_CALCULATE_REDIRECT_TO_LFE;
     }
 
-    if (mEngineFlags & AudioEngine_ZeroCenter3D)
-    {
-        mX3DCalcFlags |= X3DAUDIO_CALCULATE_ZEROCENTER;
-    }
-
     if (!(mEngineFlags & AudioEngine_DisableDopplerEffect))
     {
         mX3DCalcFlags |= X3DAUDIO_CALCULATE_DOPPLER;
+    }
+
+    if (mEngineFlags & AudioEngine_ZeroCenter3D)
+    {
+        mX3DCalcFlags |= X3DAUDIO_CALCULATE_ZEROCENTER;
     }
 
     //

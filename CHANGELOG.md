@@ -6,6 +6,19 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### March 20, 2025
+* C++17 `std::byte` support for `FromMemory` functions
+* GamePad, Keyboard, and Mouse _GameInput_ implementation now supports both v0 and v1 of the API
+* SimpleMath changes for Vector2/Vector3 operators to speed up performance particularly in debug builds
+* *DirectX Tool Kit for Audio* changes:
+  * Added more audio engine flags to control X3DAudio usage: `AudioEngine_DisableLFERedirect`, `AudioEngine_DisableDopplerEffect`, `AudioEngine_ZeroCenter3D`
+  * Repurposed `SoundEffectInstance_UseRedirectLFE` from an internal flag to a per voice override
+  * Added `SoundEffectInstance_ZeroCenter3D` as a per voice override
+  * Bug fixes for recent ``IsValid`` methods
+* Retired support for Windows 7 and Windows 8.0
+* Minor code review
+* CMake project updates including support for BUILD_SHARED_LIBS (i.e. DLL vs. static library)
+
 ### October 28, 2024
 * All enums now use ``uint32_t`` as the underlying type rather than ``unsigned long`` or ``int``.
 * Added `DDS_LOADER_INGNORE_MIPS` flag to DDSTextureLoader
@@ -119,8 +132,8 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 * Dropped support for legacy Xbox One XDK prior to April 2018
 
 ### February 28, 2022
-* SimpleMath Matrix updated with ToEuler and Vector3 version of CreateFromYawPitchRoll methods
-* SimpleMath Quaternion updated with ToEuler, RotateTowards, FromToRotation, LookRotation, and Angle methods
+* SimpleMath Matrix updated with **ToEuler** and Vector3 version of **CreateFromYawPitchRoll** methods
+* SimpleMath Quaternion updated with **ToEuler**, **RotateTowards**, **FromToRotation**, **LookRotation**, and **Angle** methods
 * Keyboard updated with new IME On/Off v-keys
 * Win32 Mouse now uses ``WM_ACTIVATE`` for more robust behavior
 * *DirectX Tool Kit for Audio* updated for Advanced Format (4Kn) wavebank streaming
@@ -395,7 +408,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 * Added ``forceSRGB`` optional parameter to SpriteFont ctor
 * EffectFactory method **EnableForceSRGB** added
 * DGSLEffect now defaults to diffuse/alpha of 1
-* Removed problematic ABI::Windows::Foundation::Rect interop for SimpleMath
+* Removed problematic `ABI::Windows::Foundation::Rect` interop for SimpleMath
 * Minor code cleanup
 
 ### August 4, 2016
