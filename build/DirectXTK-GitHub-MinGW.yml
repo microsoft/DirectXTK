@@ -240,3 +240,32 @@ jobs:
     inputs:
       cwd: $(Build.SourcesDirectory)
       cmakeArgs: --build out
+  - task: CMake@1
+    displayName: CMake (MinGW-W64) as Shared Lib
+    inputs:
+      cwd: $(Build.SourcesDirectory)
+      cmakeArgs: >
+        -B out2 -DCMAKE_BUILD_TYPE="Debug" -DDIRECTX_ARCH=x64 -DBUILD_XAUDIO_REDIST=ON
+        -DCMAKE_CXX_COMPILER="g++.exe" -G "MinGW Makefiles"
+        -DUSE_PREBUILT_SHADERS=ON -DCOMPILED_SHADERS=$(CompileShadersOutput)
+        -DCMAKE_TOOLCHAIN_FILE="$(VCPKG_CMAKE_DIR)" -DVCPKG_MANIFEST_DIR="$(VCPKG_MANIFEST_DIR)" -DVCPKG_TARGET_TRIPLET=x64-mingw-static
+        -DBUILD_SHARED_LIBS=ON
+  - task: CMake@1
+    displayName: CMake (MinGW-W64) Build Shared Lib
+    inputs:
+      cwd: $(Build.SourcesDirectory)
+      cmakeArgs: --build out2
+  - task: CMake@1
+    displayName: CMake (MinGW-W64) w/ GameInput
+    inputs:
+      cwd: $(Build.SourcesDirectory)
+      cmakeArgs: >
+        -B out3 -DCMAKE_BUILD_TYPE="Debug" -DDIRECTX_ARCH=x64 -DBUILD_XAUDIO_REDIST=ON -DBUILD_GAMEINPUT=ON
+        -DCMAKE_CXX_COMPILER="g++.exe" -G "MinGW Makefiles"
+        -DUSE_PREBUILT_SHADERS=ON -DCOMPILED_SHADERS=$(CompileShadersOutput)
+        -DCMAKE_TOOLCHAIN_FILE="$(VCPKG_CMAKE_DIR)" -DVCPKG_MANIFEST_DIR="$(VCPKG_MANIFEST_DIR)" -DVCPKG_TARGET_TRIPLET=x64-mingw-static
+  - task: CMake@1
+    displayName: CMake (MinGW-W64) Build w/ GameInput
+    inputs:
+      cwd: $(Build.SourcesDirectory)
+      cmakeArgs: --build out3
