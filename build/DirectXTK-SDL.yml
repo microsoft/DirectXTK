@@ -37,8 +37,6 @@ variables:
   Codeql.ExcludePathPatterns: packages
   VC_PATH: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC'
   VS_GENERATOR: 'Visual Studio 17 2022'
-  URL_FEED: $(ADOFeedURL)
-  skipNugetSecurityAnalysis: true # We explicitly call this task so we don't need it to be auto-injected
 
 pool:
   vmImage: windows-2022
@@ -52,30 +50,6 @@ jobs:
   - checkout: self
     clean: true
     fetchTags: false
-  - task: PowerShell@2
-    displayName: 'Create nuget.config with single source'
-    inputs:
-      targetType: inline
-      script: |
-        $xml = @'
-        <?xml version="1.0" encoding="utf-8"?>
-        <configuration>
-          <packageSources>
-            <clear />
-          </packageSources>
-        </configuration>
-        '@
-        $xml | Set-Content -Path "$(Build.SourcesDirectory)\NuGet.config"
-
-  - task: NuGetCommand@2
-    displayName: 'NuGet set package source to ADO feed'
-    inputs:
-      command: custom
-      arguments: sources add -Name xboxgdk -Source $(URL_FEED) -ConfigFile $(Build.SourcesDirectory)\NuGet.config
-  - task: nuget-security-analysis@0
-    displayName: 'Secure Supply Chain Analysis'
-  - task: NuGetAuthenticate@1
-    displayName: 'NuGet Auth'
   - task: NodeTool@0
     displayName: 'NPM install'
     inputs:
