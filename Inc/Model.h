@@ -34,9 +34,17 @@
 
 #ifndef DIRECTX_TOOLKIT_API
 #ifdef DIRECTX_TOOLKIT_EXPORT
+#ifdef __GNUC__
+#define DIRECTX_TOOLKIT_API __attribute__ ((dllexport))
+#else
 #define DIRECTX_TOOLKIT_API __declspec(dllexport)
+#endif
 #elif defined(DIRECTX_TOOLKIT_IMPORT)
+#ifdef __GNUC__
+#define DIRECTX_TOOLKIT_API __attribute__ ((dllimport))
+#else
 #define DIRECTX_TOOLKIT_API __declspec(dllimport)
+#endif
 #else
 #define DIRECTX_TOOLKIT_API
 #endif
