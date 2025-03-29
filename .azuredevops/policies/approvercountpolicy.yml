@@ -1,0 +1,20 @@
+name: approver_count
+description: Approver count policy for mscodehub/DirectXTK/DirectXTK repository
+resource: repository
+where: 
+configuration:
+  approverCountPolicySettings:
+    isBlocking: true
+    requireMinimumApproverCount: 1
+    creatorVoteCounts: false
+    allowDownvotes: false
+    sourcePushOptions:
+      resetOnSourcePush: false
+      requireVoteOnLastIteration: true
+      requireVoteOnEachIteration: false
+      resetRejectionsOnSourcePush: false
+    blockLastPusherVote: true
+    branchNames:
+    - refs/heads/release
+    - refs/heads/main
+    displayName: mscodehub/DirectXTK/DirectXTK Approver Count Policy
