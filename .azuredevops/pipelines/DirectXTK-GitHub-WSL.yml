@@ -18,6 +18,10 @@ trigger:
     - main
   paths:
     include:
+    - '.azuredevops/pipelines/DirectXTK-GitHub-WSL.yml'
+    - CMake*
+    - build/*.cmake
+    - build/*.in
     - Inc\SimpleMath.*
     - Src\SimpleMath.*
 

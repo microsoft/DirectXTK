@@ -21,7 +21,7 @@ pr:
     - main
   paths:
     include:
-    - build/DirectXTK-SDL.yml
+    - '.azuredevops/pipelines/DirectXTK-SDL.yml'
 
 resources:
   repositories:
@@ -114,6 +114,55 @@ jobs:
     inputs:
       AnalyzeTargetBinskim: ''
       AnalyzeTargetGlob: +:file|out\bin\**\RelWithDebInfo\*.exe;MakeSpriteFont\bin\**\Release\*.exe
+      AnalyzeVerbose: true
+  - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@2
+    displayName: 'Post Analysis'
+    inputs:
+      GdnBreakAllTools: true
+      GdnBreakPolicy: 'Microsoft'
+      GdnBreakPolicyMinSev: 'Error'
+  - task: ComponentGovernanceComponentDetection@0
+    displayName: Component Detection
+
+- job: SDL_BUILD_DLL
+  displayName: 'Build using required SDL tools for DLLs'
+  workspace:
+    clean: all
+  steps:
+  - checkout: self
+    clean: true
+    fetchTags: false
+  - task: NodeTool@0
+    displayName: 'NPM install'
+    inputs:
+      versionSpec: 14.x
+  - task: CMake@1
+    displayName: 'CMake (MSVC): Config x64'
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -B out -DENABLE_SPECTRE_MITIGATION=ON -DBUILD_SHARED_LIBS=ON -DBUILD_TOOLS=OFF'
+  - task: CMake@1
+    displayName: 'CMake (MSVC): Build x64 Release'
+    inputs:
+      cwd: '$(Build.SourcesDirectory)'
+      cmakeArgs: --build out -v --config RelWithDebInfo
+  - task: securedevelopmentteam.vss-secure-development-tools.build-task-antimalware.AntiMalware@4
+    displayName: 'Run AntiMalware'
+    inputs:
+      InputType: 'Basic'
+      ScanType: 'CustomScan'
+      FileDirPath: $(Agent.BuildDirectory)
+      EnableSERVICEs: true
+      SupportLogOnError: false
+      TreatSignatureUpdateFailureAs: 'Warning'
+      SignatureFreshness: 'OneDay'
+      TreatStaleSignatureAs: 'Error'
+    condition: always()
+  - task: securedevelopmentteam.vss-secure-development-tools.build-task-binskim.BinSkim@4
+    displayName: 'Run BinSkim'
+    inputs:
+      AnalyzeTargetBinskim: ''
+      AnalyzeTargetGlob: +:file|out\bin\**\RelWithDebInfo\*.dll
       AnalyzeVerbose: true
   - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@2
     displayName: 'Post Analysis'

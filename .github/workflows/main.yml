@@ -3,7 +3,7 @@
 #
 # http://go.microsoft.com/fwlink/?LinkId=248929
 
-name: 'CMake (Windows 8)'
+name: 'CMake (Windows 8.1)'
 
 on:
   push:
@@ -13,13 +13,13 @@ on:
     paths-ignore:
       - '*.md'
       - LICENSE
+      - '.azuredevops/*'
       - '.nuget/*'
       - build/*.cmd
       - build/*.json
       - build/*.props
       - build/*.ps1
       - build/*.targets
-      - build/*.yml
 
 permissions:
   contents: read

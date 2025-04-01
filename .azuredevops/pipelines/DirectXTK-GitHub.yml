@@ -20,7 +20,7 @@ pr:
     - main
   paths:
     include:
-    - build/DirectXTK-GitHub.yml
+    - '.azuredevops/pipelines/DirectXTK-GitHub.yml'
     - Src/Shaders/CompileShaders.cmd
 
 resources:

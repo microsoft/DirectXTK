@@ -20,8 +20,8 @@ pr:
     - main
   paths:
     include:
+    - '.azuredevops/pipelines/DirectXTK-GitHub-GDK-Dev17.yml'
     - CMakeList.txt
-    - build/DirectXTK-GitHub-GDK-Dev17.yml
     - build/*.in
     - build/*.cmake
     - build/SetupBWOI.*
