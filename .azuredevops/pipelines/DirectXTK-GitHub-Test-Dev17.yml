@@ -20,7 +20,7 @@ pr:
     - main
   paths:
     include:
-    - build/DirectXTK-GitHub-Test-Dev17.yml
+    - '.azuredevops/pipelines/DirectXTK-GitHub-Test-Dev17.yml'
 
 resources:
   repositories:

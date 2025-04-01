@@ -20,10 +20,12 @@ pr:
     - main
   paths:
     include:
+    - '.azuredevops/pipelines/DirectXTK-GitHub-WSL-13.yml'
     - CMake*
     - build/*.cmake
     - build/*.in
-    - build/DirectXTK-GitHub-WSL-13.yml
+    - Inc\SimpleMath.*
+    - Src\SimpleMath.*
 
 resources:
   repositories:
