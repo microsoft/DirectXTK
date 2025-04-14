@@ -12,7 +12,7 @@
     },
     {
       "name": "xaudio2redist",
-      "platform": "windows & !arm"
+      "platform": "windows & !arm32"
     }
   ]
 }
