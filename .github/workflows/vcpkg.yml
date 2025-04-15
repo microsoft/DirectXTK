@@ -72,7 +72,17 @@ jobs:
             shared: OFF
             gameinput: OFF
           - os: windows-2022
+            build_type: arm64-Debug-Redist
+            arch: amd64_arm64
+            shared: OFF
+            gameinput: OFF
+          - os: windows-2022
             build_type: arm64ec-Debug-VCPKG
+            arch: amd64_arm64
+            shared: OFF
+            gameinput: OFF
+          - os: windows-2022
+            build_type: arm64ec-Debug-Redist
             arch: amd64_arm64
             shared: OFF
             gameinput: OFF
