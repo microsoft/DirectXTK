@@ -66,12 +66,17 @@ pool:
   vmImage: windows-2019
 
 variables:
-  Codeql.Enabled: false
-  EXTRACTED_FOLDER: $(ExtractedFolder)
-  GDK_EDITION: $(GDKEditionNumber)
-  GDKEnableBWOI: true
-  URL_FEED: $(ADOFeedURL)
-  skipNugetSecurityAnalysis: true # We explicitly call this task so we don't need it to be auto-injected
+- group: dxtk-shared-variables
+- name: Codeql.Enabled
+  value: false
+- name: EXTRACTED_FOLDER
+  value: '$(ExtractedFolder)'
+- name: GDKEnableBWOI
+  value: true
+- name: URL_FEED
+  value: $(ADOFeedURL)
+- name: skipNugetSecurityAnalysis
+  value: true # We explicitly call this task so we don't need it to be auto-injected
 
 jobs:
 - job: BUILD_GDK
@@ -127,22 +132,27 @@ jobs:
       solution: build/SetupBWOI.targets
       msbuildVersion: 16.0
       msbuildArchitecture: x64
+      msbuildArguments: /p:GDKEditionNumber=$(GDK_EDITION)
   - task: VSBuild@1
     displayName: Build solution DirectXTK_GDK_2019 pcdbg
+    continueOnError: True
     inputs:
       solution: DirectXTK_GDK_2019.sln
       vsVersion: 16.0
       platform: Gaming.Desktop.x64
       configuration: Debug
       msbuildArchitecture: x64
+      msbuildArgs: /p:GDKEditionNumber=$(GDK_EDITION)
   - task: VSBuild@1
     displayName: Build solution DirectXTK_GDK_2019 pcrel
+    continueOnError: True
     inputs:
       solution: DirectXTK_GDK_2019.sln
       vsVersion: 16.0
       platform: Gaming.Desktop.x64
       configuration: Release
       msbuildArchitecture: x64
+      msbuildArgs: /p:GDKEditionNumber=$(GDK_EDITION)
 
 - job: BUILD_TESTS_GDK
   displayName: 'Test Suite for Microsoft Game Development Kit (GDK)'
@@ -203,6 +213,7 @@ jobs:
       solution: build/SetupBWOI.targets
       msbuildVersion: 16.0
       msbuildArchitecture: x64
+      msbuildArguments: /p:GDKEditionNumber=$(GDK_EDITION)
   - task: VSBuild@1
     displayName: Build Tests pcdbg
     inputs:
@@ -211,6 +222,7 @@ jobs:
       platform: Gaming.Desktop.x64
       configuration: Debug
       msbuildArchitecture: x64
+      msbuildArgs: /p:GDKEditionNumber=$(GDK_EDITION)
   - task: VSBuild@1
     displayName: Build Tests pcrel
     inputs:
@@ -219,3 +231,4 @@ jobs:
       platform: Gaming.Desktop.x64
       configuration: Release
       msbuildArchitecture: x64
+      msbuildArgs: /p:GDKEditionNumber=$(GDK_EDITION)
