@@ -39,6 +39,12 @@ pool:
   vmImage: windows-2019
 
 variables:
+- group: dxtk-shared-variables
+- name: Codeql.Enabled
+  value: false
+- name: GUID_FEED
+  value: $(ADOFeedGUID)
+
   Codeql.Enabled: false
   VC_PATH: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC'
   GUID_FEED: $(ADOFeedGUID)

@@ -35,8 +35,11 @@ pool:
   vmImage: windows-2019
 
 variables:
-  Codeql.Enabled: false
-  GUID_FEED: $(ADOFeedGUID)
+- group: dxtk-shared-variables
+- name: Codeql.Enabled
+  value: false
+- name: GUID_FEED
+  value: $(ADOFeedGUID)
 
 jobs:
 - job: DESKTOP_BUILD
