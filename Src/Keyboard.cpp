@@ -195,8 +195,8 @@ private:
     {
         auto impl = reinterpret_cast<Keyboard::Impl*>(context);
 
-        bool wasConnected = (previousStatus & GameInputDeviceConnected) != 0;
-        bool isConnected = (currentStatus & GameInputDeviceConnected) != 0;
+        const bool wasConnected = (previousStatus & GameInputDeviceConnected) != 0;
+        const bool isConnected = (currentStatus & GameInputDeviceConnected) != 0;
 
         if (isConnected && !wasConnected)
         {
