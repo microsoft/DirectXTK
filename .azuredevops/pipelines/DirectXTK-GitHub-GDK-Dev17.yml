@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 #
-# http://go.microsoft.com/fwlink/?LinkId=248929
+# https://go.microsoft.com/fwlink/?LinkId=248929
 
 # Builds the library using the Microsoft GDK.
 
@@ -40,13 +40,19 @@ pool:
   vmImage: windows-2022
 
 variables:
-  Codeql.Enabled: false
-  EXTRACTED_FOLDER: $(ExtractedFolder)
-  GDK_EDITION: $(GDKEditionNumber)
-  GDKEnableBWOI: true
-  URL_FEED: $(ADOFeedURL)
-  VC_PATH: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC'
-  skipNugetSecurityAnalysis: true # We explicitly call this task so we don't need it to be auto-injected
+- group: dxtk-shared-variables
+- name: Codeql.Enabled
+  value: false
+- name: EXTRACTED_FOLDER
+  value: '$(ExtractedFolder)'
+- name: GDKEnableBWOI
+  value: true
+- name: URL_FEED
+  value: $(ADOFeedURL)
+- name: VC_PATH
+  value: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC'
+- name: skipNugetSecurityAnalysis
+  value: true # We explicitly call this task so we don't need it to be auto-injected
 
 jobs:
 - job: BUILD_GDK
@@ -57,6 +63,7 @@ jobs:
   - checkout: self
     clean: true
     fetchTags: false
+    fetchDepth: 1
   - task: NuGetToolInstaller@1
     displayName: 'Use NuGet'
   - task: PowerShell@2
@@ -101,6 +108,7 @@ jobs:
       solution: build/SetupBWOI.targets
       msbuildVersion: 17.0
       msbuildArchitecture: x64
+      msbuildArguments: /p:GDKEditionNumber=$(GDK_EDITION)
   - task: VSBuild@1
     displayName: Build solution DirectXTK_GDK_2022 pcdbg
     continueOnError: True
@@ -110,6 +118,7 @@ jobs:
       platform: Gaming.Desktop.x64
       configuration: Debug
       msbuildArchitecture: x64
+      msbuildArgs: /p:GDKEditionNumber=$(GDK_EDITION)
   - task: VSBuild@1
     displayName: Build solution DirectXTK_GDK_2022 pcrel
     continueOnError: True
@@ -119,6 +128,7 @@ jobs:
       platform: Gaming.Desktop.x64
       configuration: Release
       msbuildArchitecture: x64
+      msbuildArgs: /p:GDKEditionNumber=$(GDK_EDITION)
 
 - job: BUILD_GDK_CMAKE
   displayName: 'Microsoft Game Development Kit (GDK) using CMake'

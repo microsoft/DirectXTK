@@ -40,9 +40,13 @@ pool:
   vmImage: windows-2022
 
 variables:
-  Codeql.Enabled: false
-  VC_PATH: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC'
-  GUID_FEED: $(ADOFeedGUID)
+- group: dxtk-shared-variables
+- name: Codeql.Enabled
+  value: false
+- name: VC_PATH
+  value: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC'
+- name: GUID_FEED
+  value: $(ADOFeedGUID)
 
 jobs:
 - job: DESKTOP_BUILD

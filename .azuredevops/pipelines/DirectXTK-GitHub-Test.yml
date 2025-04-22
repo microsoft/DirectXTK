@@ -39,9 +39,13 @@ pool:
   vmImage: windows-2019
 
 variables:
-  Codeql.Enabled: false
-  VC_PATH: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC'
-  GUID_FEED: $(ADOFeedGUID)
+- group: dxtk-shared-variables
+- name: Codeql.Enabled
+  value: false
+- name: VC_PATH
+  value: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC'
+- name: GUID_FEED
+  value: $(ADOFeedGUID)
 
 jobs:
 - job: DESKTOP_BUILD

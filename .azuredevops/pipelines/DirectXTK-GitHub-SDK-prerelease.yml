@@ -25,11 +25,17 @@ resources:
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
 variables:
-  Codeql.Enabled: false
-  EXTRACTED_FOLDER: $(ExtractedFolder)
-  WSDKEnableBWOI: true
-  URL_FEED: $(ADOFeedURL)
-  skipNugetSecurityAnalysis: true # We explicitly call this task so we don't need it to be auto-injected
+- group: dxtk-shared-variables
+- name: Codeql.Enabled
+  value: false
+- name: EXTRACTED_FOLDER
+  value: '$(ExtractedFolder)'
+- name: WSDKEnableBWOI
+  value: true
+- name: URL_FEED
+  value: $(ADOFeedURL)
+- name: skipNugetSecurityAnalysis
+  value: true # We explicitly call this task so we don't need it to be auto-injected
 
 pool:
   vmImage: windows-2022
