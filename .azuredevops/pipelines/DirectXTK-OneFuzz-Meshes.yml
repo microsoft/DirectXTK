@@ -60,6 +60,7 @@ jobs:
         -G "$(VS_GENERATOR)" -A x64 -B out
         -DCMAKE_SYSTEM_VERSION=$(WIN11_SDK)
         -DBUILD_TOOLS=OFF -DBUILD_XAUDIO_WIN10=ON -DBUILD_FUZZING=ON -DBUILD_TESTING=OFF
+        -DBUILD_MESH_FUZZING=ON
   - task: CMake@1
     displayName: 'CMake (MSVC): Build with ASan'
     inputs:
