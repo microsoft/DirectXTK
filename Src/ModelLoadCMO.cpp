@@ -107,7 +107,7 @@ namespace
 //======================================================================================
 
 _Use_decl_annotations_
-std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
+std::unique_ptr<Model> Model::CreateFromCMO(
     ID3D11Device* device,
     const uint8_t* meshData, size_t dataSize,
     IEffectFactory& fxFactory,
@@ -805,7 +805,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_
-std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
+std::unique_ptr<Model> Model::CreateFromCMO(
     ID3D11Device* device,
     const wchar_t* szFileName,
     IEffectFactory& fxFactory,
@@ -848,7 +848,7 @@ std::unique_ptr<Model> Model::CreateFromCMO(
     ModelLoaderFlags flags,
     size_t* animsOffset)
 {
-    return Model::CreateFromCMO(device, reinterpret_cast<const unsigned short*>(szFileName), fxFactory, flags, animsOffset);
+    return CreateFromCMO(device, reinterpret_cast<const unsigned short*>(szFileName), fxFactory, flags, animsOffset);
 }
 
 #endif

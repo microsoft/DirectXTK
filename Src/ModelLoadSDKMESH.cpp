@@ -85,7 +85,7 @@ namespace
         wchar_t normalName[DXUT::MAX_TEXTURE_NAME] = {};
         ASCIIToWChar(normalName, mh.NormalTexture);
 
-        if (flags & DUAL_TEXTURE && !mh.SpecularTexture[0])
+        if ((flags & DUAL_TEXTURE) && !mh.SpecularTexture[0])
         {
             DebugTrace("WARNING: Material '%s' has multiple texture coords but not multiple textures\n", mh.Name);
             flags &= ~static_cast<unsigned int>(DUAL_TEXTURE);
@@ -210,7 +210,7 @@ namespace
 
         bool posfound = false;
 
-        for (uint32_t index = 0; index < DXUT::MAX_VERTEX_ELEMENTS; ++index)
+        for (size_t index = 0; index < DXUT::MAX_VERTEX_ELEMENTS; ++index)
         {
             if (decl[index].Usage == 0xFF)
                 break;
@@ -369,7 +369,7 @@ namespace
 //======================================================================================
 
 _Use_decl_annotations_
-std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
+std::unique_ptr<Model> Model::CreateFromSDKMESH(
     ID3D11Device* d3dDevice,
     const uint8_t* meshData,
     size_t idataSize,
@@ -818,7 +818,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_
-std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
+std::unique_ptr<Model> Model::CreateFromSDKMESH(
     ID3D11Device* device,
     const wchar_t* szFileName,
     IEffectFactory& fxFactory,
@@ -849,13 +849,13 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
 #if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
 
 _Use_decl_annotations_
-std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
+std::unique_ptr<Model> Model::CreateFromSDKMESH(
     ID3D11Device* device,
     const __wchar_t* szFileName,
     IEffectFactory& fxFactory,
     ModelLoaderFlags flags)
 {
-    return Model::CreateFromSDKMESH(device, reinterpret_cast<const unsigned short*>(szFileName), fxFactory, flags);
+    return CreateFromSDKMESH(device, reinterpret_cast<const unsigned short*>(szFileName), fxFactory, flags);
 }
 
 #endif
