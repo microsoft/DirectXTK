@@ -3,10 +3,10 @@
 #
 # https://go.microsoft.com/fwlink/?LinkId=248929
 
-# Builds the library using CMake and submit for file fuzzing for texture loading
+# Builds the library using CMake and submit for file fuzzing for meshes
 
 schedules:
-- cron: "0 11 1 * *"
+- cron: "0 11 20 * *"
   displayName: 'Submit for File Fuzzing (Monthly)'
   branches:
     include:
@@ -39,7 +39,7 @@ pool:
 
 jobs:
 - job: FUZZ_BUILD
-  displayName: 'Build for file fuzzing (DDS)'
+  displayName: 'Build for file fuzzing (CMO, SDKMESH, VBO)'
   steps:
   - checkout: self
     clean: true
@@ -60,6 +60,7 @@ jobs:
         -G "$(VS_GENERATOR)" -A x64 -B out
         -DCMAKE_SYSTEM_VERSION=$(WIN11_SDK)
         -DBUILD_TOOLS=OFF -DBUILD_XAUDIO_WIN10=ON -DBUILD_FUZZING=ON -DBUILD_TESTING=OFF
+        -DBUILD_MESH_FUZZING=ON
   - task: CMake@1
     displayName: 'CMake (MSVC): Build with ASan'
     inputs:
@@ -82,27 +83,20 @@ jobs:
       TargetFolder: .drop\symbols
       OverWrite: true
       flattenFolders: true
-  - task: PowerShell@2
-    displayName: Download seed files
+  - task: CopyFiles@2
+    displayName: Copy seed files
     inputs:
-      targetType: inline
-      script: |
-        $seedfiles = "AlphaEdge.dds",
-            "cubea8r8g8b8.dds",
-            "default_texture_nm.dds",
-            "dx5_logo.dds",
-            "hdrtest.dds",
-            "normalmap.dds";
-
-        New-Item -ItemType Directory -Force -Path .drop\seeds\
-
-        foreach($filename in $seedfiles)
-        {
-            Write-Host "Fetching: $filename"
-            $url = "https://raw.githubusercontent.com/walbourn/directxtexmedia/main/" + $filename
-            $target = [System.IO.Path]::Combine(".drop\seeds\", $filename)
-            Invoke-WebRequest -Uri $url -OutFile $target
-        }
+      Contents: |
+        Tests\AnimTest\teapot.cmo
+        Tests\DGSLTest\teapot_unlit.cmo
+        Tests\ModelTest\cup.sdkmesh
+        Tests\AnimTest\soldier.sdkmesh
+        Tests\PBRModelTest\BrokenCube.sdkmesh
+        Tests\ModelTest\player_ship_a.vbo
+        Tests\PBRTest\BrokenCube.vbo
+      TargetFolder: .drop\seeds
+      OverWrite: true
+      flattenFolders: true
 
   - task: PowerShell@2
     displayName: Copy OneFuzz setup script
