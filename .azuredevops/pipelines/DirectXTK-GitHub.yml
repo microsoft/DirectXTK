@@ -61,10 +61,10 @@ jobs:
       Debug_x86:
         BuildPlatform: x86
         BuildConfiguration: Debug
-      Mixed_x86:
+      Release_Mixed:
         BuildPlatform: 'Mixed Platforms'
         BuildConfiguration: Release
-      Mixed_x86:
+      Debug_Mixed:
         BuildPlatform: 'Mixed Platforms'
         BuildConfiguration: Debug
   steps:
