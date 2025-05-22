@@ -85,6 +85,7 @@ jobs:
       platform: '$(BuildPlatform)'
       configuration: '$(BuildConfiguration)'
       msbuildArchitecture: x64
+    condition: ne(variables['BuildPlatform'], 'ARM64')
   - task: VSBuild@1
     displayName: Build solution DirectXTK_Desktop_2022_Win10.sln
     inputs:
