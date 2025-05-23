@@ -8,12 +8,18 @@ name: MSBuild
 on:
   push:
     branches: [ "main" ]
+    paths-ignore:
+      - '*.md'
+      - LICENSE
+      - '.azuredevops/**'
+      - '.nuget/*'
+      - build/*
   pull_request:
     branches: [ "main" ]
     paths-ignore:
       - '*.md'
       - LICENSE
-      - '.azuredevops/*'
+      - '.azuredevops/**'
       - '.nuget/*'
       - build/*
 

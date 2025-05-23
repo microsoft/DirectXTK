@@ -8,12 +8,20 @@ name: 'CMake (Windows using VCPKG)'
 on:
   push:
     branches: [ "main" ]
+    paths-ignore:
+      - '*.md'
+      - LICENSE
+      - '.azuredevops/**'
+      - build/*.cmd
+      - build/*.props
+      - build/*.ps1
+      - build/*.targets
   pull_request:
     branches: [ "main" ]
     paths-ignore:
       - '*.md'
       - LICENSE
-      - '.azuredevops/*'
+      - '.azuredevops/**'
       - build/*.cmd
       - build/*.props
       - build/*.ps1

@@ -43,175 +43,92 @@ variables:
 
 jobs:
 - job: DESKTOP_BUILD
-  displayName: 'Win32 Desktop'
+  displayName: 'Windows Desktop'
   timeoutInMinutes: 120
   cancelTimeoutInMinutes: 1
+  strategy:
+    maxParallel: 3
+    matrix:
+      Release_arm64:
+        BuildPlatform: ARM64
+        BuildConfiguration: Release
+      Debug_arm64:
+        BuildPlatform: ARM64
+        BuildConfiguration: Debug
+      Release_x64:
+        BuildPlatform: x64
+        BuildConfiguration: Release
+      Debug_x64:
+        BuildPlatform: x64
+        BuildConfiguration: Debug
+      Release_x86:
+        BuildPlatform: x86
+        BuildConfiguration: Release
+      Debug_x86:
+        BuildPlatform: x86
+        BuildConfiguration: Debug
+      Release_Mixed:
+        BuildPlatform: 'Mixed Platforms'
+        BuildConfiguration: Release
+      Debug_Mixed:
+        BuildPlatform: 'Mixed Platforms'
+        BuildConfiguration: Debug
   steps:
   - checkout: self
     clean: true
     fetchTags: false
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022.sln 32dbg
+    displayName: Build solution DirectXTK_Desktop_2022.sln
     inputs:
       solution: DirectXTK_Desktop_2022.sln
       msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x86
-      configuration: Debug
+      platform: '$(BuildPlatform)'
+      configuration: '$(BuildConfiguration)'
       msbuildArchitecture: x64
+    condition: ne(variables['BuildPlatform'], 'ARM64')
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022.sln 32rel
-    inputs:
-      solution: DirectXTK_Desktop_2022.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x86
-      configuration: Release
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022.sln 64dbg
-    inputs:
-      solution: DirectXTK_Desktop_2022.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x64
-      configuration: Debug
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022.sln 64rel
-    inputs:
-      solution: DirectXTK_Desktop_2022.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x64
-      configuration: Release
-      msbuildArchitecture: x64
-  - task: CmdLine@2
-    displayName: 'Reclaim diskspace'
-    inputs:
-      script: del *.pch /s
-      workingDirectory: $(Build.SourcesDirectory)
-      failOnStderr: false
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022.sln managed dbg
-    inputs:
-      solution: DirectXTK_Desktop_2022.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: Mixed Platforms
-      configuration: Debug
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022.sln managed rel
-    inputs:
-      solution: DirectXTK_Desktop_2022.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: Mixed Platforms
-      configuration: Release
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022_Win10.sln 32dbg
+    displayName: Build solution DirectXTK_Desktop_2022_Win10.sln
     inputs:
       solution: DirectXTK_Desktop_2022_Win10.sln
       msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x86
-      configuration: Debug
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022_Win10.sln 32rel
-    inputs:
-      solution: DirectXTK_Desktop_2022_Win10.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x86
-      configuration: Release
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022_Win10.sln 64dbg
-    inputs:
-      solution: DirectXTK_Desktop_2022_Win10.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x64
-      configuration: Debug
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022_Win10.sln 64rel
-    inputs:
-      solution: DirectXTK_Desktop_2022_Win10.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x64
-      configuration: Release
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022_Win10.sln arm64dbg
-    inputs:
-      solution: DirectXTK_Desktop_2022_Win10.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: ARM64
-      configuration: Debug
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022_Win10.sln arm64rel
-    inputs:
-      solution: DirectXTK_Desktop_2022_Win10.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: ARM64
-      configuration: Release
+      platform: '$(BuildPlatform)'
+      configuration: '$(BuildConfiguration)'
       msbuildArchitecture: x64
 
 - job: UWP_BUILD
   displayName: 'Universal Windows Platform (UWP)'
   timeoutInMinutes: 120
   cancelTimeoutInMinutes: 1
+  strategy:
+    maxParallel: 3
+    matrix:
+      Release_arm64:
+        BuildPlatform: ARM64
+        BuildConfiguration: Release
+      Debug_arm64:
+        BuildPlatform: ARM64
+        BuildConfiguration: Debug
+      Release_x64:
+        BuildPlatform: x64
+        BuildConfiguration: Release
+      Debug_x64:
+        BuildPlatform: x64
+        BuildConfiguration: Debug
+      Release_x86:
+        BuildPlatform: x86
+        BuildConfiguration: Release
+      Debug_x86:
+        BuildPlatform: x86
+        BuildConfiguration: Debug
   steps:
   - checkout: self
     clean: true
     fetchTags: false
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2022.sln 32dbg
+    displayName: Build solution DirectXTK_Windows10_2022.sln
     inputs:
       solution: DirectXTK_Windows10_2022.sln
       msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x86
-      configuration: Debug
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2022.sln 32rel
-    inputs:
-      solution: DirectXTK_Windows10_2022.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x86
-      configuration: Release
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2022.sln 64dbg
-    inputs:
-      solution: DirectXTK_Windows10_2022.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x64
-      configuration: Debug
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2022.sln 64rel
-    inputs:
-      solution: DirectXTK_Windows10_2022.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x64
-      configuration: Release
-      msbuildArchitecture: x64
-  - task: CmdLine@2
-    displayName: 'Reclaim diskspace'
-    inputs:
-      script: del *.pch /s
-      workingDirectory: $(Build.SourcesDirectory)
-      failOnStderr: false
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2022.sln arm64dbg
-    inputs:
-      solution: DirectXTK_Windows10_2022.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: ARM64
-      configuration: Debug
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2022.sln arm64rel
-    inputs:
-      solution: DirectXTK_Windows10_2022.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: ARM64
-      configuration: Release
+      platform: '$(BuildPlatform)'
+      configuration: '$(BuildConfiguration)'
       msbuildArchitecture: x64
