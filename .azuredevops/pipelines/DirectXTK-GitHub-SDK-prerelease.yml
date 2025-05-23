@@ -97,97 +97,7 @@ jobs:
       SourceFolder: build
       Contents: 'Directory.Build.props'
       TargetFolder: $(Build.SourcesDirectory)
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2019.sln 32dbg
-    inputs:
-      solution: DirectXTK_Desktop_2019.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x86
-      configuration: Debug
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2019.sln 32rel
-    inputs:
-      solution: DirectXTK_Desktop_2019.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x86
-      configuration: Release
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2019.sln 64dbg
-    inputs:
-      solution: DirectXTK_Desktop_2019.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x64
-      configuration: Debug
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2019.sln 64rel
-    inputs:
-      solution: DirectXTK_Desktop_2019.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x64
-      configuration: Release
-  - task: CmdLine@2
-    displayName: 'Reclaim diskspace'
-    inputs:
-      script: del *.pch /s
-      workingDirectory: $(Build.SourcesDirectory)
-      failOnStderr: false
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2019.sln managed dbg
-    inputs:
-      solution: DirectXTK_Desktop_2019.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: Mixed Platforms
-      configuration: Debug
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2019.sln managed rel
-    inputs:
-      solution: DirectXTK_Desktop_2019.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: Mixed Platforms
-      configuration: Release
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2019_Win10.sln 32dbg
-    inputs:
-      solution: DirectXTK_Desktop_2019_Win10.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x86
-      configuration: Debug
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2019_Win10.sln 32rel
-    inputs:
-      solution: DirectXTK_Desktop_2019_Win10.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x86
-      configuration: Release
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2019_Win10.sln 64dbg
-    inputs:
-      solution: DirectXTK_Desktop_2019_Win10.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x64
-      configuration: Debug
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2019_Win10.sln 64rel
-    inputs:
-      solution: DirectXTK_Desktop_2019_Win10.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x64
-      configuration: Release
-  # VS 2019 for Win32 on ARM64 is out of support.
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022_Win10.sln arm64dbg
-    inputs:
-      solution: DirectXTK_Desktop_2022_Win10.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: ARM64
-      configuration: Debug
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022_Win10.sln arm64rel
-    inputs:
-      solution: DirectXTK_Desktop_2022_Win10.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: ARM64
-      configuration: Release
+  - template: '/.azuredevops/templates/DirectXTK-build-win32.yml'
 
 - job: UWP_BUILD
   displayName: 'Universal Windows Platform (UWP)'
@@ -239,34 +149,7 @@ jobs:
       SourceFolder: build
       Contents: 'Directory.Build.props'
       TargetFolder: $(Build.SourcesDirectory)
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2022.sln 32dbg
-    inputs:
-      solution: DirectXTK_Windows10_2022.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x86
-      configuration: Debug
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2022.sln 32rel
-    inputs:
-      solution: DirectXTK_Windows10_2022.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x86
-      configuration: Release
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2022.sln 64dbg
-    inputs:
-      solution: DirectXTK_Windows10_2022.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x64
-      configuration: Debug
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2022.sln 64rel
-    inputs:
-      solution: DirectXTK_Windows10_2022.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: x64
-      configuration: Release
+  - template: '/.azuredevops/templates/DirectXTK-build-uwp.yml'
 
 - job: UWP_BUILD_ARM64
   displayName: 'Universal Windows Platform (UWP) for ARM64'
@@ -312,17 +195,4 @@ jobs:
       SourceFolder: build
       Contents: 'Directory.Build.props'
       TargetFolder: $(Build.SourcesDirectory)
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2022.sln arm64dbg
-    inputs:
-      solution: DirectXTK_Windows10_2022.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: ARM64
-      configuration: Debug
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2022.sln arm64rel
-    inputs:
-      solution: DirectXTK_Windows10_2022.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: ARM64
-      configuration: Release
+  - template: '/.azuredevops/templates/DirectXTK-build-uwp-arm64.yml'
