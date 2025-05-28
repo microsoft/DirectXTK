@@ -109,7 +109,7 @@ namespace VSD3DStarter
 
     // Vertex struct for Visual Studio Shader Designer (DGSL) holding position, normal,
     // tangent, color (RGBA), and texture mapping information
-    struct VertexPositionNormalTangentColorTexture
+    struct Vertex
     {
         DirectX::XMFLOAT3 position;
         DirectX::XMFLOAT3 normal;
@@ -173,7 +173,7 @@ namespace VSD3DStarter
 
 static_assert(sizeof(VSD3DStarter::Material) == 132, "CMO Mesh structure size incorrect");
 static_assert(sizeof(VSD3DStarter::SubMesh) == 20, "CMO Mesh structure size incorrect");
-static_assert(sizeof(VSD3DStarter::VertexPositionNormalTangentColorTexture) == 52, "CMO Mesh structure size incorrect");
+static_assert(sizeof(VSD3DStarter::Vertex) == 52, "CMO Mesh structure size incorrect");
 static_assert(sizeof(VSD3DStarter::SkinningVertex) == 32, "CMO Mesh structure size incorrect");
 static_assert(sizeof(VSD3DStarter::MeshExtents) == 40, "CMO Mesh structure size incorrect");
 static_assert(sizeof(VSD3DStarter::Bone) == 196, "CMO Mesh structure size incorrect");

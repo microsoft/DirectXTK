@@ -28,8 +28,16 @@ namespace VBO
         uint32_t numIndices;
     };
 
+    struct vertex_t
+    {
+        DirectX::XMFLOAT3 position;
+        DirectX::XMFLOAT3 normal;
+        DirectX::XMFLOAT2 textureCoordinate;
+    };
+
 #pragma pack(pop)
 
 } // namespace
 
 static_assert(sizeof(VBO::header_t) == 8, "VBO header size mismatch");
+static_assert(sizeof(VBO::vertex_t) == 32, "VBO vertex size mismatch");
