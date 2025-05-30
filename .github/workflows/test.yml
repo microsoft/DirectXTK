@@ -36,51 +36,51 @@ permissions:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-2022
     timeout-minutes: 20
 
     strategy:
       fail-fast: false
 
       matrix:
-        os: [windows-2019, windows-2022]
+        toolver: ['14.29', '14']
         build_type: [x64-Debug, x64-Release]
         arch: [amd64]
         include:
-          - os: windows-2019
+          - toolver: '14.29'
             build_type: x86-Debug
             arch: amd64_x86
-          - os: windows-2019
+          - toolver: '14.29'
             build_type: x86-Release
             arch: amd64_x86
-          - os: windows-2022
+          - toolver: '14'
             build_type: x86-Debug
             arch: amd64_x86
-          - os: windows-2022
+          - toolver: '14'
             build_type: x86-Release
             arch: amd64_x86
-          - os: windows-2022
+          - toolver: '14'
             build_type: x64-Debug-Clang
             arch: amd64
-          - os: windows-2022
+          - toolver: '14'
             build_type: x64-Release-Clang
             arch: amd64
-          - os: windows-2022
+          - toolver: '14'
             build_type: x86-Debug-Clang
             arch: amd64_x86
-          - os: windows-2022
+          - toolver: '14'
             build_type: x86-Release-Clang
             arch: amd64_x86
-          - os: windows-2022
+          - toolver: '14'
             build_type: arm64-Debug
             arch: amd64_arm64
-          - os: windows-2022
+          - toolver: '14'
             build_type: arm64-Release
             arch: amd64_arm64
-          - os: windows-2022
+          - toolver: '14'
             build_type: arm64ec-Debug
             arch: amd64_arm64
-          - os: windows-2022
+          - toolver: '14'
             build_type: arm64ec-Release
             arch: amd64_arm64
 
@@ -100,6 +100,7 @@ jobs:
     - uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
       with:
         arch: ${{ matrix.arch }}
+        toolset: ${{ matrix.toolver }}
 
     - name: 'Configure CMake'
       working-directory: ${{ github.workspace }}
