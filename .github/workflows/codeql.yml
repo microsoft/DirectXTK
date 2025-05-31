@@ -7,7 +7,7 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [ "main" ]
+    branches: "main"
     paths-ignore:
       - '*.md'
       - LICENSE
@@ -19,7 +19,7 @@ on:
       - build/*.ps1
       - build/*.targets
   pull_request:
-    branches: [ "main" ]
+    branches: "main"
     paths-ignore:
       - '*.md'
       - LICENSE
@@ -53,37 +53,37 @@ jobs:
         language: [c-cpp, csharp]
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-    - if: matrix.language == 'c-cpp'
-      name: 'Install Ninja'
-      run: choco install ninja
+      - if: matrix.language == 'c-cpp'
+        name: 'Install Ninja'
+        run: choco install ninja
 
-    - uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
+      - uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
 
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@28deaeda66b76a05916b6923827895f2b14ab387 # v3.28.16
-      with:
-        languages: ${{ matrix.language }}
-        build-mode: manual
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@28deaeda66b76a05916b6923827895f2b14ab387 # v3.28.16
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: manual
 
-    - if: matrix.language == 'c-cpp'
-      name: 'Configure CMake (C/C++)'
-      working-directory: ${{ github.workspace }}
-      run: cmake --preset=x64-Debug
+      - if: matrix.language == 'c-cpp'
+        name: 'Configure CMake (C/C++)'
+        working-directory: ${{ github.workspace }}
+        run: cmake --preset=x64-Debug
 
-    - if: matrix.language == 'c-cpp'
-      name: 'Build (C/C++)'
-      working-directory: ${{ github.workspace }}
-      run: cmake --build out\build\x64-Debug
+      - if: matrix.language == 'c-cpp'
+        name: 'Build (C/C++)'
+        working-directory: ${{ github.workspace }}
+        run: cmake --build out\build\x64-Debug
 
-    - if: matrix.language == 'csharp'
-      name: 'Build (C#)'
-      working-directory: ./MakeSpriteFont
-      run: msbuild MakeSpriteFont.csproj /p:Configuration=Debug /p:Platform=AnyCPU
+      - if: matrix.language == 'csharp'
+        name: 'Build (C#)'
+        working-directory: ./MakeSpriteFont
+        run: msbuild MakeSpriteFont.csproj /p:Configuration=Debug /p:Platform=AnyCPU
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@28deaeda66b76a05916b6923827895f2b14ab387 # v3.28.16
-      with:
-        category: "/language:${{ matrix.language }}"
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@28deaeda66b76a05916b6923827895f2b14ab387 # v3.28.16
+        with:
+          category: "/language:${{ matrix.language }}"

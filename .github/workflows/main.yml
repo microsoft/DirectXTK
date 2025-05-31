@@ -7,7 +7,7 @@ name: 'CMake (Windows 8.1)'
 
 on:
   push:
-    branches: [ "main" ]
+    branches: "main"
     paths-ignore:
       - '*.md'
       - LICENSE
@@ -19,7 +19,7 @@ on:
       - build/*.ps1
       - build/*.targets
   pull_request:
-    branches: [ "main" ]
+    branches: "main"
     paths-ignore:
       - '*.md'
       - LICENSE
@@ -72,44 +72,44 @@ jobs:
             arch: amd64_x86
 
     steps:
-    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-    - name: 'Install Ninja'
-      run: choco install ninja
+      - name: 'Install Ninja'
+        run: choco install ninja
 
-    - uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
-      with:
-        arch: ${{ matrix.arch }}
-        toolset: ${{ matrix.toolver }}
+      - uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
+        with:
+          arch: ${{ matrix.arch }}
+          toolset: ${{ matrix.toolver }}
 
-    - name: 'Configure CMake'
-      working-directory: ${{ github.workspace }}
-      run: cmake --preset=${{ matrix.build_type }}
+      - name: 'Configure CMake'
+        working-directory: ${{ github.workspace }}
+        run: cmake --preset=${{ matrix.build_type }}
 
-    - name: 'Build'
-      working-directory: ${{ github.workspace }}
-      run: cmake --build out\build\${{ matrix.build_type }}
+      - name: 'Build'
+        working-directory: ${{ github.workspace }}
+        run: cmake --build out\build\${{ matrix.build_type }}
 
-    - name: 'Clean up'
-      working-directory: ${{ github.workspace }}
-      run: Remove-Item -Path out -Recurse -Force
+      - name: 'Clean up'
+        working-directory: ${{ github.workspace }}
+        run: Remove-Item -Path out -Recurse -Force
 
-    - name: 'Configure CMake (Spectre)'
-      working-directory: ${{ github.workspace }}
-      run: cmake --preset=${{ matrix.build_type }} -DENABLE_SPECTRE_MITIGATION=ON
+      - name: 'Configure CMake (Spectre)'
+        working-directory: ${{ github.workspace }}
+        run: cmake --preset=${{ matrix.build_type }} -DENABLE_SPECTRE_MITIGATION=ON
 
-    - name: 'Build (Spectre)'
-      working-directory: ${{ github.workspace }}
-      run: cmake --build out\build\${{ matrix.build_type }}
+      - name: 'Build (Spectre)'
+        working-directory: ${{ github.workspace }}
+        run: cmake --build out\build\${{ matrix.build_type }}
 
-    - name: 'Clean up'
-      working-directory: ${{ github.workspace }}
-      run: Remove-Item -Path out -Recurse -Force
+      - name: 'Clean up'
+        working-directory: ${{ github.workspace }}
+        run: Remove-Item -Path out -Recurse -Force
 
-    - name: 'Configure CMake (DLL)'
-      working-directory: ${{ github.workspace }}
-      run: cmake --preset=${{ matrix.build_type }} -DBUILD_SHARED_LIBS=ON
+      - name: 'Configure CMake (DLL)'
+        working-directory: ${{ github.workspace }}
+        run: cmake --preset=${{ matrix.build_type }} -DBUILD_SHARED_LIBS=ON
 
-    - name: 'Build (DLL)'
-      working-directory: ${{ github.workspace }}
-      run: cmake --build out\build\${{ matrix.build_type }}
+      - name: 'Build (DLL)'
+        working-directory: ${{ github.workspace }}
+        run: cmake --build out\build\${{ matrix.build_type }}

@@ -6,26 +6,26 @@
 # Builds the library using CMake and submit for file fuzzing for texture loading
 
 schedules:
-- cron: "0 11 1 * *"
-  displayName: 'Submit for File Fuzzing (Monthly)'
-  branches:
-    include:
-    - main
-  always: true
+  - cron: "0 11 1 * *"
+    displayName: 'Submit for File Fuzzing (Monthly)'
+    branches:
+      include:
+        - main
+    always: true
 
 trigger: none
 pr: none
 
 resources:
   repositories:
-  - repository: self
-    type: git
-    ref: refs/heads/main
-  - repository: testRepo
-    name: walbourn/directxtktest
-    type: github
-    endpoint: microsoft
-    ref: refs/heads/main
+    - repository: self
+      type: git
+      ref: refs/heads/main
+    - repository: testRepo
+      name: walbourn/directxtktest
+      type: github
+      endpoint: microsoft
+      ref: refs/heads/main
 
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
@@ -38,97 +38,97 @@ pool:
   vmImage: windows-2022
 
 jobs:
-- job: FUZZ_BUILD
-  displayName: 'Build for file fuzzing (DDS)'
-  steps:
-  - checkout: self
-    clean: true
-    fetchTags: false
-    fetchDepth: 1
-    path: 's'
-  - checkout: testRepo
-    displayName: Fetch Tests
-    clean: true
-    fetchTags: false
-    fetchDepth: 1
-    path: 's/Tests'
-  - task: CMake@1
-    displayName: 'CMake (MSVC): Config with ASan'
-    inputs:
-      cwd: $(Build.SourcesDirectory)
-      cmakeArgs: >
-        -G "$(VS_GENERATOR)" -A x64 -B out
-        -DCMAKE_SYSTEM_VERSION=$(WIN11_SDK)
-        -DBUILD_TOOLS=OFF -DBUILD_XAUDIO_WIN10=ON -DBUILD_FUZZING=ON -DBUILD_TESTING=OFF
-  - task: CMake@1
-    displayName: 'CMake (MSVC): Build with ASan'
-    inputs:
-      cwd: $(Build.SourcesDirectory)
-      cmakeArgs: --build out -v --config RelWithDebInfo
-  - task: CopyFiles@2
-    displayName: Copy fuzzer
-    inputs:
-      Contents: |
-        build\OneFuzzConfig.json
-        out\bin\RelWithDebInfo\fuzzloaders.exe
-      TargetFolder: .drop
-      OverWrite: true
-      flattenFolders: true
-  - task: CopyFiles@2
-    displayName: Copy symbols
-    inputs:
-      Contents: |
-        out\bin\RelWithDebInfo\fuzzloaders.pdb
-      TargetFolder: .drop\symbols
-      OverWrite: true
-      flattenFolders: true
-  - task: PowerShell@2
-    displayName: Download seed files
-    inputs:
-      targetType: inline
-      script: |
-        $seedfiles = "AlphaEdge.dds",
-            "cubea8r8g8b8.dds",
-            "default_texture_nm.dds",
-            "dx5_logo.dds",
-            "hdrtest.dds",
-            "normalmap.dds";
+  - job: FUZZ_BUILD
+    displayName: 'Build for file fuzzing (DDS)'
+    steps:
+      - checkout: self
+        clean: true
+        fetchTags: false
+        fetchDepth: 1
+        path: 's'
+      - checkout: testRepo
+        displayName: Fetch Tests
+        clean: true
+        fetchTags: false
+        fetchDepth: 1
+        path: 's/Tests'
+      - task: CMake@1
+        displayName: 'CMake (MSVC): Config with ASan'
+        inputs:
+          cwd: $(Build.SourcesDirectory)
+          cmakeArgs: >
+            -G "$(VS_GENERATOR)" -A x64 -B out
+            -DCMAKE_SYSTEM_VERSION=$(WIN11_SDK)
+            -DBUILD_TOOLS=OFF -DBUILD_XAUDIO_WIN10=ON -DBUILD_FUZZING=ON -DBUILD_TESTING=OFF
+      - task: CMake@1
+        displayName: 'CMake (MSVC): Build with ASan'
+        inputs:
+          cwd: $(Build.SourcesDirectory)
+          cmakeArgs: --build out -v --config RelWithDebInfo
+      - task: CopyFiles@2
+        displayName: Copy fuzzer
+        inputs:
+          Contents: |
+            build\OneFuzzConfig.json
+            out\bin\RelWithDebInfo\fuzzloaders.exe
+          TargetFolder: .drop
+          OverWrite: true
+          flattenFolders: true
+      - task: CopyFiles@2
+        displayName: Copy symbols
+        inputs:
+          Contents: |
+            out\bin\RelWithDebInfo\fuzzloaders.pdb
+          TargetFolder: .drop\symbols
+          OverWrite: true
+          flattenFolders: true
+      - task: PowerShell@2
+        displayName: Download seed files
+        inputs:
+          targetType: inline
+          script: |
+            $seedfiles = "AlphaEdge.dds",
+                "cubea8r8g8b8.dds",
+                "default_texture_nm.dds",
+                "dx5_logo.dds",
+                "hdrtest.dds",
+                "normalmap.dds";
 
-        New-Item -ItemType Directory -Force -Path .drop\seeds\
+            New-Item -ItemType Directory -Force -Path .drop\seeds\
 
-        foreach($filename in $seedfiles)
-        {
-            Write-Host "Fetching: $filename"
-            $url = "https://raw.githubusercontent.com/walbourn/directxtexmedia/main/" + $filename
-            $target = [System.IO.Path]::Combine(".drop\seeds\", $filename)
-            Invoke-WebRequest -Uri $url -OutFile $target
-        }
+            foreach($filename in $seedfiles)
+            {
+                Write-Host "Fetching: $filename"
+                $url = "https://raw.githubusercontent.com/walbourn/directxtexmedia/main/" + $filename
+                $target = [System.IO.Path]::Combine(".drop\seeds\", $filename)
+                Invoke-WebRequest -Uri $url -OutFile $target
+            }
 
-  - task: PowerShell@2
-    displayName: Copy OneFuzz setup script
-    inputs:
-      targetType: 'inline'
-      script: |
-        Copy-Item -Path .\build\onefuzz-setup.ps1 -Destination .drop/setup.ps1
+      - task: PowerShell@2
+        displayName: Copy OneFuzz setup script
+        inputs:
+          targetType: 'inline'
+          script: |
+            Copy-Item -Path .\build\onefuzz-setup.ps1 -Destination .drop/setup.ps1
 
-  - task: MSBuild@1
-    displayName: 'Copy ASan binaries'
-    inputs:
-      solution: build/CopyASAN.targets
-      msbuildArguments: /p:TargetFolder=$(Build.SourcesDirectory)\.drop
-      msbuildVersion: 17.0
-      msbuildArchitecture: x64
-  - task: PowerShell@2
-    displayName: List drop files
-    inputs:
-      targetType: inline
-      script: |
-        Get-ChildItem ".drop" -Recurse | select FullName
+      - task: MSBuild@1
+        displayName: 'Copy ASan binaries'
+        inputs:
+          solution: build/CopyASAN.targets
+          msbuildArguments: /p:TargetFolder=$(Build.SourcesDirectory)\.drop
+          msbuildVersion: 17.0
+          msbuildArchitecture: x64
+      - task: PowerShell@2
+        displayName: List drop files
+        inputs:
+          targetType: inline
+          script: |
+            Get-ChildItem ".drop" -Recurse | select FullName
 
-  - task: onefuzz-task@0
-    displayName: 'Submit to OneFuzz'
-    inputs:
-      onefuzzOSes: 'Windows'
-    env:
-      onefuzzDropDirectory: $(Build.SourcesDirectory)\.drop
-      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+      - task: onefuzz-task@0
+        displayName: 'Submit to OneFuzz'
+        inputs:
+          onefuzzOSes: 'Windows'
+        env:
+          onefuzzDropDirectory: $(Build.SourcesDirectory)\.drop
+          SYSTEM_ACCESSTOKEN: $(System.AccessToken)
