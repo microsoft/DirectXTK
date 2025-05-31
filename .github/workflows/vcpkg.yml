@@ -7,7 +7,7 @@ name: 'CMake (Windows using VCPKG)'
 
 on:
   push:
-    branches: [ "main" ]
+    branches: "main"
     paths-ignore:
       - '*.md'
       - LICENSE
@@ -17,7 +17,7 @@ on:
       - build/*.ps1
       - build/*.targets
   pull_request:
-    branches: [ "main" ]
+    branches: "main"
     paths-ignore:
       - '*.md'
       - LICENSE
@@ -41,167 +41,167 @@ jobs:
         toolver: ['14.29', '14']
         build_type: [x64-Debug-VCPKG]
         arch: [amd64]
-        shared: [OFF]
-        gameinput: [OFF]
+        shared: ['OFF']
+        gameinput: ['OFF']
         include:
           - toolver: '14'
             build_type: x64-Debug-VCPKG
             arch: amd64
-            shared: OFF
-            gameinput: ON
+            shared: 'OFF'
+            gameinput: 'ON'
           - toolver: '14'
             build_type: x64-Debug-Clang-VCPKG
             arch: amd64
-            shared: OFF
-            gameinput: OFF
+            shared: 'OFF'
+            gameinput: 'OFF'
           - toolver: '14'
             build_type: x64-Debug-Clang-VCPKG
             arch: amd64
-            shared: OFF
-            gameinput: ON
+            shared: 'OFF'
+            gameinput: 'ON'
           - toolver: '14'
             build_type: x86-Debug-VCPKG
             arch: amd64_x86
-            shared: OFF
-            gameinput: OFF
+            shared: 'OFF'
+            gameinput: 'OFF'
           - toolver: '14'
             build_type: x64-Debug-Redist
             arch: amd64
-            shared: OFF
-            gameinput: OFF
+            shared: 'OFF'
+            gameinput: 'OFF'
           - toolver: '14'
             build_type: x64-Release-Redist
             arch: amd64
-            shared: OFF
-            gameinput: OFF
+            shared: 'OFF'
+            gameinput: 'OFF'
           - toolver: '14'
             build_type: arm64-Debug-VCPKG
             arch: amd64_arm64
-            shared: OFF
-            gameinput: OFF
+            shared: 'OFF'
+            gameinput: 'OFF'
           - toolver: '14'
             build_type: arm64-Debug-Redist
             arch: amd64_arm64
-            shared: OFF
-            gameinput: OFF
+            shared: 'OFF'
+            gameinput: 'OFF'
           - toolver: '14'
             build_type: arm64ec-Debug-VCPKG
             arch: amd64_arm64
-            shared: OFF
-            gameinput: OFF
+            shared: 'OFF'
+            gameinput: 'OFF'
           - toolver: '14'
             build_type: arm64ec-Debug-Redist
             arch: amd64_arm64
-            shared: OFF
-            gameinput: OFF
+            shared: 'OFF'
+            gameinput: 'OFF'
           - toolver: '14'
             build_type: x64-Debug-MinGW
             arch: amd64
-            shared: OFF
-            gameinput: OFF
+            shared: 'OFF'
+            gameinput: 'OFF'
           - toolver: '14'
             build_type: x64-Release-MinGW
             arch: amd64
-            shared: OFF
-            gameinput: OFF
+            shared: 'OFF'
+            gameinput: 'OFF'
           - toolver: '14'
             build_type: x64-Debug-MinGW
             arch: amd64
-            shared: OFF
-            gameinput: ON
+            shared: 'OFF'
+            gameinput: 'ON'
           - toolver: '14'
             build_type: x64-Debug-VCPKG
             arch: amd64
-            shared: ON
-            gameinput: ON
+            shared: 'ON'
+            gameinput: 'ON'
           - toolver: '14'
             build_type: x64-Debug-MinGW
             arch: amd64
-            shared: ON
-            gameinput: OFF
+            shared: 'ON'
+            gameinput: 'OFF'
           - toolver: '14'
             build_type: x64-Release-MinGW
             arch: amd64
-            shared: ON
-            gameinput: OFF
+            shared: 'ON'
+            gameinput: 'OFF'
 
     steps:
-    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-    - name: 'Install Ninja'
-      run: choco install ninja
+      - name: 'Install Ninja'
+        run: choco install ninja
 
-    - uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
-      with:
-        arch: ${{ matrix.arch }}
-        toolset: ${{ matrix.toolver }}
+      - uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
+        with:
+          arch: ${{ matrix.arch }}
+          toolset: ${{ matrix.toolver }}
 
-    - name: 'Set triplet'
-      shell: pwsh
-      run: |
-        echo "VCPKG_INSTALLED_DIR=${{ github.workspace }}/build/vcpkg_installed" >> $env:GITHUB_ENV
-        if ("${{ matrix.arch }}" -eq "amd64")
-        {
-            if ("${{ matrix.build_type }}" -match "MinGW")
-            {
-                echo "VCPKG_DEFAULT_TRIPLET=x64-mingw-static" >> $env:GITHUB_ENV
-            }
-            else
-            {
-                echo "VCPKG_DEFAULT_TRIPLET=x64-windows" >> $env:GITHUB_ENV
-            }
-        }
-        elseif ("${{ matrix.arch }}" -eq "amd64_x86")
-        {
-            echo "VCPKG_DEFAULT_TRIPLET=x86-windows" >> $env:GITHUB_ENV
-        }
-        elseif ("${{ matrix.arch }}" -eq "amd64_arm64")
-        {
-            if ("${{ matrix.build_type }}" -match "^arm64ec")
-            {
-                echo "VCPKG_DEFAULT_TRIPLET=arm64ec-windows" >> $env:GITHUB_ENV
-            }
-            else
-            {
-                echo "VCPKG_DEFAULT_TRIPLET=arm64-windows" >> $env:GITHUB_ENV
-            }
-        }
-        else
-        {
-            echo "::error Unknown architecture/build-type triplet mapping"
-        }
+      - name: 'Set triplet'
+        shell: pwsh
+        run: |
+          echo "VCPKG_INSTALLED_DIR=${{ github.workspace }}/build/vcpkg_installed" >> $env:GITHUB_ENV
+          if ("${{ matrix.arch }}" -eq "amd64")
+          {
+              if ("${{ matrix.build_type }}" -match "MinGW")
+              {
+                  echo "VCPKG_DEFAULT_TRIPLET=x64-mingw-static" >> $env:GITHUB_ENV
+              }
+              else
+              {
+                  echo "VCPKG_DEFAULT_TRIPLET=x64-windows" >> $env:GITHUB_ENV
+              }
+          }
+          elseif ("${{ matrix.arch }}" -eq "amd64_x86")
+          {
+              echo "VCPKG_DEFAULT_TRIPLET=x86-windows" >> $env:GITHUB_ENV
+          }
+          elseif ("${{ matrix.arch }}" -eq "amd64_arm64")
+          {
+              if ("${{ matrix.build_type }}" -match "^arm64ec")
+              {
+                  echo "VCPKG_DEFAULT_TRIPLET=arm64ec-windows" >> $env:GITHUB_ENV
+              }
+              else
+              {
+                  echo "VCPKG_DEFAULT_TRIPLET=arm64-windows" >> $env:GITHUB_ENV
+              }
+          }
+          else
+          {
+              echo "::error Unknown architecture/build-type triplet mapping"
+          }
 
-    - name: Get vcpkg commit hash
-      shell: pwsh
-      run: |
-        if ($Env:vcpkgRelease) {
-            echo "Using vcpkg commit from repo variable..."
-            $VCPKG_COMMIT_ID = $Env:vcpkgRelease
-        }
-        else {
-            echo "Fetching latest vcpkg commit hash..."
-            $commit = (git ls-remote https://github.com/microsoft/vcpkg.git HEAD | Select-String -Pattern '([a-f0-9]{40})').Matches.Value
-            $VCPKG_COMMIT_ID = $commit
-        }
-        Write-Host "VCPKG_COMMIT_ID=$VCPKG_COMMIT_ID"
-        echo "VCPKG_COMMIT_ID=$VCPKG_COMMIT_ID" >> $env:GITHUB_ENV
-      env:
-        vcpkgRelease: '${{ vars.VCPKG_COMMIT_ID }}'
+      - name: Get vcpkg commit hash
+        shell: pwsh
+        run: |
+          if ($Env:vcpkgRelease) {
+              echo "Using vcpkg commit from repo variable..."
+              $VCPKG_COMMIT_ID = $Env:vcpkgRelease
+          }
+          else {
+              echo "Fetching latest vcpkg commit hash..."
+              $commit = (git ls-remote https://github.com/microsoft/vcpkg.git HEAD | Select-String -Pattern '([a-f0-9]{40})').Matches.Value
+              $VCPKG_COMMIT_ID = $commit
+          }
+          Write-Host "VCPKG_COMMIT_ID=$VCPKG_COMMIT_ID"
+          echo "VCPKG_COMMIT_ID=$VCPKG_COMMIT_ID" >> $env:GITHUB_ENV
+        env:
+          vcpkgRelease: '${{ vars.VCPKG_COMMIT_ID }}'
 
-    - uses: lukka/run-vcpkg@7d259227a1fb6471a0253dd5ab7419835228f7d7 # v11
-      with:
-        runVcpkgInstall: true
-        vcpkgJsonGlob: '**/build/vcpkg.json'
-        vcpkgGitCommitId: '${{ env.VCPKG_COMMIT_ID }}'
+      - uses: lukka/run-vcpkg@7d259227a1fb6471a0253dd5ab7419835228f7d7 # v11
+        with:
+          runVcpkgInstall: true
+          vcpkgJsonGlob: '**/build/vcpkg.json'
+          vcpkgGitCommitId: '${{ env.VCPKG_COMMIT_ID }}'
 
-    - name: 'Configure CMake'
-      working-directory: ${{ github.workspace }}
-      run: >
-        cmake --preset=${{ matrix.build_type }} -DBUILD_TESTING=OFF
-        -DBUILD_SHARED_LIBS=${{ matrix.shared }} -DBUILD_GAMEINPUT=${{ matrix.gameinput }}
-        -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_MANIFEST_DIR="${{ github.workspace }}/build"
-        -DVCPKG_TARGET_TRIPLET="${env:VCPKG_DEFAULT_TRIPLET}"
+      - name: 'Configure CMake'
+        working-directory: ${{ github.workspace }}
+        run: >
+          cmake --preset=${{ matrix.build_type }} -DBUILD_TESTING=OFF
+          -DBUILD_SHARED_LIBS=${{ matrix.shared }} -DBUILD_GAMEINPUT=${{ matrix.gameinput }}
+          -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_MANIFEST_DIR="${{ github.workspace }}/build"
+          -DVCPKG_TARGET_TRIPLET="${env:VCPKG_DEFAULT_TRIPLET}"
 
-    - name: 'Build'
-      working-directory: ${{ github.workspace }}
-      run: cmake --build out\build\${{ matrix.build_type }}
+      - name: 'Build'
+        working-directory: ${{ github.workspace }}
+        run: cmake --build out\build\${{ matrix.build_type }}

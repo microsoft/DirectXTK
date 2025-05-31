@@ -6,28 +6,28 @@
 # Runs various SDL recommended tools on the code.
 
 schedules:
-- cron: "0 3 * * 0,3,5"
-  displayName: 'Three times a week'
-  branches:
-    include:
-    - main
-  always: true
+  - cron: "0 3 * * 0,3,5"
+    displayName: 'Three times a week'
+    branches:
+      include:
+        - main
+    always: true
 
 # GitHub Actions handles CodeQL and PREFAST for CI/PR
 trigger: none
 pr:
   branches:
     include:
-    - main
+      - main
   paths:
     include:
-    - '.azuredevops/pipelines/DirectXTK-SDL.yml'
+      - '.azuredevops/pipelines/DirectXTK-SDL.yml'
 
 resources:
   repositories:
-  - repository: self
-    type: git
-    ref: refs/heads/main
+    - repository: self
+      type: git
+      ref: refs/heads/main
 
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
@@ -42,167 +42,169 @@ pool:
   vmImage: windows-2022
 
 jobs:
-- job: SDL_BUILD
-  displayName: 'Build using required SDL tools'
-  workspace:
-    clean: all
-  steps:
-  - checkout: self
-    clean: true
-    fetchTags: false
-  - task: NodeTool@0
-    displayName: 'NPM install'
-    inputs:
-      versionSpec: 14.x
-  - task: securedevelopmentteam.vss-secure-development-tools.build-task-credscan.CredScan@3
-    displayName: 'Run Credential Scanner'
-    inputs:
-      debugMode: false
-      folderSuppression: false
-  - task: PoliCheck@2
-    displayName: 'Run PoliCheck'
-    inputs:
-      result: PoliCheck.xml
-  - task: Armory@2
-    displayName: Run ARMory
-  - task: CMake@1
-    displayName: 'CMake (MSVC): Config x64'
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -B out -DENABLE_SPECTRE_MITIGATION=ON'
-  - task: CodeQL3000Init@0
-    inputs:
-      Enabled: true
-  - task: VSBuild@1
-    displayName: 'Build C++ with CodeQL'
-    inputs:
-      solution: '$(Build.SourcesDirectory)/out/DirectXTK.sln'
-      vsVersion: 17.0
-      platform: x64
-      configuration: Release
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: 'Build C# with CodeQL'
-    inputs:
-      solution: '$(Build.SourcesDirectory)/MakeSpriteFont/MakeSpriteFont.csproj'
-      vsVersion: 17.0
-      platform: AnyCPU
-      configuration: Release
-      msbuildArchitecture: x64
-      msbuildArgs: /p:CompilerGeneratedFilesOutputPath=$(Build.SourcesDirectory)/roslyn/.
-  - task: CodeQL3000Finalize@0
-    condition: always()
-  - task: CMake@1
-    displayName: 'CMake (MSVC): Build x64 Release'
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --build out -v --config RelWithDebInfo
-  - task: securedevelopmentteam.vss-secure-development-tools.build-task-antimalware.AntiMalware@4
-    displayName: 'Run AntiMalware'
-    inputs:
-      InputType: 'Basic'
-      ScanType: 'CustomScan'
-      FileDirPath: $(Agent.BuildDirectory)
-      EnableSERVICEs: true
-      SupportLogOnError: false
-      TreatSignatureUpdateFailureAs: 'Warning'
-      SignatureFreshness: 'OneDay'
-      TreatStaleSignatureAs: 'Error'
-    condition: always()
-  - task: securedevelopmentteam.vss-secure-development-tools.build-task-binskim.BinSkim@4
-    displayName: 'Run BinSkim'
-    inputs:
-      AnalyzeTargetBinskim: ''
-      AnalyzeTargetGlob: +:file|out\bin\**\RelWithDebInfo\*.exe;MakeSpriteFont\bin\**\Release\*.exe
-      AnalyzeVerbose: true
-  - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@2
-    displayName: 'Post Analysis'
-    inputs:
-      GdnBreakAllTools: true
-      GdnBreakPolicy: 'Microsoft'
-      GdnBreakPolicyMinSev: 'Error'
-  - task: ComponentGovernanceComponentDetection@0
-    displayName: Component Detection
+  - job: SDL_BUILD
+    displayName: 'Build using required SDL tools'
+    workspace:
+      clean: all
+    steps:
+      - checkout: self
+        clean: true
+        fetchTags: false
+      - task: NodeTool@0
+        displayName: 'NPM install'
+        inputs:
+          versionSpec: 14.x
+      - task: securedevelopmentteam.vss-secure-development-tools.build-task-credscan.CredScan@3
+        displayName: 'Run Credential Scanner'
+        inputs:
+          debugMode: false
+          folderSuppression: false
+      - task: PoliCheck@2
+        displayName: 'Run PoliCheck'
+        inputs:
+          result: PoliCheck.xml
+      - task: Armory@2
+        displayName: Run ARMory
+      - task: CMake@1
+        displayName: 'CMake (MSVC): Config x64'
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -B out -DENABLE_SPECTRE_MITIGATION=ON'
+      - task: CodeQL3000Init@0
+        inputs:
+          Enabled: true
+      - task: VSBuild@1
+        displayName: 'Build C++ with CodeQL'
+        inputs:
+          solution: '$(Build.SourcesDirectory)/out/DirectXTK.sln'
+          vsVersion: 17.0
+          platform: x64
+          configuration: Release
+          msbuildArchitecture: x64
+      - task: VSBuild@1
+        displayName: 'Build C# with CodeQL'
+        inputs:
+          solution: '$(Build.SourcesDirectory)/MakeSpriteFont/MakeSpriteFont.csproj'
+          vsVersion: 17.0
+          platform: AnyCPU
+          configuration: Release
+          msbuildArchitecture: x64
+          msbuildArgs: /p:CompilerGeneratedFilesOutputPath=$(Build.SourcesDirectory)/roslyn/.
+      - task: CodeQL3000Finalize@0
+        condition: always()
+      - task: CMake@1
+        displayName: 'CMake (MSVC): Build x64 Release'
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: --build out -v --config RelWithDebInfo
+      - task: securedevelopmentteam.vss-secure-development-tools.build-task-antimalware.AntiMalware@4
+        displayName: 'Run AntiMalware'
+        inputs:
+          InputType: 'Basic'
+          ScanType: 'CustomScan'
+          FileDirPath: $(Agent.BuildDirectory)
+          EnableSERVICEs: true
+          SupportLogOnError: false
+          TreatSignatureUpdateFailureAs: 'Warning'
+          SignatureFreshness: 'OneDay'
+          TreatStaleSignatureAs: 'Error'
+        condition: always()
+      - task: securedevelopmentteam.vss-secure-development-tools.build-task-binskim.BinSkim@4
+        displayName: 'Run BinSkim'
+        inputs:
+          AnalyzeTargetBinskim: ''
+          AnalyzeTargetGlob: +:file|out\bin\**\RelWithDebInfo\*.exe;MakeSpriteFont\bin\**\Release\*.exe
+          AnalyzeVerbose: true
+      - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@2
+        displayName: 'Post Analysis'
+        inputs:
+          GdnBreakAllTools: true
+          GdnBreakPolicy: 'Microsoft'
+          GdnBreakPolicyMinSev: 'Error'
+      - task: ComponentGovernanceComponentDetection@0
+        displayName: Component Detection
 
-- job: SDL_BUILD_DLL
-  displayName: 'Build using required SDL tools for DLLs'
-  workspace:
-    clean: all
-  steps:
-  - checkout: self
-    clean: true
-    fetchTags: false
-  - task: NodeTool@0
-    displayName: 'NPM install'
-    inputs:
-      versionSpec: 14.x
-  - task: CMake@1
-    displayName: 'CMake (MSVC): Config x64'
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -B out -DENABLE_SPECTRE_MITIGATION=ON -DBUILD_SHARED_LIBS=ON -DBUILD_TOOLS=OFF'
-  - task: CMake@1
-    displayName: 'CMake (MSVC): Build x64 Release'
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --build out -v --config RelWithDebInfo
-  - task: securedevelopmentteam.vss-secure-development-tools.build-task-antimalware.AntiMalware@4
-    displayName: 'Run AntiMalware'
-    inputs:
-      InputType: 'Basic'
-      ScanType: 'CustomScan'
-      FileDirPath: $(Agent.BuildDirectory)
-      EnableSERVICEs: true
-      SupportLogOnError: false
-      TreatSignatureUpdateFailureAs: 'Warning'
-      SignatureFreshness: 'OneDay'
-      TreatStaleSignatureAs: 'Error'
-    condition: always()
-  - task: securedevelopmentteam.vss-secure-development-tools.build-task-binskim.BinSkim@4
-    displayName: 'Run BinSkim'
-    inputs:
-      AnalyzeTargetBinskim: ''
-      AnalyzeTargetGlob: +:file|out\bin\**\RelWithDebInfo\*.dll
-      AnalyzeVerbose: true
-  - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@2
-    displayName: 'Post Analysis'
-    inputs:
-      GdnBreakAllTools: true
-      GdnBreakPolicy: 'Microsoft'
-      GdnBreakPolicyMinSev: 'Error'
-  - task: ComponentGovernanceComponentDetection@0
-    displayName: Component Detection
+  - job: SDL_BUILD_DLL
+    displayName: 'Build using required SDL tools for DLLs'
+    workspace:
+      clean: all
+    steps:
+      - checkout: self
+        clean: true
+        fetchTags: false
+      - task: NodeTool@0
+        displayName: 'NPM install'
+        inputs:
+          versionSpec: 14.x
+      - task: CMake@1
+        displayName: 'CMake (MSVC): Config x64'
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: >
+            -G "$(VS_GENERATOR)" -A x64 -B out
+            -DENABLE_SPECTRE_MITIGATION=ON -DBUILD_SHARED_LIBS=ON -DBUILD_TOOLS=OFF
+      - task: CMake@1
+        displayName: 'CMake (MSVC): Build x64 Release'
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: --build out -v --config RelWithDebInfo
+      - task: securedevelopmentteam.vss-secure-development-tools.build-task-antimalware.AntiMalware@4
+        displayName: 'Run AntiMalware'
+        inputs:
+          InputType: 'Basic'
+          ScanType: 'CustomScan'
+          FileDirPath: $(Agent.BuildDirectory)
+          EnableSERVICEs: true
+          SupportLogOnError: false
+          TreatSignatureUpdateFailureAs: 'Warning'
+          SignatureFreshness: 'OneDay'
+          TreatStaleSignatureAs: 'Error'
+        condition: always()
+      - task: securedevelopmentteam.vss-secure-development-tools.build-task-binskim.BinSkim@4
+        displayName: 'Run BinSkim'
+        inputs:
+          AnalyzeTargetBinskim: ''
+          AnalyzeTargetGlob: +:file|out\bin\**\RelWithDebInfo\*.dll
+          AnalyzeVerbose: true
+      - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@2
+        displayName: 'Post Analysis'
+        inputs:
+          GdnBreakAllTools: true
+          GdnBreakPolicy: 'Microsoft'
+          GdnBreakPolicyMinSev: 'Error'
+      - task: ComponentGovernanceComponentDetection@0
+        displayName: Component Detection
 
-- job: VC_PREFAST
-  displayName: 'Build using /analyze (PREFAST)'
-  workspace:
-    clean: all
-  steps:
-  - checkout: self
-    clean: true
-    fetchTags: false
-  - task: CmdLine@2
-    displayName: Setup environment for CMake to use VS
-    inputs:
-      script: |
-        call "$(VC_PATH)\Auxiliary\Build\vcvars64.bat"
-        echo ##vso[task.setvariable variable=WindowsSdkVerBinPath;]%WindowsSdkVerBinPath%
-        echo ##vso[task.prependpath]%VSINSTALLDIR%Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja
-        echo ##vso[task.prependpath]%VCINSTALLDIR%Tools\Llvm\x64\bin
-        echo ##vso[task.prependpath]%WindowsSdkBinPath%x64
-        echo ##vso[task.prependpath]%WindowsSdkVerBinPath%x64
-        echo ##vso[task.prependpath]%VCToolsInstallDir%bin\Hostx64\x64
-        echo ##vso[task.setvariable variable=EXTERNAL_INCLUDE;]%EXTERNAL_INCLUDE%
-        echo ##vso[task.setvariable variable=INCLUDE;]%INCLUDE%
-        echo ##vso[task.setvariable variable=LIB;]%LIB%
+  - job: VC_PREFAST
+    displayName: 'Build using /analyze (PREFAST)'
+    workspace:
+      clean: all
+    steps:
+      - checkout: self
+        clean: true
+        fetchTags: false
+      - task: CmdLine@2
+        displayName: Setup environment for CMake to use VS
+        inputs:
+          script: |
+            call "$(VC_PATH)\Auxiliary\Build\vcvars64.bat"
+            echo ##vso[task.setvariable variable=WindowsSdkVerBinPath;]%WindowsSdkVerBinPath%
+            echo ##vso[task.prependpath]%VSINSTALLDIR%Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja
+            echo ##vso[task.prependpath]%VCINSTALLDIR%Tools\Llvm\x64\bin
+            echo ##vso[task.prependpath]%WindowsSdkBinPath%x64
+            echo ##vso[task.prependpath]%WindowsSdkVerBinPath%x64
+            echo ##vso[task.prependpath]%VCToolsInstallDir%bin\Hostx64\x64
+            echo ##vso[task.setvariable variable=EXTERNAL_INCLUDE;]%EXTERNAL_INCLUDE%
+            echo ##vso[task.setvariable variable=INCLUDE;]%INCLUDE%
+            echo ##vso[task.setvariable variable=LIB;]%LIB%
 
-  - task: CMake@1
-    displayName: CMake Config
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --preset=x64-Debug -DENABLE_CODE_ANALYSIS=ON
-  - task: CMake@1
-    displayName: CMake Build
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --build out/build/x64-Debug
+      - task: CMake@1
+        displayName: CMake Config
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: --preset=x64-Debug -DENABLE_CODE_ANALYSIS=ON
+      - task: CMake@1
+        displayName: CMake Build
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: --build out/build/x64-Debug
