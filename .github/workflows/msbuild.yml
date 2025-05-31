@@ -28,7 +28,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: windows-2022
+    runs-on: windows-2022 # has v142 tools but not v142 spectre libs
 
     strategy:
       fail-fast: false
@@ -37,6 +37,9 @@ jobs:
         vs: [2019, 2022]
         build_type: [Debug, Release]
         platform: [x86, x64, ARM64]
+        exclude:
+          - vs: 2019
+            platform: ARM64
 
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -64,7 +67,7 @@ jobs:
           msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=${{ matrix.platform }}
           DirectXTK_Windows10_2022.sln
 
-      - if: matrix.platform != 'ARM64'
+      - if: matrix.platform != 'ARM64' && matrix.vs != '2019'
         name: 'Build (Windows 8.1 w/ Spectre)'
         working-directory: ${{ github.workspace }}
         run: >
@@ -72,7 +75,7 @@ jobs:
           /p:SpectreMitigation=Spectre
           DirectXTK_Desktop_${{ matrix.vs }}.sln
 
-      - if: matrix.platform != 'ARM64'
+      - if: matrix.platform != 'ARM64' && matrix.vs != '2019'
         name: 'Build (Spectre Windows 10)'
         working-directory: ${{ github.workspace }}
         run: >
