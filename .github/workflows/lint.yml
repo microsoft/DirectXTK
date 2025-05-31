@@ -9,9 +9,7 @@ on:
   pull_request:
     branches: "main"
     paths-ignore:
-      - '*.md'
       - LICENSE
-      - '.azuredevops/**'
       - '.nuget/*'
       - build/*.in
 
