@@ -14,4 +14,4 @@ rules:
   comments:
     min-spaces-from-content: 1
   new-lines:
-    type: platform
+    type: dos
