@@ -170,7 +170,7 @@ namespace MakeSpriteFont
             bitmapData[destX, destY] = Color.FromArgb(0, color);
         }
 
-        
+
         // Converts a bitmap to the specified pixel format.
         public static Bitmap ChangePixelFormat(Bitmap bitmap, PixelFormat format)
         {
@@ -220,7 +220,7 @@ namespace MakeSpriteFont
 
                 set
                 {
-                    Marshal.WriteInt32(PixelAddress(x, y), value.ToArgb()); 
+                    Marshal.WriteInt32(PixelAddress(x, y), value.ToArgb());
                 }
             }
 

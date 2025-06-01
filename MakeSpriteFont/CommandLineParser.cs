@@ -263,7 +263,7 @@ namespace MakeSpriteFont
         // Used on optionsObject fields to indicate which options are required.
         [AttributeUsage(AttributeTargets.Field)]
         public sealed class RequiredAttribute : Attribute
-        { 
+        {
         }
 
 

@@ -61,7 +61,7 @@ namespace MakeSpriteFont
             }
         }
 
-        
+
         // Default to just the base ASCII character set.
         static CharacterRegion defaultRegion = new CharacterRegion(' ', '~');
     }
@@ -106,7 +106,7 @@ namespace MakeSpriteFont
                 case 2:
                     // Range of characters (eg. "a-z").
                     return new CharacterRegion(split[0], split[1]);
-             
+
                 default:
                     throw new ArgumentException();
             }
