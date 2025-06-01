@@ -357,7 +357,7 @@ void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indi
             //       v12
             const uint16_t indicesToAdd[] =
             {
-                 iv0, iv01, iv20, // a
+                iv0, iv01,  iv20, // a
                 iv20, iv12,  iv2, // b
                 iv20, iv01, iv12, // c
                 iv01,  iv1, iv12, // d

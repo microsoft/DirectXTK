@@ -163,7 +163,7 @@ namespace DirectX
                 uint32_t startInstanceLocation = 0,
                 _In_ std::function<void __cdecl()> setCustomState = nullptr) const;
 
-           // Create input layout for drawing with a custom effect.
+            // Create input layout for drawing with a custom effect.
             void __cdecl CreateInputLayout(_In_ ID3D11Device* device, _In_ IEffect* ieffect, _Outptr_ ID3D11InputLayout** iinputLayout) const;
 
             // Change effect used by part and regenerate input layout (be sure to call Model::Modified as well)

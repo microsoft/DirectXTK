@@ -47,7 +47,7 @@ float3 TwoChannelNormalX2(float2 normal)
 }
 
 
-// sRGB 
+// sRGB
 // https://en.wikipedia.org/wiki/SRGB
 
 // Apply the (approximate) sRGB curve to linear values

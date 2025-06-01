@@ -56,7 +56,7 @@ These components are designed to work without requiring any content from the leg
 
 * ``XWBTool\``
 
-  *  Command line tool for building XACT-style wave banks for use with DirectXTK for Audio's WaveBank class
+  * Command line tool for building XACT-style wave banks for use with DirectXTK for Audio's WaveBank class
 
 * ``build\``
 
