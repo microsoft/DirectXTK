@@ -368,8 +368,7 @@ void SkinnedEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
 // Public constructor.
 SkinnedEffect::SkinnedEffect(_In_ ID3D11Device* device)
     : pImpl(std::make_unique<Impl>(device))
-{
-}
+{}
 
 
 SkinnedEffect::SkinnedEffect(SkinnedEffect&&) noexcept = default;

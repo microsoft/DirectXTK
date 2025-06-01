@@ -60,8 +60,7 @@ namespace DirectX
 
             VertexPosition(XMFLOAT3 const& iposition) noexcept
                 : position(iposition)
-            {
-            }
+            {}
 
             VertexPosition(FXMVECTOR iposition) noexcept
             {
@@ -89,8 +88,7 @@ namespace DirectX
             VertexPositionColor(XMFLOAT3 const& iposition, XMFLOAT4 const& icolor) noexcept
                 : position(iposition),
                 color(icolor)
-            {
-            }
+            {}
 
             VertexPositionColor(FXMVECTOR iposition, FXMVECTOR icolor) noexcept
             {
@@ -120,8 +118,7 @@ namespace DirectX
             VertexPositionTexture(XMFLOAT3 const& iposition, XMFLOAT2 const& itextureCoordinate) noexcept
                 : position(iposition),
                 textureCoordinate(itextureCoordinate)
-            {
-            }
+            {}
 
             VertexPositionTexture(FXMVECTOR iposition, FXMVECTOR itextureCoordinate) noexcept
             {
@@ -155,8 +152,7 @@ namespace DirectX
                 : position(iposition),
                 textureCoordinate0(itextureCoordinate0),
                 textureCoordinate1(itextureCoordinate1)
-            {
-            }
+            {}
 
             VertexPositionDualTexture(
                 FXMVECTOR iposition,
@@ -191,8 +187,7 @@ namespace DirectX
             VertexPositionNormal(XMFLOAT3 const& iposition, XMFLOAT3 const& inormal) noexcept
                 : position(iposition),
                 normal(inormal)
-            {
-            }
+            {}
 
             VertexPositionNormal(FXMVECTOR iposition, FXMVECTOR inormal) noexcept
             {
@@ -223,8 +218,7 @@ namespace DirectX
                 : position(iposition),
                 color(icolor),
                 textureCoordinate(itextureCoordinate)
-            {
-            }
+            {}
 
             VertexPositionColorTexture(FXMVECTOR iposition, FXMVECTOR icolor, FXMVECTOR itextureCoordinate) noexcept
             {
@@ -257,8 +251,7 @@ namespace DirectX
                 : position(iposition),
                 normal(inormal),
                 color(icolor)
-            {
-            }
+            {}
 
             VertexPositionNormalColor(FXMVECTOR iposition, FXMVECTOR inormal, FXMVECTOR icolor) noexcept
             {
@@ -291,8 +284,7 @@ namespace DirectX
                 : position(iposition),
                 normal(inormal),
                 textureCoordinate(itextureCoordinate)
-            {
-            }
+            {}
 
             VertexPositionNormalTexture(FXMVECTOR iposition, FXMVECTOR inormal, FXMVECTOR itextureCoordinate) noexcept
             {
@@ -330,8 +322,7 @@ namespace DirectX
                 normal(inormal),
                 color(icolor),
                 textureCoordinate(itextureCoordinate)
-            {
-            }
+            {}
 
             VertexPositionNormalColorTexture(FXMVECTOR iposition, FXMVECTOR inormal, FXMVECTOR icolor, CXMVECTOR itextureCoordinate) noexcept
             {
@@ -380,8 +371,7 @@ namespace DirectX
                 tangent(itangent),
                 color(irgba),
                 textureCoordinate(itextureCoordinate)
-            {
-            }
+            {}
 
             VertexPositionNormalTangentColorTexture(
                 FXMVECTOR iposition,

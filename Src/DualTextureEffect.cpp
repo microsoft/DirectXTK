@@ -191,8 +191,7 @@ void DualTextureEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
 // Public constructor.
 DualTextureEffect::DualTextureEffect(_In_ ID3D11Device* device)
     : pImpl(std::make_unique<Impl>(device))
-{
-}
+{}
 
 
 DualTextureEffect::DualTextureEffect(DualTextureEffect&&) noexcept = default;

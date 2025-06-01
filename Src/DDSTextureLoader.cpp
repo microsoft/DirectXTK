@@ -1375,13 +1375,13 @@ namespace DirectX
     }
 
     HRESULT __cdecl CreateDDSTextureFromFile(
-#if defined(_XBOX_ONE) && defined(_TITLE)
+    #if defined(_XBOX_ONE) && defined(_TITLE)
         _In_ ID3D11DeviceX* d3dDevice,
         _In_opt_ ID3D11DeviceContextX* d3dContext,
-#else
+    #else
         _In_ ID3D11Device* d3dDevice,
         _In_opt_ ID3D11DeviceContext* d3dContext,
-#endif
+    #endif
         _In_z_ const __wchar_t* szFileName,
         _Outptr_opt_ ID3D11Resource** texture,
         _Outptr_opt_ ID3D11ShaderResourceView** textureView,
@@ -1412,13 +1412,13 @@ namespace DirectX
     }
 
     HRESULT __cdecl CreateDDSTextureFromFileEx(
-#if defined(_XBOX_ONE) && defined(_TITLE)
+    #if defined(_XBOX_ONE) && defined(_TITLE)
         _In_ ID3D11DeviceX* d3dDevice,
         _In_opt_ ID3D11DeviceContextX* d3dContext,
-#else
+    #else
         _In_ ID3D11Device* d3dDevice,
         _In_opt_ ID3D11DeviceContext* d3dContext,
-#endif
+    #endif
         _In_z_ const __wchar_t* szFileName,
         _In_ size_t maxsize,
         _In_ D3D11_USAGE usage,

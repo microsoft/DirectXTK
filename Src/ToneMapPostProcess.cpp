@@ -193,7 +193,7 @@ namespace
             mVertexShader{},
             mPixelShaders{},
             mMutex{}
-        { }
+        {}
 
         DeviceResources(const DeviceResources&) = delete;
         DeviceResources& operator=(const DeviceResources&) = delete;
@@ -396,8 +396,7 @@ int ToneMapPostProcess::Impl::GetCurrentShaderPermutation() const noexcept
 // Public constructor.
 ToneMapPostProcess::ToneMapPostProcess(_In_ ID3D11Device* device)
     : pImpl(std::make_unique<Impl>(device))
-{
-}
+{}
 
 
 ToneMapPostProcess::ToneMapPostProcess(ToneMapPostProcess&&) noexcept = default;

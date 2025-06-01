@@ -365,7 +365,8 @@ public:
             audioBytes(0),
             startPosition(0),
             request{},
-            notify{} {}
+            notify{}
+        {}
     };
 
     Packets                         mPackets[MAX_BUFFER_COUNT];
@@ -755,8 +756,7 @@ const wchar_t* SoundStreamInstance::Impl::s_debugState[4] =
 _Use_decl_annotations_
 SoundStreamInstance::SoundStreamInstance(AudioEngine* engine, WaveBank* waveBank, unsigned int index, SOUND_EFFECT_INSTANCE_FLAGS flags) :
     pImpl(std::make_unique<Impl>(engine, waveBank, index, flags))
-{
-}
+{}
 
 
 // Move ctor/operator.

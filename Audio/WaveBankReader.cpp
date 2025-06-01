@@ -448,8 +448,7 @@ public:
     #ifdef DIRECTX_ENABLE_XMA2
         , m_xmaMemory(nullptr)
     #endif
-    {
-    }
+    {}
 
     Impl(Impl&&) = default;
     Impl& operator= (Impl&&) = default;
@@ -1207,13 +1206,11 @@ bool WaveBankReader::Impl::UpdatePrepared() noexcept
 //--------------------------------------------------------------------------------------
 WaveBankReader::WaveBankReader() noexcept(false) :
     pImpl(std::make_unique<Impl>())
-{
-}
+{}
 
 
 WaveBankReader::~WaveBankReader()
-{
-}
+{}
 
 
 _Use_decl_annotations_

@@ -393,8 +393,7 @@ SpriteFont::SpriteFont(ID3D11Device* device, uint8_t const* dataBlob, size_t dat
 _Use_decl_annotations_
 SpriteFont::SpriteFont(ID3D11ShaderResourceView* texture, Glyph const* glyphs, size_t glyphCount, float lineSpacing)
     : pImpl(std::make_unique<Impl>(texture, glyphs, glyphCount, lineSpacing))
-{
-}
+{}
 
 
 SpriteFont::SpriteFont(SpriteFont&&) noexcept = default;
@@ -651,8 +650,7 @@ void SpriteFont::GetSpriteSheet(ID3D11ShaderResourceView** texture) const
 
 SpriteFont::SpriteFont(_In_ ID3D11Device* device, _In_z_ __wchar_t const* fileName, bool forceSRGB) :
     SpriteFont(device, reinterpret_cast<const unsigned short*>(fileName), forceSRGB)
-{
-}
+{}
 
 void SpriteFont::DrawString(_In_ SpriteBatch* spriteBatch, _In_z_ __wchar_t const* text, XMFLOAT2 const& position, FXMVECTOR color, float rotation, XMFLOAT2 const& origin, float scale, SpriteEffects effects, float layerDepth) const
 {

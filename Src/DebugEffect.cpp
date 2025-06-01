@@ -304,8 +304,7 @@ void DebugEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
 // Public constructor.
 DebugEffect::DebugEffect(_In_ ID3D11Device* device)
     : pImpl(std::make_unique<Impl>(device))
-{
-}
+{}
 
 
 DebugEffect::DebugEffect(DebugEffect&&) noexcept = default;

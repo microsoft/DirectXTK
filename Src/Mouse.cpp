@@ -127,9 +127,9 @@ public:
             {
             #if defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION == 1)
                 if (!mGameInput->UnregisterCallback(mDeviceToken))
-            #else
+                #else
                 if (!mGameInput->UnregisterCallback(mDeviceToken, UINT64_MAX))
-            #endif
+                #endif
                 {
                     DebugTrace("ERROR: GameInput::UnregisterCallback [mouse] failed");
                 }
@@ -227,7 +227,7 @@ public:
         {
             ShowCursor(TRUE);
 
-#ifndef _GAMING_XBOX
+        #ifndef _GAMING_XBOX
             POINT point;
             point.x = mState.x;
             point.y = mState.y;
@@ -238,7 +238,7 @@ public:
             }
 
             ClipCursor(nullptr);
-#endif
+        #endif
         }
     }
 
@@ -339,7 +339,7 @@ private:
 
     void ClipToWindow() noexcept
     {
-#ifndef _GAMING_XBOX
+    #ifndef _GAMING_XBOX
         assert(mWindow != nullptr);
 
         RECT rect;
@@ -363,7 +363,7 @@ private:
         rect.bottom = lr.y;
 
         ClipCursor(&rect);
-#endif
+    #endif
     }
 };
 
@@ -404,9 +404,9 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
             }
             else
             {
-#ifndef _GAMING_XBOX
+            #ifndef _GAMING_XBOX
                 ClipCursor(nullptr);
-#endif
+            #endif
             }
         }
         else
@@ -1568,8 +1568,7 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 // Public constructor.
 Mouse::Mouse() noexcept(false)
     : pImpl(std::make_unique<Impl>(this))
-{
-}
+{}
 
 
 // Move constructor.

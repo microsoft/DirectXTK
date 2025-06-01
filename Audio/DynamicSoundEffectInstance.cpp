@@ -130,8 +130,7 @@ public:
     }
 
     void __cdecl OnDestroyParent() noexcept override
-    {
-    }
+    {}
 
     SoundEffectInstanceBase                             mBase;
 
@@ -251,8 +250,7 @@ DynamicSoundEffectInstance::DynamicSoundEffectInstance(
     int sampleBits,
     SOUND_EFFECT_INSTANCE_FLAGS flags) :
     pImpl(std::make_unique<Impl>(engine, this, bufferNeeded, sampleRate, channels, sampleBits, flags))
-{
-}
+{}
 
 
 DynamicSoundEffectInstance::DynamicSoundEffectInstance(DynamicSoundEffectInstance&&) noexcept = default;

@@ -542,8 +542,7 @@ void DGSLEffectFactory::Impl::ReleaseCache()
 
 DGSLEffectFactory::DGSLEffectFactory(_In_ ID3D11Device* device)
     : pImpl(Impl::instancePool.DemandCreate(device))
-{
-}
+{}
 
 
 DGSLEffectFactory::DGSLEffectFactory(DGSLEffectFactory&&) noexcept = default;

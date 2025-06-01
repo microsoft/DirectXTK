@@ -79,7 +79,7 @@ namespace
             mVertexShader{},
             mPixelShaders{},
             mMutex{}
-        { }
+        {}
 
         DeviceResources(const DeviceResources&) = delete;
         DeviceResources& operator=(const DeviceResources&) = delete;
@@ -283,8 +283,7 @@ void DualPostProcess::Impl::Process(
 // Public constructor.
 DualPostProcess::DualPostProcess(_In_ ID3D11Device* device)
     : pImpl(std::make_unique<Impl>(device))
-{
-}
+{}
 
 
 DualPostProcess::DualPostProcess(DualPostProcess&&) noexcept = default;

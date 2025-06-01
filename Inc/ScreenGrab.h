@@ -57,18 +57,18 @@
 namespace DirectX
 {
     DIRECTX_TOOLKIT_API
-    HRESULT __cdecl SaveDDSTextureToFile(
-        _In_ ID3D11DeviceContext* pContext,
-        _In_ ID3D11Resource* pSource,
-        _In_z_ const wchar_t* fileName) noexcept;
+        HRESULT __cdecl SaveDDSTextureToFile(
+            _In_ ID3D11DeviceContext* pContext,
+            _In_ ID3D11Resource* pSource,
+            _In_z_ const wchar_t* fileName) noexcept;
 
     DIRECTX_TOOLKIT_API
-    HRESULT __cdecl SaveWICTextureToFile(
-        _In_ ID3D11DeviceContext* pContext,
-        _In_ ID3D11Resource* pSource,
-        _In_ REFGUID guidContainerFormat,
-        _In_z_ const wchar_t* fileName,
-        _In_opt_ const GUID* targetFormat = nullptr,
-        _In_ std::function<void __cdecl(IPropertyBag2*)> setCustomProps = nullptr,
-        _In_ bool forceSRGB = false);
+        HRESULT __cdecl SaveWICTextureToFile(
+            _In_ ID3D11DeviceContext* pContext,
+            _In_ ID3D11Resource* pSource,
+            _In_ REFGUID guidContainerFormat,
+            _In_z_ const wchar_t* fileName,
+            _In_opt_ const GUID* targetFormat = nullptr,
+            _In_ std::function<void __cdecl(IPropertyBag2*)> setCustomProps = nullptr,
+            _In_ bool forceSRGB = false);
 }

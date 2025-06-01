@@ -697,8 +697,7 @@ void NormalMapEffect::SetInstancingEnabled(bool value)
 //--------------------------------------------------------------------------------------
 
 SkinnedNormalMapEffect::~SkinnedNormalMapEffect()
-{
-}
+{}
 
 // Animation settings.
 void SkinnedNormalMapEffect::SetWeightsPerVertex(int value)

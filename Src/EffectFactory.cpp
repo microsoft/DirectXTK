@@ -483,8 +483,7 @@ void EffectFactory::Impl::ReleaseCache()
 
 EffectFactory::EffectFactory(_In_ ID3D11Device* device)
     : pImpl(Impl::instancePool.DemandCreate(device))
-{
-}
+{}
 
 
 EffectFactory::EffectFactory(EffectFactory&&) noexcept = default;

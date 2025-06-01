@@ -1138,20 +1138,20 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
                 break;
 
             case OPT_FILELIST:
-            {
-                std::filesystem::path path(pValue);
-                std::wifstream inFile(path.make_preferred().c_str());
-                if (!inFile)
                 {
-                    wprintf(L"Error opening -flist file %ls\n", pValue);
-                    return 1;
+                    std::filesystem::path path(pValue);
+                    std::wifstream inFile(path.make_preferred().c_str());
+                    if (!inFile)
+                    {
+                        wprintf(L"Error opening -flist file %ls\n", pValue);
+                        return 1;
+                    }
+
+                    inFile.imbue(std::locale::classic());
+
+                    ProcessFileList(inFile, conversion);
                 }
-
-                inFile.imbue(std::locale::classic());
-
-                ProcessFileList(inFile, conversion);
-            }
-            break;
+                break;
             }
         }
         else if (wcspbrk(pArg, L"?*") != nullptr)
@@ -1376,17 +1376,17 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
             break;
 
         case MINIWAVEFORMAT::TAG_ADPCM:
-        {
-            auto adpcmFmt = reinterpret_cast<const ADPCMEWAVEFORMAT*>(wfx);
-            duration = (uint64_t(it->data.audioBytes) / uint64_t(wfx->nBlockAlign)) * uint64_t(adpcmFmt->wSamplesPerBlock);
-            int partial = it->data.audioBytes % wfx->nBlockAlign;
-            if (partial)
             {
-                if (partial >= (7 * wfx->nChannels))
-                    duration += (uint64_t(partial) * 2 / uint64_t(wfx->nChannels - 12));
+                auto adpcmFmt = reinterpret_cast<const ADPCMEWAVEFORMAT*>(wfx);
+                duration = (uint64_t(it->data.audioBytes) / uint64_t(wfx->nBlockAlign)) * uint64_t(adpcmFmt->wSamplesPerBlock);
+                int partial = it->data.audioBytes % wfx->nBlockAlign;
+                if (partial)
+                {
+                    if (partial >= (7 * wfx->nChannels))
+                        duration += (uint64_t(partial) * 2 / uint64_t(wfx->nChannels - 12));
+                }
             }
-        }
-        break;
+            break;
 
         case MINIWAVEFORMAT::TAG_WMA:
             if (it->data.seekCount > 0)

@@ -56,8 +56,7 @@ EffectFog::EffectFog() noexcept :
     enabled(false),
     start(0),
     end(1.f)
-{
-}
+{}
 
 
 // Lazily recomputes the derived vector used by shader fog calculations.
@@ -116,8 +115,7 @@ void XM_CALLCONV EffectFog::SetConstants(int& dirtyFlags, FXMMATRIX worldView, X
 EffectColor::EffectColor() noexcept :
     diffuseColor(g_XMOne),
     alpha(1.f)
-{
-}
+{}
 
 
 // Lazily recomputes the material color parameter for shaders that do not support realtime lighting.

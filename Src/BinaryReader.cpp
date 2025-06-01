@@ -39,8 +39,7 @@ BinaryReader::BinaryReader(_In_z_ wchar_t const* fileName) noexcept(false) :
 BinaryReader::BinaryReader(_In_reads_bytes_(dataSize) uint8_t const* dataBlob, size_t dataSize) noexcept :
     mPos(dataBlob),
     mEnd(dataBlob + dataSize)
-{
-}
+{}
 
 
 // Reads from the filesystem into memory.

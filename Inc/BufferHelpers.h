@@ -44,13 +44,13 @@ namespace DirectX
 {
     // Helpers for creating initialized Direct3D buffer resources.
     DIRECTX_TOOLKIT_API
-    HRESULT __cdecl CreateStaticBuffer(
-        _In_ ID3D11Device* device,
-        _In_reads_bytes_(count* stride) const void* ptr,
-        size_t count,
-        size_t stride,
-        unsigned int bindFlags,
-        _COM_Outptr_ ID3D11Buffer** pBuffer) noexcept;
+        HRESULT __cdecl CreateStaticBuffer(
+            _In_ ID3D11Device* device,
+            _In_reads_bytes_(count* stride) const void* ptr,
+            size_t count,
+            size_t stride,
+            unsigned int bindFlags,
+            _COM_Outptr_ ID3D11Buffer** pBuffer) noexcept;
 
     template<typename T>
     HRESULT CreateStaticBuffer(
@@ -75,51 +75,51 @@ namespace DirectX
 
     // Helpers for creating texture from memory arrays.
     DIRECTX_TOOLKIT_API
-    HRESULT __cdecl CreateTextureFromMemory(
-        _In_ ID3D11Device* device,
-        size_t width,
-        DXGI_FORMAT format,
-        const D3D11_SUBRESOURCE_DATA& initData,
-        _COM_Outptr_opt_ ID3D11Texture1D** texture,
-        _COM_Outptr_opt_ ID3D11ShaderResourceView** textureView,
-        unsigned int bindFlags = D3D11_BIND_SHADER_RESOURCE) noexcept;
+        HRESULT __cdecl CreateTextureFromMemory(
+            _In_ ID3D11Device* device,
+            size_t width,
+            DXGI_FORMAT format,
+            const D3D11_SUBRESOURCE_DATA& initData,
+            _COM_Outptr_opt_ ID3D11Texture1D** texture,
+            _COM_Outptr_opt_ ID3D11ShaderResourceView** textureView,
+            unsigned int bindFlags = D3D11_BIND_SHADER_RESOURCE) noexcept;
 
     DIRECTX_TOOLKIT_API
-    HRESULT __cdecl CreateTextureFromMemory(
-        _In_ ID3D11Device* device,
-        size_t width, size_t height,
-        DXGI_FORMAT format,
-        const D3D11_SUBRESOURCE_DATA& initData,
-        _COM_Outptr_opt_ ID3D11Texture2D** texture,
-        _COM_Outptr_opt_ ID3D11ShaderResourceView** textureView,
-        unsigned int bindFlags = D3D11_BIND_SHADER_RESOURCE) noexcept;
+        HRESULT __cdecl CreateTextureFromMemory(
+            _In_ ID3D11Device* device,
+            size_t width, size_t height,
+            DXGI_FORMAT format,
+            const D3D11_SUBRESOURCE_DATA& initData,
+            _COM_Outptr_opt_ ID3D11Texture2D** texture,
+            _COM_Outptr_opt_ ID3D11ShaderResourceView** textureView,
+            unsigned int bindFlags = D3D11_BIND_SHADER_RESOURCE) noexcept;
 
     DIRECTX_TOOLKIT_API
-    HRESULT __cdecl CreateTextureFromMemory(
-    #if defined(_XBOX_ONE) && defined(_TITLE)
-        _In_ ID3D11DeviceX* d3dDeviceX,
-        _In_ ID3D11DeviceContextX* d3dContextX,
-    #else
-        _In_ ID3D11Device* device,
-        _In_ ID3D11DeviceContext* d3dContext,
-    #endif
-        size_t width, size_t height,
-        DXGI_FORMAT format,
-        const D3D11_SUBRESOURCE_DATA& initData,
-        _COM_Outptr_opt_ ID3D11Texture2D** texture,
-        _COM_Outptr_opt_ ID3D11ShaderResourceView** textureView) noexcept;
+        HRESULT __cdecl CreateTextureFromMemory(
+        #if defined(_XBOX_ONE) && defined(_TITLE)
+            _In_ ID3D11DeviceX* d3dDeviceX,
+            _In_ ID3D11DeviceContextX* d3dContextX,
+        #else
+            _In_ ID3D11Device* device,
+            _In_ ID3D11DeviceContext* d3dContext,
+        #endif
+            size_t width, size_t height,
+            DXGI_FORMAT format,
+            const D3D11_SUBRESOURCE_DATA& initData,
+            _COM_Outptr_opt_ ID3D11Texture2D** texture,
+            _COM_Outptr_opt_ ID3D11ShaderResourceView** textureView) noexcept;
 
     DIRECTX_TOOLKIT_API
-    HRESULT __cdecl CreateTextureFromMemory(
-        _In_ ID3D11Device* device,
-        size_t width, size_t height, size_t depth,
-        DXGI_FORMAT format,
-        const D3D11_SUBRESOURCE_DATA& initData,
-        _COM_Outptr_opt_ ID3D11Texture3D** texture,
-        _COM_Outptr_opt_ ID3D11ShaderResourceView** textureView,
-        unsigned int bindFlags = D3D11_BIND_SHADER_RESOURCE) noexcept;
+        HRESULT __cdecl CreateTextureFromMemory(
+            _In_ ID3D11Device* device,
+            size_t width, size_t height, size_t depth,
+            DXGI_FORMAT format,
+            const D3D11_SUBRESOURCE_DATA& initData,
+            _COM_Outptr_opt_ ID3D11Texture3D** texture,
+            _COM_Outptr_opt_ ID3D11ShaderResourceView** textureView,
+            unsigned int bindFlags = D3D11_BIND_SHADER_RESOURCE) noexcept;
 
-    // Strongly typed wrapper around a Direct3D constant buffer.
+        // Strongly typed wrapper around a Direct3D constant buffer.
     inline namespace DX11
     {
         namespace Private

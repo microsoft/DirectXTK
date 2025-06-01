@@ -117,8 +117,7 @@ namespace DirectX
             mDirectVoice(nullptr),
             mReverbVoice(nullptr),
             mDSPSettings{}
-        {
-        }
+        {}
 
         SoundEffectInstanceBase(SoundEffectInstanceBase&&) = default;
         SoundEffectInstanceBase& operator= (SoundEffectInstanceBase&&) = default;

@@ -32,13 +32,11 @@ ModelMeshPart::ModelMeshPart() noexcept :
     primitiveType(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST),
     indexFormat(DXGI_FORMAT_R16_UINT),
     isAlpha(false)
-{
-}
+{}
 
 
 ModelMeshPart::~ModelMeshPart()
-{
-}
+{}
 
 
 // Draws using a custom override effect.
@@ -169,13 +167,11 @@ ModelMesh::ModelMesh() noexcept :
     boneIndex(ModelBone::c_Invalid),
     ccw(true),
     pmalpha(true)
-{
-}
+{}
 
 
 ModelMesh::~ModelMesh()
-{
-}
+{}
 
 
 // Set render state for mesh part rendering.
@@ -409,8 +405,7 @@ void XM_CALLCONV ModelMesh::DrawSkinned(
 //--------------------------------------------------------------------------------------
 
 Model::~Model()
-{
-}
+{}
 
 Model::Model(Model const& other) :
     meshes(other.meshes),
