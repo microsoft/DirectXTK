@@ -3,21 +3,21 @@ Copyright (c) Microsoft Corporation.
 Licensed under the MIT License.
 #>
 
-function Execute-Setup {
+function Invoke-Setup {
     # Temporary work-around while OneFuzz does not run script from setup dir
     Set-Location -Path $PSScriptRoot
 
-    Write-Log "Executing custom setup script in $(pwd)"
+    Write-OneFuzzLog "Executing custom setup script in $(Get-Location)"
 
     # Exclude any uploaded DLL from known DLLs
-    gci -filter '*.dll' | Exclude-Library
+    Get-ChildItem -filter '*.dll' | Set-Exclude-Library
 
     # Done. Useful to know that the script did not prematurely error out
-    Write-Log 'Setup script finished successfully'
+    Write-OneFuzzLog 'Setup script finished successfully'
 }
 
 # Write log statements into the event log.
-function Write-Log {
+function Write-OneFuzzLog {
     Param(
         [Parameter(Position=0,
                    Mandatory,
@@ -41,8 +41,8 @@ function Write-Log {
 }
 
 # This function is used to exclude DLL's that the fuzzer is dependent on. The dependent DLL's
-# have been built with ASan and copied into the setup directory along with the fuzzer. 
-function Exclude-Library {
+# have been built with ASan and copied into the setup directory along with the fuzzer.
+function Set-Exclude-Library {
     Param(
         [Parameter(Position=0,
                    Mandatory,
@@ -59,34 +59,34 @@ function Exclude-Library {
         $ExistingExclusions = @()
 
         # Normalize DLL name to lowercase for comparison
-        if ($ExistingProperty -ne $null) {
+        if ($null -ne $ExistingProperty) {
             $ExistingExclusions = $ExistingProperty.$Name.ForEach("ToLower")
         }
 
         # Normalize DLL name to lowercase for comparison, remove duplicates
         $Libs = $Libraries.ForEach("ToLower") | Select-Object -Unique
-        Write-Log "Excluding libraries $Libs"
+        Write-OneFuzzLog "Excluding libraries $Libs"
 
         # Discard empty strings and libraries already excluded
         $Libs = $Libs.Where({$_.Length -gt 0 -and !($ExistingExclusions.Contains($_))})
 
         # If anything remains either add or update registry key
         if ($Libs.Length -gt 0) {
-            if ($ExistingProperty -eq $null) {
+            if ($null -eq $ExistingProperty) {
                 # Create registry key to exclude DLLs
                 New-ItemProperty -Path $Path -Name $Name -PropertyType MultiString -Value $Libs
-                Write-Log "Created known DLLs exclusions with $Libs"
+                Write-OneFuzzLog "Created known DLLs exclusions with $Libs"
             } else {
                 # Update registry key to exclude DLLs
                 Set-ItemProperty -Path $Path -Name $Name -Value ($ExistingProperty.$Name + $Libs)
-                Write-Log "Updated known DLLs exclusions with $Libs"
+                Write-OneFuzzLog "Updated known DLLs exclusions with $Libs"
             }
         } else {
             # DLLs already excluded
-            Write-Log "Known DLL exclusions already exist for $Libraries"
+            Write-OneFuzzLog "Known DLL exclusions already exist for $Libraries"
         }
     }
     End {}
 }
 
-Execute-Setup
+Invoke-Setup
