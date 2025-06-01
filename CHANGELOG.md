@@ -24,7 +24,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 * Added `DDS_LOADER_INGNORE_MIPS` flag to DDSTextureLoader
 * Refactored CMO structures into their own header
 * xwbool:
-  * Add "GNU-style" *--long-options* to the command-line tools (all existing switches are still supported)
+  * Add "GNU-style" _--long-options_ to the command-line tools (all existing switches are still supported)
   * Refactored code to use shared header
 * MakeSpriteFont: supports `--version` and `--help` and accepts either `/` or `-` style command-line parameters.
 * CMake and MSBuild project updates
@@ -89,7 +89,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ### December 15, 2022
 * GamePad, Keyboard, and Mouse headers have ``USING_XINPUT``, ``USING_GAMEINPUT``, ``USING_WINDOWS_GAMING_INPUT`` defines
-* Updates for *GameInputCreate* failure handling on PC
+* Updates for `GameInputCreate` failure handling on PC
 * _DirectX Tool Kit for Audio_ updated for XAudio2Redist 1.2.10
 * CMake project updated to require 3.20 or later
 * CMake and MSBuild project updates
