@@ -10,7 +10,7 @@ function Invoke-Setup {
     Write-OneFuzzLog "Executing custom setup script in $(Get-Location)"
 
     # Exclude any uploaded DLL from known DLLs
-    Get-ChildItem -filter '*.dll' | Set-Exclude-Library
+    Get-ChildItem -filter '*.dll' | Add-Exclude-Library
 
     # Done. Useful to know that the script did not prematurely error out
     Write-OneFuzzLog 'Setup script finished successfully'
@@ -23,8 +23,7 @@ function Write-OneFuzzLog {
                    Mandatory,
                    ValueFromPipeline,
                    ValueFromRemainingArguments)]
-        [String[]] $Messages,
-        [Parameter()] [Int] $EventId=0)
+        [String[]] $Messages)
     Begin {
         $EventSource = 'onefuzz-setup.ps1'
         $EventLog = 'Application'
@@ -34,7 +33,7 @@ function Write-OneFuzzLog {
     }
     Process {
         $Messages.ForEach({
-            Write-EventLog -LogName $EventLog -Source $EventSource -EventId $EventId -EntryType Information -Message $_
+            Write-EventLog -LogName $EventLog -Source $EventSource -EventId 0 -EntryType Information -Message $_
         })
     }
     End {}
@@ -42,7 +41,7 @@ function Write-OneFuzzLog {
 
 # This function is used to exclude DLL's that the fuzzer is dependent on. The dependent DLL's
 # have been built with ASan and copied into the setup directory along with the fuzzer.
-function Set-Exclude-Library {
+function Add-Exclude-Library {
     Param(
         [Parameter(Position=0,
                    Mandatory,
