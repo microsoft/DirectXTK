@@ -125,8 +125,7 @@ namespace DirectX
     public:
         EffectDeviceResources(_In_ ID3D11Device* device) noexcept
             : mDevice(device)
-        {
-        }
+        {}
 
         ID3D11VertexShader* DemandCreateVertexShader(_Inout_ Microsoft::WRL::ComPtr<ID3D11VertexShader>& vertexShader, ShaderBytecode const& bytecode);
         ID3D11PixelShader * DemandCreatePixelShader(_Inout_ Microsoft::WRL::ComPtr<ID3D11PixelShader> & pixelShader, ShaderBytecode const& bytecode);
@@ -258,7 +257,7 @@ namespace DirectX
                 : EffectDeviceResources(device),
                 mVertexShaders{},
                 mPixelShaders{}
-            { }
+            {}
 
 
             // Gets or lazily creates the specified vertex shader permutation.

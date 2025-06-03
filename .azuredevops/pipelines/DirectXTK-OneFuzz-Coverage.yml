@@ -13,14 +13,14 @@ pool:
 
 resources:
   repositories:
-  - repository: self
-    type: git
-    ref: refs/heads/main
-  - repository: testRepo
-    name: walbourn/directxtktest
-    type: github
-    endpoint: microsoft
-    ref: refs/heads/main
+    - repository: self
+      type: git
+      ref: refs/heads/main
+    - repository: testRepo
+      name: walbourn/directxtktest
+      type: github
+      endpoint: microsoft
+      ref: refs/heads/main
 
 parameters:
   - name: sasUrl
@@ -42,9 +42,9 @@ parameters:
 variables:
   - name: coverage-file
     value: cobertura-coverage.xml
-  - name: job-ID 
+  - name: job-ID
     value: ${{ parameters.jobID }}
-  - name: build-date 
+  - name: build-date
     value: ${{ parameters.buildDate }}
   - name: branch
     value: ${{ parameters.branch }}
@@ -54,39 +54,39 @@ variables:
     value: ${{ parameters.commitID }}
 
 jobs:
-- job: prod
-  displayName: Prod Task
-  workspace:
-    clean: all
-  steps:
-  - checkout: self
-    clean: true
-    fetchTags: false
-    fetchDepth: 1
-    path: 's'
-  - checkout: testRepo
-    displayName: Fetch Tests
-    clean: true
-    fetchTags: false
-    fetchDepth: 1
-    path: 's/Tests'
-  - powershell: |
-      Write-Host "Job ID: $(job-ID), Build Date: $(build-date), Branch: $(branch)"
-      $SASUrl = [System.Uri]::new("$(sas-url)")
-      azcopy cp $SASUrl.AbsoluteUri ./ --recursive
-      $ContainerName = $SASURL.LocalPath.Split("/")[1]
-      Write-Host "##vso[task.setvariable variable=container-name;]$ContainerName"
-      cd $ContainerName
-      $size = ((Get-Item .\$(coverage-file)).length)
-      if ($size -eq 0) {
-        Write-Host "Cobertura coverage XML is empty."
-        exit 1
-      }
-    displayName: 'Get code coverage from OneFuzz'
+  - job: prod
+    displayName: Prod Task
+    workspace:
+      clean: all
+    steps:
+      - checkout: self
+        clean: true
+        fetchTags: false
+        fetchDepth: 1
+        path: 's'
+      - checkout: testRepo
+        displayName: Fetch Tests
+        clean: true
+        fetchTags: false
+        fetchDepth: 1
+        path: 's/Tests'
+      - powershell: |
+          Write-Host "Job ID: $(job-ID), Build Date: $(build-date), Branch: $(branch)"
+          $SASUrl = [System.Uri]::new("$(sas-url)")
+          azcopy cp $SASUrl.AbsoluteUri ./ --recursive
+          $ContainerName = $SASURL.LocalPath.Split("/")[1]
+          Write-Host "##vso[task.setvariable variable=container-name;]$ContainerName"
+          cd $ContainerName
+          $size = ((Get-Item .\$(coverage-file)).length)
+          if ($size -eq 0) {
+            Write-Host "Cobertura coverage XML is empty."
+            exit 1
+          }
+        displayName: 'Get code coverage from OneFuzz'
 
-  - task: PublishCodeCoverageResults@1
-    inputs:
-      codeCoverageTool: 'Cobertura'
-      summaryFileLocation: ./$(container-name)\$(coverage-file)
-      pathToSources: $(Build.SourcesDirectory)
-    displayName: 'Generate coverage report'
+      - task: PublishCodeCoverageResults@1
+        inputs:
+          codeCoverageTool: 'Cobertura'
+          summaryFileLocation: ./$(container-name)\$(coverage-file)
+          pathToSources: $(Build.SourcesDirectory)
+        displayName: 'Generate coverage report'

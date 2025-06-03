@@ -77,8 +77,7 @@ namespace
         VoiceCallback& operator=(const VoiceCallback&) = delete;
 
         virtual ~VoiceCallback()
-        {
-        }
+        {}
 
         STDMETHOD_(void, OnVoiceProcessingPassStart) (UINT32) override {}
         STDMETHOD_(void, OnVoiceProcessingPassEnd)() override {}
@@ -287,8 +286,7 @@ public:
         mOutputFormat{},
         mCategory(AudioCategory_GameEffects),
         mVoiceInstances(0)
-    {
-    }
+    {}
 
     ~Impl() = default;
 
@@ -1536,9 +1534,9 @@ namespace
     {
     #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
         InspectableClass(L"AudioEngine.PropertyIterator", FullTrust)
-    #else
+        #else
         InspectableClass(L"AudioEngine.PropertyIterator", BaseTrust)
-    #endif
+        #endif
 
     public:
         PropertyIterator() : mFirst(true), mString(c_PKEY_AudioEngine_DeviceFormat) {}
@@ -1586,9 +1584,9 @@ namespace
     {
     #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
         InspectableClass(L"AudioEngine.PropertyList", FullTrust)
-    #else
+        #else
         InspectableClass(L"AudioEngine.PropertyList", BaseTrust)
-    #endif
+        #endif
 
     public:
         HRESULT STDMETHODCALLTYPE First(ABI::Windows::Foundation::Collections::IIterator<HSTRING> **first) override
@@ -1944,9 +1942,8 @@ AudioEngine::AudioEngine(
     const WAVEFORMATEX* wfx,
     const __wchar_t* deviceId,
     AUDIO_STREAM_CATEGORY category) noexcept(false) :
-        AudioEngine(flags, wfx, reinterpret_cast<const unsigned short*>(deviceId), category)
-{
-}
+    AudioEngine(flags, wfx, reinterpret_cast<const unsigned short*>(deviceId), category)
+{}
 
 _Use_decl_annotations_
 bool AudioEngine::Reset(const WAVEFORMATEX* wfx, const __wchar_t* deviceId)

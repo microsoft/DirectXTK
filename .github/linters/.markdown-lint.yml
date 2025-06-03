@@ -1,0 +1,20 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+# line-length
+MD013: false
+
+# blanks-around-headings
+MD022: false
+
+# blanks-around-lists
+MD032: false
+
+# no-inline-html
+MD033: false
+
+# no-bare-urls
+MD034: false
+
+# first-line-heading
+MD041: false

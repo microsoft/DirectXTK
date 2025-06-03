@@ -333,7 +333,7 @@ private:
             : EffectDeviceResources(device),
             mVertexShaders{},
             mPixelShaders{}
-        { }
+        {}
 
         // Gets or lazily creates the vertex shader.
         ID3D11VertexShader* GetVertexShader(int permutation)
@@ -906,8 +906,7 @@ void DGSLEffect::SetTexture(int whichTexture, _In_opt_ ID3D11ShaderResourceView*
 //--------------------------------------------------------------------------------------
 
 SkinnedDGSLEffect::~SkinnedDGSLEffect()
-{
-}
+{}
 
 // Animation settings.
 void SkinnedDGSLEffect::SetWeightsPerVertex(int value)

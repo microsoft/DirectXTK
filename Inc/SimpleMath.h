@@ -363,8 +363,8 @@ namespace DirectX
         DIRECTX_TOOLKIT_API inline Vector3 operator+ (const Vector3& V1, const Vector3& V2) noexcept { return Vector3(V1.x + V2.x, V1.y + V2.y, V1.z + V2.z); }
         DIRECTX_TOOLKIT_API inline Vector3 operator- (const Vector3& V1, const Vector3& V2) noexcept { return Vector3(V1.x - V2.x, V1.y - V2.y, V1.z - V2.z); }
         DIRECTX_TOOLKIT_API inline Vector3 operator* (const Vector3& V1, const Vector3& V2) noexcept { return Vector3(V1.x * V2.x, V1.y * V2.y, V1.z * V2.z); }
-        DIRECTX_TOOLKIT_API inline Vector3 operator* (const Vector3& V, float S) noexcept  { return Vector3(V.x * S, V.y * S, V.z * S); }
-        DIRECTX_TOOLKIT_API inline Vector3 operator* (float S, const Vector3& V) noexcept  { return Vector3(S * V.x, S * V.y, S * V.z); }
+        DIRECTX_TOOLKIT_API inline Vector3 operator* (const Vector3& V, float S) noexcept { return Vector3(V.x * S, V.y * S, V.z * S); }
+        DIRECTX_TOOLKIT_API inline Vector3 operator* (float S, const Vector3& V) noexcept { return Vector3(S * V.x, S * V.y, S * V.z); }
         DIRECTX_TOOLKIT_API inline Vector3 operator/ (const Vector3& V1, const Vector3& V2) noexcept { return Vector3(V1.x / V2.x, V1.y / V2.y, V1.z / V2.z); }
         DIRECTX_TOOLKIT_API inline Vector3 operator/ (const Vector3& V, float S) noexcept { return Vector3(V.x / S, V.y / S, V.z / S); }
         DIRECTX_TOOLKIT_API inline Vector3 operator/ (float S, const Vector3& V) noexcept { return Vector3(S / V.x, S / V.y, S / V.z); }
@@ -493,8 +493,7 @@ namespace DirectX
                     0, 1.f, 0, 0,
                     0, 0, 1.f, 0,
                     0, 0, 0, 1.f)
-            {
-            }
+            {}
             constexpr Matrix(float m00, float m01, float m02, float m03,
                 float m10, float m11, float m12, float m13,
                 float m20, float m21, float m22, float m23,
@@ -503,22 +502,19 @@ namespace DirectX
                     m10, m11, m12, m13,
                     m20, m21, m22, m23,
                     m30, m31, m32, m33)
-            {
-            }
+            {}
             explicit Matrix(const Vector3& r0, const Vector3& r1, const Vector3& r2) noexcept
                 : XMFLOAT4X4(r0.x, r0.y, r0.z, 0,
                     r1.x, r1.y, r1.z, 0,
                     r2.x, r2.y, r2.z, 0,
                     0, 0, 0, 1.f)
-            {
-            }
+            {}
             explicit Matrix(const Vector4& r0, const Vector4& r1, const Vector4& r2, const Vector4& r3) noexcept
                 : XMFLOAT4X4(r0.x, r0.y, r0.z, r0.w,
                     r1.x, r1.y, r1.z, r1.w,
                     r2.x, r2.y, r2.z, r2.w,
                     r3.x, r3.y, r3.z, r3.w)
-            {
-            }
+            {}
             Matrix(const XMFLOAT4X4& M) noexcept { memcpy(this, &M, sizeof(XMFLOAT4X4)); }
             Matrix(const XMFLOAT3X3& M) noexcept;
             Matrix(const XMFLOAT4X3& M) noexcept;
@@ -944,19 +940,16 @@ namespace DirectX
 
             Viewport() noexcept :
                 x(0.f), y(0.f), width(0.f), height(0.f), minDepth(0.f), maxDepth(1.f)
-            {
-            }
+            {}
             constexpr Viewport(float ix, float iy, float iw, float ih, float iminz = 0.f, float imaxz = 1.f) noexcept :
                 x(ix), y(iy), width(iw), height(ih), minDepth(iminz), maxDepth(imaxz)
-            {
-            }
+            {}
             explicit Viewport(const RECT& rct) noexcept :
                 x(float(rct.left)), y(float(rct.top)),
                 width(float(rct.right - rct.left)),
                 height(float(rct.bottom - rct.top)),
                 minDepth(0.f), maxDepth(1.f)
-            {
-            }
+            {}
 
         #if defined(__d3d11_h__) || defined(__d3d11_x_h__)
             // Direct3D 11 interop
@@ -964,8 +957,7 @@ namespace DirectX
                 x(vp.TopLeftX), y(vp.TopLeftY),
                 width(vp.Width), height(vp.Height),
                 minDepth(vp.MinDepth), maxDepth(vp.MaxDepth)
-            {
-            }
+            {}
 
             operator D3D11_VIEWPORT() noexcept { return *reinterpret_cast<const D3D11_VIEWPORT*>(this); }
             const D3D11_VIEWPORT* Get11() const noexcept { return reinterpret_cast<const D3D11_VIEWPORT*>(this); }
@@ -978,8 +970,7 @@ namespace DirectX
                 x(vp.TopLeftX), y(vp.TopLeftY),
                 width(vp.Width), height(vp.Height),
                 minDepth(vp.MinDepth), maxDepth(vp.MaxDepth)
-            {
-            }
+            {}
 
             operator D3D12_VIEWPORT() noexcept { return *reinterpret_cast<const D3D12_VIEWPORT*>(this); }
             const D3D12_VIEWPORT* Get12() const noexcept { return reinterpret_cast<const D3D12_VIEWPORT*>(this); }

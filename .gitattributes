@@ -16,6 +16,7 @@
 *.vcxproj eol=crlf
 *.filters eol=crlf
 *.sln eol=crlf
+*.yml eol=crlf
 
 # Explicitly declare resource files as binary
 *.pdb binary

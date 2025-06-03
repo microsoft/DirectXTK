@@ -444,11 +444,11 @@ namespace DirectX
             bool OemClear : 1;          // VK_OEM_CLEAR, 0xFE
             bool Reserved26 : 1;
 
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunknown-warning-option"
-#pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
-#endif
+        #ifdef __clang__
+        #pragma clang diagnostic push
+        #pragma clang diagnostic ignored "-Wunknown-warning-option"
+        #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+        #endif
 
             bool __cdecl IsKeyDown(Keys key) const noexcept
             {
@@ -472,9 +472,9 @@ namespace DirectX
                 return false;
             }
 
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
+        #ifdef __clang__
+        #pragma clang diagnostic pop
+        #endif
         };
 
         class DIRECTX_TOOLKIT_API KeyboardStateTracker

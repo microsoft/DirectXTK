@@ -152,8 +152,7 @@ public:
     }
 
     void __cdecl OnDestroyParent() noexcept override
-    {
-    }
+    {}
 
     const WAVEFORMATEX*                 mWaveFormat;
     const uint8_t*                      mStartAudio;
@@ -623,7 +622,6 @@ void SoundEffect::FillSubmitBuffer(_Out_ XAUDIO2_BUFFER& buffer) const
 _Use_decl_annotations_
 SoundEffect::SoundEffect(AudioEngine* engine, const __wchar_t* waveFileName) :
     SoundEffect(engine, reinterpret_cast<const unsigned short*>(waveFileName))
-{
-}
+{}
 
 #endif // !_NATIVE_WCHAR_T_DEFINED

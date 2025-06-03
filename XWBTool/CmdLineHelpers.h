@@ -361,7 +361,7 @@ namespace Helpers
             if (errorText)
                 LocalFree(errorText);
 
-            for(wchar_t* ptr = desc; *ptr != 0; ++ptr)
+            for (wchar_t* ptr = desc; *ptr != 0; ++ptr)
             {
                 if (*ptr == L'\r' || *ptr == L'\n')
                 {

@@ -118,9 +118,9 @@ public:
             {
             #if defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION == 1)
                 if (!mGameInput->UnregisterCallback(mDeviceToken))
-            #else
+                #else
                 if (!mGameInput->UnregisterCallback(mDeviceToken, UINT64_MAX))
-            #endif
+                #endif
                 {
                     DebugTrace("ERROR: GameInput::UnregisterCallback [keyboard] failed");
                 }
@@ -164,8 +164,7 @@ public:
     }
 
     void Reset() noexcept
-    {
-    }
+    {}
 
     bool IsConnected() const
     {
@@ -608,8 +607,7 @@ void Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 // Public constructor.
 Keyboard::Keyboard() noexcept(false)
     : pImpl(std::make_unique<Impl>(this))
-{
-}
+{}
 
 
 // Move constructor.

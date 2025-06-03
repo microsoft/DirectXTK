@@ -142,9 +142,9 @@ namespace MakeSpriteFont
                 usedPixels += (glyph.Width * glyph.Height);
             }
 
-            float utilization = ( (float)usedPixels / (float)(width * height) ) * 100;
+            float utilization = ((float)usedPixels / (float)(width * height)) * 100;
 
-            Console.WriteLine("Packing efficiency {0}%", utilization );
+            Console.WriteLine("Packing efficiency {0}%", utilization);
 
             return output;
         }

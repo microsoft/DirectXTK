@@ -260,8 +260,7 @@ public:
     }
 
     void Commit() noexcept
-    {
-    }
+    {}
 
     GraphicsMemory*  mOwner;
 

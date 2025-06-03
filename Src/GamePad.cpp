@@ -147,9 +147,9 @@ public:
             {
             #if defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION == 1)
                 if (!mGameInput->UnregisterCallback(mDeviceToken))
-            #else
+                #else
                 if (!mGameInput->UnregisterCallback(mDeviceToken, UINT64_MAX))
-            #endif
+                #endif
                 {
                     DebugTrace("ERROR: GameInput::UnregisterCallback [gamepad] failed");
                 }
@@ -1574,8 +1574,7 @@ GamePad::Impl* GamePad::Impl::s_gamePad = nullptr;
 // Public constructor.
 GamePad::GamePad() noexcept(false)
     : pImpl(std::make_unique<Impl>(this))
-{
-}
+{}
 
 
 // Move constructor.

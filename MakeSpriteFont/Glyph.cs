@@ -28,7 +28,7 @@ namespace MakeSpriteFont
         // Glyph image data (may only use a portion of a larger bitmap).
         public Bitmap Bitmap;
         public Rectangle Subrect;
-        
+
 
         // Layout information.
         public float XOffset;

@@ -10,7 +10,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 * C++17 `std::byte` support for `FromMemory` functions
 * GamePad, Keyboard, and Mouse _GameInput_ implementation now supports both v0 and v1 of the API
 * SimpleMath changes for Vector2/Vector3 operators to speed up performance particularly in debug builds
-* *DirectX Tool Kit for Audio* changes:
+* _DirectX Tool Kit for Audio_ changes:
   * Added more audio engine flags to control X3DAudio usage: `AudioEngine_DisableLFERedirect`, `AudioEngine_DisableDopplerEffect`, `AudioEngine_ZeroCenter3D`
   * Repurposed `SoundEffectInstance_UseRedirectLFE` from an internal flag to a per voice override
   * Added `SoundEffectInstance_ZeroCenter3D` as a per voice override
@@ -24,13 +24,13 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 * Added `DDS_LOADER_INGNORE_MIPS` flag to DDSTextureLoader
 * Refactored CMO structures into their own header
 * xwbool:
-  * Add "GNU-style" *--long-options* to the command-line tools (all existing switches are still supported)
+  * Add "GNU-style" _--long-options_ to the command-line tools (all existing switches are still supported)
   * Refactored code to use shared header
 * MakeSpriteFont: supports `--version` and `--help` and accepts either `/` or `-` style command-line parameters.
 * CMake and MSBuild project updates
 
 ### September 4, 2024
-* *DirectX Tool Kit for Audio* update
+* _DirectX Tool Kit for Audio_ update
   * Added ``IsValid`` method to **AudioEmitter** and **AudioListener**
 * Sync'd DDS.H with latest changes from DirectXTex
 * CMake project updates including support for ARM64EC
@@ -53,7 +53,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 * Code review
 
 ### October 28, 2023
-* Additional methods for *DirectX Tool Kit for Audio* emitter for linear and inverse-square falloff curves
+* Additional methods for _DirectX Tool Kit for Audio_ emitter for linear and inverse-square falloff curves
 * xwbtool: -flist option updated to support filenames with spaces
 
 ### September 1, 2023
@@ -71,7 +71,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 * xwbtool: Windows on ARM64 version
 
 ### March 30, 2023
-* *DirectX Tool Kit for Audio* updates
+* _DirectX Tool Kit for Audio_ updates
   * Reworked audio device enumeration for XAudio 2.9 to use MMDeviceEnumerator rather than Windows Runtime APIs
   * ``GetOutputFormat`` now reports sample rate and bit-depth from the audio device properties
   * New method ``GetOutputSampleRate`` added to return the input sample rate of the mastering voice
@@ -84,13 +84,13 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 * Mouse relative mode now accumulates multiple delta updates per frame. Added new optional but recommended method ``EndOfInputFrame``.
 * Fixed out-of-bounds read bug in the .WAV file reader.
 * Additional checks added to DDSTextureLoader for planar video formats.
-* *DirectX Tool Kit for Audio* updated for XAudio2Redist 1.2.11
+* _DirectX Tool Kit for Audio_ updated for XAudio2Redist 1.2.11
 * CMake project updates
 
 ### December 15, 2022
 * GamePad, Keyboard, and Mouse headers have ``USING_XINPUT``, ``USING_GAMEINPUT``, ``USING_WINDOWS_GAMING_INPUT`` defines
-* Updates for *GameInputCreate* failure handling on PC
-* *DirectX Tool Kit for Audio* updated for XAudio2Redist 1.2.10
+* Updates for `GameInputCreate` failure handling on PC
+* _DirectX Tool Kit for Audio_ updated for XAudio2Redist 1.2.10
 * CMake project updated to require 3.20 or later
 * CMake and MSBuild project updates
 * Minor MinGW code changes
@@ -98,13 +98,13 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 * Test suite updated with CTest support
 
 ### October 17, 2022
-* Additional methods for *DirectX Tool Kit for Audio* emitter and listener for cone and falloff curves
+* Additional methods for _DirectX Tool Kit for Audio_ emitter and listener for cone and falloff curves
 * Added use of C++11 inline namespaces to make it possible to link both DX11 and DX12 versions at once
 * Minor fix for ``CompileShaders.cmd`` to address additional 'paths with spaces' issues
 * Minor CMake update
 
 ### July 29, 2022
-* *breaking change* DDSTextureLoader ``Ex`` functions now use ``DDS_LOADER_FLAGS`` instead of ``bool forceSRGB`` parameter.
+* _breaking change_ DDSTextureLoader ``Ex`` functions now use ``DDS_LOADER_FLAGS`` instead of ``bool forceSRGB`` parameter.
 * MapGuard helper class updated with a new ``copy`` method
 * Fixed Mouse race-condition with changing mode and resetting scroll wheel at the same time.
 * CMake and MSBuild project updates
@@ -112,7 +112,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ### June 15, 2022
 * GamePad, Keyboard, and Mouse updated to use GameInput on PC for the Gaming.Desktop.x64 platform
-* *DirectX Tool Kit for Audio* updated for XAudio2Redist 1.2.9
+* _DirectX Tool Kit for Audio_ updated for XAudio2Redist 1.2.9
 * CMake project updates
 
 ### May 9, 2022
@@ -136,7 +136,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 * SimpleMath Quaternion updated with **ToEuler**, **RotateTowards**, **FromToRotation**, **LookRotation**, and **Angle** methods
 * Keyboard updated with new IME On/Off v-keys
 * Win32 Mouse now uses ``WM_ACTIVATE`` for more robust behavior
-* *DirectX Tool Kit for Audio* updated for Advanced Format (4Kn) wavebank streaming
+* _DirectX Tool Kit for Audio_ updated for Advanced Format (4Kn) wavebank streaming
 * Code and project review including fixing clang v13 warnings
 * Added CMakePresets.json
 * xwbtool: Added support for Advanced Format (4Kn) streaming wavebanks with ``-af``
@@ -149,7 +149,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ### October 18, 2021
 * Fixed loading of skinned PBR models from SDKMESH v2
-* *DirectX Tool Kit for Audio* updated for XAudio2Redist 1.2.8
+* _DirectX Tool Kit for Audio_ updated for XAudio2Redist 1.2.8
 * Minor code review updates
 
 ### October 13, 2021
@@ -202,9 +202,9 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ### November 11, 2020
 * Fixed ``/analyze`` warnings in GameInput usage
-* Fixed *DirectX Tool Kit for Audio* use of XAudio 2.8 for Windows 8 w/ Windows 10 SDK
+* Fixed _DirectX Tool Kit for Audio_ use of XAudio 2.8 for Windows 8 w/ Windows 10 SDK
 * Minor code and project cleanup
-* *DirectX Tool Kit for Audio* updated for XAudio2Redist 1.2.4
+* _DirectX Tool Kit for Audio_ updated for XAudio2Redist 1.2.4
 
 ### September 30, 2020
 * GamePad class updated with ``c_MostRecent`` constant for ``-1`` player index special behavior
@@ -215,29 +215,29 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 ### August 15, 2020
 * EnvironmentMapEffect now supports cubemaps, spherical, and dual-parabola environment maps
 * Code review and project updates
-* *DirectX Tool Kit for Audio* updated for XAudio2Redist 1.2.3
+* _DirectX Tool Kit for Audio_ updated for XAudio2Redist 1.2.3
 
 ### July 2, 2020
 * Improved SpriteFont drawing performance in Debug builds
 * Regenerated shaders using Windows 10 May 2020 Update SDK (19041)
 * Code cleanup for some new VC++ 16.7 warnings and static code analysis
 * CMake updates
-* *DirectX Tool Kit for Audio* updated for XAudio2Redist 1.2.2
+* _DirectX Tool Kit for Audio_ updated for XAudio2Redist 1.2.2
 
 ### June 1, 2020
 * Added BufferHelpers header with functions **CreateStaticBuffer** / **CreateTextureFromMemory**, and the **ConstantBuffer** helper class
 * Added **IsPowerOf2** and **CreateInputLayoutFromEffect** helpers to DirectXHelpers
-* Converted to typed enum bitmask flags (see release notes for details on this potential *breaking change*)
-  + ``AUDIO_ENGINE_FLAGS``, ``ModelLoaderFlags``, ``SOUND_EFFECT_INSTANCE_FLAGS``, and ``WIC_LOADER_FLAGS``
+* Converted to typed enum bitmask flags (see release notes for details on this potential _breaking change_)
+  * ``AUDIO_ENGINE_FLAGS``, ``ModelLoaderFlags``, ``SOUND_EFFECT_INSTANCE_FLAGS``, and ``WIC_LOADER_FLAGS``
 * WICTextureLoader for ``PNG`` codec now checks ``gAMA`` chunk to determine colorspace if the ``sRGB`` chunk is not found for legacy sRGB detection.
 * ``WIC_LOADER_SRGB_DEFAULT`` flag added when loading image via WIC without explicit colorspace metadata
-* Retired XAudio 2.7 for *DirectX Tool Kit for Audio*. Use XAudio 2.9, XAudio 2.8, or XAudio2Redist instead.
+* Retired XAudio 2.7 for _DirectX Tool Kit for Audio_. Use XAudio 2.9, XAudio 2.8, or XAudio2Redist instead.
 * CMake project updates
 
 ### May 10, 2020
 * WICTextureLoader updated with new loader flags: ``FORCE_RGBA32``, ``FIT_POW2``, and ``MAKE_SQUARE``
 * SimpleMath no longer forces use of d3d11.h or d3d12.h (can be used with d3d9.h for example)
-* *DirectX Tool Kit for Audio* updated with **SoundStreamInstance** class for async I/O playback from XACT-style streaming wavebanks
+* _DirectX Tool Kit for Audio_ updated with **SoundStreamInstance** class for async I/O playback from XACT-style streaming wavebanks
 * Code cleanup
 * xwbtool: Updated with ``-l`` switch for case-sensitive file systems
 
@@ -247,7 +247,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 * CMake updated for PCH usage with 3.16 or later
 
 ### February 24, 2020
-* *breaking change* **Model::CreateFromxxx** changed to use ModelLoaderFlags instead of default bool parameters
+* _breaking change_ **Model::CreateFromxxx** changed to use ModelLoaderFlags instead of default bool parameters
 * DirectX Tool Kit for Audio updated to support XAudio2Redist NuGet
 * Added ``ignoreWhitespace`` defaulted parameter to SpriteFont Measure methods
 * Fixed encoding issue with Utilities.fxh
@@ -301,7 +301,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ### October 31, 2018
 * Model loader for SDKMESH now attempts to use legacy DE3CN compressed normals
-  + This is an approximation only and emits a warning in debug builds
+  * This is an approximation only and emits a warning in debug builds
 
 ### October 25, 2018
 * Use UTF-8 instead of ANSI for narrow strings
@@ -345,7 +345,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 ### December 13, 2017
 * **PBREffect** and **DebugEffect** added
 * **NormalMapEffect** no longer requires or uses explicit vertex tangents
-* *breaking change* NormalMapEffect::SetBiasedVertexNormalsAndTangents renamed to **SetBiasedVertexNormals**
+* _breaking change_ NormalMapEffect::SetBiasedVertexNormalsAndTangents renamed to **SetBiasedVertexNormals**
 * PBREffect, DebugEffect, & NormalMapEffect all require Direct3D hardware feature level 10.0 or better
 * **VertexType** typedef added to GeometricPrimitive as alias for VertexPositionNormalTexture
 * Updated for VS 2017 15.5 update warnings
@@ -432,7 +432,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 * **MeasureDrawString** added to SpriteFont; bad fix to MeasureString reverted
 * GamePad tracker updated to track emulated buttons (i.e. leftStickUp)
 * EffectFactory **SetDirectory** now checks current working directory (CWD) as well
-* *breaking change* must include <d3d11.h> before including <SimpleMath.h>
+* _breaking change_ must include <d3d11.h> before including <SimpleMath.h>
 * Code refactor for sharing some files with DirectX 12 version
 * Minor code cleanup
 
@@ -460,7 +460,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ### January 5, 2016
 * Xbox One platform updates
-* *breaking change* Need to add use of **GraphicsMemory** class to Xbox One titles
+* _breaking change_ Need to add use of **GraphicsMemory** class to Xbox One titles
 * Minor code cleanup
 
 ### November 30, 2015
@@ -472,7 +472,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ### October 30, 2015
 * DirectXTK for Audio 3D updates
-* *breaking change* emitters/listeners now use RH coordinates by default
+* _breaking change_ emitters/listeners now use RH coordinates by default
 * **GeometricPrimitive** support for custom geometry
 * SimpleMath Matrix class improvements
 * DDS support for legacy bumpmap formats (V8U8, Q8W8V8U8, V16U16)
@@ -505,11 +505,11 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ### February 25, 2015
 * DirectXTK for Audio updates
-  + *breaking change* pitch now defined as -1 to 1 with 0 as the default
-  + One-shot Play method with volume, pitch, and pan
-  + **GetMasterVolume** / **SetMasterVolume** method for AudioEngine
-  + Fix for compact wavebank validation
-  + Improved voice cleanup and shutdown
+  * _breaking change_ pitch now defined as -1 to 1 with 0 as the default
+  * One-shot Play method with volume, pitch, and pan
+  * **GetMasterVolume** / **SetMasterVolume** method for AudioEngine
+  * Fix for compact wavebank validation
+  * Improved voice cleanup and shutdown
 * Minor code cleanup and C++11 ``=default``/``=delete`` usage
 
 ### January 26, 2015
@@ -534,7 +534,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ### September 5, 2014
 * **GamePad** class: gamepad controller helper using XInput on Windows, IGamepad for Xbox One
-* SimpleMath updates; Matrix billboard methods; *breaking change*: Matrix::Identity() -> Matrix::Identity
+* SimpleMath updates; Matrix billboard methods; _breaking change_: Matrix::Identity() -> Matrix::Identity
 * SpriteBatch new optional **SetViewport** method
 * SpriteFont fix for white-space character rendering optimization
 * DDSTextureLoader fix for auto-gen mipmaps for volume textures
@@ -564,7 +564,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 * Code cleanup (removed ``DXGI_1_2_FORMATS`` control define; d2d1.h workaround not needed; ScopedObject typedef removed)
 
 ### December 24, 2013
-* Added **DirectX Tool Kit for Audio** using XAudio2
+* Added _DirectX Tool Kit for Audio_ using XAudio2
 * Xbox One platform support
 * ``MakeSpriteFont`` tool updated with more progress feedback when capturing large fonts
 * Minor updates for ``SDKMESH`` Model loader
@@ -594,12 +594,12 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ### February 22, 2013
 * Added **SimpleMath** header
-* Fixed bug that prevented properly overriding EffectFactory::CreateTexture
+* Fixed bug that prevented properly overriding **EffectFactory::CreateTexture**
 * Fixed forceSRGB logic in DDSTextureLoader and WICTextureLoader
 * Break circular reference chains when using SpriteBatch with a setCustomShaders lambda
 * Updated projects with ``/fp:fast`` for all configs, ``/arch:SSE2`` for Win32 configs
 * Sensibly named .pdb output files
-* Added ``WIC_USE_FACTORY_PROXY`` build option (uses WindowsCodecs.dll entrypoint rather than CoCreateInstance)
+* Added ``WIC_USE_FACTORY_PROXY`` build option (uses _WindowsCodecs.dll_ entrypoint rather than ``CoCreateInstance``)
 
 ### January 25, 2013
 * **GeometricPrimitive** support for left-handed coordinates and drawing with custom effects

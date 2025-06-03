@@ -8,7 +8,7 @@
 //
 // Developed by Minigraph
 //
-// Author:  James Stanard 
+// Author:  James Stanard
 //
 
 #ifndef __PIXEL_PACKING_VELOCITY_HLSLI__

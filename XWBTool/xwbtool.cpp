@@ -87,26 +87,26 @@ struct XMA2WAVEFORMATEX
 {
     WAVEFORMATEX wfx;
     // Meaning of the WAVEFORMATEX fields here:
-    //    wFormatTag;        // Audio format type; always WAVE_FORMAT_XMA2
-    //    nChannels;         // Channel count of the decoded audio
-    //    nSamplesPerSec;    // Sample rate of the decoded audio
-    //    nAvgBytesPerSec;   // Used internally by the XMA encoder
-    //    nBlockAlign;       // Decoded sample size; channels * wBitsPerSample / 8
-    //    wBitsPerSample;    // Bits per decoded mono sample; always 16 for XMA
-    //    cbSize;            // Size in bytes of the rest of this structure (34)
+    //    wFormatTag;       // Audio format type; always WAVE_FORMAT_XMA2
+    //    nChannels;        // Channel count of the decoded audio
+    //    nSamplesPerSec;   // Sample rate of the decoded audio
+    //    nAvgBytesPerSec;  // Used internally by the XMA encoder
+    //    nBlockAlign;      // Decoded sample size; channels * wBitsPerSample / 8
+    //    wBitsPerSample;   // Bits per decoded mono sample; always 16 for XMA
+    //    cbSize;           // Size in bytes of the rest of this structure (34)
 
-    WORD  NumStreams;        // Number of audio streams (1 or 2 channels each)
-    DWORD ChannelMask;       // Spatial positions of the channels in this file,
-                             // stored as SPEAKER_xxx values (see audiodefs.h)
-    DWORD SamplesEncoded;    // Total number of PCM samples per channel the file decodes to
-    DWORD BytesPerBlock;     // XMA block size (but the last one may be shorter)
-    DWORD PlayBegin;         // First valid sample in the decoded audio
-    DWORD PlayLength;        // Length of the valid part of the decoded audio
-    DWORD LoopBegin;         // Beginning of the loop region in decoded sample terms
-    DWORD LoopLength;        // Length of the loop region in decoded sample terms
-    BYTE  LoopCount;         // Number of loop repetitions; 255 = infinite
-    BYTE  EncoderVersion;    // Version of XMA encoder that generated the file
-    WORD  BlockCount;        // XMA blocks in file (and entries in its seek table)
+    WORD  NumStreams;       // Number of audio streams (1 or 2 channels each)
+    DWORD ChannelMask;      // Spatial positions of the channels in this file,
+                            // stored as SPEAKER_xxx values (see audiodefs.h)
+    DWORD SamplesEncoded;   // Total number of PCM samples per channel the file decodes to
+    DWORD BytesPerBlock;    // XMA block size (but the last one may be shorter)
+    DWORD PlayBegin;        // First valid sample in the decoded audio
+    DWORD PlayLength;       // Length of the valid part of the decoded audio
+    DWORD LoopBegin;        // Beginning of the loop region in decoded sample terms
+    DWORD LoopLength;       // Length of the loop region in decoded sample terms
+    BYTE  LoopCount;        // Number of loop repetitions; 255 = infinite
+    BYTE  EncoderVersion;   // Version of XMA encoder that generated the file
+    WORD  BlockCount;       // XMA blocks in file (and entries in its seek table)
 };
 #endif
 
@@ -1138,20 +1138,20 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
                 break;
 
             case OPT_FILELIST:
-            {
-                std::filesystem::path path(pValue);
-                std::wifstream inFile(path.make_preferred().c_str());
-                if (!inFile)
                 {
-                    wprintf(L"Error opening -flist file %ls\n", pValue);
-                    return 1;
+                    std::filesystem::path path(pValue);
+                    std::wifstream inFile(path.make_preferred().c_str());
+                    if (!inFile)
+                    {
+                        wprintf(L"Error opening -flist file %ls\n", pValue);
+                        return 1;
+                    }
+
+                    inFile.imbue(std::locale::classic());
+
+                    ProcessFileList(inFile, conversion);
                 }
-
-                inFile.imbue(std::locale::classic());
-
-                ProcessFileList(inFile, conversion);
-            }
-            break;
+                break;
             }
         }
         else if (wcspbrk(pArg, L"?*") != nullptr)
@@ -1376,17 +1376,17 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
             break;
 
         case MINIWAVEFORMAT::TAG_ADPCM:
-        {
-            auto adpcmFmt = reinterpret_cast<const ADPCMEWAVEFORMAT*>(wfx);
-            duration = (uint64_t(it->data.audioBytes) / uint64_t(wfx->nBlockAlign)) * uint64_t(adpcmFmt->wSamplesPerBlock);
-            int partial = it->data.audioBytes % wfx->nBlockAlign;
-            if (partial)
             {
-                if (partial >= (7 * wfx->nChannels))
-                    duration += (uint64_t(partial) * 2 / uint64_t(wfx->nChannels - 12));
+                auto adpcmFmt = reinterpret_cast<const ADPCMEWAVEFORMAT*>(wfx);
+                duration = (uint64_t(it->data.audioBytes) / uint64_t(wfx->nBlockAlign)) * uint64_t(adpcmFmt->wSamplesPerBlock);
+                int partial = it->data.audioBytes % wfx->nBlockAlign;
+                if (partial)
+                {
+                    if (partial >= (7 * wfx->nChannels))
+                        duration += (uint64_t(partial) * 2 / uint64_t(wfx->nChannels - 12));
+                }
             }
-        }
-        break;
+            break;
 
         case MINIWAVEFORMAT::TAG_WMA:
             if (it->data.seekCount > 0)

@@ -6,28 +6,28 @@
 # Builds the library for Windows Desktop and UWP.
 
 schedules:
-- cron: "0 2 * * *"
-  displayName: 'Nightly build'
-  branches:
-    include:
-    - main
+  - cron: "0 2 * * *"
+    displayName: 'Nightly build'
+    branches:
+      include:
+        - main
 
 # GitHub Actions handles MSBuild for CI/PR
 trigger: none
 pr:
   branches:
     include:
-    - main
+      - main
   paths:
     include:
-    - '.azuredevops/pipelines/DirectXTK-GitHub-Dev17.yml'
-    - Src/Shaders/CompileShaders.cmd
+      - '.azuredevops/pipelines/DirectXTK-GitHub-Dev17.yml'
+      - Src/Shaders/CompileShaders.cmd
 
 resources:
   repositories:
-  - repository: self
-    type: git
-    ref: refs/heads/main
+    - repository: self
+      type: git
+      ref: refs/heads/main
 
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
@@ -35,100 +35,100 @@ pool:
   vmImage: windows-2022
 
 variables:
-- group: dxtk-shared-variables
-- name: Codeql.Enabled
-  value: false
-- name: GUID_FEED
-  value: $(ADOFeedGUID)
+  - group: dxtk-shared-variables
+  - name: Codeql.Enabled
+    value: false
+  - name: GUID_FEED
+    value: $(ADOFeedGUID)
 
 jobs:
-- job: DESKTOP_BUILD
-  displayName: 'Windows Desktop'
-  timeoutInMinutes: 120
-  cancelTimeoutInMinutes: 1
-  strategy:
-    maxParallel: 3
-    matrix:
-      Release_arm64:
-        BuildPlatform: ARM64
-        BuildConfiguration: Release
-      Debug_arm64:
-        BuildPlatform: ARM64
-        BuildConfiguration: Debug
-      Release_x64:
-        BuildPlatform: x64
-        BuildConfiguration: Release
-      Debug_x64:
-        BuildPlatform: x64
-        BuildConfiguration: Debug
-      Release_x86:
-        BuildPlatform: x86
-        BuildConfiguration: Release
-      Debug_x86:
-        BuildPlatform: x86
-        BuildConfiguration: Debug
-      Release_Mixed:
-        BuildPlatform: 'Mixed Platforms'
-        BuildConfiguration: Release
-      Debug_Mixed:
-        BuildPlatform: 'Mixed Platforms'
-        BuildConfiguration: Debug
-  steps:
-  - checkout: self
-    clean: true
-    fetchTags: false
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022.sln
-    inputs:
-      solution: DirectXTK_Desktop_2022.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: '$(BuildPlatform)'
-      configuration: '$(BuildConfiguration)'
-      msbuildArchitecture: x64
-    condition: ne(variables['BuildPlatform'], 'ARM64')
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022_Win10.sln
-    inputs:
-      solution: DirectXTK_Desktop_2022_Win10.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: '$(BuildPlatform)'
-      configuration: '$(BuildConfiguration)'
-      msbuildArchitecture: x64
+  - job: DESKTOP_BUILD
+    displayName: 'Windows Desktop'
+    timeoutInMinutes: 120
+    cancelTimeoutInMinutes: 1
+    strategy:
+      maxParallel: 3
+      matrix:
+        Release_arm64:
+          BuildPlatform: ARM64
+          BuildConfiguration: Release
+        Debug_arm64:
+          BuildPlatform: ARM64
+          BuildConfiguration: Debug
+        Release_x64:
+          BuildPlatform: x64
+          BuildConfiguration: Release
+        Debug_x64:
+          BuildPlatform: x64
+          BuildConfiguration: Debug
+        Release_x86:
+          BuildPlatform: x86
+          BuildConfiguration: Release
+        Debug_x86:
+          BuildPlatform: x86
+          BuildConfiguration: Debug
+        Release_Mixed:
+          BuildPlatform: 'Mixed Platforms'
+          BuildConfiguration: Release
+        Debug_Mixed:
+          BuildPlatform: 'Mixed Platforms'
+          BuildConfiguration: Debug
+    steps:
+      - checkout: self
+        clean: true
+        fetchTags: false
+      - task: VSBuild@1
+        displayName: Build solution DirectXTK_Desktop_2022.sln
+        inputs:
+          solution: DirectXTK_Desktop_2022.sln
+          msbuildArgs: /p:PreferredToolArchitecture=x64
+          platform: '$(BuildPlatform)'
+          configuration: '$(BuildConfiguration)'
+          msbuildArchitecture: x64
+        condition: ne(variables['BuildPlatform'], 'ARM64')
+      - task: VSBuild@1
+        displayName: Build solution DirectXTK_Desktop_2022_Win10.sln
+        inputs:
+          solution: DirectXTK_Desktop_2022_Win10.sln
+          msbuildArgs: /p:PreferredToolArchitecture=x64
+          platform: '$(BuildPlatform)'
+          configuration: '$(BuildConfiguration)'
+          msbuildArchitecture: x64
 
-- job: UWP_BUILD
-  displayName: 'Universal Windows Platform (UWP)'
-  timeoutInMinutes: 120
-  cancelTimeoutInMinutes: 1
-  strategy:
-    maxParallel: 3
-    matrix:
-      Release_arm64:
-        BuildPlatform: ARM64
-        BuildConfiguration: Release
-      Debug_arm64:
-        BuildPlatform: ARM64
-        BuildConfiguration: Debug
-      Release_x64:
-        BuildPlatform: x64
-        BuildConfiguration: Release
-      Debug_x64:
-        BuildPlatform: x64
-        BuildConfiguration: Debug
-      Release_x86:
-        BuildPlatform: x86
-        BuildConfiguration: Release
-      Debug_x86:
-        BuildPlatform: x86
-        BuildConfiguration: Debug
-  steps:
-  - checkout: self
-    clean: true
-    fetchTags: false
-  - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2022.sln
-    inputs:
-      solution: DirectXTK_Windows10_2022.sln
-      msbuildArgs: /p:PreferredToolArchitecture=x64
-      platform: '$(BuildPlatform)'
-      configuration: '$(BuildConfiguration)'
-      msbuildArchitecture: x64
+  - job: UWP_BUILD
+    displayName: 'Universal Windows Platform (UWP)'
+    timeoutInMinutes: 120
+    cancelTimeoutInMinutes: 1
+    strategy:
+      maxParallel: 3
+      matrix:
+        Release_arm64:
+          BuildPlatform: ARM64
+          BuildConfiguration: Release
+        Debug_arm64:
+          BuildPlatform: ARM64
+          BuildConfiguration: Debug
+        Release_x64:
+          BuildPlatform: x64
+          BuildConfiguration: Release
+        Debug_x64:
+          BuildPlatform: x64
+          BuildConfiguration: Debug
+        Release_x86:
+          BuildPlatform: x86
+          BuildConfiguration: Release
+        Debug_x86:
+          BuildPlatform: x86
+          BuildConfiguration: Debug
+    steps:
+      - checkout: self
+        clean: true
+        fetchTags: false
+      - task: VSBuild@1
+        displayName: Build solution DirectXTK_Windows10_2022.sln
+        inputs:
+          solution: DirectXTK_Windows10_2022.sln
+          msbuildArgs: /p:PreferredToolArchitecture=x64
+          platform: '$(BuildPlatform)'
+          configuration: '$(BuildConfiguration)'
+          msbuildArchitecture: x64

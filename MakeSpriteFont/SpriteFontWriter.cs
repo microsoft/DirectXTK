@@ -33,7 +33,7 @@ namespace MakeSpriteFont
 
                 writer.Write(lineSpacing);
                 writer.Write(options.DefaultCharacter);
-                
+
                 WriteBitmap(writer, options, bitmap);
             }
         }
@@ -78,15 +78,15 @@ namespace MakeSpriteFont
                 case TextureFormat.Rgba32:
                     WriteRgba32(writer, bitmap);
                     break;
-             
+
                 case TextureFormat.Bgra4444:
                     WriteBgra4444(writer, bitmap);
                     break;
-                
+
                 case TextureFormat.CompressedMono:
                     WriteCompressedMono(writer, bitmap, options);
                     break;
-                
+
                 default:
                     throw new NotSupportedException();
             }

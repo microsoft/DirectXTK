@@ -312,8 +312,7 @@ void PBREffectFactory::Impl::ReleaseCache()
 
 PBREffectFactory::PBREffectFactory(_In_ ID3D11Device* device)
     : pImpl(Impl::instancePool.DemandCreate(device))
-{
-}
+{}
 
 PBREffectFactory::PBREffectFactory(PBREffectFactory&&) noexcept = default;
 PBREffectFactory& PBREffectFactory::operator= (PBREffectFactory&&) noexcept = default;

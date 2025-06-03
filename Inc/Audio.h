@@ -327,7 +327,7 @@ namespace DirectX
         DIRECTX_TOOLKIT_API static std::vector<RendererDetail> __cdecl GetRendererDetails();
             // Returns a list of valid audio endpoint devices
 
-#if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
+    #if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
         DIRECTX_TOOLKIT_API explicit AudioEngine(
             AUDIO_ENGINE_FLAGS flags = AudioEngine_Default,
             _In_opt_ const WAVEFORMATEX* wfx = nullptr,
@@ -337,7 +337,7 @@ namespace DirectX
         DIRECTX_TOOLKIT_API bool __cdecl Reset(
             _In_opt_ const WAVEFORMATEX* wfx = nullptr,
             _In_opt_z_ const __wchar_t* deviceId = nullptr);
-#endif
+    #endif
 
     private:
         // Private implementation.
@@ -425,11 +425,11 @@ namespace DirectX
             unsigned int index,
             _Out_writes_bytes_(datasize) void* data, size_t datasize);
 
-#if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
+    #if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
         DIRECTX_TOOLKIT_API WaveBank(
             _In_ AudioEngine* engine,
             _In_z_ const __wchar_t* wbFileName);
-#endif
+    #endif
 
     private:
         // Private implementation.
@@ -507,11 +507,11 @@ namespace DirectX
 
         DIRECTX_TOOLKIT_API void __cdecl UnregisterInstance(_In_ IVoiceNotify* instance);
 
-#if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
+    #if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
         DIRECTX_TOOLKIT_API SoundEffect(
             _In_ AudioEngine* engine,
             _In_z_ const __wchar_t* waveFileName);
-#endif
+    #endif
 
     private:
         // Private implementation.
@@ -898,9 +898,9 @@ namespace DirectX
 #endif
 
     DEFINE_ENUM_FLAG_OPERATORS(AUDIO_ENGINE_FLAGS)
-    DEFINE_ENUM_FLAG_OPERATORS(SOUND_EFFECT_INSTANCE_FLAGS)
+        DEFINE_ENUM_FLAG_OPERATORS(SOUND_EFFECT_INSTANCE_FLAGS)
 
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
+    #ifdef __clang__
+    #pragma clang diagnostic pop
+    #endif
 }

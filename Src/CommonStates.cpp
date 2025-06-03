@@ -24,8 +24,7 @@ class CommonStates::Impl
 public:
     explicit Impl(_In_ ID3D11Device* device) noexcept
         : mDevice(device)
-    {
-    }
+    {}
 
     Impl(const Impl&) = delete;
     Impl& operator=(const Impl&) = delete;
@@ -189,8 +188,7 @@ HRESULT CommonStates::Impl::CreateSamplerState(
 // Public constructor.
 CommonStates::CommonStates(_In_ ID3D11Device* device)
     : pImpl(Impl::instancePool.DemandCreate(device))
-{
-}
+{}
 
 
 CommonStates::CommonStates(CommonStates&&) noexcept = default;

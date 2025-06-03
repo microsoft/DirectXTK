@@ -73,7 +73,7 @@ namespace DirectX
         }
 
 
-            static void operator delete[](void* ptr)
+        static void operator delete[](void* ptr)
         {
             operator delete(ptr);
         }

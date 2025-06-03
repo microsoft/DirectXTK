@@ -86,15 +86,13 @@ namespace DirectX
                 parentIndex(c_Invalid),
                 childIndex(c_Invalid),
                 siblingIndex(c_Invalid)
-            {
-            }
+            {}
 
             ModelBone(uint32_t parent, uint32_t child, uint32_t sibling) noexcept :
                 parentIndex(parent),
                 childIndex(child),
                 siblingIndex(sibling)
-            {
-            }
+            {}
 
             uint32_t            parentIndex;
             uint32_t            childIndex;
@@ -165,7 +163,7 @@ namespace DirectX
                 uint32_t startInstanceLocation = 0,
                 _In_ std::function<void __cdecl()> setCustomState = nullptr) const;
 
-           // Create input layout for drawing with a custom effect.
+            // Create input layout for drawing with a custom effect.
             void __cdecl CreateInputLayout(_In_ ID3D11Device* device, _In_ IEffect* ieffect, _Outptr_ ID3D11InputLayout** iinputLayout) const;
 
             // Change effect used by part and regenerate input layout (be sure to call Model::Modified as well)
@@ -350,7 +348,7 @@ namespace DirectX
                 _In_ std::shared_ptr<IEffect> ieffect = nullptr,
                 ModelLoaderFlags flags = ModelLoader_Clockwise);
 
-#ifdef __cpp_lib_byte
+        #ifdef __cpp_lib_byte
             static std::unique_ptr<Model> __cdecl CreateFromCMO(
                 _In_ ID3D11Device* device,
                 _In_reads_bytes_(dataSize) const std::byte* meshData, size_t dataSize,
@@ -378,9 +376,9 @@ namespace DirectX
             {
                 return CreateFromVBO(device, reinterpret_cast<const uint8_t*>(meshData), dataSize, ieffect, flags);
             }
-#endif // __cpp_lib_byte
+        #endif // __cpp_lib_byte
 
-#if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
+        #if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
             static std::unique_ptr<Model> __cdecl CreateFromCMO(
                 _In_ ID3D11Device* device,
                 _In_z_ const __wchar_t* szFileName,
@@ -399,7 +397,7 @@ namespace DirectX
                 _In_z_ const __wchar_t* szFileName,
                 _In_ std::shared_ptr<IEffect> ieffect = nullptr,
                 ModelLoaderFlags flags = ModelLoader_Clockwise);
-#endif // !_NATIVE_WCHAR_T_DEFINED
+        #endif // !_NATIVE_WCHAR_T_DEFINED
 
         private:
             std::set<IEffect*>  mEffectCache;
@@ -418,9 +416,9 @@ namespace DirectX
 
         DEFINE_ENUM_FLAG_OPERATORS(ModelLoaderFlags)
 
-    #ifdef __clang__
-    #pragma clang diagnostic pop
-    #endif
+        #ifdef __clang__
+        #pragma clang diagnostic pop
+        #endif
     }
 }
 

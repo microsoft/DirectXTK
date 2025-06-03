@@ -37,7 +37,8 @@ namespace
 
         MaterialRecordCMO() noexcept :
             pMaterial(nullptr),
-            texture{} {}
+            texture{}
+        {}
     };
 
     // Helper for creating a D3D input layout.
