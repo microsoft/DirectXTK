@@ -94,6 +94,8 @@ jobs:
             Tests\BasicAudioTest\ADPCMdroid.xwb
             Tests\BasicAudioTest\wavebank.xwb
             Tests\BasicAudioTest\xwmadroid.xwb
+            Tests\SimpleAudioTest\Alarm01_xma.wav
+            Tests\StreamingAudioTest\WaveBankXMA2.xwb
           TargetFolder: .drop\seeds
           OverWrite: true
           flattenFolders: true
