@@ -92,6 +92,7 @@ jobs:
             Tests\BasicAudioTest\Alarm01_float.wav
             Tests\BasicAudioTest\Alarm01_xwma.wav
             Tests\BasicAudioTest\ADPCMdroid.xwb
+            Tests\BasicAudioTest\electro_adpcm.wav
             Tests\BasicAudioTest\wavebank.xwb
             Tests\BasicAudioTest\xwmadroid.xwb
             Tests\SimpleAudioTest\Alarm01_xma.wav
