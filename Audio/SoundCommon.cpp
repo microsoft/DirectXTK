@@ -592,7 +592,7 @@ void DirectX::CreateADPCM(
     adpcm->wNumCoef = MSADPCM_NUM_COEFFICIENTS;
 
     static ADPCMCOEFSET aCoef[7] = { { 256, 0}, {512, -256}, {0,0}, {192,64}, {240,0}, {460, -208}, {392,-232} };
-    memcpy(&adpcm->aCoef, aCoef, sizeof(aCoef)); // [CodeQL.SM01947]: Code scanner doesn't understand the 0-length MSVC array extension. MSADPCM_FORMAT_EXTRA_BYTES includes this memory.
+    memcpy(&adpcm->aCoef, aCoef, sizeof(aCoef)); // CodeQL [SM01947] Code scanner doesn't understand the 0-length MSVC array extension. MSADPCM_FORMAT_EXTRA_BYTES includes this memory.
 
     assert(IsValid(wfx));
 }
