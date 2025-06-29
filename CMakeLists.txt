@@ -145,22 +145,22 @@ set(SHADER_SOURCES
 
 # Xbox-specific extensions
 if(DEFINED XBOX_CONSOLE_TARGET)
-  set(LIBRARY_HEADERS ${LIBRARY_HEADERS}
+  list(APPEND LIBRARY_HEADERS
       Inc/XboxDDSTextureLoader.h)
 
-  set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
+  list(APEND LIBRARY_SOURCES
       Src/XboxDDSTextureLoader.cpp)
 endif()
 
 # These source files are identical in both DX11 and DX12 version.
-set(LIBRARY_HEADERS ${LIBRARY_HEADERS}
+list(APPEND LIBRARY_HEADERS
     Inc/GamePad.h
     Inc/Keyboard.h
     Inc/Mouse.h
     Inc/SimpleMath.h
     Inc/SimpleMath.inl)
 
-set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
+list(APPEND LIBRARY_SOURCES
     Src/BinaryReader.cpp
     Src/GamePad.cpp
     Src/Geometry.cpp
@@ -168,7 +168,7 @@ set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
     Src/Mouse.cpp
     Src/SimpleMath.cpp)
 
-set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
+list(APPEND LIBRARY_SOURCES
     Src/AlignedNew.h
     Src/Bezier.h
     Src/BinaryReader.h
@@ -182,7 +182,7 @@ set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
     Src/vbo.h
     Src/TeapotData.inc)
 
-set(SHADER_SOURCES ${SHADER_SOURCES}
+list(APPEND SHADER_SOURCES
     Src/Shaders/Common.fxh
     Src/Shaders/Lighting.fxh
     Src/Shaders/PBRCommon.fxh
@@ -199,10 +199,10 @@ endif()
 if(WINDOWS_STORE
    OR BUILD_XAUDIO_WIN10 OR BUILD_XAUDIO_WIN8
    OR BUILD_XAUDIO_REDIST)
-    set(LIBRARY_HEADERS ${LIBRARY_HEADERS}
+    list(APPEND LIBRARY_HEADERS
         Inc/Audio.h)
 
-    set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
+    list(APPEND LIBRARY_SOURCES
         Audio/AudioEngine.cpp
         Audio/DynamicSoundEffectInstance.cpp
         Audio/SoundCommon.cpp
@@ -227,7 +227,7 @@ else()
     file(TO_CMAKE_PATH ${COMPILED_SHADERS} COMPILED_SHADERS)
 endif()
 
-set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
+list(APPEND LIBRARY_SOURCES
     ${COMPILED_SHADERS}/SpriteEffect_SpriteVertexShader.inc)
 
 if(BUILD_XBOXONE_SHADERS)
@@ -254,6 +254,13 @@ if(NOT USE_PREBUILT_SHADERS)
         COMMAND ${CMAKE_COMMAND} -E env CompileShadersOutput="${COMPILED_SHADERS}" $<$<BOOL:${DIRECTX_FXC_TOOL}>:LegacyShaderCompiler=${DIRECTX_FXC_TOOL}> CompileShaders.cmd ARGS ${ShaderOpts} > "${COMPILED_SHADERS}/compileshaders.log"
         WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/Src/Shaders"
         USES_TERMINAL)
+endif()
+
+find_package(nlohmann_json CONFIG QUIET)
+if(nlohmann_json_FOUND)
+  message(STATUS "Building glTF support")
+  list(APPEND LIBRARY_SOURCES
+      Src/ModelLoadGLTF.cpp)
 endif()
 
 if(WIN32 AND BUILD_SHARED_LIBS)
@@ -342,6 +349,11 @@ elseif(BUILD_WGI)
 elseif(BUILD_XINPUT)
     message(STATUS "Using XInput for GamePad.")
     target_compile_definitions(${PROJECT_NAME} PUBLIC USING_XINPUT)
+endif()
+
+if(nlohmann_json_FOUND)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC DIRECTX_TOOLKIT_GLTF)
+    target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
 endif()
 
 #--- Package
