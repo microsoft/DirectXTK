@@ -336,6 +336,20 @@ namespace DirectX
                 _In_ IEffectFactory& fxFactory,
                 ModelLoaderFlags flags = ModelLoader_Clockwise);
 
+        #ifdef DIRECTX_TOOLKIT_GLTF
+            // Loads a model from a .gltf or .glb file
+            static std::unique_ptr<Model> __cdecl CreateFromGLTF(
+                _In_ ID3D11Device* device,
+                _In_reads_bytes_(dataSize) const uint8_t* meshData, _In_ size_t dataSize,
+                _In_ IEffectFactory& fxFactory,
+                ModelLoaderFlags flags = ModelLoader_CounterClockwise);
+            static std::unique_ptr<Model> __cdecl CreateFromGLTF(
+                _In_ ID3D11Device* device,
+                _In_z_ const wchar_t* szFileName,
+                _In_ IEffectFactory& fxFactory,
+                ModelLoaderFlags flags = ModelLoader_CounterClockwise);
+        #endif
+
             // Loads a model from a .VBO file
             static std::unique_ptr<Model> __cdecl CreateFromVBO(
                 _In_ ID3D11Device* device,
@@ -368,6 +382,17 @@ namespace DirectX
                 return CreateFromSDKMESH(device, reinterpret_cast<const uint8_t*>(meshData), dataSize, fxFactory, flags);
             }
 
+        #ifdef DIRECTX_TOOLKIT_GLTF
+            static std::unique_ptr<Model> __cdecl CreateFromGLTF(
+                _In_ ID3D11Device* device,
+                _In_reads_bytes_(dataSize) const std::byte* meshData, size_t dataSize,
+                _In_ IEffectFactory& fxFactory,
+                ModelLoaderFlags flags = ModelLoader_CounterClockwise)
+            {
+                return CreateFromGLTF(device, reinterpret_cast<const uint8_t*>(meshData), dataSize, fxFactory, flags);
+            }
+        #endif
+
             static std::unique_ptr<Model> __cdecl CreateFromVBO(
                 _In_ ID3D11Device* device,
                 _In_reads_bytes_(dataSize) const std::byte* meshData, _In_ size_t dataSize,
@@ -391,6 +416,14 @@ namespace DirectX
                 _In_z_ const __wchar_t* szFileName,
                 _In_ IEffectFactory& fxFactory,
                 ModelLoaderFlags flags = ModelLoader_Clockwise);
+
+        #ifdef DIRECTX_TOOLKIT_GLTF
+            static std::unique_ptr<Model> __cdecl CreateFromGLTF(
+                _In_ ID3D11Device* device,
+                _In_z_ const __wchar_t* szFileName,
+                _In_ IEffectFactory& fxFactory,
+                ModelLoaderFlags flags = ModelLoader_CounterClockwise);
+        #endif
 
             static std::unique_ptr<Model> __cdecl CreateFromVBO(
                 _In_ ID3D11Device* device,
