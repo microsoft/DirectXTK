@@ -68,11 +68,11 @@ else {
 
 $newversion = $newrawversion[0] + "." + $newrawversion[1] + "." + $newrawversion[2]
 
-$rawreleasedate = $(Get-Content $readme) | Select-String -Pattern "\*\*[A-Z][a-z]+\S.\d+,?\S.\d\d\d\d\*\*"
+$rawreleasedate = $(Get-Content $readme) | Select-String -Pattern "\#\#\s.[A-Z][a-z]+\S.\d+,?\S.\d\d\d\d"
 if ([string]::IsNullOrEmpty($rawreleasedate)) {
     Write-Error "ERROR: Failed to current release date!" -ErrorAction Stop
 }
-$releasedate = $rawreleasedate -replace '\*',''
+$releasedate = $rawreleasedate -replace '## ',''
 
 if($releasedate -eq $newreleasedate) {
     Write-Error ("ERROR: Release "+$releasedate+" already exists!") -ErrorAction Stop
@@ -100,7 +100,7 @@ if($UpdateVersion) {
     (Get-Content $cmake).Replace("set(DIRECTXTK_VERSION $version)","set(DIRECTXTK_VERSION $newversion)") | Set-Content $cmake
 }
 
-(Get-Content $readme).Replace("$rawreleasedate", "**$newreleasedate**") | Set-Content $readme
+(Get-Content $readme).Replace("$rawreleasedate", "# $newreleasedate") | Set-Content $readme
 
 Get-ChildItem -Path ($reporoot + "\.nuget") -Filter *.nuspec | Foreach-Object {
     (Get-Content -Path $_.Fullname).Replace("$releasedate", "$newreleasedate") | Set-Content -Path $_.Fullname -Encoding utf8
