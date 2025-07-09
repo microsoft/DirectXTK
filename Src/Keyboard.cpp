@@ -55,6 +55,8 @@ namespace
 
 #if defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION == 1)
 using namespace GameInput::v1;
+#elif defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION == 2)
+using namespace GameInput::v2;
 #endif
 
 
@@ -116,11 +118,11 @@ public:
         {
             if (mGameInput)
             {
-            #if defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION == 1)
+            #if defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION >= 1)
                 if (!mGameInput->UnregisterCallback(mDeviceToken))
-                #else
+            #else
                 if (!mGameInput->UnregisterCallback(mDeviceToken, UINT64_MAX))
-                #endif
+            #endif
                 {
                     DebugTrace("ERROR: GameInput::UnregisterCallback [keyboard] failed");
                 }

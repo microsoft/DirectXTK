@@ -331,15 +331,16 @@ namespace DirectX
         DIRECTX_TOOLKIT_API void __cdecl RegisterEvents(void* ctrlChanged) noexcept;
 
         // Underlying device access
+    #if defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION == 1)
+        using GameInputDevice_t = GameInput::v1::IGameInputDevice;
+    #elif defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION == 2)
+        using GameInputDevice_t = GameInput::v2::IGameInputDevice;
+    #else
+        using GameInputDevice_t = ::IGameInputDevice;
+    #endif
+
         _Success_(return)
-            DIRECTX_TOOLKIT_API
-            bool __cdecl GetDevice(int player,
-            #if defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION == 1)
-                _Outptr_ GameInput::v1::IGameInputDevice * *device
-            #else
-                _Outptr_ IGameInputDevice * *device
-            #endif
-            ) noexcept;
+            DIRECTX_TOOLKIT_API bool __cdecl GetDevice(int player, _Outptr_ GameInputDevice_t * *device) noexcept;
     #elif defined(USING_WINDOWS_GAMING_INPUT) || defined(_XBOX_ONE)
         DIRECTX_TOOLKIT_API void __cdecl RegisterEvents(void* ctrlChanged, void* userChanged) noexcept;
     #endif
