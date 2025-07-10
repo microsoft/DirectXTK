@@ -6,6 +6,13 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### July 9, 2025
+* GamePad, Keyboard, and Mouse _GameInput_ implementation now supports v0, v1, and v2 of the API
+* Additional bounds checking for CMO and SDKMESH readers
+* Reformat source using updated .editorconfig settings and general lint cleanup
+* Minor code review
+* CMake project updates
+
 ### March 20, 2025
 * C++17 `std::byte` support for `FromMemory` functions
 * GamePad, Keyboard, and Mouse _GameInput_ implementation now supports both v0 and v1 of the API
