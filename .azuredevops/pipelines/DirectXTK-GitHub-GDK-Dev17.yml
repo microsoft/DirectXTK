@@ -109,7 +109,6 @@ jobs:
         displayName: Setup BWOI VCTargets
         inputs:
           solution: build/SetupBWOI.targets
-          msbuildVersion: 17.0
           msbuildArchitecture: x64
           msbuildArguments: /p:GDKEditionNumber=$(GDK_EDITION)
       - task: VSBuild@1
@@ -117,7 +116,6 @@ jobs:
         continueOnError: true
         inputs:
           solution: DirectXTK_GDK_2022.sln
-          vsVersion: 17.0
           platform: Gaming.Desktop.x64
           configuration: Debug
           msbuildArchitecture: x64
@@ -127,7 +125,6 @@ jobs:
         continueOnError: true
         inputs:
           solution: DirectXTK_GDK_2022.sln
-          vsVersion: 17.0
           platform: Gaming.Desktop.x64
           configuration: Release
           msbuildArchitecture: x64

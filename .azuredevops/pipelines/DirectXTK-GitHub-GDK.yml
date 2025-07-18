@@ -63,7 +63,7 @@ resources:
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
 pool:
-  vmImage: windows-2019
+  vmImage: windows-2022
 
 variables:
   - group: dxtk-shared-variables
@@ -134,7 +134,6 @@ jobs:
         displayName: Setup BWOI VCTargets
         inputs:
           solution: build/SetupBWOI.targets
-          msbuildVersion: 16.0
           msbuildArchitecture: x64
           msbuildArguments: /p:GDKEditionNumber=$(GDK_EDITION)
       - task: VSBuild@1
@@ -142,7 +141,6 @@ jobs:
         continueOnError: true
         inputs:
           solution: DirectXTK_GDK_2019.sln
-          vsVersion: 16.0
           platform: Gaming.Desktop.x64
           configuration: Debug
           msbuildArchitecture: x64
@@ -152,7 +150,6 @@ jobs:
         continueOnError: true
         inputs:
           solution: DirectXTK_GDK_2019.sln
-          vsVersion: 16.0
           platform: Gaming.Desktop.x64
           configuration: Release
           msbuildArchitecture: x64
@@ -217,14 +214,12 @@ jobs:
         displayName: Setup BWOI VCTargets
         inputs:
           solution: build/SetupBWOI.targets
-          msbuildVersion: 16.0
           msbuildArchitecture: x64
           msbuildArguments: /p:GDKEditionNumber=$(GDK_EDITION)
       - task: VSBuild@1
         displayName: Build Tests pcdbg
         inputs:
           solution: '**\*GDK_2019*.sln'
-          vsVersion: 16.0
           platform: Gaming.Desktop.x64
           configuration: Debug
           msbuildArchitecture: x64
@@ -233,7 +228,6 @@ jobs:
         displayName: Build Tests pcrel
         inputs:
           solution: '**\*GDK_2019*.sln'
-          vsVersion: 16.0
           platform: Gaming.Desktop.x64
           configuration: Release
           msbuildArchitecture: x64
