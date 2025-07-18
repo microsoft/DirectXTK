@@ -58,6 +58,8 @@ variables:
 jobs:
   - job: BUILD_GDK
     displayName: 'Microsoft Game Development Kit (GDK)'
+    workspace:
+      clean: all
     timeoutInMinutes: 120
     cancelTimeoutInMinutes: 1
     steps:
@@ -132,6 +134,8 @@ jobs:
 
   - job: BUILD_GDK_CMAKE
     displayName: 'Microsoft Game Development Kit (GDK) using CMake'
+    workspace:
+      clean: all
     timeoutInMinutes: 120
     cancelTimeoutInMinutes: 1
     steps:

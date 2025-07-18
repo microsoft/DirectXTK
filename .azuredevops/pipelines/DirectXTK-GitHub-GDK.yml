@@ -83,6 +83,8 @@ variables:
 jobs:
   - job: BUILD_GDK
     displayName: 'Microsoft Game Development Kit (GDK)'
+    workspace:
+      clean: all
     timeoutInMinutes: 120
     cancelTimeoutInMinutes: 1
     steps:
@@ -157,6 +159,8 @@ jobs:
 
   - job: BUILD_TESTS_GDK
     displayName: 'Test Suite for Microsoft Game Development Kit (GDK)'
+    workspace:
+      clean: all
     timeoutInMinutes: 120
     cancelTimeoutInMinutes: 1
     steps:

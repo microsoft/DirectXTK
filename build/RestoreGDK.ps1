@@ -69,7 +69,7 @@ if ($GDKEditionNumber -ge 241000) {
     $PGDK_ID = "Microsoft.GDK.PC"
 }
 else {
-    Write-Error "##[error]Script supports October 2010 or later" -ErrorAction Stop
+    Write-Error "##[error]Script supports October 2024 or later" -ErrorAction Stop
 }
 
 # Check that the package isn't already present
