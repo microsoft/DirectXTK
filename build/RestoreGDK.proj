@@ -1,0 +1,19 @@
+<!-- First update the GDKEditionNumber property in gdkedition.props -->
+
+<!-- nuget restore restoregdk.proj -packagesDirectory <outputdirectory> -->
+
+<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="gdkedition.props" />
+    <PropertyGroup>
+        <EditionYearMonth>$(GDKEditionNumber.Substring(0,2))$(GDKEditionNumber.Substring(2,2))</EditionYearMonth>
+        <EditionQFE>$(GDKEditionNumber.Substring(4,2).TrimStart('0'))</EditionQFE>
+        <EditionQFE Condition="'$(EditionQFE)'==''">0</EditionQFE>
+    </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net472</TargetFramework>
+        <Platforms>x64</Platforms>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.GDK.PC" Version="$(EditionYearMonth).$(EditionQFE).*" />
+    </ItemGroup>
+</Project>

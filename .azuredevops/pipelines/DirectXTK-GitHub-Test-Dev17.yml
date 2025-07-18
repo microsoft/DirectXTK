@@ -27,7 +27,6 @@ resources:
     - repository: self
       type: git
       ref: refs/heads/main
-      trigger: none
     - repository: testRepo
       name: walbourn/directxtktest
       type: github
@@ -92,7 +91,6 @@ jobs:
         displayName: Build solution DirectXTK_Tests_Desktop_2022.sln
         inputs:
           solution: Tests/DirectXTK_Tests_Desktop_2022.sln
-          vsVersion: 17.0
           msbuildArgs: /p:PreferredToolArchitecture=x64
           platform: '$(BuildPlatform)'
           configuration: '$(BuildConfiguration)'
@@ -102,7 +100,6 @@ jobs:
         displayName: Build solution DirectXTK_Tests_Desktop_2022_Win10.sln
         inputs:
           solution: Tests/DirectXTK_Tests_Desktop_2022_Win10.sln
-          vsVersion: 17.0
           msbuildArgs: /p:PreferredToolArchitecture=x64
           platform: '$(BuildPlatform)'
           configuration: '$(BuildConfiguration)'
@@ -149,7 +146,6 @@ jobs:
         displayName: Build solution DirectXTK_Tests_Windows10.sln
         inputs:
           solution: Tests/DirectXTK_Tests_Windows10.sln
-          vsVersion: 17.0
           msbuildArgs: /p:PreferredToolArchitecture=x64 /p:AppxBundle=Never
           platform: '$(BuildPlatform)'
           configuration: '$(BuildConfiguration)'

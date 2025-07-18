@@ -63,7 +63,7 @@ resources:
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
 pool:
-  vmImage: windows-2019
+  vmImage: windows-2022
 
 variables:
   - group: dxtk-shared-variables
@@ -71,6 +71,8 @@ variables:
     value: false
   - name: EXTRACTED_FOLDER
     value: '$(ExtractedFolder)'
+  - name: GDK_EDITION
+    value: $(GDKEditionNumber)
   - name: GDKEnableBWOI
     value: true
   - name: URL_FEED
@@ -81,6 +83,8 @@ variables:
 jobs:
   - job: BUILD_GDK
     displayName: 'Microsoft Game Development Kit (GDK)'
+    workspace:
+      clean: all
     timeoutInMinutes: 120
     cancelTimeoutInMinutes: 1
     steps:
@@ -115,11 +119,13 @@ jobs:
         displayName: 'Secure Supply Chain Analysis'
       - task: NuGetAuthenticate@1
         displayName: 'NuGet Auth'
-      - task: NuGetCommand@2
-        displayName: NuGet install PGDK
+      - task: PowerShell@2
+        displayName: 'NuGet Install GDK'
         inputs:
-          command: custom
-          arguments: install -prerelease Microsoft.GDK.PC.$(GDK_EDITION) -ExcludeVersion -OutputDirectory $(EXTRACTED_FOLDER)
+          targetType: filePath
+          filePath: ./build/RestoreGDK.ps1
+          arguments: -GDKEditionNumber $(GDK_EDITION) -OutputDirectory $(EXTRACTED_FOLDER)
+          failOnStderr: true
       - task: CopyFiles@2
         displayName: Set up Directory.Build.props
         inputs:
@@ -130,7 +136,6 @@ jobs:
         displayName: Setup BWOI VCTargets
         inputs:
           solution: build/SetupBWOI.targets
-          msbuildVersion: 16.0
           msbuildArchitecture: x64
           msbuildArguments: /p:GDKEditionNumber=$(GDK_EDITION)
       - task: VSBuild@1
@@ -138,7 +143,6 @@ jobs:
         continueOnError: true
         inputs:
           solution: DirectXTK_GDK_2019.sln
-          vsVersion: 16.0
           platform: Gaming.Desktop.x64
           configuration: Debug
           msbuildArchitecture: x64
@@ -148,7 +152,6 @@ jobs:
         continueOnError: true
         inputs:
           solution: DirectXTK_GDK_2019.sln
-          vsVersion: 16.0
           platform: Gaming.Desktop.x64
           configuration: Release
           msbuildArchitecture: x64
@@ -156,6 +159,8 @@ jobs:
 
   - job: BUILD_TESTS_GDK
     displayName: 'Test Suite for Microsoft Game Development Kit (GDK)'
+    workspace:
+      clean: all
     timeoutInMinutes: 120
     cancelTimeoutInMinutes: 1
     steps:
@@ -196,11 +201,13 @@ jobs:
         displayName: 'Secure Supply Chain Analysis'
       - task: NuGetAuthenticate@1
         displayName: 'NuGet Auth'
-      - task: NuGetCommand@2
-        displayName: NuGet install PGDK
+      - task: PowerShell@2
+        displayName: 'NuGet Install GDK'
         inputs:
-          command: custom
-          arguments: install -prerelease Microsoft.GDK.PC.$(GDK_EDITION) -ExcludeVersion -OutputDirectory $(EXTRACTED_FOLDER)
+          targetType: filePath
+          filePath: ./build/RestoreGDK.ps1
+          arguments: -GDKEditionNumber $(GDK_EDITION) -OutputDirectory $(EXTRACTED_FOLDER)
+          failOnStderr: true
       - task: CopyFiles@2
         displayName: Set up Directory.Build.props
         inputs:
@@ -211,14 +218,12 @@ jobs:
         displayName: Setup BWOI VCTargets
         inputs:
           solution: build/SetupBWOI.targets
-          msbuildVersion: 16.0
           msbuildArchitecture: x64
           msbuildArguments: /p:GDKEditionNumber=$(GDK_EDITION)
       - task: VSBuild@1
         displayName: Build Tests pcdbg
         inputs:
           solution: '**\*GDK_2019*.sln'
-          vsVersion: 16.0
           platform: Gaming.Desktop.x64
           configuration: Debug
           msbuildArchitecture: x64
@@ -227,7 +232,6 @@ jobs:
         displayName: Build Tests pcrel
         inputs:
           solution: '**\*GDK_2019*.sln'
-          vsVersion: 16.0
           platform: Gaming.Desktop.x64
           configuration: Release
           msbuildArchitecture: x64
