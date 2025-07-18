@@ -98,6 +98,7 @@ if (-Not (Test-Path $PGDK_DIR)) {
 
 # Reduce path depth removing version folder
 $PGDK_VER = Get-ChildItem $PGDK_DIR
+Write-Host $PGDK_VER
 if ($PGDK_VER.Count -ne 1) {
     Write-Error "##[error]Expected a single directory for the version!" -ErrorAction Stop
 }
