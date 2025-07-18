@@ -98,7 +98,6 @@ if (-Not (Test-Path $PGDK_DIR)) {
 
 # Reduce path depth removing version folder
 $PGDK_VER = Get-ChildItem $PGDK_DIR
-Write-Host $PGDK_VER
 if ($PGDK_VER.Count -ne 1) {
     Write-Error "##[error]Expected a single directory for the version!" -ErrorAction Stop
 }
@@ -107,15 +106,6 @@ $content = Get-ChildItem $PGDK_VER.Fullname
 ForEach-Object -InputObject $content { Move-Item $_.Fullname -Destination $PGDK_DIR }
 Remove-Item $PGDK_VER.Fullname
 
-$GDKX_VER = Get-ChildItem $GDKX_DIR
-if ($GDKX_VER.Count -ne 1) {
-    Write-Error "##[error]Expected a single directory for the version!" -ErrorAction Stop
-}
-
-$content = Get-ChildItem $GDKX_VER.Fullname
-ForEach-Object -InputObject $content { Move-Item $_.Fullname -Destination $GDKX_DIR }
-Remove-Item $GDKX_VER.Fullname
-
 Write-Host ("##[debug]PC Package ID: {0}  Version: {1}" -f $PGDK_ID, $PGDK_VER)
 
 
@@ -123,10 +113,6 @@ Write-Host ("##[debug]PC Package ID: {0}  Version: {1}" -f $PGDK_ID, $PGDK_VER)
 $PGDK_NUSPEC = New-Object xml
 $PGDK_NUSPEC.PreserveWhitespace = $true
 $PGDK_NUSPEC.Load([IO.Path]::Combine($PGDK_DIR, $PGDK_ID + ".nuspec"))
-
-$GDKX_NUSPEC = New-Object xml
-$GDKX_NUSPEC.PreserveWhitespace = $true
-$GDKX_NUSPEC.Load([IO.Path]::Combine($GDKX_DIR, $GDKX_ID + ".nuspec"))
 
 # Log results
 Write-Host "##[group]PC Nuget Package nuspec"
