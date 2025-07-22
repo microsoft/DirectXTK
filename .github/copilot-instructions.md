@@ -5,6 +5,7 @@ These instructions define how GitHub Copilot should assist with this project. Th
 ## Context
 
 - **Project Type**: Graphics Library / DirectX / Direct3D 11 / Game Audio
+- **Project Name**: DirectX Tool Kit for DirectX 11
 - **Language**: C++
 - **Framework / Libraries**: STL / CMake / CTest
 - **Architecture**: Modular / RAII / OOP
@@ -22,7 +23,7 @@ These instructions define how GitHub Copilot should assist with this project. Th
 - **Documentation**: The project provides documentation in the form of wiki pages available at [Documentation](https://github.com/microsoft/DirectXTK/wiki/).
 - **Error Handling**: Use C++ exceptions for error handling and uses RAII smart pointers to ensure resources are properly managed. For some functions that return HRESULT error codes, they are marked `noexcept`, use `std::nothrow` for memory allocation, and should not throw exceptions.
 - **Testing**: Unit tests for this project are implemented in this repository [Test Suite](https://github.com/walbourn/directxtktest/) and can be run using CTest per the instructions at [Test Documentation](https://github.com/walbourn/directxtktest/wiki).
-- **Security**: This project uses secure coding practices from the Microsoft Secure Coding Guidelines, and is subject to the `SECURITY.md` file in the root of the repository. Functions that read input from image file, geomeotry files, and audio files are subject to OneFuzz testing to ensure they are secure against malformed files.
+- **Security**: This project uses secure coding practices from the Microsoft Secure Coding Guidelines, and is subject to the `SECURITY.md` file in the root of the repository. Functions that read input from image file, geometry files, and audio files are subject to OneFuzz testing to ensure they are secure against malformed files.
 - **Dependencies**: The project uses CMake and VCPKG for managing dependencies, making optional use of DirectXMath, GameInput, and XAudio2Redist. The project can be built without these dependencies, relying on the Windows SDK for core functionality.
 - **Continuous Integration**: This project implements GitHub Actions for continuous integration, ensuring that all code changes are tested and validated before merging. This includes building the project for a number of configurations and toolsets, running a subset of unit tests, and static code analysis including GitHub super-linter, CodeQL, and MSVC Code Analysis.
 - **Code of Conduct**: The project adheres to the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). All contributors are expected to follow this code of conduct in all interactions related to the project.
