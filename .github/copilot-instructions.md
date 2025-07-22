@@ -85,24 +85,24 @@ When creating documentation:
 
 ### Document Only What Exists
 
-* Only document features, patterns, and decisions that are explicitly present in the source code.
-* Only include configurations and requirements that are clearly specified.
-* Do not make assumptions about implementation details.
+- Only document features, patterns, and decisions that are explicitly present in the source code.
+- Only include configurations and requirements that are clearly specified.
+- Do not make assumptions about implementation details.
 
 ### Handle Missing Information
 
-* Ask the user questions to gather missing information.
-* Document gaps in current implementation or specifications.
-* List open questions that need to be addressed.
+- Ask the user questions to gather missing information.
+- Document gaps in current implementation or specifications.
+- List open questions that need to be addressed.
 
 ### Source Material
 
-* Always cite the specific source file and line numbers for documented features.
-* Link directly to relevant source code when possible.
-* Indicate when information comes from requirements vs. implementation.
+- Always cite the specific source file and line numbers for documented features.
+- Link directly to relevant source code when possible.
+- Indicate when information comes from requirements vs. implementation.
 
 ### Verification Process
 
-* Review each documented item against source code whenever related to the task.
-* Remove any speculative content.
-* Ensure all documentation is verifiable against the current state of the codebase.
+- Review each documented item against source code whenever related to the task.
+- Remove any speculative content.
+- Ensure all documentation is verifiable against the current state of the codebase.
