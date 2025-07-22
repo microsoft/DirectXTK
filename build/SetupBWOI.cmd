@@ -13,7 +13,7 @@ goto needconsole
 set GXDKEDITION=%2
 echo GXDKEDITION: %GXDKEDITION%
 
-set PCNUGET=%1\Microsoft.GDK.PC.%GXDKEDITION%\
+set PCNUGET=%1\Microsoft.GDK.PC\
 if NOT EXIST %PCNUGET% goto missingpcnuget
 
 set GRDKLatest=%PCNUGET%native\%GXDKEDITION%\GRDK\
@@ -21,7 +21,7 @@ echo GRDKLatest: %GRDKLatest%
 
 if %3.==PC. goto grdkonly
 
-set XBOXNUGET=%1\Microsoft.gdk.xbox.%GXDKEDITION%\
+set XBOXNUGET=%1\Microsoft.gdk.xbox\
 if NOT EXIST %XBOXNUGET% goto missingxboxnuget
 
 set GXDKLatest=%XBOXNUGET%native\%GXDKEDITION%\GXDK\
@@ -68,9 +68,9 @@ echo Usage: This script requires the target type of PC, Scarlett, or XboxOne in 
 exit /b 1
 
 :missingpcnuget
-echo ERROR - Cannot find Microsoft.GDK.PC.<edition> installed at '%1'
+echo ERROR - Cannot find Microsoft.GDK.PC installed at '%1'
 exit /b 1
 
 :missingxboxnuget
-echo ERROR - Cannot find Microsoft.GDK.Xbox.<edition> installed at '%1'
+echo ERROR - Cannot find Microsoft.GDK.Xbox installed at '%1'
 exit /b 1

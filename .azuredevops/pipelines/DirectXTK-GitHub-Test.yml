@@ -36,14 +36,12 @@ resources:
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
 pool:
-  vmImage: windows-2019
+  vmImage: windows-2022
 
 variables:
   - group: dxtk-shared-variables
   - name: Codeql.Enabled
     value: false
-  - name: VC_PATH
-    value: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC'
   - name: GUID_FEED
     value: $(ADOFeedGUID)
 
@@ -85,7 +83,6 @@ jobs:
         displayName: Build solution DirectXTK_Tests_Desktop_2019.sln
         inputs:
           solution: Tests/DirectXTK_Tests_Desktop_2019.sln
-          vsVersion: 16.0
           msbuildArgs: /p:PreferredToolArchitecture=x64
           platform: '$(BuildPlatform)'
           configuration: '$(BuildConfiguration)'
@@ -93,63 +90,6 @@ jobs:
         displayName: Build solution DirectXTK_Tests_Desktop_2019_Win10.sln
         inputs:
           solution: Tests/DirectXTK_Tests_Desktop_2019_Win10.sln
-          vsVersion: 16.0
           msbuildArgs: /p:PreferredToolArchitecture=x64
           platform: '$(BuildPlatform)'
           configuration: '$(BuildConfiguration)'
-
-  - job: CMAKE_BUILD_X64
-    displayName: 'CMake for X64 BUILD_TESTING=ON'
-    timeoutInMinutes: 60
-    workspace:
-      clean: all
-    steps:
-      - checkout: self
-        clean: true
-        fetchTags: false
-        fetchDepth: 1
-        path: 's'
-      - checkout: testRepo
-        displayName: Fetch Tests
-        clean: true
-        fetchTags: false
-        fetchDepth: 1
-        path: 's/Tests'
-      - task: CmdLine@2
-        displayName: Setup environment for CMake to use VS
-        inputs:
-          script: |
-            call "$(VC_PATH)\Auxiliary\Build\vcvars64.bat"
-            echo ##vso[task.setvariable variable=WindowsSdkVerBinPath;]%WindowsSdkVerBinPath%
-            echo ##vso[task.prependpath]%VSINSTALLDIR%Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja
-            echo ##vso[task.prependpath]%VCINSTALLDIR%Tools\Llvm\x64\bin
-            echo ##vso[task.prependpath]%WindowsSdkBinPath%x64
-            echo ##vso[task.prependpath]%WindowsSdkVerBinPath%x64
-            echo ##vso[task.prependpath]%VCToolsInstallDir%bin\Hostx64\x64
-            echo ##vso[task.setvariable variable=EXTERNAL_INCLUDE;]%EXTERNAL_INCLUDE%
-            echo ##vso[task.setvariable variable=INCLUDE;]%INCLUDE%
-            echo ##vso[task.setvariable variable=LIB;]%LIB%
-
-      - task: CMake@1
-        displayName: CMake (MSVC; x64-Debug) Config
-        inputs:
-          cwd: $(Build.SourcesDirectory)
-          cmakeArgs: --preset=x64-Debug
-      - task: CMake@1
-        displayName: CMake (MSVC; x64-Debug) Build
-        inputs:
-          cwd: $(Build.SourcesDirectory)
-          cmakeArgs: --build out/build/x64-Debug -v
-      - task: DeleteFiles@1
-        inputs:
-          Contents: 'out'
-      - task: CMake@1
-        displayName: CMake (MSVC; x64-Release) Config
-        inputs:
-          cwd: $(Build.SourcesDirectory)
-          cmakeArgs: --preset=x64-Release
-      - task: CMake@1
-        displayName: CMake (MSVC; x64-Release) Build
-        inputs:
-          cwd: $(Build.SourcesDirectory)
-          cmakeArgs: --build out/build/x64-Release -v
