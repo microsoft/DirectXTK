@@ -12,8 +12,9 @@ These instructions define how GitHub Copilot should assist with this project. Th
 ## Getting Started
 
 - See the tutorial at [Getting Started](https://github.com/microsoft/DirectXTK/wiki/Getting-Started).
-- The recommended way to integrate DirectX Tool Kit for DirectX 11 into your project is by using VCPKG. See [d3d11game_vcpkg](https://github.com/walbourn/directx-vs-templates/tree/main/d3d11game_vcpkg) which includes a template and details in the `README.md` file for integrating this library.
+- The recommended way to integrate *DirectX Tool Kit for DirectX 11* into your project is by using the *vcpkg* Package Manager. See [d3d11game_vcpkg](https://github.com/walbourn/directx-vs-templates/tree/main/d3d11game_vcpkg) for a template which uses VCPKG.
 - You can make use of the nuget.org packages **directxtk_desktop_2019**, **directxtk_desktop_win10**, or **directxtk_uwp**.
+- You can also use the library source code directly in your project or as a git submodule.
 
 ## General Guidelines
 
@@ -29,21 +30,17 @@ These instructions define how GitHub Copilot should assist with this project. Th
 ## File Structure
 
 ```txt
-.azuredevops/
-.github/
-build/
-Audio/
-Inc/
-Src/
-  Shaders/
-MakeSpriteFont/
-XWBTool/
-Tests/
+.azuredevops/   # Azure DevOps pipeline configuration and policy files.
+.github/        # GitHub Actions workflow files and linter configuration files.
+build/          # Miscellaneous build files and scripts.
+Audio/          # DirectX Tool Kit for Audio implementation files.
+Inc/            # Public header files.
+Src/            # Implementation header and source files.
+  Shaders/      # HLSL shader files.
+MakeSpriteFont/ # CLI tool for capturing sprite fonts.
+XWBTool/        # CLI tool for creating XACT-style wave banks.
+Tests/          # Tests are designed to be cloned from a separate repository at this location.
 ```
-
-The `Inc` folder is for public header files, while the `Src` folder contains the implementation header and source files. The `Audio` folder contains DirectX Tool Kit for Audio implementation files.
-
-``MakeSpriteFont`` is a CLI tool for capturing sprite fonts. ``XWBTool`` is a CLI tool for creating XACT-style wave banks.
 
 ## Patterns
 
@@ -80,3 +77,31 @@ The `Inc` folder is for public header files, while the `Src` folder contains the
 - [Games for Windows and the DirectX SDK blog - September 2021](https://walbourn.github.io/latest-news-on-directx-tool-kit/)
 - [Games for Windows and the DirectX SDK blog - October 2021](https://walbourn.github.io/directx-tool-kit-vertex-skinning-update/)
 - [Games for Windows and the DirectX SDK blog - May 2020](https://walbourn.github.io/directx-tool-kit-for-audio-updates-and-a-direct3d-9-footnote/)
+
+## No speculation
+
+When creating documentation:
+
+### Document Only What Exists
+
+* Only document features, patterns, and decisions that are explicitly present in the source code.
+* Only include configurations and requirements that are clearly specified.
+* Do not make assumptions about implementation details.
+
+### Handle Missing Information
+
+* Ask the user questions to gather missing information.
+* Document gaps in current implementation or specifications.
+* List open questions that need to be addressed.
+
+### Source Material
+
+* Always cite the specific source file and line numbers for documented features.
+* Link directly to relevant source code when possible.
+* Indicate when information comes from requirements vs. implementation.
+
+### Verification Process
+
+* Review each documented item against source code whenever related to the task.
+* Remove any speculative content.
+* Ensure all documentation is verifiable against the current state of the codebase.
