@@ -52,20 +52,38 @@ DirectX Tool Kit for Audio in this package uses XAudio 2.9 which requires Window
         <file target="native\lib\x86\Debug" src="Bin\Desktop_2022_Win10\Win32\Debug\*.lib" />
         <file target="native\lib\x86\Debug" src="Bin\Desktop_2022_Win10\Win32\Debug\*.pdb" />
 
+        <file target="native\lib\x86\Debug" src="Bin\Desktop_2022_Win10\Win32\DebugSpectre\*.lib" />
+        <file target="native\lib\x86\Debug" src="Bin\Desktop_2022_Win10\Win32\DebugSpectre\*.pdb" />
+
         <file target="native\lib\x86\Release" src="Bin\Desktop_2022_Win10\Win32\Release\*.lib" />
         <file target="native\lib\x86\Release" src="Bin\Desktop_2022_Win10\Win32\Release\*.pdb" />
+
+        <file target="native\lib\x86\Release" src="Bin\Desktop_2022_Win10\Win32\ReleaseSpectre\*.lib" />
+        <file target="native\lib\x86\Release" src="Bin\Desktop_2022_Win10\Win32\ReleaseSpectre\*.pdb" />
 
         <file target="native\lib\x64\Debug" src="Bin\Desktop_2022_Win10\x64\Debug\*.lib" />
         <file target="native\lib\x64\Debug" src="Bin\Desktop_2022_Win10\x64\Debug\*.pdb" />
 
+        <file target="native\lib\x64\Debug" src="Bin\Desktop_2022_Win10\x64\DebugSpectre\*.lib" />
+        <file target="native\lib\x64\Debug" src="Bin\Desktop_2022_Win10\x64\DebugSpectre\*.pdb" />
+
         <file target="native\lib\x64\Release" src="Bin\Desktop_2022_Win10\x64\Release\*.lib" />
         <file target="native\lib\x64\Release" src="Bin\Desktop_2022_Win10\x64\Release\*.pdb" />
+
+        <file target="native\lib\x64\Release" src="Bin\Desktop_2022_Win10\x64\ReleaseSpectre\*.lib" />
+        <file target="native\lib\x64\Release" src="Bin\Desktop_2022_Win10\x64\ReleaseSpectre\*.pdb" />
 
         <file target="native\lib\ARM64\Debug" src="Bin\Desktop_2022_Win10\ARM64\Debug\*.lib" />
         <file target="native\lib\ARM64\Debug" src="Bin\Desktop_2022_Win10\ARM64\Debug\*.pdb" />
 
+        <file target="native\lib\ARM64\Debug" src="Bin\Desktop_2022_Win10\ARM64\DebugSpectre\*.lib" />
+        <file target="native\lib\ARM64\Debug" src="Bin\Desktop_2022_Win10\ARM64\DebugSpectre\*.pdb" />
+
         <file target="native\lib\ARM64\Release" src="Bin\Desktop_2022_Win10\ARM64\Release\*.lib" />
         <file target="native\lib\ARM64\Release" src="Bin\Desktop_2022_Win10\ARM64\Release\*.pdb" />
+
+        <file target="native\lib\ARM64\Release" src="Bin\Desktop_2022_Win10\ARM64\ReleaseSpectre\*.lib" />
+        <file target="native\lib\ARM64\Release" src="Bin\Desktop_2022_Win10\ARM64\ReleaseSpectre\*.pdb" />
 
         <file src=".nuget/directxtk_desktop_win10.targets" target="build\native" />
 
