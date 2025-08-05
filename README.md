@@ -126,7 +126,7 @@ When you submit a pull request, a CLA bot will automatically determine whether y
 
 Tests for new features should also be submitted as a PR to the [Test Suite](https://github.com/walbourn/directxtktest/wiki) repository.
 
-Information on coding-style can be found [here](https://github.com/microsoft/DirectXTK/wiki/Implementation).
+Information on coding-style can be found on [GitHub](https://github.com/microsoft/DirectXTK/wiki/Implementation).
 
 ## Code of Conduct
 
