@@ -611,7 +611,7 @@ namespace DirectX
 
         void __cdecl SetCone(const X3DAUDIO_CONE& listenerCone);
 
-        bool __cdecl IsValid() const;
+        bool __cdecl IsValid() const noexcept;
     };
 
 
@@ -732,7 +732,7 @@ namespace DirectX
             pReverbCurve = nullptr;
         }
 
-        bool __cdecl IsValid() const;
+        bool __cdecl IsValid() const noexcept;
     };
 
 

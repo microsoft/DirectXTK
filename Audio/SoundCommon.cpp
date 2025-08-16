@@ -895,7 +895,7 @@ void AudioListener::SetCone(const X3DAUDIO_CONE& listenerCone)
     pCone = &ListenerCone;
 }
 
-bool AudioListener::IsValid() const
+bool AudioListener::IsValid() const noexcept
 {
     if (!std::isfinite(OrientFront.x))
         return false;
@@ -943,7 +943,7 @@ void AudioEmitter::SetCone(const X3DAUDIO_CONE& emitterCone)
     pCone = &EmitterCone;
 }
 
-bool AudioEmitter::IsValid() const
+bool AudioEmitter::IsValid() const noexcept
 {
     if (!std::isfinite(OrientFront.x))
         return false;
