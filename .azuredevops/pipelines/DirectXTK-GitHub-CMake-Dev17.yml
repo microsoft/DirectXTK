@@ -57,7 +57,7 @@ variables:
   Codeql.Enabled: false
   VS_GENERATOR: 'Visual Studio 17 2022'
   WIN10_SDK: '10.0.19041.0'
-  WIN11_SDK: '10.0.22000.0'
+  WIN11_SDK: '10.0.26100.0'
 
 pool:
   vmImage: windows-2022

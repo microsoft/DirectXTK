@@ -18,6 +18,7 @@
 *.VC.db
 *.nupkg
 .vs
+.vscode
 Bin
 packages
 /Src/Shaders/Compiled/*.inc
