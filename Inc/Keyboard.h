@@ -531,7 +531,7 @@ namespace DirectX
         }
     #endif
     #elif defined(WM_USER)
-        DIRECTX_TOOLKIT_API static void __cdecl ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam);
+        DIRECTX_TOOLKIT_API static void __cdecl ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam) noexcept;
     #endif
 
         // Singleton
