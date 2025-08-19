@@ -90,6 +90,7 @@ variables:
 jobs:
   - job: MINGW32_BUILD
     displayName: 'Minimalist GNU for Windows (MinGW32)'
+    timeoutInMinutes: 30
     steps:
       - checkout: self
         clean: true
@@ -178,6 +179,7 @@ jobs:
 
   - job: MINGW64_BUILD
     displayName: 'Minimalist GNU for Windows (MinGW-W64) BUILD_TESTING=ON'
+    timeoutInMinutes: 90
     steps:
       - checkout: self
         clean: true
