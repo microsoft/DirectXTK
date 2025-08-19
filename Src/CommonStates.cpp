@@ -187,8 +187,12 @@ HRESULT CommonStates::Impl::CreateSamplerState(
 
 // Public constructor.
 CommonStates::CommonStates(_In_ ID3D11Device* device)
-    : pImpl(Impl::instancePool.DemandCreate(device))
-{}
+{
+    if (!device)
+        throw std::invalid_argument("Direct3D device is null");
+
+    pImpl = Impl::instancePool.DemandCreate(device);
+}
 
 
 CommonStates::CommonStates(CommonStates&&) noexcept = default;

@@ -128,12 +128,13 @@ PrimitiveBatchBase::Impl::Impl(_In_ ID3D11DeviceContext* deviceContext, size_t m
     grfxMemoryIB(nullptr),
     grfxMemoryVB(nullptr)
 #else
-    mMappedIndices
-{
-},
-mMappedVertices{}
+    mMappedIndices{},
+    mMappedVertices{}
 #endif
 {
+    if (!deviceContext)
+        throw std::invalid_argument("Direct3D device context is null");
+
     ComPtr<ID3D11Device> device;
     deviceContext->GetDevice(&device);
 

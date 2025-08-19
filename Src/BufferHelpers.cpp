@@ -360,6 +360,9 @@ void Private::ConstantBufferBase::CreateBuffer(
     size_t bytes,
     ID3D11Buffer** pBuffer)
 {
+    if (!device)
+        throw std::invalid_argument("Direct3D device is null");
+
     if (!pBuffer)
         throw std::invalid_argument("ConstantBuffer needs valid buffer parameter");
 
