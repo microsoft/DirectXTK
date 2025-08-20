@@ -214,7 +214,7 @@ private:
 Keyboard::Impl* Keyboard::Impl::s_keyboard = nullptr;
 
 
-void Keyboard::ProcessMessage(UINT, WPARAM, LPARAM)
+void Keyboard::ProcessMessage(UINT, WPARAM, LPARAM) noexcept
 {
     // GameInput for Keyboard doesn't require Win32 messages, but this simplifies integration.
 }
@@ -535,7 +535,7 @@ public:
 Keyboard::Impl* Keyboard::Impl::s_keyboard = nullptr;
 
 
-void Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
+void Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam) noexcept
 {
     auto pImpl = Impl::s_keyboard;
 

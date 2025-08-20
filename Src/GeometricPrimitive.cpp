@@ -160,6 +160,9 @@ void GeometricPrimitive::Impl::SharedResources::PrepareForRendering(bool alpha, 
 _Use_decl_annotations_
 void GeometricPrimitive::Impl::Initialize(ID3D11DeviceContext* deviceContext, const VertexCollection& vertices, const IndexCollection& indices)
 {
+    if (!deviceContext)
+        throw std::invalid_argument("Direct3D device context is null");
+
     if (vertices.size() >= USHRT_MAX)
         throw std::out_of_range("Too many vertices for 16-bit index buffer");
 

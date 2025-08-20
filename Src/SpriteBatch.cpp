@@ -382,10 +382,14 @@ SpriteBatch::Impl::Impl(_In_ ID3D11DeviceContext* deviceContext)
     mSpriteQueueArraySize(0),
     mInBeginEndPair(false),
     mSortMode(SpriteSortMode_Deferred),
-    mTransformMatrix(MatrixIdentity),
-    mDeviceResources(deviceResourcesPool.DemandCreate(GetDevice(deviceContext).Get())),
-    mContextResources(contextResourcesPool.DemandCreate(deviceContext))
-{}
+    mTransformMatrix(MatrixIdentity)
+{
+    if (!deviceContext)
+        throw std::invalid_argument("Direct3D device context is null");
+
+    mDeviceResources = deviceResourcesPool.DemandCreate(GetDevice(deviceContext).Get());
+    mContextResources = contextResourcesPool.DemandCreate(deviceContext);
+}
 
 
 // Begins a batch of sprite drawing operations.
