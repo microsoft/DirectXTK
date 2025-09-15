@@ -16,6 +16,10 @@
 #include "DDSTextureLoader.h"
 #include "PlatformHelpers.h"
 
+#include <algorithm>
+#include <memory>
+#include <new>
+#include <tuple>
 
 namespace DirectX
 {
