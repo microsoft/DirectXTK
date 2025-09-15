@@ -342,6 +342,11 @@
     { "name": "x86-Debug"      , "configurePreset": "x86-Debug" },
     { "name": "x86-Release"    , "configurePreset": "x86-Release" },
 
+    { "name": "x64-Debug-Win10"  , "configurePreset": "x64-Debug-Win10" },
+    { "name": "x64-Release-Win10", "configurePreset": "x64-Release-Win10" },
+    { "name": "x86-Debug-Win10"  , "configurePreset": "x86-Debug-Win10" },
+    { "name": "x86-Release-Win10", "configurePreset": "x86-Release-Win10" },
+
     { "name": "arm64-Debug"    , "configurePreset": "arm64-Debug" },
     { "name": "arm64-Release"  , "configurePreset": "arm64-Release" },
     { "name": "arm64ec-Debug"  , "configurePreset": "arm64ec-Debug" },
