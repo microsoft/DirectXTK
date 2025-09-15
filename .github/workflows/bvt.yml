@@ -44,7 +44,7 @@ jobs:
 
       matrix:
         toolver: ['14.29', '14']
-        build_type: [x64-Release]
+        build_type: [x64-Release, x64-Release-Win10]
         arch: [amd64]
 
     steps:

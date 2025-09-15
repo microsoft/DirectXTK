@@ -1,5 +1,5 @@
 ﻿{
-  "version": 2,
+  "version": 3,
   "configurePresets": [
     {
       "name": "base",
@@ -8,7 +8,7 @@
       "generator": "Ninja",
       "hidden": true,
       "binaryDir": "${sourceDir}/out/build/${presetName}",
-      "cacheVariables": { "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}" }
+      "installDir": "${sourceDir}/out/install/${presetName}"
     },
 
     {
@@ -164,12 +164,7 @@
     },
     {
       "name": "VCPKG",
-      "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": {
-          "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-          "type": "FILEPATH"
-        }
-      },
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
       "hidden": true
     },
     {
