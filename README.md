@@ -78,6 +78,8 @@ FOR SECURITY ADVISORIES, see [GitHub](https://github.com/microsoft/DirectXTK/sec
 
 For a full change history, see [CHANGELOG.md](https://github.com/microsoft/DirectXTK/blob/main/CHANGELOG.md).
 
+* The CMake projects require 3.21 or later. VS 2019 users will need to install a standalone version of CMake 3.21 or later and add it to their PATH.
+
 * Starting with the March 2025 release, Windows 7 and Windows 8.0 support has been retired. For _DirectX ToolKit for Audio_ this means that `DirectXTKAudio_Desktop_*_Win7` has been removed, and `DirectXTKAudio_Desktop_*_Win8` has been integrated into the `DirectXTK_Desktop_*` vcxproj which uses XAudio 2.8 for Windows 8.1 compatibility.
 
   * Remove any References to or use of `DirectXTKAudio_Desktop_*_Win8.vcxproj` or `DirectXTKAudio_Desktop_*_Win7`. If using `DirectXTK_Desktop_*.vcxproj` you will be using XAudio 2.8 as before. Client code will need to build with `_WIN32_WINNT=0x0603`.
