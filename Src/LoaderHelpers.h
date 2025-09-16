@@ -17,6 +17,8 @@
 #include "PlatformHelpers.h"
 
 #include <algorithm>
+#include <cfloat>
+#include <cmath>
 #include <memory>
 #include <new>
 #include <tuple>
