@@ -14,6 +14,7 @@
 #pragma warning(disable : 4324)
 #endif
 
+#include <cstdio>
 #include <exception>
 #include <memory>
 
