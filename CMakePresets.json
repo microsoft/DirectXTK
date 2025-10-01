@@ -1,5 +1,5 @@
 ﻿{
-  "version": 2,
+  "version": 3,
   "configurePresets": [
     {
       "name": "base",
@@ -8,7 +8,7 @@
       "generator": "Ninja",
       "hidden": true,
       "binaryDir": "${sourceDir}/out/build/${presetName}",
-      "cacheVariables": { "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}" }
+      "installDir": "${sourceDir}/out/install/${presetName}"
     },
 
     {
@@ -164,12 +164,7 @@
     },
     {
       "name": "VCPKG",
-      "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": {
-          "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-          "type": "FILEPATH"
-        }
-      },
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
       "hidden": true
     },
     {
@@ -346,6 +341,11 @@
     { "name": "x64-Release"    , "configurePreset": "x64-Release" },
     { "name": "x86-Debug"      , "configurePreset": "x86-Debug" },
     { "name": "x86-Release"    , "configurePreset": "x86-Release" },
+
+    { "name": "x64-Debug-Win10"  , "configurePreset": "x64-Debug-Win10" },
+    { "name": "x64-Release-Win10", "configurePreset": "x64-Release-Win10" },
+    { "name": "x86-Debug-Win10"  , "configurePreset": "x86-Debug-Win10" },
+    { "name": "x86-Release-Win10", "configurePreset": "x86-Release-Win10" },
 
     { "name": "arm64-Debug"    , "configurePreset": "arm64-Debug" },
     { "name": "arm64-Release"  , "configurePreset": "arm64-Release" },
