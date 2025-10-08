@@ -19,17 +19,19 @@ using Microsoft::WRL::ComPtr;
 #pragma region Implementations
 #ifdef USING_GAMEINPUT
 
-#include <GameInput.h>
+//======================================================================================
+// Win32 + GameInput implementation
+//======================================================================================
 
 #if defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION == 1)
 using namespace GameInput::v1;
 #elif defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION == 2)
 using namespace GameInput::v2;
+#elif defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION == 3)
+using namespace GameInput::v3;
 #endif
 
-//======================================================================================
-// Win32 + GameInput implementation
-//======================================================================================
+using GameInputCreateFn = HRESULT(*)(IGameInput**);
 
 //
 // Call this static function from your Window Message Procedure
@@ -83,7 +85,26 @@ public:
 
         s_mouse = this;
 
+    #if defined(_GAMING_XBOX) || defined(GAMEINPUT_API_VERSION)
         HRESULT hr = GameInputCreate(mGameInput.GetAddressOf());
+    #else
+        if (!s_gameInputCreate)
+        {
+            s_gameInputModule = LoadLibraryExW(L"GameInput.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
+            if (s_gameInputModule)
+            {
+                s_gameInputCreate = reinterpret_cast<GameInputCreateFn>(static_cast<void*>(GetProcAddress(s_gameInputModule, "GameInputCreate")));
+            }
+
+            if (!s_gameInputCreate)
+            {
+                DebugTrace("ERROR: GetProcAddress GameInputCreate failed\n");
+                throw std::runtime_error("GameInput.dll is not installed on this system");
+            }
+        }
+
+        HRESULT hr = s_gameInputCreate(mGameInput.GetAddressOf());
+    #endif
         if (SUCCEEDED(hr))
         {
             ThrowIfFailed(mGameInput->RegisterDeviceCallback(
@@ -99,12 +120,11 @@ public:
         {
             DebugTrace("ERROR: GameInputCreate [mouse] failed with %08X\n", static_cast<unsigned int>(hr));
         #ifdef _GAMING_XBOX
-            ThrowIfFailed(hr);
-        #elif defined(_DEBUG)
+            throw com_exception(hr);
+        #else
             DebugTrace(
-                "\t**** Check that the 'GameInput Service' is running on this system.             ****\n"
-                "\t**** NOTE: No relative movement be returned and IsConnected will return false. ****\n"
-            );
+                "\t**** Check that the 'GameInput Service' is running on this system.    ****\n"
+                "\t**** NOTE: All calls to GetState will be reported as 'not connected'. ****\n");
         #endif
         }
 
@@ -367,11 +387,19 @@ private:
         ClipCursor(&rect);
     #endif
     }
+
+#if !defined(_GAMING_XBOX) && !defined(GAMEINPUT_API_VERSION)
+    static HMODULE s_gameInputModule;
+    static GameInputCreateFn s_gameInputCreate;
+#endif
 };
 
+#if !defined(_GAMING_XBOX) && !defined(GAMEINPUT_API_VERSION)
+HMODULE Mouse::Impl::s_gameInputModule = nullptr;
+GameInputCreateFn Mouse::Impl::s_gameInputCreate = nullptr;
+#endif
 
 Mouse::Impl* Mouse::Impl::s_mouse = nullptr;
-
 
 void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 {

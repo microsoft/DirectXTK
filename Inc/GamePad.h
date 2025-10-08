@@ -28,7 +28,7 @@
 
 #ifdef USING_GAMEINPUT
 #include <GameInput.h>
-#if !defined(_GAMING_XBOX) && defined(_MSC_VER)
+#if defined(_MSC_VER) && (defined(_GAMING_XBOX) || defined(GAMEINPUT_API_VERSION))
 #pragma comment(lib,"gameinput.lib")
 #endif
 
@@ -335,6 +335,8 @@ namespace DirectX
         using GameInputDevice_t = GameInput::v1::IGameInputDevice;
     #elif defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION == 2)
         using GameInputDevice_t = GameInput::v2::IGameInputDevice;
+    #elif defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION == 3)
+        using GameInputDevice_t = GameInput::v3::IGameInputDevice;
     #else
         using GameInputDevice_t = ::IGameInputDevice;
     #endif
