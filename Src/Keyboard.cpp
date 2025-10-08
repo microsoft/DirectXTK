@@ -119,7 +119,7 @@ public:
             throw com_exception(hr);
         #else
             DebugTrace(
-                "\t**** Check that the 'GameInput Service' is running on this system.    ****\n"
+                "\t**** Install the latest GameInputRedist package on this system.       ****\n"
                 "\t**** NOTE: All calls to GetState will be reported as 'not connected'. ****\n");
         #endif
         }
