@@ -51,18 +51,19 @@ namespace
 #pragma region Implementations
 #ifdef USING_GAMEINPUT
 
-#include <GameInput.h>
+//======================================================================================
+// GameInput
+//======================================================================================
 
 #if defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION == 1)
 using namespace GameInput::v1;
 #elif defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION == 2)
 using namespace GameInput::v2;
+#elif defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION == 3)
+using namespace GameInput::v3;
 #endif
 
-
-//======================================================================================
-// GameInput
-//======================================================================================
+using GameInputCreateFn = HRESULT(*)(IGameInput**);
 
 class Keyboard::Impl
 {
@@ -80,7 +81,26 @@ public:
 
         s_keyboard = this;
 
+    #if defined(_GAMING_XBOX) || defined(GAMEINPUT_API_VERSION)
         HRESULT hr = GameInputCreate(mGameInput.GetAddressOf());
+    #else
+        if (!s_gameInputCreate)
+        {
+            s_gameInputModule = LoadLibraryExW(L"GameInput.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
+            if (s_gameInputModule)
+            {
+                s_gameInputCreate = reinterpret_cast<GameInputCreateFn>(static_cast<void*>(GetProcAddress(s_gameInputModule, "GameInputCreate")));
+            }
+
+            if (!s_gameInputCreate)
+            {
+                DebugTrace("ERROR: GetProcAddress GameInputCreate failed\n");
+                throw std::runtime_error("GameInput.dll is not installed on this system");
+            }
+        }
+
+        HRESULT hr = s_gameInputCreate(mGameInput.GetAddressOf());
+    #endif
         if (SUCCEEDED(hr))
         {
             ThrowIfFailed(mGameInput->RegisterDeviceCallback(
@@ -96,12 +116,11 @@ public:
         {
             DebugTrace("ERROR: GameInputCreate [keyboard] failed with %08X\n", static_cast<unsigned int>(hr));
         #ifdef _GAMING_XBOX
-            ThrowIfFailed(hr);
-        #elif defined(_DEBUG)
+            throw com_exception(hr);
+        #else
             DebugTrace(
-                "\t**** Check that the 'GameInput Service' is running on this system.     ****\n"
-                "\t**** NOTE: No keys will be returned and IsConnected will return false. ****\n"
-            );
+                "\t**** Install the latest GameInputRedist package on this system.       ****\n"
+                "\t**** NOTE: All calls to GetState will be reported as 'not connected'. ****\n");
         #endif
         }
     }
@@ -208,11 +227,19 @@ private:
             --impl->mConnected;
         }
     }
-};
 
+#if !defined(_GAMING_XBOX) && !defined(GAMEINPUT_API_VERSION)
+    static HMODULE s_gameInputModule;
+    static GameInputCreateFn s_gameInputCreate;
+#endif
+};
 
 Keyboard::Impl* Keyboard::Impl::s_keyboard = nullptr;
 
+#if !defined(_GAMING_XBOX) && !defined(GAMEINPUT_API_VERSION)
+HMODULE Keyboard::Impl::s_gameInputModule = nullptr;
+GameInputCreateFn Keyboard::Impl::s_gameInputCreate = nullptr;
+#endif
 
 void Keyboard::ProcessMessage(UINT, WPARAM, LPARAM) noexcept
 {
