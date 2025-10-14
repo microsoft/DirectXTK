@@ -33,7 +33,9 @@ public:
         mPrepared(false),
         mStreaming(false)
     {
-        assert(mEngine != nullptr);
+        if (!engine)
+            throw std::invalid_argument("AudioEngine is required");
+
         mEngine->RegisterNotify(this, false);
     }
 

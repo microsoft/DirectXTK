@@ -95,7 +95,10 @@ public:
         mDevice(device),
         mSharing(true),
         mForceSRGB(false)
-    {}
+    {
+        if (!device)
+            throw std::invalid_argument("Direct3D device is null");
+    }
 
     Impl(const Impl&) = delete;
     Impl& operator=(const Impl&) = delete;

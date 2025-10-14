@@ -177,6 +177,11 @@ SpriteFont::Impl::Impl(
     lineSpacing(ilineSpacing),
     utfBufferSize(0)
 {
+    if (!itexture || !iglyphs)
+    {
+        throw std::invalid_argument("Sprite sheet texture required");
+    }
+
     if (!std::is_sorted(iglyphs, iglyphs + glyphCount))
     {
         throw std::runtime_error("Glyphs must be in ascending codepoint order");
