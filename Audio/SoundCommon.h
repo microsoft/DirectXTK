@@ -13,6 +13,8 @@
 #include "Audio.h"
 #include "PlatformHelpers.h"
 
+#include <stdexcept>
+
 #ifdef USING_XAUDIO2_9
 #define DIRECTX_ENABLE_XWMA
 #endif

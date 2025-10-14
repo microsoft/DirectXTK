@@ -31,6 +31,9 @@ public:
         mBufferNeeded(nullptr),
         mObject(object)
     {
+        if (!engine)
+            throw std::invalid_argument("AudioEngine is required");
+
         if ((sampleRate < XAUDIO2_MIN_SAMPLE_RATE)
             || (sampleRate > XAUDIO2_MAX_SAMPLE_RATE))
         {
@@ -55,6 +58,12 @@ public:
             throw std::invalid_argument("DynamicSoundEffectInstance supports 8 or 16 bit");
         }
 
+        if (!bufferNeeded)
+        {
+            DebugTrace("DynamicSoundEffectInstance requires a valid callback\n");
+            throw std::invalid_argument("DynamicSoundEffectInstance");
+        }
+
         mBufferEvent.reset(CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE));
         if (!mBufferEvent)
         {
@@ -63,7 +72,6 @@ public:
 
         CreateIntegerPCM(&mWaveFormat, sampleRate, channels, sampleBits);
 
-        assert(engine != nullptr);
         engine->RegisterNotify(this, true);
 
         mBase.Initialize(engine, &mWaveFormat, flags);

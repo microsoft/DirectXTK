@@ -517,6 +517,9 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
     Close();
     Clear();
 
+    if (!szFileName)
+        return E_INVALIDARG;
+
     m_prepared = false;
 
     m_event.reset(CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_MODIFY_STATE | SYNCHRONIZE));
@@ -1029,7 +1032,7 @@ HRESULT WaveBankReader::Impl::GetWaveData(uint32_t index, const uint8_t** pData,
 #endif
 
     if (!waveData)
-        return E_FAIL;
+        return E_POINTER;
 
     if (m_data.dwFlags & BANKDATA::TYPE_STREAMING)
     {
@@ -1223,10 +1226,13 @@ HRESULT WaveBankReader::Open(const wchar_t* szFileName) noexcept
 _Use_decl_annotations_
 uint32_t WaveBankReader::Find(const char* name) const
 {
-    auto it = pImpl->m_names.find(name);
-    if (it != pImpl->m_names.cend())
+    if (name)
     {
-        return it->second;
+        auto it = pImpl->m_names.find(name);
+        if (it != pImpl->m_names.cend())
+        {
+            return it->second;
+        }
     }
 
     return uint32_t(-1);
