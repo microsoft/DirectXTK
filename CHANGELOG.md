@@ -6,6 +6,11 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### October 27, 2025
+* GamePad, Keyboard, and Mouse _GameInput_ implementation now supports v0 - v3 of the API
+* Code review, particularly for invalid args validation
+* CMake project update to use 3.21 minimum
+
 ### July 9, 2025
 * GamePad, Keyboard, and Mouse _GameInput_ implementation now supports v0, v1, and v2 of the API
 * Additional bounds checking for CMO and SDKMESH readers
