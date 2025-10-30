@@ -98,6 +98,10 @@ using namespace GameInput::v3;
 
 using GameInputCreateFn = HRESULT(*)(IGameInput**);
 
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Wmicrosoft-cast"
+#endif
+
 class GamePad::Impl
 {
 public:
@@ -122,7 +126,7 @@ public:
             s_gameInputModule = LoadLibraryExW(L"GameInput.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
             if (s_gameInputModule)
             {
-                s_gameInputCreate = reinterpret_cast<GameInputCreateFn>(static_cast<void*>(GetProcAddress(s_gameInputModule, "GameInputCreate")));
+                s_gameInputCreate = reinterpret_cast<GameInputCreateFn>(reinterpret_cast<void*>(GetProcAddress(s_gameInputModule, "GameInputCreate")));
             }
 
             if (!s_gameInputCreate)
