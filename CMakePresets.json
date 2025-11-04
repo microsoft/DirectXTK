@@ -122,8 +122,7 @@
       "cacheVariables": {
         "BUILD_XAUDIO_WIN10": false,
         "BUILD_XAUDIO_WIN8": false,
-        "BUILD_XAUDIO_REDIST": true,
-        "BUILD_XINPUT": true
+        "BUILD_XAUDIO_REDIST": true
       },
       "hidden": true
     },
@@ -323,6 +322,9 @@
     { "name": "x64-Release-MinGW", "description": "MinG-W64 (Release)", "inherits": [ "base", "x64", "Release", "GNUC", "VCPKG", "XAudio2Redist", "MinGW64" ] },
     { "name": "x86-Debug-MinGW"  , "description": "MinG-W32 (Debug)", "inherits": [ "base", "x86", "Debug", "GNUC", "VCPKG", "XAudio2Redist", "MinGW32" ] },
     { "name": "x86-Release-MinGW", "description": "MinG-W32 (Release)", "inherits": [ "base", "x86", "Release", "GNUC", "VCPKG", "XAudio2Redist", "MinGW32" ] },
+
+    { "name": "x64-Debug-MinGW-GI"  , "description": "MinG-W64 (Debug) using GameInput", "inherits": [ "base", "x64", "Debug", "GNUC", "VCPKG", "XAudio2Redist", "MinGW64" ], "cacheVariables": { "BUILD_GAMEINPUT": "true" } },
+    { "name": "x64-Release-MinGW-GI", "description": "MinG-W64 (Release) using GameInput", "inherits": [ "base", "x64", "Release", "GNUC", "VCPKG", "XAudio2Redist", "MinGW64" ], "cacheVariables": { "BUILD_GAMEINPUT": "true" } },
 
     { "name": "x64-Debug-ICC"     , "description": "Intel Classic Compiler (Debug) for Windows 8", "inherits": [ "base", "x64", "Debug", "Intel" ] },
     { "name": "x64-Release-ICC"   , "description": "Intel Classic Compiler (Release) for Windows 8", "inherits": [ "base", "x64", "Release", "Intel" ] },
