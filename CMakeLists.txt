@@ -60,19 +60,19 @@ if(XBOX_CONSOLE_TARGET STREQUAL "durango")
   set(BUILD_GAMEINPUT OFF)
   set(BUILD_WGI OFF)
   set(BUILD_XINPUT OFF)
-  set(BUILD_XBOXONE_SHADERS ON)
   set(BUILD_XAUDIO_WIN10 OFF)
   set(BUILD_XAUDIO_WIN8 ON)
   set(BUILD_XAUDIO_REDIST OFF)
+  set(BUILD_XBOXONE_SHADERS ON)
   set(BUILD_TOOLS OFF)
 elseif(WINDOWS_STORE)
   set(BUILD_GAMEINPUT OFF)
   set(BUILD_WGI ON)
   set(BUILD_XINPUT OFF)
-  set(BUILD_TOOLS OFF)
   set(BUILD_XAUDIO_WIN10 ON)
   set(BUILD_XAUDIO_WIN8 OFF)
   set(BUILD_XAUDIO_REDIST OFF)
+  set(BUILD_TOOLS OFF)
 elseif(MINGW)
   set(BUILD_WGI OFF)
   set(BUILD_XAUDIO_WIN10 OFF)
@@ -161,18 +161,12 @@ set(SHADER_SOURCES
 
 # These source files are identical in both DX11 and DX12 version.
 set(LIBRARY_HEADERS ${LIBRARY_HEADERS}
-    Inc/GamePad.h
-    Inc/Keyboard.h
-    Inc/Mouse.h
     Inc/SimpleMath.h
     Inc/SimpleMath.inl)
 
 set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
     Src/BinaryReader.cpp
-    Src/GamePad.cpp
     Src/Geometry.cpp
-    Src/Keyboard.cpp
-    Src/Mouse.cpp
     Src/SimpleMath.cpp)
 
 set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
@@ -205,6 +199,18 @@ if(DEFINED XBOX_CONSOLE_TARGET)
 
   set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
       Src/XboxDDSTextureLoader.cpp)
+endif()
+
+if(BUILD_XINPUT OR BUILD_WGI OR BUILD_GAMEINPUT)
+  set(LIBRARY_HEADERS ${LIBRARY_HEADERS}
+      Inc/GamePad.h
+      Inc/Keyboard.h
+      Inc/Mouse.h)
+
+  set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
+      Src/GamePad.cpp
+      Src/Keyboard.cpp
+      Src/Mouse.cpp)
 endif()
 
 if(BUILD_XAUDIO_WIN10 OR BUILD_XAUDIO_WIN8 OR BUILD_XAUDIO_REDIST)
