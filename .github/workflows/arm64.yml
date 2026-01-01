@@ -45,7 +45,7 @@ jobs:
         build_type: [arm64-Debug, arm64-Release, arm64-Debug-UWP, arm64-Release-UWP]
 
     steps:
-      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
       - name: 'Install Ninja'
         run: choco install ninja
