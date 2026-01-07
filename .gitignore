@@ -31,3 +31,4 @@ packages
 /out
 /CMakeUserPresets.json
 /build/vcpkg_installed
+/build/*.exe
