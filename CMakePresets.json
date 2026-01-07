@@ -14,14 +14,15 @@
       "binaryDir": "${sourceDir}/out/build/${presetName}",
       "installDir": "${sourceDir}/out/install/${presetName}"
     },
-
     {
       "name": "x64",
       "architecture": {
         "value": "x64",
         "strategy": "external"
       },
-      "cacheVariables": { "DIRECTX_ARCH": "x64" },
+      "cacheVariables": {
+        "DIRECTX_ARCH": "x64"
+      },
       "hidden": true
     },
     {
@@ -30,7 +31,9 @@
         "value": "x86",
         "strategy": "external"
       },
-      "cacheVariables": { "DIRECTX_ARCH": "x86" },
+      "cacheVariables": {
+        "DIRECTX_ARCH": "x86"
+      },
       "hidden": true
     },
     {
@@ -39,7 +42,9 @@
         "value": "arm64",
         "strategy": "external"
       },
-      "cacheVariables": { "DIRECTX_ARCH": "arm64" },
+      "cacheVariables": {
+        "DIRECTX_ARCH": "arm64"
+      },
       "hidden": true
     },
     {
@@ -48,29 +53,30 @@
         "value": "arm64ec",
         "strategy": "external"
       },
-      "cacheVariables": { "DIRECTX_ARCH": "arm64ec" },
+      "cacheVariables": {
+        "DIRECTX_ARCH": "arm64ec"
+      },
       "environment": {
         "CFLAGS": "/arm64EC",
         "CXXFLAGS": "/arm64EC"
       },
       "hidden": true
     },
-
     {
       "name": "Debug",
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      },
       "hidden": true
     },
     {
       "name": "Release",
-      "cacheVariables":
-      {
-          "CMAKE_BUILD_TYPE": "RelWithDebInfo",
-          "CMAKE_INTERPROCEDURAL_OPTIMIZATION": true
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CMAKE_INTERPROCEDURAL_OPTIMIZATION": true
       },
       "hidden": true
     },
-
     {
       "name": "MSVC",
       "hidden": true,
@@ -120,7 +126,6 @@
         "strategy": "external"
       }
     },
-
     {
       "name": "XAudio2Redist",
       "cacheVariables": {
@@ -215,19 +220,16 @@
         "strategy": "external"
       }
     },
-
     {
       "name": "Analyze",
-      "cacheVariables":
-      {
+      "cacheVariables": {
         "ENABLE_CODE_ANALYSIS": true
       },
       "hidden": true
     },
     {
       "name": "Coverage",
-      "cacheVariables":
-      {
+      "cacheVariables": {
         "BUILD_TOOLS": false,
         "ENABLE_CODE_COVERAGE": true
       },
@@ -342,6 +344,7 @@
     { "name": "x64-Coverage-Clang", "description": "Clang/LLVM for x64 (Debug) w/ Code Coverage", "inherits": [ "base", "x64", "Debug", "Clang", "Coverage" ] },
     { "name": "x64-Fuzzing"       , "description": "MSVC for x64 (Release) with ASan", "inherits": [ "base", "x64", "Release", "MSVC", "Win10", "Fuzzing" ] }
   ],
+
   "testPresets": [
     { "name": "x64-Debug"      , "configurePreset": "x64-Debug" },
     { "name": "x64-Release"    , "configurePreset": "x64-Release" },
