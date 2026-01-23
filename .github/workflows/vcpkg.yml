@@ -26,6 +26,7 @@ on:
       - build/*.props
       - build/*.ps1
       - build/*.targets
+  workflow_dispatch: {}
 
 permissions:
   contents: read
