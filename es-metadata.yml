@@ -1,0 +1,12 @@
+schemaVersion: 1.0.0
+providers:
+- provider: InventoryAsCode
+  version: 1.0.0
+  metadata:
+    isProduction: true
+    accountableOwners:
+      service: 9116a377-9c24-438f-8dfb-39ba0934fac6
+    routing:
+      defaultAreaPath:
+        org: microsoft
+        path: OS\Core\SiGMa\GRFX-Graphics\Direct3D
