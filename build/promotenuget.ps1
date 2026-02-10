@@ -33,7 +33,7 @@ param(
 
 # Parse PAT
 if ($PAT.Length -eq 0) {
-    $PAT = $env:ADO_PERSONAL_ACCESS_TOKEN
+    $PAT = [string]$env:ADO_PERSONAL_ACCESS_TOKEN
 
     if ($PAT.Length -eq 0) {
         Write-Error "##[error]This script requires a valid ADO Personal Access Token!" -ErrorAction Stop
