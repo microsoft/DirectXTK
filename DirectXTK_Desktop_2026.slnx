@@ -1,0 +1,18 @@
+<Solution>
+  <Configurations>
+    <Platform Name="ARM64" />
+    <Platform Name="Mixed Platforms" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Project Path="DirectXTK_Desktop_2026.vcxproj">
+    <Platform Solution="*|Mixed Platforms" Project="Win32" />
+  </Project>
+  <Project Path="MakeSpriteFont/MakeSpriteFont.csproj" />
+  <Project Path="XWBTool/XWBTool_Desktop_2026.vcxproj">
+    <Platform Solution="*|Mixed Platforms" Project="Win32" />
+  </Project>
+</Solution>
