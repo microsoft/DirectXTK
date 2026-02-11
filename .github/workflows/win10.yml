@@ -70,23 +70,70 @@ jobs:
           - toolver: '14'
             build_type: arm64ec-Release
             arch: amd64_arm64
-          - toolver: '14'
-            build_type: x64-Debug-Win10-Clang
-            arch: amd64
-          - toolver: '14'
-            build_type: x64-Release-Win10-Clang
-            arch: amd64
-          - toolver: '14'
-            build_type: x86-Debug-Win10-Clang
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: 'Install Ninja'
+        run: choco install ninja
+
+      - uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
+        with:
+          arch: ${{ matrix.arch }}
+          toolset: ${{ matrix.toolver }}
+
+      - name: 'Configure CMake'
+        working-directory: ${{ github.workspace }}
+        run: cmake --preset=${{ matrix.build_type }}
+
+      - name: 'Build'
+        working-directory: ${{ github.workspace }}
+        run: cmake --build out\build\${{ matrix.build_type }}
+
+      - name: 'Clean up'
+        working-directory: ${{ github.workspace }}
+        run: Remove-Item -Path out -Recurse -Force
+
+      - if: matrix.arch != 'amd64_arm64'
+        name: 'Configure CMake (Spectre)'
+        working-directory: ${{ github.workspace }}
+        run: cmake --preset=${{ matrix.build_type }} -DENABLE_SPECTRE_MITIGATION=ON
+
+      - if: matrix.arch != 'amd64_arm64'
+        name: 'Build (Spectre)'
+        working-directory: ${{ github.workspace }}
+        run: cmake --build out\build\${{ matrix.build_type }}
+
+      - if: matrix.arch != 'amd64_arm64'
+        name: 'Clean up'
+        working-directory: ${{ github.workspace }}
+        run: Remove-Item -Path out -Recurse -Force
+
+      - name: 'Configure CMake (DLL)'
+        working-directory: ${{ github.workspace }}
+        run: cmake --preset=${{ matrix.build_type }} -DBUILD_SHARED_LIBS=ON
+
+      - name: 'Build (DLL)'
+        working-directory: ${{ github.workspace }}
+        run: cmake --build out\build\${{ matrix.build_type }}
+
+  build2026:
+    runs-on: windows-2025-vs2026
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        build_type: [x64-Debug-Win10, x64-Release-Win10]
+        arch: [amd64]
+        include:
+          - build_type: x86-Debug-Win10
             arch: amd64_x86
-          - toolver: '14'
-            build_type: x86-Release-Win10-Clang
+          - build_type: x86-Release-Win10
             arch: amd64_x86
-          - toolver: '14'
-            build_type: arm64-Debug-Clang
+          - build_type: arm64-Debug
             arch: amd64_arm64
-          - toolver: '14'
-            build_type: arm64-Release-Clang
+          - build_type: arm64-Release
             arch: amd64_arm64
 
     steps:
