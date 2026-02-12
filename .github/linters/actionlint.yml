@@ -2,3 +2,4 @@ self-hosted-runner:
   # Workaround until linter is updated
   labels:
     - windows-11-arm
+    - windows-2025-vs2026

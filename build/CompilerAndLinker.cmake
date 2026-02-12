@@ -205,6 +205,10 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
         list(APPEND COMPILER_SWITCHES $<$<VERSION_GREATER_EQUAL:${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION},10.0.22000>:/Zc:templateScope>)
       endif()
     endif()
+
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.50)
+      list(APPEND COMPILER_SWITCHES /Zc:u8EscapeEncoding)
+    endif()
 endif()
 
 #--- Windows API Family
