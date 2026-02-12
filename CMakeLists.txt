@@ -258,6 +258,7 @@ if(NOT USE_PREBUILT_SHADERS)
     else()
         find_program(DIRECTX_FXC_TOOL FXC.EXE
           HINTS "C:/Program Files (x86)/Windows Kits/10/bin/${CMAKE_SYSTEM_VERSION}/${DIRECTX_HOST_ARCH}"
+                "C:/Program Files (x86)/Windows Kits/10/bin/${CMAKE_SYSTEM_VERSION}.0/${DIRECTX_HOST_ARCH}"
                 "C:/Program Files (x86)/Windows Kits/10/bin/${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION}/${DIRECTX_HOST_ARCH}")
         message(STATUS "Using LegacyShaderCompiler found in ${DIRECTX_FXC_TOOL}")
     endif()
