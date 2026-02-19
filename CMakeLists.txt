@@ -3,6 +3,10 @@
 
 cmake_minimum_required (VERSION 3.21)
 
+if(POLICY CMP0162)
+   cmake_policy(SET CMP0162 NEW)
+endif()
+
 set(DIRECTXTK_VERSION 1.9.2)
 
 if(XBOX_CONSOLE_TARGET STREQUAL "durango")
@@ -272,6 +276,10 @@ if(NOT USE_PREBUILT_SHADERS)
         USES_TERMINAL)
 endif()
 
+add_library(${PROJECT_NAME})
+
+target_sources(${PROJECT_NAME} PRIVATE ${LIBRARY_HEADERS} ${LIBRARY_SOURCES})
+
 if(WIN32 AND BUILD_SHARED_LIBS)
   message(STATUS "Build library as a DLL")
 
@@ -279,7 +287,7 @@ if(WIN32 AND BUILD_SHARED_LIBS)
       "${CMAKE_CURRENT_SOURCE_DIR}/build/DirectXTK.rc.in"
       "${CMAKE_CURRENT_BINARY_DIR}/DirectXTK.rc" @ONLY)
 
-  add_library(${PROJECT_NAME} SHARED ${LIBRARY_SOURCES} ${LIBRARY_HEADERS} "${CMAKE_CURRENT_BINARY_DIR}/DirectXTK.rc")
+  target_sources(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/DirectXTK.rc")
 
   target_compile_definitions(${PROJECT_NAME} PRIVATE DIRECTX_TOOLKIT_EXPORT)
   target_compile_definitions(${PROJECT_NAME} INTERFACE DIRECTX_TOOLKIT_IMPORT)
@@ -291,8 +299,6 @@ if(WIN32 AND BUILD_SHARED_LIBS)
   if(MINGW AND BUILD_XINPUT)
     target_link_libraries(${PROJECT_NAME} PRIVATE xinput1_4.lib)
   endif()
-else()
-  add_library(${PROJECT_NAME} ${LIBRARY_SOURCES} ${LIBRARY_HEADERS})
 endif()
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${COMPILED_SHADERS} Src)
