@@ -43,6 +43,7 @@ Src/            # Implementation header and source files.
 MakeSpriteFont/ # CLI tool for capturing sprite fonts.
 XWBTool/        # CLI tool for creating XACT-style wave banks.
 Tests/          # Tests are designed to be cloned from a separate repository at this location.
+wiki/           # Local clone of the GitHub wiki documentation repository.
 ```
 
 ## Patterns
@@ -59,6 +60,8 @@ Tests/          # Tests are designed to be cloned from a separate repository at 
 - Explicitly `= delete` copy constructors and copy-assignment operators on all classes that use the pImpl idiom.
 - Explicitly utilize `= default` or `=delete` for copy constructors, assignment operators, move constructors and move-assignment operators where appropriate.
 - Use 16-byte alignment (`_aligned_malloc` / `_aligned_free`) to support SIMD operations in the implementation, but do not expose this requirement in public APIs.
+- All implementation `.cpp` files include `pch.h` as their first include (precompiled header). MinGW builds skip precompiled headers.
+- `Model` and related classes require RTTI (`/GR` on MSVC, `__GXX_RTTI` on GCC/Clang). The CMake build enables `/GR` automatically; do not disable RTTI when using `Model`.
 
 #### SAL Annotations
 
@@ -74,6 +77,7 @@ Common annotations:
 | `_In_reads_bytes_(n)` | Input buffer with byte count |
 | `_In_reads_(n)` | Input array with element count |
 | `_In_z_` | Null-terminated input string |
+| `_In_opt_` | Optional input parameter (may be null) |
 | `_Out_opt_` | Optional output parameter |
 | `_COM_Outptr_` | Output COM interface |
 
@@ -155,7 +159,7 @@ Every source file (`.cpp`, `.h`, `.hlsl`, `.fx`, etc.) must begin with this bloc
 
 ```cpp
 //-------------------------------------------------------------------------------------
-// {FileName}
+// File: {FileName}
 //
 // {One-line description}
 //
@@ -174,10 +178,10 @@ The project does **not** use Doxygen. API documentation is maintained exclusivel
 
 ## HLSL Shader Compilation
 
-Shaders in `Src/Shaders/` are compiled with **FXC**, producing embedded C++ header files (`.inc`) that are checked in alongside the source:
+Shaders in `Src/Shaders/` are compiled with **FXC**, producing embedded C++ header files (`.inc`):
 
 - Use `CompileShaders.cmd` in `Src/Shaders/` to regenerate the `.inc` files.
-- The CMake option `USE_PREBUILT_SHADERS` controls whether pre-compiled shaders are used.
+- The CMake option `USE_PREBUILT_SHADERS=ON` skips shader compilation and uses pre-built `.inc` files; requires `COMPILED_SHADERS` variable to be set.
 
 ## References
 
@@ -244,7 +248,10 @@ Use these established guards — do not invent new ones:
 | `_MSC_VER` | MSVC-specific (and MSVC-like clang-cl) pragmas and warning suppression |
 | `__GNUC__` | MinGW/GCC DLL attribute equivalents |
 | `_M_ARM64` / `_M_X64` / `_M_IX86` | Architecture-specific code paths for MSVC (`#ifdef`) |
+| `_M_ARM64EC` | ARM64EC ABI (ARM64 code with x64 interop) for MSVC |
 | `__aarch64__` / `__x86_64__` / `__i386__` | Additional architecture-specific symbols for MinGW/GNUC (`#if`) |
+
+> `_M_ARM`/ `__arm__` is legacy 32-bit ARM which is deprecated.
 
 ## Code Review Instructions
 
