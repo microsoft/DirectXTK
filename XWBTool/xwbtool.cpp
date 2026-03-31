@@ -272,7 +272,7 @@ namespace
     static_assert(sizeof(ENTRYCOMPACT) == 4, "Mismatch with xact3wb.h");
     static_assert(sizeof(BANKDATA) == 96, "Mismatch with xact3wb.h");
 
-    template <typename T> WORD ChannelsSpecifiedInMask(T x)
+    template <typename T> WORD ChannelsSpecifiedInMask(T x) noexcept
     {
         WORD bitCount = 0;
         while (x) { ++bitCount; x &= (x - 1); }
