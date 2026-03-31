@@ -618,13 +618,13 @@ float SpriteFont::GetLineSpacing() const noexcept
 }
 
 
-void SpriteFont::SetLineSpacing(float spacing)
+void SpriteFont::SetLineSpacing(float spacing) noexcept
 {
     pImpl->lineSpacing = spacing;
 }
 
 
-void SpriteFont::SetPixelAlignment(bool enable)
+void SpriteFont::SetPixelAlignment(bool enable) noexcept
 {
     pImpl->pixelAlignment = enable;
 }
