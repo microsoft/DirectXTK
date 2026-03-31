@@ -27,6 +27,7 @@ namespace MakeSpriteFont
         List<string> requiredUsageHelp = new List<string>();
         List<string> optionalUsageHelp = new List<string>();
 
+        private const string feedbackURL = "https://github.com/microsoft/DirectXTK/issues";
 
         // Constructor.
         public CommandLineParser(object optionsObject)
@@ -126,6 +127,11 @@ namespace MakeSpriteFont
                 }
 
                 return SetOption(field, value);
+            }
+            else if (arg.Equals("feedback", StringComparison.OrdinalIgnoreCase))
+            {
+                System.Diagnostics.Process.Start(feedbackURL);
+                return false;
             }
             else
             {

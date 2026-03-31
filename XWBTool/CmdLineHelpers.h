@@ -58,7 +58,7 @@ namespace Helpers
     };
 
     template<typename T>
-    T LookupByName(const wchar_t _In_z_ *pName, const SValue<T> *pArray)
+    T LookupByName(const wchar_t _In_z_ *pName, const SValue<T> *pArray) noexcept
     {
         while (pArray->name)
         {
@@ -72,7 +72,7 @@ namespace Helpers
     }
 
     template<typename T>
-    const wchar_t* LookupByValue(T value, const SValue<T> *pArray)
+    const wchar_t* LookupByValue(T value, const SValue<T> *pArray) noexcept
     {
         while (pArray->name)
         {
@@ -85,7 +85,7 @@ namespace Helpers
         return L"";
     }
 
-    void PrintFormat(DXGI_FORMAT Format, const SValue<DXGI_FORMAT>* pFormatList)
+    void PrintFormat(DXGI_FORMAT Format, const SValue<DXGI_FORMAT>* pFormatList) noexcept
     {
         for (auto pFormat = pFormatList; pFormat->name; pFormat++)
         {
@@ -99,7 +99,7 @@ namespace Helpers
         wprintf(L"*UNKNOWN*");
     }
 
-    void PrintFormat(DXGI_FORMAT Format, const SValue<DXGI_FORMAT>* pFormatList1, const SValue<DXGI_FORMAT>* pFormatList2)
+    void PrintFormat(DXGI_FORMAT Format, const SValue<DXGI_FORMAT>* pFormatList1, const SValue<DXGI_FORMAT>* pFormatList2) noexcept
     {
         for (auto pFormat = pFormatList1; pFormat->name; pFormat++)
         {
@@ -123,7 +123,7 @@ namespace Helpers
     }
 
     template<typename T>
-    void PrintList(size_t cch, const SValue<T> *pValue)
+    void PrintList(size_t cch, const SValue<T> *pValue) noexcept
     {
         while (pValue->name)
         {
@@ -143,7 +143,7 @@ namespace Helpers
         wprintf(L"\n");
     }
 
-    void PrintLogo(bool versionOnly, _In_z_ const wchar_t* name, _In_z_ const wchar_t* desc)
+    void PrintLogo(bool versionOnly, _In_z_ const wchar_t* name, _In_z_ const wchar_t* desc) noexcept
     {
         wchar_t version[32] = {};
 
@@ -336,7 +336,7 @@ namespace Helpers
         }
     }
 
-    const wchar_t* GetErrorDesc(HRESULT hr)
+    const wchar_t* GetErrorDesc(HRESULT hr) noexcept
     {
         static wchar_t desc[1024] = {};
 
