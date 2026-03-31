@@ -58,6 +58,8 @@
 
 #include "WAVFileReader.h"
 
+#include <shellapi.h>
+
 #define TOOL_VERSION 0
 #include "CmdLineHelpers.h"
 
@@ -277,7 +279,7 @@ namespace
         return bitCount;
     }
 
-    WORD AdpcmBlockSizeFromPcmFrames(WORD nPcmFrames, WORD nChannels)
+    WORD AdpcmBlockSizeFromPcmFrames(WORD nPcmFrames, WORD nChannels) noexcept
     {
         // The full calculation is as follows:
         //    UINT uHeaderBytes = MSADPCM_HEADER_LENGTH * nChannels;
@@ -305,7 +307,7 @@ namespace
         }
     }
 
-    DWORD EncodeWMABlockAlign(DWORD dwBlockAlign, DWORD dwAvgBytesPerSec)
+    DWORD EncodeWMABlockAlign(DWORD dwBlockAlign, DWORD dwAvgBytesPerSec) noexcept
     {
         static const uint32_t aWMABlockAlign[17] =
         {
@@ -354,7 +356,7 @@ namespace
         return DWORD(blockAlignIndex | (bytesPerSecIndex << 5));
     }
 
-    bool ConvertToMiniFormat(const WAVEFORMATEX* wfx, bool hasSeek, MINIWAVEFORMAT& miniFmt)
+    bool ConvertToMiniFormat(const WAVEFORMATEX* wfx, bool hasSeek, MINIWAVEFORMAT& miniFmt) noexcept
     {
         if (!wfx)
             return false;
@@ -787,6 +789,7 @@ namespace
 
     const wchar_t* g_ToolName = L"xwbtool";
     const wchar_t* g_Description = L"Microsoft (R) XACT-style Wave Bank Tool [DirectXTK]";
+    const wchar_t* g_FeedbackURL = L"https://github.com/microsoft/DirectXTK/issues";
 
     enum OPTIONS : uint32_t
     {
@@ -828,7 +831,7 @@ namespace
         WaveFile(WaveFile&&) = default;
     };
 
-    void FileNameToIdentifier(_Inout_updates_all_(count) wchar_t* str, size_t count)
+    void FileNameToIdentifier(_Inout_updates_all_(count) wchar_t* str, size_t count) noexcept
     {
         size_t j = 0;
         for (wchar_t* c = str; j < count && *c != 0; ++c, ++j)
@@ -880,13 +883,14 @@ namespace
     //////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////
 
-    void PrintUsage()
+    void PrintUsage(bool full = false) noexcept
     {
         PrintLogo(false, g_ToolName, g_Description);
 
         static const wchar_t* const s_usage =
-            L"Usage: xwbtool <options> [--] <wav-files>\n"
-            L"\n"
+            L"Usage: xwbtool <options> [--] <wav-files>\n\n";
+
+        static const wchar_t* const s_fullUsage =
             L"   -r                  wildcard filename search is recursive\n"
             L"   -flist <filename>, --file-list <filename>\n"
             L"                       use text file with a list of input files (one per line)\n"
@@ -909,9 +913,14 @@ namespace
             L"   '-- ' is needed if any input filepath starts with the '-' or '/' character\n";
 
         wprintf(L"%ls", s_usage);
+
+        if (!full)
+            return;
+
+        wprintf(L"%ls", s_fullUsage);
     }
 
-    const char* GetFormatTagName(WORD wFormatTag)
+    const char* GetFormatTagName(WORD wFormatTag) noexcept
     {
         switch (wFormatTag)
         {
@@ -930,7 +939,7 @@ namespace
         }
     }
 
-    const char *ChannelDesc(DWORD dwChannelMask)
+    const char *ChannelDesc(DWORD dwChannelMask) noexcept
     {
         switch (dwChannelMask)
         {
@@ -948,7 +957,7 @@ namespace
         }
     }
 
-    void PrintInfo(const WaveFile& wave)
+    void PrintInfo(const WaveFile& wave) noexcept
     {
         if (wave.data.wfx->wFormatTag == WAVE_FORMAT_EXTENSIBLE
             && (wave.data.wfx->cbSize >= (sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX))))
@@ -985,6 +994,24 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
     std::locale::global(std::locale(""));
 
     // Process command line
+    if (argc < 2)
+    {
+        PrintUsage();
+        return 0;
+    }
+
+    // check for these first
+    if (!_wcsicmp(argv[1], L"help") || !_wcsicmp(argv[1], L"/?"))
+    {
+        PrintUsage(true);
+        return 0;
+    }
+    else if (!_wcsicmp(argv[1], L"feedback"))
+    {
+        std::ignore = ShellExecuteW(nullptr, L"open", g_FeedbackURL, nullptr, nullptr, SW_SHOW);
+        return 0;
+    }
+
     uint32_t dwOptions = 0;
     std::list<SConversion> conversion;
     bool allowOpts = true;
@@ -1056,7 +1083,7 @@ int __cdecl wmain(_In_ int argc, _In_z_count_(argc) wchar_t* argv[])
                 return 0;
 
             case OPT_HELP:
-                PrintUsage();
+                PrintUsage(true);
                 return 0;
 
             default:
