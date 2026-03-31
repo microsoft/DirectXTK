@@ -302,7 +302,8 @@
       <WarningLevel>EnableAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir)Inc;$(ProjectDir)Src;$(ProjectDir)Src\Shaders\Compiled;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_WIN32_WINNT=0x0A00;_DEBUG;USING_GAMEINPUT;_GAMING_DESKTOP;WINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP;WIN32;_WINDOWS;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>      <FloatingPointModel>Fast</FloatingPointModel>
+      <PreprocessorDefinitions>_WIN32_WINNT=0x0A00;_DEBUG;USING_GAMEINPUT;_GAMING_DESKTOP;WINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP;WIN32;_WINDOWS;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <FloatingPointModel>Fast</FloatingPointModel>
       <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
@@ -471,11 +472,20 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
-  <Target Name="EnsureGDK" BeforeTargets="_CheckForInvalidConfigurationAndPlatform" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(Platform)', 'Gaming\..+\.x64'))">
-    <PropertyGroup>
-      <ErrorText>This project requires the Microsoft GDK to be installed. If you have already installed the GDK, then run Repair to ensure proper integration with Visual Studio. The missing platform is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('$(VCTargetsPath)\Platforms\$(Platform)\Platform.props')" Text="$([System.String]::Format('$(ErrorText)', '$(Platform)'))" />
+  <Target Name="GDKEditionCheck" BeforeTargets="PrepareForBuild" Condition="'$(GDKCrossPlatform)'=='true'">
+    <Error Condition="'$(GameDK)'==''" Text="GameDK property is required" />
+    <Error Condition="!HasTrailingSlash('$(GameDK)')" Text="GameDK property must have trailing slash" />
+    <Error Condition="'$(GDKCrossPlatformPath)'==''" Text="GDKCrossPlatformPath property, GameDKCoreLatest environment variable, or GameDKXboxLatest environment variable is required" />
+    <Error Condition="!HasTrailingSlash('$(GDKCrossPlatformPath)')" Text="GDKCrossPlatformPath property must have trailing slash" />
+    <Error Condition="!Exists('$(GDKCrossPlatformPath)windows')" Text="GDKCrossPlatformPath needs to point to the October 2025 GDK or later" />
+    <Message Importance="high" Text="Using $(GDKCrossPlatformPath)" />
+  </Target>
+  <Target Name="GDKEditionCheckOld" BeforeTargets="PrepareForBuild" Condition="'$(GDKCrossPlatform)'!='true' AND '$(Platform)'=='x64'">
+    <Error Condition="'$(GameDK)'==''" Text="GameDK property is required" />
+    <Error Condition="!HasTrailingSlash('$(GameDK)')" Text="GameDK property must have trailing slash" />
+    <Error Condition="'$(GDKPCEditionPath)'==''" Text="GDKPCEditionPath or GRDKLatest property is required" />
+    <Error Condition="!HasTrailingSlash('$(GDKPCEditionPath)')" Text="GDKPCEditionPath property must have trailing slash" />
+    <Message Importance="high" Text="Using $(GDKPCEditionPath)" />
   </Target>
   <Target Name="ATGEnsureShaders" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
