@@ -32,6 +32,11 @@ resources:
     - repository: self
       type: git
       ref: refs/heads/main
+    - repository: testRepo
+      name: walbourn/directxtktest
+      type: github
+      endpoint: microsoft
+      ref: refs/heads/main
 
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
