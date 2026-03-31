@@ -94,12 +94,12 @@ SixtyFourBit = (IntPtr.Size == 8) ? true : false;
         Text="NuGet package $(_PCNuGetPackage) not found in $(ExtractedFolder)" />
 
     <PropertyGroup>
+      <_VSFolder Condition="'$(VisualStudioVersion)' == '18.0'">VS2026</_VSFolder>
       <_VSFolder Condition="'$(VisualStudioVersion)' == '17.0'">VS2022</_VSFolder>
-      <_VSFolder Condition="'$(VisualStudioVersion)' == '16.0'">VS2019</_VSFolder>
     </PropertyGroup>
 
     <Error Condition="'$(_VSFolder)'==''"
-        Text="Only supports VS 2019 or VS 2022" />
+        Text="Only supports VS 2022 or VS 2026" />
 
     <!-- Set up files for v141 platform toolset projects -->
     <ItemGroup Condition="'$(GDKEditionNumber)' &lt; '241000'">
