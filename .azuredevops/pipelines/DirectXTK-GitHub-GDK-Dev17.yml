@@ -248,3 +248,110 @@ jobs:
         inputs:
           cwd: '$(Build.SourcesDirectory)'
           cmakeArgs: --build out\build\x64-Debug-GDK
+
+  - job: BUILD_GDKW
+    condition: ge(variables.GDKEditionNumber, '251000')
+    displayName: 'Microsoft Game Development Kit (ARM64+x64)'
+    timeoutInMinutes: 120
+    cancelTimeoutInMinutes: 1
+    steps:
+      - checkout: self
+        clean: true
+        fetchTags: false
+        fetchDepth: 1
+        path: 's'
+      - checkout: testRepo
+        displayName: Fetch Tests
+        clean: true
+        fetchTags: false
+        fetchDepth: 1
+        path: 's/Tests'
+      - task: NuGetToolInstaller@1
+        displayName: 'Use NuGet'
+      - task: PowerShell@2
+        displayName: 'Create nuget.config with single source'
+        inputs:
+          targetType: inline
+          script: |
+            $xml = @'
+            <?xml version="1.0" encoding="utf-8"?>
+            <configuration>
+              <packageSources>
+                <clear />
+              </packageSources>
+            </configuration>
+            '@
+            $xml | Set-Content -Path "$(Build.SourcesDirectory)\NuGet.config"
+
+      - task: NuGetCommand@2
+        # We have to use a nuget.config to provide the feed for the 'nuget install' option.
+        displayName: 'NuGet set package source to ADO feed'
+        inputs:
+          command: custom
+          arguments: sources add -Name xboxgdk -Source $(URL_FEED) -ConfigFile $(Build.SourcesDirectory)\NuGet.config
+      - task: nuget-security-analysis@0
+        displayName: 'Secure Supply Chain Analysis'
+      - task: NuGetAuthenticate@1
+        displayName: 'NuGet Auth'
+      - task: PowerShell@2
+        displayName: 'NuGet Install GDK'
+        inputs:
+          targetType: filePath
+          filePath: ./build/RestoreGDK.ps1
+          arguments: -GDKEditionNumber $(GDK_EDITION) -OutputDirectory $(EXTRACTED_FOLDER) -NewLayout
+          failOnStderr: true
+      - task: NuGetCommand@2
+        displayName: 'NuGet install GDK (Windows)'
+        inputs:
+          command: custom
+          arguments: >
+            install -directdownload Microsoft.GDK.Windows -ExcludeVersion -Version $(GDKNuGetPackageVersion)
+            -OutputDirectory $(EXTRACTED_FOLDER)
+      - task: CopyFiles@2
+        displayName: Set up Directory.Build.props
+        inputs:
+          SourceFolder: build
+          Contents: 'Directory.Build.props'
+          TargetFolder: $(Build.SourcesDirectory)
+      - task: MSBuild@1
+        displayName: Log Information
+        inputs:
+          solution: build/LogInfo.targets
+          msbuildArchitecture: x64
+          msbuildArguments: /p:GDKEditionNumber=$(GDK_EDITION)
+      - task: VSBuild@1
+        displayName: Build arm64dbg
+        continueOnError: true
+        inputs:
+          solution: '**\*GDKW_2022*.sln'
+          platform: ARM64
+          configuration: Debug
+          msbuildArchitecture: x64
+          msbuildArgs: /p:GDKEditionNumber=$(GDK_EDITION)
+      - task: VSBuild@1
+        displayName: Build arm64rel
+        continueOnError: true
+        inputs:
+          solution: '**\*GDKW_2022*.sln'
+          platform: ARM64
+          configuration: Release
+          msbuildArchitecture: x64
+          msbuildArgs: /p:GDKEditionNumber=$(GDK_EDITION)
+      - task: VSBuild@1
+        displayName: Build x64dbg
+        continueOnError: true
+        inputs:
+          solution: '**\*GDKW_2022*.sln'
+          platform: x64
+          configuration: Debug
+          msbuildArchitecture: x64
+          msbuildArgs: /p:GDKEditionNumber=$(GDK_EDITION)
+      - task: VSBuild@1
+        displayName: Build x64rel
+        continueOnError: true
+        inputs:
+          solution: '**\*GDKW_2022*.sln'
+          platform: x64
+          configuration: Release
+          msbuildArchitecture: x64
+          msbuildArgs: /p:GDKEditionNumber=$(GDK_EDITION)
