@@ -146,6 +146,8 @@ namespace DirectX
             DIRECTX_TOOLKIT_API float __cdecl GetLineSpacing() const noexcept;
             DIRECTX_TOOLKIT_API void __cdecl SetLineSpacing(float spacing);
 
+            DIRECTX_TOOLKIT_API void __cdecl SetPixelAlignment(bool enable);
+
             // Font properties
             DIRECTX_TOOLKIT_API wchar_t __cdecl GetDefaultCharacter() const noexcept;
             DIRECTX_TOOLKIT_API void __cdecl SetDefaultCharacter(wchar_t character);
