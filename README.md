@@ -2,7 +2,7 @@
 
 # DirectX Tool Kit for DirectX 11
 
-http://go.microsoft.com/fwlink/?LinkId=248929
+https://go.microsoft.com/fwlink/?LinkId=248929
 
 Copyright (c) Microsoft Corporation.
 
