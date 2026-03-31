@@ -100,7 +100,7 @@ if($UpdateVersion) {
     (Get-Content $cmake).Replace("set(DIRECTXTK_VERSION $version)","set(DIRECTXTK_VERSION $newversion)") | Set-Content $cmake
 }
 
-(Get-Content $readme).Replace("$rawreleasedate", "# $newreleasedate") | Set-Content $readme
+(Get-Content $readme).Replace("$rawreleasedate", "## $newreleasedate") | Set-Content $readme
 
 Get-ChildItem -Path ($reporoot + "\.nuget") -Filter *.nuspec | Foreach-Object {
     (Get-Content -Path $_.Fullname).Replace("$releasedate", "$newreleasedate") | Set-Content -Path $_.Fullname -Encoding utf8
