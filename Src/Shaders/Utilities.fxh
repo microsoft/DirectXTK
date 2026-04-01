@@ -2,8 +2,8 @@
 // Licensed under the MIT License.
 //
 // http://go.microsoft.com/fwlink/?LinkId=248926
-// http://go.microsoft.com/fwlink/?LinkId=248929
-// http://go.microsoft.com/fwlink/?LinkID=615561
+// https://go.microsoft.com/fwlink/?LinkId=248929
+// https://go.microsoft.com/fwlink/?LinkID=615561
 
 
 float3 BiasX2(float3 x)

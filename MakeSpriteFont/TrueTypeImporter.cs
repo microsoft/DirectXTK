@@ -3,7 +3,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 //
-// http://go.microsoft.com/fwlink/?LinkId=248929
+// https://go.microsoft.com/fwlink/?LinkId=248929
 
 using System;
 using System.Collections.Generic;

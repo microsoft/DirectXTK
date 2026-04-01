@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 //
-// http://go.microsoft.com/fwlink/?LinkId=248929
-// http://go.microsoft.com/fwlink/?LinkID=615561
+// https://go.microsoft.com/fwlink/?LinkId=248929
+// https://go.microsoft.com/fwlink/?LinkID=615561
 
 
 float3 Skin(inout VSInputNmTxWeights vin, float3 normal, uniform int boneCount)

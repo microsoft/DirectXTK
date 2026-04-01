@@ -166,7 +166,7 @@ Every source file (`.cpp`, `.h`, `.hlsl`, `.fx`, etc.) must begin with this bloc
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 //
-// http://go.microsoft.com/fwlink/?LinkId=248929
+// https://go.microsoft.com/fwlink/?LinkId=248929
 //-------------------------------------------------------------------------------------
 ```
 
@@ -243,9 +243,8 @@ Use these established guards — do not invent new ones:
 | `_WIN32` | Windows platform (desktop, UWP, Xbox) |
 | `_GAMING_XBOX` | Xbox One |
 | `_XBOX_ONE && _TITLE` | Xbox One XDK (legacy) |
-| `_MSC_VER` | MSVC-specific pragmas and warning suppression |
-| `__clang__` | Clang/LLVM diagnostic suppressions |
 | `_MSC_VER` | MSVC-specific (and MSVC-like clang-cl) pragmas and warning suppression |
+| `__clang__` | Clang/LLVM diagnostic suppressions |
 | `__GNUC__` | MinGW/GCC DLL attribute equivalents |
 | `_M_ARM64` / `_M_X64` / `_M_IX86` | Architecture-specific code paths for MSVC (`#ifdef`) |
 | `_M_ARM64EC` | ARM64EC ABI (ARM64 code with x64 interop) for MSVC |
