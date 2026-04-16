@@ -37,6 +37,7 @@ namespace
     constexpr size_t DVD_BLOCK_SIZE = DVD_SECTOR_SIZE * 16;
 
     constexpr size_t ALIGNMENT_MIN = 4;
+    constexpr size_t ALIGNMENT_MAX = 0xFFFF;
     constexpr size_t ALIGNMENT_DVD = DVD_SECTOR_SIZE;
 
     constexpr size_t MAX_DATA_SEGMENT_SIZE = 0xFFFFFFFF;
@@ -608,7 +609,7 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
         if (m_data.dwAlignment % DVD_SECTOR_SIZE)
             return E_FAIL;
     }
-    else if (m_data.dwAlignment < ALIGNMENT_MIN)
+    else if ((m_data.dwAlignment < ALIGNMENT_MIN) || (m_data.dwAlignment > ALIGNMENT_MAX))
     {
         return E_FAIL;
     }
