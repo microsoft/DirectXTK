@@ -635,7 +635,14 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
     }
 
     const DWORD metadataBytes = m_header.Segments[HEADER::SEGIDX_ENTRYMETADATA].dwLength;
-    if (metadataBytes != (m_data.dwEntryCount * m_data.dwEntryMetaDataElementSize))
+
+    uint64_t expectedSize = uint64_t(m_data.dwEntryCount) * m_data.dwEntryMetaDataElementSize;
+    if (expectedSize > MAX_DATA_SEGMENT_SIZE)
+    {
+        return HRESULT_FROM_WIN32(ERROR_ARITHMETIC_OVERFLOW);
+    }
+
+    if (metadataBytes != static_cast<DWORD>(expectedSize))
     {
         return E_FAIL;
     }
@@ -644,7 +651,13 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
     const DWORD namesBytes = m_header.Segments[HEADER::SEGIDX_ENTRYNAMES].dwLength;
     if (namesBytes > 0)
     {
-        if (namesBytes >= (m_data.dwEntryNameElementSize * m_data.dwEntryCount))
+        expectedSize = uint64_t(m_data.dwEntryCount) * m_data.dwEntryNameElementSize;
+        if (expectedSize > UINT32_MAX)
+        {
+            return E_FAIL;
+        }
+
+        if (namesBytes >= static_cast<DWORD>(expectedSize))
         {
             std::unique_ptr<char[]> temp(new (std::nothrow) char[namesBytes]);
             if (!temp)
