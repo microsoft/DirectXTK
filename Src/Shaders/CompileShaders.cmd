@@ -5,7 +5,7 @@ rem Licensed under the MIT License.
 setlocal
 set error=0
 
-if %PROCESSOR_ARCHITECTURE%.==ARM64. (set FXCARCH=arm64) else (if %PROCESSOR_ARCHITECTURE%.==AMD64. (set FXCARCH=x64) else (set FXCARCH=x86))
+if %PROCESSOR_ARCHITECTURE%.==ARM64. (set FXCARCH=arm64) else (set FXCARCH=x64)
 
 set FXCOPTS=/nologo /WX /Ges /Zi /Zpc /Qstrip_reflect /Qstrip_debug
 
