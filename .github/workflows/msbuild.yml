@@ -99,3 +99,30 @@ jobs:
         run: >
           msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=${{ matrix.platform }}
           DirectXTK_Desktop_2026.slnx
+
+  build2022_arm64:
+    runs-on: windows-11-arm
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        build_type: [Debug, Release]
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@30375c66a4eea26614e0d39710365f22f8b0af57 # v3.0.0
+
+      - name: 'Build (Windows 10)'
+        working-directory: ${{ github.workspace }}
+        run: >
+          msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=ARM64
+          DirectXTK_Desktop_2022_Win10.sln
+
+      - name: 'Build (UWP)'
+        working-directory: ${{ github.workspace }}
+        run: >
+          msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=ARM64
+          DirectXTK_Windows10_2022.sln
