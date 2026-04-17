@@ -42,6 +42,8 @@ jobs:
 
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@30375c66a4eea26614e0d39710365f22f8b0af57 # v3.0.0
+        with:
+          msbuild-architecture: x64
 
       - if: matrix.platform != 'ARM64'
         name: Build (Windows 8.1)
@@ -93,6 +95,8 @@ jobs:
 
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@30375c66a4eea26614e0d39710365f22f8b0af57 # v3.0.0
+        with:
+          msbuild-architecture: x64
 
       - name: 'Build'
         working-directory: ${{ github.workspace }}
@@ -114,6 +118,8 @@ jobs:
 
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@30375c66a4eea26614e0d39710365f22f8b0af57 # v3.0.0
+        with:
+          msbuild-architecture: arm64
 
       - name: 'Build (Windows 10)'
         working-directory: ${{ github.workspace }}
