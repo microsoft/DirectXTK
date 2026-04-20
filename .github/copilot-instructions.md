@@ -19,7 +19,7 @@ These instructions define how GitHub Copilot should assist with this project. Th
 
 ## General Guidelines
 
-- **Code Style**: The project uses an .editorconfig file to enforce coding standards. Follow the rules defined in `.editorconfig` for indentation, line endings, and other formatting. Additional information can be found on the wiki at [Implementation](https://github.com/microsoft/DirectXTK/wiki/Implementation). The implementation is written to be compatible with C++14 features. The command-line tools also use C++17, including `<filesystem>` for long file path support. This code is designed to build with Visual Studio 2022, Visual Studio 2026, clang for Windows v12 or later, or MinGW 12.2.
+- **Code Style**: The project uses an .editorconfig file to enforce coding standards. Follow the rules defined in `.editorconfig` for indentation, line endings, and other formatting. Additional information can be found on the wiki at [Implementation](https://github.com/microsoft/DirectXTK/wiki/Implementation). The library's public API requires C++11, and the project builds with C++17 (`CMAKE_CXX_STANDARD 17`). The command-line tools also use C++17, including `<filesystem>` for long file path support. This code is designed to build with Visual Studio 2022, Visual Studio 2026, clang for Windows v12 or later, or MinGW 12.2.
 > Notable `.editorconfig` rules: C/C++ files use 4-space indentation, `crlf` line endings, and `latin1` charset — avoid non-ASCII characters in source files. HLSL files have separate indent/spacing rules defined in `.editorconfig`.
 - **Documentation**: The project provides documentation in the form of wiki pages available at [Documentation](https://github.com/microsoft/DirectXTK/wiki/).
 - **Error Handling**: Use C++ exceptions for error handling and uses RAII smart pointers to ensure resources are properly managed. For some functions that return HRESULT error codes, they are marked `noexcept`, use `std::nothrow` for memory allocation, and should not throw exceptions.
@@ -65,7 +65,7 @@ wiki/           # Local clone of the GitHub wiki documentation repository.
 
 #### Inline Namespace
 
-All public headers that contain types shared with the DirectX 12 version of the _DirectX Tool Kit_ use `inline namespace DX11` inside `namespace DirectX`. This provides link-unique names (e.g. `DirectX::DX11::SpriteBatch`) without requiring explicit `DX11` qualification in client code. When adding new public types that also exist in DirectXTK12, place them inside this inline namespace.
+All public headers that contain types shared with the DirectX 12 version of the *DirectX Tool Kit* use `inline namespace DX11` inside `namespace DirectX`. This provides link-unique names (e.g. `DirectX::DX11::SpriteBatch`) without requiring explicit `DX11` qualification in client code. When adding new public types that also exist in DirectXTK12, place them inside this inline namespace.
 
 #### SAL Annotations
 
