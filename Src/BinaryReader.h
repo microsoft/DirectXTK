@@ -45,7 +45,11 @@ namespace DirectX
         {
             static_assert(std::is_standard_layout<T>::value, "Can only read plain-old-data types");
 
-            uint8_t const* newPos = mPos + sizeof(T) * elementCount;
+            uint64_t byteCount = uint64_t(sizeof(T)) * uint64_t(elementCount);
+            if (byteCount > UINT32_MAX)
+                throw std::overflow_error("ReadArray");
+
+            uint8_t const* newPos = mPos + static_cast<size_t>(byteCount);
 
             if (newPos < mPos)
                 throw std::overflow_error("ReadArray");
