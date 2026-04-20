@@ -14,12 +14,12 @@ These instructions define how GitHub Copilot should assist with this project. Th
 
 - See the tutorial at [Getting Started](https://github.com/microsoft/DirectXTK/wiki/Getting-Started).
 - The recommended way to integrate *DirectX Tool Kit for DirectX 11* into your project is by using the *vcpkg* Package Manager. See [d3d11game_vcpkg](https://github.com/walbourn/directx-vs-templates/tree/main/d3d11game_vcpkg) for a template which uses VCPKG.
-- You can make use of the nuget.org packages **directxtk_desktop_2019**, **directxtk_desktop_win10**, or **directxtk_uwp**.
+- You can make use of the nuget.org packages **directxtk_desktop_win10** or **directxtk_uwp**.
 - You can also use the library source code directly in your project or as a git submodule.
 
 ## General Guidelines
 
-- **Code Style**: The project uses an .editorconfig file to enforce coding standards. Follow the rules defined in `.editorconfig` for indentation, line endings, and other formatting. Additional information can be found on the wiki at [Implementation](https://github.com/microsoft/DirectXTK/wiki/Implementation). The library implementation is written to be compatible with C++14 features, but C++17 is required to build the project for the command-line tools which utilize C++17 filesystem for long file path support.
+- **Code Style**: The project uses an .editorconfig file to enforce coding standards. Follow the rules defined in `.editorconfig` for indentation, line endings, and other formatting. Additional information can be found on the wiki at [Implementation](https://github.com/microsoft/DirectXTK/wiki/Implementation). The implementation is written to be compatible with C++14 features. The command-line tools also use C++17, including `<filesystem>` for long file path support. This code is designed to build with Visual Studio 2022, Visual Studio 2026, clang for Windows v12 or later, or MinGW 12.2.
 > Notable `.editorconfig` rules: C/C++ files use 4-space indentation, `crlf` line endings, and `latin1` charset — avoid non-ASCII characters in source files. HLSL files have separate indent/spacing rules defined in `.editorconfig`.
 - **Documentation**: The project provides documentation in the form of wiki pages available at [Documentation](https://github.com/microsoft/DirectXTK/wiki/).
 - **Error Handling**: Use C++ exceptions for error handling and uses RAII smart pointers to ensure resources are properly managed. For some functions that return HRESULT error codes, they are marked `noexcept`, use `std::nothrow` for memory allocation, and should not throw exceptions.
@@ -35,13 +35,13 @@ These instructions define how GitHub Copilot should assist with this project. Th
 .azuredevops/   # Azure DevOps pipeline configuration and policy files.
 .github/        # GitHub Actions workflow files and linter configuration files.
 .nuget/         # NuGet package configuration files.
-build/          # Miscellaneous build files and scripts.
+build/          # Miscellaneous build files and scripts, including OneFuzzConfig.json.
 Audio/          # DirectX Tool Kit for Audio implementation files.
 Inc/            # Public header files.
 Src/            # Implementation header and source files.
   Shaders/      # HLSL shader files.
-MakeSpriteFont/ # CLI tool for capturing sprite fonts.
-XWBTool/        # CLI tool for creating XACT-style wave banks.
+MakeSpriteFont/ # C# CLI tool for capturing sprite fonts.
+XWBTool/        # C++ CLI tool for creating XACT-style wave banks.
 Tests/          # Tests are designed to be cloned from a separate repository at this location.
 wiki/           # Local clone of the GitHub wiki documentation repository.
 ```
@@ -62,6 +62,10 @@ wiki/           # Local clone of the GitHub wiki documentation repository.
 - Use 16-byte alignment (`_aligned_malloc` / `_aligned_free`) to support SIMD operations in the implementation, but do not expose this requirement in public APIs.
 - All implementation `.cpp` files include `pch.h` as their first include (precompiled header). MinGW builds skip precompiled headers.
 - `Model` and related classes require RTTI (`/GR` on MSVC, `__GXX_RTTI` on GCC/Clang). The CMake build enables `/GR` automatically; do not disable RTTI when using `Model`.
+
+#### Inline Namespace
+
+All public headers that contain types shared with the DirectX 12 version of the _DirectX Tool Kit_ use `inline namespace DX11` inside `namespace DirectX`. This provides link-unique names (e.g. `DirectX::DX11::SpriteBatch`) without requiring explicit `DX11` qualification in client code. When adding new public types that also exist in DirectXTK12, place them inside this inline namespace.
 
 #### SAL Annotations
 
@@ -231,8 +235,10 @@ When creating documentation:
 
 ## Cross-platform Support Notes
 
-- The code supports building for Windows.
+- The code targets Win32 desktop applications for Windows 8.1 or later, Xbox One, Xbox Series X|S, and Universal Windows Platform (UWP) apps for Windows 10 and Windows 11.
 - Portability and conformance of the code is validated by building with Visual C++, clang/LLVM for Windows, and MinGW.
+- For Xbox development, the project provides MSBuild solutions for GDK (`DirectXTK_GDK_2022.sln`) and GDK with Xbox Extensions (`DirectXTK_GDKW_2022.sln`). The CMake build supports Xbox via the `XBOX_CONSOLE_TARGET` variable (`scarlett` or `xboxone`).
+- The project ships MSBuild projects for Visual Studio 2022 (`.sln` / `.vcxproj`) and Visual Studio 2026 (`.slnx` / `.vcxproj`). VS 2019 projects have been retired.
 
 ### Platform and Compiler `#ifdef` Guards
 
@@ -241,7 +247,9 @@ Use these established guards — do not invent new ones:
 | Guard | Purpose |
 | --- | --- |
 | `_WIN32` | Windows platform (desktop, UWP, Xbox) |
-| `_GAMING_XBOX` | Xbox One |
+| `_GAMING_XBOX` | Xbox platform (GDK — covers both Xbox One and Xbox Series X\|S) |
+| `_GAMING_XBOX_SCARLETT` | Xbox Series X\|S (GDK with Xbox Extensions) |
+| `_GAMING_XBOX_XBOXONE` | Xbox One (GDK with Xbox Extensions) |
 | `_XBOX_ONE && _TITLE` | Xbox One XDK (legacy) |
 | `_MSC_VER` | MSVC-specific (and MSVC-like clang-cl) pragmas and warning suppression |
 | `__clang__` | Clang/LLVM diagnostic suppressions |
@@ -249,6 +257,10 @@ Use these established guards — do not invent new ones:
 | `_M_ARM64` / `_M_X64` / `_M_IX86` | Architecture-specific code paths for MSVC (`#ifdef`) |
 | `_M_ARM64EC` | ARM64EC ABI (ARM64 code with x64 interop) for MSVC |
 | `__aarch64__` / `__x86_64__` / `__i386__` | Additional architecture-specific symbols for MinGW/GNUC (`#if`) |
+| `USING_GAMEINPUT` | GameInput API for GamePad, Keyboard, Mouse |
+| `USING_WINDOWS_GAMING_INPUT` | Windows.Gaming.Input API for GamePad |
+| `USING_XINPUT` | XInput API for GamePad, Keyboard, Mouse |
+| `USING_COREWINDOW` | CoreWindow-based input (UWP) for Keyboard, Mouse |
 
 > `_M_ARM`/ `__arm__` is legacy 32-bit ARM which is deprecated.
 
