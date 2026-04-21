@@ -70,6 +70,12 @@ jobs:
           - toolver: '14'
             build_type: x86-Release-Clang
             arch: amd64_x86
+          - toolver: '14'
+            build_type: x64-Debug-VS
+            arch: amd64
+          - toolver: '14'
+            build_type: x86-Debug-VS
+            arch: amd64_x86
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2

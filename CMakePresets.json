@@ -15,6 +15,15 @@
       "installDir": "${sourceDir}/out/install/${presetName}"
     },
     {
+      "name": "vsbase",
+      "displayName": "Visual Studio Basic Config",
+      "description": "Basic build using Visual Studio generator",
+      "generator": "Visual Studio 17 2022",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "installDir": "${sourceDir}/out/install/${presetName}"
+    },
+    {
       "name": "x64",
       "architecture": {
         "value": "x64",
@@ -248,6 +257,11 @@
     { "name": "x64-Release"  , "description": "MSVC for x64 (Release) for Windows 8", "inherits": [ "base", "x64", "Release", "MSVC" ] },
     { "name": "x86-Debug"    , "description": "MSVC for x86 (Debug) for Windows 8", "inherits": [ "base", "x86", "Debug", "MSVC" ] },
     { "name": "x86-Release"  , "description": "MSVC for x86 (Release) for Windows 8", "inherits": [ "base", "x86", "Release", "MSVC" ] },
+
+    { "name": "x64-Debug-VS"    , "description": "MSVC for x64 (Debug) w/ MakeSpriteFont", "inherits": [ "vsbase", "x64", "Debug", "MSVC" ] },
+    { "name": "x64-Release-VS"  , "description": "MSVC for x64 (Release) w/ MakeSpriteFont", "inherits": [ "vsbase", "x64", "Release", "MSVC" ] },
+    { "name": "x86-Debug-VS"    , "description": "MSVC for x86 (Debug) w/ MakeSpriteFont", "inherits": [ "vsbase", "x86", "Debug", "MSVC" ] },
+    { "name": "x86-Release-VS"  , "description": "MSVC for x86 (Release) w/ MakeSpriteFont", "inherits": [ "vsbase", "x86", "Release", "MSVC" ] },
 
     { "name": "x64-Debug-Win10"   , "description": "MSVC for x64 (Debug) for Windows 10", "inherits": [ "base", "x64", "Debug", "MSVC", "Win10" ] },
     { "name": "x64-Release-Win10" , "description": "MSVC for x64 (Release) for Windows 10", "inherits": [ "base", "x64", "Release", "MSVC", "Win10" ] },

@@ -446,6 +446,10 @@ if(TOOL_EXES)
   message(STATUS "Building tools: ${TOOL_EXES}")
 endif()
 
+if (BUILD_TOOLS AND (CMAKE_GENERATOR MATCHES "Visual Studio"))
+  add_subdirectory(MakeSpriteFont)
+endif()
+
 # Model uses dynamic_cast, so we need /GR (Enable RTTI)
 if(MSVC)
     foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
