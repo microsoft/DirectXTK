@@ -258,11 +258,6 @@
     { "name": "x86-Debug"    , "description": "MSVC for x86 (Debug) for Windows 8", "inherits": [ "base", "x86", "Debug", "MSVC" ] },
     { "name": "x86-Release"  , "description": "MSVC for x86 (Release) for Windows 8", "inherits": [ "base", "x86", "Release", "MSVC" ] },
 
-    { "name": "x64-Debug-VS"    , "description": "MSVC for x64 (Debug) w/ MakeSpriteFont", "inherits": [ "vsbase", "x64", "Debug", "MSVC" ] },
-    { "name": "x64-Release-VS"  , "description": "MSVC for x64 (Release) w/ MakeSpriteFont", "inherits": [ "vsbase", "x64", "Release", "MSVC" ] },
-    { "name": "x86-Debug-VS"    , "description": "MSVC for x86 (Debug) w/ MakeSpriteFont", "inherits": [ "vsbase", "x86", "Debug", "MSVC" ] },
-    { "name": "x86-Release-VS"  , "description": "MSVC for x86 (Release) w/ MakeSpriteFont", "inherits": [ "vsbase", "x86", "Release", "MSVC" ] },
-
     { "name": "x64-Debug-Win10"   , "description": "MSVC for x64 (Debug) for Windows 10", "inherits": [ "base", "x64", "Debug", "MSVC", "Win10" ] },
     { "name": "x64-Release-Win10" , "description": "MSVC for x64 (Release) for Windows 10", "inherits": [ "base", "x64", "Release", "MSVC", "Win10" ] },
     { "name": "x86-Debug-Win10"   , "description": "MSVC for x86 (Debug) for Windows 10", "inherits": [ "base", "x86", "Debug", "MSVC", "Win10" ] },
@@ -272,6 +267,9 @@
     { "name": "arm64-Release"   , "description": "MSVC for ARM64 (Release) for Windows 10", "inherits": [ "base", "ARM64", "Release", "MSVC", "Win10" ] },
     { "name": "arm64ec-Debug"   , "description": "MSVC for ARM64EC (Debug) for Windows 10", "inherits": [ "base", "ARM64EC", "Debug", "MSVC", "Win10" ] },
     { "name": "arm64ec-Release" , "description": "MSVC for ARM64EC (Release) for Windows 10", "inherits": [ "base", "ARM64EC", "Release", "MSVC", "Win10" ] },
+
+    { "name": "x64-VS"  , "description": "MSVC for x64 w/ Visual Studio generator", "inherits": [ "vsbase", "x64", "MSVC" ] },
+    { "name": "x86-VS"  , "description": "MSVC for x86 w/ Visual Studio generator", "inherits": [ "vsbase", "x86", "MSVC" ] },
 
     { "name": "x64-Debug-UWP"    , "description": "MSVC for x64 (Debug) for UWP", "inherits": [ "base", "x64", "Debug", "MSVC", "UWP" ] },
     { "name": "x64-Release-UWP"  , "description": "MSVC for x64 (Release) for UWP", "inherits": [ "base", "x64", "Release", "MSVC", "UWP" ] },

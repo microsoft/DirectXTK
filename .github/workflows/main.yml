@@ -71,10 +71,10 @@ jobs:
             build_type: x86-Release-Clang
             arch: amd64_x86
           - toolver: '14'
-            build_type: x64-Debug-VS
+            build_type: x64-VS
             arch: amd64
           - toolver: '14'
-            build_type: x86-Debug-VS
+            build_type: x86-VS
             arch: amd64_x86
 
     steps:
