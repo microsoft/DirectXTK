@@ -151,3 +151,5 @@ Thanks to Roberto Sonnino for his help with the ``CMO``, DGSL rendering, and the
 Thanks to Pete Lewis and Justin Saunders for the normal-mapped and PBR shaders implementation.
 
 Thanks to Andrew Farrier and Scott Matloff for their on-going help with code reviews.
+
+Thanks to Imre Eilertsen for creating winget ports for the command-line tools.
