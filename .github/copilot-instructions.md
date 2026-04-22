@@ -261,10 +261,10 @@ When creating documentation:
 
 - The code targets Win32 desktop applications for Windows 8.1 or later, legacy Xbox One XDK, and Universal Windows Platform (UWP) apps for Windows 10 and Windows 11.
 - Portability and conformance of the code is validated by building with Visual C++, clang/LLVM for Windows, and MinGW.
-- For PC development using the Microsoft GDK, the project provides MSBuild solution `DirectXTK_GDKW_2022.sln` for the x64 or ARM64 architectures.
-- The MSBuild solution `DirectXTK_GDK_2022.sln` is for Microsoft GDK development for desktop using the legacy Gaming.Desktop.x64 custom platform.
+- For PC development using the *Microsoft GDK*, the project provides MSBuild solution `DirectXTK_GDKW_2022.sln` for the x64 or ARM64 architectures.
+- The MSBuild solution `DirectXTK_GDK_2022.sln` is for *Microsoft GDK with Xbox Extensions* development for PC using the legacy Gaming.Desktop.x64 custom platform. There is no support for the Gaming.Xbox.*.x64 custom platforms since they do not support DirectX 11.
 - The project ships MSBuild projects for Visual Studio 2022 (`.sln` / `.vcxproj`) and Visual Studio 2026 (`.slnx` / `.vcxproj`). VS 2019 projects have been retired.
-- The CMake build supports legacy Xbox One XDK via the `XBOX_CONSOLE_TARGET` variable (`durango`).
+- The CMake build supports legacy Xbox One XDK via the `XBOX_CONSOLE_TARGET` variable (`durango`). Xbox Series X|S (`scarlett`) and Xbox One (`xboxone`) via the *Microsoft GDK with Xbox Extensions* only supports DirectX 12, so this version of the library cannot support those platforms.
 
 ### Platform and Compiler `#ifdef` Guards
 
