@@ -12,6 +12,8 @@ on:
       - '*.md'
       - LICENSE
       - '.azuredevops/**'
+      - '.github/*.md'
+      - '.nuget/*'
       - build/*.cmd
       - build/*.props
       - build/*.ps1
@@ -22,6 +24,8 @@ on:
       - '*.md'
       - LICENSE
       - '.azuredevops/**'
+      - '.github/*.md'
+      - '.nuget/*'
       - build/*.cmd
       - build/*.props
       - build/*.ps1
