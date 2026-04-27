@@ -604,7 +604,7 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
 
     if (m_data.dwFlags & BANKDATA::TYPE_STREAMING)
     {
-        if (m_data.dwAlignment < ALIGNMENT_DVD)
+        if ((m_data.dwAlignment < ALIGNMENT_DVD) || (m_data.dwAlignment > ALIGNMENT_MAX))
             return E_FAIL;
         if (m_data.dwAlignment % DVD_SECTOR_SIZE)
             return E_FAIL;
@@ -655,7 +655,7 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
         expectedSize = uint64_t(m_data.dwEntryCount) * m_data.dwEntryNameElementSize;
         if (expectedSize > UINT32_MAX)
         {
-            return E_FAIL;
+            return HRESULT_FROM_WIN32(ERROR_ARITHMETIC_OVERFLOW);
         }
 
         if (namesBytes >= static_cast<DWORD>(expectedSize))
@@ -1185,7 +1185,9 @@ HRESULT WaveBankReader::Impl::GetMetadata(uint32_t index, Metadata& metadata) co
     {
         const uint64_t offset = uint64_t(metadata.offsetBytes) + uint64_t(m_header.Segments[HEADER::SEGIDX_ENTRYWAVEDATA].dwOffset);
         if (offset > UINT32_MAX)
+        {
             return HRESULT_FROM_WIN32(ERROR_ARITHMETIC_OVERFLOW);
+        }
 
         metadata.offsetBytes = static_cast<uint32_t>(offset);
     }
