@@ -325,13 +325,16 @@ endif()
 
 if(MINGW)
     find_package(directxmath CONFIG REQUIRED)
+    target_link_libraries(${PROJECT_NAME} PUBLIC Microsoft::DirectXMath)
 else()
     find_package(directxmath CONFIG QUIET)
 endif()
 
 if(directxmath_FOUND)
     message(STATUS "Using DirectXMath package")
-    target_link_libraries(${PROJECT_NAME} PUBLIC Microsoft::DirectXMath)
+    if(NOT MINGW)
+      target_link_libraries(${PROJECT_NAME} PRIVATE Microsoft::DirectXMath)
+    endif()
 endif()
 
 if(BUILD_XAUDIO_REDIST AND (NOT BUILD_XAUDIO_WIN10) AND (NOT BUILD_XAUDIO_WIN8))
