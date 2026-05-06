@@ -263,7 +263,9 @@ if(NOT USE_PREBUILT_SHADERS)
           HINTS "C:/Program Files (x86)/Windows Kits/10/bin/${CMAKE_SYSTEM_VERSION}/${DIRECTX_HOST_ARCH}"
                 "C:/Program Files (x86)/Windows Kits/10/bin/${CMAKE_SYSTEM_VERSION}.0/${DIRECTX_HOST_ARCH}"
                 "C:/Program Files (x86)/Windows Kits/10/bin/${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION}/${DIRECTX_HOST_ARCH}")
-        message(STATUS "Using LegacyShaderCompiler found in ${DIRECTX_FXC_TOOL}")
+        if(DIRECTX_FXC_TOOL)
+          message(STATUS "Using LegacyShaderCompiler found in ${DIRECTX_FXC_TOOL}")
+        endif()
     endif()
     add_custom_command(
         OUTPUT "${COMPILED_SHADERS}/SpriteEffect_SpriteVertexShader.inc"
@@ -311,8 +313,9 @@ source_group(Inc REGULAR_EXPRESSION Inc/*.*)
 source_group(Src REGULAR_EXPRESSION Src/*.*)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Inc>
-  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/directxtk>)
+   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Inc>)
+target_include_directories(${PROJECT_NAME} SYSTEM INTERFACE
+   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/directxtk>)
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_11)
 
@@ -322,14 +325,13 @@ endif()
 
 if(MINGW)
     find_package(directxmath CONFIG REQUIRED)
-    target_link_libraries(${PROJECT_NAME} PUBLIC Microsoft::DirectXMath)
 else()
     find_package(directxmath CONFIG QUIET)
 endif()
 
 if(directxmath_FOUND)
     message(STATUS "Using DirectXMath package")
-    target_link_libraries(${PROJECT_NAME} PRIVATE Microsoft::DirectXMath)
+    target_link_libraries(${PROJECT_NAME} PUBLIC Microsoft::DirectXMath)
 endif()
 
 if(BUILD_XAUDIO_REDIST AND (NOT BUILD_XAUDIO_WIN10) AND (NOT BUILD_XAUDIO_WIN8))
@@ -396,10 +398,9 @@ install(FILES
   DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PACKAGE_NAME})
 
 # Create pkg-config file
-include(build/JoinPaths.cmake)
 # from: https://github.com/jtojnar/cmake-snips#concatenating-paths-when-building-pkg-config-files
-join_paths(DIRECTXTK_INCLUDEDIR_FOR_PKG_CONFIG "\${prefix}" "${CMAKE_INSTALL_INCLUDEDIR}")
-join_paths(DIRECTXTK_LIBDIR_FOR_PKG_CONFIG "\${prefix}"     "${CMAKE_INSTALL_LIBDIR}")
+cmake_path(APPEND DIRECTXTK_INCLUDEDIR_FOR_PKG_CONFIG "\${prefix}" "${CMAKE_INSTALL_INCLUDEDIR}")
+cmake_path(APPEND DIRECTXTK_LIBDIR_FOR_PKG_CONFIG "\${prefix}"     "${CMAKE_INSTALL_LIBDIR}")
 
 set(DIRECTXTK_DEP_L "")
 if(directxmath_FOUND)
@@ -419,6 +420,8 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/DirectXTK.pc"
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
 #--- Command-line tools
+set(TOOL_EXES "")
+
 if(BUILD_TOOLS AND WIN32)
   set(TOOL_EXES xwbtool)
 
@@ -532,6 +535,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     endforeach()
 
     if(BUILD_FUZZING AND (NOT WINDOWS_STORE))
+      # Prevent fuzzing builds (which is otherwise configured as a Release mode) from disabling assertions
       string(REPLACE "/DNDEBUG" "" CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
       string(REPLACE "/DNDEBUG" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO ${CMAKE_CXX_FLAGS_RELWITHDEBINFO})
 
