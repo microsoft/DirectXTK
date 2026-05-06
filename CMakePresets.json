@@ -253,10 +253,10 @@
       "hidden": true
     },
 
-    { "name": "x64-Debug"    , "description": "MSVC for x64 (Debug) for Windows 8", "inherits": [ "base", "x64", "Debug", "MSVC" ] },
-    { "name": "x64-Release"  , "description": "MSVC for x64 (Release) for Windows 8", "inherits": [ "base", "x64", "Release", "MSVC" ] },
-    { "name": "x86-Debug"    , "description": "MSVC for x86 (Debug) for Windows 8", "inherits": [ "base", "x86", "Debug", "MSVC" ] },
-    { "name": "x86-Release"  , "description": "MSVC for x86 (Release) for Windows 8", "inherits": [ "base", "x86", "Release", "MSVC" ] },
+    { "name": "x64-Debug"    , "description": "MSVC for x64 (Debug) for Windows 8.1", "inherits": [ "base", "x64", "Debug", "MSVC" ] },
+    { "name": "x64-Release"  , "description": "MSVC for x64 (Release) for Windows 8.1", "inherits": [ "base", "x64", "Release", "MSVC" ] },
+    { "name": "x86-Debug"    , "description": "MSVC for x86 (Debug) for Windows 8.1", "inherits": [ "base", "x86", "Debug", "MSVC" ] },
+    { "name": "x86-Release"  , "description": "MSVC for x86 (Release) for Windows 8.1", "inherits": [ "base", "x86", "Release", "MSVC" ] },
 
     { "name": "x64-Debug-Win10"   , "description": "MSVC for x64 (Debug) for Windows 10", "inherits": [ "base", "x64", "Debug", "MSVC", "Win10" ] },
     { "name": "x64-Release-Win10" , "description": "MSVC for x64 (Release) for Windows 10", "inherits": [ "base", "x64", "Release", "MSVC", "Win10" ] },
@@ -303,10 +303,10 @@
     { "name": "arm64ec-Debug-VCPKG"  , "description": "MSVC for ARM64EC (Debug) using VCPKG", "inherits": [ "base", "ARM64EC", "Debug", "MSVC", "VCPKG", "Win10" ], "cacheVariables": { "VCPKG_TARGET_TRIPLET": "arm64ec-windows" } },
     { "name": "arm64ec-Release-VCPKG", "description": "MSVC for ARM64EC (Release) using VCPKG", "inherits": [ "base", "ARM64EC", "Release", "MSVC", "VCPKG", "Win10" ], "cacheVariables": { "VCPKG_TARGET_TRIPLET": "arm64ec-windows" } },
 
-    { "name": "x64-Debug-Clang"    , "description": "Clang/LLVM for x64 (Debug) for Windows 8", "inherits": [ "base", "x64", "Debug", "Clang" ] },
-    { "name": "x64-Release-Clang"  , "description": "Clang/LLVM for x64 (Release) for Windows 8", "inherits": [ "base", "x64", "Release", "Clang" ] },
-    { "name": "x86-Debug-Clang"    , "description": "Clang/LLVM for x86 (Debug) for Windows 8", "inherits": [ "base", "x86", "Debug", "Clang", "Clang-X86" ] },
-    { "name": "x86-Release-Clang"  , "description": "Clang/LLVM for x86 (Release) for Windows 8", "inherits": [ "base", "x86", "Release", "Clang", "Clang-X86" ] },
+    { "name": "x64-Debug-Clang"    , "description": "Clang/LLVM for x64 (Debug) for Windows 8.1", "inherits": [ "base", "x64", "Debug", "Clang" ] },
+    { "name": "x64-Release-Clang"  , "description": "Clang/LLVM for x64 (Release) for Windows 8.1", "inherits": [ "base", "x64", "Release", "Clang" ] },
+    { "name": "x86-Debug-Clang"    , "description": "Clang/LLVM for x86 (Debug) for Windows 8.1", "inherits": [ "base", "x86", "Debug", "Clang", "Clang-X86" ] },
+    { "name": "x86-Release-Clang"  , "description": "Clang/LLVM for x86 (Release) for Windows 8.1", "inherits": [ "base", "x86", "Release", "Clang", "Clang-X86" ] },
 
     { "name": "x64-Debug-Win10-Clang"    , "description": "Clang/LLVM for x64 (Debug) for Windows 10", "inherits": [ "base", "x64", "Debug", "Clang", "Win10" ] },
     { "name": "x64-Release-Win10-Clang"  , "description": "Clang/LLVM for x64 (Release) for Windows 10", "inherits": [ "base", "x64", "Release", "Clang", "Win10" ] },
@@ -344,13 +344,13 @@
     { "name": "x64-Debug-MinGW-GI"  , "description": "MinG-W64 (Debug) using GameInput", "inherits": [ "base", "x64", "Debug", "GNUC", "VCPKG", "XAudio2Redist", "MinGW64" ], "cacheVariables": { "BUILD_GAMEINPUT": "true" } },
     { "name": "x64-Release-MinGW-GI", "description": "MinG-W64 (Release) using GameInput", "inherits": [ "base", "x64", "Release", "GNUC", "VCPKG", "XAudio2Redist", "MinGW64" ], "cacheVariables": { "BUILD_GAMEINPUT": "true" } },
 
-    { "name": "x64-Debug-ICC"     , "description": "Intel Classic Compiler (Debug) for Windows 8", "inherits": [ "base", "x64", "Debug", "Intel" ] },
-    { "name": "x64-Release-ICC"   , "description": "Intel Classic Compiler (Release) for Windows 8", "inherits": [ "base", "x64", "Release", "Intel" ] },
+    { "name": "x64-Debug-ICC"     , "description": "Intel Classic Compiler (Debug) for Windows 8.1", "inherits": [ "base", "x64", "Debug", "Intel" ] },
+    { "name": "x64-Release-ICC"   , "description": "Intel Classic Compiler (Release) for Windows 8.1", "inherits": [ "base", "x64", "Release", "Intel" ] },
 
-    { "name": "x64-Debug-ICX"    , "description": "Intel oneAPI Compiler (Debug) for Windows 8", "inherits": [ "base", "x64", "Debug", "IntelLLVM" ] },
-    { "name": "x64-Release-ICX"  , "description": "Intel oneAPI Compiler (Release) for Windows 8", "inherits": [ "base", "x64", "Release", "IntelLLVM" ] },
+    { "name": "x64-Debug-ICX"    , "description": "Intel oneAPI Compiler (Debug) for Windows 8.1", "inherits": [ "base", "x64", "Debug", "IntelLLVM" ] },
+    { "name": "x64-Release-ICX"  , "description": "Intel oneAPI Compiler (Release) for Windows 8.1", "inherits": [ "base", "x64", "Release", "IntelLLVM" ] },
 
-    { "name": "x64-Analyze"       , "description": "MSVC for x64 (Debug) for Windows 8 using /analyze", "inherits": [ "base", "x64", "Debug", "MSVC", "Analyze" ] },
+    { "name": "x64-Analyze"       , "description": "MSVC for x64 (Debug) for Windows 8.1 using /analyze", "inherits": [ "base", "x64", "Debug", "MSVC", "Analyze" ] },
     { "name": "x64-Analyze-Win10" , "description": "MSVC for x64 (Debug) for Windows 10 using /analyze", "inherits": [ "base", "x64", "Debug", "MSVC", "Win10", "Analyze" ] },
     { "name": "x64-Coverage"      , "description": "MSVC for x64 (Debug) w/ Code Coverage", "inherits": [ "base", "x64", "Debug", "MSVC", "Coverage" ] },
     { "name": "x64-Coverage-Clang", "description": "Clang/LLVM for x64 (Debug) w/ Code Coverage", "inherits": [ "base", "x64", "Debug", "Clang", "Coverage" ] },

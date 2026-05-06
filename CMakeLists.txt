@@ -164,16 +164,16 @@ set(SHADER_SOURCES
     Src/Shaders/ToneMap.fx)
 
 # These source files are identical in both DX11 and DX12 version.
-set(LIBRARY_HEADERS ${LIBRARY_HEADERS}
+list(APPEND LIBRARY_HEADERS
     Inc/SimpleMath.h
     Inc/SimpleMath.inl)
 
-set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
+list(APPEND LIBRARY_SOURCES
     Src/BinaryReader.cpp
     Src/Geometry.cpp
     Src/SimpleMath.cpp)
 
-set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
+list(APPEND LIBRARY_SOURCES
     Src/AlignedNew.h
     Src/Bezier.h
     Src/BinaryReader.h
@@ -187,7 +187,7 @@ set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
     Src/vbo.h
     Src/TeapotData.inc)
 
-set(SHADER_SOURCES ${SHADER_SOURCES}
+list(APPEND SHADER_SOURCES
     Src/Shaders/Common.fxh
     Src/Shaders/Lighting.fxh
     Src/Shaders/PBRCommon.fxh
@@ -198,30 +198,30 @@ set(SHADER_SOURCES ${SHADER_SOURCES}
 
 # Xbox-specific extensions
 if(DEFINED XBOX_CONSOLE_TARGET)
-  set(LIBRARY_HEADERS ${LIBRARY_HEADERS}
+  list(APPEND LIBRARY_HEADERS
       Inc/XboxDDSTextureLoader.h)
 
-  set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
+  list(APPEND LIBRARY_SOURCES
       Src/XboxDDSTextureLoader.cpp)
 endif()
 
 if(BUILD_XINPUT OR BUILD_WGI OR BUILD_GAMEINPUT)
-  set(LIBRARY_HEADERS ${LIBRARY_HEADERS}
+  list(APPEND LIBRARY_HEADERS
       Inc/GamePad.h
       Inc/Keyboard.h
       Inc/Mouse.h)
 
-  set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
+  list(APPEND LIBRARY_SOURCES
       Src/GamePad.cpp
       Src/Keyboard.cpp
       Src/Mouse.cpp)
 endif()
 
 if(BUILD_XAUDIO_WIN10 OR BUILD_XAUDIO_WIN8 OR BUILD_XAUDIO_REDIST)
-    set(LIBRARY_HEADERS ${LIBRARY_HEADERS}
+    list(APPEND LIBRARY_HEADERS
         Inc/Audio.h)
 
-    set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
+    list(APPEND LIBRARY_SOURCES
         Audio/AudioEngine.cpp
         Audio/DynamicSoundEffectInstance.cpp
         Audio/SoundCommon.cpp
@@ -246,8 +246,7 @@ else()
     file(TO_CMAKE_PATH ${COMPILED_SHADERS} COMPILED_SHADERS)
 endif()
 
-set(LIBRARY_SOURCES ${LIBRARY_SOURCES}
-    ${COMPILED_SHADERS}/SpriteEffect_SpriteVertexShader.inc)
+list(APPEND LIBRARY_SOURCES ${COMPILED_SHADERS}/SpriteEffect_SpriteVertexShader.inc)
 
 if(BUILD_XBOXONE_SHADERS)
     message(STATUS "Using Shader Model 5.0 for Xbox One for shaders")
