@@ -67,7 +67,7 @@ endif()
 
 #--- General MSVC-like SDL options
 if(MSVC)
-    list(APPEND COMPILER_SWITCHES "$<$<NOT:$<CONFIG:DEBUG>>:/guard:cf>")
+    list(APPEND COMPILER_SWITCHES /Gd /GS /Zc:forScope /Zc:inline /Zc:wchar_t $<$<NOT:$<CONFIG:DEBUG>>:/guard:cf>)
     list(APPEND LINKER_SWITCHES /DYNAMICBASE /NXCOMPAT /INCREMENTAL:NO)
 
     if(WINDOWS_STORE)
@@ -130,7 +130,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|IntelLLVM")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
     list(APPEND COMPILER_SWITCHES /Zc:__cplusplus /Zc:inline /fp:fast /Qdiag-disable:161)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    list(APPEND COMPILER_SWITCHES /sdl /Zc:forScope /Zc:inline /Zc:wchar_t /fp:fast)
+    list(APPEND COMPILER_SWITCHES /sdl /fp:fast)
 
     if(WINDOWS_STORE)
       list(APPEND COMPILER_SWITCHES /await)

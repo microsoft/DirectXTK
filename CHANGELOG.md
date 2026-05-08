@@ -6,6 +6,12 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXT
 
 ## Release History
 
+### May 7, 2026
+* SpriteFont file loader updated to fix a potential overflow issue in 32-bit (x86) builds
+* XWB reader updated to resolve a potential overflow issue when reading a malformed wavebank file
+* CMake project updates
+* Minor comments cleanup
+
 ### March 31, 2026
 * Added SpriteFont **SetPixelAlignment** method for opt-in pixel snapping support
 * VS 2026 support
