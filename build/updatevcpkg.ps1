@@ -178,3 +178,8 @@ Write-Host "`nvcpkg port updated successfully!"
 Write-Host "`nUpdated files:"
 Write-Host "  $vcpkgJson"
 Write-Host "  $portfile"
+
+$portContent = Get-Content $portfile -Raw
+if ($portContent -match '\bPATCHES\b') {
+    Write-Warning "This port includes patches. Review them to either remove or update."
+}
