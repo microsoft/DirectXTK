@@ -163,7 +163,7 @@ Headers that trigger Clang warnings use paired `#pragma clang diagnostic push`/`
 ### Patterns to Avoid
 
 - Don’t use raw pointers for ownership.
-- Avoid macros for constants—prefer `constexpr` or `inline` `const`.
+- Avoid macros for constants—prefer `constexpr` or `inline const`.
 - Don’t put implementation logic in header files unless using templates, although the SimpleMath library does use an .inl file for performance.
 - Avoid using `using namespace` in header files to prevent polluting the global namespace.
 - Don't use `[[deprecated]]` or `__declspec(deprecated)` attributes. Feature retirement is communicated via `CHANGELOG.md` notes, not in-source deprecation markers.
@@ -260,11 +260,11 @@ When creating documentation:
 ## Cross-platform Support Notes
 
 - The code targets Win32 desktop applications for Windows 8.1 or later, legacy Xbox One XDK, and Universal Windows Platform (UWP) apps for Windows 10 and Windows 11.
-- Portability and conformance of the code is validated by building with Visual C++, clang/LLVM for Windows, and MinGW.
+- Portability and conformance of the code are validated by building with Visual C++, clang/LLVM for Windows, and MinGW.
 - For PC development using the *Microsoft GDK*, the project provides MSBuild solution `DirectXTK_GDKW_2022.sln` for the x64 or ARM64 architectures.
 - The MSBuild solution `DirectXTK_GDK_2022.sln` is for *Microsoft GDK with Xbox Extensions* development for PC using the legacy Gaming.Desktop.x64 custom platform. There is no support for the Gaming.Xbox.*.x64 custom platforms since they do not support DirectX 11.
 - The project ships MSBuild projects for Visual Studio 2022 (`.sln` / `.vcxproj`) and Visual Studio 2026 (`.slnx` / `.vcxproj`). VS 2019 projects have been retired.
-- The CMake build supports legacy Xbox One XDK via the `XBOX_CONSOLE_TARGET` variable (`durango`). Xbox Series X|S (`scarlett`) and Xbox One (`xboxone`) via the *Microsoft GDK with Xbox Extensions* only supports DirectX 12, so this version of the library cannot support those platforms.
+- The CMake build supports legacy Xbox One XDK via the `XBOX_CONSOLE_TARGET` variable (`durango`). Xbox Series X|S (`scarlett`) and Xbox One (`xboxone`) via the *Microsoft GDK with Xbox Extensions* only support DirectX 12, so this version of the library cannot support those platforms.
 
 ### Platform and Compiler `#ifdef` Guards
 
@@ -342,7 +342,7 @@ When reviewing documentation, do the following:
 20. Run `.\vcpkg --x-add-version directxtk` to update the VCPKG versioning history.
 21. Submit a PR to the VCPKG repository to update the DirectXTK port back to the main GitHub repo. The PR will be reviewed and merged by the VCPKG maintainers.
 22. If relevant changes were made to the `xwbtool` or `MakeSpriteFont` tools, update the winget manifests for those tools in the `winget` repository.
-  - Git pull a local repository to `D:\winget-pkgs` in sync with the `master` branch of the WinGet repository.
-  - Run the PowerShell script `build\updatewinget.ps1` to update the winget manifests for the tools with the new release version.
-  - Submit a PR to the `winget` repository to update the manifests for each tool — they must be done as distinct PRs. The PRs will be reviewed and merged by the winget maintainers.
+- Git pull a local repository to `D:\winget-pkgs` in sync with the `master` branch of the WinGet repository.
+- Run the PowerShell script `build\updatewinget.ps1` to update the winget manifests for the tools with the new release version.
+- Submit a PR to the `winget` repository to update the manifests for each tool — they must be done as distinct PRs. The PRs will be reviewed and merged by the winget maintainers.
 23. Update the GitHub release with links to the matching NuGet packages, the VCPKG port, and the winget manifests for the tools.
