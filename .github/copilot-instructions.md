@@ -343,7 +343,7 @@ When reviewing documentation, do the following:
 20. Run `.\vcpkg --x-add-version directxtk` to update the VCPKG versioning history.
 21. Submit a PR to the VCPKG repository to update the DirectXTK port back to the main GitHub repo. The PR will be reviewed and merged by the VCPKG maintainers.
 22. If relevant changes were made to the `xwbtool` or `MakeSpriteFont` tools, update the winget manifests for those tools in the `winget` repository.
-  * Git pull a local repository to `D:\winget-pkgs` in sync with the `main` branch of the WinGet repository.
+  * Git pull a local repository to `D:\winget-pkgs` in sync with the `master` branch of the WinGet repository.
   * Run the PowerShell script `build\updatewinget.ps1` to update the winget manifests for the tools with the new release version.
   * Submit a PR to the `winget` repository to update the manifests for each tool — they must be done as distinct PRs. The PRs will be reviewed and merged by the winget maintainers.
 23. Update the GitHub release with links to the matching NuGet packages, the VCPKG port, and the winget manifests for the tools.
