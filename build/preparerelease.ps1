@@ -24,6 +24,7 @@ https://github.com/microsoft/DirectXTK/wiki
 
 #>
 
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingEmptyCatchBlock', '')]
 param(
     [string]$BaseBranch = "main",
     [string]$TargetBranch = $null,
@@ -31,27 +32,27 @@ param(
 )
 
 $reporoot = Split-Path -Path $PSScriptRoot -Parent
-$cmake = $reporoot + "\CMakeLists.txt"
-$readme = $reporoot + "\README.md"
-$history = $reporoot + "\CHANGELOG.md"
+$cmake   = Join-Path $reporoot "CMakeLists.txt"
+$readme  = Join-Path $reporoot "README.md"
+$history = Join-Path $reporoot "CHANGELOG.md"
 
 if ((-Not (Test-Path $cmake)) -Or (-Not (Test-Path $readme)) -Or (-Not (Test-Path $history))) {
     Write-Error "ERROR: Unexpected location of script file!" -ErrorAction Stop
 }
 
-$branch = git branch --show-current
+$branch = git -C $reporoot branch --show-current
 if ($branch -ne $BaseBranch) {
     Write-Error "ERROR: Must be in the $BaseBranch branch!" -ErrorAction Stop
 }
 
-git pull -q
+git -C $reporoot pull -q
 if ($LastExitCode -ne 0) {
     Write-Error "ERROR: Failed to sync branch!" -ErrorAction Stop
 }
 
 $version = Get-Content ($cmake) | Select-String -Pattern "set\(DIRECTXTK_VERSION" -CaseSensitive
 if (-Not ($version -match "([0-9]?\.[0-9]?\.[0-9]?)")) {
-    Write-Error "ERROR: Failed to current version!" -ErrorAction Stop
+    Write-Error "ERROR: Failed to find current version!" -ErrorAction Stop
 }
 $version = $Matches.0
 $rawversion = $version.replace('.','')
@@ -68,11 +69,11 @@ else {
 
 $newversion = $newrawversion[0] + "." + $newrawversion[1] + "." + $newrawversion[2]
 
-$rawreleasedate = $(Get-Content $readme) | Select-String -Pattern "\#\#\s.[A-Z][a-z]+\S.\d+,?\S.\d\d\d\d"
+$rawreleasedate = $(Get-Content $readme) | Select-String -Pattern "^## [A-Z][a-z]+ (?:\d+,?\s+)?\d{4}" | Select-Object -First 1
 if ([string]::IsNullOrEmpty($rawreleasedate)) {
-    Write-Error "ERROR: Failed to current release date!" -ErrorAction Stop
+    Write-Error "ERROR: Failed to find current release date!" -ErrorAction Stop
 }
-$releasedate = $rawreleasedate -replace '## ',''
+$releasedate = ($rawreleasedate.ToString() -replace '^## ', '').Trim()
 
 if($releasedate -eq $newreleasedate) {
     Write-Error ("ERROR: Release "+$releasedate+" already exists!") -ErrorAction Stop
@@ -83,7 +84,7 @@ if ($TargetBranch -ne 'none') {
         $TargetBranch = $newreleasetag + "release"
     }
 
-    git checkout -b $TargetBranch
+    git -C $reporoot checkout -b $TargetBranch
     if ($LastExitCode -ne 0) {
         Write-Error "ERROR: Failed to create new topic branch!" -ErrorAction Stop
     }
@@ -100,9 +101,9 @@ if($UpdateVersion) {
     (Get-Content $cmake).Replace("set(DIRECTXTK_VERSION $version)","set(DIRECTXTK_VERSION $newversion)") | Set-Content $cmake
 }
 
-(Get-Content $readme).Replace("$rawreleasedate", "## $newreleasedate") | Set-Content $readme
+(Get-Content $readme).Replace("## $releasedate", "## $newreleasedate") | Set-Content $readme
 
-Get-ChildItem -Path ($reporoot + "\.nuget") -Filter *.nuspec | Foreach-Object {
+Get-ChildItem -Path (Join-Path $reporoot ".nuget") -Filter *.nuspec | Foreach-Object {
     (Get-Content -Path $_.Fullname).Replace("$releasedate", "$newreleasedate") | Set-Content -Path $_.Fullname -Encoding utf8
     }
 
