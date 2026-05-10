@@ -22,7 +22,7 @@ These instructions define how GitHub Copilot should assist with this project. Th
 - **Code Style**: The project uses an .editorconfig file to enforce coding standards. Follow the rules defined in `.editorconfig` for indentation, line endings, and other formatting. Additional information can be found on the wiki at [Implementation](https://github.com/microsoft/DirectXTK/wiki/Implementation). The library's public API requires C++11, and the project builds with C++17 (`CMAKE_CXX_STANDARD 17`). The command-line tools also use C++17, including `<filesystem>` for long file path support. This code is designed to build with Visual Studio 2022, Visual Studio 2026, clang for Windows v12 or later, or MinGW 12.2.
 > Notable `.editorconfig` rules: C/C++ and HLSL files use 4-space indentation, `crlf` line endings, and `latin1` charset — avoid non-ASCII characters in source files. HLSL files have separate indent/spacing rules defined in `.editorconfig`.
 - **Documentation**: The project provides documentation in the form of wiki pages available at [Documentation](https://github.com/microsoft/DirectXTK/wiki/).
-- **Error Handling**: Use C++ exceptions for error handling and uses RAII smart pointers to ensure resources are properly managed. For some functions that return HRESULT error codes, they are marked `noexcept`, use `std::nothrow` for memory allocation, and should not throw exceptions.
+- **Error Handling**: Use C++ exceptions for error handling and use RAII smart pointers to ensure resources are properly managed. For some functions that return HRESULT error codes, they are marked `noexcept`, use `std::nothrow` for memory allocation, and should not throw exceptions.
 - **Testing**: Unit tests for this project are implemented in this repository [Test Suite](https://github.com/walbourn/directxtktest/) and can be run using CTest per the instructions at [Test Documentation](https://github.com/walbourn/directxtktest/wiki). See [test copilot instructions](https://github.com/walbourn/directxtktest/blob/main/.github/copilot-instructions.md) for additional information on the tests.
 - **Security**: This project uses secure coding practices from the Microsoft Secure Coding Guidelines, and is subject to the `SECURITY.md` file in the root of the repository. Functions that read input from image files, geometry files, and audio files are subject to OneFuzz fuzz testing to ensure they are secure against malformed files.
 - **Dependencies**: The project uses CMake and VCPKG for managing dependencies, making optional use of DirectXMath, GameInput, and XAudio2Redist. The project can be built without these dependencies, relying on the Windows SDK for core functionality. CMake build options include `BUILD_GAMEINPUT`, `BUILD_WGI`, and `BUILD_XINPUT` for alternative input backends.
@@ -58,7 +58,7 @@ wiki/           # Local clone of the GitHub wiki documentation repository.
 - Make use of `assert` for debugging checks, but be sure to validate input parameters in release builds.
 - Make use of the `DebugTrace` helper to log diagnostic messages, particularly at the point of throwing an exception.
 - Explicitly `= delete` copy constructors and copy-assignment operators on all classes that use the pImpl idiom.
-- Explicitly utilize `= default` or `=delete` for copy constructors, assignment operators, move constructors and move-assignment operators where appropriate.
+- Explicitly utilize `= default` or `= delete` for copy constructors, assignment operators, move constructors and move-assignment operators where appropriate.
 - Use 16-byte alignment (`_aligned_malloc` / `_aligned_free`) to support SIMD operations in the implementation, but do not expose this requirement in public APIs.
 - All implementation `.cpp` files include `pch.h` as their first include (precompiled header). MinGW builds skip precompiled headers.
 - `Model` and related classes require RTTI (`/GR` on MSVC, `__GXX_RTTI` on GCC/Clang). The CMake build enables `/GR` automatically; do not disable RTTI when using `Model`.
@@ -199,7 +199,7 @@ Every source file (`.cpp`, `.h`, `.hlsl`, `.fx`, etc.) must begin with this bloc
 
 Section separators within files use:
 - Major sections: `//--------------------------------------------------------------------------------------`
-- Subsections:   `//--------------------------------------------------------------------------------------`
+- Subsections:   `//----------------------------------------------------------------------------------`
 
 The project does **not** use Doxygen. API documentation is maintained exclusively on the GitHub wiki.
 
@@ -225,9 +225,9 @@ Shaders in `Src/Shaders/` are compiled with **FXC**, producing embedded C++ head
 - [Games for Windows and the DirectX SDK blog - December 2013](https://walbourn.github.io/directx-tool-kit-for-audio/)
 - [Games for Windows and the DirectX SDK blog - September 2014](https://walbourn.github.io/directx-tool-kit-now-with-gamepads/)
 - [Games for Windows and the DirectX SDK blog - August 2015](https://walbourn.github.io/directx-tool-kit-keyboard-and-mouse-support/)
-- [Games for Windows and the DirectX SDK blog - October 2021](https://walbourn.github.io/directx-tool-kit-vertex-skinning-update/)
-- [Games for Windows and the DirectX SDK blog - September 2021](https://walbourn.github.io/latest-news-on-directx-tool-kit/)
 - [Games for Windows and the DirectX SDK blog - May 2020](https://walbourn.github.io/directx-tool-kit-for-audio-updates-and-a-direct3d-9-footnote/)
+- [Games for Windows and the DirectX SDK blog - September 2021](https://walbourn.github.io/latest-news-on-directx-tool-kit/)
+- [Games for Windows and the DirectX SDK blog - October 2021](https://walbourn.github.io/directx-tool-kit-vertex-skinning-update/)
 
 ## No speculation
 
@@ -291,7 +291,7 @@ Use these established guards — do not invent new ones:
 | `USING_COREWINDOW` | CoreWindow-based input (UWP) for Keyboard, Mouse |
 | `GAMEINPUT_API_VERSION` | GameInput SDK version detection for API-level feature checks |
 
-> `_M_ARM`/ `__arm__` is legacy 32-bit ARM which is deprecated.
+> `_M_ARM` / `__arm__` is legacy 32-bit ARM which is deprecated.
 
 ## Code Review Instructions
 
@@ -317,3 +317,33 @@ When reviewing documentation, do the following:
 - Review the public interface defined in the `Inc` folder.
 - Read the documentation on the wiki located in [this git repository](https://github.com/microsoft/DirectXTK.wiki.git).
 - Report any specific gaps in the documentation compared to the public interface.
+
+## Release Process
+
+1. Ensure all changes are merged into the `main` branch and that all tests pass.
+2. Git pull the local repository to ensure it is up to date with the `main` branch.
+3. Run the PowerShell script `build\preparerelease.ps1` which will generate a topic branch for the release, update the version number in `CMakeLists.txt`, the `README.md` file, the release notes in the nuspec files, and create a stub in the `CHANGELOG.md` file for the new release.
+4. Edit the `CHANGELOG.md` file to update it with a summary of changes.
+5. Submit the topic branch for review and merge into `main` once approved. Allow the GitHub Actions workflows and the Azure DevOps pipelines to complete successfully before proceeding.
+6. Run the PowerShell script `build\compilerelease.ps1` which will set a tag on the project repo and the test repo, and create a release on GitHub with the release notes from `CHANGELOG.md`.
+> Ensure you have set up GPG signing for your GitHub account so that the tags will be verified.
+7. Git pull the local repository to ensure it is up to date with the `main` branch. Be sure to include `--tags`.
+8. Push the `main` branch to the MSCodeHub mirror repository. Be sure to include `--tags`.
+9. Create a PR on MSCodeHub from the `main` branch to the `release` branch.
+10. Merge the PR on MSCodeHub to update the release branch, which will trigger the Azure DevOps pipeline to build signed binaries and the NuGet packages.
+11. Run the PowerShell script `build\downloadartifacts.ps1` to download the signed binaries from the Azure DevOps pipeline artifacts.
+12. Edit the GitHub release and upload the signed binaries to the release assets.
+13. Download the GitHub source .zip archive from the release. Unzip and compare to the local repo to ensure it matches — keep in mind there may be some CR/LF differences. Run minisign on the .zip to generate a signature file, and upload the signature file to the release assets.
+14. Validate the NuGet packages with <https://github.com/walbourn/directxtk-tutorials> by pushing the NuGet packages to a local Packages Source folder, and refreshing the NuGet packages from that folder. Then build using BuildAllSolutions.targets.
+15. Run the PowerShell script `build\promotenuget.ps1` with the `-Release` parameter to promote the version to the Release view on the project-scoped ADO feed.
+16. Run the MSCodeHub pipeline to publish the NuGet packages to nuget.org. The pipeline will automatically push the most recent package promoted to the Release view to nuget.org.
+17. Git pull a local repository of VCPKG to `d:\vcpkg` in sync with the `main` branch of the VCPKG repository.
+18. Run the PowerShell script `build\updatevcpkg.ps1` to update the DirectXTK port in VCPKG with the new release version. This will edit the files in `ports\directxtk`.
+19. Test the VCPKG port using all appropriate triplets and features.
+20. Run `.\vcpkg --x-add-version directxtk` to update the VCPKG versioning history.
+21. Submit a PR to the VCPKG repository to update the DirectXTK port back to the main GitHub repo. The PR will be reviewed and merged by the VCPKG maintainers.
+22. If relevant changes were made to the `xwbtool` or `MakeSpriteFont` tools, update the winget manifests for those tools in the `winget` repository.
+  * Git pull a local repository to `D:\winget-pkgs` in sync with the `main` branch of the WinGet repository.
+  * Run the PowerShell script `build\updatewinget.ps1` to update the winget manifests for the tools with the new release version.
+  * Submit a PR to the `winget` repository to update the manifests for each tool — they must be done as distinct PRs. The PRs will be reviewed and merged by the winget maintainers.
+23. Update the GitHub release with links to the matching NuGet packages, the VCPKG port, and the winget manifests for the tools.
