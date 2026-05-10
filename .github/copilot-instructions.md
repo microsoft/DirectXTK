@@ -325,8 +325,7 @@ When reviewing documentation, do the following:
 3. Run the PowerShell script `build\preparerelease.ps1` which will generate a topic branch for the release, update the version number in `CMakeLists.txt`, the `README.md` file, the release notes in the nuspec files, and create a stub in the `CHANGELOG.md` file for the new release.
 4. Edit the `CHANGELOG.md` file to update it with a summary of changes.
 5. Submit the topic branch for review and merge into `main` once approved. Allow the GitHub Actions workflows and the Azure DevOps pipelines to complete successfully before proceeding.
-6. Run the PowerShell script `build\compilerelease.ps1` which will set a tag on the project repo and the test repo, and create a release on GitHub with the release notes from `CHANGELOG.md`.
-> Ensure you have set up GPG signing for your GitHub account so that the tags will be verified.
+6. Run the PowerShell script `build\compilerelease.ps1` which will set a tag on the project repo and the test repo, and create a release on GitHub with the release notes from `CHANGELOG.md`. Ensure you have set up GPG signing for your GitHub account so that the tags will be verified.
 7. Git pull the local repository to ensure it is up to date with the `main` branch. Be sure to include `--tags`.
 8. Push the `main` branch to the MSCodeHub mirror repository. Be sure to include `--tags`.
 9. Create a PR on MSCodeHub from the `main` branch to the `release` branch.
@@ -343,7 +342,7 @@ When reviewing documentation, do the following:
 20. Run `.\vcpkg --x-add-version directxtk` to update the VCPKG versioning history.
 21. Submit a PR to the VCPKG repository to update the DirectXTK port back to the main GitHub repo. The PR will be reviewed and merged by the VCPKG maintainers.
 22. If relevant changes were made to the `xwbtool` or `MakeSpriteFont` tools, update the winget manifests for those tools in the `winget` repository.
-  * Git pull a local repository to `D:\winget-pkgs` in sync with the `master` branch of the WinGet repository.
-  * Run the PowerShell script `build\updatewinget.ps1` to update the winget manifests for the tools with the new release version.
-  * Submit a PR to the `winget` repository to update the manifests for each tool — they must be done as distinct PRs. The PRs will be reviewed and merged by the winget maintainers.
+  - Git pull a local repository to `D:\winget-pkgs` in sync with the `master` branch of the WinGet repository.
+  - Run the PowerShell script `build\updatewinget.ps1` to update the winget manifests for the tools with the new release version.
+  - Submit a PR to the `winget` repository to update the manifests for each tool — they must be done as distinct PRs. The PRs will be reviewed and merged by the winget maintainers.
 23. Update the GitHub release with links to the matching NuGet packages, the VCPKG port, and the winget manifests for the tools.
