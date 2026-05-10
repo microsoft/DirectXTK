@@ -325,7 +325,7 @@ When reviewing documentation, do the following:
 3. Run the PowerShell script `build\preparerelease.ps1` which will generate a topic branch for the release, update the version number in `CMakeLists.txt`, the `README.md` file, the release notes in the nuspec files, and create a stub in the `CHANGELOG.md` file for the new release.
 4. Edit the `CHANGELOG.md` file to update it with a summary of changes.
 5. Submit the topic branch for review and merge into `main` once approved. Allow the GitHub Actions workflows and the Azure DevOps pipelines to complete successfully before proceeding.
-6. Run the PowerShell script `build\compilerelease.ps1` which will set a tag on the project repo and the test repo, and create a release on GitHub with the release notes from `CHANGELOG.md`. Ensure you have set up GPG signing for your GitHub account so that the tags will be verified.
+6. Run the PowerShell script `build\completerelease.ps1` which will set a tag on the project repo and the test repo, and create a release on GitHub with the release notes from `CHANGELOG.md`. Ensure you have set up GPG signing for your GitHub account so that the tags will be verified.
 7. Git pull the local repository to ensure it is up to date with the `main` branch. Be sure to include `--tags`.
 8. Push the `main` branch to the MSCodeHub mirror repository. Be sure to include `--tags`.
 9. Create a PR on MSCodeHub from the `main` branch to the `release` branch.
