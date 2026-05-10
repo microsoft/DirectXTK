@@ -345,4 +345,5 @@ When reviewing documentation, do the following:
 - Git pull a local repository to `D:\winget-pkgs` in sync with the `master` branch of the WinGet repository.
 - Run the PowerShell script `build\updatewinget.ps1` to update the winget manifests for the tools with the new release version.
 - Submit a PR to the `winget` repository to update the manifests for each tool — they must be done as distinct PRs. The PRs will be reviewed and merged by the winget maintainers.
-23. Update the GitHub release with links to the matching NuGet packages, the VCPKG port, and the winget manifests for the tools.
+
+> When fully completed, be sure to update the GitHub release with links to the matching NuGet packages, the VCPKG port, and the winget manifests for the tools.
