@@ -74,7 +74,7 @@ foreach ($package in $packages) {
     try
     {
         Write-Host "Checking if $package version $Version exists..."
-        Invoke-RestMethod -Uri $uri -Method Get -Headers $headers
+        $null = Invoke-RestMethod -Uri $uri -Method Get -Headers $headers
     }
     catch
     {
@@ -87,19 +87,19 @@ if (-not $allPackagesSucceeded) {
     Write-Error "##[error]Not all packages found. Aborting promotion." -ErrorAction Stop
 }
 
-# Promote package to Prerelease view
+# Promote packages to Prerelease view
+$allPackagesSucceeded = $true
 foreach ($package in $packages) {
     $uri = $uriFormat -f $package, $Version
 
     try
     {
-        # Promote to Prerelease view
         Write-Host "Promoting $package version $Version to Prerelease view..."
-        Invoke-RestMethod -Uri $uri -Method Patch -Headers $headers -Body $bodyPrerelease
+        $null = Invoke-RestMethod -Uri $uri -Method Patch -Headers $headers -Body $bodyPrerelease
     }
     catch
     {
-        Write-Error "##[error]Package $package version $Version failed to promote" -ErrorAction Continue
+        Write-Error "##[error]Package $package version $Version failed to promote to Prerelease!" -ErrorAction Continue
         $allPackagesSucceeded = $false
     }
 }
@@ -108,20 +108,20 @@ if (-not $allPackagesSucceeded) {
     Write-Error "##[error]Not all packages promoted to Prerelease." -ErrorAction Stop
 }
 
-# Optionally promote package to Release view
+# Optionally promote packages to Release view
 if ($Release.IsPresent) {
+    $allPackagesSucceeded = $true
     foreach ($package in $packages) {
         $uri = $uriFormat -f $package, $Version
 
         try
         {
-            # Promote to Release view
             Write-Host "Promoting $package version $Version to Release view..."
-            Invoke-RestMethod -Uri $uri -Method Patch -Headers $headers -Body $bodyRelease
+            $null = Invoke-RestMethod -Uri $uri -Method Patch -Headers $headers -Body $bodyRelease
         }
         catch
         {
-            Write-Error "##[error]Package $package version $Version failed to promote" -ErrorAction Continue
+            Write-Error "##[error]Package $package version $Version failed to promote to Release!" -ErrorAction Continue
             $allPackagesSucceeded = $false
         }
     }
