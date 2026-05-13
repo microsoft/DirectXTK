@@ -9,7 +9,7 @@ configuration:
     ruleset:
       - name: prod-branches
         branchNames:
-        - main
-        - ms_1.7.6_release
-        - release
+          - main
+          - ms_1.7.6_release
+          - release
         classification: production
