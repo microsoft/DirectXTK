@@ -104,6 +104,12 @@ jobs:
           filePath: ./build/RestoreGDK.ps1
           arguments: -GDKEditionNumber $(GDK_EDITION) -OutputDirectory $(EXTRACTED_FOLDER)
           failOnStderr: true
+      - task: NuGetCommand@2
+        displayName: 'NuGet install Xbox GDK'
+        # Required for Gaming.Desktop.x64 MSBuild rules which are deprecated and only ship in the GXDK
+        inputs:
+          command: custom
+          arguments: 'install -directdownload Microsoft.GDK.Xbox -ExcludeVersion -Version $(GDKNuGetPackageVersion) -OutputDirectory $(EXTRACTED_FOLDER)'
       - task: CopyFiles@2
         displayName: Set up Directory.Build.props
         inputs:
