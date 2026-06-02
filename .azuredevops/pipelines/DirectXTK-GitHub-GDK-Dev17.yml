@@ -62,9 +62,7 @@ variables:
 
 jobs:
   - job: BUILD_GDK
-    displayName: 'Microsoft Game Development Kit (GDK)'
-    workspace:
-      clean: all
+    displayName: 'Microsoft Game Development Kit (Gaming.*.x64)'
     timeoutInMinutes: 120
     cancelTimeoutInMinutes: 1
     steps:
@@ -100,7 +98,7 @@ jobs:
       - task: NuGetAuthenticate@1
         displayName: 'NuGet Auth'
       - task: PowerShell@2
-        displayName: 'NuGet Install GDK'
+        displayName: 'NuGet Install PC GDK'
         inputs:
           targetType: filePath
           filePath: ./build/RestoreGDK.ps1
@@ -116,6 +114,12 @@ jobs:
         displayName: Setup BWOI VCTargets
         inputs:
           solution: build/SetupBWOI.targets
+          msbuildArchitecture: x64
+          msbuildArguments: /p:GDKEditionNumber=$(GDK_EDITION)
+      - task: MSBuild@1
+        displayName: Log Information
+        inputs:
+          solution: build/LogInfo.targets
           msbuildArchitecture: x64
           msbuildArguments: /p:GDKEditionNumber=$(GDK_EDITION)
       - task: VSBuild@1
@@ -147,6 +151,7 @@ jobs:
       - checkout: self
         clean: true
         fetchTags: false
+        fetchDepth: 1
       - task: NuGetToolInstaller@1
         displayName: 'Use NuGet'
       - task: PowerShell@2
@@ -200,6 +205,12 @@ jobs:
             echo ##vso[task.prependpath]%ADDBIN%
 
           failOnStderr: true
+      - task: MSBuild@1
+        displayName: Log Information
+        inputs:
+          solution: build/LogInfo.targets
+          msbuildArchitecture: x64
+          msbuildArguments: /p:GDKEditionNumber=$(GDK_EDITION)
       - task: CMake@1
         displayName: 'CMake (MSVC): Config Debug'
         inputs:

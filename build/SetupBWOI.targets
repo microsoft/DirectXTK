@@ -7,20 +7,9 @@
   -->
 
   <PropertyGroup>
+    <GDKEditionNumber Condition="$(GDKEditionNumber)==''">999999</GDKEditionNumber>
     <ExtractedFolder Condition="'$(ExtractedFolder)'==''">C:\xtracted\</ExtractedFolder>
     <ExtractedFolder Condition="!HasTrailingSlash('$(ExtractedFolder)')">$(ExtractedFolder)\</ExtractedFolder>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(GDKEditionNumber)' &lt; '220300'">
-    <_PCNuGetPackage>Microsoft.PGDK</_PCNuGetPackage>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(GDKEditionNumber)' &gt;= '220300'">
-    <_PCNuGetPackage>Microsoft.GDK.PC</_PCNuGetPackage>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(GDKEditionNumber)' &lt; '241000'">
-    <_PCNuGetPackage>$(_PCNuGetPackage).$(GDKEditionNumber)</_PCNuGetPackage>
   </PropertyGroup>
 
   <!--
@@ -31,12 +20,14 @@
     <BWOIVCFolders Include="$(ExtractedFolder)VCTargets160\" />
     <BWOIVCFolders Include="$(ExtractedFolder)VCTargets160\Platforms\" />
     <BWOIVCFolders Include="$(ExtractedFolder)VCTargets160\Platforms\gaming.desktop.x64" />
+    <BWOIVCFolders Include="$(ExtractedFolder)VCTargets160\Platforms\gaming.xbox.xboxone.x64" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(VisualStudioVersion)' == '17.0'">
     <BWOIVCFolders Include="$(ExtractedFolder)VCTargets170\" />
     <BWOIVCFolders Include="$(ExtractedFolder)VCTargets170\Platforms\" />
     <BWOIVCFolders Include="$(ExtractedFolder)VCTargets170\Platforms\gaming.desktop.x64" />
+    <BWOIVCFolders Include="$(ExtractedFolder)VCTargets170\Platforms\gaming.xbox.xboxone.x64" />
   </ItemGroup>
 
   <!--
@@ -61,7 +52,11 @@ SixtyFourBit = (IntPtr.Size == 8) ? true : false;
     </Is64BitMSBuild>
 
     <Error Condition="'$(_SixtyFourBit)'=='false'"
-        Text="The 64-bit version of MSBuild is required to support NuGet GDK packages." />
+        Text="##[error]The 64-bit version of MSBuild is required to support NuGet GDK packages." />
+  </Target>
+
+  <Target Name="_ValidateGDK">
+    <Error Condition="'$(GDKEditionNumber)'=='999999'" Text="##[error]GDKEditionNumber was not set!" />
   </Target>
 
   <!--
@@ -70,7 +65,7 @@ SixtyFourBit = (IntPtr.Size == 8) ? true : false;
   <Target Name="_ProbeForExtractedVCTargets"
           Outputs="%(BWOIVCFolders.Identity)">
     <Error Condition="'$(ExtractedFolder)'==''"
-        Text="ExtractedFolder property is required" />
+        Text="##[error]ExtractedFolder property is required" />
 
     <PropertyGroup>
       <_BWOIFolder>%(BWOIVCFolders.Identity)</_BWOIFolder>
@@ -88,10 +83,6 @@ SixtyFourBit = (IntPtr.Size == 8) ? true : false;
 
   <Target Name="_CreateVCTargetsFolder"
           Condition="'@(_MissingBWOIVCFolders)' != ''">
-    <Error Condition="'$(GDKEditionNumber)'==''"
-        Text="GDKEditionNumber property is required" />
-    <Error Condition="!Exists('$(ExtractedFolder)$(_PCNuGetPackage)')"
-        Text="NuGet package $(_PCNuGetPackage) not found in $(ExtractedFolder)" />
 
     <PropertyGroup>
       <_VSFolder Condition="'$(VisualStudioVersion)' == '18.0'">VS2026</_VSFolder>
@@ -99,19 +90,68 @@ SixtyFourBit = (IntPtr.Size == 8) ? true : false;
     </PropertyGroup>
 
     <Error Condition="'$(_VSFolder)'==''"
-        Text="Only supports VS 2022 or VS 2026" />
+        Text="##[error]Only supports VS 2022 or VS 2026" />
 
-    <!-- Set up files for v141 platform toolset projects -->
-    <ItemGroup Condition="'$(GDKEditionNumber)' &lt; '241000'">
-      <SourceVCTargetsFilesV150 Include="$(MSBuildExtensionsPath32)\Microsoft\VC\v150\**" />
+    <!-- Set up files for v142 platform toolset projects -->
+    <ItemGroup>
+      <SourceVCTargetsFilesV160 Include="$(MSBuildExtensionsPath32)\Microsoft\VC\v160\**" />
     </ItemGroup>
 
-    <ItemGroup Condition="'$(GDKEditionNumber)' &lt; '241000'">
-      <GDKVCTargetsFilesV150 Include="$(ExtractedFolder)$(_PCNuGetPackage)\native\$(GDKEditionNumber)\GRDK\$(_VSFolder)\flatDeployment\MSBuild\Microsoft\VC\v150\**" />
+    <ItemGroup Condition="Exists('$(ExtractedFolder)Microsoft.GDK.Xbox.XboxOne\native\$(GDKEditionNumber)\xbox\build')">
+      <GDKVCTargetsFilesV160 Include="$(ExtractedFolder)Microsoft.GDK.Xbox.XboxOne\native\$(GDKEditionNumber)\xbox\build\$(_VSFolder)\pc\v160\**" />
+      <GDKVCTargetsFilesV160 Include="$(ExtractedFolder)Microsoft.GDK.Xbox.XboxOne\native\$(GDKEditionNumber)\xbox\build\$(_VSFolder)\gen8\v160\**" />
+      <GDKVCTargetsFilesV160 Include="$(ExtractedFolder)Microsoft.GDK.Xbox.XboxOne\native\$(GDKEditionNumber)\xbox\build\$(_VSFolder)\gen9\v160\**" />
     </ItemGroup>
 
-    <Copy Condition="'$(GDKEditionNumber)' &lt; '241000'" SkipUnchangedFiles="true" SourceFiles="@(SourceVCTargetsFilesV150)" DestinationFolder="$(ExtractedFolder)VCTargets150\%(RecursiveDir)/" />
-    <Copy Condition="'$(GDKEditionNumber)' &lt; '241000'" SourceFiles="@(GDKVCTargetsFilesV150)" DestinationFolder="$(ExtractedFolder)VCTargets150\%(RecursiveDir)/" />
+    <ItemGroup Condition="Exists('$(ExtractedFolder)Microsoft.GDK.Xbox.XboxSeriesX_S\native\$(GDKEditionNumber)\xbox\build')">
+      <GDKVCTargetsFilesV160 Include="$(ExtractedFolder)Microsoft.GDK.Xbox.XboxSeriesX_S\native\$(GDKEditionNumber)\xbox\build\$(_VSFolder)\pc\v160\**" />
+      <GDKVCTargetsFilesV160 Include="$(ExtractedFolder)Microsoft.GDK.Xbox.XboxSeriesX_S\native\$(GDKEditionNumber)\xbox\build\$(_VSFolder)\gen8\v160\**" />
+      <GDKVCTargetsFilesV160 Include="$(ExtractedFolder)Microsoft.GDK.Xbox.XboxSeriesX_S\native\$(GDKEditionNumber)\xbox\build\$(_VSFolder)\gen9\v160\**" />
+    </ItemGroup>
+
+    <Error Condition="@(GDKVCTargetsFilesV160->Count()) == 0"
+           Text="##[error]No MSBuild v142 files found in NuGets. Check GDKEditionNumber."/>
+
+    <Copy SkipUnchangedFiles="true" SourceFiles="@(SourceVCTargetsFilesV160)" DestinationFolder="$(ExtractedFolder)VCTargets160\%(RecursiveDir)/" />
+    <Copy SourceFiles="@(GDKVCTargetsFilesV160)" DestinationFolder="$(ExtractedFolder)VCTargets160\%(RecursiveDir)/" />
+
+    <!-- Set up files for v143 platform toolset projects -->
+    <ItemGroup Condition="'$(VisualStudioVersion)' == '17.0'">
+      <SourceVCTargetsFilesV170 Include="$(MSBuildExtensionsPath32)\Microsoft\VC\v170\**" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(VisualStudioVersion)' == '17.0' and Exists('$(ExtractedFolder)Microsoft.GDK.Xbox.XboxOne\native\$(GDKEditionNumber)\xbox\build')">
+      <GDKVCTargetsFilesV170 Include="$(ExtractedFolder)Microsoft.GDK.Xbox.XboxOne\native\$(GDKEditionNumber)\xbox\build\$(_VSFolder)\pc\v170\**" />
+      <GDKVCTargetsFilesV170 Include="$(ExtractedFolder)Microsoft.GDK.Xbox.XboxOne\native\$(GDKEditionNumber)\xbox\build\$(_VSFolder)\gen8\v170\**" />
+      <GDKVCTargetsFilesV170 Include="$(ExtractedFolder)Microsoft.GDK.Xbox.XboxOne\native\$(GDKEditionNumber)\xbox\build\$(_VSFolder)\gen9\v170\**" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(VisualStudioVersion)' == '17.0' and Exists('$(ExtractedFolder)Microsoft.GDK.Xbox.XboxSeriesX_S\native\$(GDKEditionNumber)\xbox\build')">
+      <GDKVCTargetsFilesV170 Include="$(ExtractedFolder)Microsoft.GDK.Xbox.XboxSeriesX_S\native\$(GDKEditionNumber)\xbox\build\$(_VSFolder)\pc\v170\**" />
+      <GDKVCTargetsFilesV170 Include="$(ExtractedFolder)Microsoft.GDK.Xbox.XboxSeriesX_S\native\$(GDKEditionNumber)\xbox\build\$(_VSFolder)\gen8\v170\**" />
+      <GDKVCTargetsFilesV170 Include="$(ExtractedFolder)Microsoft.GDK.Xbox.XboxSeriesX_S\native\$(GDKEditionNumber)\xbox\build\$(_VSFolder)\gen9\v170\**" />
+    </ItemGroup>
+
+    <Error Condition="'$(VisualStudioVersion)' == '17.0' AND @(GDKVCTargetsFilesV170->Count()) == 0"
+           Text="##[error]No MSBuild v143 files found in NuGets. Check GDKEditionNumber."/>
+
+    <Copy SkipUnchangedFiles="true" SourceFiles="@(SourceVCTargetsFilesV170)" DestinationFolder="$(ExtractedFolder)VCTargets170\%(RecursiveDir)/" />
+    <Copy SourceFiles="@(GDKVCTargetsFilesV170)" DestinationFolder="$(ExtractedFolder)VCTargets170\%(RecursiveDir)/" />
+
+  </Target>
+
+  <Target Name="_CreateVCTargetsFolderOld"
+          Condition="'@(_MissingBWOIVCFolders)' != ''">
+    <Error Condition="!Exists('$(ExtractedFolder)Microsoft.GDK.PC')"
+        Text="##[error]NuGet package Microsoft.GDK.PC not found in $(ExtractedFolder)" />
+
+    <PropertyGroup>
+      <_VSFolder Condition="'$(VisualStudioVersion)' == '18.0'">VS2026</_VSFolder>
+      <_VSFolder Condition="'$(VisualStudioVersion)' == '17.0'">VS2022</_VSFolder>
+    </PropertyGroup>
+
+    <Error Condition="'$(_VSFolder)'==''"
+        Text="##[error]Only supports VS 2022 or VS 2026" />
 
     <!-- Set up files for v142 platform toolset projects -->
     <ItemGroup>
@@ -119,8 +159,12 @@ SixtyFourBit = (IntPtr.Size == 8) ? true : false;
     </ItemGroup>
 
     <ItemGroup>
-      <GDKVCTargetsFilesV160 Include="$(ExtractedFolder)$(_PCNuGetPackage)\native\$(GDKEditionNumber)\GRDK\$(_VSFolder)\flatDeployment\MSBuild\Microsoft\VC\v160\**" />
+      <GDKVCTargetsFilesV160 Include="$(ExtractedFolder)Microsoft.GDK.PC\native\$(GDKEditionNumber)\GRDK\$(_VSFolder)\flatDeployment\MSBuild\Microsoft\VC\v160\**" />
+      <GDKVCTargetsFilesV160 Include="$(ExtractedFolder)Microsoft.GDK.Xbox\native\$(GDKEditionNumber)\GXDK\$(_VSFolder)\flatDeployment\MSBuild\Microsoft\VC\v160\**" />
     </ItemGroup>
+
+    <Error Condition="@(GDKVCTargetsFilesV160->Count()) == 0"
+           Text="##[error]No MSBuild v142 files found in NuGets. Check GDKEditionNumber."/>
 
     <Copy SkipUnchangedFiles="true" SourceFiles="@(SourceVCTargetsFilesV160)" DestinationFolder="$(ExtractedFolder)VCTargets160\%(RecursiveDir)/" />
     <Copy SourceFiles="@(GDKVCTargetsFilesV160)" DestinationFolder="$(ExtractedFolder)VCTargets160\%(RecursiveDir)/" />
@@ -131,13 +175,24 @@ SixtyFourBit = (IntPtr.Size == 8) ? true : false;
     </ItemGroup>
 
     <ItemGroup Condition="'$(VisualStudioVersion)' == '17.0'">
-      <GDKVCTargetsFilesV170 Include="$(ExtractedFolder)$(_PCNuGetPackage)\native\$(GDKEditionNumber)\GRDK\$(_VSFolder)\flatDeployment\MSBuild\Microsoft\VC\v170\**" />
+      <GDKVCTargetsFilesV170 Include="$(ExtractedFolder)Microsoft.GDK.PC\native\$(GDKEditionNumber)\GRDK\$(_VSFolder)\flatDeployment\MSBuild\Microsoft\VC\v170\**" />
+      <GDKVCTargetsFilesV170 Include="$(ExtractedFolder)Microsoft.GDK.Xbox\native\$(GDKEditionNumber)\GXDK\$(_VSFolder)\flatDeployment\MSBuild\Microsoft\VC\v170\**" />
     </ItemGroup>
+
+    <Error Condition="'$(VisualStudioVersion)' == '17.0' AND @(GDKVCTargetsFilesV170->Count()) == 0"
+           Text="##[error]No MSBuild v143 files found in NuGets. Check GDKEditionNumber."/>
 
     <Copy SkipUnchangedFiles="true" SourceFiles="@(SourceVCTargetsFilesV170)" DestinationFolder="$(ExtractedFolder)VCTargets170\%(RecursiveDir)/" />
     <Copy SourceFiles="@(GDKVCTargetsFilesV170)" DestinationFolder="$(ExtractedFolder)VCTargets170\%(RecursiveDir)/" />
 
   </Target>
 
-  <Target Name="SetupVCTargets" DependsOnTargets="_CheckMSBuild64;_ProbeForExtractedVCTargets;_CreateVCTargetsFolder" />
+  <PropertyGroup>
+    <SetupTargets></SetupTargets>
+    <SetupTargets Condition="Exists('$(ExtractedFolder)Microsoft.GDK.Core')">;_CreateVCTargetsFolder</SetupTargets>
+    <SetupTargets Condition="'$(SetupTargets)'=='' AND Exists('$(ExtractedFolder)Microsoft.GDK.Xbox')">;_CreateVCTargetsFolderOld</SetupTargets>
+  </PropertyGroup>
+
+  <Target Name="SetupVCTargets" DependsOnTargets="_CheckMSBuild64;_ValidateGDK;_ProbeForExtractedVCTargets$(SetupTargets)" />
+
 </Project>

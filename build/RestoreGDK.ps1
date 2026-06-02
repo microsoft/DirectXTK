@@ -1,7 +1,7 @@
 <#
 
 .SYNOPSIS
-Download and extract GDK NuGet based on edition number
+Download and extract the 'base' GDK NuGet based on edition number, returning the full version number that can be used to restore other GDK packages in the set.
 
 .DESCRIPTION
 This script determines the NuGet package id to use based on the provided GDK edition number. It makes use of MSBuild PackageReference floating version numbers to do the restore operation.
@@ -11,6 +11,12 @@ The GDK edition number in the form of YYMMQQ.
 
 .PARAMETER OutputDirectory
 Directory to write the packages into. Path should not already contain the packages.
+
+.PARAMETER NewLayout
+Switch to indicate to use the 'new layout' of GDK packages (October 2025 and later).
+
+.PARAMETER AutoLayout
+Switch to indicate to automatically choose layout style based on edition number.
 
 #>
 
@@ -24,8 +30,14 @@ param(
         Mandatory,
         Position = 1
     )]
-    [string]$OutputDirectory
+    [string]$OutputDirectory,
+    [switch]$NewLayout,
+    [switch]$AutoLayout
 )
+
+if ($NewLayout -and $AutoLayout) {
+    Write-Error "##[error]Cannot specify both NewLayout and AutoLayout switches" -ErrorAction Stop
+}
 
 # Validate output directory
 if ([string]::IsNullOrEmpty($OutputDirectory)) {
@@ -65,23 +77,40 @@ if (-Not $nuget) {
 }
 
 # Determine NuGet package ID
-if ($GDKEditionNumber -ge 241000) {
-    $PGDK_ID = "Microsoft.GDK.PC"
-}
-else {
+if ($GDKEditionNumber -lt 241000) {
     Write-Error "##[error]Script supports October 2024 or later" -ErrorAction Stop
 }
 
+if ($AutoLayout) {
+    if ($GDKEditionNumber -ge 251000) {
+        $NewLayout = $true
+    }
+    else {
+        $NewLayout = $false
+    }
+}
+
+if ($NewLayout) {
+    if ($GDKEditionNumber -lt 251000) {
+        Write-Error "##[error]New layout only supported for October 2025 or later" -ErrorAction Stop
+    }
+    $GDK_ID = "Microsoft.GDK.Core"
+}
+else {
+    $GDK_ID = "Microsoft.GDK.PC"
+}
+
 # Check that the package isn't already present
-$PGDK_DIR = [IO.Path]::Combine($OutputDirectory, $PGDK_ID)
-if (Test-Path $PGDK_DIR) {
-    Write-Error "##[error]PC Package ID already exists!" -ErrorAction Stop
+$GDK_DIR = [IO.Path]::Combine($OutputDirectory, $GDK_ID)
+if (Test-Path $GDK_DIR) {
+    Write-Error "##[error]NuGet Package ID already exists!" -ErrorAction Stop
 }
 
 # Restore Nuget packages using floating versions
 $propsfile = [IO.Path]::Combine( $PSScriptRoot , "gdkedition.props")
 $props = Get-Content -Path $propsfile
 $props = $props -replace '<GDKEditionNumber>.+</GDKEditionNumber>', ("<GDKEditionNumber>{0}</GDKEditionNumber>" -f $GDKEditionNumber)
+$props = $props -replace '<GDKNuGetPackage>.+</GDKNuGetPackage>', ("<GDKNuGetPackage>{0}</GDKNuGetPackage>" -f $GDK_ID)
 Set-Content -Path $propsfile -Value $props
 
 $nugetArgs = "restore RestoreGDK.proj -PackageSaveMode nuspec -packagesDirectory `"{0}`"" -f $OutputDirectory.TrimEnd('\')
@@ -92,35 +121,31 @@ if ($nugetrun.ExitCode -gt 0) {
 }
 
 # Verify expected output of restore
-if (-Not (Test-Path $PGDK_DIR)) {
-    Write-Error "##[error]Missing PC package after restore!" -ErrorAction Stop
+if (-Not (Test-Path $GDK_DIR)) {
+    Write-Error "##[error]Missing NuGet package after restore!" -ErrorAction Stop
 }
 
 # Reduce path depth removing version folder
-$PGDK_VER = Get-ChildItem $PGDK_DIR
-if ($PGDK_VER.Count -ne 1) {
+$GDK_VER = Get-ChildItem $GDK_DIR
+if ($GDK_VER.Count -ne 1) {
     Write-Error "##[error]Expected a single directory for the version!" -ErrorAction Stop
 }
 
-$content = Get-ChildItem $PGDK_VER.Fullname
-ForEach-Object -InputObject $content { Move-Item $_.Fullname -Destination $PGDK_DIR }
-Remove-Item $PGDK_VER.Fullname
+$content = Get-ChildItem $GDK_VER.Fullname
+ForEach-Object -InputObject $content { Move-Item $_.Fullname -Destination $GDK_DIR }
+Remove-Item $GDK_VER.Fullname
 
-Write-Host ("##[debug]PC Package ID: {0}  Version: {1}" -f $PGDK_ID, $PGDK_VER)
-
+Write-Host ("##[debug]NuGet Package ID: {0}  Version: {1}" -f $GDK_ID, $GDK_VER)
 
 # Read the nuspec files
-$PGDK_NUSPEC = New-Object xml
-$PGDK_NUSPEC.PreserveWhitespace = $true
-$PGDK_NUSPEC.Load([IO.Path]::Combine($PGDK_DIR, $PGDK_ID + ".nuspec"))
+$GDK_NUSPEC = New-Object xml
+$GDK_NUSPEC.PreserveWhitespace = $true
+$GDK_NUSPEC.Load([IO.Path]::Combine($GDK_DIR, $GDK_ID + ".nuspec"))
 
 # Log results
-Write-Host "##[group]PC Nuget Package nuspec"
-Write-host $PGDK_NUSPEC.outerxml
+Write-Host "##[group]NuGet Nuget Package nuspec"
+Write-host $GDK_NUSPEC.outerxml
 Write-Host "##[endgroup]"
 
-$id = $PGDK_NUSPEC.package.metadata.id
-Write-Host "##vso[task.setvariable variable=PCNuGetPackage;]$id"
-
-$ver = $PGDK_NUSPEC.package.metadata.version
-Write-Host "##vso[task.setvariable variable=PCNuGetPackageVersion;]$ver"
+$ver = $GDK_NUSPEC.package.metadata.version
+Write-Host "##vso[task.setvariable variable=GDKNuGetPackageVersion;]$ver"

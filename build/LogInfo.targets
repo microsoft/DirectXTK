@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="LogInfo" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!--
+      Copyright (c) Microsoft Corporation.
+      Licensed under the MIT License.
+  -->
+
+  <Target Name="LogInfo">
+    <Message Condition="'$(Platform)'!=''" Text="##[debug]Building $(Platform)" Importance="high" />
+    <Message Condition="'$(Configuration)'!=''" Text="##[debug]Building $(Configuration)" Importance="high" />
+    <Message Text="##[debug]Using VS $(VisualStudioVersion) : MSBuild $(MSBuildFileVersion)" Importance="high" />
+    <Message Condition="'$(GDKEditionNumber)'!=''" Text="##[debug]GDK Edition Number: $(GDKEditionNumber)" Importance="high" />
+  </Target>
+</Project>

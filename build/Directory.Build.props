@@ -12,22 +12,9 @@
 
     <_AlternativeVCTargetsPath170>$(ExtractedFolder)VCTargets170\</_AlternativeVCTargetsPath170>
     <_AlternativeVCTargetsPath160>$(ExtractedFolder)VCTargets160\</_AlternativeVCTargetsPath160>
-    <_AlternativeVCTargetsPath150 Condition="'$(GDKEditionNumber)' != '' AND '$(GDKEditionNumber)' &lt; '241000'">$(ExtractedFolder)VCTargets150\</_AlternativeVCTargetsPath150>
 
     <!-- Workaround for VS bug -->
     <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(GDKEditionNumber)' != '' AND '$(GDKEditionNumber)' &lt; '220300'">
-    <_PCNuGetPackage>Microsoft.PGDK</_PCNuGetPackage>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(GDKEditionNumber)' != '' AND '$(GDKEditionNumber)' &gt;= '220300'">
-    <_PCNuGetPackage>Microsoft.GDK.PC</_PCNuGetPackage>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(GDKEditionNumber)' != '' AND '$(GDKEditionNumber)' &lt; '241000'">
-    <_PCNuGetPackage>$(_PCNuGetPackage).$(GDKEditionNumber)</_PCNuGetPackage>
   </PropertyGroup>
 
   <!-- Windows SDK NuGet -->
@@ -44,8 +31,19 @@
           Project="$(ExtractedFolder)Microsoft.Windows.SDK.cpp.arm64\build\native\Microsoft.Windows.SDK.cpp.arm64.props" />
 
   <!-- Microsoft GDK NuGet -->
-  <Import Condition="'$(GDKEnableBWOI)' == 'true' and $(Platform.Contains('x64')) and Exists('$(ExtractedFolder)$(_PCNuGetPackage)\build\$(_PCNuGetPackage).props')"
-          Project="$(ExtractedFolder)$(_PCNuGetPackage)\build\$(_PCNuGetPackage).props" />
+  <Import Condition="'$(GDKEnableBWOI)' == 'true' and Exists('$(ExtractedFolder)Microsoft.GDK.Core\build\Microsoft.GDK.Core.props')"
+          Project="$(ExtractedFolder)Microsoft.GDK.Core\build\Microsoft.GDK.Core.props" />
+
+  <Import Condition="'$(GDKEnableBWOI)' == 'true' and '$(Platform)'=='ARM64' and Exists('$(ExtractedFolder)Microsoft.GDK.Windows\build\Microsoft.GDK.Windows.props')"
+          Project="$(ExtractedFolder)Microsoft.GDK.Windows\build\Microsoft.GDK.Windows.props" />
+  <Import Condition="'$(GDKEnableBWOI)' == 'true' and '$(Platform)'=='x64' and Exists('$(ExtractedFolder)Microsoft.GDK.Windows\build\Microsoft.GDK.Windows.props')"
+          Project="$(ExtractedFolder)Microsoft.GDK.Windows\build\Microsoft.GDK.Windows.props" />
+  <Import Condition="'$(GDKEnableBWOI)' == 'true' and '$(Platform)'=='Gaming.Desktop.x64' and Exists('$(ExtractedFolder)Microsoft.GDK.Windows\build\Microsoft.GDK.Windows.props')"
+          Project="$(ExtractedFolder)Microsoft.GDK.Windows\build\Microsoft.GDK.Windows.props" />
+
+  <!-- Microsoft GDK NuGet (Old Layouts)-->
+  <Import Condition="'$(GDKEnableBWOI)' == 'true' and $(Platform.Contains('x64')) and Exists('$(ExtractedFolder)Microsoft.GDK.PC\build\Microsoft.GDK.PC.props')"
+          Project="$(ExtractedFolder)Microsoft.GDK.PC\build\Microsoft.GDK.PC.props" />
 
   <!--
   ****************************************************************************************************
@@ -54,7 +52,6 @@
   -->
   <PropertyGroup Condition="'$(Platform)' == 'Gaming.Desktop.x64' and '$(VisualStudioVersion)' == '17.0'">
     <DisableInstalledVCTargetsUse>true</DisableInstalledVCTargetsUse>
-    <VCTargetsPath15 Condition="'$(_AlternativeVCTargetsPath150)'!=''">$(_AlternativeVCTargetsPath150)</VCTargetsPath15>
     <VCTargetsPath16 Condition="'$(_AlternativeVCTargetsPath160)'!=''">$(_AlternativeVCTargetsPath160)</VCTargetsPath16>
     <VCTargetsPath17>$(_AlternativeVCTargetsPath170)</VCTargetsPath17>
   </PropertyGroup>
