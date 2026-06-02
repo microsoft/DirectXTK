@@ -2,5 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <GDKEditionNumber>000000</GDKEditionNumber>
+        <GDKNuGetPackage>Microsoft.GDK.xyz</GDKNuGetPackage>
     </PropertyGroup>
 </Project>
