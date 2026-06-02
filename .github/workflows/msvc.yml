@@ -45,7 +45,7 @@ jobs:
       security-events: write
       actions: read
     name: Analyze
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     steps:
       - name: Checkout repository
@@ -76,6 +76,6 @@ jobs:
 
       # Upload SARIF file to GitHub Code Scanning Alerts
       - name: Upload SARIF to GitHub
-        uses: github/codeql-action/upload-sarif@7211b7c8077ea37d8641b6271f6a365a22a5fbfa # v3.29.5
+        uses: github/codeql-action/upload-sarif@7211b7c8077ea37d8641b6271f6a365a22a5fbfa # v4.36.0
         with:
           sarif_file: ${{ steps.run-analysis.outputs.sarif }}
