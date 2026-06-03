@@ -108,6 +108,8 @@ The public API is defined in the header files in the `Inc/` directory. See the [
 
 Full documentation for each class is available on the [GitHub wiki](https://github.com/microsoft/DirectXTK/wiki).
 
+API signatures are defined in the public headers under the `Inc/` directory. Always consult those headers for the authoritative function signatures, parameters, and SAL annotations.
+
 ## Key Concepts
 
 ### Resource Ownership
@@ -121,6 +123,17 @@ Most DirectXTK objects are **device-dependent** — they are created with a `ID3
 ### Thread Safety
 
 DirectXTK rendering classes (SpriteBatch, Effects, PrimitiveBatch, etc.) are **not** thread-safe. Use one instance per thread, or synchronize access externally. Resource creation (texture loading, model loading) can be done from any thread.
+
+## Namespace
+
+All classes and functions reside in the `DirectX` namespace. Headers that contain Direct3D 11-specific types use `inline namespace DX11` to avoid conflicts when both DX11 and DX12 toolkits are linked together.
+
+```cpp
+#include "SpriteBatch.h"
+
+// Usage:
+auto spriteBatch = std::make_unique<DirectX::SpriteBatch>(device, ...);
+```
 
 ## Common Patterns
 
@@ -226,5 +239,5 @@ For a full step-by-step walkthrough, see the [Getting Started](https://github.co
 
 - [DirectXTK Wiki](https://github.com/microsoft/DirectXTK/wiki)
 - [DirectX Tool Kit for Audio](https://github.com/microsoft/DirectXTK/wiki/Audio)
+- [SimpleMath documentation](https://github.com/Microsoft/DirectXTK/wiki/SimpleMath)
 - [Project templates](https://github.com/walbourn/directx-vs-templates)
-- [API Reference](reference/overview.md)
