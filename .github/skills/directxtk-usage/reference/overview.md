@@ -112,7 +112,7 @@ There is no single umbrella header. Each header declares its dependencies via fo
 
 ### VCPKG Usage
 
-When using VCPKG+MSBuild integration, the public headers must be included with a `directxtk/` prefix.
+When using VCPKG+MSBuild integration (both classic and manifest mode), the public headers must be included with a `directxtk/` prefix.
 
 ```cpp
 #include "directxtk/SpriteBatch.h"
@@ -122,4 +122,4 @@ When using VCPKG+MSBuild integration, the public headers must be included with a
 #include "directxtk/SimpleMath.h"
 ```
 
-This is not required with VCPKG+CMake integration, but will generally work there as well due to references to directxmath include headers.
+When using VCPKG with CMake integration via `find_package`, the include path is added directly so the prefix is not required, but will generally work as well.
