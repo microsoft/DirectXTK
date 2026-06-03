@@ -77,7 +77,7 @@ When fully completed, be sure to update the GitHub release with links to the mat
 | `build\preparerelease.ps1` | Creates topic branch, updates version numbers and changelog stub |
 | `build\completerelease.ps1` | Sets tags, creates GitHub release from changelog |
 | `build\downloadbuild.ps1` | Downloads signed binaries from Azure DevOps |
-| `build\promotenuget.ps1 -Release` | Promotes NuGet package to Release view on ADO feed |
+| `build\promotenuget.ps1` | Promotes NuGet package to Release view on ADO feed |
 | `build\updatevcpkg.ps1` | Updates DirectXTK VCPKG port files |
 | `assets\vcpkgdxtk.cmd` | Tests VCPKG port across all triplets and features |
 | `build\updatewinget.ps1` | Updates winget manifests for CLI tools |
