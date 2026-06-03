@@ -12,7 +12,9 @@ For detailed documentation on each class, see the [DirectXTK Wiki](https://githu
 | `SpriteFont.h` | `SpriteFont` | Bitmap font rendering using SpriteBatch. Supports MakeSpriteFont and BMFont formats. |
 | `PrimitiveBatch.h` | `PrimitiveBatch<T>` | Low-level immediate-mode rendering of user-defined vertex types. |
 | `GeometricPrimitive.h` | `GeometricPrimitive` | Factory for common 3D shapes (sphere, cube, cylinder, torus, teapot, etc.). |
-| `Model.h` | `Model`, `ModelMesh`, `ModelMeshPart`, `ModelBone` | Loading and rendering of 3D models from SDKMESH and VBO file formats. |
+| `Model.h` | `Model`, `ModelMesh`, `ModelMeshPart`, `ModelBone` | Loading and rendering of 3D models from CMO, SDKMESH and VBO file formats. |
+
+> Model requires RTTI (`/GR`) to be enabled.
 
 ## Effects (Shaders)
 
@@ -68,6 +70,8 @@ For detailed documentation on each class, see the [DirectXTK Wiki](https://githu
 | `Mouse.h` | `Mouse`, `Mouse::State`, `Mouse::ButtonStateTracker` | Mouse state polling with absolute and relative modes. |
 | `GamePad.h` | `GamePad`, `GamePad::State`, `GamePad::ButtonStateTracker` | Gamepad state polling, vibration, and button tracking. Supports GameInput, XInput, and Windows.Gaming.Input backends. |
 
+See [DirectX Tool Kit wiki: GamePad](https://github.com/Microsoft/DirectXTK/wiki/GamePad), [DirectX Tool Kit wiki: Keyboard](https://github.com/Microsoft/DirectXTK/wiki/Keyboard), and [DirectX Tool Kit wiki: Mouse](https://github.com/Microsoft/DirectXTK/wiki/Mouse) for full documentation.
+
 ## Audio
 
 | Header | Classes | Purpose |
@@ -80,11 +84,17 @@ For detailed documentation on each class, see the [DirectXTK Wiki](https://githu
 | | `DynamicSoundEffectInstance` | Programmatic audio generation via callback-driven buffer submission. |
 | | `AudioListener`, `AudioEmitter` | 3D audio positioning for spatialized sound. |
 
+See the [DirectX Tool Kit for Audio wiki](https://github.com/Microsoft/DirectXTK/wiki/Audio) for full documentation.
+
 ## Math
 
 | Header | Classes / Types | Purpose |
 | --- | --- | --- |
 | `SimpleMath.h` | `Vector2`, `Vector3`, `Vector4`, `Matrix`, `Quaternion`, `Plane`, `Color`, `Ray`, `Viewport`, `Rectangle` | Wrapper types around DirectXMath (XMFLOAT/XMVECTOR) providing operator overloads and convenience methods. |
+
+All types support standard arithmetic operators and implicit conversion to/from DirectXMath SIMD types (`XMVECTOR`, `XMMATRIX`).
+
+See the [SimpleMath wiki](https://github.com/Microsoft/DirectXTK/wiki/SimpleMath) for full documentation.
 
 ## Header Inclusion
 
