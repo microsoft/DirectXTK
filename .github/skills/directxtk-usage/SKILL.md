@@ -132,7 +132,7 @@ All classes and functions reside in the `DirectX` namespace. Headers that contai
 #include "SpriteBatch.h"
 
 // Usage:
-auto spriteBatch = std::make_unique<DirectX::SpriteBatch>(device, ...);
+auto spriteBatch = std::make_unique<DirectX::SpriteBatch>(context);
 ```
 
 ## Common Patterns
@@ -163,10 +163,11 @@ spriteBatch->End();
 
 // Create
 auto states = std::make_unique<DirectX::CommonStates>(device);
-auto modelResources = DirectX::Model::CreateFromSDKMESH(device, L"ship.sdkmesh");
+auto fxFactory = std::make_unique<DirectX::EffectFactory>(device);
+auto model = DirectX::Model::CreateFromSDKMESH(device, L"ship.sdkmesh", *fxFactory);
 
 // Draw
-modelResources->Draw(context, *states, world, view, projection);
+model->Draw(context, *states, world, view, projection);
 ```
 
 ### Drawing Geometric Primitives
