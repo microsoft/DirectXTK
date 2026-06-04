@@ -64,11 +64,23 @@ These components are designed to work without requiring any content from the leg
 
 * ``skills\``
 
-   * Contains published CoPilot skills for use by developers.
+  * Contains published CoPilot skills for use by developers.
 
 ## Documentation
 
 Documentation is available on the [GitHub wiki](https://github.com/Microsoft/DirectXTK/wiki).
+
+## CoPilot Usage
+
+For CoPilot CLI assistance with using DirectX Tool Kit, try:
+
+```bash
+winget install GitHub.Copilot
+winget install GitHub.cli
+gh skill install microsoft/directxtk
+copilot
+/skills list
+```
 
 ## Notices
 
