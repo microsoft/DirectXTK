@@ -62,6 +62,10 @@ These components are designed to work without requiring any content from the leg
 
   * Contains miscellaneous build files and scripts.
 
+* ``skills\``
+
+   * Contains published CoPilot skills for use by developers.
+
 ## Documentation
 
 Documentation is available on the [GitHub wiki](https://github.com/Microsoft/DirectXTK/wiki).

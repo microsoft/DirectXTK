@@ -42,6 +42,7 @@ Src/            # Implementation header and source files.
   Shaders/      # HLSL shader files.
 MakeSpriteFont/ # C# CLI tool for capturing sprite fonts.
 XWBTool/        # C++ CLI tool for creating XACT-style wave banks.
+skills/         # Published CoPilot skills for use by developers.
 Tests/          # Tests are designed to be cloned from a separate repository at this location.
 wiki/           # Local clone of the GitHub wiki documentation repository.
 ```
