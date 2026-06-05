@@ -8,6 +8,7 @@ Each lesson is documented on the [DirectXTK wiki](https://github.com/microsoft/D
 
 | # | Lesson | Wiki Page | Summary |
 | --- | -------- | ----------- | --------- |
+| 0 | Prerequisites | [Getting Started](https://github.com/microsoft/DirectXTK/wiki/Getting-Started) | Verify required tools: Visual Studio, Windows SDK, vcpkg, and Git |
 | 1 | Project Setup | [Getting Started](https://github.com/microsoft/DirectXTK/wiki/Getting-Started) | Create a new Direct3D 11 project using the d3d11game_vcpkg template |
 | 2 | Building the project | | Build the project and resolve any dependencies |
 | 3 | Adding DirectXTK | [Adding the DirectX Tool Kit](https://github.com/microsoft/DirectXTK/wiki/Adding-the-DirectX-Tool-Kit) | Integrate DirectXTK into the project via vcpkg |

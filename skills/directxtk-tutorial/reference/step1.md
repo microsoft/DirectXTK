@@ -11,7 +11,7 @@ If the user wants a new project, use the `d3d11game_vcpkg` template from <https:
 **Ask the user:**
 
 1. What project name would you like? (Default: `Direct3DGame`)
-2. Do you want an MSBuild (.vcxproj) project or a CMake project?
+2. Do you want an MSBuild (.vcxproj) project or a CMake project (CMake recommended)?
 3. Where should the project be created? (Default: `$Env:USERPROFILE\source`)
 
 Then download the templates from the latest GitHub release and run the appropriate script:
