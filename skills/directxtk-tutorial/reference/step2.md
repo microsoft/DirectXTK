@@ -119,7 +119,7 @@ The `CMakePresets.json` sets `CMAKE_TOOLCHAIN_FILE` to vcpkg's toolchain discove
 The vcpkg **triplet** describes the architecture, configuration, and other properties of the build environment.
 
 | Triplet | Description |
-|---------|-------------|
+| --------- | ------------- |
 | `x64-windows` | x64 architecture, Windows, dynamic linking for Multithreaded DLL CRT |
 | `arm64-windows` | ARM64 architecture, Windows, dynamic linking for Multithreaded DLL CRT |
 | `x64-windows-static-md` | x64 architecture, Windows, static linking for Multi-threaded CRT |

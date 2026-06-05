@@ -15,7 +15,7 @@ To draw geometry with Direct3D 11, you need:
 DirectX Tool Kit simplifies this:
 
 | Requirement | DirectXTK Class |
-|-------------|----------------|
+| ------------- | ---------------- |
 | Vertex buffer + topology | `PrimitiveBatch<T>` |
 | Input layout + shaders | `BasicEffect` + `CreateInputLayoutFromEffect` |
 | State objects | `CommonStates` |

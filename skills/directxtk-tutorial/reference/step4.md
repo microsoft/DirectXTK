@@ -168,6 +168,7 @@ The SpriteBatch shaders are built-in HLSL shader 'blobs'. They are compiled at b
 The shaders in this case are fairly trivial:
 
 ***Vertex Shader***
+
 ```hlsl
 cbuffer Parameters : register(b0)
 {
@@ -184,6 +185,7 @@ void SpriteVertexShader(inout float4 color    : COLOR0,
 ```
 
 ***Pixel Shader***
+
 ```hlsl
 Texture2D Texture : register(t0);
 SamplerState Sampler : register(s0);

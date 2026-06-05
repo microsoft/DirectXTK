@@ -20,7 +20,7 @@ At the end of each step, **ask the user** if they would like to see the Technica
 ## Tutorial Steps
 
 | Step | Title | Reference |
-|------|-------|-----------|
+| ------ | ------- | ----------- |
 | 1 | Project Setup | [reference/step1.md](reference/step1.md) |
 | 2 | Building the Project | [reference/step2.md](reference/step2.md) |
 | 3 | Adding DirectX Tool Kit | [reference/step3.md](reference/step3.md) |

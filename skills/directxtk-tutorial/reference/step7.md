@@ -9,7 +9,7 @@ In the previous step, we used `PrimitiveBatch` to draw geometry with manually sp
 Key differences from `PrimitiveBatch`:
 
 | | PrimitiveBatch | GeometricPrimitive |
-|---|---|---|
+| --- | --- | --- |
 | Buffer type | Dynamic (CPU-writable each frame) | Static (GPU-only, created once) |
 | Index buffer | Optional | Always used |
 | Shader setup | Manual (you set effect + input layout) | Built-in default or custom effect |
@@ -121,7 +121,7 @@ The teapot is rendered with default lighting (three directional lights) and back
 `GeometricPrimitive` can create many shapes. Replace `CreateTeapot` with any of these:
 
 | Factory Method | Shape |
-|---|---|
+| --- | --- |
 | `CreateSphere` | UV sphere |
 | `CreateGeoSphere` | Geodesic sphere |
 | `CreateCube` | Unit cube |
