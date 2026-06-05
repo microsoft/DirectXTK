@@ -1,6 +1,13 @@
 ---
 name: directxtk-usage
-description: Guide for integrating DirectX Tool Kit for DirectX 11 into new projects and understanding the API surface. Use this skill when asked about how to use DirectX Tool Kit, integrate it into a project, or get an overview of its classes and functionality.
+description: >-
+  Guide for integrating DirectX Tool Kit for DirectX 11 into new projects and understanding the API surface.
+  Use this skill when asked about how to use DirectX Tool Kit, integrate it into a project,
+  or get an overview of its classes and functionality.
+license: MIT
+metadata:
+  author: chuckw
+  version: "1.0"
 ---
 
 # DirectX Tool Kit for DirectX 11 — Usage Guide
