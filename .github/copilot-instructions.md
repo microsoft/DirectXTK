@@ -31,7 +31,7 @@ These instructions define how GitHub Copilot should assist with this project. Th
 
 ## File Structure
 
-```txt
+```plaintext
 .azuredevops/   # Azure DevOps pipeline configuration and policy files.
 .github/        # GitHub Actions workflow files and linter configuration files.
 .nuget/         # NuGet package configuration files.
