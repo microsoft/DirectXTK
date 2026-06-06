@@ -135,6 +135,9 @@ namespace DirectX
             // Set viewport for sprite transformation
             DIRECTX_TOOLKIT_API void __cdecl SetViewport(const D3D11_VIEWPORT& viewPort);
 
+            // Gets transform matrix based on viewport (which may be read from the device context) and rotation mode
+            DIRECTX_TOOLKIT_API void GetViewportTransform(_In_ ID3D11DeviceContext* deviceContext, XMMATRIX& transformMatrix) const;
+
         private:
             // Private implementation.
             struct Impl;
