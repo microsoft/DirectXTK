@@ -1198,5 +1198,5 @@ void SpriteBatch::SetViewport(const D3D11_VIEWPORT& viewPort)
 _Use_decl_annotations_
 void SpriteBatch::GetViewportTransform(ID3D11DeviceContext* deviceContext, XMMATRIX& transformMatrix) const
 {
-    transformMatrix = pImpl->GetViewportTransform(deviceContext,pImpl->mRotation);
+    transformMatrix = pImpl->GetViewportTransform(deviceContext, pImpl->mRotation);
 }
