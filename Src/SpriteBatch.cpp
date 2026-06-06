@@ -109,6 +109,8 @@ public:
     bool mSetViewport;
     D3D11_VIEWPORT mViewPort;
 
+    XMMATRIX GetViewportTransform(_In_ ID3D11DeviceContext* deviceContext, DXGI_MODE_ROTATION rotation);
+
 private:
     // Implementation helper methods.
     void GrowSpriteQueue();
@@ -125,7 +127,6 @@ private:
         FXMVECTOR inverseTextureSize);
 
     static XMVECTOR GetTextureSize(_In_ ID3D11ShaderResourceView* texture);
-    XMMATRIX GetViewportTransform(_In_ ID3D11DeviceContext* deviceContext, DXGI_MODE_ROTATION rotation);
 
 
     // Constants.
@@ -1191,4 +1192,11 @@ void SpriteBatch::SetViewport(const D3D11_VIEWPORT& viewPort)
 {
     pImpl->mSetViewport = true;
     pImpl->mViewPort = viewPort;
+}
+
+
+_Use_decl_annotations_
+void SpriteBatch::GetViewportTransform(ID3D11DeviceContext* deviceContext, XMMATRIX& transformMatrix) const
+{
+    transformMatrix = pImpl->GetViewportTransform(deviceContext, pImpl->mRotation);
 }
