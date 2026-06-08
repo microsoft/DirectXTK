@@ -119,6 +119,7 @@ set(LIBRARY_SOURCES
     Src/DDSTextureLoader.cpp
     Src/DebugEffect.cpp
     Src/DGSLEffect.cpp
+    Src/NPREffect.cpp
     Src/DGSLEffectFactory.cpp
     Src/DirectXHelpers.cpp
     Src/DualPostProcess.cpp
@@ -150,6 +151,7 @@ set(SHADER_SOURCES
     Src/Shaders/AlphaTestEffect.fx
     Src/Shaders/BasicEffect.fx
     Src/Shaders/DebugEffect.fx
+    Src/Shaders/NPREffect.fx
     Src/Shaders/DGSLEffect.fx
     Src/Shaders/DGSLLambert.hlsl
     Src/Shaders/DGSLPhong.hlsl
