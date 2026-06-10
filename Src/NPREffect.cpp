@@ -334,6 +334,18 @@ void XM_CALLCONV NPREffect::SetMatrices(FXMMATRIX world, CXMMATRIX view, CXMMATR
 
 
 // Light settings.
+void NPREffect::SetLightingEnabled(bool)
+{
+    // Unsupported interface.
+}
+
+
+void NPREffect::SetPerPixelLighting(bool)
+{
+    // Unsupported interface.
+}
+
+
 void NPREffect::SetAmbientLightColor(FXMVECTOR)
 {
     // Unsupported interface.
