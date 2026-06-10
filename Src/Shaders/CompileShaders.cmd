@@ -226,6 +226,19 @@ call :CompileShaderSM4%1 DebugEffect ps PSRGBNormals
 call :CompileShaderSM4%1 DebugEffect ps PSRGBTangents
 call :CompileShaderSM4%1 DebugEffect ps PSRGBBiTangents
 
+call :CompileShaderSM4%1 NPREffect vs VSNPREffect
+call :CompileShaderSM4%1 NPREffect vs VSNPREffectBn
+call :CompileShaderSM4%1 NPREffect vs VSNPREffectVc
+call :CompileShaderSM4%1 NPREffect vs VSNPREffectVcBn
+
+call :CompileShaderSM4%1 NPREffect vs VSNPREffectInst
+call :CompileShaderSM4%1 NPREffect vs VSNPREffectBnInst
+call :CompileShaderSM4%1 NPREffect vs VSNPREffectVcInst
+call :CompileShaderSM4%1 NPREffect vs VSNPREffectVcBnInst
+
+call :CompileShaderSM4%1 NPREffect ps PSCelShading
+call :CompileShaderSM4%1 NPREffect ps PSGoochShading
+
 call :CompileShader%1 SpriteEffect vs SpriteVertexShader
 call :CompileShader%1 SpriteEffect ps SpritePixelShader
 

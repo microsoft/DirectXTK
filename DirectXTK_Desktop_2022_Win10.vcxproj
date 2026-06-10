@@ -83,6 +83,7 @@
     <ClCompile Include="Src\CommonStates.cpp" />
     <ClCompile Include="Src\DDSTextureLoader.cpp" />
     <ClCompile Include="Src\DebugEffect.cpp" />
+    <ClCompile Include="Src\NPREffect.cpp" />
     <ClCompile Include="Src\DGSLEffect.cpp" />
     <ClCompile Include="Src\DGSLEffectFactory.cpp" />
     <ClCompile Include="Src\DirectXHelpers.cpp" />
@@ -187,6 +188,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Src\Shaders\DebugEffect.fx">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Src\Shaders\NPREffect.fx">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

@@ -879,6 +879,91 @@ namespace DirectX
         };
 
         //------------------------------------------------------------------------------
+        // Built-in shader for non-photorealistic rendering (cel shading, Gooch shading).
+        class NPREffect : public IEffect, public IEffectMatrices, public IEffectLights
+        {
+        public:
+            enum Mode : uint32_t
+            {
+                Mode_Cel = 0,       // Cel (toon) shading
+                Mode_Gooch,         // Gooch shading
+            };
+
+            DIRECTX_TOOLKIT_API explicit NPREffect(_In_ ID3D11Device* device);
+
+            DIRECTX_TOOLKIT_API NPREffect(NPREffect&&) noexcept;
+            DIRECTX_TOOLKIT_API NPREffect& operator= (NPREffect&&) noexcept;
+
+            NPREffect(NPREffect const&) = delete;
+            NPREffect& operator= (NPREffect const&) = delete;
+
+            DIRECTX_TOOLKIT_API ~NPREffect() override;
+
+            // IEffect methods.
+            DIRECTX_TOOLKIT_API void __cdecl Apply(_In_ ID3D11DeviceContext* deviceContext) override;
+
+            DIRECTX_TOOLKIT_API void __cdecl GetVertexShaderBytecode(
+                _Out_ void const** pShaderByteCode,
+                _Out_ size_t* pByteCodeLength) override;
+
+            // Camera settings.
+            DIRECTX_TOOLKIT_API void XM_CALLCONV SetWorld(FXMMATRIX value) override;
+            DIRECTX_TOOLKIT_API void XM_CALLCONV SetView(FXMMATRIX value) override;
+            DIRECTX_TOOLKIT_API void XM_CALLCONV SetProjection(FXMMATRIX value) override;
+            DIRECTX_TOOLKIT_API void XM_CALLCONV SetMatrices(FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection) override;
+
+            // Material settings.
+            DIRECTX_TOOLKIT_API void XM_CALLCONV SetDiffuseColor(FXMVECTOR value);
+            DIRECTX_TOOLKIT_API void XM_CALLCONV SetSpecularColor(FXMVECTOR value);
+            DIRECTX_TOOLKIT_API void __cdecl SetSpecularPower(float value);
+            DIRECTX_TOOLKIT_API void __cdecl DisableSpecular();
+            DIRECTX_TOOLKIT_API void __cdecl SetAlpha(float value);
+            DIRECTX_TOOLKIT_API void XM_CALLCONV SetColorAndAlpha(FXMVECTOR value);
+
+            // Light settings.
+            void XM_CALLCONV SetLightDirection(int whichLight, FXMVECTOR value) override;
+            DIRECTX_TOOLKIT_API void __cdecl EnableDefaultLighting() override;
+
+            static constexpr int MaxDirectionalLights = 1;
+
+            // Texture settings.
+            // TODO: Implement texture settings.
+
+            // Shader mode setting.
+            DIRECTX_TOOLKIT_API void __cdecl SetMode(Mode mode);
+
+            // Cel shading settings.
+            DIRECTX_TOOLKIT_API void __cdecl SetCelShaderBands(int bands);
+
+            // Gooch shading settings.
+            DIRECTX_TOOLKIT_API void XM_CALLCONV SetGoochCoolColor(FXMVECTOR value, float alpha = 0.25f);
+            DIRECTX_TOOLKIT_API void XM_CALLCONV SetGoochWarmColor(FXMVECTOR value, float beta = 0.25f);
+
+            // Vertex color setting.
+            DIRECTX_TOOLKIT_API void __cdecl SetVertexColorEnabled(bool value);
+
+            // Normal compression settings.
+            DIRECTX_TOOLKIT_API void __cdecl SetBiasedVertexNormals(bool value);
+
+            // Instancing settings.
+            DIRECTX_TOOLKIT_API void __cdecl SetInstancingEnabled(bool value);
+
+        private:
+            // Private implementation.
+            class Impl;
+
+            std::unique_ptr<Impl> pImpl;
+
+            // Unsupported interface methods.
+            DIRECTX_TOOLKIT_API void __cdecl SetLightingEnabled(bool value) override;
+            DIRECTX_TOOLKIT_API void __cdecl SetPerPixelLighting(bool value) override;
+            DIRECTX_TOOLKIT_API void XM_CALLCONV SetAmbientLightColor(FXMVECTOR value) override;
+            DIRECTX_TOOLKIT_API void __cdecl SetLightEnabled(int whichLight, bool value) override;
+            DIRECTX_TOOLKIT_API void XM_CALLCONV SetLightDiffuseColor(int whichLight, FXMVECTOR value) override;
+            DIRECTX_TOOLKIT_API void XM_CALLCONV SetLightSpecularColor(int whichLight, FXMVECTOR value) override;
+        };
+
+        //------------------------------------------------------------------------------
         // Abstract interface to factory for sharing effects and texture resources
         class DIRECTX_TOOLKIT_API IEffectFactory
         {
