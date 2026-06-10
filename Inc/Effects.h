@@ -955,6 +955,8 @@ namespace DirectX
             std::unique_ptr<Impl> pImpl;
 
             // Unsupported interface methods.
+            DIRECTX_TOOLKIT_API void __cdecl SetLightingEnabled(bool value) override;
+            DIRECTX_TOOLKIT_API void __cdecl SetPerPixelLighting(bool value) override;
             DIRECTX_TOOLKIT_API void XM_CALLCONV SetAmbientLightColor(FXMVECTOR value) override;
             DIRECTX_TOOLKIT_API void __cdecl SetLightEnabled(int whichLight, bool value) override;
             DIRECTX_TOOLKIT_API void XM_CALLCONV SetLightDiffuseColor(int whichLight, FXMVECTOR value) override;
