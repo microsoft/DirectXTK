@@ -58,6 +58,13 @@
 
 #include "WAVFileReader.h"
 
+#ifdef _MSC_VER
+// Off by default warnings
+#pragma warning(disable : 4619 4616 4668)
+// C4619/4616 #pragma warning warnings
+// C4668 not defined as a preprocessor macro
+#endif
+
 #include <shellapi.h>
 
 #define TOOL_VERSION 0
