@@ -44,9 +44,9 @@ namespace DirectX
     public:
         explicit com_exception(HRESULT hr) : result(hr)
         {
-            char s_str[64] = {};
-            sprintf_s(s_str, "Failure with HRESULT of %08X", static_cast<unsigned int>(result));
-            message = s_str;
+            char str[64] = {};
+            sprintf_s(str, "Failure with HRESULT of %08X", static_cast<unsigned int>(result));
+            message = str;
         }
 
         const char* what() const noexcept override
