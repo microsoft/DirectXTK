@@ -17,6 +17,7 @@
 #include <cstdio>
 #include <exception>
 #include <memory>
+#include <string>
 
 #ifndef MAKEFOURCC
 #define MAKEFOURCC(ch0, ch1, ch2, ch3) \
@@ -41,19 +42,23 @@ namespace DirectX
     class com_exception : public std::exception
     {
     public:
-        com_exception(HRESULT hr) noexcept : result(hr) {}
+        explicit com_exception(HRESULT hr) : result(hr)
+        {
+            char str[64] = {};
+            sprintf_s(str, "Failure with HRESULT of %08X", static_cast<unsigned int>(result));
+            message = str;
+        }
 
         const char* what() const noexcept override
         {
-            static char s_str[64] = {};
-            sprintf_s(s_str, "Failure with HRESULT of %08X", static_cast<unsigned int>(result));
-            return s_str;
+            return message.c_str();
         }
 
         HRESULT get_result() const noexcept { return result; }
 
     private:
         HRESULT result;
+        std::string message;
     };
 
     // Helper utility converts D3D API failures into exceptions.

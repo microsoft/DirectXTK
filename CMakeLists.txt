@@ -463,7 +463,7 @@ if(MSVC)
     if(NO_WCHAR_T)
       message(STATUS "Using non-native wchar_t as unsigned short")
       foreach(t IN LISTS TOOL_EXES ITEMS ${PROJECT_NAME})
-        target_compile_options(${t} PRIVATE "/Zc:wchar_t-")
+        target_compile_options(${t} PRIVATE /Zc:wchar_t-)
       endforeach()
     endif()
 endif()
@@ -477,13 +477,14 @@ endforeach()
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|IntelLLVM")
     set(WarningsLib -Wall -Wpedantic -Wextra)
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 16.0)
-        list(APPEND WarningsLib "-Wno-unsafe-buffer-usage")
+        list(APPEND WarningsLib -Wno-unsafe-buffer-usage)
     endif()
     target_compile_options(${PROJECT_NAME} PRIVATE ${WarningsLib})
 
-    set(WarningsEXE ${WarningsLib} "-Wno-c++98-compat" "-Wno-c++98-compat-pedantic" "-Wno-switch-default"
-        "-Wno-double-promotion" "-Wno-exit-time-destructors" "-Wno-gnu-anonymous-struct"
-        "-Wno-missing-prototypes" "-Wno-nested-anon-types" "-Wno-unused-const-variable")
+    set(WarningsEXE ${WarningsLib}
+      -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-switch-default
+      -Wno-double-promotion -Wno-exit-time-destructors -Wno-gnu-anonymous-struct
+      -Wno-missing-prototypes -Wno-nested-anon-types -Wno-unused-const-variable -Wno-padded)
     foreach(t IN LISTS TOOL_EXES)
       target_compile_options(${t} PRIVATE ${WarningsEXE})
     endforeach()
