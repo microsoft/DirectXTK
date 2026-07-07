@@ -561,8 +561,15 @@ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceI
             return hr;
         }
 
-        XAUDIO2FX_REVERB_PARAMETERS native;
-        ReverbConvertI3DL2ToNative(&gReverbPresets[Reverb_Default], &native);
+        XAUDIO2FX_REVERB_PARAMETERS native = {};
+        ReverbConvertI3DL2ToNative(
+            &gReverbPresets[Reverb_Default],
+            &native
+#ifdef __MINGW32__
+            , FALSE
+#endif
+            );
+
         hr = mReverbVoice->SetEffectParameters(0, &native, sizeof(XAUDIO2FX_REVERB_PARAMETERS));
         if (FAILED(hr))
         {
@@ -1330,8 +1337,14 @@ void AudioEngine::SetReverb(AUDIO_ENGINE_REVERB reverb)
     }
     else
     {
-        XAUDIO2FX_REVERB_PARAMETERS native;
-        ReverbConvertI3DL2ToNative(&gReverbPresets[reverb], &native);
+        XAUDIO2FX_REVERB_PARAMETERS native = {};
+        ReverbConvertI3DL2ToNative(
+            &gReverbPresets[reverb],
+            &native
+#ifdef __MINGW32__
+            , FALSE
+#endif
+            );
         pImpl->SetReverb(&native);
     }
 }
