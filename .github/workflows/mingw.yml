@@ -1,0 +1,102 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# https://go.microsoft.com/fwlink/?LinkID=324981
+
+name: 'CMake (MinGW)'
+
+on:
+  push:
+    branches: "main"
+    paths-ignore:
+      - '*.md'
+      - LICENSE
+      - '.azuredevops/**'
+      - '.github/*.md'
+      - '.nuget/*'
+      - build/*.cmd
+      - build/*.props
+      - build/*.ps1
+      - build/*.targets
+  pull_request:
+    branches: "main"
+    paths-ignore:
+      - '*.md'
+      - LICENSE
+      - '.azuredevops/**'
+      - '.github/*.md'
+      - '.nuget/*'
+      - build/*.cmd
+      - build/*.props
+      - build/*.ps1
+      - build/*.targets
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        build_type: [x64-Debug-MinGW, x64-Release-MinGW]
+        shared: ['OFF', 'ON']
+        gameinput: ['OFF', 'ON']
+
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Clone test repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: walbourn/directxtk12test
+          path: Tests
+          ref: main
+
+      - name: 'Install Ninja'
+        run: choco install ninja
+
+      - name: 'Set triplet'
+        shell: pwsh
+        run: |
+          echo "VCPKG_INSTALLED_DIR=${{ github.workspace }}/build/vcpkg_installed" >> $env:GITHUB_ENV
+          echo "VCPKG_DEFAULT_TRIPLET=x64-mingw-static" >> $env:GITHUB_ENV
+
+      - name: Get vcpkg commit hash
+        shell: pwsh
+        run: |
+          if ($Env:vcpkgRelease) {
+              echo "Using vcpkg commit from repo variable..."
+              $VCPKG_COMMIT_ID = $Env:vcpkgRelease
+          }
+          else {
+              echo "Fetching latest vcpkg commit hash..."
+              $commit = (git ls-remote https://github.com/microsoft/vcpkg.git HEAD | Select-String -Pattern '([a-f0-9]{40})').Matches.Value
+              $VCPKG_COMMIT_ID = $commit
+          }
+          Write-Host "VCPKG_COMMIT_ID=$VCPKG_COMMIT_ID"
+          echo "VCPKG_COMMIT_ID=$VCPKG_COMMIT_ID" >> $env:GITHUB_ENV
+        env:
+          vcpkgRelease: '${{ vars.VCPKG_COMMIT_ID }}'
+
+      - uses: lukka/run-vcpkg@305c06bd4dee21e23dcf142c85c657a993f7aa1a # v11
+        with:
+          runVcpkgInstall: true
+          vcpkgJsonGlob: '**/build/vcpkg.json'
+          vcpkgGitCommitId: '${{ env.VCPKG_COMMIT_ID }}'
+
+      - name: 'Configure CMake'
+        working-directory: ${{ github.workspace }}
+        run: >
+          cmake --preset=${{ matrix.build_type }} -DBUILD_TESTING=ON
+          -DBUILD_SHARED_LIBS=${{ matrix.shared }} -DBUILD_GAMEINPUT=${{ matrix.gameinput }}
+          -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_MANIFEST_DIR="${{ github.workspace }}/build"
+          -DVCPKG_TARGET_TRIPLET="${env:VCPKG_DEFAULT_TRIPLET}"
+
+      - name: 'Build'
+        working-directory: ${{ github.workspace }}
+        run: cmake --build out\build\${{ matrix.build_type }}
