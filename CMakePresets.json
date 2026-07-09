@@ -188,7 +188,7 @@
       "name": "MinGW32",
       "hidden": true,
       "environment": {
-        "PATH": "$penv{PATH};c:/mingw32/bin;c:/mingw32/libexec/gcc/i686-w64-mingw32/12.2.0"
+        "PATH": "$penv{PATH};c:/mingw32/bin;c:/mingw32/libexec/gcc/i686-w64-mingw32/16.1.0"
       },
       "cacheVariables": {
         "VCPKG_TARGET_TRIPLET": "x86-mingw-static",
@@ -199,7 +199,7 @@
       "name": "MinGW64",
       "hidden": true,
       "environment": {
-        "PATH": "$penv{PATH};c:/mingw64/bin;c:/mingw64/libexec/gcc/x86_64-w64-mingw32/12.2.0"
+        "PATH": "$penv{PATH};c:/mingw64/bin;c:/mingw64/libexec/gcc/x86_64-w64-mingw32/16.1.0"
       },
       "cacheVariables": {
         "VCPKG_TARGET_TRIPLET": "x64-mingw-static",
