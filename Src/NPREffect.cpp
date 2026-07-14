@@ -36,9 +36,9 @@ namespace
     {
         using ConstantBufferType = NPREffectConstants;
 
-        static constexpr int VertexShaderCount = 8;
-        static constexpr int PixelShaderCount = 2;
-        static constexpr int ShaderPermutationCount = 16;
+        static constexpr int VertexShaderCount = 16;
+        static constexpr int PixelShaderCount = 4;
+        static constexpr int ShaderPermutationCount = 32;
 
         static constexpr int ModeCount = 2;
     };
@@ -67,7 +67,9 @@ public:
     bool vertexColorEnabled;
     bool biasedVertexNormals;
     bool instancing;
+    bool textureEnabled;
     NPREffect::Mode nprMode;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> texture;
 
     int GetCurrentShaderPermutation() const noexcept;
 
@@ -92,8 +94,22 @@ namespace
 #include "XboxOneNPREffect_VSNPREffectVcBn.inc"
 #include "XboxOneNPREffect_VSNPREffectVcBnInst.inc"
 
+#include "XboxOneNPREffect_VSNPREffectTx.inc"
+#include "XboxOneNPREffect_VSNPREffectInstTx.inc"
+
+#include "XboxOneNPREffect_VSNPREffectVcTx.inc"
+#include "XboxOneNPREffect_VSNPREffectVcInstTx.inc"
+
+#include "XboxOneNPREffect_VSNPREffectBnTx.inc"
+#include "XboxOneNPREffect_VSNPREffectBnInstTx.inc"
+
+#include "XboxOneNPREffect_VSNPREffectVcBnTx.inc"
+#include "XboxOneNPREffect_VSNPREffectVcBnInstTx.inc"
+
 #include "XboxOneNPREffect_PSCelShading.inc"
+#include "XboxOneNPREffect_PSCelShadingTx.inc"
 #include "XboxOneNPREffect_PSGoochShading.inc"
+#include "XboxOneNPREffect_PSGoochShadingTx.inc"
 #else
 #include "NPREffect_VSNPREffect.inc"
 #include "NPREffect_VSNPREffectInst.inc"
@@ -107,8 +123,23 @@ namespace
 #include "NPREffect_VSNPREffectVcBn.inc"
 #include "NPREffect_VSNPREffectVcBnInst.inc"
 
+#include "NPREffect_VSNPREffectTx.inc"
+#include "NPREffect_VSNPREffectInstTx.inc"
+
+#include "NPREffect_VSNPREffectVcTx.inc"
+#include "NPREffect_VSNPREffectVcInstTx.inc"
+
+#include "NPREffect_VSNPREffectBnTx.inc"
+#include "NPREffect_VSNPREffectBnInstTx.inc"
+
+#include "NPREffect_VSNPREffectVcBnTx.inc"
+#include "NPREffect_VSNPREffectVcBnInstTx.inc"
+
 #include "NPREffect_PSCelShading.inc"
+#include "NPREffect_PSCelShadingTx.inc"
+
 #include "NPREffect_PSGoochShading.inc"
+#include "NPREffect_PSGoochShadingTx.inc"
 #endif
 }
 
@@ -116,14 +147,22 @@ namespace
 template<>
 const ShaderBytecode EffectBase<NPREffectTraits>::VertexShaderBytecode[] =
 {
-    { NPREffect_VSNPREffect,         sizeof(NPREffect_VSNPREffect)         },
-    { NPREffect_VSNPREffectVc,       sizeof(NPREffect_VSNPREffectVc)       },
-    { NPREffect_VSNPREffectBn,       sizeof(NPREffect_VSNPREffectBn)       },
-    { NPREffect_VSNPREffectVcBn,     sizeof(NPREffect_VSNPREffectVcBn)     },
-    { NPREffect_VSNPREffectInst,     sizeof(NPREffect_VSNPREffectInst)     },
-    { NPREffect_VSNPREffectVcInst,   sizeof(NPREffect_VSNPREffectVcInst)   },
-    { NPREffect_VSNPREffectBnInst,   sizeof(NPREffect_VSNPREffectBnInst)   },
-    { NPREffect_VSNPREffectVcBnInst, sizeof(NPREffect_VSNPREffectVcBnInst) },
+    { NPREffect_VSNPREffect,           sizeof(NPREffect_VSNPREffect)           },
+    { NPREffect_VSNPREffectVc,         sizeof(NPREffect_VSNPREffectVc)         },
+    { NPREffect_VSNPREffectBn,         sizeof(NPREffect_VSNPREffectBn)         },
+    { NPREffect_VSNPREffectVcBn,       sizeof(NPREffect_VSNPREffectVcBn)       },
+    { NPREffect_VSNPREffectInst,       sizeof(NPREffect_VSNPREffectInst)       },
+    { NPREffect_VSNPREffectVcInst,     sizeof(NPREffect_VSNPREffectVcInst)     },
+    { NPREffect_VSNPREffectBnInst,     sizeof(NPREffect_VSNPREffectBnInst)     },
+    { NPREffect_VSNPREffectVcBnInst,   sizeof(NPREffect_VSNPREffectVcBnInst)   },
+    { NPREffect_VSNPREffectTx,         sizeof(NPREffect_VSNPREffectTx)         },
+    { NPREffect_VSNPREffectVcTx,       sizeof(NPREffect_VSNPREffectVcTx)       },
+    { NPREffect_VSNPREffectBnTx,       sizeof(NPREffect_VSNPREffectBnTx)       },
+    { NPREffect_VSNPREffectVcBnTx,     sizeof(NPREffect_VSNPREffectVcBnTx)     },
+    { NPREffect_VSNPREffectInstTx,     sizeof(NPREffect_VSNPREffectInstTx)     },
+    { NPREffect_VSNPREffectVcInstTx,   sizeof(NPREffect_VSNPREffectVcInstTx)   },
+    { NPREffect_VSNPREffectBnInstTx,   sizeof(NPREffect_VSNPREffectBnInstTx)   },
+    { NPREffect_VSNPREffectVcBnInstTx, sizeof(NPREffect_VSNPREffectVcBnInstTx) },
 };
 
 
@@ -153,14 +192,40 @@ const int EffectBase<NPREffectTraits>::VertexShaderIndices[] =
 
     7,      // instancing + vertex color (biased vertex normal) + cel shading
     7,      // instancing + vertex color (biased vertex normal) + gooch shading
+
+    8,      // cel shading + texture
+    8,      // gooch shading + texture
+
+    9,      // vertex color + cel shading + texture
+    9,      // vertex color + gooch shading + texture
+
+    10,     // cel shading (biased vertex normal) + texture
+    10,     // gooch shading (biased vertex normal) + texture
+
+    11,     // vertex color (biased vertex normal) + cel shading + texture
+    11,     // vertex color (biased vertex normal) + gooch shading + texture
+
+    12,     // instancing + cel shading + texture
+    12,     // instancing + gooch shading + texture
+
+    13,     // instancing + vertex color + cel shading + texture
+    13,     // instancing + vertex color + gooch shading + texture
+
+    14,     // instancing (biased vertex normal) + cel shading + texture
+    14,     // instancing (biased vertex normal) + gooch shading + texture
+
+    15,     // instancing + vertex color (biased vertex normal) + cel shading + texture
+    15,     // instancing + vertex color (biased vertex normal) + gooch shading + texture
 };
 
 
 template<>
 const ShaderBytecode EffectBase<NPREffectTraits>::PixelShaderBytecode[] =
 {
-    { NPREffect_PSCelShading,   sizeof(NPREffect_PSCelShading)   },
-    { NPREffect_PSGoochShading, sizeof(NPREffect_PSGoochShading) },
+    { NPREffect_PSCelShading,     sizeof(NPREffect_PSCelShading)     },
+    { NPREffect_PSGoochShading,   sizeof(NPREffect_PSGoochShading)   },
+    { NPREffect_PSCelShadingTx,   sizeof(NPREffect_PSCelShadingTx)   },
+    { NPREffect_PSGoochShadingTx, sizeof(NPREffect_PSGoochShadingTx) },
 };
 
 
@@ -190,6 +255,30 @@ const int EffectBase<NPREffectTraits>::PixelShaderIndices[] =
 
     0,      // instancing + vertex color (biased vertex normal) + cel shading
     1,      // instancing + vertex color (biased vertex normal) + gooch shading
+
+    2,      // cel shading + texture
+    3,      // gooch shading + texture
+
+    2,      // vertex color + cel shading + texture
+    3,      // vertex color + gooch shading + texture
+
+    2,      // cel shading (biased vertex normal) + texture
+    3,      // gooch shading (biased vertex normal) + texture
+
+    2,      // vertex color (biased vertex normal) + cel shading + texture
+    3,      // vertex color (biased vertex normal) + gooch shading + texture
+
+    2,      // instancing + cel shading + texture
+    3,      // instancing + gooch shading + texture
+
+    2,      // instancing + vertex color + cel shading + texture
+    3,      // instancing + vertex color + gooch shading + texture
+
+    2,      // instancing (biased vertex normal) + cel shading + texture
+    3,      // instancing (biased vertex normal) + gooch shading + texture
+
+    2,      // instancing + vertex color (biased vertex normal) + cel shading + texture
+    3,      // instancing + vertex color (biased vertex normal) + gooch shading + texture
 };
 #pragma endregion
 
@@ -204,6 +293,7 @@ NPREffect::Impl::Impl(_In_ ID3D11Device* device)
     vertexColorEnabled(false),
     biasedVertexNormals(false),
     instancing(false),
+    textureEnabled(false),
     nprMode(NPREffect::Mode_Cel)
 {
     static_assert(static_cast<int>(std::size(EffectBase<NPREffectTraits>::VertexShaderIndices)) == NPREffectTraits::ShaderPermutationCount, "array/max mismatch");
@@ -240,6 +330,12 @@ int NPREffect::Impl::GetCurrentShaderPermutation() const noexcept
     {
         // Vertex shader needs to use vertex matrix transform.
         permutation += 8;
+    }
+
+    // Use shaders without texture coordinates?
+    if (textureEnabled)
+    {
+        permutation += 16;
     }
 
     return permutation;
@@ -281,6 +377,13 @@ void NPREffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
 
     // Set shaders and constant buffers.
     ApplyShaders(deviceContext, GetCurrentShaderPermutation());
+
+    // Set texture.
+    if (textureEnabled)
+    {
+        ID3D11ShaderResourceView* srv = texture.Get();
+        deviceContext->PSSetShaderResources(0, 1, &srv);
+    }
 }
 
 
@@ -425,6 +528,7 @@ void NPREffect::SetSpecularColor(FXMVECTOR value)
 
 void NPREffect::SetSpecularPower(float value)
 {
+    // TODO: specular power needs to be specular threshold!
     // Set w of specularColorAndSpecularPower.
     pImpl->constants.specularColorAndSpecularPower = XMVectorSetW(pImpl->constants.specularColorAndSpecularPower, value);
 
@@ -461,7 +565,16 @@ void NPREffect::SetColorAndAlpha(FXMVECTOR value)
 
 
 // Texture settings.
-// TODO: Implement texture settings.
+void NPREffect::SetTextureEnabled(bool value)
+{
+    pImpl->textureEnabled = value;
+}
+
+
+void NPREffect::SetTexture(_In_opt_ ID3D11ShaderResourceView* value)
+{
+    pImpl->texture = value;
+}
 
 
 // Shader mode setting.

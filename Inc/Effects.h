@@ -225,7 +225,7 @@ namespace DirectX
             // Vertex color setting.
             DIRECTX_TOOLKIT_API void __cdecl SetVertexColorEnabled(bool value);
 
-            // Texture setting.
+            // Texture settings.
             DIRECTX_TOOLKIT_API void __cdecl SetTextureEnabled(bool value);
             DIRECTX_TOOLKIT_API void __cdecl SetTexture(_In_opt_ ID3D11ShaderResourceView* value);
 
@@ -927,7 +927,8 @@ namespace DirectX
             static constexpr int MaxDirectionalLights = 1;
 
             // Texture settings.
-            // TODO: Implement texture settings.
+            DIRECTX_TOOLKIT_API void __cdecl SetTextureEnabled(bool value);
+            DIRECTX_TOOLKIT_API void __cdecl SetTexture(_In_opt_ ID3D11ShaderResourceView* value);
 
             // Shader mode setting.
             DIRECTX_TOOLKIT_API void __cdecl SetMode(Mode mode);

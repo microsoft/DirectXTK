@@ -236,8 +236,21 @@ call :CompileShaderSM4%1 NPREffect vs VSNPREffectBnInst
 call :CompileShaderSM4%1 NPREffect vs VSNPREffectVcInst
 call :CompileShaderSM4%1 NPREffect vs VSNPREffectVcBnInst
 
+call :CompileShaderSM4%1 NPREffect vs VSNPREffectTx
+call :CompileShaderSM4%1 NPREffect vs VSNPREffectBnTx
+call :CompileShaderSM4%1 NPREffect vs VSNPREffectVcTx
+call :CompileShaderSM4%1 NPREffect vs VSNPREffectVcBnTx
+
+call :CompileShaderSM4%1 NPREffect vs VSNPREffectInstTx
+call :CompileShaderSM4%1 NPREffect vs VSNPREffectBnInstTx
+call :CompileShaderSM4%1 NPREffect vs VSNPREffectVcInstTx
+call :CompileShaderSM4%1 NPREffect vs VSNPREffectVcBnInstTx
+
 call :CompileShaderSM4%1 NPREffect ps PSCelShading
+call :CompileShaderSM4%1 NPREffect ps PSCelShadingTx
+
 call :CompileShaderSM4%1 NPREffect ps PSGoochShading
+call :CompileShaderSM4%1 NPREffect ps PSGoochShadingTx
 
 call :CompileShader%1 SpriteEffect vs SpriteVertexShader
 call :CompileShader%1 SpriteEffect ps SpritePixelShader
