@@ -100,35 +100,10 @@ jobs:
             shared: 'OFF'
             gameinput: 'OFF'
           - toolver: '14'
-            build_type: x64-Debug-MinGW
-            arch: amd64
-            shared: 'OFF'
-            gameinput: 'OFF'
-          - toolver: '14'
-            build_type: x64-Release-MinGW
-            arch: amd64
-            shared: 'OFF'
-            gameinput: 'OFF'
-          - toolver: '14'
-            build_type: x64-Debug-MinGW
-            arch: amd64
-            shared: 'OFF'
-            gameinput: 'ON'
-          - toolver: '14'
             build_type: x64-Debug-VCPKG
             arch: amd64
             shared: 'ON'
             gameinput: 'ON'
-          - toolver: '14'
-            build_type: x64-Debug-MinGW
-            arch: amd64
-            shared: 'ON'
-            gameinput: 'OFF'
-          - toolver: '14'
-            build_type: x64-Release-MinGW
-            arch: amd64
-            shared: 'ON'
-            gameinput: 'OFF'
 
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -147,14 +122,7 @@ jobs:
           echo "VCPKG_INSTALLED_DIR=${{ github.workspace }}/build/vcpkg_installed" >> $env:GITHUB_ENV
           if ("${{ matrix.arch }}" -eq "amd64")
           {
-              if ("${{ matrix.build_type }}" -match "MinGW")
-              {
-                  echo "VCPKG_DEFAULT_TRIPLET=x64-mingw-static" >> $env:GITHUB_ENV
-              }
-              else
-              {
-                  echo "VCPKG_DEFAULT_TRIPLET=x64-windows" >> $env:GITHUB_ENV
-              }
+              echo "VCPKG_DEFAULT_TRIPLET=x64-windows" >> $env:GITHUB_ENV
           }
           elseif ("${{ matrix.arch }}" -eq "amd64_x86")
           {
