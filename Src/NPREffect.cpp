@@ -269,6 +269,16 @@ void NPREffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
         dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
     }
 
+    // Eye position.
+    if (dirtyFlags & EffectDirtyFlags::EyePosition)
+    {
+        const XMMATRIX viewInverse = XMMatrixInverse(nullptr, matrices.view);
+        constants.eyePosition = viewInverse.r[3];
+
+        dirtyFlags &= ~EffectDirtyFlags::EyePosition;
+        dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
+    }
+
     // Set shaders and constant buffers.
     ApplyShaders(deviceContext, GetCurrentShaderPermutation());
 }
@@ -311,7 +321,7 @@ void XM_CALLCONV NPREffect::SetView(FXMMATRIX value)
 {
     pImpl->matrices.view = value;
 
-    pImpl->dirtyFlags |= EffectDirtyFlags::WorldViewProj;
+    pImpl->dirtyFlags |= EffectDirtyFlags::WorldViewProj | EffectDirtyFlags::EyePosition;
 }
 
 
@@ -329,7 +339,7 @@ void XM_CALLCONV NPREffect::SetMatrices(FXMMATRIX world, CXMMATRIX view, CXMMATR
     pImpl->matrices.view = view;
     pImpl->matrices.projection = projection;
 
-    pImpl->dirtyFlags |= EffectDirtyFlags::WorldViewProj | EffectDirtyFlags::WorldInverseTranspose;
+    pImpl->dirtyFlags |= EffectDirtyFlags::WorldViewProj | EffectDirtyFlags::WorldInverseTranspose | EffectDirtyFlags::EyePosition;
 }
 
 
@@ -424,8 +434,10 @@ void NPREffect::SetSpecularPower(float value)
 
 void NPREffect::DisableSpecular()
 {
-    // Set w of specularColorAndSpecularPower to 0.
-    pImpl->constants.specularColorAndSpecularPower = XMVectorSetW(pImpl->constants.specularColorAndSpecularPower, 0.0f);
+    // Set specular color to black, power to 1
+    // Note: Don't use a power of 0 or the shader will generate strange highlights on non-specular materials
+
+    pImpl->constants.specularColorAndSpecularPower = g_XMIdentityR3;
 
     pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
 }

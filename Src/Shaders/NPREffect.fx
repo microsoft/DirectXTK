@@ -213,9 +213,9 @@ float4 PSGoochShading(PSInputPixelLightingTx pin) : SV_Target0
     // Specular highlight
     float3 viewDir = normalize(EyePosition - pin.PositionWS.xyz);
     float3 reflectDir = reflect(LightDirection, normal);
-    float spec = pow(max(0, dot(viewDir, reflectDir)), SpecularPower);
+    float specular = pow(max(0, dot(viewDir, reflectDir)), SpecularPower);
 
-    color += SpecularColor * spec;
+    color += SpecularColor * specular;
 
     return float4(color, pin.Diffuse.a);
 }
