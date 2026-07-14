@@ -58,5 +58,5 @@ jobs:
         working-directory: ${{ github.workspace }}/Tests
         run: >
           msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=${{ matrix.platform }}
-          /p:AppxPackage=false
+          /T:Build /p:AppxPackage=false
           DirectXTK_Tests_Windows10.sln
