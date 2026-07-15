@@ -10,7 +10,7 @@ Copyright (c) Microsoft Corporation.
 
 This package contains the "DirectX Tool Kit", a collection of helper classes for writing Direct3D 11 C++ code for Win32 desktop applications for Windows 8.1 or later, Xbox One, and Universal Windows Platform (UWP) apps for Windows 10 and Windows 11.
 
-This code is designed to build with Visual Studio 2022, Visual Studio 2026, clang for Windows v12 or later, or MinGW 12.2. Use of the Windows 10 May 2020 Update SDK ([19041](https://walbourn.github.io/windows-10-may-2020-update-sdk/)) or later is required for Visual Studio.
+This code is designed to build with Visual Studio 2022, Visual Studio 2026, clang for Windows v12 or later, or MinGW. Use of the Windows 10 May 2020 Update SDK ([19041](https://walbourn.github.io/windows-10-may-2020-update-sdk/)) or later is required for Visual Studio.
 
 These components are designed to work without requiring any content from the legacy DirectX SDK. For details, see [Where is the DirectX SDK?](https://aka.ms/dxsdk).
 
