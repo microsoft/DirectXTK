@@ -94,6 +94,8 @@ FOR SECURITY ADVISORIES, see [GitHub](https://github.com/microsoft/DirectXTK/sec
 
 For a full change history, see [CHANGELOG.md](https://github.com/microsoft/DirectXTK/blob/main/CHANGELOG.md).
 
+* The _directxtk_desktop_win10_ and _directxtk_uwp_ NuGet packages are deprecated. The best way to integrate the latest DirectX Tool Kit into your C++ project is using [vcpkg](https://github.com/microsoft/vcpkg/tree/master/ports/directxtk).
+
 * The CMake projects require 3.21 or later.
 
 * Starting with the March 2025 release, Windows 7 and Windows 8.0 support has been retired. For _DirectX ToolKit for Audio_ this means that `DirectXTKAudio_Desktop_*_Win7` has been removed, and `DirectXTKAudio_Desktop_*_Win8` has been integrated into the `DirectXTK_Desktop_*` vcxproj which uses XAudio 2.8 for Windows 8.1 compatibility.
@@ -166,6 +168,8 @@ Thanks to Roberto Sonnino for his help with the ``CMO``, DGSL rendering, and the
 
 Thanks to Pete Lewis and Justin Saunders for the normal-mapped and PBR shaders implementation.
 
-Thanks to Andrew Farrier and Scott Matloff for their on-going help with code reviews.
-
 Thanks to Imre Eilertsen for creating winget ports for the command-line tools.
+
+Thanks to Andrew Farrier, Jon Martin, and Scott Matloff for their help with code reviews.
+
+Thanks to Shawn Hargreaves and Nada Ouf for their continued support for this library.
