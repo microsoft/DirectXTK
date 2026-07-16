@@ -19,7 +19,9 @@ namespace
     {
         XMVECTOR lightDirectionAndCelBands;
         XMVECTOR diffuseColorAndAlpha;
-        XMVECTOR specularColorAndSpecularPower;
+        XMVECTOR specularColorAndSpecularThreshold;
+        XMVECTOR rimColorAndPower;
+        XMVECTOR extraSettings; // .x = SpecularSmoothing, .y = RimStrength, .z = RimStart, .w = RimEnd
         XMVECTOR goochCoolColorAndAlpha;
         XMVECTOR goochWarmColorAndBeta;
         XMVECTOR eyePosition;
@@ -47,7 +49,9 @@ namespace
     // Default values
     constexpr XMVECTORF32 s_defaultLightDir = { { { 0.f, -1.f, 0.f, 4.f } } };
     constexpr XMVECTORF32 s_defaultDiffuse = { { { 1.f, 1.f, 1.f, 1.f } } };
-    constexpr XMVECTORF32 s_defaultSpecular = { { { 1.f, 1.f, 1.f, 32.f } } };
+    constexpr XMVECTORF32 s_defaultSpecular = { { { 1.f, 1.f, 1.f, 0.95f } } };
+    constexpr XMVECTORF32 s_defaultRim = { { { 0.f, 0.f, 0.f, 4.f } } };
+    constexpr XMVECTORF32 s_defaultExtraSettings = { { { 0.004f, 0.75f, 0.2f, 0.6f } } };
     constexpr XMVECTORF32 s_defaultCool = { { { 0.f, 0.f, 0.55f, 0.25f } } };
     constexpr XMVECTORF32 s_defaultWarm = { { { 0.3f, 0.3f, 0.f, 0.25f } } };
 }
@@ -303,7 +307,9 @@ NPREffect::Impl::Impl(_In_ ID3D11Device* device)
 
     constants.lightDirectionAndCelBands = s_defaultLightDir;
     constants.diffuseColorAndAlpha = s_defaultDiffuse;
-    constants.specularColorAndSpecularPower = s_defaultSpecular;
+    constants.specularColorAndSpecularThreshold = s_defaultSpecular;
+    constants.rimColorAndPower = s_defaultRim;
+    constants.extraSettings = s_defaultExtraSettings;
     constants.goochCoolColorAndAlpha = s_defaultCool;
     constants.goochWarmColorAndBeta = s_defaultWarm;
     constants.eyePosition = g_XMZero;
@@ -519,18 +525,30 @@ void NPREffect::SetDiffuseColor(FXMVECTOR value)
 
 void NPREffect::SetSpecularColor(FXMVECTOR value)
 {
-    // Set xyz, preserve w (specular power).
-    pImpl->constants.specularColorAndSpecularPower = XMVectorSelect(pImpl->constants.specularColorAndSpecularPower, value, g_XMSelect1110);
+    // Set xyz, preserve w (specular threshold).
+    pImpl->constants.specularColorAndSpecularThreshold = XMVectorSelect(pImpl->constants.specularColorAndSpecularThreshold, value, g_XMSelect1110);
 
     pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
 }
 
 
-void NPREffect::SetSpecularPower(float value)
+void NPREffect::SetSpecularThreshold(float threshold, float smoothing)
 {
-    // TODO: specular power needs to be specular threshold!
-    // Set w of specularColorAndSpecularPower.
-    pImpl->constants.specularColorAndSpecularPower = XMVectorSetW(pImpl->constants.specularColorAndSpecularPower, value);
+    if (threshold < 0.f || threshold > 1.f)
+    {
+        throw std::invalid_argument("Specular threshold must be between 0 and 1");
+    }
+
+    if (smoothing < 0.f || smoothing > 1.f)
+    {
+        throw std::invalid_argument("Specular smoothing must be between 0 and 1");
+    }
+
+    // Set w of specularColorAndSpecularThreshold.
+    pImpl->constants.specularColorAndSpecularThreshold = XMVectorSetW(pImpl->constants.specularColorAndSpecularThreshold, threshold);
+
+    // Set x of extraSettings.
+    pImpl->constants.extraSettings = XMVectorSetX(pImpl->constants.extraSettings, smoothing);
 
     pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
 }
@@ -541,7 +559,62 @@ void NPREffect::DisableSpecular()
     // Set specular color to black, power to 1
     // Note: Don't use a power of 0 or the shader will generate strange highlights on non-specular materials
 
-    pImpl->constants.specularColorAndSpecularPower = g_XMIdentityR3;
+    pImpl->constants.specularColorAndSpecularThreshold = g_XMIdentityR3;
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
+}
+
+
+void NPREffect::SetRimLightingColor(FXMVECTOR value)
+{
+    // Set xyz, preserve w (rim power).
+    pImpl->constants.rimColorAndPower = XMVectorSelect(pImpl->constants.rimColorAndPower, value, g_XMSelect1110);
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
+}
+
+
+void NPREffect::SetRimLightingPower(float power)
+{
+    // Set w of rimColorAndPower.
+    pImpl->constants.rimColorAndPower = XMVectorSetW(pImpl->constants.rimColorAndPower, power);
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
+}
+
+
+void NPREffect::SetRimLightingIntensity(float strength)
+{
+    if (strength < 0.f || strength > 1.f)
+    {
+        throw std::invalid_argument("Rim lighting strength must be between 0 and 1");
+    }
+
+    // Set y of extraSettings.
+    pImpl->constants.extraSettings = XMVectorSetY(pImpl->constants.extraSettings, strength);
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
+}
+
+
+void NPREffect::SetRimLightingRange(float start, float end)
+{
+    if (start < 0.f || end > 1.f || start > end)
+    {
+        throw std::invalid_argument("Rim lighting start/end must be between 0 and 1");
+    }
+
+    // Set zw of extraSettings.
+    XMVECTORF32 range = { { { 0.f, 0.f, start, end } } };
+    pImpl->constants.extraSettings = XMVectorSelect(range, pImpl->constants.extraSettings, g_XMSelect1100);
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
+}
+
+
+void NPREffect::DisableRimLighting()
+{
+    pImpl->constants.rimColorAndPower = g_XMIdentityR3;
 
     pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
 }

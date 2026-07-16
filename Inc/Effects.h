@@ -915,8 +915,13 @@ namespace DirectX
             // Material settings.
             DIRECTX_TOOLKIT_API void XM_CALLCONV SetDiffuseColor(FXMVECTOR value);
             DIRECTX_TOOLKIT_API void XM_CALLCONV SetSpecularColor(FXMVECTOR value);
-            DIRECTX_TOOLKIT_API void __cdecl SetSpecularPower(float value);
+            DIRECTX_TOOLKIT_API void __cdecl SetSpecularThreshold(float threshold, float smoothing);
             DIRECTX_TOOLKIT_API void __cdecl DisableSpecular();
+            DIRECTX_TOOLKIT_API void XM_CALLCONV SetRimLightingColor(FXMVECTOR value);
+            DIRECTX_TOOLKIT_API void __cdecl SetRimLightingPower(float power);
+            DIRECTX_TOOLKIT_API void __cdecl SetRimLightingIntensity(float strength);
+            DIRECTX_TOOLKIT_API void __cdecl SetRimLightingRange(float start, float end);
+            DIRECTX_TOOLKIT_API void __cdecl DisableRimLighting();
             DIRECTX_TOOLKIT_API void __cdecl SetAlpha(float value);
             DIRECTX_TOOLKIT_API void XM_CALLCONV SetColorAndAlpha(FXMVECTOR value);
 
