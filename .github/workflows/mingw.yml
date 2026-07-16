@@ -37,8 +37,6 @@ permissions:
 
 jobs:
   build:
-    runs-on: windows-2022
-
     strategy:
       fail-fast: false
 
@@ -46,6 +44,9 @@ jobs:
         build_type: [x64-Debug-MinGW, x64-Release-MinGW]
         shared: ['OFF', 'ON']
         gameinput: ['OFF', 'ON']
+        os: [windows-2022, windows-2025]
+
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -104,4 +105,4 @@ jobs:
 
       - name: 'Build'
         working-directory: ${{ github.workspace }}
-        run: cmake --build out\build\${{ matrix.build_type }}
+        run: cmake --build out/build/${{ matrix.build_type }}
