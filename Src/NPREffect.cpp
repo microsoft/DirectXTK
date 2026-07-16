@@ -556,9 +556,7 @@ void NPREffect::SetSpecularThreshold(float threshold, float smoothing)
 
 void NPREffect::DisableSpecular()
 {
-    // Set specular color to black, power to 1
-    // Note: Don't use a power of 0 or the shader will generate strange highlights on non-specular materials
-
+    // Set specular color to black, threshold to 1
     pImpl->constants.specularColorAndSpecularThreshold = g_XMIdentityR3;
 
     pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
@@ -607,7 +605,7 @@ void NPREffect::SetMode(Mode mode)
 }
 
 
-// Cel shading settings.
+// Cel shading setting.
 void NPREffect::SetCelShaderBands(int bands)
 {
     if (bands < 1)

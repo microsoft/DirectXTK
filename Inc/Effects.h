@@ -933,7 +933,7 @@ namespace DirectX
             // Shader mode setting.
             DIRECTX_TOOLKIT_API void __cdecl SetMode(Mode mode);
 
-            // Cel shading settings.
+            // Cel shading setting.
             DIRECTX_TOOLKIT_API void __cdecl SetCelShaderBands(int bands);
 
             // Gooch shading settings.

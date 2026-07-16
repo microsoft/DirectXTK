@@ -1,13 +1,7 @@
-//--------------------------------------------------------------------------------------
-// File: NPREffect.fx
-//
-// Non-photorealistic rendering effects (cel shading and Gooch shading)
-//
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 //
 // https://go.microsoft.com/fwlink/?LinkId=248929
-//--------------------------------------------------------------------------------------
 
 
 Texture2D<float4> Texture : register(t0);
