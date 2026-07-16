@@ -565,61 +565,6 @@ void NPREffect::DisableSpecular()
 }
 
 
-void NPREffect::SetRimLightingColor(FXMVECTOR value)
-{
-    // Set xyz, preserve w (rim power).
-    pImpl->constants.rimColorAndPower = XMVectorSelect(pImpl->constants.rimColorAndPower, value, g_XMSelect1110);
-
-    pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
-}
-
-
-void NPREffect::SetRimLightingPower(float power)
-{
-    // Set w of rimColorAndPower.
-    pImpl->constants.rimColorAndPower = XMVectorSetW(pImpl->constants.rimColorAndPower, power);
-
-    pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
-}
-
-
-void NPREffect::SetRimLightingIntensity(float strength)
-{
-    if (strength < 0.f || strength > 1.f)
-    {
-        throw std::invalid_argument("Rim lighting strength must be between 0 and 1");
-    }
-
-    // Set y of extraSettings.
-    pImpl->constants.extraSettings = XMVectorSetY(pImpl->constants.extraSettings, strength);
-
-    pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
-}
-
-
-void NPREffect::SetRimLightingRange(float start, float end)
-{
-    if (start < 0.f || end > 1.f || start > end)
-    {
-        throw std::invalid_argument("Rim lighting start/end must be between 0 and 1");
-    }
-
-    // Set zw of extraSettings.
-    XMVECTORF32 range = { { { 0.f, 0.f, start, end } } };
-    pImpl->constants.extraSettings = XMVectorSelect(range, pImpl->constants.extraSettings, g_XMSelect1100);
-
-    pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
-}
-
-
-void NPREffect::DisableRimLighting()
-{
-    pImpl->constants.rimColorAndPower = g_XMIdentityR3;
-
-    pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
-}
-
-
 void NPREffect::SetAlpha(float value)
 {
     // Set w of diffuseColorAndAlpha.
@@ -693,6 +638,61 @@ void NPREffect::SetGoochWarmColor(FXMVECTOR value, float beta)
     pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
 }
 
+
+// Rim lighting settings.
+void NPREffect::SetRimLightingColor(FXMVECTOR value)
+{
+    // Set xyz, preserve w (rim power).
+    pImpl->constants.rimColorAndPower = XMVectorSelect(pImpl->constants.rimColorAndPower, value, g_XMSelect1110);
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
+}
+
+
+void NPREffect::SetRimLightingPower(float power)
+{
+    // Set w of rimColorAndPower.
+    pImpl->constants.rimColorAndPower = XMVectorSetW(pImpl->constants.rimColorAndPower, power);
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
+}
+
+
+void NPREffect::SetRimLightingIntensity(float strength)
+{
+    if (strength < 0.f || strength > 1.f)
+    {
+        throw std::invalid_argument("Rim lighting strength must be between 0 and 1");
+    }
+
+    // Set y of extraSettings.
+    pImpl->constants.extraSettings = XMVectorSetY(pImpl->constants.extraSettings, strength);
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
+}
+
+
+void NPREffect::SetRimLightingRange(float start, float end)
+{
+    if (start < 0.f || end > 1.f || start > end)
+    {
+        throw std::invalid_argument("Rim lighting start/end must be between 0 and 1");
+    }
+
+    // Set zw of extraSettings.
+    XMVECTORF32 range = { { { 0.f, 0.f, start, end } } };
+    pImpl->constants.extraSettings = XMVectorSelect(range, pImpl->constants.extraSettings, g_XMSelect1100);
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
+}
+
+
+void NPREffect::DisableRimLighting()
+{
+    pImpl->constants.rimColorAndPower = g_XMIdentityR3;
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
+}
 
 // Vertex color setting.
 void NPREffect::SetVertexColorEnabled(bool value)
