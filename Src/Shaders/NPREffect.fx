@@ -275,7 +275,7 @@ float4 PSCelShading(PSInputPixelLighting pin) : SV_Target0
     color += SpecularColor * specular;
 
     return float4(color, pin.Diffuse.a);
-    }
+}
 
 
 // Pixel shader: cel shading + texture.
@@ -308,7 +308,7 @@ float4 PSCelShadingTx(PSInputPixelLightingTx pin) : SV_Target0
     float specular = HardEdgeSpecular(NdotH);
     color += SpecularColor * specular;
 
-    return float4(color, pin.Diffuse.a);
+    return float4(color, pin.Diffuse.a * texColor.a);
 }
 
 
