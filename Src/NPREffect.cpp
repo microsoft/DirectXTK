@@ -665,6 +665,11 @@ void NPREffect::SetMode(Mode mode)
 // Cel shading settings.
 void NPREffect::SetCelShaderBands(int bands)
 {
+    if (bands < 1)
+    {
+        throw std::invalid_argument("Cel shading bands must be greater than 0");
+    }
+
     // Set w of lightDirectionAndCelBands.
     pImpl->constants.lightDirectionAndCelBands = XMVectorSetW(pImpl->constants.lightDirectionAndCelBands, static_cast<float>(bands));
 
