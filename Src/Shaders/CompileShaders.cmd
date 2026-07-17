@@ -226,31 +226,31 @@ call :CompileShaderSM4%1 DebugEffect ps PSRGBNormals
 call :CompileShaderSM4%1 DebugEffect ps PSRGBTangents
 call :CompileShaderSM4%1 DebugEffect ps PSRGBBiTangents
 
-call :CompileShaderSM4%1 NPREffect vs VSNPREffect
-call :CompileShaderSM4%1 NPREffect vs VSNPREffectBn
-call :CompileShaderSM4%1 NPREffect vs VSNPREffectVc
-call :CompileShaderSM4%1 NPREffect vs VSNPREffectVcBn
+call :CompileShader%1 NPREffect vs VSNPREffect
+call :CompileShader%1 NPREffect vs VSNPREffectBn
+call :CompileShader%1 NPREffect vs VSNPREffectVc
+call :CompileShader%1 NPREffect vs VSNPREffectVcBn
 
-call :CompileShaderSM4%1 NPREffect vs VSNPREffectInst
-call :CompileShaderSM4%1 NPREffect vs VSNPREffectBnInst
-call :CompileShaderSM4%1 NPREffect vs VSNPREffectVcInst
-call :CompileShaderSM4%1 NPREffect vs VSNPREffectVcBnInst
+call :CompileShader%1 NPREffect vs VSNPREffectInst
+call :CompileShader%1 NPREffect vs VSNPREffectBnInst
+call :CompileShader%1 NPREffect vs VSNPREffectVcInst
+call :CompileShader%1 NPREffect vs VSNPREffectVcBnInst
 
-call :CompileShaderSM4%1 NPREffect vs VSNPREffectTx
-call :CompileShaderSM4%1 NPREffect vs VSNPREffectBnTx
-call :CompileShaderSM4%1 NPREffect vs VSNPREffectVcTx
-call :CompileShaderSM4%1 NPREffect vs VSNPREffectVcBnTx
+call :CompileShader%1 NPREffect vs VSNPREffectTx
+call :CompileShader%1 NPREffect vs VSNPREffectBnTx
+call :CompileShader%1 NPREffect vs VSNPREffectVcTx
+call :CompileShader%1 NPREffect vs VSNPREffectVcBnTx
 
-call :CompileShaderSM4%1 NPREffect vs VSNPREffectInstTx
-call :CompileShaderSM4%1 NPREffect vs VSNPREffectBnInstTx
-call :CompileShaderSM4%1 NPREffect vs VSNPREffectVcInstTx
-call :CompileShaderSM4%1 NPREffect vs VSNPREffectVcBnInstTx
+call :CompileShader%1 NPREffect vs VSNPREffectInstTx
+call :CompileShader%1 NPREffect vs VSNPREffectBnInstTx
+call :CompileShader%1 NPREffect vs VSNPREffectVcInstTx
+call :CompileShader%1 NPREffect vs VSNPREffectVcBnInstTx
 
-call :CompileShaderSM4%1 NPREffect ps PSCelShading
-call :CompileShaderSM4%1 NPREffect ps PSCelShadingTx
+call :CompileShader%1 NPREffect ps PSCelShading
+call :CompileShader%1 NPREffect ps PSCelShadingTx
 
-call :CompileShaderSM4%1 NPREffect ps PSGoochShading
-call :CompileShaderSM4%1 NPREffect ps PSGoochShadingTx
+call :CompileShader%1 NPREffect ps PSGoochShading
+call :CompileShader%1 NPREffect ps PSGoochShadingTx
 
 call :CompileShader%1 SpriteEffect vs SpriteVertexShader
 call :CompileShader%1 SpriteEffect ps SpritePixelShader
