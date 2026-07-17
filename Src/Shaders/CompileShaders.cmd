@@ -252,6 +252,9 @@ call :CompileShader%1 NPREffect ps PSCelShadingTx
 call :CompileShader%1 NPREffect ps PSGoochShading
 call :CompileShader%1 NPREffect ps PSGoochShadingTx
 
+call :CompileShader%1 NPREffect ps PSMatCapShading
+call :CompileShader%1 NPREffect ps PSMatCapShadingTx
+
 call :CompileShader%1 SpriteEffect vs SpriteVertexShader
 call :CompileShader%1 SpriteEffect ps SpritePixelShader
 

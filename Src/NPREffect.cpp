@@ -39,10 +39,10 @@ namespace
         using ConstantBufferType = NPREffectConstants;
 
         static constexpr int VertexShaderCount = 16;
-        static constexpr int PixelShaderCount = 4;
-        static constexpr int ShaderPermutationCount = 32;
+        static constexpr int PixelShaderCount = 6;
+        static constexpr int ShaderPermutationCount = 48;
 
-        static constexpr int ModeCount = 2;
+        static constexpr int ModeCount = 3;
     };
 
 
@@ -74,6 +74,7 @@ public:
     bool textureEnabled;
     NPREffect::Mode nprMode;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> texture;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> matcap;
 
     int GetCurrentShaderPermutation() const noexcept;
 
@@ -112,8 +113,12 @@ namespace
 
 #include "XboxOneNPREffect_PSCelShading.inc"
 #include "XboxOneNPREffect_PSCelShadingTx.inc"
+
 #include "XboxOneNPREffect_PSGoochShading.inc"
 #include "XboxOneNPREffect_PSGoochShadingTx.inc"
+
+#include "XboxOneNPREffect_PSMatCapShading.inc"
+#include "XboxOneNPREffect_PSMatCapShadingTx.inc"
 #else
 #include "NPREffect_VSNPREffect.inc"
 #include "NPREffect_VSNPREffectInst.inc"
@@ -144,6 +149,9 @@ namespace
 
 #include "NPREffect_PSGoochShading.inc"
 #include "NPREffect_PSGoochShadingTx.inc"
+
+#include "NPREffect_PSMatCapShading.inc"
+#include "NPREffect_PSMatCapShadingTx.inc"
 #endif
 }
 
@@ -175,61 +183,79 @@ const int EffectBase<NPREffectTraits>::VertexShaderIndices[] =
 {
     0,      // cel shading
     0,      // gooch shading
+    0,      // matcap shading
 
     1,      // vertex color + cel shading
     1,      // vertex color + gooch shading
+    1,      // vertex color + matcap shading
 
     2,      // cel shading (biased vertex normal)
     2,      // gooch shading (biased vertex normal)
+    2,      // matcap shading (biased vertex normal)
 
     3,      // vertex color (biased vertex normal) + cel shading
     3,      // vertex color (biased vertex normal) + gooch shading
+    3,      // vertex color (biased vertex normal) + matcap shading
 
     4,      // instancing + cel shading
     4,      // instancing + gooch shading
+    4,      // instancing + matcap shading
 
     5,      // instancing + vertex color + cel shading
     5,      // instancing + vertex color + gooch shading
+    5,      // instancing + vertex color + matcap shading
 
     6,      // instancing (biased vertex normal) + cel shading
     6,      // instancing (biased vertex normal) + gooch shading
+    6,      // instancing (biased vertex normal) + matcap shading
 
     7,      // instancing + vertex color (biased vertex normal) + cel shading
     7,      // instancing + vertex color (biased vertex normal) + gooch shading
+    7,      // instancing + vertex color (biased vertex normal) + matcap shading
 
     8,      // cel shading + texture
     8,      // gooch shading + texture
+    8,      // matcap shading + texture
 
     9,      // vertex color + cel shading + texture
     9,      // vertex color + gooch shading + texture
+    9,      // vertex color + matcap shading + texture
 
     10,     // cel shading (biased vertex normal) + texture
     10,     // gooch shading (biased vertex normal) + texture
+    10,     // matcap shading (biased vertex normal) + texture
 
     11,     // vertex color (biased vertex normal) + cel shading + texture
     11,     // vertex color (biased vertex normal) + gooch shading + texture
+    11,     // vertex color (biased vertex normal) + matcap shading + texture
 
     12,     // instancing + cel shading + texture
     12,     // instancing + gooch shading + texture
+    12,     // instancing + matcap shading + texture
 
     13,     // instancing + vertex color + cel shading + texture
     13,     // instancing + vertex color + gooch shading + texture
+    13,     // instancing + vertex color + matcap shading + texture
 
     14,     // instancing (biased vertex normal) + cel shading + texture
     14,     // instancing (biased vertex normal) + gooch shading + texture
+    14,     // instancing (biased vertex normal) + matcap shading + texture
 
     15,     // instancing + vertex color (biased vertex normal) + cel shading + texture
     15,     // instancing + vertex color (biased vertex normal) + gooch shading + texture
+    15,     // instancing + vertex color (biased vertex normal) + matcap shading + texture
 };
 
 
 template<>
 const ShaderBytecode EffectBase<NPREffectTraits>::PixelShaderBytecode[] =
 {
-    { NPREffect_PSCelShading,     sizeof(NPREffect_PSCelShading)     },
-    { NPREffect_PSGoochShading,   sizeof(NPREffect_PSGoochShading)   },
-    { NPREffect_PSCelShadingTx,   sizeof(NPREffect_PSCelShadingTx)   },
-    { NPREffect_PSGoochShadingTx, sizeof(NPREffect_PSGoochShadingTx) },
+    { NPREffect_PSCelShading,      sizeof(NPREffect_PSCelShading)      },
+    { NPREffect_PSGoochShading,    sizeof(NPREffect_PSGoochShading)    },
+    { NPREffect_PSMatCapShading,   sizeof(NPREffect_PSMatCapShading)   },
+    { NPREffect_PSCelShadingTx,    sizeof(NPREffect_PSCelShadingTx)    },
+    { NPREffect_PSGoochShadingTx,  sizeof(NPREffect_PSGoochShadingTx)  },
+    { NPREffect_PSMatCapShadingTx, sizeof(NPREffect_PSMatCapShadingTx) },
 };
 
 
@@ -238,51 +264,67 @@ const int EffectBase<NPREffectTraits>::PixelShaderIndices[] =
 {
     0,      // cel shading
     1,      // gooch shading
+    2,      // matcap shading
 
     0,      // vertex color + cel shading
     1,      // vertex color + gooch shading
+    2,      // vertex color + matcap shading
 
     0,      // cel shading (biased vertex normal)
     1,      // gooch shading (biased vertex normal)
+    2,      // matcap shading (biased vertex normal)
 
     0,      // vertex color (biased vertex normal) + cel shading
     1,      // vertex color (biased vertex normal) + gooch shading
+    2,      // vertex color (biased vertex normal) + matcap shading
 
     0,      // instancing + cel shading
     1,      // instancing + gooch shading
+    2,      // instancing + matcap shading
 
     0,      // instancing + vertex color + cel shading
     1,      // instancing + vertex color + gooch shading
+    2,      // instancing + vertex color + matcap shading
 
     0,      // instancing (biased vertex normal) + cel shading
     1,      // instancing (biased vertex normal) + gooch shading
+    2,      // instancing (biased vertex normal) + matcap shading
 
     0,      // instancing + vertex color (biased vertex normal) + cel shading
     1,      // instancing + vertex color (biased vertex normal) + gooch shading
+    2,      // instancing + vertex color (biased vertex normal) + matcap shading
 
-    2,      // cel shading + texture
-    3,      // gooch shading + texture
+    3,      // cel shading + texture
+    4,      // gooch shading + texture
+    5,      // matcap shading + texture
 
-    2,      // vertex color + cel shading + texture
-    3,      // vertex color + gooch shading + texture
+    3,      // vertex color + cel shading + texture
+    4,      // vertex color + gooch shading + texture
+    5,      // vertex color + matcap shading + texture
 
-    2,      // cel shading (biased vertex normal) + texture
-    3,      // gooch shading (biased vertex normal) + texture
+    3,      // cel shading (biased vertex normal) + texture
+    4,      // gooch shading (biased vertex normal) + texture
+    5,      // matcap shading (biased vertex normal) + texture
 
-    2,      // vertex color (biased vertex normal) + cel shading + texture
-    3,      // vertex color (biased vertex normal) + gooch shading + texture
+    3,      // vertex color (biased vertex normal) + cel shading + texture
+    4,      // vertex color (biased vertex normal) + gooch shading + texture
+    5,      // vertex color (biased vertex normal) + matcap shading + texture
 
-    2,      // instancing + cel shading + texture
-    3,      // instancing + gooch shading + texture
+    3,      // instancing + cel shading + texture
+    4,      // instancing + gooch shading + texture
+    5,      // instancing + matcap shading + texture
 
-    2,      // instancing + vertex color + cel shading + texture
-    3,      // instancing + vertex color + gooch shading + texture
+    3,      // instancing + vertex color + cel shading + texture
+    4,      // instancing + vertex color + gooch shading + texture
+    5,      // instancing + vertex color + matcap shading + texture
 
-    2,      // instancing (biased vertex normal) + cel shading + texture
-    3,      // instancing (biased vertex normal) + gooch shading + texture
+    3,      // instancing (biased vertex normal) + cel shading + texture
+    4,      // instancing (biased vertex normal) + gooch shading + texture
+    5,      // instancing (biased vertex normal) + matcap shading + texture
 
-    2,      // instancing + vertex color (biased vertex normal) + cel shading + texture
-    3,      // instancing + vertex color (biased vertex normal) + gooch shading + texture
+    3,      // instancing + vertex color (biased vertex normal) + cel shading + texture
+    4,      // instancing + vertex color (biased vertex normal) + gooch shading + texture
+    5,      // instancing + vertex color (biased vertex normal) + matcap shading + texture
 };
 #pragma endregion
 
@@ -323,25 +365,25 @@ int NPREffect::Impl::GetCurrentShaderPermutation() const noexcept
     // Support vertex coloring?
     if (vertexColorEnabled)
     {
-        permutation += 2;
+        permutation += 3;
     }
 
     if (biasedVertexNormals)
     {
         // Compressed normals need to be scaled and biased in the vertex shader.
-        permutation += 4;
+        permutation += 6;
     }
 
     if (instancing)
     {
         // Vertex shader needs to use vertex matrix transform.
-        permutation += 8;
+        permutation += 12;
     }
 
     // Use shaders without texture coordinates?
     if (textureEnabled)
     {
-        permutation += 16;
+        permutation += 24;
     }
 
     return permutation;
@@ -385,10 +427,28 @@ void NPREffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
     ApplyShaders(deviceContext, GetCurrentShaderPermutation());
 
     // Set texture.
-    if (textureEnabled)
+    switch (nprMode)
     {
-        ID3D11ShaderResourceView* srv = texture.Get();
-        deviceContext->PSSetShaderResources(0, 1, &srv);
+    case Mode_MatCap:
+        if (textureEnabled)
+        {
+            ID3D11ShaderResourceView* srvs[] = { texture.Get(), matcap.Get() };
+            deviceContext->PSSetShaderResources(0, 2, srvs);
+        }
+        else
+        {
+            ID3D11ShaderResourceView* srv = matcap.Get();
+            deviceContext->PSSetShaderResources(0, 1, &srv);
+        }
+        break;
+
+    default:
+        if (textureEnabled)
+        {
+            ID3D11ShaderResourceView* srv = texture.Get();
+            deviceContext->PSSetShaderResources(0, 1, &srv);
+        }
+        break;
     }
 }
 
@@ -634,6 +694,13 @@ void NPREffect::SetGoochWarmColor(FXMVECTOR value, float beta)
     pImpl->constants.goochWarmColorAndBeta = XMVectorSetW(value, beta);
 
     pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
+}
+
+
+// MatCap shading setting.
+void NPREffect::SetMatCap(_In_opt_ ID3D11ShaderResourceView* value)
+{
+    pImpl->matcap = value;
 }
 
 

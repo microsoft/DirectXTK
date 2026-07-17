@@ -5,6 +5,7 @@
 
 
 Texture2D<float4> Texture : register(t0);
+Texture2D<float4> Texture2 : register(t1);
 SamplerState Sampler : register(s0);
 
 
@@ -372,6 +373,47 @@ float4 PSGoochShadingTx(PSInputPixelLightingTx pin) : SV_Target0
     // Specular highlight
     float specular = HardEdgeSpecular(RdotV);
     color += SpecularColor * specular;
+
+    return float4(color, pin.Diffuse.a * texColor.a);
+}
+
+
+//--- MatCap shading ---
+
+// Pixel shader: MatCap shading.
+float4 PSMatCapShading(PSInputPixelLighting pin) : SV_Target0
+{
+    float3 normal = normalize(pin.NormalWS);
+    float3 viewDir = normalize(EyePosition - pin.PositionWS.xyz);
+    float3 reflectDir = reflect(viewDir, normal);
+
+    float2 uv = reflectDir.xy * 0.5 + 0.5;
+
+    // Sample matcap texture
+    float4 matcap = Texture.Sample(Sampler, uv);
+
+    float3 color = pin.Diffuse.rgb * matcap.rgb;
+
+    return float4(color, pin.Diffuse.a);
+}
+
+
+// Pixel shader: MatCap shading + texture.
+float4 PSMatCapShadingTx(PSInputPixelLightingTx pin) : SV_Target0
+{
+    float3 normal = normalize(pin.NormalWS);
+    float3 viewDir = normalize(EyePosition - pin.PositionWS.xyz);
+    float3 reflectDir = reflect(viewDir, normal);
+
+    float2 uv = reflectDir.xy * 0.5 + 0.5;
+
+    // Sample base texture
+    float4 texColor = Texture.Sample(Sampler, pin.TexCoord);
+
+    // Sample matcap texture
+    float4 matcap = Texture2.Sample(Sampler, uv);
+
+    float3 color = pin.Diffuse.rgb * texColor.rgb * matcap.rgb;
 
     return float4(color, pin.Diffuse.a * texColor.a);
 }
