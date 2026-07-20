@@ -578,13 +578,14 @@ namespace DirectX
             static constexpr int MaxTextures = 8;
 
         protected:
-            // Private implementation.
+            // Internal implementation.
             class Impl;
 
             std::unique_ptr<Impl> pImpl;
 
             DIRECTX_TOOLKIT_API DGSLEffect(_In_ ID3D11Device* device, _In_opt_ ID3D11PixelShader* pixelShader, bool skinningEnabled);
 
+        private:
             // Unsupported interface methods.
             DIRECTX_TOOLKIT_API void __cdecl SetPerPixelLighting(bool value) override;
         };
@@ -680,13 +681,14 @@ namespace DirectX
             DIRECTX_TOOLKIT_API void __cdecl SetInstancingEnabled(bool value);
 
         protected:
-            // Private implementation.
+            // Internal implementation.
             class Impl;
 
             std::unique_ptr<Impl> pImpl;
 
             DIRECTX_TOOLKIT_API NormalMapEffect(_In_ ID3D11Device* device, bool skinningEnabled);
 
+        private:
             // Unsupported interface methods.
             DIRECTX_TOOLKIT_API void __cdecl SetLightingEnabled(bool value) override;
             DIRECTX_TOOLKIT_API void __cdecl SetPerPixelLighting(bool value) override;
@@ -786,13 +788,14 @@ namespace DirectX
             DIRECTX_TOOLKIT_API void __cdecl SetRenderTargetSizeInPixels(int width, int height);
 
         protected:
-            // Private implementation.
+            // Internal implementation.
             class Impl;
 
             std::unique_ptr<Impl> pImpl;
 
             DIRECTX_TOOLKIT_API PBREffect(_In_ ID3D11Device* device, bool skinningEnabled);
 
+        private:
             // Unsupported interface methods.
             DIRECTX_TOOLKIT_API void __cdecl SetLightingEnabled(bool value) override;
             DIRECTX_TOOLKIT_API void __cdecl SetPerPixelLighting(bool value) override;
@@ -890,7 +893,9 @@ namespace DirectX
                 Mode_MatCap,        // Material Capture shading
             };
 
-            DIRECTX_TOOLKIT_API explicit NPREffect(_In_ ID3D11Device* device);
+            DIRECTX_TOOLKIT_API inline explicit NPREffect(_In_ ID3D11Device* device) :
+                NPREffect(device, false)
+            {}
 
             DIRECTX_TOOLKIT_API NPREffect(NPREffect&&) noexcept;
             DIRECTX_TOOLKIT_API NPREffect& operator= (NPREffect&&) noexcept;
@@ -960,12 +965,15 @@ namespace DirectX
             // Instancing settings.
             DIRECTX_TOOLKIT_API void __cdecl SetInstancingEnabled(bool value);
 
-        private:
-            // Private implementation.
+        protected:
+            // Internal implementation.
             class Impl;
 
             std::unique_ptr<Impl> pImpl;
 
+            DIRECTX_TOOLKIT_API NPREffect(_In_ ID3D11Device* device, bool skinningEnabled);
+
+        private:
             // Unsupported interface methods.
             DIRECTX_TOOLKIT_API void __cdecl SetLightingEnabled(bool value) override;
             DIRECTX_TOOLKIT_API void __cdecl SetPerPixelLighting(bool value) override;
@@ -973,6 +981,27 @@ namespace DirectX
             DIRECTX_TOOLKIT_API void __cdecl SetLightEnabled(int whichLight, bool value) override;
             DIRECTX_TOOLKIT_API void XM_CALLCONV SetLightDiffuseColor(int whichLight, FXMVECTOR value) override;
             DIRECTX_TOOLKIT_API void XM_CALLCONV SetLightSpecularColor(int whichLight, FXMVECTOR value) override;
+        };
+
+        class DIRECTX_TOOLKIT_API SkinnedNPREffect : public NPREffect, public IEffectSkinning
+        {
+        public:
+            explicit SkinnedNPREffect(_In_ ID3D11Device* device) :
+                NPREffect(device, true)
+            {}
+
+            SkinnedNPREffect(SkinnedNPREffect&&) = default;
+            SkinnedNPREffect& operator= (SkinnedNPREffect&&) = default;
+
+            SkinnedNPREffect(SkinnedNPREffect const&) = delete;
+            SkinnedNPREffect& operator= (SkinnedNPREffect const&) = delete;
+
+            ~SkinnedNPREffect() override;
+
+            // Animation settings.
+            void __cdecl SetWeightsPerVertex(int value) override;
+            void __cdecl SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, size_t count) override;
+            void __cdecl ResetBoneTransforms() override;
         };
 
         //------------------------------------------------------------------------------

@@ -10,6 +10,14 @@
 #include "pch.h"
 #include "EffectCommon.h"
 
+namespace DirectX
+{
+    namespace EffectDirtyFlags
+    {
+        constexpr int ConstantBufferBones = 0x100000;
+    }
+}
+
 using namespace DirectX;
 
 namespace
@@ -32,15 +40,21 @@ namespace
 
     static_assert((sizeof(NPREffectConstants) % 16) == 0, "CB size not padded correctly");
 
+    XM_ALIGNED_STRUCT(16) BoneConstants
+    {
+        XMVECTOR Bones[SkinnedNPREffect::MaxBones][3];
+    };
+
+    static_assert((sizeof(BoneConstants) % 16) == 0, "CB size not padded correctly");
 
     // Traits type describes our characteristics to the EffectBase template.
     struct NPREffectTraits
     {
         using ConstantBufferType = NPREffectConstants;
 
-        static constexpr int VertexShaderCount = 16;
+        static constexpr int VertexShaderCount = 18;
         static constexpr int PixelShaderCount = 6;
-        static constexpr int ShaderPermutationCount = 48;
+        static constexpr int ShaderPermutationCount = 54;
 
         static constexpr int ModeCount = 3;
     };
@@ -68,10 +82,14 @@ public:
     Impl(Impl&&) = default;
     Impl& operator=(Impl&&) = default;
 
+    void Initialize(_In_ ID3D11Device* device, bool enableSkinning);
+
     bool vertexColorEnabled;
     bool biasedVertexNormals;
     bool instancing;
     bool textureEnabled;
+    int weightsPerVertex;
+
     NPREffect::Mode nprMode;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> texture;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> matcap;
@@ -79,6 +97,11 @@ public:
     int GetCurrentShaderPermutation() const noexcept;
 
     void Apply(_In_ ID3D11DeviceContext* deviceContext);
+
+    BoneConstants boneConstants;
+
+private:
+    ConstantBuffer<BoneConstants> mBones;
 };
 
 
@@ -110,6 +133,9 @@ namespace
 
 #include "XboxOneNPREffect_VSNPREffectVcBnTx.inc"
 #include "XboxOneNPREffect_VSNPREffectVcBnInstTx.inc"
+
+#include "XboxOneNPREffect_VSSkinnedNPREffectTx.inc"
+#include "XboxOneNPREffect_VSSkinnedNPREffectTxBn.inc"
 
 #include "XboxOneNPREffect_PSCelShading.inc"
 #include "XboxOneNPREffect_PSCelShadingTx.inc"
@@ -144,6 +170,9 @@ namespace
 #include "NPREffect_VSNPREffectVcBnTx.inc"
 #include "NPREffect_VSNPREffectVcBnInstTx.inc"
 
+#include "NPREffect_VSSkinnedNPREffectTx.inc"
+#include "NPREffect_VSSkinnedNPREffectTxBn.inc"
+
 #include "NPREffect_PSCelShading.inc"
 #include "NPREffect_PSCelShadingTx.inc"
 
@@ -159,22 +188,24 @@ namespace
 template<>
 const ShaderBytecode EffectBase<NPREffectTraits>::VertexShaderBytecode[] =
 {
-    { NPREffect_VSNPREffect,           sizeof(NPREffect_VSNPREffect)           },
-    { NPREffect_VSNPREffectVc,         sizeof(NPREffect_VSNPREffectVc)         },
-    { NPREffect_VSNPREffectBn,         sizeof(NPREffect_VSNPREffectBn)         },
-    { NPREffect_VSNPREffectVcBn,       sizeof(NPREffect_VSNPREffectVcBn)       },
-    { NPREffect_VSNPREffectInst,       sizeof(NPREffect_VSNPREffectInst)       },
-    { NPREffect_VSNPREffectVcInst,     sizeof(NPREffect_VSNPREffectVcInst)     },
-    { NPREffect_VSNPREffectBnInst,     sizeof(NPREffect_VSNPREffectBnInst)     },
-    { NPREffect_VSNPREffectVcBnInst,   sizeof(NPREffect_VSNPREffectVcBnInst)   },
-    { NPREffect_VSNPREffectTx,         sizeof(NPREffect_VSNPREffectTx)         },
-    { NPREffect_VSNPREffectVcTx,       sizeof(NPREffect_VSNPREffectVcTx)       },
-    { NPREffect_VSNPREffectBnTx,       sizeof(NPREffect_VSNPREffectBnTx)       },
-    { NPREffect_VSNPREffectVcBnTx,     sizeof(NPREffect_VSNPREffectVcBnTx)     },
-    { NPREffect_VSNPREffectInstTx,     sizeof(NPREffect_VSNPREffectInstTx)     },
-    { NPREffect_VSNPREffectVcInstTx,   sizeof(NPREffect_VSNPREffectVcInstTx)   },
-    { NPREffect_VSNPREffectBnInstTx,   sizeof(NPREffect_VSNPREffectBnInstTx)   },
-    { NPREffect_VSNPREffectVcBnInstTx, sizeof(NPREffect_VSNPREffectVcBnInstTx) },
+    { NPREffect_VSNPREffect,            sizeof(NPREffect_VSNPREffect)            },
+    { NPREffect_VSNPREffectVc,          sizeof(NPREffect_VSNPREffectVc)          },
+    { NPREffect_VSNPREffectBn,          sizeof(NPREffect_VSNPREffectBn)          },
+    { NPREffect_VSNPREffectVcBn,        sizeof(NPREffect_VSNPREffectVcBn)        },
+    { NPREffect_VSNPREffectInst,        sizeof(NPREffect_VSNPREffectInst)        },
+    { NPREffect_VSNPREffectVcInst,      sizeof(NPREffect_VSNPREffectVcInst)      },
+    { NPREffect_VSNPREffectBnInst,      sizeof(NPREffect_VSNPREffectBnInst)      },
+    { NPREffect_VSNPREffectVcBnInst,    sizeof(NPREffect_VSNPREffectVcBnInst)    },
+    { NPREffect_VSNPREffectTx,          sizeof(NPREffect_VSNPREffectTx)          },
+    { NPREffect_VSNPREffectVcTx,        sizeof(NPREffect_VSNPREffectVcTx)        },
+    { NPREffect_VSNPREffectBnTx,        sizeof(NPREffect_VSNPREffectBnTx)        },
+    { NPREffect_VSNPREffectVcBnTx,      sizeof(NPREffect_VSNPREffectVcBnTx)      },
+    { NPREffect_VSNPREffectInstTx,      sizeof(NPREffect_VSNPREffectInstTx)      },
+    { NPREffect_VSNPREffectVcInstTx,    sizeof(NPREffect_VSNPREffectVcInstTx)    },
+    { NPREffect_VSNPREffectBnInstTx,    sizeof(NPREffect_VSNPREffectBnInstTx)    },
+    { NPREffect_VSNPREffectVcBnInstTx,  sizeof(NPREffect_VSNPREffectVcBnInstTx)  },
+    { NPREffect_VSSkinnedNPREffectTx,   sizeof(NPREffect_VSSkinnedNPREffectTx)   },
+    { NPREffect_VSSkinnedNPREffectTxBn, sizeof(NPREffect_VSSkinnedNPREffectTxBn) },
 };
 
 
@@ -244,6 +275,14 @@ const int EffectBase<NPREffectTraits>::VertexShaderIndices[] =
     15,     // instancing + vertex color (biased vertex normal) + cel shading + texture
     15,     // instancing + vertex color (biased vertex normal) + gooch shading + texture
     15,     // instancing + vertex color (biased vertex normal) + matcap shading + texture
+
+    16,     // skinning + cel shading
+    16,     // skinning + gooch shading
+    16,     // skinning + matcap shading
+
+    17,     // skinning (biased vertex normal) + cel shading
+    17,     // skinning (biased vertex normal) + gooch shading
+    17,     // skinning (biased vertex normal) + matcap shading
 };
 
 
@@ -325,6 +364,14 @@ const int EffectBase<NPREffectTraits>::PixelShaderIndices[] =
     3,      // instancing + vertex color (biased vertex normal) + cel shading + texture
     4,      // instancing + vertex color (biased vertex normal) + gooch shading + texture
     5,      // instancing + vertex color (biased vertex normal) + matcap shading + texture
+
+    0,      // skinning + cel shading
+    1,      // skinning + gooch shading
+    2,      // skinning + matcap shading
+
+    3,      // skinning (biased vertex normal) + cel shading
+    4,      // skinning (biased vertex normal) + gooch shading
+    5,      // skinning (biased vertex normal) + matcap shading
 };
 #pragma endregion
 
@@ -340,13 +387,17 @@ NPREffect::Impl::Impl(_In_ ID3D11Device* device)
     biasedVertexNormals(false),
     instancing(false),
     textureEnabled(false),
+    weightsPerVertex(0),
     nprMode(NPREffect::Mode_Cel)
 {
     static_assert(static_cast<int>(std::size(EffectBase<NPREffectTraits>::VertexShaderIndices)) == NPREffectTraits::ShaderPermutationCount, "array/max mismatch");
     static_assert(static_cast<int>(std::size(EffectBase<NPREffectTraits>::VertexShaderBytecode)) == NPREffectTraits::VertexShaderCount, "array/max mismatch");
     static_assert(static_cast<int>(std::size(EffectBase<NPREffectTraits>::PixelShaderBytecode)) == NPREffectTraits::PixelShaderCount, "array/max mismatch");
     static_assert(static_cast<int>(std::size(EffectBase<NPREffectTraits>::PixelShaderIndices)) == NPREffectTraits::ShaderPermutationCount, "array/max mismatch");
+}
 
+void NPREffect::Impl::Initialize(_In_ ID3D11Device* device, bool enableSkinning)
+{
     constants.lightDirectionAndCelBands = s_defaultLightDir;
     constants.diffuseColorAndAlpha = s_defaultDiffuse;
     constants.specularColorAndSpecularThreshold = s_defaultSpecular;
@@ -355,12 +406,39 @@ NPREffect::Impl::Impl(_In_ ID3D11Device* device)
     constants.goochCoolColorAndAlpha = s_defaultCool;
     constants.goochWarmColorAndBeta = s_defaultWarm;
     constants.eyePosition = g_XMZero;
-}
 
+    if (enableSkinning)
+    {
+        weightsPerVertex = 4;
+
+        mBones.Create(device);
+
+        for (size_t j = 0; j < SkinnedNPREffect::MaxBones; ++j)
+        {
+            boneConstants.Bones[j][0] = g_XMIdentityR0;
+            boneConstants.Bones[j][1] = g_XMIdentityR1;
+            boneConstants.Bones[j][2] = g_XMIdentityR2;
+        }
+    }
+}
 
 int NPREffect::Impl::GetCurrentShaderPermutation() const noexcept
 {
     int permutation = static_cast<int>(nprMode);
+
+    if (weightsPerVertex > 0)
+    {
+        if (biasedVertexNormals)
+        {
+            // Compressed normals need to be scaled and biased in the vertex shader.
+            permutation += 3;
+        }
+
+        // Vertex skinning does not support vertex colors or instancing, always includes a texture.
+        permutation += 48;
+
+        return permutation;
+    }
 
     // Support vertex coloring?
     if (vertexColorEnabled)
@@ -403,6 +481,28 @@ void NPREffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
         constants.worldViewProj,
         constants.eyePosition);
 
+    if (weightsPerVertex > 0)
+    {
+    #if defined(_XBOX_ONE) && defined(_TITLE)
+        void* grfxMemoryBone;
+        mBones.SetData(deviceContext, boneConstants, &grfxMemoryBone);
+
+        ComPtr<ID3D11DeviceContextX> deviceContextX;
+        ThrowIfFailed(deviceContext->QueryInterface(IID_GRAPHICS_PPV_ARGS(deviceContextX.GetAddressOf())));
+
+        deviceContextX->VSSetPlacementConstantBuffer(1, mBones.GetBuffer(), grfxMemoryBone);
+    #else
+        if (dirtyFlags & EffectDirtyFlags::ConstantBufferBones)
+        {
+            mBones.SetData(deviceContext, boneConstants);
+            dirtyFlags &= ~EffectDirtyFlags::ConstantBufferBones;
+        }
+
+        ID3D11Buffer* buffer = mBones.GetBuffer();
+        deviceContext->VSSetConstantBuffers(1, 1, &buffer);
+    #endif
+    }
+
     // Set texture.
     switch (nprMode)
     {
@@ -434,10 +534,11 @@ void NPREffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
 
 
 // Public constructor.
-NPREffect::NPREffect(_In_ ID3D11Device* device)
+NPREffect::NPREffect(_In_ ID3D11Device* device, bool skinningEnabled)
     : pImpl(std::make_unique<Impl>(device))
-{}
-
+{
+    pImpl->Initialize(device, skinningEnabled);
+}
 
 NPREffect::NPREffect(NPREffect&&) noexcept = default;
 NPREffect& NPREffect::operator= (NPREffect&&) noexcept = default;
@@ -623,6 +724,11 @@ void NPREffect::SetColorAndAlpha(FXMVECTOR value)
 // Texture settings.
 void NPREffect::SetTextureEnabled(bool value)
 {
+    if (!value && (pImpl->weightsPerVertex > 0))
+    {
+        throw std::invalid_argument("Texturing is alaways enabled for SkinnedNPREffect");
+    }
+
     pImpl->textureEnabled = value;
 }
 
@@ -742,6 +848,11 @@ void NPREffect::DisableRimLighting()
 // Vertex color setting.
 void NPREffect::SetVertexColorEnabled(bool value)
 {
+    if (value && (pImpl->weightsPerVertex > 0))
+    {
+        throw std::invalid_argument("Per-vertex color is not supported for SkinnedNPREffect");
+    }
+
     pImpl->vertexColorEnabled = value;
 }
 
@@ -756,5 +867,71 @@ void NPREffect::SetBiasedVertexNormals(bool value)
 // Instancing settings.
 void NPREffect::SetInstancingEnabled(bool value)
 {
+    if (value && (pImpl->weightsPerVertex > 0))
+    {
+        throw std::invalid_argument("Instancing is not supported for SkinnedNPREffect");
+    }
+
     pImpl->instancing = value;
+}
+
+
+//--------------------------------------------------------------------------------------
+// SkinnedNPREffect
+//--------------------------------------------------------------------------------------
+
+SkinnedNPREffect::~SkinnedNPREffect()
+{}
+
+// Animation settings.
+void SkinnedNPREffect::SetWeightsPerVertex(int value)
+{
+    if ((value != 1) &&
+        (value != 2) &&
+        (value != 4))
+    {
+        throw std::invalid_argument("WeightsPerVertex must be 1, 2, or 4");
+    }
+
+    pImpl->weightsPerVertex = value;
+}
+
+
+void SkinnedNPREffect::SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, size_t count)
+{
+    if (count > MaxBones)
+        throw std::invalid_argument("count parameter exceeds MaxBones");
+
+    auto boneConstant = pImpl->boneConstants.Bones;
+
+    for (size_t i = 0; i < count; i++)
+    {
+    #if DIRECTX_MATH_VERSION >= 313
+        XMStoreFloat3x4A(reinterpret_cast<XMFLOAT3X4A*>(&boneConstant[i]), value[i]);
+    #else
+            // Xbox One XDK has an older version of DirectXMath
+        XMMATRIX boneMatrix = XMMatrixTranspose(value[i]);
+
+        boneConstant[i][0] = boneMatrix.r[0];
+        boneConstant[i][1] = boneMatrix.r[1];
+        boneConstant[i][2] = boneMatrix.r[2];
+    #endif
+    }
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBufferBones;
+}
+
+
+void SkinnedNPREffect::ResetBoneTransforms()
+{
+    auto boneConstant = pImpl->boneConstants.Bones;
+
+    for (size_t i = 0; i < MaxBones; ++i)
+    {
+        boneConstant[i][0] = g_XMIdentityR0;
+        boneConstant[i][1] = g_XMIdentityR1;
+        boneConstant[i][2] = g_XMIdentityR2;
+    }
+
+    pImpl->dirtyFlags |= EffectDirtyFlags::ConstantBufferBones;
 }

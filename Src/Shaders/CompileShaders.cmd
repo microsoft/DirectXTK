@@ -246,6 +246,9 @@ call :CompileShader%1 NPREffect vs VSNPREffectBnInstTx
 call :CompileShader%1 NPREffect vs VSNPREffectVcInstTx
 call :CompileShader%1 NPREffect vs VSNPREffectVcBnInstTx
 
+call :CompileShader%1 NPREffect vs VSSkinnedNPREffectTx
+call :CompileShader%1 NPREffect vs VSSkinnedNPREffectTxBn
+
 call :CompileShader%1 NPREffect ps PSCelShading
 call :CompileShader%1 NPREffect ps PSCelShadingTx
 
