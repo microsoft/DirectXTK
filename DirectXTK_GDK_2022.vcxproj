@@ -228,6 +228,7 @@
     <ClCompile Include="Src\CommonStates.cpp" />
     <ClCompile Include="Src\DDSTextureLoader.cpp" />
     <ClCompile Include="Src\DebugEffect.cpp" />
+    <ClCompile Include="Src\NPREffect.cpp" />
     <ClCompile Include="Src\DGSLEffect.cpp" />
     <ClCompile Include="Src\DGSLEffectFactory.cpp" />
     <ClCompile Include="Src\DirectXHelpers.cpp" />
@@ -291,6 +292,7 @@
     <None Include="Src\Shaders\ToneMap.fx" />
     <None Include="Src\Shaders\PBREffect.fx" />
     <None Include="Src\Shaders\DebugEffect.fx" />
+    <None Include="Src\Shaders\NPREffect.fx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

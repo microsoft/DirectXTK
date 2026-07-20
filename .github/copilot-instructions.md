@@ -319,6 +319,43 @@ When reviewing documentation, do the following:
 - Read the documentation on the wiki located in [this git repository](https://github.com/microsoft/DirectXTK.wiki.git).
 - Report any specific gaps in the documentation compared to the public interface.
 
+## Code Change Rules
+
+- Make precise, surgical changes that **fully** address the request. Don't modify unrelated code, but ensure changes are complete and correct.
+- Don't fix pre-existing issues unrelated to your task. However, if you discover bugs directly caused by or tightly coupled to the code you're changing, fix those too.
+- Update documentation if it is directly related to the changes you are making.
+- Always validate that your changes don't break existing behavior.
+
+### Linting, Building, Testing
+
+- Only run linters, builds and tests that already exist. Do not add new linting, building or testing tools unless necessary for the task.
+- Use the smallest targeted test, build, or lint command that covers the changed behavior. When related targeted selectors use the same runner, include them in one invocation; escalate to full-suite or baseline runs only when targeted validation shows they are needed.
+- Documentation changes do not need to be linted, built or tested unless there are specific tests for documentation.
+
+### Using Ecosystem Tools
+
+- Prefer ecosystem tools (package managers, scaffolding, refactoring tools, linters) over manual changes.
+- Install packages only when changing dependencies or after a missing-dependency failure.
+
+### Code Commenting Style
+
+- Only comment code that needs a bit of clarification. Do not comment otherwise.
+
 ## Release Process
 
 The release process is documented in the [release skill](.github/skills/release/SKILL.md). Invoke the `release` skill for step-by-step guidance when performing a release.
+
+## CoPilot Skills
+
+The project includes published CoPilot skills for developers:
+
+- **Release-Process**: Guide for performing the DirectX Tool Kit release process. Invoked when asked to help with releasing a new version, publishing packages, or updating ports. See [Release Process skill](.github/skills/release/SKILL.md) for details.
+- **directxtk-usage**: Provides usage guidance for the DirectX Tool Kit for DX11 library. Located in the `skills/directxtk-usage/` directory.
+- **directxtk-tutorial**: Provides an interactive tutorial which can create a project, add the toolkit, and implement features in a step-by-step fashion. Located in the `skills/directxtk-tutorial` directory.
+
+To use these skills in the Copilot CLI:
+
+```bash
+/skills list
+/skills search directxtk
+```

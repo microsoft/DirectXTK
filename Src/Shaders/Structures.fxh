@@ -60,6 +60,21 @@ struct VSInputNmTxVc
     float4 Color    : COLOR;
 };
 
+struct VSInputNmInst
+{
+    float4 Position    : SV_Position;
+    float3 Normal      : NORMAL;
+    float4x3 Transform : InstMatrix;
+};
+
+struct VSInputNmVcInst
+{
+    float4 Position    : SV_Position;
+    float3 Normal      : NORMAL;
+    float4 Color       : COLOR;
+    float4x3 Transform : InstMatrix;
+};
+
 struct VSInputNmTxInst
 {
     float4 Position    : SV_Position;

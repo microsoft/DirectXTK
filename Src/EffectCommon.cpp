@@ -51,6 +51,54 @@ void EffectMatrices::SetConstants(int& dirtyFlags, XMMATRIX& worldViewProjConsta
 }
 
 
+// Lazily recomputes the combined world+view+projection matrix, inverse, eyePosition, etc.
+// This version is used for effects that do not use the EffectLights helper.
+_Use_decl_annotations_
+void EffectMatrices::SetConstants(
+    int& dirtyFlags,
+    XMMATRIX& worldConstant,
+    XMVECTOR worldInverseTransposeConstant[3],
+    XMMATRIX& worldViewProjConstant,
+    XMVECTOR& eyePositionConstant)
+{
+    // Combined world+view+projection matrix.
+    if (dirtyFlags & EffectDirtyFlags::WorldViewProj)
+    {
+        worldView = XMMatrixMultiply(world, view);
+
+        worldViewProjConstant = XMMatrixTranspose(XMMatrixMultiply(worldView, projection));
+
+        dirtyFlags &= ~EffectDirtyFlags::WorldViewProj;
+        dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
+    }
+
+    // World inverse transpose matrix.
+    if (dirtyFlags & EffectDirtyFlags::WorldInverseTranspose)
+    {
+        worldConstant = XMMatrixTranspose(world);
+
+        const XMMATRIX worldInverse = XMMatrixInverse(nullptr, world);
+
+        worldInverseTransposeConstant[0] = worldInverse.r[0];
+        worldInverseTransposeConstant[1] = worldInverse.r[1];
+        worldInverseTransposeConstant[2] = worldInverse.r[2];
+
+        dirtyFlags &= ~EffectDirtyFlags::WorldInverseTranspose;
+        dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
+    }
+
+    // Eye position.
+    if (dirtyFlags & EffectDirtyFlags::EyePosition)
+    {
+        const XMMATRIX viewInverse = XMMatrixInverse(nullptr, view);
+        eyePositionConstant = viewInverse.r[3];
+
+        dirtyFlags &= ~EffectDirtyFlags::EyePosition;
+        dirtyFlags |= EffectDirtyFlags::ConstantBuffer;
+    }
+}
+
+
 // Constructor initializes default fog settings.
 EffectFog::EffectFog() noexcept :
     enabled(false),
@@ -156,7 +204,12 @@ EffectLights::EffectLights() noexcept :
 #endif
 
 // Initializes constant buffer fields to match the current lighting state.
-_Use_decl_annotations_ void EffectLights::InitializeConstants(XMVECTOR& specularColorAndPowerConstant, XMVECTOR* lightDirectionConstant, XMVECTOR* lightDiffuseConstant, XMVECTOR* lightSpecularConstant) const
+_Use_decl_annotations_
+void EffectLights::InitializeConstants(
+    XMVECTOR& specularColorAndPowerConstant,
+    XMVECTOR* lightDirectionConstant,
+    XMVECTOR* lightDiffuseConstant,
+    XMVECTOR* lightSpecularConstant) const
 {
     static const XMVECTORF32 defaultSpecular = { { { 1, 1, 1, 16 } } };
     static const XMVECTORF32 defaultLightDirection = { { { 0, -1, 0, 0 } } };
@@ -178,7 +231,16 @@ _Use_decl_annotations_ void EffectLights::InitializeConstants(XMVECTOR& specular
 
 
 // Lazily recomputes derived parameter values used by shader lighting calculations.
-_Use_decl_annotations_ void EffectLights::SetConstants(int& dirtyFlags, EffectMatrices const& matrices, XMMATRIX& worldConstant, XMVECTOR worldInverseTransposeConstant[3], XMVECTOR& eyePositionConstant, XMVECTOR& diffuseColorConstant, XMVECTOR& emissiveColorConstant, bool lightingEnabled)
+_Use_decl_annotations_
+void EffectLights::SetConstants(
+    int& dirtyFlags,
+    EffectMatrices const& matrices,
+    XMMATRIX& worldConstant,
+    XMVECTOR worldInverseTransposeConstant[3],
+    XMVECTOR& eyePositionConstant,
+    XMVECTOR& diffuseColorConstant,
+    XMVECTOR& emissiveColorConstant,
+    bool lightingEnabled)
 {
     if (lightingEnabled)
     {
@@ -262,7 +324,12 @@ _Use_decl_annotations_ void EffectLights::SetConstants(int& dirtyFlags, EffectMa
 #endif
 
 // Helper for turning one of the directional lights on or off.
-_Use_decl_annotations_ int EffectLights::SetLightEnabled(int whichLight, bool value, XMVECTOR* lightDiffuseConstant, XMVECTOR* lightSpecularConstant)
+_Use_decl_annotations_
+int EffectLights::SetLightEnabled(
+    int whichLight,
+    bool value,
+    XMVECTOR* lightDiffuseConstant,
+    XMVECTOR* lightSpecularConstant)
 {
     ValidateLightIndex(whichLight);
 
