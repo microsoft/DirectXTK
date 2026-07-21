@@ -365,9 +365,9 @@ const int EffectBase<NPREffectTraits>::PixelShaderIndices[] =
     4,      // instancing + vertex color (biased vertex normal) + gooch shading + texture
     5,      // instancing + vertex color (biased vertex normal) + matcap shading + texture
 
-    0,      // skinning + cel shading
-    1,      // skinning + gooch shading
-    2,      // skinning + matcap shading
+    3,      // skinning + cel shading
+    4,      // skinning + gooch shading
+    5,      // skinning + matcap shading
 
     3,      // skinning (biased vertex normal) + cel shading
     4,      // skinning (biased vertex normal) + gooch shading
@@ -409,6 +409,7 @@ void NPREffect::Impl::Initialize(_In_ ID3D11Device* device, bool enableSkinning)
 
     if (enableSkinning)
     {
+        textureEnabled = true;
         weightsPerVertex = 4;
 
         mBones.Create(device);
