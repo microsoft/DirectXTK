@@ -297,7 +297,9 @@ if(WIN32 AND BUILD_SHARED_LIBS)
   target_compile_definitions(${PROJECT_NAME} INTERFACE DIRECTX_TOOLKIT_IMPORT)
 
   if(XBOX_CONSOLE_TARGET MATCHES "durango")
-    target_link_libraries(${PROJECT_NAME} PRIVATE kernelx.lib combase.lib d3d12_x.lib xi.lib)
+    target_link_libraries(${PROJECT_NAME} PRIVATE kernelx.lib combase.lib d3d11_x.lib xi.lib)
+  else()
+    target_link_libraries(${PROJECT_NAME} PRIVATE d3d11.lib dxguid.lib)
   endif()
 
   if(MINGW AND BUILD_XINPUT)
