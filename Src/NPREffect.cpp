@@ -510,7 +510,7 @@ void NPREffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
     case Mode_MatCap:
         if (textureEnabled)
         {
-            ID3D11ShaderResourceView* srvs[] = { texture.Get(), matcap.Get() };
+            ID3D11ShaderResourceView* srvs[] = { (texture) ? texture.Get() : GetDefaultTexture(), matcap.Get() };
             deviceContext->PSSetShaderResources(0, 2, srvs);
         }
         else
@@ -523,7 +523,7 @@ void NPREffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
     default:
         if (textureEnabled)
         {
-            ID3D11ShaderResourceView* srv = texture.Get();
+            ID3D11ShaderResourceView* srv = (texture) ? texture.Get() : GetDefaultTexture();
             deviceContext->PSSetShaderResources(0, 1, &srv);
         }
         break;

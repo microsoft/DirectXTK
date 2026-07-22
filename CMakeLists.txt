@@ -120,6 +120,7 @@ set(LIBRARY_SOURCES
     Src/DebugEffect.cpp
     Src/DGSLEffect.cpp
     Src/NPREffect.cpp
+    Src/NPREffectFactory.cpp
     Src/DGSLEffectFactory.cpp
     Src/DirectXHelpers.cpp
     Src/DualPostProcess.cpp

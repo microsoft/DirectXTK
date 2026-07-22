@@ -116,14 +116,15 @@ public:
         _Outptr_ ID3D11ShaderResourceView** textureView);
 
     void ReleaseCache();
-    void SetSharing(bool enabled) noexcept { mSharing = enabled; }
-    void EnableForceSRGB(bool forceSRGB) noexcept { mForceSRGB = forceSRGB; }
 
     static SharedResourcePool<ID3D11Device*, Impl> instancePool;
 
     wchar_t mPath[MAX_PATH];
 
     ComPtr<ID3D11Device> mDevice;
+
+    bool mSharing;
+    bool mForceSRGB;
 
 private:
     using EffectCache = std::map< std::wstring, std::shared_ptr<IEffect> >;
@@ -132,9 +133,6 @@ private:
     EffectCache  mEffectCache;
     EffectCache  mEffectCacheSkinning;
     TextureCache mTextureCache;
-
-    bool mSharing;
-    bool mForceSRGB;
 
     std::mutex mutex;
 };
@@ -341,12 +339,12 @@ void PBREffectFactory::ReleaseCache()
 
 void PBREffectFactory::SetSharing(bool enabled) noexcept
 {
-    pImpl->SetSharing(enabled);
+    pImpl->mSharing = enabled;
 }
 
 void PBREffectFactory::EnableForceSRGB(bool forceSRGB) noexcept
 {
-    pImpl->EnableForceSRGB(forceSRGB);
+    pImpl->mForceSRGB = forceSRGB;
 }
 
 void PBREffectFactory::SetDirectory(_In_opt_z_ const wchar_t* path) noexcept

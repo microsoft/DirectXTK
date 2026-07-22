@@ -1156,6 +1156,55 @@ namespace DirectX
         };
 
 
+        // Factory for Non-Photorealistic Rendering (NPR)
+        class NPREffectFactory : public IEffectFactory
+        {
+        public:
+            DIRECTX_TOOLKIT_API explicit NPREffectFactory(_In_ ID3D11Device* device);
+
+            DIRECTX_TOOLKIT_API NPREffectFactory(NPREffectFactory&&) noexcept;
+            DIRECTX_TOOLKIT_API NPREffectFactory& operator= (NPREffectFactory&&) noexcept;
+
+            NPREffectFactory(NPREffectFactory const&) = delete;
+            NPREffectFactory& operator= (NPREffectFactory const&) = delete;
+
+            DIRECTX_TOOLKIT_API ~NPREffectFactory() override;
+
+            // IEffectFactory methods.
+            DIRECTX_TOOLKIT_API std::shared_ptr<IEffect> __cdecl CreateEffect(
+                _In_ const EffectInfo& info,
+                _In_opt_ ID3D11DeviceContext* deviceContext) override;
+            DIRECTX_TOOLKIT_API void __cdecl CreateTexture(
+                _In_z_ const wchar_t* name,
+                _In_opt_ ID3D11DeviceContext* deviceContext,
+                _Outptr_ ID3D11ShaderResourceView** textureView) override;
+
+            // Settings.
+            DIRECTX_TOOLKIT_API void __cdecl ReleaseCache();
+
+            DIRECTX_TOOLKIT_API void __cdecl SetSharing(bool enabled) noexcept;
+
+            DIRECTX_TOOLKIT_API void __cdecl EnableForceSRGB(bool forceSRGB) noexcept;
+
+            DIRECTX_TOOLKIT_API void __cdecl SetDirectory(_In_opt_z_ const wchar_t* path) noexcept;
+
+            DIRECTX_TOOLKIT_API void __cdecl SetMode(NPREffect::Mode mode) noexcept;
+
+            DIRECTX_TOOLKIT_API void __cdecl SetDefaultMatCap(_In_opt_ ID3D11ShaderResourceView* textureView) noexcept;
+
+            DIRECTX_TOOLKIT_API void __cdecl SetEmissiveAsMatCap(bool value) noexcept;
+
+            // Properties.
+            DIRECTX_TOOLKIT_API ID3D11Device* GetDevice() const noexcept;
+
+        private:
+            // Private implementation.
+            class Impl;
+
+            std::shared_ptr<Impl> pImpl;
+        };
+
+
         // Factory for sharing Visual Studio Shader Designer (DGSL) shaders and texture resources
         class DGSLEffectFactory : public IEffectFactory
         {

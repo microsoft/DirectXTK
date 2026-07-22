@@ -365,5 +365,8 @@
     <ClCompile Include="Src\DirectXHelpers.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="Src\NPREffectFactory.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
