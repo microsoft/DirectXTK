@@ -8,11 +8,11 @@
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
   </Folder>
-  <Project Path="DirectXTK_Desktop_2026.vcxproj">
+  <Project Path="DirectXTK_Desktop_2026.vcxproj" Id="e0b52ae7-e160-4d32-bf3f-910b785e5a8e">
     <Platform Solution="*|Mixed Platforms" Project="Win32" />
   </Project>
-  <Project Path="MakeSpriteFont/MakeSpriteFont.csproj" />
-  <Project Path="XWBTool/XWBTool_Desktop_2026.vcxproj">
+  <Project Path="MakeSpriteFont/MakeSpriteFont.csproj" Id="7329b02d-c504-482a-a156-181d48ce493c" />
+  <Project Path="XWBTool/XWBTool_Desktop_2026.vcxproj" Id="c7ab4186-54b2-4244-a533-77494763ea1d">
     <Platform Solution="*|Mixed Platforms" Project="Win32" />
   </Project>
 </Solution>

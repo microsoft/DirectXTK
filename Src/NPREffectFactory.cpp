@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------------------
-// File: EffectFactory.cpp
+// File: NPREffectFactory.cpp
 //
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
@@ -21,8 +21,10 @@ using Microsoft::WRL::ComPtr;
 namespace
 {
     template<typename T>
-    void SetMaterialProperties(_In_ T* effect, const EffectFactory::EffectInfo& info)
+    void SetMaterialProperties(_In_ T* effect, const NPREffectFactory::EffectInfo& info, NPREffect::Mode mode)
     {
+        effect->SetMode(mode);
+
         effect->EnableDefaultLighting();
 
         effect->SetAlpha(info.alpha);
@@ -36,17 +38,10 @@ namespace
         {
             color = XMLoadFloat3(&info.specularColor);
             effect->SetSpecularColor(color);
-            effect->SetSpecularPower(info.specularPower);
         }
         else
         {
             effect->DisableSpecular();
-        }
-
-        if (info.emissiveColor.x != 0 || info.emissiveColor.y != 0 || info.emissiveColor.z != 0)
-        {
-            color = XMLoadFloat3(&info.emissiveColor);
-            effect->SetEmissiveColor(color);
         }
 
         if (info.biasedVertexNormals)
@@ -56,25 +51,21 @@ namespace
     }
 }
 
-// Internal EffectFactory implementation class. Only one of these helpers is allocated
-// per D3D device, even if there are multiple public facing EffectFactory instances.
-class EffectFactory::Impl
+// Internal NPREffectFactory implementation class. Only one of these helpers is allocated
+// per D3D device, even if there are multiple public facing NPREffectFactory instances.
+class NPREffectFactory::Impl
 {
 public:
     explicit Impl(_In_ ID3D11Device* device)
         : mPath{},
+        mMode(NPREffect::Mode_Cel),
         mDevice(device),
         mSharing(true),
-        mUseNormalMapEffect(true),
-        mForceSRGB(false)
+        mForceSRGB(false),
+        mUseEmissiveForMatCap(true)
     {
         if (!device)
             throw std::invalid_argument("Direct3D device is null");
-
-        if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
-        {
-            mUseNormalMapEffect = false;
-        }
     }
 
     Impl(const Impl&) = delete;
@@ -83,7 +74,7 @@ public:
     Impl(Impl&&) = delete;
     Impl& operator=(Impl&&) = delete;
 
-    std::shared_ptr<IEffect> CreateEffect(_In_ IEffectFactory* factory, _In_ const IEffectFactory::EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext);
+    std::shared_ptr<IEffect> CreateEffect(_In_ NPREffectFactory* factory, _In_ const EffectFactory::EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext);
     void CreateTexture(_In_z_ const wchar_t* texture, _In_opt_ ID3D11DeviceContext* deviceContext, _Outptr_ ID3D11ShaderResourceView** textureView);
 
     void ReleaseCache();
@@ -92,11 +83,14 @@ public:
 
     wchar_t mPath[MAX_PATH];
 
+    NPREffect::Mode mMode;
+
+    ComPtr<ID3D11ShaderResourceView> mMatCap;
     ComPtr<ID3D11Device> mDevice;
 
     bool mSharing;
-    bool mUseNormalMapEffect;
     bool mForceSRGB;
+    bool mUseEmissiveForMatCap;
 
 private:
     using EffectCache = std::map< std::wstring, std::shared_ptr<IEffect> >;
@@ -105,8 +99,6 @@ private:
     EffectCache  mEffectCache;
     EffectCache  mEffectCacheSkinning;
     EffectCache  mEffectCacheDualTexture;
-    EffectCache  mEffectNormalMap;
-    EffectCache  mEffectNormalMapSkinned;
     TextureCache mTextureCache;
 
     std::mutex mutex;
@@ -114,100 +106,57 @@ private:
 
 
 // Global instance pool.
-SharedResourcePool<ID3D11Device*, EffectFactory::Impl> EffectFactory::Impl::instancePool;
+SharedResourcePool<ID3D11Device*, NPREffectFactory::Impl> NPREffectFactory::Impl::instancePool;
 
 
 _Use_decl_annotations_
-std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* factory, const IEffectFactory::EffectInfo& info, ID3D11DeviceContext* deviceContext)
+std::shared_ptr<IEffect> NPREffectFactory::Impl::CreateEffect(NPREffectFactory* factory, const EffectFactory::EffectInfo& info, ID3D11DeviceContext* deviceContext)
 {
     if (info.enableSkinning)
     {
-        if (info.enableNormalMaps && mUseNormalMapEffect)
+        // SkinnedNPREffect
+        if (mSharing && info.name && *info.name)
         {
-            // SkinnedNormalMapEffect
-            if (mSharing && info.name && *info.name)
+            auto it = mEffectCacheSkinning.find(info.name);
+            if (mSharing && it != mEffectCacheSkinning.end())
             {
-                auto it = mEffectNormalMapSkinned.find(info.name);
-                if (mSharing && it != mEffectNormalMapSkinned.end())
-                {
-                    return it->second;
-                }
+                return it->second;
             }
-
-            auto effect = std::make_shared<SkinnedNormalMapEffect>(mDevice.Get());
-
-            SetMaterialProperties(effect.get(), info);
-
-            if (info.diffuseTexture && *info.diffuseTexture)
-            {
-                ComPtr<ID3D11ShaderResourceView> srv;
-
-                factory->CreateTexture(info.diffuseTexture, deviceContext, srv.GetAddressOf());
-
-                effect->SetTexture(srv.Get());
-            }
-
-            if (info.specularTexture && *info.specularTexture)
-            {
-                ComPtr<ID3D11ShaderResourceView> srv;
-
-                factory->CreateTexture(info.specularTexture, deviceContext, srv.GetAddressOf());
-
-                effect->SetSpecularTexture(srv.Get());
-            }
-
-            if (info.normalTexture && *info.normalTexture)
-            {
-                ComPtr<ID3D11ShaderResourceView> srv;
-
-                factory->CreateTexture(info.normalTexture, deviceContext, srv.GetAddressOf());
-
-                effect->SetNormalTexture(srv.Get());
-            }
-
-            if (mSharing && info.name && *info.name)
-            {
-                std::lock_guard<std::mutex> lock(mutex);
-                EffectCache::value_type v(info.name, effect);
-                mEffectNormalMapSkinned.insert(v);
-            }
-
-            return std::move(effect);
         }
-        else
+
+        auto effect = std::make_shared<SkinnedNPREffect>(mDevice.Get());
+
+        SetMaterialProperties(effect.get(), info, mMode);
+
+        if (info.diffuseTexture && *info.diffuseTexture)
         {
-            // SkinnedEffect
-            if (mSharing && info.name && *info.name)
-            {
-                auto it = mEffectCacheSkinning.find(info.name);
-                if (mSharing && it != mEffectCacheSkinning.end())
-                {
-                    return it->second;
-                }
-            }
+            ComPtr<ID3D11ShaderResourceView> srv;
+            factory->CreateTexture(info.diffuseTexture, deviceContext, srv.GetAddressOf());
+            effect->SetTexture(srv.Get());
+        }
 
-            auto effect = std::make_shared<SkinnedEffect>(mDevice.Get());
-
-            SetMaterialProperties(effect.get(), info);
-
-            if (info.diffuseTexture && *info.diffuseTexture)
+        if (mMode == NPREffect::Mode_MatCap)
+        {
+            if (mUseEmissiveForMatCap && info.emissiveTexture && *info.emissiveTexture)
             {
                 ComPtr<ID3D11ShaderResourceView> srv;
-
-                factory->CreateTexture(info.diffuseTexture, deviceContext, srv.GetAddressOf());
-
-                effect->SetTexture(srv.Get());
+                factory->CreateTexture(info.emissiveTexture, deviceContext, srv.GetAddressOf());
+                effect->SetMatCap(srv.Get());
             }
-
-            if (mSharing && info.name && *info.name)
+            else
             {
-                std::lock_guard<std::mutex> lock(mutex);
-                EffectCache::value_type v(info.name, effect);
-                mEffectCacheSkinning.insert(v);
+                effect->SetMatCap(mMatCap.Get());
             }
-
-            return std::move(effect);
         }
+
+        if (mSharing && info.name && *info.name)
+        {
+            std::lock_guard<std::mutex> lock(mutex);
+            EffectCache::value_type v(info.name, effect);
+            mEffectCacheSkinning.insert(v);
+        }
+
+        return std::move(effect);
     }
     else if (info.enableDualTexture)
     {
@@ -271,66 +220,9 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
 
         return std::move(effect);
     }
-    else if (info.enableNormalMaps && mUseNormalMapEffect)
-    {
-        // NormalMapEffect
-        if (mSharing && info.name && *info.name)
-        {
-            auto it = mEffectNormalMap.find(info.name);
-            if (mSharing && it != mEffectNormalMap.end())
-            {
-                return it->second;
-            }
-        }
-
-        auto effect = std::make_shared<NormalMapEffect>(mDevice.Get());
-
-        SetMaterialProperties(effect.get(), info);
-
-        if (info.perVertexColor)
-        {
-            effect->SetVertexColorEnabled(true);
-        }
-
-        if (info.diffuseTexture && *info.diffuseTexture)
-        {
-            ComPtr<ID3D11ShaderResourceView> srv;
-
-            factory->CreateTexture(info.diffuseTexture, deviceContext, srv.GetAddressOf());
-
-            effect->SetTexture(srv.Get());
-        }
-
-        if (info.specularTexture && *info.specularTexture)
-        {
-            ComPtr<ID3D11ShaderResourceView> srv;
-
-            factory->CreateTexture(info.specularTexture, deviceContext, srv.GetAddressOf());
-
-            effect->SetSpecularTexture(srv.Get());
-        }
-
-        if (info.normalTexture && *info.normalTexture)
-        {
-            ComPtr<ID3D11ShaderResourceView> srv;
-
-            factory->CreateTexture(info.normalTexture, deviceContext, srv.GetAddressOf());
-
-            effect->SetNormalTexture(srv.Get());
-        }
-
-        if (mSharing && info.name && *info.name)
-        {
-            std::lock_guard<std::mutex> lock(mutex);
-            EffectCache::value_type v(info.name, effect);
-            mEffectNormalMap.insert(v);
-        }
-
-        return std::move(effect);
-    }
     else
     {
-        // BasicEffect
+        // NPREffect
         if (mSharing && info.name && *info.name)
         {
             auto it = mEffectCache.find(info.name);
@@ -340,11 +232,9 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
             }
         }
 
-        auto effect = std::make_shared<BasicEffect>(mDevice.Get());
+        auto effect = std::make_shared<NPREffect>(mDevice.Get());
 
-        effect->SetLightingEnabled(true);
-
-        SetMaterialProperties(effect.get(), info);
+        SetMaterialProperties(effect.get(), info, mMode);
 
         if (info.perVertexColor)
         {
@@ -361,6 +251,12 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
             effect->SetTextureEnabled(true);
         }
 
+        if (mMode == NPREffect::Mode_MatCap)
+        {
+            // TODO: Use emissiveTexture or specularTexture for matcap?
+            effect->SetMatCap(mMatCap.Get());
+        }
+
         if (mSharing && info.name && *info.name)
         {
             std::lock_guard<std::mutex> lock(mutex);
@@ -373,7 +269,7 @@ std::shared_ptr<IEffect> EffectFactory::Impl::CreateEffect(IEffectFactory* facto
 }
 
 _Use_decl_annotations_
-void EffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView)
+void NPREffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView)
 {
     if (!name || !textureView)
         throw std::invalid_argument("name and textureView parameters can't be null");
@@ -403,8 +299,8 @@ void EffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext
             wcscpy_s(fullName, name);
             if (!GetFileAttributesExW(fullName, GetFileExInfoStandard, &fileAttr))
             {
-                DebugTrace("ERROR: EffectFactory could not find texture file '%ls'\n", name);
-                throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "EffectFactory::CreateTexture");
+                DebugTrace("ERROR: NPREffectFactory could not find texture file '%ls'\n", name);
+                throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "NPREffectFactory::CreateTexture");
             }
         }
 
@@ -422,7 +318,7 @@ void EffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext
             {
                 DebugTrace("ERROR: CreateDDSTextureFromFile failed (%08X) for '%ls'\n",
                     static_cast<unsigned int>(hr), fullName);
-                throw std::runtime_error("EffectFactory::CreateDDSTextureFromFile");
+                throw std::runtime_error("NPREffectFactory::CreateDDSTextureFromFile");
             }
         }
     #if !defined(_XBOX_ONE) || !defined(_TITLE)
@@ -437,7 +333,7 @@ void EffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext
             {
                 DebugTrace("ERROR: CreateWICTextureFromFile failed (%08X) for '%ls'\n",
                     static_cast<unsigned int>(hr), fullName);
-                throw std::runtime_error("EffectFactory::CreateWICTextureFromFile");
+                throw std::runtime_error("NPREffectFactory::CreateWICTextureFromFile");
             }
         }
     #endif
@@ -451,7 +347,7 @@ void EffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext
             {
                 DebugTrace("ERROR: CreateWICTextureFromFile failed (%08X) for '%ls'\n",
                     static_cast<unsigned int>(hr), fullName);
-                throw std::runtime_error("EffectFactory::CreateWICTextureFromFile");
+                throw std::runtime_error("NPREffectFactory::CreateWICTextureFromFile");
             }
         }
 
@@ -464,66 +360,59 @@ void EffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext
     }
 }
 
-void EffectFactory::Impl::ReleaseCache()
+void NPREffectFactory::Impl::ReleaseCache()
 {
     std::lock_guard<std::mutex> lock(mutex);
     mEffectCache.clear();
     mEffectCacheSkinning.clear();
     mEffectCacheDualTexture.clear();
-    mEffectNormalMap.clear();
-    mEffectNormalMapSkinned.clear();
     mTextureCache.clear();
 }
 
 
 
 //--------------------------------------------------------------------------------------
-// EffectFactory
+// NPREffectFactory
 //--------------------------------------------------------------------------------------
 
-EffectFactory::EffectFactory(_In_ ID3D11Device* device)
+NPREffectFactory::NPREffectFactory(_In_ ID3D11Device* device)
     : pImpl(Impl::instancePool.DemandCreate(device))
 {}
 
 
-EffectFactory::EffectFactory(EffectFactory&&) noexcept = default;
-EffectFactory& EffectFactory::operator= (EffectFactory&&) noexcept = default;
-EffectFactory::~EffectFactory() = default;
+NPREffectFactory::NPREffectFactory(NPREffectFactory&&) noexcept = default;
+NPREffectFactory& NPREffectFactory::operator= (NPREffectFactory&&) noexcept = default;
+NPREffectFactory::~NPREffectFactory() = default;
 
 
 _Use_decl_annotations_
-std::shared_ptr<IEffect> EffectFactory::CreateEffect(const EffectInfo& info, ID3D11DeviceContext* deviceContext)
+std::shared_ptr<IEffect> NPREffectFactory::CreateEffect(const EffectInfo& info, ID3D11DeviceContext* deviceContext)
 {
     return pImpl->CreateEffect(this, info, deviceContext);
 }
 
 _Use_decl_annotations_
-void EffectFactory::CreateTexture(const wchar_t* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView)
+void NPREffectFactory::CreateTexture(const wchar_t* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView)
 {
     return pImpl->CreateTexture(name, deviceContext, textureView);
 }
 
-void EffectFactory::ReleaseCache()
+void NPREffectFactory::ReleaseCache()
 {
     pImpl->ReleaseCache();
 }
 
-void EffectFactory::SetSharing(bool enabled) noexcept
+void NPREffectFactory::SetSharing(bool enabled) noexcept
 {
     pImpl->mSharing = enabled;
 }
 
-void EffectFactory::EnableNormalMapEffect(bool enabled) noexcept
-{
-    pImpl->mUseNormalMapEffect = enabled;
-}
-
-void EffectFactory::EnableForceSRGB(bool forceSRGB) noexcept
+void NPREffectFactory::EnableForceSRGB(bool forceSRGB) noexcept
 {
     pImpl->mForceSRGB = forceSRGB;
 }
 
-void EffectFactory::SetDirectory(_In_opt_z_ const wchar_t* path) noexcept
+void NPREffectFactory::SetDirectory(_In_opt_z_ const wchar_t* path) noexcept
 {
     if (path && *path != 0)
     {
@@ -543,7 +432,24 @@ void EffectFactory::SetDirectory(_In_opt_z_ const wchar_t* path) noexcept
         *pImpl->mPath = 0;
 }
 
-ID3D11Device* EffectFactory::GetDevice() const noexcept
+void NPREffectFactory::SetMode(NPREffect::Mode mode) noexcept
+{
+    pImpl->mMode = mode;
+}
+
+void NPREffectFactory::SetDefaultMatCap(_In_opt_ ID3D11ShaderResourceView* textureView) noexcept
+{
+    pImpl->mMatCap = textureView;
+}
+
+
+void NPREffectFactory::SetEmissiveAsMatCap(bool value) noexcept
+{
+    pImpl->mUseEmissiveForMatCap = value;
+}
+
+
+ID3D11Device* NPREffectFactory::GetDevice() const noexcept
 {
     return pImpl->mDevice.Get();
 }
