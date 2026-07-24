@@ -123,14 +123,12 @@ namespace
 #include "EnvironmentMapEffect_VSEnvMapOneLight.inc"
 #include "EnvironmentMapEffect_VSEnvMapOneLightFresnel.inc"
 #include "EnvironmentMapEffect_VSEnvMapPixelLighting.inc"
-#include "EnvironmentMapEffect_VSEnvMapPixelLightingSM4.inc"
 
 #include "EnvironmentMapEffect_VSEnvMapBn.inc"
 #include "EnvironmentMapEffect_VSEnvMapFresnelBn.inc"
 #include "EnvironmentMapEffect_VSEnvMapOneLightBn.inc"
 #include "EnvironmentMapEffect_VSEnvMapOneLightFresnelBn.inc"
 #include "EnvironmentMapEffect_VSEnvMapPixelLightingBn.inc"
-#include "EnvironmentMapEffect_VSEnvMapPixelLightingBnSM4.inc"
 
 #include "EnvironmentMapEffect_PSEnvMap.inc"
 #include "EnvironmentMapEffect_PSEnvMapNoFog.inc"
@@ -168,14 +166,6 @@ const ShaderBytecode EffectBase<EnvironmentMapEffectTraits>::VertexShaderBytecod
     { EnvironmentMapEffect_VSEnvMapOneLightBn,         sizeof(EnvironmentMapEffect_VSEnvMapOneLightBn)         },
     { EnvironmentMapEffect_VSEnvMapOneLightFresnelBn,  sizeof(EnvironmentMapEffect_VSEnvMapOneLightFresnelBn)  },
     { EnvironmentMapEffect_VSEnvMapPixelLightingBn,    sizeof(EnvironmentMapEffect_VSEnvMapPixelLightingBn)    },
-
-#if defined(_XBOX_ONE) && defined(_TITLE)
-    { EnvironmentMapEffect_VSEnvMapPixelLighting,      sizeof(EnvironmentMapEffect_VSEnvMapPixelLighting)      },
-    { EnvironmentMapEffect_VSEnvMapPixelLightingBn,    sizeof(EnvironmentMapEffect_VSEnvMapPixelLightingBn)    },
-#else
-    { EnvironmentMapEffect_VSEnvMapPixelLightingSM4,   sizeof(EnvironmentMapEffect_VSEnvMapPixelLightingSM4)   },
-    { EnvironmentMapEffect_VSEnvMapPixelLightingBnSM4, sizeof(EnvironmentMapEffect_VSEnvMapPixelLightingBnSM4) },
-#endif
 };
 
 
@@ -238,15 +228,15 @@ const int EffectBase<EnvironmentMapEffectTraits>::VertexShaderIndices[] =
     9,      // spheremap pixel lighting (biased vertex normals), fresnel
     9,      // spheremap pixel lighting (biased vertex normals), fresnel, no fog
 
-    10,     // dual-parabola pixel lighting
-    10,     // dual-parabola pixel lighting, no fog
-    10,     // dual-parabola pixel lighting, fresnel
-    10,     // dual-parabola pixel lighting, fresnel, no fog
+    4,      // dual-parabola pixel lighting
+    4,      // dual-parabola pixel lighting, no fog
+    4,      // dual-parabola pixel lighting, fresnel
+    4,      // dual-parabola pixel lighting, fresnel, no fog
 
-    11,     // dual-parabola pixel lighting (biased vertex normals)
-    11,     // dual-parabola pixel lighting (biased vertex normals), no fog
-    11,     // dual-parabola pixel lighting (biased vertex normals), fresnel
-    11,     // dual-parabola pixel lighting (biased vertex normals), fresnel, no fog
+    9,      // dual-parabola pixel lighting (biased vertex normals)
+    9,      // dual-parabola pixel lighting (biased vertex normals), no fog
+    9,      // dual-parabola pixel lighting (biased vertex normals), fresnel
+    9,      // dual-parabola pixel lighting (biased vertex normals), fresnel, no fog
 };
 
 
@@ -670,14 +660,6 @@ void EnvironmentMapEffect::SetMode(EnvironmentMapEffect::Mapping mapping)
     if (static_cast<int>(mapping) < 0 || static_cast<int>(mapping) >= EnvironmentMapEffectTraits::MappingCount)
     {
         throw std::invalid_argument("Unsupported mapping");
-    }
-
-    if (mapping == Mapping_DualParabola)
-    {
-        if (pImpl->GetDeviceFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
-        {
-            throw std::runtime_error("Dual Parabola requires Feature Level 10.0 or later");
-        }
     }
 
     pImpl->mapping = mapping;

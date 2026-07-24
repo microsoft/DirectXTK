@@ -301,11 +301,6 @@ NormalMapEffect::Impl::Impl(_In_ ID3D11Device* device)
     weightsPerVertex(0),
     boneConstants{}
 {
-    if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
-    {
-        throw std::runtime_error("NormalMapEffect requires Feature Level 10.0 or later");
-    }
-
     static_assert(static_cast<int>(std::size(EffectBase<NormalMapEffectTraits>::VertexShaderIndices)) == NormalMapEffectTraits::ShaderPermutationCount, "array/max mismatch");
     static_assert(static_cast<int>(std::size(EffectBase<NormalMapEffectTraits>::VertexShaderBytecode)) == NormalMapEffectTraits::VertexShaderCount, "array/max mismatch");
     static_assert(static_cast<int>(std::size(EffectBase<NormalMapEffectTraits>::PixelShaderBytecode)) == NormalMapEffectTraits::PixelShaderCount, "array/max mismatch");

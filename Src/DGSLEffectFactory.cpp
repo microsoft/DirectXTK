@@ -245,13 +245,6 @@ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateDGSLEffect(DGSLEffectFac
         {
             lighting = false;
         }
-        else if (mDevice->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
-        {
-            // DGSL shaders are not compatible with Feature Level 9.x, use fallback shader
-            wcscat_s(root, L".cso");
-
-            factory->CreatePixelShader(root, ps.GetAddressOf());
-        }
         else
         {
             // Create DGSL shader and use it for the effect

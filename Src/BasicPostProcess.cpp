@@ -102,7 +102,17 @@ namespace
             mVertexShader{},
             mPixelShaders{},
             mMutex{}
-        {}
+        {
+            if (!device)
+            {
+                throw std::invalid_argument("Direct3D device is null");
+            }
+
+            if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
+            {
+                throw std::runtime_error("DirectX Tool Kit requires Feature Level 10.0 or later");
+            }
+        }
 
         DeviceResources(const DeviceResources&) = delete;
         DeviceResources& operator=(const DeviceResources&) = delete;
@@ -219,11 +229,6 @@ BasicPostProcess::Impl::Impl(_In_ ID3D11Device* device)
     mConstantBuffer(device),
     mDeviceResources(deviceResourcesPool.DemandCreate(device))
 {
-    if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
-    {
-        throw std::runtime_error("BasicPostProcess requires Feature Level 10.0 or later");
-    }
-
     SetDebugObjectName(mConstantBuffer.GetBuffer(), "BasicPostProcess");
 }
 

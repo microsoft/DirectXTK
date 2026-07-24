@@ -193,7 +193,17 @@ namespace
             mVertexShader{},
             mPixelShaders{},
             mMutex{}
-        {}
+        {
+            if (!device)
+            {
+                throw std::invalid_argument("Direct3D device is null");
+            }
+
+            if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
+            {
+                throw std::runtime_error("DirectX Tool Kit requires Feature Level 10.0 or later");
+            }
+        }
 
         DeviceResources(const DeviceResources&) = delete;
         DeviceResources& operator=(const DeviceResources&) = delete;
@@ -302,11 +312,6 @@ ToneMapPostProcess::Impl::Impl(_In_ ID3D11Device* device)
     mConstantBuffer(device),
     mDeviceResources(deviceResourcesPool.DemandCreate(device))
 {
-    if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
-    {
-        throw std::runtime_error("ToneMapPostProcess requires Feature Level 10.0 or later");
-    }
-
     memcpy(constants.colorRotation, c_from709to2020, sizeof(c_from709to2020));
 
     SetDebugObjectName(mConstantBuffer.GetBuffer(), "ToneMapPostProcess");
