@@ -7,30 +7,30 @@
 
 steps:
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022.sln 32dbg
+    displayName: Build solution DirectXTK_Desktop_2022 32dbg
     inputs:
-      solution: DirectXTK_Desktop_2022.sln
+      solution: DirectXTK_Desktop_2022.slnx
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x86
       configuration: Debug
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022.sln 32rel
+    displayName: Build solution DirectXTK_Desktop_2022 32rel
     inputs:
-      solution: DirectXTK_Desktop_2022.sln
+      solution: DirectXTK_Desktop_2022.slnx
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x86
       configuration: Release
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022.sln 64dbg
+    displayName: Build solution DirectXTK_Desktop_2022 64dbg
     inputs:
-      solution: DirectXTK_Desktop_2022.sln
+      solution: DirectXTK_Desktop_2022.slnx
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Debug
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022.sln 64rel
+    displayName: Build solution DirectXTK_Desktop_2022 64rel
     inputs:
-      solution: DirectXTK_Desktop_2022.sln
+      solution: DirectXTK_Desktop_2022.slnx
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Release
@@ -41,58 +41,58 @@ steps:
       workingDirectory: $(Build.SourcesDirectory)
       failOnStderr: false
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022.sln managed dbg
+    displayName: Build solution DirectXTK_Desktop_2022 managed dbg
     inputs:
-      solution: DirectXTK_Desktop_2022.sln
+      solution: DirectXTK_Desktop_2022.slnx
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: Mixed Platforms
       configuration: Debug
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022.sln managed rel
+    displayName: Build solution DirectXTK_Desktop_2022 managed rel
     inputs:
-      solution: DirectXTK_Desktop_2022.sln
+      solution: DirectXTK_Desktop_2022.slnx
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: Mixed Platforms
       configuration: Release
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022_Win10.sln 32dbg
+    displayName: Build solution DirectXTK_Desktop_2022_Win10 32dbg
     inputs:
-      solution: DirectXTK_Desktop_2022_Win10.sln
+      solution: DirectXTK_Desktop_2022_Win10.slnx
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x86
       configuration: Debug
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022_Win10.sln 32rel
+    displayName: Build solution DirectXTK_Desktop_2022_Win10 32rel
     inputs:
-      solution: DirectXTK_Desktop_2022_Win10.sln
+      solution: DirectXTK_Desktop_2022_Win10.slnx
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x86
       configuration: Release
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022_Win10.sln 64dbg
+    displayName: Build solution DirectXTK_Desktop_2022_Win10 64dbg
     inputs:
-      solution: DirectXTK_Desktop_2022_Win10.sln
+      solution: DirectXTK_Desktop_2022_Win10.slnx
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Debug
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022_Win10.sln 64rel
+    displayName: Build solution DirectXTK_Desktop_2022_Win10 64rel
     inputs:
-      solution: DirectXTK_Desktop_2022_Win10.sln
+      solution: DirectXTK_Desktop_2022_Win10.slnx
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Release
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022_Win10.sln arm64dbg
+    displayName: Build solution DirectXTK_Desktop_2022_Win10 arm64dbg
     inputs:
-      solution: DirectXTK_Desktop_2022_Win10.sln
+      solution: DirectXTK_Desktop_2022_Win10.slnx
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: ARM64
       configuration: Debug
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Desktop_2022_Win10.sln arm64rel
+    displayName: Build solution DirectXTK_Desktop_2022_Win10 arm64rel
     inputs:
-      solution: DirectXTK_Desktop_2022_Win10.sln
+      solution: DirectXTK_Desktop_2022_Win10.slnx
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: ARM64
       configuration: Release
