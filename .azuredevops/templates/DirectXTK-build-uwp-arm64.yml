@@ -7,16 +7,16 @@
 
 steps:
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2022.sln arm64dbg
+    displayName: Build solution DirectXTK_Windows10_2022 arm64dbg
     inputs:
-      solution: DirectXTK_Windows10_2022.sln
+      solution: DirectXTK_Windows10_2022.slnx
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: ARM64
       configuration: Debug
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2022.sln arm64rel
+    displayName: Build solution DirectXTK_Windows10_2022 arm64rel
     inputs:
-      solution: DirectXTK_Windows10_2022.sln
+      solution: DirectXTK_Windows10_2022.slnx
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: ARM64
       configuration: Release

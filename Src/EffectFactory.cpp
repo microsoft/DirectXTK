@@ -70,11 +70,6 @@ public:
     {
         if (!device)
             throw std::invalid_argument("Direct3D device is null");
-
-        if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
-        {
-            mUseNormalMapEffect = false;
-        }
     }
 
     Impl(const Impl&) = delete;

@@ -132,7 +132,7 @@ jobs:
         displayName: Build solution DirectXTK_GDK_2022 pcdbg
         continueOnError: true
         inputs:
-          solution: DirectXTK_GDK_2022.sln
+          solution: DirectXTK_GDK_2022.slnx
           platform: Gaming.Desktop.x64
           configuration: Debug
           msbuildArchitecture: x64
@@ -141,7 +141,7 @@ jobs:
         displayName: Build solution DirectXTK_GDK_2022 pcrel
         continueOnError: true
         inputs:
-          solution: DirectXTK_GDK_2022.sln
+          solution: DirectXTK_GDK_2022.slnx
           platform: Gaming.Desktop.x64
           configuration: Release
           msbuildArchitecture: x64
@@ -345,7 +345,7 @@ jobs:
         displayName: Build arm64dbg
         continueOnError: true
         inputs:
-          solution: '**\*GDKW_2022*.sln'
+          solution: '**\*GDKW_2022*.slnx'
           platform: ARM64
           configuration: Debug
           msbuildArchitecture: x64
@@ -354,7 +354,7 @@ jobs:
         displayName: Build arm64rel
         continueOnError: true
         inputs:
-          solution: '**\*GDKW_2022*.sln'
+          solution: '**\*GDKW_2022*.slnx'
           platform: ARM64
           configuration: Release
           msbuildArchitecture: x64
@@ -363,7 +363,7 @@ jobs:
         displayName: Build x64dbg
         continueOnError: true
         inputs:
-          solution: '**\*GDKW_2022*.sln'
+          solution: '**\*GDKW_2022*.slnx'
           platform: x64
           configuration: Debug
           msbuildArchitecture: x64
@@ -372,7 +372,7 @@ jobs:
         displayName: Build x64rel
         continueOnError: true
         inputs:
-          solution: '**\*GDKW_2022*.sln'
+          solution: '**\*GDKW_2022*.slnx'
           platform: x64
           configuration: Release
           msbuildArchitecture: x64

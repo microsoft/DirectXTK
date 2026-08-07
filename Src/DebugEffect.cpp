@@ -230,11 +230,6 @@ DebugEffect::Impl::Impl(_In_ ID3D11Device* device)
     instancing(false),
     debugMode(DebugEffect::Mode_Default)
 {
-    if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
-    {
-        throw std::runtime_error("DebugEffect requires Feature Level 10.0 or later");
-    }
-
     static_assert(static_cast<int>(std::size(EffectBase<DebugEffectTraits>::VertexShaderIndices)) == DebugEffectTraits::ShaderPermutationCount, "array/max mismatch");
     static_assert(static_cast<int>(std::size(EffectBase<DebugEffectTraits>::VertexShaderBytecode)) == DebugEffectTraits::VertexShaderCount, "array/max mismatch");
     static_assert(static_cast<int>(std::size(EffectBase<DebugEffectTraits>::PixelShaderBytecode)) == DebugEffectTraits::PixelShaderCount, "array/max mismatch");

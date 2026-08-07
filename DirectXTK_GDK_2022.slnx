@@ -1,0 +1,12 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="Profile" />
+    <BuildType Name="Release" />
+    <Platform Name="Gaming.Desktop.x64" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Project Path="DirectXTK_GDK_2022.vcxproj" Id="26be66bd-6e77-43ba-b363-725f9fc827c1" />
+</Solution>

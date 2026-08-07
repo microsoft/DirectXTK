@@ -839,28 +839,20 @@ namespace
                     {
                     case D3D_FEATURE_LEVEL_9_1:
                     case D3D_FEATURE_LEVEL_9_2:
-                        if (isCubeMap)
-                        {
-                            maxsize = 512u /*D3D_FL9_1_REQ_TEXTURECUBE_DIMENSION*/;
-                        }
-                        else
-                        {
-                            maxsize = (resDim == D3D11_RESOURCE_DIMENSION_TEXTURE3D)
-                                ? 256u /*D3D_FL9_1_REQ_TEXTURE3D_U_V_OR_W_DIMENSION*/
-                                : 2048u /*D3D_FL9_1_REQ_TEXTURE2D_U_OR_V_DIMENSION*/;
-                        }
-                        break;
-
                     case D3D_FEATURE_LEVEL_9_3:
-                        maxsize = (resDim == D3D11_RESOURCE_DIMENSION_TEXTURE3D)
-                            ? 256u /*D3D_FL9_1_REQ_TEXTURE3D_U_V_OR_W_DIMENSION*/
-                            : 4096u /*D3D_FL9_3_REQ_TEXTURE2D_U_OR_V_DIMENSION*/;
-                        break;
+                        return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
 
-                    default: // D3D_FEATURE_LEVEL_10_0 & D3D_FEATURE_LEVEL_10_1
+                    case D3D_FEATURE_LEVEL_10_0:
+                    case D3D_FEATURE_LEVEL_10_1:
                         maxsize = (resDim == D3D11_RESOURCE_DIMENSION_TEXTURE3D)
                             ? 2048u /*D3D10_REQ_TEXTURE3D_U_V_OR_W_DIMENSION*/
                             : 8192u /*D3D10_REQ_TEXTURE2D_U_OR_V_DIMENSION*/;
+                        break;
+
+                    default: // D3D_FEATURE_LEVEL_11_0
+                        maxsize = (resDim == D3D11_RESOURCE_DIMENSION_TEXTURE3D)
+                            ? D3D11_REQ_TEXTURE3D_U_V_OR_W_DIMENSION
+                            : D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION;
                         break;
                     }
 

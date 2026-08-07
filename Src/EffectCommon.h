@@ -156,9 +156,19 @@ namespace DirectX
     class EffectDeviceResources
     {
     public:
-        EffectDeviceResources(_In_ ID3D11Device* device) noexcept
+        EffectDeviceResources(_In_ ID3D11Device* device)
             : mDevice(device)
-        {}
+        {
+            if (!device)
+            {
+                throw std::invalid_argument("Direct3D device is null");
+            }
+
+            if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
+            {
+                throw std::runtime_error("DirectX Tool Kit requires Feature Level 10.0 or later");
+            }
+        }
 
         ID3D11VertexShader* DemandCreateVertexShader(_Inout_ Microsoft::WRL::ComPtr<ID3D11VertexShader>& vertexShader, ShaderBytecode const& bytecode);
         ID3D11PixelShader * DemandCreatePixelShader(_Inout_ Microsoft::WRL::ComPtr<ID3D11PixelShader> & pixelShader, ShaderBytecode const& bytecode);
@@ -286,7 +296,7 @@ namespace DirectX
         class DeviceResources : protected EffectDeviceResources
         {
         public:
-            DeviceResources(_In_ ID3D11Device* device) noexcept
+            DeviceResources(_In_ ID3D11Device* device)
                 : EffectDeviceResources(device),
                 mVertexShaders{},
                 mPixelShaders{}

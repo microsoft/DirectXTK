@@ -131,8 +131,6 @@ call :CompileShader%1 EnvironmentMapEffect vs VSEnvMapOneLightFresnel
 call :CompileShader%1 EnvironmentMapEffect vs VSEnvMapOneLightFresnelBn
 call :CompileShader%1 EnvironmentMapEffect vs VSEnvMapPixelLighting
 call :CompileShader%1 EnvironmentMapEffect vs VSEnvMapPixelLightingBn
-call :CompileShaderSM4%1 EnvironmentMapEffect vs VSEnvMapPixelLightingSM4
-call :CompileShaderSM4%1 EnvironmentMapEffect vs VSEnvMapPixelLightingBnSM4
 
 call :CompileShader%1 EnvironmentMapEffect ps PSEnvMap
 call :CompileShader%1 EnvironmentMapEffect ps PSEnvMapNoFog
@@ -148,10 +146,10 @@ call :CompileShader%1 EnvironmentMapEffect ps PSEnvMapSpherePixelLightingNoFog
 call :CompileShader%1 EnvironmentMapEffect ps PSEnvMapSpherePixelLightingFresnel
 call :CompileShader%1 EnvironmentMapEffect ps PSEnvMapSpherePixelLightingFresnelNoFog
 
-call :CompileShaderSM4%1 EnvironmentMapEffect ps PSEnvMapDualParabolaPixelLighting
-call :CompileShaderSM4%1 EnvironmentMapEffect ps PSEnvMapDualParabolaPixelLightingNoFog
-call :CompileShaderSM4%1 EnvironmentMapEffect ps PSEnvMapDualParabolaPixelLightingFresnel
-call :CompileShaderSM4%1 EnvironmentMapEffect ps PSEnvMapDualParabolaPixelLightingFresnelNoFog
+call :CompileShader%1 EnvironmentMapEffect ps PSEnvMapDualParabolaPixelLighting
+call :CompileShader%1 EnvironmentMapEffect ps PSEnvMapDualParabolaPixelLightingNoFog
+call :CompileShader%1 EnvironmentMapEffect ps PSEnvMapDualParabolaPixelLightingFresnel
+call :CompileShader%1 EnvironmentMapEffect ps PSEnvMapDualParabolaPixelLightingFresnelNoFog
 
 call :CompileShader%1 SkinnedEffect vs VSSkinnedVertexLightingOneBone
 call :CompileShader%1 SkinnedEffect vs VSSkinnedVertexLightingOneBoneBn
@@ -178,53 +176,53 @@ call :CompileShader%1 SkinnedEffect ps PSSkinnedVertexLighting
 call :CompileShader%1 SkinnedEffect ps PSSkinnedVertexLightingNoFog
 call :CompileShader%1 SkinnedEffect ps PSSkinnedPixelLighting
 
-call :CompileShaderSM4%1 NormalMapEffect vs VSNormalPixelLightingTx
-call :CompileShaderSM4%1 NormalMapEffect vs VSNormalPixelLightingTxBn
-call :CompileShaderSM4%1 NormalMapEffect vs VSNormalPixelLightingTxVc
-call :CompileShaderSM4%1 NormalMapEffect vs VSNormalPixelLightingTxVcBn
+call :CompileShader%1 NormalMapEffect vs VSNormalPixelLightingTx
+call :CompileShader%1 NormalMapEffect vs VSNormalPixelLightingTxBn
+call :CompileShader%1 NormalMapEffect vs VSNormalPixelLightingTxVc
+call :CompileShader%1 NormalMapEffect vs VSNormalPixelLightingTxVcBn
 
-call :CompileShaderSM4%1 NormalMapEffect vs VSNormalPixelLightingTxInst
-call :CompileShaderSM4%1 NormalMapEffect vs VSNormalPixelLightingTxBnInst
-call :CompileShaderSM4%1 NormalMapEffect vs VSNormalPixelLightingTxVcInst
-call :CompileShaderSM4%1 NormalMapEffect vs VSNormalPixelLightingTxVcBnInst
+call :CompileShader%1 NormalMapEffect vs VSNormalPixelLightingTxInst
+call :CompileShader%1 NormalMapEffect vs VSNormalPixelLightingTxBnInst
+call :CompileShader%1 NormalMapEffect vs VSNormalPixelLightingTxVcInst
+call :CompileShader%1 NormalMapEffect vs VSNormalPixelLightingTxVcBnInst
 
-call :CompileShaderSM4%1 NormalMapEffect vs VSSkinnedPixelLightingTx
-call :CompileShaderSM4%1 NormalMapEffect vs VSSkinnedPixelLightingTxBn
+call :CompileShader%1 NormalMapEffect vs VSSkinnedPixelLightingTx
+call :CompileShader%1 NormalMapEffect vs VSSkinnedPixelLightingTxBn
 
-call :CompileShaderSM4%1 NormalMapEffect ps PSNormalPixelLightingTx
-call :CompileShaderSM4%1 NormalMapEffect ps PSNormalPixelLightingTxNoFog
-call :CompileShaderSM4%1 NormalMapEffect ps PSNormalPixelLightingTxNoSpec
-call :CompileShaderSM4%1 NormalMapEffect ps PSNormalPixelLightingTxNoFogSpec
+call :CompileShader%1 NormalMapEffect ps PSNormalPixelLightingTx
+call :CompileShader%1 NormalMapEffect ps PSNormalPixelLightingTxNoFog
+call :CompileShader%1 NormalMapEffect ps PSNormalPixelLightingTxNoSpec
+call :CompileShader%1 NormalMapEffect ps PSNormalPixelLightingTxNoFogSpec
 
-call :CompileShaderSM4%1 PBREffect vs VSConstant
-call :CompileShaderSM4%1 PBREffect vs VSConstantInst
-call :CompileShaderSM4%1 PBREffect vs VSConstantVelocity
-call :CompileShaderSM4%1 PBREffect vs VSConstantBn
-call :CompileShaderSM4%1 PBREffect vs VSConstantBnInst
-call :CompileShaderSM4%1 PBREffect vs VSConstantVelocityBn
-call :CompileShaderSM4%1 PBREffect vs VSSkinned
-call :CompileShaderSM4%1 PBREffect vs VSSkinnedBn
+call :CompileShader%1 PBREffect vs VSConstant
+call :CompileShader%1 PBREffect vs VSConstantInst
+call :CompileShader%1 PBREffect vs VSConstantVelocity
+call :CompileShader%1 PBREffect vs VSConstantBn
+call :CompileShader%1 PBREffect vs VSConstantBnInst
+call :CompileShader%1 PBREffect vs VSConstantVelocityBn
+call :CompileShader%1 PBREffect vs VSSkinned
+call :CompileShader%1 PBREffect vs VSSkinnedBn
 
-call :CompileShaderSM4%1 PBREffect ps PSConstant
-call :CompileShaderSM4%1 PBREffect ps PSTextured
-call :CompileShaderSM4%1 PBREffect ps PSTexturedEmissive
-call :CompileShaderSM4%1 PBREffect ps PSTexturedVelocity
-call :CompileShaderSM4%1 PBREffect ps PSTexturedEmissiveVelocity
+call :CompileShader%1 PBREffect ps PSConstant
+call :CompileShader%1 PBREffect ps PSTextured
+call :CompileShader%1 PBREffect ps PSTexturedEmissive
+call :CompileShader%1 PBREffect ps PSTexturedVelocity
+call :CompileShader%1 PBREffect ps PSTexturedEmissiveVelocity
 
-call :CompileShaderSM4%1 DebugEffect vs VSDebug
-call :CompileShaderSM4%1 DebugEffect vs VSDebugBn
-call :CompileShaderSM4%1 DebugEffect vs VSDebugVc
-call :CompileShaderSM4%1 DebugEffect vs VSDebugVcBn
+call :CompileShader%1 DebugEffect vs VSDebug
+call :CompileShader%1 DebugEffect vs VSDebugBn
+call :CompileShader%1 DebugEffect vs VSDebugVc
+call :CompileShader%1 DebugEffect vs VSDebugVcBn
 
-call :CompileShaderSM4%1 DebugEffect vs VSDebugInst
-call :CompileShaderSM4%1 DebugEffect vs VSDebugBnInst
-call :CompileShaderSM4%1 DebugEffect vs VSDebugVcInst
-call :CompileShaderSM4%1 DebugEffect vs VSDebugVcBnInst
+call :CompileShader%1 DebugEffect vs VSDebugInst
+call :CompileShader%1 DebugEffect vs VSDebugBnInst
+call :CompileShader%1 DebugEffect vs VSDebugVcInst
+call :CompileShader%1 DebugEffect vs VSDebugVcBnInst
 
-call :CompileShaderSM4%1 DebugEffect ps PSHemiAmbient
-call :CompileShaderSM4%1 DebugEffect ps PSRGBNormals
-call :CompileShaderSM4%1 DebugEffect ps PSRGBTangents
-call :CompileShaderSM4%1 DebugEffect ps PSRGBBiTangents
+call :CompileShader%1 DebugEffect ps PSHemiAmbient
+call :CompileShader%1 DebugEffect ps PSRGBNormals
+call :CompileShader%1 DebugEffect ps PSRGBTangents
+call :CompileShader%1 DebugEffect ps PSRGBBiTangents
 
 call :CompileShader%1 NPREffect vs VSNPREffect
 call :CompileShader%1 NPREffect vs VSNPREffectBn
@@ -286,37 +284,37 @@ call :CompileShaderHLSL%1 DGSLUnlit ps mainTxTk
 call :CompileShaderHLSL%1 DGSLLambert ps mainTxTk
 call :CompileShaderHLSL%1 DGSLPhong ps mainTxTk
 
-call :CompileShaderSM4%1 PostProcess vs VSQuad
-call :CompileShaderSM4%1 PostProcess ps PSCopy
-call :CompileShaderSM4%1 PostProcess ps PSMonochrome
-call :CompileShaderSM4%1 PostProcess ps PSSepia
-call :CompileShaderSM4%1 PostProcess ps PSDownScale2x2
-call :CompileShaderSM4%1 PostProcess ps PSDownScale4x4
-call :CompileShaderSM4%1 PostProcess ps PSGaussianBlur5x5
-call :CompileShaderSM4%1 PostProcess ps PSBloomExtract
-call :CompileShaderSM4%1 PostProcess ps PSBloomBlur
-call :CompileShaderSM4%1 PostProcess ps PSMerge
-call :CompileShaderSM4%1 PostProcess ps PSBloomCombine
+call :CompileShader%1 PostProcess vs VSQuad
+call :CompileShader%1 PostProcess ps PSCopy
+call :CompileShader%1 PostProcess ps PSMonochrome
+call :CompileShader%1 PostProcess ps PSSepia
+call :CompileShader%1 PostProcess ps PSDownScale2x2
+call :CompileShader%1 PostProcess ps PSDownScale4x4
+call :CompileShader%1 PostProcess ps PSGaussianBlur5x5
+call :CompileShader%1 PostProcess ps PSBloomExtract
+call :CompileShader%1 PostProcess ps PSBloomBlur
+call :CompileShader%1 PostProcess ps PSMerge
+call :CompileShader%1 PostProcess ps PSBloomCombine
 
-call :CompileShaderSM4%1 ToneMap vs VSQuad
-call :CompileShaderSM4%1 ToneMap ps PSCopy
-call :CompileShaderSM4%1 ToneMap ps PSSaturate
-call :CompileShaderSM4%1 ToneMap ps PSReinhard
-call :CompileShaderSM4%1 ToneMap ps PSACESFilmic
-call :CompileShaderSM4%1 ToneMap ps PS_SRGB
-call :CompileShaderSM4%1 ToneMap ps PSSaturate_SRGB
-call :CompileShaderSM4%1 ToneMap ps PSReinhard_SRGB
-call :CompileShaderSM4%1 ToneMap ps PSACESFilmic_SRGB
-call :CompileShaderSM4%1 ToneMap ps PSHDR10
+call :CompileShader%1 ToneMap vs VSQuad
+call :CompileShader%1 ToneMap ps PSCopy
+call :CompileShader%1 ToneMap ps PSSaturate
+call :CompileShader%1 ToneMap ps PSReinhard
+call :CompileShader%1 ToneMap ps PSACESFilmic
+call :CompileShader%1 ToneMap ps PS_SRGB
+call :CompileShader%1 ToneMap ps PSSaturate_SRGB
+call :CompileShader%1 ToneMap ps PSReinhard_SRGB
+call :CompileShader%1 ToneMap ps PSACESFilmic_SRGB
+call :CompileShader%1 ToneMap ps PSHDR10
 
 if NOT %1.==xbox. goto skipxboxonly
 
-call :CompileShaderSM4xbox ToneMap ps PSHDR10_Saturate
-call :CompileShaderSM4xbox ToneMap ps PSHDR10_Reinhard
-call :CompileShaderSM4xbox ToneMap ps PSHDR10_ACESFilmic
-call :CompileShaderSM4xbox ToneMap ps PSHDR10_Saturate_SRGB
-call :CompileShaderSM4xbox ToneMap ps PSHDR10_Reinhard_SRGB
-call :CompileShaderSM4xbox ToneMap ps PSHDR10_ACESFilmic_SRGB
+call :CompileShaderxbox ToneMap ps PSHDR10_Saturate
+call :CompileShaderxbox ToneMap ps PSHDR10_Reinhard
+call :CompileShaderxbox ToneMap ps PSHDR10_ACESFilmic
+call :CompileShaderxbox ToneMap ps PSHDR10_Saturate_SRGB
+call :CompileShaderxbox ToneMap ps PSHDR10_Reinhard_SRGB
+call :CompileShaderxbox ToneMap ps PSHDR10_ACESFilmic_SRGB
 
 :skipxboxonly
 
@@ -333,13 +331,6 @@ endlocal
 exit /b 0
 
 :CompileShader
-set fxc=%PCFXC% "%1.fx" %FXCOPTS% /T%2_4_0_level_9_1 /E%3 "/Fh%CompileShadersOutput%\%1_%3.inc" "/Fd%CompileShadersOutput%\%1_%3.pdb" /Vn%1_%3
-echo.
-echo %fxc%
-%fxc% || set error=1
-exit /b
-
-:CompileShaderSM4
 set fxc=%PCFXC% "%1.fx" %FXCOPTS% /T%2_4_0 /E%3 "/Fh%CompileShadersOutput%\%1_%3.inc" "/Fd%CompileShadersOutput%\%1_%3.pdb" /Vn%1_%3
 echo.
 echo %fxc%
@@ -347,14 +338,13 @@ echo %fxc%
 exit /b
 
 :CompileShaderHLSL
-set fxc=%PCFXC% "%1.hlsl" %FXCOPTS% /T%2_4_0_level_9_1 /E%3 "/Fh%CompileShadersOutput%\%1_%3.inc" "/Fd%CompileShadersOutput%\%1_%3.pdb" /Vn%1_%3
+set fxc=%PCFXC% "%1.hlsl" %FXCOPTS% /T%2_4_0 /E%3 "/Fh%CompileShadersOutput%\%1_%3.inc" "/Fd%CompileShadersOutput%\%1_%3.pdb" /Vn%1_%3
 echo.
 echo %fxc%
 %fxc% || set error=1
 exit /b
 
 :CompileShaderxbox
-:CompileShaderSM4xbox
 set fxc=%XBOXFXC% "%1.fx" %FXCOPTS% /T%2_5_0 %XBOXOPTS% /E%3 "/Fh%CompileShadersOutput%\XboxOne%1_%3.inc" "/Fd%CompileShadersOutput%\XboxOne%1_%3.pdb" /Vn%1_%3
 echo.
 echo %fxc%

@@ -250,7 +250,14 @@ public:
     void Initialize(_In_ ID3D11Device* device, unsigned int backBufferCount)
     {
         if (!device)
+        {
             throw std::invalid_argument("Direct3D device is null");
+        }
+
+        if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
+        {
+            throw std::runtime_error("DirectX Tool Kit requires Feature Level 10.0 or later");
+        }
 
         UNREFERENCED_PARAMETER(backBufferCount);
     }
