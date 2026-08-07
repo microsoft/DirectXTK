@@ -59,4 +59,4 @@ jobs:
         run: >
           msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=${{ matrix.platform }}
           /T:Build /p:AppxPackage=false
-          DirectXTK_Tests_Windows10.sln
+          DirectXTK_Tests_Windows10.slnx

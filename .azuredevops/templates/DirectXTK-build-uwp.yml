@@ -7,30 +7,30 @@
 
 steps:
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2022.sln 32dbg
+    displayName: Build solution DirectXTK_Windows10_2022 32dbg
     inputs:
-      solution: DirectXTK_Windows10_2022.sln
+      solution: DirectXTK_Windows10_2022.slnx
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x86
       configuration: Debug
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2022.sln 32rel
+    displayName: Build solution DirectXTK_Windows10_2022 32rel
     inputs:
-      solution: DirectXTK_Windows10_2022.sln
+      solution: DirectXTK_Windows10_2022.slnx
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x86
       configuration: Release
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2022.sln 64dbg
+    displayName: Build solution DirectXTK_Windows10_2022 64dbg
     inputs:
-      solution: DirectXTK_Windows10_2022.sln
+      solution: DirectXTK_Windows10_2022.slnx
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Debug
   - task: VSBuild@1
-    displayName: Build solution DirectXTK_Windows10_2022.sln 64rel
+    displayName: Build solution DirectXTK_Windows10_2022 64rel
     inputs:
-      solution: DirectXTK_Windows10_2022.sln
+      solution: DirectXTK_Windows10_2022.slnx
       msbuildArgs: /p:PreferredToolArchitecture=x64
       platform: x64
       configuration: Release
