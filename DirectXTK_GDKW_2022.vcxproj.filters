@@ -289,6 +289,9 @@
     <ClCompile Include="Audio\SoundStreamInstance.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
+    <ClCompile Include="Src\NPREffectFactory.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Src\Shaders\CompileShaders.cmd">
