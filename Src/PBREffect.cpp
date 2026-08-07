@@ -262,11 +262,6 @@ PBREffect::Impl::Impl(_In_ ID3D11Device* device)
     lightColor{},
     boneConstants{}
 {
-    if (device->GetFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
-    {
-        throw std::runtime_error("PBREffect requires Feature Level 10.0 or later");
-    }
-
     static_assert(static_cast<int>(std::size(EffectBase<PBREffectTraits>::VertexShaderIndices)) == PBREffectTraits::ShaderPermutationCount, "array/max mismatch");
     static_assert(static_cast<int>(std::size(EffectBase<PBREffectTraits>::VertexShaderBytecode)) == PBREffectTraits::VertexShaderCount, "array/max mismatch");
     static_assert(static_cast<int>(std::size(EffectBase<PBREffectTraits>::PixelShaderBytecode)) == PBREffectTraits::PixelShaderCount, "array/max mismatch");
