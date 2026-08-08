@@ -91,7 +91,6 @@ public:
     int weightsPerVertex;
 
     NPREffect::Mode nprMode;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> texture;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> matcap;
 
     int GetCurrentShaderPermutation() const noexcept;
