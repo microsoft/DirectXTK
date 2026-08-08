@@ -927,7 +927,7 @@ namespace DirectX
             DIRECTX_TOOLKIT_API void XM_CALLCONV SetColorAndAlpha(FXMVECTOR value);
 
             // Light settings.
-            void XM_CALLCONV SetLightDirection(int whichLight, FXMVECTOR value) override;
+            DIRECTX_TOOLKIT_API void XM_CALLCONV SetLightDirection(int whichLight, FXMVECTOR value) override;
             DIRECTX_TOOLKIT_API void __cdecl EnableDefaultLighting() override;
 
             static constexpr int MaxDirectionalLights = 1;
