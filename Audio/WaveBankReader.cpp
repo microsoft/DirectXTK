@@ -408,20 +408,33 @@ namespace
 
         const uint32_t seekSize = header.Segments[HEADER::SEGIDX_SEEKTABLES].dwLength;
 
-        if ((index * sizeof(uint32_t)) > seekSize)
+        // The segment opens with dwEntryCount uint32_t offsets. Require the whole element
+        // to be inside the segment, not merely its first byte.
+        if ((uint64_t(index) + 1u) * sizeof(uint32_t) > seekSize)
             return nullptr;
 
         auto table = reinterpret_cast<const uint32_t*>(seekTable);
-        uint32_t offset = table[index];
-        if (offset == uint32_t(-1))
+        const uint32_t entry = table[index];
+        if (entry == uint32_t(-1))
             return nullptr;
 
-        offset += sizeof(uint32_t) * data.dwEntryCount;
+        // Both terms come from the file and their sum exceeds a uint32_t for large values,
+        // so accumulate in 64-bit; a truncated sum would wrap past the bounds check below.
+        const uint64_t offset = uint64_t(entry) + uint64_t(sizeof(uint32_t)) * uint64_t(data.dwEntryCount);
 
-        if (offset > seekSize)
+        // The subtable leads with its own entry count, so that value must itself be fully
+        // inside the segment before anything may read it.
+        if ((offset + sizeof(uint32_t)) > seekSize)
             return nullptr;
 
-        return reinterpret_cast<const uint32_t*>(seekTable + offset);
+        auto result = reinterpret_cast<const uint32_t*>(seekTable + offset);
+
+        // Validate the declared count against the bytes actually remaining. Consumers index
+        // result[0] through result[*result], so that many elements plus the count must fit.
+        if ((uint64_t(*result) + 1u) * sizeof(uint32_t) > (uint64_t(seekSize) - offset))
+            return nullptr;
+
+        return result;
     }
 }
 
@@ -765,8 +778,11 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
 
         if (be)
         {
+            // Step only over whole uint32_t elements: seekLen comes from the file and is
+            // not guaranteed to be a multiple of 4, while the buffer is exactly seekLen
+            // bytes, so a trailing partial element would be read and written out of bounds.
             auto ptr = reinterpret_cast<uint32_t*>(m_seekData.get());
-            for (size_t j = 0; j < seekLen; j += 4, ++ptr)
+            for (size_t j = 0; (j + sizeof(uint32_t)) <= seekLen; j += 4, ++ptr)
             {
                 *ptr = _byteswap_ulong(*ptr);
             }
