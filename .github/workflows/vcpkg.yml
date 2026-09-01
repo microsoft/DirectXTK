@@ -161,7 +161,7 @@ jobs:
         env:
           vcpkgRelease: '${{ vars.VCPKG_COMMIT_ID }}'
 
-      - uses: lukka/run-vcpkg@b2d136d6889529a06ddb4c3a90cc36decbbf18fe # v11
+      - uses: lukka/run-vcpkg@5ad8bfa6267ef808f7d48cf4004c879bed752401 # v11
         with:
           runVcpkgInstall: true
           vcpkgJsonGlob: '**/build/vcpkg.json'
