@@ -854,31 +854,39 @@ namespace
     //////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////
 
-    const SValue<uint32_t> g_pOptions[] = { { L"r", OPT_RECURSIVE },
-        { L"s", OPT_STREAMING },
-        { L"af", OPT_ADVANCED_FORMAT },
-        { L"o", OPT_OUTPUTFILE },
-        { L"l", OPT_TOLOWER },
-        { L"h", OPT_OUTPUTHEADER },
-        { L"y", OPT_OVERWRITE },
-        { L"c", OPT_COMPACT },
-        { L"nc", OPT_NOCOMPACT },
-        { L"f", OPT_FRIENDLY_NAMES },
-        { L"nologo", OPT_NOLOGO },
-        { L"flist", OPT_FILELIST },
-        { nullptr, 0 } };
+    // clang-format off
+    const SValue<uint32_t> g_pOptions[] =
+    {
+        { L"r",         OPT_RECURSIVE },
+        { L"s",         OPT_STREAMING },
+        { L"af",        OPT_ADVANCED_FORMAT },
+        { L"o",         OPT_OUTPUTFILE },
+        { L"l",         OPT_TOLOWER },
+        { L"h",         OPT_OUTPUTHEADER },
+        { L"y",         OPT_OVERWRITE },
+        { L"c",         OPT_COMPACT },
+        { L"nc",        OPT_NOCOMPACT },
+        { L"f",         OPT_FRIENDLY_NAMES },
+        { L"nologo",    OPT_NOLOGO },
+        { L"flist",     OPT_FILELIST },
+        { nullptr,      0 }
+    };
 
-    const SValue<uint32_t> g_pOptionsLong[] = { { L"advanced-format", OPT_ADVANCED_FORMAT },
-        { L"compact", OPT_COMPACT },
-        { L"file-list", OPT_FILELIST },
-        { L"friendly-names", OPT_FRIENDLY_NAMES },
-        { L"help", OPT_HELP },
-        { L"no-compact", OPT_NOCOMPACT },
-        { L"overwrite", OPT_OVERWRITE },
-        { L"streaming", OPT_STREAMING },
-        { L"to-lowercase", OPT_TOLOWER },
-        { L"version", OPT_VERSION },
-        { nullptr, 0 } };
+    const SValue<uint32_t> g_pOptionsLong[] =
+    {
+        { L"advanced-format",   OPT_ADVANCED_FORMAT },
+        { L"compact",           OPT_COMPACT },
+        { L"file-list",         OPT_FILELIST },
+        { L"friendly-names",    OPT_FRIENDLY_NAMES },
+        { L"help",              OPT_HELP },
+        { L"no-compact",        OPT_NOCOMPACT },
+        { L"overwrite",         OPT_OVERWRITE },
+        { L"streaming",         OPT_STREAMING },
+        { L"to-lowercase",      OPT_TOLOWER },
+        { L"version",           OPT_VERSION },
+        { nullptr,              0 }
+    };
+    // clang-format on
 
     //////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////
