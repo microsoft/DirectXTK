@@ -17,6 +17,17 @@ if (-not $clangFormat) {
     throw 'clang-format was not found on PATH.'
 }
 
+# This has to match the version used by GitHub super-linter or results will not match.
+$requiredClangFormatVersion = '21.1.2'
+$clangFormatVersion = (& $clangFormat.Source '--version' 2>&1 | Out-String).Trim()
+if ($LASTEXITCODE -ne 0) {
+    throw "Unable to determine clang-format version."
+}
+
+if ($clangFormatVersion -notmatch "\b$([regex]::Escape($requiredClangFormatVersion))\b") {
+    throw "clang-format version $requiredClangFormatVersion is required; found: $clangFormatVersion"
+}
+
 $sourceFiles = Get-ChildItem -LiteralPath $repoRoot -Recurse|
     Where-Object {
         $_.FullName -notmatch '\\(?:\.git|\.vs|build|Tests|vcpkg_installed)\\' -and $_.Extension -in '.c','.cc','.cpp','.cxx','.h','.hh','.hpp'

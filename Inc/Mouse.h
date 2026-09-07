@@ -181,7 +181,7 @@ namespace DirectX
 
         DIRECTX_TOOLKIT_API static void __cdecl SetDpi(float dpi);
 #elif defined(WM_USER)
-        DIRECTX_TOOLKIT_API void __cdecl SetWindow(HWND window);
+        DIRECTX_TOOLKIT_API void __cdecl        SetWindow(HWND window);
         DIRECTX_TOOLKIT_API static void __cdecl ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam);
 
 #ifdef _GAMING_XBOX

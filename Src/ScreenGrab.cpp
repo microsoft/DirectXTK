@@ -711,9 +711,8 @@ _Use_decl_annotations_ HRESULT DirectX::SaveWICTextureToFile(ID3D11DeviceContext
 
 namespace DirectX
 {
-    HRESULT __cdecl SaveDDSTextureToFile(_In_ ID3D11DeviceContext* pContext,
-        _In_ ID3D11Resource*                                       pSource,
-        _In_z_ const __wchar_t*                                    fileName) noexcept
+    HRESULT __cdecl
+    SaveDDSTextureToFile(_In_ ID3D11DeviceContext* pContext, _In_ ID3D11Resource* pSource, _In_z_ const __wchar_t* fileName) noexcept
     {
         return SaveDDSTextureToFile(pContext, pSource, reinterpret_cast<const unsigned short*>(fileName));
     }

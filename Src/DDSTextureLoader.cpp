@@ -972,13 +972,11 @@ _Use_decl_annotations_ HRESULT DirectX::CreateDDSTextureFromMemory(ID3D11Device*
 
 _Use_decl_annotations_
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    HRESULT
-    DirectX::CreateDDSTextureFromMemory(ID3D11DeviceX* d3dDevice,
-        ID3D11DeviceContextX*                          d3dContext,
+    HRESULT DirectX::CreateDDSTextureFromMemory(ID3D11DeviceX* d3dDevice,
+        ID3D11DeviceContextX*                                  d3dContext,
 #else
-    HRESULT
-    DirectX::CreateDDSTextureFromMemory(ID3D11Device* d3dDevice,
-        ID3D11DeviceContext*                          d3dContext,
+    HRESULT DirectX::CreateDDSTextureFromMemory(ID3D11Device* d3dDevice,
+        ID3D11DeviceContext*                                  d3dContext,
 #endif
         const uint8_t*             ddsData,
         size_t                     ddsDataSize,
@@ -1087,13 +1085,11 @@ _Use_decl_annotations_ HRESULT DirectX::CreateDDSTextureFromMemoryEx(ID3D11Devic
 
 _Use_decl_annotations_
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    HRESULT
-    DirectX::CreateDDSTextureFromMemoryEx(ID3D11DeviceX* d3dDevice,
-        ID3D11DeviceContextX*                            d3dContext,
+    HRESULT DirectX::CreateDDSTextureFromMemoryEx(ID3D11DeviceX* d3dDevice,
+        ID3D11DeviceContextX*                                    d3dContext,
 #else
-    HRESULT
-    DirectX::CreateDDSTextureFromMemoryEx(ID3D11Device* d3dDevice,
-        ID3D11DeviceContext*                            d3dContext,
+    HRESULT DirectX::CreateDDSTextureFromMemoryEx(ID3D11Device* d3dDevice,
+        ID3D11DeviceContext*                                    d3dContext,
 #endif
         const uint8_t*             ddsData,
         size_t                     ddsDataSize,
@@ -1200,13 +1196,11 @@ _Use_decl_annotations_ HRESULT DirectX::CreateDDSTextureFromFile(ID3D11Device* d
 
 _Use_decl_annotations_
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    HRESULT
-    DirectX::CreateDDSTextureFromFile(ID3D11DeviceX* d3dDevice,
-        ID3D11DeviceContextX*                        d3dContext,
+    HRESULT DirectX::CreateDDSTextureFromFile(ID3D11DeviceX* d3dDevice,
+        ID3D11DeviceContextX*                                d3dContext,
 #else
-    HRESULT
-    DirectX::CreateDDSTextureFromFile(ID3D11Device* d3dDevice,
-        ID3D11DeviceContext*                        d3dContext,
+    HRESULT DirectX::CreateDDSTextureFromFile(ID3D11Device* d3dDevice,
+        ID3D11DeviceContext*                                d3dContext,
 #endif
         const wchar_t*             fileName,
         ID3D11Resource**           texture,
@@ -1305,13 +1299,11 @@ _Use_decl_annotations_ HRESULT DirectX::CreateDDSTextureFromFileEx(ID3D11Device*
 
 _Use_decl_annotations_
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    HRESULT
-    DirectX::CreateDDSTextureFromFileEx(ID3D11DeviceX* d3dDevice,
-        ID3D11DeviceContextX*                          d3dContext,
+    HRESULT DirectX::CreateDDSTextureFromFileEx(ID3D11DeviceX* d3dDevice,
+        ID3D11DeviceContextX*                                  d3dContext,
 #else
-    HRESULT
-    DirectX::CreateDDSTextureFromFileEx(ID3D11Device* d3dDevice,
-        ID3D11DeviceContext*                          d3dContext,
+    HRESULT DirectX::CreateDDSTextureFromFileEx(ID3D11Device* d3dDevice,
+        ID3D11DeviceContext*                                  d3dContext,
 #endif
         const wchar_t*             fileName,
         size_t                     maxsize,

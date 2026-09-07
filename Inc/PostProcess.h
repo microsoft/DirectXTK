@@ -154,10 +154,8 @@ namespace DirectX
             DIRECTX_TOOLKIT_API void __cdecl SetMergeParameters(float weight1, float weight2);
 
             // Sets parameters for BloomCombine
-            DIRECTX_TOOLKIT_API void __cdecl SetBloomCombineParameters(float bloom,
-                float                                                        base,
-                float                                                        bloomSaturation,
-                float                                                        baseSaturation);
+            DIRECTX_TOOLKIT_API void __cdecl
+            SetBloomCombineParameters(float bloom, float base, float bloomSaturation, float baseSaturation);
 
         private:
             // Private implementation.

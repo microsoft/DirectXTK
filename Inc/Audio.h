@@ -249,7 +249,7 @@ namespace DirectX
         // Suspend/resumes audio processing (i.e. global pause/resume)
 
         DIRECTX_TOOLKIT_API float __cdecl GetMasterVolume() const noexcept;
-        DIRECTX_TOOLKIT_API void __cdecl SetMasterVolume(float volume);
+        DIRECTX_TOOLKIT_API void __cdecl  SetMasterVolume(float volume);
         // Master volume property for all sounds
 
         DIRECTX_TOOLKIT_API void __cdecl SetReverb(AUDIO_ENGINE_REVERB reverb);
@@ -301,16 +301,16 @@ namespace DirectX
         // Should only be called for instance voices, not one-shots
 
         DIRECTX_TOOLKIT_API void __cdecl RegisterNotify(_In_ IVoiceNotify* notify, bool usesUpdate);
-        void __cdecl UnregisterNotify(_In_ IVoiceNotify* notify, bool usesOneShots, bool usesUpdate);
+        void __cdecl                     UnregisterNotify(_In_ IVoiceNotify* notify, bool usesOneShots, bool usesUpdate);
 
         // XAudio2 interface access
-        DIRECTX_TOOLKIT_API IXAudio2* __cdecl GetInterface() const noexcept;
+        DIRECTX_TOOLKIT_API IXAudio2* __cdecl               GetInterface() const noexcept;
         DIRECTX_TOOLKIT_API IXAudio2MasteringVoice* __cdecl GetMasterVoice() const noexcept;
-        DIRECTX_TOOLKIT_API IXAudio2SubmixVoice* __cdecl GetReverbVoice() const noexcept;
+        DIRECTX_TOOLKIT_API IXAudio2SubmixVoice* __cdecl    GetReverbVoice() const noexcept;
 
         // X3DAudio interface access
         DIRECTX_TOOLKIT_API X3DAUDIO_HANDLE& __cdecl Get3DHandle() const noexcept;
-        DIRECTX_TOOLKIT_API uint32_t __cdecl Get3DCalculateFlags() const noexcept;
+        DIRECTX_TOOLKIT_API uint32_t __cdecl         Get3DCalculateFlags() const noexcept;
 
         // Static functions
         struct RendererDetail
@@ -381,16 +381,14 @@ namespace DirectX
         DIRECTX_TOOLKIT_API size_t __cdecl GetSampleDurationMS(unsigned int index) const noexcept;
         // Returns the duration in milliseconds
 
-        DIRECTX_TOOLKIT_API const WAVEFORMATEX* __cdecl GetFormat(unsigned int index,
-            _Out_writes_bytes_(maxsize) WAVEFORMATEX*                          wfx,
-            size_t                                                             maxsize) const noexcept;
+        DIRECTX_TOOLKIT_API const WAVEFORMATEX* __cdecl
+        GetFormat(unsigned int index, _Out_writes_bytes_(maxsize) WAVEFORMATEX* wfx, size_t maxsize) const noexcept;
 
         DIRECTX_TOOLKIT_API int __cdecl Find(_In_z_ const char* name) const;
 
 #ifdef USING_XAUDIO2_9
-        DIRECTX_TOOLKIT_API bool __cdecl FillSubmitBuffer(unsigned int index,
-            _Out_ XAUDIO2_BUFFER&                                      buffer,
-            _Out_ XAUDIO2_BUFFER_WMA&                                  wmaBuffer) const;
+        DIRECTX_TOOLKIT_API bool __cdecl
+        FillSubmitBuffer(unsigned int index, _Out_ XAUDIO2_BUFFER& buffer, _Out_ XAUDIO2_BUFFER_WMA& wmaBuffer) const;
 #else
         DIRECTX_TOOLKIT_API void __cdecl FillSubmitBuffer(unsigned int index, _Out_ XAUDIO2_BUFFER& buffer) const;
 #endif
@@ -505,7 +503,7 @@ namespace DirectX
         }
 
         void XM_CALLCONV SetPosition(FXMVECTOR v) noexcept { XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&Position), v); }
-        void __cdecl SetPosition(const XMFLOAT3& pos) noexcept
+        void __cdecl     SetPosition(const XMFLOAT3& pos) noexcept
         {
             Position.x = pos.x;
             Position.y = pos.y;
@@ -513,7 +511,7 @@ namespace DirectX
         }
 
         void XM_CALLCONV SetVelocity(FXMVECTOR v) noexcept { XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&Velocity), v); }
-        void __cdecl SetVelocity(const XMFLOAT3& vel) noexcept
+        void __cdecl     SetVelocity(const XMFLOAT3& vel) noexcept
         {
             Velocity.x = vel.x;
             Velocity.y = vel.y;
@@ -599,7 +597,7 @@ namespace DirectX
         }
 
         void XM_CALLCONV SetPosition(FXMVECTOR v) noexcept { XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&Position), v); }
-        void __cdecl SetPosition(const XMFLOAT3& pos) noexcept
+        void __cdecl     SetPosition(const XMFLOAT3& pos) noexcept
         {
             Position.x = pos.x;
             Position.y = pos.y;
@@ -607,7 +605,7 @@ namespace DirectX
         }
 
         void XM_CALLCONV SetVelocity(FXMVECTOR v) noexcept { XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&Velocity), v); }
-        void __cdecl SetVelocity(const XMFLOAT3& vel) noexcept
+        void __cdecl     SetVelocity(const XMFLOAT3& vel) noexcept
         {
             Velocity.x = vel.x;
             Velocity.y = vel.y;
@@ -809,9 +807,8 @@ namespace DirectX
         DIRECTX_TOOLKIT_API void __cdecl Apply3D(const X3DAUDIO_LISTENER& listener, const X3DAUDIO_EMITTER& emitter, bool rhcoords = true);
 
         DIRECTX_TOOLKIT_API void __cdecl SubmitBuffer(_In_reads_bytes_(audioBytes) const uint8_t* pAudioData, size_t audioBytes);
-        DIRECTX_TOOLKIT_API void __cdecl SubmitBuffer(_In_reads_bytes_(audioBytes) const uint8_t* pAudioData,
-            uint32_t                                                                              offset,
-            size_t                                                                                audioBytes);
+        DIRECTX_TOOLKIT_API void __cdecl
+        SubmitBuffer(_In_reads_bytes_(audioBytes) const uint8_t* pAudioData, uint32_t offset, size_t audioBytes);
 
         DIRECTX_TOOLKIT_API SoundState __cdecl GetState() noexcept;
 

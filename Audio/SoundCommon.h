@@ -84,11 +84,9 @@ namespace DirectX
     // Helpers for creating various wave format structures
     void __cdecl CreateIntegerPCM(_Out_ WAVEFORMATEX* wfx, int sampleRate, int channels, int sampleBits) noexcept;
     void __cdecl CreateFloatPCM(_Out_ WAVEFORMATEX* wfx, int sampleRate, int channels) noexcept;
-    void __cdecl CreateADPCM(_Out_writes_bytes_(wfxSize) WAVEFORMATEX* wfx,
-        size_t                                                         wfxSize,
-        int                                                            sampleRate,
-        int                                                            channels,
-        int                                                            samplesPerBlock) noexcept(false);
+    void __cdecl
+    CreateADPCM(_Out_writes_bytes_(wfxSize) WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int samplesPerBlock) noexcept(
+        false);
 #ifdef DIRECTX_ENABLE_XWMA
     void __cdecl CreateXWMA(_Out_ WAVEFORMATEX* wfx, int sampleRate, int channels, int blockAlign, int avgBytes, bool wma3) noexcept;
 #endif

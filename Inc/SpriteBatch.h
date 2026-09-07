@@ -83,7 +83,7 @@ namespace DirectX
                 _In_opt_ ID3D11RasterizerState*                       rasterizerState   = nullptr,
                 _In_ std::function<void __cdecl()> setCustomShaders                     = nullptr,
                 FXMMATRIX                          transformMatrix                      = MatrixIdentity);
-            DIRECTX_TOOLKIT_API void __cdecl End();
+            DIRECTX_TOOLKIT_API void __cdecl     End();
 
             // Draw overloads specifying position, origin and scale as XMFLOAT2.
             DIRECTX_TOOLKIT_API void XM_CALLCONV Draw(_In_ ID3D11ShaderResourceView* texture,
@@ -145,7 +145,7 @@ namespace DirectX
                 float                                                                layerDepth = 0);
 
             // Rotation mode to be applied to the sprite transformation
-            DIRECTX_TOOLKIT_API void __cdecl SetRotation(DXGI_MODE_ROTATION mode);
+            DIRECTX_TOOLKIT_API void __cdecl               SetRotation(DXGI_MODE_ROTATION mode);
             DIRECTX_TOOLKIT_API DXGI_MODE_ROTATION __cdecl GetRotation() const noexcept;
 
             // Set viewport for sprite transformation

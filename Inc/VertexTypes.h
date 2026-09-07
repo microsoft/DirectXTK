@@ -399,7 +399,7 @@ namespace DirectX
                 SetColor(icolor);
             }
 
-            void __cdecl SetColor(XMFLOAT4 const& icolor) noexcept { SetColor(XMLoadFloat4(&icolor)); }
+            void __cdecl     SetColor(XMFLOAT4 const& icolor) noexcept { SetColor(XMLoadFloat4(&icolor)); }
             void XM_CALLCONV SetColor(FXMVECTOR icolor) noexcept;
 
             static constexpr unsigned int         InputElementCount = 5;
@@ -483,7 +483,7 @@ namespace DirectX
 
             void __cdecl SetBlendIndices(XMUINT4 const& iindices) noexcept;
 
-            void __cdecl SetBlendWeights(XMFLOAT4 const& iweights) noexcept { SetBlendWeights(XMLoadFloat4(&iweights)); }
+            void __cdecl     SetBlendWeights(XMFLOAT4 const& iweights) noexcept { SetBlendWeights(XMLoadFloat4(&iweights)); }
             void XM_CALLCONV SetBlendWeights(FXMVECTOR iweights) noexcept;
 
             static constexpr unsigned int         InputElementCount = 7;

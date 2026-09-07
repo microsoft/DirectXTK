@@ -321,11 +321,8 @@ namespace DirectX
         DIRECTX_TOOLKIT_API Capabilities __cdecl GetCapabilities(int player);
 
         // Set the vibration motor speeds of the gamepad
-        DIRECTX_TOOLKIT_API bool __cdecl SetVibration(int player,
-            float                                         leftMotor,
-            float                                         rightMotor,
-            float                                         leftTrigger  = 0.f,
-            float                                         rightTrigger = 0.f) noexcept;
+        DIRECTX_TOOLKIT_API bool __cdecl
+        SetVibration(int player, float leftMotor, float rightMotor, float leftTrigger = 0.f, float rightTrigger = 0.f) noexcept;
 
         // Handle suspending/resuming
         DIRECTX_TOOLKIT_API void __cdecl Suspend() noexcept;

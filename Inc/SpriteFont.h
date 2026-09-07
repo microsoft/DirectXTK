@@ -154,19 +154,19 @@ namespace DirectX
 
             // Spacing properties
             DIRECTX_TOOLKIT_API float __cdecl GetLineSpacing() const noexcept;
-            DIRECTX_TOOLKIT_API void __cdecl SetLineSpacing(float spacing) noexcept;
+            DIRECTX_TOOLKIT_API void __cdecl  SetLineSpacing(float spacing) noexcept;
 
             DIRECTX_TOOLKIT_API void __cdecl SetPixelAlignment(bool enable) noexcept;
 
             // Font properties
             DIRECTX_TOOLKIT_API wchar_t __cdecl GetDefaultCharacter() const noexcept;
-            DIRECTX_TOOLKIT_API void __cdecl SetDefaultCharacter(wchar_t character);
+            DIRECTX_TOOLKIT_API void __cdecl    SetDefaultCharacter(wchar_t character);
 
             DIRECTX_TOOLKIT_API bool __cdecl ContainsCharacter(wchar_t character) const;
 
             // Custom layout/rendering
             DIRECTX_TOOLKIT_API Glyph const* __cdecl FindGlyph(wchar_t character) const;
-            DIRECTX_TOOLKIT_API void __cdecl GetSpriteSheet(ID3D11ShaderResourceView** texture) const;
+            DIRECTX_TOOLKIT_API void __cdecl         GetSpriteSheet(ID3D11ShaderResourceView** texture) const;
 
             // Describes a single character glyph.
             struct Glyph
