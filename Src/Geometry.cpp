@@ -251,8 +251,10 @@ void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indi
         XMFLOAT3(-1,  0,  0), // 4 left
         XMFLOAT3(0, -1,  0), // 5 bottom
     };
+
     static const uint16_t OctahedronIndices[] =
     {
+        // clang-format off
         0, 1, 2, // top front-right face
         0, 2, 3, // top back-right face
         0, 3, 4, // top back-left face
@@ -261,6 +263,7 @@ void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indi
         5, 4, 3, // bottom back-left face
         5, 3, 2, // bottom back-right face
         5, 2, 1, // bottom front-right face
+        // clang-format on
     };
 
     const float radius = diameter / 2.0f;
@@ -355,12 +358,15 @@ void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indi
             //     /b\c/d\
             // v2 o---o---o v1
             //       v12
+
             const uint16_t indicesToAdd[] =
             {
+                // clang-format off
                 iv0, iv01,  iv20, // a
                 iv20, iv12,  iv2, // b
                 iv20, iv01, iv12, // c
                 iv01,  iv1, iv12, // d
+                // clang-format on
             };
             newIndices.insert(newIndices.end(), std::begin(indicesToAdd), std::end(indicesToAdd));
         }
@@ -783,18 +789,22 @@ void DirectX::ComputeTetrahedron(VertexCollection& vertices, IndexCollection& in
 
     static const XMVECTORF32 verts[4] =
     {
+        // clang-format off
         { { {              0.f,          0.f,        1.f, 0 } } },
         { { {  2.f*SQRT2 / 3.f,          0.f, -1.f / 3.f, 0 } } },
         { { {     -SQRT2 / 3.f,  SQRT6 / 3.f, -1.f / 3.f, 0 } } },
         { { {     -SQRT2 / 3.f, -SQRT6 / 3.f, -1.f / 3.f, 0 } } }
+        // clang-format on
     };
 
     static const uint32_t faces[4 * 3] =
     {
+        // clang-format off
         0, 1, 2,
         0, 2, 3,
         0, 3, 1,
         1, 3, 2,
+        // clang-format on
     };
 
     for (size_t j = 0; j < std::size(faces); j += 3)
@@ -853,6 +863,7 @@ void DirectX::ComputeOctahedron(VertexCollection& vertices, IndexCollection& ind
 
     static const uint32_t faces[8 * 3] =
     {
+        // clang-format off
         4, 0, 2,
         4, 2, 1,
         4, 1, 3,
@@ -861,6 +872,7 @@ void DirectX::ComputeOctahedron(VertexCollection& vertices, IndexCollection& ind
         5, 1, 2,
         5, 3, 1,
         5, 0, 3
+        // clang-format on
     };
 
     for (size_t j = 0; j < std::size(faces); j += 3)
@@ -913,6 +925,7 @@ void DirectX::ComputeDodecahedron(VertexCollection& vertices, IndexCollection& i
 
     static const XMVECTORF32 verts[20] =
     {
+        // clang-format off
         { { {  a,  a,  a, 0 } } },
         { { {  a,  a, -a, 0 } } },
         { { {  a, -a,  a, 0 } } },
@@ -933,10 +946,12 @@ void DirectX::ComputeDodecahedron(VertexCollection& vertices, IndexCollection& i
         { { {  0, -b,  c, 0 } } },
         { { {  0,  b, -c, 0 } } },
         { { {  0, -b, -c, 0 } } }
+        // clang-format on
     };
 
     static const uint32_t faces[12 * 5] =
     {
+        // clang-format off
         0, 8, 9, 4, 16,
         0, 16, 17, 2, 12,
         12, 2, 10, 3, 13,
@@ -949,19 +964,23 @@ void DirectX::ComputeDodecahedron(VertexCollection& vertices, IndexCollection& i
         6, 11, 10, 2, 17,
         7, 15, 5, 18, 19,
         7, 19, 3, 10, 11,
+        // clang-format on
     };
 
     static const XMVECTORF32 textureCoordinates[5] =
     {
+        // clang-format off
         { { {  0.654508f, 0.0244717f, 0, 0 } } },
         { { { 0.0954915f,  0.206107f, 0, 0 } } },
         { { { 0.0954915f,  0.793893f, 0, 0 } } },
         { { {  0.654508f,  0.975528f, 0, 0 } } },
         { { {        1.f,       0.5f, 0, 0 } } }
+        // clang-format on
     };
 
     static const uint32_t textureIndex[12][5] =
     {
+        // clang-format off
         { 0, 1, 2, 3, 4 },
         { 2, 3, 4, 0, 1 },
         { 4, 0, 1, 2, 3 },
@@ -974,6 +993,7 @@ void DirectX::ComputeDodecahedron(VertexCollection& vertices, IndexCollection& i
         { 1, 2, 3, 4, 0 },
         { 0, 1, 2, 3, 4 },
         { 2, 3, 4, 0, 1 },
+        // clang-format on
     };
 
     size_t t = 0;
@@ -1043,6 +1063,7 @@ void DirectX::ComputeIcosahedron(VertexCollection& vertices, IndexCollection& in
 
     static const XMVECTORF32 verts[12] =
     {
+        // clang-format off
         { { {    t / t2,  1.f / t2,       0, 0 } } },
         { { {   -t / t2,  1.f / t2,       0, 0 } } },
         { { {    t / t2, -1.f / t2,       0, 0 } } },
@@ -1055,10 +1076,12 @@ void DirectX::ComputeIcosahedron(VertexCollection& vertices, IndexCollection& in
         { { {       0,   -t / t2,  1.f / t2, 0 } } },
         { { {       0,    t / t2, -1.f / t2, 0 } } },
         { { {       0,   -t / t2, -1.f / t2, 0 } } }
+        // clang-format on
     };
 
     static const uint32_t faces[20 * 3] =
     {
+        // clang-format off
         0, 8, 4,
         0, 5, 10,
         2, 4, 9,
@@ -1079,6 +1102,7 @@ void DirectX::ComputeIcosahedron(VertexCollection& vertices, IndexCollection& in
         9, 4, 6,
         10, 5, 7,
         11, 7, 5
+        // clang-format on
     };
 
     for (size_t j = 0; j < std::size(faces); j += 3)
