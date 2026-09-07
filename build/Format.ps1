@@ -70,7 +70,7 @@ if ($clangFormatVersion -notmatch "\b$([regex]::Escape($requiredClangFormatVersi
 
 $sourceFiles = Get-ChildItem -LiteralPath $repoRoot -Recurse|
     Where-Object {
-        $_.FullName -notmatch '\\(?:\.git|\.vs|build|Tests|vcpkg_installed)\\' -and $_.Extension -in '.c','.cc','.cpp','.cxx','.h','.hh','.hpp'
+        $_.FullName -notmatch '\\(?:\.git|\.vs|build|Tests|vcpkg_installed)\\' -and $_.Extension -in '.c','.cc','.cpp','.cxx','.h','.hh','.hpp','.inl'
     }
 
 if ($sourceFiles.Count -eq 0) {
