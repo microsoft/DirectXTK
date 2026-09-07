@@ -26,31 +26,28 @@ namespace
 {
     //--------------------------------------------------------------------------------------
     // Shared VB input element description
-    INIT_ONCE g_InitOnce = INIT_ONCE_STATIC_INIT;
+    INIT_ONCE                                             g_InitOnce = INIT_ONCE_STATIC_INIT;
     std::shared_ptr<ModelMeshPart::InputLayoutCollection> g_vbdecl;
 
-    BOOL CALLBACK InitializeDecl(PINIT_ONCE initOnce, PVOID Parameter, PVOID *lpContext)
+    BOOL CALLBACK InitializeDecl(PINIT_ONCE initOnce, PVOID Parameter, PVOID* lpContext)
     {
         UNREFERENCED_PARAMETER(initOnce);
         UNREFERENCED_PARAMETER(Parameter);
         UNREFERENCED_PARAMETER(lpContext);
 
-        g_vbdecl = std::make_shared<ModelMeshPart::InputLayoutCollection>(
-            VertexPositionNormalTexture::InputElements,
+        g_vbdecl = std::make_shared<ModelMeshPart::InputLayoutCollection>(VertexPositionNormalTexture::InputElements,
             VertexPositionNormalTexture::InputElements + VertexPositionNormalTexture::InputElementCount);
 
         return TRUE;
     }
-}
-
+} // namespace
 
 //--------------------------------------------------------------------------------------
-_Use_decl_annotations_
-std::unique_ptr<Model> Model::CreateFromVBO(
-    ID3D11Device* device,
-    const uint8_t* meshData, size_t dataSize,
-    std::shared_ptr<IEffect> ieffect,
-    ModelLoaderFlags flags)
+_Use_decl_annotations_ std::unique_ptr<Model> Model::CreateFromVBO(ID3D11Device* device,
+    const uint8_t*                                                               meshData,
+    size_t                                                                       dataSize,
+    std::shared_ptr<IEffect>                                                     ieffect,
+    ModelLoaderFlags                                                             flags)
 {
     if (!InitOnceExecuteOnce(&g_InitOnce, InitializeDecl, nullptr, nullptr))
         throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "InitOnceExecuteOnce");
@@ -104,15 +101,13 @@ std::unique_ptr<Model> Model::CreateFromVBO(
     ComPtr<ID3D11Buffer> vb;
     {
         D3D11_BUFFER_DESC desc = {};
-        desc.Usage = D3D11_USAGE_DEFAULT;
-        desc.ByteWidth = static_cast<UINT>(vertSize);
-        desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+        desc.Usage             = D3D11_USAGE_DEFAULT;
+        desc.ByteWidth         = static_cast<UINT>(vertSize);
+        desc.BindFlags         = D3D11_BIND_VERTEX_BUFFER;
 
         D3D11_SUBRESOURCE_DATA initData = { verts, 0, 0 };
 
-        ThrowIfFailed(
-            device->CreateBuffer(&desc, &initData, vb.GetAddressOf())
-        );
+        ThrowIfFailed(device->CreateBuffer(&desc, &initData, vb.GetAddressOf()));
 
         SetDebugObjectName(vb.Get(), "ModelVBO");
     }
@@ -121,15 +116,13 @@ std::unique_ptr<Model> Model::CreateFromVBO(
     ComPtr<ID3D11Buffer> ib;
     {
         D3D11_BUFFER_DESC desc = {};
-        desc.Usage = D3D11_USAGE_DEFAULT;
-        desc.ByteWidth = static_cast<UINT>(indexSize);
-        desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+        desc.Usage             = D3D11_USAGE_DEFAULT;
+        desc.ByteWidth         = static_cast<UINT>(indexSize);
+        desc.BindFlags         = D3D11_BIND_INDEX_BUFFER;
 
         D3D11_SUBRESOURCE_DATA initData = { indices, 0, 0 };
 
-        ThrowIfFailed(
-            device->CreateBuffer(&desc, &initData, ib.GetAddressOf())
-        );
+        ThrowIfFailed(device->CreateBuffer(&desc, &initData, ib.GetAddressOf()));
 
         SetDebugObjectName(ib.Get(), "ModelVBO");
     }
@@ -146,24 +139,22 @@ std::unique_ptr<Model> Model::CreateFromVBO(
 
     ComPtr<ID3D11InputLayout> il;
 
-    ThrowIfFailed(
-        CreateInputLayoutFromEffect<VertexPositionNormalTexture>(device, ieffect.get(), il.GetAddressOf())
-    );
+    ThrowIfFailed(CreateInputLayoutFromEffect<VertexPositionNormalTexture>(device, ieffect.get(), il.GetAddressOf()));
 
     SetDebugObjectName(il.Get(), "ModelVBO");
 
-    auto part = std::make_unique<ModelMeshPart>();
-    part->indexCount = header->numIndices;
-    part->startIndex = 0;
+    auto part          = std::make_unique<ModelMeshPart>();
+    part->indexCount   = header->numIndices;
+    part->startIndex   = 0;
     part->vertexStride = static_cast<UINT>(sizeof(VertexPositionNormalTexture));
-    part->inputLayout = il;
-    part->indexBuffer = ib;
+    part->inputLayout  = il;
+    part->indexBuffer  = ib;
     part->vertexBuffer = vb;
-    part->effect = ieffect;
-    part->vbDecl = g_vbdecl;
+    part->effect       = ieffect;
+    part->vbDecl       = g_vbdecl;
 
-    auto mesh = std::make_shared<ModelMesh>();
-    mesh->ccw = (flags & ModelLoader_CounterClockwise) != 0;
+    auto mesh     = std::make_shared<ModelMesh>();
+    mesh->ccw     = (flags & ModelLoader_CounterClockwise) != 0;
     mesh->pmalpha = (flags & ModelLoader_PremultipledAlpha) != 0;
     BoundingSphere::CreateFromPoints(mesh->boundingSphere, header->numVertices, &verts->position, sizeof(VertexPositionNormalTexture));
     BoundingBox::CreateFromPoints(mesh->boundingBox, header->numVertices, &verts->position, sizeof(VertexPositionNormalTexture));
@@ -177,22 +168,16 @@ std::unique_ptr<Model> Model::CreateFromVBO(
     return model;
 }
 
-
 //--------------------------------------------------------------------------------------
-_Use_decl_annotations_
-std::unique_ptr<Model> Model::CreateFromVBO(
-    ID3D11Device* device,
-    const wchar_t* szFileName,
-    std::shared_ptr<IEffect> ieffect,
-    ModelLoaderFlags flags)
+_Use_decl_annotations_ std::unique_ptr<Model>
+Model::CreateFromVBO(ID3D11Device* device, const wchar_t* szFileName, std::shared_ptr<IEffect> ieffect, ModelLoaderFlags flags)
 {
-    size_t dataSize = 0;
+    size_t                     dataSize = 0;
     std::unique_ptr<uint8_t[]> data;
-    HRESULT hr = BinaryReader::ReadEntireFile(szFileName, data, &dataSize);
+    HRESULT                    hr = BinaryReader::ReadEntireFile(szFileName, data, &dataSize);
     if (FAILED(hr))
     {
-        DebugTrace("ERROR: CreateFromVBO failed (%08X) loading '%ls'\n",
-            static_cast<unsigned int>(hr), szFileName);
+        DebugTrace("ERROR: CreateFromVBO failed (%08X) loading '%ls'\n", static_cast<unsigned int>(hr), szFileName);
         throw std::runtime_error("CreateFromVBO");
     }
 
@@ -203,18 +188,13 @@ std::unique_ptr<Model> Model::CreateFromVBO(
     return model;
 }
 
-
 //--------------------------------------------------------------------------------------
 // Adapters for /Zc:wchar_t- clients
 
 #if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
 
-_Use_decl_annotations_
-std::unique_ptr<Model> Model::CreateFromVBO(
-    ID3D11Device* device,
-    const __wchar_t* szFileName,
-    std::shared_ptr<IEffect> ieffect,
-    ModelLoaderFlags flags)
+_Use_decl_annotations_ std::unique_ptr<Model>
+Model::CreateFromVBO(ID3D11Device* device, const __wchar_t* szFileName, std::shared_ptr<IEffect> ieffect, ModelLoaderFlags flags)
 {
     return CreateFromVBO(device, reinterpret_cast<const unsigned short*>(szFileName), ieffect, flags);
 }

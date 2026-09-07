@@ -15,7 +15,6 @@
 
 #include "PlatformHelpers.h"
 
-
 namespace DirectX
 {
     // Pool manager ensures that only a single TData instance is created for each unique TKey.
@@ -30,8 +29,8 @@ namespace DirectX
             : mResourceMap(std::make_shared<ResourceMap>())
         {}
 
-        SharedResourcePool(SharedResourcePool const&) = delete;
-        SharedResourcePool& operator= (SharedResourcePool const&) = delete;
+        SharedResourcePool(SharedResourcePool const&)            = delete;
+        SharedResourcePool& operator=(SharedResourcePool const&) = delete;
 
         // Allocates or looks up the shared TData instance for the specified key.
         std::shared_ptr<TData> DemandCreate(TKey key, TConstructorArgs... args)
@@ -60,7 +59,6 @@ namespace DirectX
             return std::move(newValue);
         }
 
-
     private:
         // Keep track of all allocated TData instances.
         struct ResourceMap : public std::map<TKey, std::weak_ptr<TData>>
@@ -70,22 +68,21 @@ namespace DirectX
 
         std::shared_ptr<ResourceMap> mResourceMap;
 
-
         // Wrap TData with our own subclass, so we can hook the destructor
         // to remove instances from our pool before they are freed.
         struct WrappedData : public TData
         {
             WrappedData(TKey key, std::shared_ptr<ResourceMap> const& resourceMap, TConstructorArgs... args)
                 : TData(key, args...),
-                mKey(key),
-                mResourceMap(resourceMap)
+                  mKey(key),
+                  mResourceMap(resourceMap)
             {}
 
-            WrappedData(WrappedData&&) = default;
-            WrappedData& operator= (WrappedData&&) = default;
+            WrappedData(WrappedData&&)            = default;
+            WrappedData& operator=(WrappedData&&) = default;
 
-            WrappedData(WrappedData const&) = delete;
-            WrappedData& operator= (WrappedData const&) = delete;
+            WrappedData(WrappedData const&)            = delete;
+            WrappedData& operator=(WrappedData const&) = delete;
 
             ~WrappedData()
             {
@@ -102,8 +99,8 @@ namespace DirectX
                 }
             }
 
-            TKey mKey;
+            TKey                         mKey;
             std::shared_ptr<ResourceMap> mResourceMap;
         };
     };
-}
+} // namespace DirectX

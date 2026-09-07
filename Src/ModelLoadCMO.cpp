@@ -22,22 +22,21 @@ using Microsoft::WRL::ComPtr;
 
 static_assert(sizeof(VertexPositionNormalTangentColorTexture) == sizeof(VSD3DStarter::Vertex), "mismatch with CMO vertex type");
 
-
 namespace
 {
     //----------------------------------------------------------------------------------
     struct MaterialRecordCMO
     {
-        const VSD3DStarter::Material*   pMaterial;
-        std::wstring                    name;
-        std::wstring                    pixelShader;
-        std::wstring                    texture[VSD3DStarter::MAX_TEXTURE];
-        std::shared_ptr<IEffect>        effect;
-        ComPtr<ID3D11InputLayout>       il;
+        const VSD3DStarter::Material* pMaterial;
+        std::wstring                  name;
+        std::wstring                  pixelShader;
+        std::wstring                  texture[VSD3DStarter::MAX_TEXTURE];
+        std::shared_ptr<IEffect>      effect;
+        ComPtr<ID3D11InputLayout>     il;
 
-        MaterialRecordCMO() noexcept :
-            pMaterial(nullptr),
-            texture{}
+        MaterialRecordCMO() noexcept
+            : pMaterial(nullptr),
+              texture{}
         {}
     };
 
@@ -46,15 +45,11 @@ namespace
     {
         if (skinning)
         {
-            ThrowIfFailed(
-                CreateInputLayoutFromEffect<VertexPositionNormalTangentColorTextureSkinning>(device, effect, pInputLayout)
-            );
+            ThrowIfFailed(CreateInputLayoutFromEffect<VertexPositionNormalTangentColorTextureSkinning>(device, effect, pInputLayout));
         }
         else
         {
-            ThrowIfFailed(
-                CreateInputLayoutFromEffect<VertexPositionNormalTangentColorTexture>(device, effect, pInputLayout)
-            );
+            ThrowIfFailed(CreateInputLayoutFromEffect<VertexPositionNormalTangentColorTexture>(device, effect, pInputLayout));
         }
 
         assert(pInputLayout != nullptr && *pInputLayout != nullptr);
@@ -64,23 +59,23 @@ namespace
     }
 
     // Shared VB input element description
-    INIT_ONCE g_InitOnce = INIT_ONCE_STATIC_INIT;
+    INIT_ONCE                                             g_InitOnce = INIT_ONCE_STATIC_INIT;
     std::shared_ptr<ModelMeshPart::InputLayoutCollection> g_vbdecl;
     std::shared_ptr<ModelMeshPart::InputLayoutCollection> g_vbdeclSkinning;
 
-    BOOL CALLBACK InitializeDecl(PINIT_ONCE initOnce, PVOID Parameter, PVOID *lpContext)
+    BOOL CALLBACK InitializeDecl(PINIT_ONCE initOnce, PVOID Parameter, PVOID* lpContext)
     {
         UNREFERENCED_PARAMETER(initOnce);
         UNREFERENCED_PARAMETER(Parameter);
         UNREFERENCED_PARAMETER(lpContext);
 
-        g_vbdecl = std::make_shared<ModelMeshPart::InputLayoutCollection>(
-            VertexPositionNormalTangentColorTexture::InputElements,
+        g_vbdecl = std::make_shared<ModelMeshPart::InputLayoutCollection>(VertexPositionNormalTangentColorTexture::InputElements,
             VertexPositionNormalTangentColorTexture::InputElements + VertexPositionNormalTangentColorTexture::InputElementCount);
 
-        g_vbdeclSkinning = std::make_shared<ModelMeshPart::InputLayoutCollection>(
-            VertexPositionNormalTangentColorTextureSkinning::InputElements,
-            VertexPositionNormalTangentColorTextureSkinning::InputElements + VertexPositionNormalTangentColorTextureSkinning::InputElementCount);
+        g_vbdeclSkinning
+            = std::make_shared<ModelMeshPart::InputLayoutCollection>(VertexPositionNormalTangentColorTextureSkinning::InputElements,
+                VertexPositionNormalTangentColorTextureSkinning::InputElements
+                    + VertexPositionNormalTangentColorTextureSkinning::InputElementCount);
         return TRUE;
     }
 
@@ -89,7 +84,7 @@ namespace
         if (srgb)
         {
             XMVECTOR v = XMVectorSet(r, g, b, 1.f);
-            v = XMColorSRGBToRGB(v);
+            v          = XMColorSRGBToRGB(v);
 
             XMFLOAT3 result;
             XMStoreFloat3(&result, v);
@@ -100,20 +95,18 @@ namespace
             return XMFLOAT3(r, g, b);
         }
     }
-}
-
+} // namespace
 
 //======================================================================================
 // Model Loader
 //======================================================================================
 
-_Use_decl_annotations_
-std::unique_ptr<Model> Model::CreateFromCMO(
-    ID3D11Device* device,
-    const uint8_t* meshData, size_t dataSize,
-    IEffectFactory& fxFactory,
-    ModelLoaderFlags flags,
-    size_t* animsOffset)
+_Use_decl_annotations_ std::unique_ptr<Model> Model::CreateFromCMO(ID3D11Device* device,
+    const uint8_t*                                                               meshData,
+    size_t                                                                       dataSize,
+    IEffectFactory&                                                              fxFactory,
+    ModelLoaderFlags                                                             flags,
+    size_t*                                                                      animsOffset)
 {
     if (animsOffset)
     {
@@ -129,7 +122,7 @@ std::unique_ptr<Model> Model::CreateFromCMO(
     auto fxFactoryDGSL = dynamic_cast<DGSLEffectFactory*>(&fxFactory);
 
     // Meshes
-    auto nMesh = reinterpret_cast<const uint32_t*>(meshData);
+    auto   nMesh    = reinterpret_cast<const uint32_t*>(meshData);
     size_t usedSize = sizeof(uint32_t);
     if (dataSize < usedSize)
         throw std::runtime_error("End of file");
@@ -150,15 +143,16 @@ std::unique_ptr<Model> Model::CreateFromCMO(
         if (dataSize < usedSize)
             throw std::runtime_error("End of file");
 
-        auto meshName = reinterpret_cast<const wchar_t*>(static_cast<const void*>(meshData + usedSize)); // CodeQL [SM02986] The cast here is intentional to interpret the string in the buffer.
+        auto meshName = reinterpret_cast<const wchar_t*>(static_cast<const void*>(
+            meshData + usedSize)); // CodeQL [SM02986] The cast here is intentional to interpret the string in the buffer.
 
-        usedSize += sizeof(wchar_t)*(*nName);
+        usedSize += sizeof(wchar_t) * (*nName);
         if (dataSize < usedSize)
             throw std::runtime_error("End of file");
 
         auto mesh = std::make_shared<ModelMesh>();
         mesh->name.assign(meshName, *nName);
-        mesh->ccw = (flags & ModelLoader_CounterClockwise) != 0;
+        mesh->ccw     = (flags & ModelLoader_CounterClockwise) != 0;
         mesh->pmalpha = (flags & ModelLoader_PremultipledAlpha) != 0;
 
         // Materials
@@ -182,9 +176,10 @@ std::unique_ptr<Model> Model::CreateFromCMO(
             if (dataSize < usedSize)
                 throw std::runtime_error("End of file");
 
-            auto matName = reinterpret_cast<const wchar_t*>(static_cast<const void*>(meshData + usedSize)); // CodeQL [SM02986] The cast here is intentional to interpret the string in the buffer.
+            auto matName = reinterpret_cast<const wchar_t*>(static_cast<const void*>(
+                meshData + usedSize)); // CodeQL [SM02986] The cast here is intentional to interpret the string in the buffer.
 
-            usedSize += sizeof(wchar_t)*(*nName);
+            usedSize += sizeof(wchar_t) * (*nName);
             if (dataSize < usedSize)
                 throw std::runtime_error("End of file");
 
@@ -204,9 +199,10 @@ std::unique_ptr<Model> Model::CreateFromCMO(
             if (dataSize < usedSize)
                 throw std::runtime_error("End of file");
 
-            auto psName = reinterpret_cast<const wchar_t*>(static_cast<const void*>(meshData + usedSize)); // CodeQL [SM02986] The cast here is intentional to interpret the string in the buffer.
+            auto psName = reinterpret_cast<const wchar_t*>(static_cast<const void*>(
+                meshData + usedSize)); // CodeQL [SM02986] The cast here is intentional to interpret the string in the buffer.
 
-            usedSize += sizeof(wchar_t)*(*nName);
+            usedSize += sizeof(wchar_t) * (*nName);
             if (dataSize < usedSize)
                 throw std::runtime_error("End of file");
 
@@ -219,9 +215,10 @@ std::unique_ptr<Model> Model::CreateFromCMO(
                 if (dataSize < usedSize)
                     throw std::runtime_error("End of file");
 
-                auto txtName = reinterpret_cast<const wchar_t*>(static_cast<const void*>(meshData + usedSize)); // CodeQL [SM02986] The cast here is intentional to interpret the string in the buffer.
+                auto txtName = reinterpret_cast<const wchar_t*>(static_cast<const void*>(
+                    meshData + usedSize)); // CodeQL [SM02986] The cast here is intentional to interpret the string in the buffer.
 
-                usedSize += sizeof(wchar_t)*(*nName);
+                usedSize += sizeof(wchar_t) * (*nName);
                 if (dataSize < usedSize)
                     throw std::runtime_error("End of file");
 
@@ -238,7 +235,7 @@ std::unique_ptr<Model> Model::CreateFromCMO(
             // Add default material if none defined
             MaterialRecordCMO m;
             m.pMaterial = &VSD3DStarter::s_defMaterial;
-            m.name = L"Default";
+            m.name      = L"Default";
             materials.emplace_back(m);
         }
 
@@ -316,19 +313,17 @@ std::unique_ptr<Model> Model::CreateFromCMO(
 
             IBData ib;
             ib.nIndices = *nIndexes;
-            ib.ptr = indexes;
+            ib.ptr      = indexes;
             ibData.emplace_back(ib);
 
             D3D11_BUFFER_DESC desc = {};
-            desc.Usage = D3D11_USAGE_DEFAULT;
-            desc.ByteWidth = static_cast<UINT>(ibBytes);
-            desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+            desc.Usage             = D3D11_USAGE_DEFAULT;
+            desc.ByteWidth         = static_cast<UINT>(ibBytes);
+            desc.BindFlags         = D3D11_BIND_INDEX_BUFFER;
 
             D3D11_SUBRESOURCE_DATA initData = { indexes, 0, 0 };
 
-            ThrowIfFailed(
-                device->CreateBuffer(&desc, &initData, &ibs[j])
-            );
+            ThrowIfFailed(device->CreateBuffer(&desc, &initData, &ibs[j]));
 
             SetDebugObjectName(ibs[j].Get(), "ModelCMO");
         }
@@ -350,9 +345,9 @@ std::unique_ptr<Model> Model::CreateFromCMO(
 
         struct VBData
         {
-            size_t                                          nVerts;
-            const VertexPositionNormalTangentColorTexture*  ptr;
-            const VSD3DStarter::SkinningVertex*             skinPtr;
+            size_t                                         nVerts;
+            const VertexPositionNormalTangentColorTexture* ptr;
+            const VSD3DStarter::SkinningVertex*            skinPtr;
         };
 
         std::vector<VBData> vbData;
@@ -375,8 +370,8 @@ std::unique_ptr<Model> Model::CreateFromCMO(
                 throw std::runtime_error("End of file");
 
             VBData vb;
-            vb.nVerts = *nVerts;
-            vb.ptr = verts;
+            vb.nVerts  = *nVerts;
+            vb.ptr     = verts;
             vb.skinPtr = nullptr;
             vbData.emplace_back(vb);
         }
@@ -427,7 +422,7 @@ std::unique_ptr<Model> Model::CreateFromCMO(
         mesh->boundingSphere.Center.x = extents->CenterX;
         mesh->boundingSphere.Center.y = extents->CenterY;
         mesh->boundingSphere.Center.z = extents->CenterZ;
-        mesh->boundingSphere.Radius = extents->Radius;
+        mesh->boundingSphere.Radius   = extents->Radius;
 
         const XMVECTOR min = XMVectorSet(extents->MinX, extents->MinY, extents->MinZ, 0.f);
         const XMVECTOR max = XMVectorSet(extents->MaxX, extents->MaxY, extents->MaxZ, 0.f);
@@ -447,7 +442,7 @@ std::unique_ptr<Model> Model::CreateFromCMO(
 
             ModelBone::Collection bones;
             bones.resize(*nBones);
-            auto transforms = ModelBone::MakeArray(*nBones);
+            auto transforms    = ModelBone::MakeArray(*nBones);
             auto invTransforms = ModelBone::MakeArray(*nBones);
 
             for (uint32_t j = 0; j < *nBones; ++j)
@@ -458,7 +453,8 @@ std::unique_ptr<Model> Model::CreateFromCMO(
                 if (dataSize < usedSize)
                     throw std::runtime_error("End of file");
 
-                auto boneName = reinterpret_cast<const wchar_t*>(static_cast<const void*>(meshData + usedSize)); // CodeQL [SM02986] The cast here is intentional to interpret the string in the buffer.
+                auto boneName = reinterpret_cast<const wchar_t*>(static_cast<const void*>(
+                    meshData + usedSize)); // CodeQL [SM02986] The cast here is intentional to interpret the string in the buffer.
 
                 usedSize += sizeof(wchar_t) * (*nName);
                 if (dataSize < usedSize)
@@ -472,7 +468,7 @@ std::unique_ptr<Model> Model::CreateFromCMO(
                 if (dataSize < usedSize)
                     throw std::runtime_error("End of file");
 
-                transforms[j] = XMLoadFloat4x4(&cmobones->LocalTransform);
+                transforms[j]    = XMLoadFloat4x4(&cmobones->LocalTransform);
                 invTransforms[j] = XMLoadFloat4x4(&cmobones->InvBindPos);
 
                 if (cmobones->ParentIndex < 0)
@@ -572,8 +568,8 @@ std::unique_ptr<Model> Model::CreateFromCMO(
         std::vector<ComPtr<ID3D11Buffer>> vbs;
         vbs.resize(*nVBs);
 
-        const size_t stride = enableSkinning ? sizeof(VertexPositionNormalTangentColorTextureSkinning)
-            : sizeof(VertexPositionNormalTangentColorTexture);
+        const size_t stride
+            = enableSkinning ? sizeof(VertexPositionNormalTangentColorTextureSkinning) : sizeof(VertexPositionNormalTangentColorTexture);
 
         for (size_t j = 0; j < *nVBs; ++j)
         {
@@ -593,18 +589,16 @@ std::unique_ptr<Model> Model::CreateFromCMO(
             const size_t bytes = static_cast<size_t>(sizeInBytes);
 
             D3D11_BUFFER_DESC desc = {};
-            desc.Usage = D3D11_USAGE_DEFAULT;
-            desc.ByteWidth = static_cast<UINT>(bytes);
-            desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+            desc.Usage             = D3D11_USAGE_DEFAULT;
+            desc.ByteWidth         = static_cast<UINT>(bytes);
+            desc.BindFlags         = D3D11_BIND_VERTEX_BUFFER;
 
             if (fxFactoryDGSL && !enableSkinning)
             {
                 // Can use CMO vertex data directly
                 D3D11_SUBRESOURCE_DATA initData = { vbData[j].ptr, 0, 0 };
 
-                ThrowIfFailed(
-                    device->CreateBuffer(&desc, &initData, &vbs[j])
-                );
+                ThrowIfFailed(device->CreateBuffer(&desc, &initData, &vbs[j]));
             }
             else
             {
@@ -651,8 +645,7 @@ std::unique_ptr<Model> Model::CreateFromCMO(
                         if (sm.VertexBufferIndex != j)
                             continue;
 
-                        if ((sm.IndexBufferIndex >= *nIBs)
-                            || (sm.MaterialIndex >= materials.size()))
+                        if ((sm.IndexBufferIndex >= *nIBs) || (sm.MaterialIndex >= materials.size()))
                             throw std::out_of_range("Invalid submesh found\n");
 
                         const XMMATRIX uvTransform = XMLoadFloat4x4(&materials[sm.MaterialIndex].pMaterial->UVTransform);
@@ -683,17 +676,18 @@ std::unique_ptr<Model> Model::CreateFromCMO(
                             }
                             else if (visited[v] != sm.MaterialIndex)
                             {
-                            #ifdef _DEBUG
+#ifdef _DEBUG
                                 const XMMATRIX uv2 = XMLoadFloat4x4(&materials[visited[v]].pMaterial->UVTransform);
 
-                                if (XMVector4NotEqual(uvTransform.r[0], uv2.r[0])
-                                    || XMVector4NotEqual(uvTransform.r[1], uv2.r[1])
-                                    || XMVector4NotEqual(uvTransform.r[2], uv2.r[2])
-                                    || XMVector4NotEqual(uvTransform.r[3], uv2.r[3]))
+                                if (XMVector4NotEqual(uvTransform.r[0], uv2.r[0]) || XMVector4NotEqual(uvTransform.r[1], uv2.r[1])
+                                    || XMVector4NotEqual(uvTransform.r[2], uv2.r[2]) || XMVector4NotEqual(uvTransform.r[3], uv2.r[3]))
                                 {
-                                    DebugTrace("WARNING: %ls - mismatched UV transforms for the same vertex; texture coordinates may not be correct\n", mesh->name.c_str());
+                                    DebugTrace(
+                                        "WARNING: %ls - mismatched UV transforms for the same vertex; texture coordinates may not be "
+                                        "correct\n",
+                                        mesh->name.c_str());
                                 }
-                            #endif
+#endif
                             }
                         }
                     }
@@ -702,9 +696,7 @@ std::unique_ptr<Model> Model::CreateFromCMO(
                 // Create vertex buffer from temporary buffer
                 D3D11_SUBRESOURCE_DATA initData = { temp.get(), 0, 0 };
 
-                ThrowIfFailed(
-                    device->CreateBuffer(&desc, &initData, &vbs[j])
-                );
+                ThrowIfFailed(device->CreateBuffer(&desc, &initData, &vbs[j]));
             }
 
             SetDebugObjectName(vbs[j].Get(), "ModelCMO");
@@ -722,20 +714,20 @@ std::unique_ptr<Model> Model::CreateFromCMO(
             if (fxFactoryDGSL)
             {
                 DGSLEffectFactory::DGSLEffectInfo info;
-                info.name = m.name.c_str();
-                info.specularPower = m.pMaterial->SpecularPower;
-                info.perVertexColor = true;
-                info.enableSkinning = enableSkinning;
-                info.alpha = m.pMaterial->Diffuse.w;
-                info.ambientColor = GetMaterialColor(m.pMaterial->Ambient.x, m.pMaterial->Ambient.y, m.pMaterial->Ambient.z, srgb);
-                info.diffuseColor = GetMaterialColor(m.pMaterial->Diffuse.x, m.pMaterial->Diffuse.y, m.pMaterial->Diffuse.z, srgb);
-                info.specularColor = GetMaterialColor(m.pMaterial->Specular.x, m.pMaterial->Specular.y, m.pMaterial->Specular.z, srgb);
-                info.emissiveColor = GetMaterialColor(m.pMaterial->Emissive.x, m.pMaterial->Emissive.y, m.pMaterial->Emissive.z, srgb);
-                info.diffuseTexture = m.texture[0].empty() ? nullptr : m.texture[0].c_str();
+                info.name            = m.name.c_str();
+                info.specularPower   = m.pMaterial->SpecularPower;
+                info.perVertexColor  = true;
+                info.enableSkinning  = enableSkinning;
+                info.alpha           = m.pMaterial->Diffuse.w;
+                info.ambientColor    = GetMaterialColor(m.pMaterial->Ambient.x, m.pMaterial->Ambient.y, m.pMaterial->Ambient.z, srgb);
+                info.diffuseColor    = GetMaterialColor(m.pMaterial->Diffuse.x, m.pMaterial->Diffuse.y, m.pMaterial->Diffuse.z, srgb);
+                info.specularColor   = GetMaterialColor(m.pMaterial->Specular.x, m.pMaterial->Specular.y, m.pMaterial->Specular.z, srgb);
+                info.emissiveColor   = GetMaterialColor(m.pMaterial->Emissive.x, m.pMaterial->Emissive.y, m.pMaterial->Emissive.z, srgb);
+                info.diffuseTexture  = m.texture[0].empty() ? nullptr : m.texture[0].c_str();
                 info.specularTexture = m.texture[1].empty() ? nullptr : m.texture[1].c_str();
-                info.normalTexture = m.texture[2].empty() ? nullptr : m.texture[2].c_str();
+                info.normalTexture   = m.texture[2].empty() ? nullptr : m.texture[2].c_str();
                 info.emissiveTexture = m.texture[3].empty() ? nullptr : m.texture[3].c_str();
-                info.pixelShader = m.pixelShader.c_str();
+                info.pixelShader     = m.pixelShader.c_str();
 
                 constexpr int offset = DGSLEffectFactory::DGSLEffectInfo::BaseTextureOffset;
                 for (int i = 0; i < (DGSLEffect::MaxTextures - offset); ++i)
@@ -751,15 +743,15 @@ std::unique_ptr<Model> Model::CreateFromCMO(
             else
             {
                 EffectFactory::EffectInfo info;
-                info.name = m.name.c_str();
-                info.specularPower = m.pMaterial->SpecularPower;
+                info.name           = m.name.c_str();
+                info.specularPower  = m.pMaterial->SpecularPower;
                 info.perVertexColor = true;
                 info.enableSkinning = enableSkinning;
-                info.alpha = m.pMaterial->Diffuse.w;
-                info.ambientColor = GetMaterialColor(m.pMaterial->Ambient.x, m.pMaterial->Ambient.y, m.pMaterial->Ambient.z, srgb);
-                info.diffuseColor = GetMaterialColor(m.pMaterial->Diffuse.x, m.pMaterial->Diffuse.y, m.pMaterial->Diffuse.z, srgb);
-                info.specularColor = GetMaterialColor(m.pMaterial->Specular.x, m.pMaterial->Specular.y, m.pMaterial->Specular.z, srgb);
-                info.emissiveColor = GetMaterialColor(m.pMaterial->Emissive.x, m.pMaterial->Emissive.y, m.pMaterial->Emissive.z, srgb);
+                info.alpha          = m.pMaterial->Diffuse.w;
+                info.ambientColor   = GetMaterialColor(m.pMaterial->Ambient.x, m.pMaterial->Ambient.y, m.pMaterial->Ambient.z, srgb);
+                info.diffuseColor   = GetMaterialColor(m.pMaterial->Diffuse.x, m.pMaterial->Diffuse.y, m.pMaterial->Diffuse.z, srgb);
+                info.specularColor  = GetMaterialColor(m.pMaterial->Specular.x, m.pMaterial->Specular.y, m.pMaterial->Specular.z, srgb);
+                info.emissiveColor  = GetMaterialColor(m.pMaterial->Emissive.x, m.pMaterial->Emissive.y, m.pMaterial->Emissive.z, srgb);
                 info.diffuseTexture = m.texture[0].c_str();
 
                 m.effect = fxFactory.CreateEffect(info, nullptr);
@@ -773,9 +765,7 @@ std::unique_ptr<Model> Model::CreateFromCMO(
         {
             auto& sm = subMesh[j];
 
-            if ((sm.IndexBufferIndex >= *nIBs)
-                || (sm.VertexBufferIndex >= *nVBs)
-                || (sm.MaterialIndex >= materials.size()))
+            if ((sm.IndexBufferIndex >= *nIBs) || (sm.VertexBufferIndex >= *nVBs) || (sm.MaterialIndex >= materials.size()))
                 throw std::out_of_range("Invalid submesh found\n");
 
             auto& mat = materials[sm.MaterialIndex];
@@ -785,14 +775,14 @@ std::unique_ptr<Model> Model::CreateFromCMO(
             if (mat.pMaterial->Diffuse.w < 1)
                 part->isAlpha = true;
 
-            part->indexCount = sm.PrimCount * 3;
-            part->startIndex = sm.StartIndex;
+            part->indexCount   = sm.PrimCount * 3;
+            part->startIndex   = sm.StartIndex;
             part->vertexStride = static_cast<UINT>(stride);
-            part->inputLayout = mat.il;
-            part->indexBuffer = ibs[sm.IndexBufferIndex];
+            part->inputLayout  = mat.il;
+            part->indexBuffer  = ibs[sm.IndexBufferIndex];
             part->vertexBuffer = vbs[sm.VertexBufferIndex];
-            part->effect = mat.effect;
-            part->vbDecl = enableSkinning ? g_vbdeclSkinning : g_vbdecl;
+            part->effect       = mat.effect;
+            part->vbDecl       = enableSkinning ? g_vbdeclSkinning : g_vbdecl;
 
             mesh->meshParts.emplace_back(std::move(part));
         }
@@ -803,28 +793,24 @@ std::unique_ptr<Model> Model::CreateFromCMO(
     return model;
 }
 
-
 //--------------------------------------------------------------------------------------
-_Use_decl_annotations_
-std::unique_ptr<Model> Model::CreateFromCMO(
-    ID3D11Device* device,
-    const wchar_t* szFileName,
-    IEffectFactory& fxFactory,
-    ModelLoaderFlags flags,
-    size_t* animsOffset)
+_Use_decl_annotations_ std::unique_ptr<Model> Model::CreateFromCMO(ID3D11Device* device,
+    const wchar_t*                                                               szFileName,
+    IEffectFactory&                                                              fxFactory,
+    ModelLoaderFlags                                                             flags,
+    size_t*                                                                      animsOffset)
 {
     if (animsOffset)
     {
         *animsOffset = 0;
     }
 
-    size_t dataSize = 0;
+    size_t                     dataSize = 0;
     std::unique_ptr<uint8_t[]> data;
-    HRESULT hr = BinaryReader::ReadEntireFile(szFileName, data, &dataSize);
+    HRESULT                    hr = BinaryReader::ReadEntireFile(szFileName, data, &dataSize);
     if (FAILED(hr))
     {
-        DebugTrace("ERROR: CreateFromCMO failed (%08X) loading '%ls'\n",
-            static_cast<unsigned int>(hr), szFileName);
+        DebugTrace("ERROR: CreateFromCMO failed (%08X) loading '%ls'\n", static_cast<unsigned int>(hr), szFileName);
         throw std::runtime_error("CreateFromCMO");
     }
 
@@ -835,19 +821,16 @@ std::unique_ptr<Model> Model::CreateFromCMO(
     return model;
 }
 
-
 //--------------------------------------------------------------------------------------
 // Adapters for /Zc:wchar_t- clients
 
 #if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
 
-_Use_decl_annotations_
-std::unique_ptr<Model> Model::CreateFromCMO(
-    ID3D11Device* device,
-    const __wchar_t* szFileName,
-    IEffectFactory& fxFactory,
-    ModelLoaderFlags flags,
-    size_t* animsOffset)
+_Use_decl_annotations_ std::unique_ptr<Model> Model::CreateFromCMO(ID3D11Device* device,
+    const __wchar_t*                                                             szFileName,
+    IEffectFactory&                                                              fxFactory,
+    ModelLoaderFlags                                                             flags,
+    size_t*                                                                      animsOffset)
 {
     return CreateFromCMO(device, reinterpret_cast<const unsigned short*>(szFileName), fxFactory, flags, animsOffset);
 }

@@ -37,14 +37,12 @@ namespace DirectX
             case DXGI_FORMAT_R32G32B32A32_TYPELESS:
             case DXGI_FORMAT_R32G32B32A32_FLOAT:
             case DXGI_FORMAT_R32G32B32A32_UINT:
-            case DXGI_FORMAT_R32G32B32A32_SINT:
-                return 128;
+            case DXGI_FORMAT_R32G32B32A32_SINT:        return 128;
 
             case DXGI_FORMAT_R32G32B32_TYPELESS:
             case DXGI_FORMAT_R32G32B32_FLOAT:
             case DXGI_FORMAT_R32G32B32_UINT:
-            case DXGI_FORMAT_R32G32B32_SINT:
-                return 96;
+            case DXGI_FORMAT_R32G32B32_SINT:           return 96;
 
             case DXGI_FORMAT_R16G16B16A16_TYPELESS:
             case DXGI_FORMAT_R16G16B16A16_FLOAT:
@@ -62,8 +60,7 @@ namespace DirectX
             case DXGI_FORMAT_X32_TYPELESS_G8X24_UINT:
             case DXGI_FORMAT_Y416:
             case DXGI_FORMAT_Y210:
-            case DXGI_FORMAT_Y216:
-                return 64;
+            case DXGI_FORMAT_Y216:                     return 64;
 
             case DXGI_FORMAT_R10G10B10A2_TYPELESS:
             case DXGI_FORMAT_R10G10B10A2_UNORM:
@@ -103,23 +100,23 @@ namespace DirectX
             case DXGI_FORMAT_AYUV:
             case DXGI_FORMAT_Y410:
             case DXGI_FORMAT_YUY2:
-            #if (defined(_XBOX_ONE) && defined(_TITLE)) || defined(_GAMING_XBOX)
+#if (defined(_XBOX_ONE) && defined(_TITLE)) || defined(_GAMING_XBOX)
             case DXGI_FORMAT_R10G10B10_7E3_A2_FLOAT:
             case DXGI_FORMAT_R10G10B10_6E4_A2_FLOAT:
             case DXGI_FORMAT_R10G10B10_SNORM_A2_UNORM:
-            #endif
+#endif
                 return 32;
 
             case DXGI_FORMAT_P010:
             case DXGI_FORMAT_P016:
-            #if (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
+#if (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
             case DXGI_FORMAT_V408:
-            #endif
-            #if (defined(_XBOX_ONE) && defined(_TITLE)) || defined(_GAMING_XBOX)
+#endif
+#if (defined(_XBOX_ONE) && defined(_TITLE)) || defined(_GAMING_XBOX)
             case DXGI_FORMAT_D16_UNORM_S8_UINT:
             case DXGI_FORMAT_R16_UNORM_X8_TYPELESS:
             case DXGI_FORMAT_X16_TYPELESS_G8_UINT:
-            #endif
+#endif
                 return 24;
 
             case DXGI_FORMAT_R8G8_TYPELESS:
@@ -138,16 +135,15 @@ namespace DirectX
             case DXGI_FORMAT_B5G5R5A1_UNORM:
             case DXGI_FORMAT_A8P8:
             case DXGI_FORMAT_B4G4R4A4_UNORM:
-            #if (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
+#if (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
             case DXGI_FORMAT_P208:
             case DXGI_FORMAT_V208:
-            #endif
+#endif
                 return 16;
 
             case DXGI_FORMAT_NV12:
             case DXGI_FORMAT_420_OPAQUE:
-            case DXGI_FORMAT_NV11:
-                return 12;
+            case DXGI_FORMAT_NV11:       return 12;
 
             case DXGI_FORMAT_R8_TYPELESS:
             case DXGI_FORMAT_R8_UNORM:
@@ -173,26 +169,23 @@ namespace DirectX
             case DXGI_FORMAT_AI44:
             case DXGI_FORMAT_IA44:
             case DXGI_FORMAT_P8:
-            #if (defined(_XBOX_ONE) && defined(_TITLE)) || defined(_GAMING_XBOX)
+#if (defined(_XBOX_ONE) && defined(_TITLE)) || defined(_GAMING_XBOX)
             case DXGI_FORMAT_R4G4_UNORM:
-            #endif
+#endif
                 return 8;
 
-            case DXGI_FORMAT_R1_UNORM:
-                return 1;
+            case DXGI_FORMAT_R1_UNORM:       return 1;
 
             case DXGI_FORMAT_BC1_TYPELESS:
             case DXGI_FORMAT_BC1_UNORM:
             case DXGI_FORMAT_BC1_UNORM_SRGB:
             case DXGI_FORMAT_BC4_TYPELESS:
             case DXGI_FORMAT_BC4_UNORM:
-            case DXGI_FORMAT_BC4_SNORM:
-                return 4;
+            case DXGI_FORMAT_BC4_SNORM:      return 4;
 
             case DXGI_FORMAT_UNKNOWN:
             case DXGI_FORMAT_FORCE_UINT:
-            default:
-                return 0;
+            default:                         return 0;
             }
         }
 
@@ -201,29 +194,21 @@ namespace DirectX
         {
             switch (format)
             {
-            case DXGI_FORMAT_R8G8B8A8_UNORM:
-                return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+            case DXGI_FORMAT_R8G8B8A8_UNORM: return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 
-            case DXGI_FORMAT_BC1_UNORM:
-                return DXGI_FORMAT_BC1_UNORM_SRGB;
+            case DXGI_FORMAT_BC1_UNORM:      return DXGI_FORMAT_BC1_UNORM_SRGB;
 
-            case DXGI_FORMAT_BC2_UNORM:
-                return DXGI_FORMAT_BC2_UNORM_SRGB;
+            case DXGI_FORMAT_BC2_UNORM:      return DXGI_FORMAT_BC2_UNORM_SRGB;
 
-            case DXGI_FORMAT_BC3_UNORM:
-                return DXGI_FORMAT_BC3_UNORM_SRGB;
+            case DXGI_FORMAT_BC3_UNORM:      return DXGI_FORMAT_BC3_UNORM_SRGB;
 
-            case DXGI_FORMAT_B8G8R8A8_UNORM:
-                return DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
+            case DXGI_FORMAT_B8G8R8A8_UNORM: return DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
 
-            case DXGI_FORMAT_B8G8R8X8_UNORM:
-                return DXGI_FORMAT_B8G8R8X8_UNORM_SRGB;
+            case DXGI_FORMAT_B8G8R8X8_UNORM: return DXGI_FORMAT_B8G8R8X8_UNORM_SRGB;
 
-            case DXGI_FORMAT_BC7_UNORM:
-                return DXGI_FORMAT_BC7_UNORM_SRGB;
+            case DXGI_FORMAT_BC7_UNORM:      return DXGI_FORMAT_BC7_UNORM_SRGB;
 
-            default:
-                return format;
+            default:                         return format;
             }
         }
 
@@ -232,29 +217,21 @@ namespace DirectX
         {
             switch (format)
             {
-            case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
-                return DXGI_FORMAT_R8G8B8A8_UNORM;
+            case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB: return DXGI_FORMAT_R8G8B8A8_UNORM;
 
-            case DXGI_FORMAT_BC1_UNORM_SRGB:
-                return DXGI_FORMAT_BC1_UNORM;
+            case DXGI_FORMAT_BC1_UNORM_SRGB:      return DXGI_FORMAT_BC1_UNORM;
 
-            case DXGI_FORMAT_BC2_UNORM_SRGB:
-                return DXGI_FORMAT_BC2_UNORM;
+            case DXGI_FORMAT_BC2_UNORM_SRGB:      return DXGI_FORMAT_BC2_UNORM;
 
-            case DXGI_FORMAT_BC3_UNORM_SRGB:
-                return DXGI_FORMAT_BC3_UNORM;
+            case DXGI_FORMAT_BC3_UNORM_SRGB:      return DXGI_FORMAT_BC3_UNORM;
 
-            case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
-                return DXGI_FORMAT_B8G8R8A8_UNORM;
+            case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB: return DXGI_FORMAT_B8G8R8A8_UNORM;
 
-            case DXGI_FORMAT_B8G8R8X8_UNORM_SRGB:
-                return DXGI_FORMAT_B8G8R8X8_UNORM;
+            case DXGI_FORMAT_B8G8R8X8_UNORM_SRGB: return DXGI_FORMAT_B8G8R8X8_UNORM;
 
-            case DXGI_FORMAT_BC7_UNORM_SRGB:
-                return DXGI_FORMAT_BC7_UNORM;
+            case DXGI_FORMAT_BC7_UNORM_SRGB:      return DXGI_FORMAT_BC7_UNORM;
 
-            default:
-                return format;
+            default:                              return format;
             }
         }
 
@@ -283,11 +260,9 @@ namespace DirectX
             case DXGI_FORMAT_BC6H_SF16:
             case DXGI_FORMAT_BC7_TYPELESS:
             case DXGI_FORMAT_BC7_UNORM:
-            case DXGI_FORMAT_BC7_UNORM_SRGB:
-                return true;
+            case DXGI_FORMAT_BC7_UNORM_SRGB: return true;
 
-            default:
-                return false;
+            default:                         return false;
             }
         }
 
@@ -321,12 +296,11 @@ namespace DirectX
         }
 
         //--------------------------------------------------------------------------------------
-        inline HRESULT LoadTextureDataFromMemory(
-            _In_reads_(ddsDataSize) const uint8_t* ddsData,
-            size_t ddsDataSize,
-            const DDS_HEADER** header,
-            const uint8_t** bitData,
-            size_t* bitSize) noexcept
+        inline HRESULT LoadTextureDataFromMemory(_In_reads_(ddsDataSize) const uint8_t* ddsData,
+            size_t                                                                      ddsDataSize,
+            const DDS_HEADER**                                                          header,
+            const uint8_t**                                                             bitData,
+            size_t*                                                                     bitSize) noexcept
         {
             if (!header || !bitData || !bitSize)
             {
@@ -355,16 +329,14 @@ namespace DirectX
             auto hdr = reinterpret_cast<const DDS_HEADER*>(ddsData + sizeof(uint32_t));
 
             // Verify header to validate DDS file
-            if (hdr->size != sizeof(DDS_HEADER) ||
-                hdr->ddspf.size != sizeof(DDS_PIXELFORMAT))
+            if (hdr->size != sizeof(DDS_HEADER) || hdr->ddspf.size != sizeof(DDS_PIXELFORMAT))
             {
                 return E_FAIL;
             }
 
             // Check for DX10 extension
             bool bDXT10Header = false;
-            if ((hdr->ddspf.flags & DDS_FOURCC) &&
-                (MAKEFOURCC('D', 'X', '1', '0') == hdr->ddspf.fourCC))
+            if ((hdr->ddspf.flags & DDS_FOURCC) && (MAKEFOURCC('D', 'X', '1', '0') == hdr->ddspf.fourCC))
             {
                 // Must be long enough for both headers and magic value
                 if (ddsDataSize < DDS_DX10_HEADER_SIZE)
@@ -376,22 +348,20 @@ namespace DirectX
             }
 
             // setup the pointers in the process request
-            *header = hdr;
-            auto offset = DDS_MIN_HEADER_SIZE
-                + (bDXT10Header ? sizeof(DDS_HEADER_DXT10) : 0u);
-            *bitData = ddsData + offset;
-            *bitSize = ddsDataSize - offset;
+            *header     = hdr;
+            auto offset = DDS_MIN_HEADER_SIZE + (bDXT10Header ? sizeof(DDS_HEADER_DXT10) : 0u);
+            *bitData    = ddsData + offset;
+            *bitSize    = ddsDataSize - offset;
 
             return S_OK;
         }
 
         //--------------------------------------------------------------------------------------
-        inline HRESULT LoadTextureDataFromFile(
-            _In_z_ const wchar_t* fileName,
-            std::unique_ptr<uint8_t[]>& ddsData,
-            const DDS_HEADER** header,
-            const uint8_t** bitData,
-            size_t* bitSize) noexcept
+        inline HRESULT LoadTextureDataFromFile(_In_z_ const wchar_t* fileName,
+            std::unique_ptr<uint8_t[]>&                              ddsData,
+            const DDS_HEADER**                                       header,
+            const uint8_t**                                          bitData,
+            size_t*                                                  bitSize) noexcept
         {
             if (!header || !bitData || !bitSize)
             {
@@ -401,10 +371,7 @@ namespace DirectX
             *bitSize = 0;
 
             // open the file
-            ScopedHandle hFile(safe_handle(CreateFile2(
-                fileName,
-                GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING,
-                nullptr)));
+            ScopedHandle hFile(safe_handle(CreateFile2(fileName, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING, nullptr)));
             if (!hFile)
             {
                 return HRESULT_FROM_WIN32(GetLastError());
@@ -438,12 +405,7 @@ namespace DirectX
 
             // read the data in
             DWORD bytesRead = 0;
-            if (!ReadFile(hFile.get(),
-                ddsData.get(),
-                fileInfo.EndOfFile.LowPart,
-                &bytesRead,
-                nullptr
-            ))
+            if (!ReadFile(hFile.get(), ddsData.get(), fileInfo.EndOfFile.LowPart, &bytesRead, nullptr))
             {
                 ddsData.reset();
                 return HRESULT_FROM_WIN32(GetLastError());
@@ -466,8 +428,7 @@ namespace DirectX
             auto hdr = reinterpret_cast<const DDS_HEADER*>(ddsData.get() + sizeof(uint32_t));
 
             // Verify header to validate DDS file
-            if (hdr->size != sizeof(DDS_HEADER) ||
-                hdr->ddspf.size != sizeof(DDS_PIXELFORMAT))
+            if (hdr->size != sizeof(DDS_HEADER) || hdr->ddspf.size != sizeof(DDS_PIXELFORMAT))
             {
                 ddsData.reset();
                 return E_FAIL;
@@ -475,8 +436,7 @@ namespace DirectX
 
             // Check for DX10 extension
             bool bDXT10Header = false;
-            if ((hdr->ddspf.flags & DDS_FOURCC) &&
-                (MAKEFOURCC('D', 'X', '1', '0') == hdr->ddspf.fourCC))
+            if ((hdr->ddspf.flags & DDS_FOURCC) && (MAKEFOURCC('D', 'X', '1', '0') == hdr->ddspf.fourCC))
             {
                 // Must be long enough for both headers and magic value
                 if (fileInfo.EndOfFile.LowPart < DDS_DX10_HEADER_SIZE)
@@ -489,11 +449,10 @@ namespace DirectX
             }
 
             // setup the pointers in the process request
-            *header = hdr;
-            auto offset = DDS_MIN_HEADER_SIZE
-                + (bDXT10Header ? sizeof(DDS_HEADER_DXT10) : 0u);
-            *bitData = ddsData.get() + offset;
-            *bitSize = fileInfo.EndOfFile.LowPart - offset;
+            *header     = hdr;
+            auto offset = DDS_MIN_HEADER_SIZE + (bDXT10Header ? sizeof(DDS_HEADER_DXT10) : 0u);
+            *bitData    = ddsData.get() + offset;
+            *bitSize    = fileInfo.EndOfFile.LowPart - offset;
 
             return S_OK;
         }
@@ -501,26 +460,24 @@ namespace DirectX
         //--------------------------------------------------------------------------------------
         // Get surface information for a particular format
         //--------------------------------------------------------------------------------------
-        inline HRESULT GetSurfaceInfo(
-            _In_ size_t width,
-            _In_ size_t height,
-            _In_ DXGI_FORMAT fmt,
-            _Out_opt_ size_t* outNumBytes,
-            _Out_opt_ size_t* outRowBytes,
-            _Out_opt_ size_t* outNumRows) noexcept
+        inline HRESULT GetSurfaceInfo(_In_ size_t width,
+            _In_ size_t                           height,
+            _In_ DXGI_FORMAT                      fmt,
+            _Out_opt_ size_t*                     outNumBytes,
+            _Out_opt_ size_t*                     outRowBytes,
+            _Out_opt_ size_t*                     outNumRows) noexcept
         {
             uint64_t numBytes = 0;
             uint64_t rowBytes = 0;
-            uint64_t numRows = 0;
+            uint64_t numRows  = 0;
 
-            bool bc = false;
-            bool packed = false;
-            bool planar = false;
-            size_t bpe = 0;
+            bool   bc     = false;
+            bool   packed = false;
+            bool   planar = false;
+            size_t bpe    = 0;
             switch (fmt)
             {
-            case DXGI_FORMAT_UNKNOWN:
-                return E_INVALIDARG;
+            case DXGI_FORMAT_UNKNOWN: return E_INVALIDARG;
 
             case DXGI_FORMAT_BC1_TYPELESS:
             case DXGI_FORMAT_BC1_UNORM:
@@ -528,7 +485,7 @@ namespace DirectX
             case DXGI_FORMAT_BC4_TYPELESS:
             case DXGI_FORMAT_BC4_UNORM:
             case DXGI_FORMAT_BC4_SNORM:
-                bc = true;
+                bc  = true;
                 bpe = 8;
                 break;
 
@@ -547,7 +504,7 @@ namespace DirectX
             case DXGI_FORMAT_BC7_TYPELESS:
             case DXGI_FORMAT_BC7_UNORM:
             case DXGI_FORMAT_BC7_UNORM_SRGB:
-                bc = true;
+                bc  = true;
                 bpe = 16;
                 break;
 
@@ -555,13 +512,13 @@ namespace DirectX
             case DXGI_FORMAT_G8R8_G8B8_UNORM:
             case DXGI_FORMAT_YUY2:
                 packed = true;
-                bpe = 4;
+                bpe    = 4;
                 break;
 
             case DXGI_FORMAT_Y210:
             case DXGI_FORMAT_Y216:
                 packed = true;
-                bpe = 8;
+                bpe    = 8;
                 break;
 
             case DXGI_FORMAT_NV12:
@@ -572,17 +529,17 @@ namespace DirectX
                     return E_INVALIDARG;
                 }
                 planar = true;
-                bpe = 2;
+                bpe    = 2;
                 break;
 
-            #if (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
+#if (_WIN32_WINNT >= _WIN32_WINNT_WIN10)
 
             case DXGI_FORMAT_P208:
                 planar = true;
-                bpe = 2;
+                bpe    = 2;
                 break;
 
-            #endif
+#endif
 
             case DXGI_FORMAT_P010:
             case DXGI_FORMAT_P016:
@@ -592,22 +549,21 @@ namespace DirectX
                     return E_INVALIDARG;
                 }
                 planar = true;
-                bpe = 4;
+                bpe    = 4;
                 break;
 
-            #if (defined(_XBOX_ONE) && defined(_TITLE)) || defined(_GAMING_XBOX)
+#if (defined(_XBOX_ONE) && defined(_TITLE)) || defined(_GAMING_XBOX)
 
             case DXGI_FORMAT_D16_UNORM_S8_UINT:
             case DXGI_FORMAT_R16_UNORM_X8_TYPELESS:
             case DXGI_FORMAT_X16_TYPELESS_G8_UINT:
                 planar = true;
-                bpe = 4;
+                bpe    = 4;
                 break;
 
-            #endif
+#endif
 
-            default:
-                break;
+            default: break;
             }
 
             if (bc)
@@ -623,26 +579,26 @@ namespace DirectX
                     numBlocksHigh = std::max<uint64_t>(1u, (uint64_t(height) + 3u) / 4u);
                 }
                 rowBytes = numBlocksWide * bpe;
-                numRows = numBlocksHigh;
+                numRows  = numBlocksHigh;
                 numBytes = rowBytes * numBlocksHigh;
             }
             else if (packed)
             {
                 rowBytes = ((uint64_t(width) + 1u) >> 1) * bpe;
-                numRows = uint64_t(height);
+                numRows  = uint64_t(height);
                 numBytes = rowBytes * height;
             }
             else if (fmt == DXGI_FORMAT_NV11)
             {
                 rowBytes = ((uint64_t(width) + 3u) >> 2) * 4u;
-                numRows = uint64_t(height) * 2u; // Direct3D makes this simplifying assumption, although it is larger than the 4:1:1 data
+                numRows  = uint64_t(height) * 2u; // Direct3D makes this simplifying assumption, although it is larger than the 4:1:1 data
                 numBytes = rowBytes * numRows;
             }
             else if (planar)
             {
                 rowBytes = ((uint64_t(width) + 1u) >> 1) * bpe;
                 numBytes = (rowBytes * uint64_t(height)) + ((rowBytes * uint64_t(height) + 1u) >> 1);
-                numRows = height + ((uint64_t(height) + 1u) >> 1);
+                numRows  = height + ((uint64_t(height) + 1u) >> 1);
             }
             else
             {
@@ -651,17 +607,17 @@ namespace DirectX
                     return E_INVALIDARG;
 
                 rowBytes = (uint64_t(width) * bpp + 7u) / 8u; // round up to nearest byte
-                numRows = uint64_t(height);
+                numRows  = uint64_t(height);
                 numBytes = rowBytes * height;
             }
 
-        #if defined(_M_IX86) || defined(_M_ARM) || defined(_M_HYBRID_X86_ARM64)
+#if defined(_M_IX86) || defined(_M_ARM) || defined(_M_HYBRID_X86_ARM64)
             static_assert(sizeof(size_t) == 4, "Not a 32-bit platform!");
             if (numBytes > UINT32_MAX || rowBytes > UINT32_MAX || numRows > UINT32_MAX)
                 return HRESULT_FROM_WIN32(ERROR_ARITHMETIC_OVERFLOW);
-        #else
+#else
             static_assert(sizeof(size_t) == 8, "Not a 64-bit platform!");
-        #endif
+#endif
 
             if (outNumBytes)
             {
@@ -680,7 +636,7 @@ namespace DirectX
         }
 
         //--------------------------------------------------------------------------------------
-    #define ISBITMASK( r,g,b,a ) ( ddpf.RBitMask == r && ddpf.GBitMask == g && ddpf.BBitMask == b && ddpf.ABitMask == a )
+#define ISBITMASK(r, g, b, a) (ddpf.RBitMask == r && ddpf.GBitMask == g && ddpf.BBitMask == b && ddpf.ABitMask == a)
 
         inline DXGI_FORMAT GetDXGIFormat(const DDS_PIXELFORMAT& ddpf) noexcept
         {
@@ -780,8 +736,7 @@ namespace DirectX
                     // No 3:3:2 or paletted DXGI formats aka D3DFMT_R3G3B2, D3DFMT_P8
                     break;
 
-                default:
-                    return DXGI_FORMAT_UNKNOWN;
+                default: return DXGI_FORMAT_UNKNOWN;
                 }
             }
             else if (ddpf.flags & DDS_LUMINANCE)
@@ -813,8 +768,7 @@ namespace DirectX
                     }
                     break;
 
-                default:
-                    return DXGI_FORMAT_UNKNOWN;
+                default: return DXGI_FORMAT_UNKNOWN;
                 }
             }
             else if (ddpf.flags & DDS_ALPHA)
@@ -848,8 +802,7 @@ namespace DirectX
                     }
                     break;
 
-                default:
-                    return DXGI_FORMAT_UNKNOWN;
+                default: return DXGI_FORMAT_UNKNOWN;
                 }
 
                 // No DXGI format maps to DDPF_BUMPLUMINANCE aka D3DFMT_L6V5U5, D3DFMT_X8L8V8U8
@@ -925,7 +878,7 @@ namespace DirectX
                 // Check for D3DFORMAT enums being set here
                 switch (ddpf.fourCC)
                 {
-                case 36: // D3DFMT_A16B16G16R16
+                case 36:  // D3DFMT_A16B16G16R16
                     return DXGI_FORMAT_R16G16B16A16_UNORM;
 
                 case 110: // D3DFMT_Q16W16V16U16
@@ -949,17 +902,16 @@ namespace DirectX
                 case 116: // D3DFMT_A32B32G32R32F
                     return DXGI_FORMAT_R32G32B32A32_FLOAT;
 
-                // No DXGI format maps to D3DFMT_CxV8U8
+                    // No DXGI format maps to D3DFMT_CxV8U8
 
-                default:
-                    return DXGI_FORMAT_UNKNOWN;
+                default: return DXGI_FORMAT_UNKNOWN;
                 }
             }
 
             return DXGI_FORMAT_UNKNOWN;
         }
 
-    #undef ISBITMASK
+#undef ISBITMASK
 
         //--------------------------------------------------------------------------------------
         inline DirectX::DDS_ALPHA_MODE GetAlphaMode(_In_ const DDS_HEADER* header) noexcept
@@ -968,23 +920,22 @@ namespace DirectX
             {
                 if (MAKEFOURCC('D', 'X', '1', '0') == header->ddspf.fourCC)
                 {
-                    auto d3d10ext = reinterpret_cast<const DDS_HEADER_DXT10*>(reinterpret_cast<const uint8_t*>(header) + sizeof(DDS_HEADER));
+                    auto d3d10ext
+                        = reinterpret_cast<const DDS_HEADER_DXT10*>(reinterpret_cast<const uint8_t*>(header) + sizeof(DDS_HEADER));
                     const auto mode = static_cast<DDS_ALPHA_MODE>(d3d10ext->miscFlags2 & DDS_MISC_FLAGS2_ALPHA_MODE_MASK);
                     switch (mode)
                     {
                     case DDS_ALPHA_MODE_STRAIGHT:
                     case DDS_ALPHA_MODE_PREMULTIPLIED:
                     case DDS_ALPHA_MODE_OPAQUE:
-                    case DDS_ALPHA_MODE_CUSTOM:
-                        return mode;
+                    case DDS_ALPHA_MODE_CUSTOM:        return mode;
 
                     case DDS_ALPHA_MODE_UNKNOWN:
-                    default:
-                        break;
+                    default:                           break;
                     }
                 }
                 else if ((MAKEFOURCC('D', 'X', 'T', '2') == header->ddspf.fourCC)
-                    || (MAKEFOURCC('D', 'X', 'T', '4') == header->ddspf.fourCC))
+                         || (MAKEFOURCC('D', 'X', 'T', '4') == header->ddspf.fourCC))
                 {
                     return DDS_ALPHA_MODE_PREMULTIPLIED;
                 }
@@ -997,12 +948,14 @@ namespace DirectX
         class auto_delete_file
         {
         public:
-            auto_delete_file(HANDLE hFile) noexcept : m_handle(hFile) {}
+            auto_delete_file(HANDLE hFile) noexcept
+                : m_handle(hFile)
+            {}
 
-            auto_delete_file(const auto_delete_file&) = delete;
+            auto_delete_file(const auto_delete_file&)            = delete;
             auto_delete_file& operator=(const auto_delete_file&) = delete;
 
-            auto_delete_file(const auto_delete_file&&) = delete;
+            auto_delete_file(const auto_delete_file&&)            = delete;
             auto_delete_file& operator=(const auto_delete_file&&) = delete;
 
             ~auto_delete_file()
@@ -1010,8 +963,8 @@ namespace DirectX
                 if (m_handle)
                 {
                     FILE_DISPOSITION_INFO info = {};
-                    info.DeleteFile = TRUE;
-                    std::ignore = SetFileInformationByHandle(m_handle, FileDispositionInfo, &info, sizeof(info));
+                    info.DeleteFile            = TRUE;
+                    std::ignore                = SetFileInformationByHandle(m_handle, FileDispositionInfo, &info, sizeof(info));
                 }
             }
 
@@ -1024,12 +977,15 @@ namespace DirectX
         class auto_delete_file_wic
         {
         public:
-            auto_delete_file_wic(Microsoft::WRL::ComPtr<IWICStream>& hFile, LPCWSTR szFile) noexcept : m_filename(szFile), m_handle(hFile) {}
+            auto_delete_file_wic(Microsoft::WRL::ComPtr<IWICStream>& hFile, LPCWSTR szFile) noexcept
+                : m_filename(szFile),
+                  m_handle(hFile)
+            {}
 
-            auto_delete_file_wic(const auto_delete_file_wic&) = delete;
+            auto_delete_file_wic(const auto_delete_file_wic&)            = delete;
             auto_delete_file_wic& operator=(const auto_delete_file_wic&) = delete;
 
-            auto_delete_file_wic(const auto_delete_file_wic&&) = delete;
+            auto_delete_file_wic(const auto_delete_file_wic&&)            = delete;
             auto_delete_file_wic& operator=(const auto_delete_file_wic&&) = delete;
 
             ~auto_delete_file_wic()
@@ -1044,7 +1000,7 @@ namespace DirectX
             void clear() noexcept { m_filename = nullptr; }
 
         private:
-            LPCWSTR m_filename;
+            LPCWSTR                             m_filename;
             Microsoft::WRL::ComPtr<IWICStream>& m_handle;
         };
 
@@ -1070,7 +1026,11 @@ namespace DirectX
             if (origx > origy)
             {
                 size_t x;
-                for (x = maxsize; x > 1; x >>= 1) { if (x <= targetx) break; }
+                for (x = maxsize; x > 1; x >>= 1)
+                {
+                    if (x <= targetx)
+                        break;
+                }
                 targetx = UINT(x);
 
                 float bestScore = FLT_MAX;
@@ -1080,14 +1040,18 @@ namespace DirectX
                     if (score < bestScore)
                     {
                         bestScore = score;
-                        targety = UINT(y);
+                        targety   = UINT(y);
                     }
                 }
             }
             else
             {
                 size_t y;
-                for (y = maxsize; y > 1; y >>= 1) { if (y <= targety) break; }
+                for (y = maxsize; y > 1; y >>= 1)
+                {
+                    if (y <= targety)
+                        break;
+                }
                 targety = UINT(y);
 
                 float bestScore = FLT_MAX;
@@ -1097,10 +1061,10 @@ namespace DirectX
                     if (score < bestScore)
                     {
                         bestScore = score;
-                        targetx = UINT(x);
+                        targetx   = UINT(x);
                     }
                 }
             }
         }
-    }
-}
+    } // namespace LoaderHelpers
+} // namespace DirectX

@@ -26,7 +26,7 @@ namespace
     constexpr int c_MaxSamples = 16;
 
     constexpr int Dirty_ConstantBuffer = 0x01;
-    constexpr int Dirty_Parameters = 0x02;
+    constexpr int Dirty_Parameters     = 0x02;
 
     // Constant buffer layout. Must match the shader!
     XM_ALIGNED_STRUCT(16) PostProcessConstants
@@ -36,8 +36,7 @@ namespace
     };
 
     static_assert((sizeof(PostProcessConstants) % 16) == 0, "CB size not padded correctly");
-}
-
+} // namespace
 
 #pragma region Shaders
 // Include the precompiled shader code.
@@ -58,13 +57,12 @@ namespace
     struct ShaderBytecode
     {
         void const* code;
-        size_t length;
+        size_t      length;
     };
 
-    const ShaderBytecode pixelShaders[] =
-    {
-        { PostProcess_PSMerge,              sizeof(PostProcess_PSMerge) },
-        { PostProcess_PSBloomCombine,       sizeof(PostProcess_PSBloomCombine) },
+    const ShaderBytecode pixelShaders[] = {
+        { PostProcess_PSMerge, sizeof(PostProcess_PSMerge) },
+        { PostProcess_PSBloomCombine, sizeof(PostProcess_PSBloomCombine) },
     };
 
     static_assert(static_cast<unsigned int>(std::size(pixelShaders)) == DualPostProcess::Effect_Max, "array/max mismatch");
@@ -75,10 +73,10 @@ namespace
     public:
         DeviceResources(_In_ ID3D11Device* device)
             : stateObjects(device),
-            mDevice(device),
-            mVertexShader{},
-            mPixelShaders{},
-            mMutex{}
+              mDevice(device),
+              mVertexShader{},
+              mPixelShaders{},
+              mMutex{}
         {
             if (!device)
             {
@@ -91,16 +89,18 @@ namespace
             }
         }
 
-        DeviceResources(const DeviceResources&) = delete;
+        DeviceResources(const DeviceResources&)            = delete;
         DeviceResources& operator=(const DeviceResources&) = delete;
 
-        DeviceResources(DeviceResources&&) = delete;
+        DeviceResources(DeviceResources&&)            = delete;
         DeviceResources& operator=(DeviceResources&&) = delete;
 
         // Gets or lazily creates the vertex shader.
         ID3D11VertexShader* GetVertexShader()
         {
-            return DemandCreate(mVertexShader, mMutex, [&](ID3D11VertexShader** pResult) -> HRESULT
+            return DemandCreate(mVertexShader,
+                mMutex,
+                [&](ID3D11VertexShader** pResult) -> HRESULT
                 {
                     HRESULT hr = mDevice->CreateVertexShader(PostProcess_VSQuad, sizeof(PostProcess_VSQuad), nullptr, pResult);
 
@@ -117,9 +117,12 @@ namespace
             assert(shaderIndex < DualPostProcess::Effect_Max);
             _Analysis_assume_(shaderIndex < DualPostProcess::Effect_Max);
 
-            return DemandCreate(mPixelShaders[shaderIndex], mMutex, [&](ID3D11PixelShader** pResult) -> HRESULT
+            return DemandCreate(mPixelShaders[shaderIndex],
+                mMutex,
+                [&](ID3D11PixelShader** pResult) -> HRESULT
                 {
-                    HRESULT hr = mDevice->CreatePixelShader(pixelShaders[shaderIndex].code, pixelShaders[shaderIndex].length, nullptr, pResult);
+                    HRESULT hr
+                        = mDevice->CreatePixelShader(pixelShaders[shaderIndex].code, pixelShaders[shaderIndex].length, nullptr, pResult);
 
                     if (SUCCEEDED(hr))
                         SetDebugObjectName(*pResult, "DualPostProcess");
@@ -128,27 +131,26 @@ namespace
                 });
         }
 
-        CommonStates                stateObjects;
+        CommonStates stateObjects;
 
     protected:
-        ComPtr<ID3D11Device>        mDevice;
-        ComPtr<ID3D11VertexShader>  mVertexShader;
-        ComPtr<ID3D11PixelShader>   mPixelShaders[DualPostProcess::Effect_Max];
-        std::mutex                  mMutex;
+        ComPtr<ID3D11Device>       mDevice;
+        ComPtr<ID3D11VertexShader> mVertexShader;
+        ComPtr<ID3D11PixelShader>  mPixelShaders[DualPostProcess::Effect_Max];
+        std::mutex                 mMutex;
     };
-}
+} // namespace
 #pragma endregion
-
 
 class DualPostProcess::Impl : public AlignedNew<PostProcessConstants>
 {
 public:
     explicit Impl(_In_ ID3D11Device* device);
 
-    Impl(const Impl&) = delete;
+    Impl(const Impl&)            = delete;
     Impl& operator=(const Impl&) = delete;
 
-    Impl(Impl&&) = default;
+    Impl(Impl&&)            = default;
     Impl& operator=(Impl&&) = default;
 
     void Process(_In_ ID3D11DeviceContext* deviceContext, const std::function<void __cdecl()>& setCustomState);
@@ -156,55 +158,50 @@ public:
     void SetDirtyFlag() noexcept { mDirtyFlags = INT_MAX; }
 
     // Fields.
-    PostProcessConstants                    constants;
-    DualPostProcess::Effect                 fx;
-    ComPtr<ID3D11ShaderResourceView>        texture;
-    ComPtr<ID3D11ShaderResourceView>        texture2;
-    float                                   mergeWeight1;
-    float                                   mergeWeight2;
-    float                                   bloomIntensity;
-    float                                   bloomBaseIntensity;
-    float                                   bloomSaturation;
-    float                                   bloomBaseSaturation;
+    PostProcessConstants             constants;
+    DualPostProcess::Effect          fx;
+    ComPtr<ID3D11ShaderResourceView> texture;
+    ComPtr<ID3D11ShaderResourceView> texture2;
+    float                            mergeWeight1;
+    float                            mergeWeight2;
+    float                            bloomIntensity;
+    float                            bloomBaseIntensity;
+    float                            bloomSaturation;
+    float                            bloomBaseSaturation;
 
 private:
-    int                                     mDirtyFlags;
+    int mDirtyFlags;
 
-    ConstantBuffer<PostProcessConstants>    mConstantBuffer;
+    ConstantBuffer<PostProcessConstants> mConstantBuffer;
 
     // Per-device resources.
-    std::shared_ptr<DeviceResources>        mDeviceResources;
+    std::shared_ptr<DeviceResources> mDeviceResources;
 
     static SharedResourcePool<ID3D11Device*, DeviceResources> deviceResourcesPool;
 };
 
-
 // Global pool of per-device DualPostProcess resources.
 SharedResourcePool<ID3D11Device*, DeviceResources> DualPostProcess::Impl::deviceResourcesPool;
-
 
 // Constructor.
 DualPostProcess::Impl::Impl(_In_ ID3D11Device* device)
     : constants{},
-    fx(DualPostProcess::Merge),
-    mergeWeight1(0.5f),
-    mergeWeight2(0.5f),
-    bloomIntensity(1.25f),
-    bloomBaseIntensity(1.f),
-    bloomSaturation(1.f),
-    bloomBaseSaturation(1.f),
-    mDirtyFlags(INT_MAX),
-    mConstantBuffer(device),
-    mDeviceResources(deviceResourcesPool.DemandCreate(device))
+      fx(DualPostProcess::Merge),
+      mergeWeight1(0.5f),
+      mergeWeight2(0.5f),
+      bloomIntensity(1.25f),
+      bloomBaseIntensity(1.f),
+      bloomSaturation(1.f),
+      bloomBaseSaturation(1.f),
+      mDirtyFlags(INT_MAX),
+      mConstantBuffer(device),
+      mDeviceResources(deviceResourcesPool.DemandCreate(device))
 {
     SetDebugObjectName(mConstantBuffer.GetBuffer(), "DualPostProcess");
 }
 
-
 // Sets our state onto the D3D device.
-void DualPostProcess::Impl::Process(
-    _In_ ID3D11DeviceContext* deviceContext,
-    const std::function<void __cdecl()>& setCustomState)
+void DualPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, const std::function<void __cdecl()>& setCustomState)
 {
     // Set the texture.
     ID3D11ShaderResourceView* textures[2] = { texture.Get(), texture2.Get() };
@@ -220,7 +217,7 @@ void DualPostProcess::Impl::Process(
 
     // Set shaders.
     auto vertexShader = mDeviceResources->GetVertexShader();
-    auto pixelShader = mDeviceResources->GetPixelShader(fx);
+    auto pixelShader  = mDeviceResources->GetPixelShader(fx);
 
     deviceContext->VSSetShader(vertexShader, nullptr, 0);
     deviceContext->PSSetShader(pixelShader, nullptr, 0);
@@ -244,13 +241,12 @@ void DualPostProcess::Impl::Process(
             constants.sampleWeights[2] = XMVectorReplicate(bloomIntensity);
             break;
 
-        default:
-            break;
+        default: break;
         }
     }
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    void *grfxMemory;
+    void* grfxMemory;
     mConstantBuffer.SetData(deviceContext, constants, &grfxMemory);
 
     ComPtr<ID3D11DeviceContextX> deviceContextX;
@@ -284,26 +280,20 @@ void DualPostProcess::Impl::Process(
     deviceContext->Draw(3, 0);
 }
 
-
 // Public constructor.
 DualPostProcess::DualPostProcess(_In_ ID3D11Device* device)
     : pImpl(std::make_unique<Impl>(device))
 {}
 
-
-DualPostProcess::DualPostProcess(DualPostProcess&&) noexcept = default;
-DualPostProcess& DualPostProcess::operator= (DualPostProcess&&) noexcept = default;
-DualPostProcess::~DualPostProcess() = default;
-
+DualPostProcess::DualPostProcess(DualPostProcess&&) noexcept            = default;
+DualPostProcess& DualPostProcess::operator=(DualPostProcess&&) noexcept = default;
+DualPostProcess::~DualPostProcess()                                     = default;
 
 // IPostProcess methods.
-void DualPostProcess::Process(
-    _In_ ID3D11DeviceContext* deviceContext,
-    _In_ std::function<void __cdecl()> setCustomState)
+void DualPostProcess::Process(_In_ ID3D11DeviceContext* deviceContext, _In_ std::function<void __cdecl()> setCustomState)
 {
     pImpl->Process(deviceContext, setCustomState);
 }
-
 
 // Shader control.
 void DualPostProcess::SetEffect(Effect fx)
@@ -315,19 +305,16 @@ void DualPostProcess::SetEffect(Effect fx)
     pImpl->SetDirtyFlag();
 }
 
-
 // Properties
 void DualPostProcess::SetSourceTexture(_In_opt_ ID3D11ShaderResourceView* value)
 {
     pImpl->texture = value;
 }
 
-
 void DualPostProcess::SetSourceTexture2(_In_opt_ ID3D11ShaderResourceView* value)
 {
     pImpl->texture2 = value;
 }
-
 
 void DualPostProcess::SetMergeParameters(float weight1, float weight2)
 {
@@ -336,12 +323,11 @@ void DualPostProcess::SetMergeParameters(float weight1, float weight2)
     pImpl->SetDirtyFlag();
 }
 
-
 void DualPostProcess::SetBloomCombineParameters(float bloom, float base, float bloomSaturation, float baseSaturation)
 {
-    pImpl->bloomIntensity = bloom;
-    pImpl->bloomBaseIntensity = base;
-    pImpl->bloomSaturation = bloomSaturation;
+    pImpl->bloomIntensity      = bloom;
+    pImpl->bloomBaseIntensity  = base;
+    pImpl->bloomSaturation     = bloomSaturation;
     pImpl->bloomBaseSaturation = baseSaturation;
     pImpl->SetDirtyFlag();
 }

@@ -33,7 +33,7 @@ using namespace DirectX;
 #pragma warning(disable : 4061 4062)
 #endif
 
-//#define VERBOSE_TRACE
+// #define VERBOSE_TRACE
 
 #ifdef VERBOSE_TRACE
 #pragma message("NOTE: Verbose tracing enabled")
@@ -41,9 +41,9 @@ using namespace DirectX;
 
 namespace
 {
-    constexpr size_t DVD_SECTOR_SIZE = 2048;
+    constexpr size_t DVD_SECTOR_SIZE             = 2048;
     constexpr size_t ADVANCED_FORMAT_SECTOR_SIZE = 4096;
-    constexpr size_t MAX_BUFFER_COUNT = 3;
+    constexpr size_t MAX_BUFFER_COUNT            = 3;
 
 #ifdef DIRECTX_ENABLE_SEEK_TABLES
     constexpr size_t MAX_STREAMING_SEEK_PACKETS = 2048;
@@ -52,7 +52,14 @@ namespace
 #ifdef DIRECTX_ENABLE_XMA2
     constexpr size_t XMA2_64KBLOCKINBYTES = 65536;
 
-    struct apu_deleter { void operator()(void* p) noexcept { if (p) ApuFree(p); } };
+    struct apu_deleter
+    {
+        void operator()(void* p) noexcept
+        {
+            if (p)
+                ApuFree(p);
+        }
+    };
 #endif
 
     size_t ComputeAsyncPacketSize(_In_ const WAVEFORMATEX* wfx, uint32_t tag, uint32_t alignment)
@@ -62,23 +69,22 @@ namespace
 
         size_t buffer = size_t(wfx->nAvgBytesPerSec) * 2u;
 
-    #ifdef DIRECTX_ENABLE_XMA2
+#ifdef DIRECTX_ENABLE_XMA2
         if (tag == WAVE_FORMAT_XMA2)
         {
             buffer = AlignUp(buffer, XMA2_64KBLOCKINBYTES);
             buffer = std::max<size_t>(XMA2_64KBLOCKINBYTES, buffer);
             return buffer;
         }
-    #else
+#else
         UNREFERENCED_PARAMETER(tag);
-    #endif
+#endif
 
         buffer = AlignUp(buffer, size_t(alignment) * 2);
         buffer = std::max<size_t>(65536u, buffer);
         return buffer;
     }
-}
-
+} // namespace
 
 //======================================================================================
 // SoundStreamInstance
@@ -88,58 +94,56 @@ namespace
 class SoundStreamInstance::Impl : public IVoiceNotify
 {
 public:
-    Impl(_In_ AudioEngine* engine,
-        WaveBank* waveBank,
-        uint32_t index,
-        SOUND_EFFECT_INSTANCE_FLAGS flags) noexcept(false) :
-        mBase(),
-        mWaveBank(waveBank),
-        mIndex(index),
-        mPlaying(false),
-        mLooped(false),
-        mEndStream(false),
-        mPrefetch(false),
-        mSitching(false),
-        mPackets{},
-        mCurrentDiskReadBuffer(0),
-        mCurrentPlayBuffer(0),
-        mBlockAlign(0),
-        mAsyncAlign(DVD_SECTOR_SIZE),
-        mCurrentPosition(0),
-        mOffsetBytes(0),
-        mLengthInBytes(0),
-        mPacketSize(0),
-        mTotalSize(0)
-    #ifdef DIRECTX_ENABLE_SEEK_TABLES
-        , mSeekCount(0),
-        mSeekTable(nullptr),
-        mSeekTableCopy{}
-    #endif
+    Impl(_In_ AudioEngine* engine, WaveBank* waveBank, uint32_t index, SOUND_EFFECT_INSTANCE_FLAGS flags) noexcept(false)
+        : mBase(),
+          mWaveBank(waveBank),
+          mIndex(index),
+          mPlaying(false),
+          mLooped(false),
+          mEndStream(false),
+          mPrefetch(false),
+          mSitching(false),
+          mPackets{},
+          mCurrentDiskReadBuffer(0),
+          mCurrentPlayBuffer(0),
+          mBlockAlign(0),
+          mAsyncAlign(DVD_SECTOR_SIZE),
+          mCurrentPosition(0),
+          mOffsetBytes(0),
+          mLengthInBytes(0),
+          mPacketSize(0),
+          mTotalSize(0)
+#ifdef DIRECTX_ENABLE_SEEK_TABLES
+          ,
+          mSeekCount(0),
+          mSeekTable(nullptr),
+          mSeekTableCopy{}
+#endif
     {
         assert(engine != nullptr);
         engine->RegisterNotify(this, true);
 
         char buff[64] = {};
-        auto wfx = reinterpret_cast<WAVEFORMATEX*>(buff);
+        auto wfx      = reinterpret_cast<WAVEFORMATEX*>(buff);
         assert(mWaveBank != nullptr);
         mBase.Initialize(engine, mWaveBank->GetFormat(index, wfx, sizeof(buff)), flags);
 
         WaveBankReader::Metadata metadata = {};
-        std::ignore = mWaveBank->GetPrivateData(index, &metadata, sizeof(metadata));
+        std::ignore                       = mWaveBank->GetPrivateData(index, &metadata, sizeof(metadata));
 
-        mOffsetBytes = metadata.offsetBytes;
+        mOffsetBytes   = metadata.offsetBytes;
         mLengthInBytes = metadata.lengthBytes;
-        mAsyncAlign = mWaveBank->IsAdvancedFormat() ? ADVANCED_FORMAT_SECTOR_SIZE : DVD_SECTOR_SIZE;
+        mAsyncAlign    = mWaveBank->IsAdvancedFormat() ? ADVANCED_FORMAT_SECTOR_SIZE : DVD_SECTOR_SIZE;
 
-    #ifdef DIRECTX_ENABLE_SEEK_TABLES
+#ifdef DIRECTX_ENABLE_SEEK_TABLES
         WaveBankSeekData seekData = {};
-        std::ignore = mWaveBank->GetPrivateData(index, &seekData, sizeof(seekData));
+        std::ignore               = mWaveBank->GetPrivateData(index, &seekData, sizeof(seekData));
         if (seekData.tag == WAVE_FORMAT_WMAUDIO2 || seekData.tag == WAVE_FORMAT_WMAUDIO3)
         {
             mSeekCount = seekData.seekCount;
             mSeekTable = seekData.seekTable;
         }
-    #endif
+#endif
 
         mBufferEnd.reset(CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE));
         mBufferRead.reset(CreateEventEx(nullptr, nullptr, 0, EVENT_MODIFY_STATE | SYNCHRONIZE));
@@ -150,9 +154,9 @@ public:
 
         ThrowIfFailed(AllocateStreamingBuffers(wfx));
 
-    #ifdef VERBOSE_TRACE
+#ifdef VERBOSE_TRACE
         DebugTrace("INFO (Streaming): packet size %zu, play length %zu\n", mPacketSize, mLengthInBytes);
-    #endif
+#endif
 
         mPrefetch = true;
         ThrowIfFailed(ReadBuffers());
@@ -183,11 +187,11 @@ public:
         mPacketSize = 0;
     }
 
-    Impl(Impl&&) = default;
-    Impl& operator= (Impl&&) = default;
+    Impl(Impl&&)            = default;
+    Impl& operator=(Impl&&) = default;
 
-    Impl(Impl const&) = delete;
-    Impl& operator= (Impl const&) = delete;
+    Impl(Impl const&)            = delete;
+    Impl& operator=(Impl const&) = delete;
 
     void Play(bool loop)
     {
@@ -197,14 +201,14 @@ public:
                 return;
 
             char buff[64] = {};
-            auto wfx = reinterpret_cast<WAVEFORMATEX*>(buff);
+            auto wfx      = reinterpret_cast<WAVEFORMATEX*>(buff);
             mBase.AllocateVoice(mWaveBank->GetFormat(mIndex, wfx, sizeof(buff)));
         }
 
         if (!mBase.Play())
             return;
 
-        mLooped = loop;
+        mLooped    = loop;
         mEndStream = false;
 
         if (!mPrefetch)
@@ -221,15 +225,9 @@ public:
         // Not used
     }
 
-    virtual void __cdecl OnCriticalError() override
-    {
-        mBase.OnCriticalError();
-    }
+    virtual void __cdecl OnCriticalError() override { mBase.OnCriticalError(); }
 
-    virtual void __cdecl OnReset() override
-    {
-        mBase.OnReset();
-    }
+    virtual void __cdecl OnReset() override { mBase.OnReset(); }
 
     virtual void __cdecl OnUpdate() override
     {
@@ -240,31 +238,30 @@ public:
         switch (WaitForMultipleObjectsEx(static_cast<DWORD>(std::size(events)), events, FALSE, 0, FALSE))
         {
         default:
-        case WAIT_TIMEOUT:
-            break;
+        case WAIT_TIMEOUT: break;
 
         case WAIT_OBJECT_0: // Read completed
-        #ifdef VERBOSE_TRACE
+#ifdef VERBOSE_TRACE
             DebugTrace("INFO (Streaming): Playing... (readpos %zu) [", mCurrentPosition);
             for (uint32_t k = 0; k < MAX_BUFFER_COUNT; ++k)
             {
                 DebugTrace("%ls ", s_debugState[static_cast<int>(mPackets[k].state)]);
             }
             DebugTrace("]\n");
-        #endif
+#endif
             mPrefetch = false;
             ThrowIfFailed(PlayBuffers());
             break;
 
         case (WAIT_OBJECT_0 + 1): // Play completed
-        #ifdef VERBOSE_TRACE
+#ifdef VERBOSE_TRACE
             DebugTrace("INFO (Streaming): Reading... (readpos %zu) [", mCurrentPosition);
             for (uint32_t k = 0; k < MAX_BUFFER_COUNT; ++k)
             {
                 DebugTrace("%ls ", s_debugState[static_cast<int>(mPackets[k].state)]);
             }
             DebugTrace("]\n");
-        #endif
+#endif
             ThrowIfFailed(ReadBuffers());
             break;
 
@@ -273,15 +270,9 @@ public:
         }
     }
 
-    virtual void __cdecl OnDestroyEngine() noexcept override
-    {
-        mBase.OnDestroy();
-    }
+    virtual void __cdecl OnDestroyEngine() noexcept override { mBase.OnDestroy(); }
 
-    virtual void __cdecl OnTrim() override
-    {
-        mBase.OnTrim();
-    }
+    virtual void __cdecl OnTrim() override { mBase.OnTrim(); }
 
     virtual void __cdecl GatherStatistics(AudioStatistics& stats) const noexcept override
     {
@@ -296,17 +287,17 @@ public:
         mWaveBank = nullptr;
     }
 
-    SoundEffectInstanceBase         mBase;
-    WaveBank*                       mWaveBank;
-    uint32_t                        mIndex;
-    bool                            mPlaying;
-    bool                            mLooped;
-    bool                            mEndStream;
-    bool                            mPrefetch;
-    bool                            mSitching;
+    SoundEffectInstanceBase mBase;
+    WaveBank*               mWaveBank;
+    uint32_t                mIndex;
+    bool                    mPlaying;
+    bool                    mLooped;
+    bool                    mEndStream;
+    bool                    mPrefetch;
+    bool                    mSitching;
 
-    ScopedHandle                    mBufferEnd;
-    ScopedHandle                    mBufferRead;
+    ScopedHandle mBufferEnd;
+    ScopedHandle mBufferRead;
 
     enum class State : uint32_t
     {
@@ -322,9 +313,16 @@ public:
 
     struct BufferNotify : public IVoiceNotify
     {
-        BufferNotify() : mParent(nullptr), mIndex(0) {}
+        BufferNotify()
+            : mParent(nullptr),
+              mIndex(0)
+        {}
 
-        void Set(SoundStreamInstance::Impl* parent, size_t index) noexcept(true) { mParent = parent; mIndex = index; }
+        void Set(SoundStreamInstance::Impl* parent, size_t index) noexcept(true)
+        {
+            mParent = parent;
+            mIndex  = index;
+        }
 
         void __cdecl OnBufferEnd() override
         {
@@ -333,61 +331,89 @@ public:
             SetEvent(mParent->mBufferEnd.get());
         }
 
-        void __cdecl OnCriticalError() override { assert(mParent != nullptr); mParent->OnCriticalError(); }
-        void __cdecl OnReset() override { assert(mParent != nullptr); mParent->OnReset(); }
-        void __cdecl OnUpdate() override { assert(mParent != nullptr); mParent->OnUpdate(); }
-        void __cdecl OnDestroyEngine() noexcept override { assert(mParent != nullptr); mParent->OnDestroyEngine(); }
-        void __cdecl OnTrim() override { assert(mParent != nullptr); mParent->OnTrim(); }
-        void __cdecl GatherStatistics(AudioStatistics& stats) const override { assert(mParent != nullptr); mParent->GatherStatistics(stats); }
-        void __cdecl OnDestroyParent() noexcept override { assert(mParent != nullptr); mParent->OnDestroyParent(); }
+        void __cdecl OnCriticalError() override
+        {
+            assert(mParent != nullptr);
+            mParent->OnCriticalError();
+        }
+        void __cdecl OnReset() override
+        {
+            assert(mParent != nullptr);
+            mParent->OnReset();
+        }
+        void __cdecl OnUpdate() override
+        {
+            assert(mParent != nullptr);
+            mParent->OnUpdate();
+        }
+        void __cdecl OnDestroyEngine() noexcept override
+        {
+            assert(mParent != nullptr);
+            mParent->OnDestroyEngine();
+        }
+        void __cdecl OnTrim() override
+        {
+            assert(mParent != nullptr);
+            mParent->OnTrim();
+        }
+        void __cdecl GatherStatistics(AudioStatistics& stats) const override
+        {
+            assert(mParent != nullptr);
+            mParent->GatherStatistics(stats);
+        }
+        void __cdecl OnDestroyParent() noexcept override
+        {
+            assert(mParent != nullptr);
+            mParent->OnDestroyParent();
+        }
 
     private:
         SoundStreamInstance::Impl* mParent;
-        size_t mIndex;
+        size_t                     mIndex;
     };
 
     struct Packets
     {
-        State       state;
-        uint8_t*    buffer;
-        uint8_t*    stitchBuffer;
-        uint32_t    valid;
-        uint32_t    audioBytes;
-        uint32_t    startPosition;
-        OVERLAPPED  request;
+        State        state;
+        uint8_t*     buffer;
+        uint8_t*     stitchBuffer;
+        uint32_t     valid;
+        uint32_t     audioBytes;
+        uint32_t     startPosition;
+        OVERLAPPED   request;
         BufferNotify notify;
 
-        Packets() :
-            state(State::FREE),
-            buffer(nullptr),
-            stitchBuffer(nullptr),
-            valid(0),
-            audioBytes(0),
-            startPosition(0),
-            request{},
-            notify{}
+        Packets()
+            : state(State::FREE),
+              buffer(nullptr),
+              stitchBuffer(nullptr),
+              valid(0),
+              audioBytes(0),
+              startPosition(0),
+              request{},
+              notify{}
         {}
     };
 
-    Packets                         mPackets[MAX_BUFFER_COUNT];
+    Packets mPackets[MAX_BUFFER_COUNT];
 
 private:
-    uint32_t                        mCurrentDiskReadBuffer;
-    uint32_t                        mCurrentPlayBuffer;
-    uint32_t                        mBlockAlign;
-    uint32_t                        mAsyncAlign;
-    size_t                          mCurrentPosition;
-    size_t                          mOffsetBytes;
-    size_t                          mLengthInBytes;
+    uint32_t mCurrentDiskReadBuffer;
+    uint32_t mCurrentPlayBuffer;
+    uint32_t mBlockAlign;
+    uint32_t mAsyncAlign;
+    size_t   mCurrentPosition;
+    size_t   mOffsetBytes;
+    size_t   mLengthInBytes;
 
-    size_t                          mPacketSize;
-    size_t                          mTotalSize;
+    size_t                                      mPacketSize;
+    size_t                                      mTotalSize;
     std::unique_ptr<uint8_t[], virtual_deleter> mStreamBuffer;
 
 #ifdef DIRECTX_ENABLE_SEEK_TABLES
-    uint32_t                        mSeekCount;
-    const uint32_t*                 mSeekTable;
-    uint32_t                        mSeekTableCopy[MAX_STREAMING_SEEK_PACKETS];
+    uint32_t        mSeekCount;
+    const uint32_t* mSeekTable;
+    uint32_t        mSeekTableCopy[MAX_STREAMING_SEEK_PACKETS];
 #endif
 
 #ifdef DIRECTX_ENABLE_XMA2
@@ -398,7 +424,6 @@ private:
     HRESULT ReadBuffers() noexcept;
     HRESULT PlayBuffers() noexcept;
 };
-
 
 HRESULT SoundStreamInstance::Impl::AllocateStreamingBuffers(const WAVEFORMATEX* wfx) noexcept
 {
@@ -417,7 +442,7 @@ HRESULT SoundStreamInstance::Impl::AllocateStreamingBuffers(const WAVEFORMATEX* 
 
     mPacketSize = packetSize;
     mBlockAlign = wfx->nBlockAlign;
-    mSitching = false;
+    mSitching   = false;
 
     size_t stitchSize = 0;
     if ((packetSize % wfx->nBlockAlign) != 0)
@@ -432,51 +457,53 @@ HRESULT SoundStreamInstance::Impl::AllocateStreamingBuffers(const WAVEFORMATEX* 
 
 #ifdef DIRECTX_ENABLE_XMA2
     if ((mTotalSize < totalSize) || (tag == WAVE_FORMAT_XMA2 && !mXMAMemory) || (tag != WAVE_FORMAT_XMA2 && !mStreamBuffer))
-    #else
+#else
     if (mTotalSize < totalSize)
-    #endif
+#endif
     {
         mStreamBuffer.reset();
-    #ifdef DIRECTX_ENABLE_XMA2
+#ifdef DIRECTX_ENABLE_XMA2
         mXMAMemory.reset();
         if (tag == WAVE_FORMAT_XMA2)
         {
-            void* xmaMemory = nullptr;
-            HRESULT hr = ApuAlloc(&xmaMemory, nullptr, static_cast<UINT32>(totalSize), SHAPE_XMA_INPUT_BUFFER_ALIGNMENT);
+            void*   xmaMemory = nullptr;
+            HRESULT hr        = ApuAlloc(&xmaMemory, nullptr, static_cast<UINT32>(totalSize), SHAPE_XMA_INPUT_BUFFER_ALIGNMENT);
             if (FAILED(hr))
             {
-                DebugTrace("ERROR: ApuAlloc failed (%llu bytes). Did you allocate a large enough heap with ApuCreateHeap for all your XMA wave data?\n", totalSize);
+                DebugTrace(
+                    "ERROR: ApuAlloc failed (%llu bytes). Did you allocate a large enough heap with ApuCreateHeap for all your XMA wave "
+                    "data?\n",
+                    totalSize);
                 return hr;
             }
             mXMAMemory.reset(static_cast<uint8_t*>(xmaMemory));
         }
         else
-        #endif
+#endif
         {
-            mStreamBuffer.reset(reinterpret_cast<uint8_t*>(
-                VirtualAlloc(nullptr, static_cast<SIZE_T>(totalSize), MEM_COMMIT, PAGE_READWRITE)
-                ));
+            mStreamBuffer.reset(
+                reinterpret_cast<uint8_t*>(VirtualAlloc(nullptr, static_cast<SIZE_T>(totalSize), MEM_COMMIT, PAGE_READWRITE)));
 
             if (!mStreamBuffer)
             {
                 DebugTrace("ERROR: Failed allocating %llu bytes for SoundStreamInstance\n", totalSize);
                 mPacketSize = 0;
-                totalSize = 0;
+                totalSize   = 0;
                 return E_OUTOFMEMORY;
             }
         }
 
         mTotalSize = static_cast<size_t>(totalSize);
 
-    #ifdef DIRECTX_ENABLE_XMA2
+#ifdef DIRECTX_ENABLE_XMA2
         uint8_t* ptr = (tag == WAVE_FORMAT_XMA2) ? mXMAMemory.get() : mStreamBuffer.get();
-    #else
+#else
         uint8_t* ptr = mStreamBuffer.get();
-    #endif
+#endif
         for (size_t j = 0; j < MAX_BUFFER_COUNT; ++j)
         {
-            mPackets[j].buffer = ptr;
-            mPackets[j].stitchBuffer = nullptr;
+            mPackets[j].buffer         = ptr;
+            mPackets[j].stitchBuffer   = nullptr;
             mPackets[j].request.hEvent = mBufferRead.get();
             mPackets[j].notify.Set(this, j);
             ptr += packetSize;
@@ -495,7 +522,6 @@ HRESULT SoundStreamInstance::Impl::AllocateStreamingBuffers(const WAVEFORMATEX* 
     return S_OK;
 }
 
-
 HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
 {
     if (mCurrentPosition >= mLengthInBytes)
@@ -506,9 +532,9 @@ HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
             return S_FALSE;
         }
 
-    #ifdef VERBOSE_TRACE
+#ifdef VERBOSE_TRACE
         DebugTrace("INFO (Streaming): Loop restart\n");
-    #endif
+#endif
 
         mCurrentPosition = 0;
     }
@@ -527,9 +553,9 @@ HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
             {
                 const auto cbValid = static_cast<uint32_t>(std::min(mPacketSize, mLengthInBytes - mCurrentPosition));
 
-                mPackets[entry].valid = cbValid;
-                mPackets[entry].audioBytes = 0;
-                mPackets[entry].startPosition = static_cast<uint32_t>(mCurrentPosition);
+                mPackets[entry].valid          = cbValid;
+                mPackets[entry].audioBytes     = 0;
+                mPackets[entry].startPosition  = static_cast<uint32_t>(mCurrentPosition);
                 mPackets[entry].request.Offset = static_cast<DWORD>(mOffsetBytes + mCurrentPosition);
 
                 if (!ReadFile(async, mPackets[entry].buffer, uint32_t(mPacketSize), nullptr, &mPackets[entry].request))
@@ -537,13 +563,14 @@ HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
                     const DWORD error = GetLastError();
                     if (error != ERROR_IO_PENDING)
                     {
-                    #ifdef _DEBUG
+#ifdef _DEBUG
                         if (error == ERROR_INVALID_PARAMETER)
                         {
                             // May be due to Advanced Format (4Kn) vs. DVD sector size. See the xwbtool -af switch.
-                            OutputDebugStringA("ERROR: non-buffered async I/O failed: check disk sector size vs. streaming wave bank alignment!\n");
+                            OutputDebugStringA(
+                                "ERROR: non-buffered async I/O failed: check disk sector size vs. streaming wave bank alignment!\n");
                         }
-                    #endif
+#endif
                         return HRESULT_FROM_WIN32(error);
                     }
                 }
@@ -556,9 +583,9 @@ HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
 
                 if ((cbValid < mPacketSize) && mLooped)
                 {
-                #ifdef VERBOSE_TRACE
+#ifdef VERBOSE_TRACE
                     DebugTrace("INFO (Streaming): Loop restart\n");
-                #endif
+#endif
                     mCurrentPosition = 0;
                 }
             }
@@ -567,7 +594,6 @@ HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
 
     return S_OK;
 }
-
 
 HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
 {
@@ -579,7 +605,7 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
     {
         if (mPackets[j].state == State::PENDING)
         {
-            DWORD cb = 0;
+            DWORD      cb     = 0;
             const BOOL result = GetOverlappedResultEx(async, &mPackets[j].request, &cb, 0, FALSE);
             if (result)
             {
@@ -604,16 +630,16 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
         if (mPackets[mCurrentPlayBuffer].state != State::READY)
             break;
 
-        const uint8_t* ptr = mPackets[mCurrentPlayBuffer].buffer;
-        uint32_t valid = mPackets[mCurrentPlayBuffer].valid;
+        const uint8_t* ptr   = mPackets[mCurrentPlayBuffer].buffer;
+        uint32_t       valid = mPackets[mCurrentPlayBuffer].valid;
 
         bool endstream = false;
         if (valid < mPacketSize)
         {
             endstream = true;
-        #ifdef VERBOSE_TRACE
+#ifdef VERBOSE_TRACE
             DebugTrace("INFO (Streaming): End of stream (%u of %zu bytes)\n", mPackets[mCurrentPlayBuffer].valid, mPacketSize);
-        #endif
+#endif
         }
 
         uint32_t thisFrameStitch = 0;
@@ -634,10 +660,10 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
                 {
                     // Compute how many bytes at the start of the previous packet were the tail of the previous stitch block.
                     uint32_t prevFrameStitchOffset = (mPackets[k].startPosition % mBlockAlign);
-                    prevFrameStitchOffset = (prevFrameStitchOffset > 0) ? (mBlockAlign - prevFrameStitchOffset) : 0u;
+                    prevFrameStitchOffset          = (prevFrameStitchOffset > 0) ? (mBlockAlign - prevFrameStitchOffset) : 0u;
 
                     // Point to the start of the partial block's head in the previous packet.
-                    const auto *prevBuffer = mPackets[k].buffer + prevFrameStitchOffset + mPackets[k].audioBytes;
+                    const auto* prevBuffer = mPackets[k].buffer + prevFrameStitchOffset + mPackets[k].audioBytes;
 
                     // Merge the the head partial block in the previous packet with the tail partial block at the start of our packet.
                     memcpy(buffer, prevBuffer, prevFrameStitch);
@@ -645,32 +671,33 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
 
                     // Submit stitch packet (only need to get notified if we aren't submitting another packet for this buffer).
                     XAUDIO2_BUFFER buf = {};
-                    buf.AudioBytes = mBlockAlign;
-                    buf.pAudioData = buffer;
+                    buf.AudioBytes     = mBlockAlign;
+                    buf.pAudioData     = buffer;
 
                     if (endstream && (valid <= thisFrameStitch))
                     {
-                        buf.Flags = XAUDIO2_END_OF_STREAM;
+                        buf.Flags    = XAUDIO2_END_OF_STREAM;
                         buf.pContext = &mPackets[mCurrentPlayBuffer].notify;
                     }
-                #ifdef VERBOSE_TRACE
+#ifdef VERBOSE_TRACE
                     DebugTrace("INFO (Streaming): Stitch packet (%u + %u = %u)\n", prevFrameStitch, thisFrameStitch, mBlockAlign);
-                #endif
-                #ifdef DIRECTX_ENABLE_XWMA
+#endif
+#ifdef DIRECTX_ENABLE_XWMA
                     if (mSeekCount > 0)
                     {
-                        XAUDIO2_BUFFER_WMA wmaBuf = {};
+                        XAUDIO2_BUFFER_WMA wmaBuf            = {};
                         wmaBuf.pDecodedPacketCumulativeBytes = mSeekTableCopy;
-                        wmaBuf.PacketCount = 1;
+                        wmaBuf.PacketCount                   = 1;
 
-                        const uint32_t seekOffset = (mPackets[k].startPosition + prevFrameStitchOffset + mPackets[k].audioBytes) / mBlockAlign;
+                        const uint32_t seekOffset
+                            = (mPackets[k].startPosition + prevFrameStitchOffset + mPackets[k].audioBytes) / mBlockAlign;
                         assert(seekOffset > 0);
                         mSeekTableCopy[0] = mSeekTable[seekOffset] - mSeekTable[seekOffset - 1];
 
                         ThrowIfFailed(mBase.voice->SubmitSourceBuffer(&buf, &wmaBuf));
                     }
                     else
-                    #endif // XWMA
+#endif // XWMA
                     {
                         ThrowIfFailed(mBase.voice->SubmitSourceBuffer(&buf));
                     }
@@ -689,12 +716,12 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
             mPackets[mCurrentPlayBuffer].audioBytes = valid;
 
             XAUDIO2_BUFFER buf = {};
-            buf.Flags = (endstream) ? XAUDIO2_END_OF_STREAM : 0;
-            buf.AudioBytes = valid;
-            buf.pAudioData = ptr;
-            buf.pContext = &mPackets[mCurrentPlayBuffer].notify;
+            buf.Flags          = (endstream) ? XAUDIO2_END_OF_STREAM : 0;
+            buf.AudioBytes     = valid;
+            buf.pAudioData     = ptr;
+            buf.pContext       = &mPackets[mCurrentPlayBuffer].notify;
 
-        #ifdef DIRECTX_ENABLE_XWMA
+#ifdef DIRECTX_ENABLE_XWMA
             if (mSeekCount > 0)
             {
                 XAUDIO2_BUFFER_WMA wmaBuf = {};
@@ -724,29 +751,22 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
                 ThrowIfFailed(mBase.voice->SubmitSourceBuffer(&buf, &wmaBuf));
             }
             else
-            #endif // xWMA
+#endif // xWMA
             {
                 ThrowIfFailed(mBase.voice->SubmitSourceBuffer(&buf));
             }
         }
 
         mPackets[mCurrentPlayBuffer].state = State::PLAYING;
-        mCurrentPlayBuffer = (mCurrentPlayBuffer + 1) % uint32_t(MAX_BUFFER_COUNT);
+        mCurrentPlayBuffer                 = (mCurrentPlayBuffer + 1) % uint32_t(MAX_BUFFER_COUNT);
     }
 
     return S_OK;
 }
 
 #ifdef VERBOSE_TRACE
-const wchar_t* SoundStreamInstance::Impl::s_debugState[4] =
-{
-    L"FREE",
-    L"PENDING",
-    L"READY",
-    L"PLAYING"
-};
+const wchar_t* SoundStreamInstance::Impl::s_debugState[4] = { L"FREE", L"PENDING", L"READY", L"PLAYING" };
 #endif
-
 
 //--------------------------------------------------------------------------------------
 // SoundStreamInstance
@@ -754,15 +774,13 @@ const wchar_t* SoundStreamInstance::Impl::s_debugState[4] =
 
 // Private constructors
 _Use_decl_annotations_
-SoundStreamInstance::SoundStreamInstance(AudioEngine* engine, WaveBank* waveBank, unsigned int index, SOUND_EFFECT_INSTANCE_FLAGS flags) :
-    pImpl(std::make_unique<Impl>(engine, waveBank, index, flags))
+SoundStreamInstance::SoundStreamInstance(AudioEngine* engine, WaveBank* waveBank, unsigned int index, SOUND_EFFECT_INSTANCE_FLAGS flags)
+    : pImpl(std::make_unique<Impl>(engine, waveBank, index, flags))
 {}
 
-
 // Move ctor/operator.
-SoundStreamInstance::SoundStreamInstance(SoundStreamInstance&&) noexcept = default;
-SoundStreamInstance& SoundStreamInstance::operator= (SoundStreamInstance&&) noexcept = default;
-
+SoundStreamInstance::SoundStreamInstance(SoundStreamInstance&&) noexcept            = default;
+SoundStreamInstance& SoundStreamInstance::operator=(SoundStreamInstance&&) noexcept = default;
 
 // Public destructor.
 SoundStreamInstance::~SoundStreamInstance()
@@ -777,7 +795,6 @@ SoundStreamInstance::~SoundStreamInstance()
     }
 }
 
-
 // Public methods.
 void SoundStreamInstance::Play(bool loop)
 {
@@ -785,56 +802,47 @@ void SoundStreamInstance::Play(bool loop)
     pImpl->mPlaying = true;
 }
 
-
 void SoundStreamInstance::Stop(bool immediate) noexcept
 {
     pImpl->mBase.Stop(immediate, pImpl->mLooped);
     pImpl->mPlaying = !immediate;
 }
 
-
 void SoundStreamInstance::Pause() noexcept
 {
     pImpl->mBase.Pause();
 }
-
 
 void SoundStreamInstance::Resume()
 {
     pImpl->mBase.Resume();
 }
 
-
 void SoundStreamInstance::SetVolume(float volume)
 {
     pImpl->mBase.SetVolume(volume);
 }
-
 
 void SoundStreamInstance::SetPitch(float pitch)
 {
     pImpl->mBase.SetPitch(pitch);
 }
 
-
 void SoundStreamInstance::SetPan(float pan)
 {
     pImpl->mBase.SetPan(pan);
 }
-
 
 void SoundStreamInstance::Apply3D(const X3DAUDIO_LISTENER& listener, const X3DAUDIO_EMITTER& emitter, bool rhcoords)
 {
     pImpl->mBase.Apply3D(listener, emitter, rhcoords);
 }
 
-
 // Public accessors.
 bool SoundStreamInstance::IsLooped() const noexcept
 {
     return pImpl->mLooped;
 }
-
 
 SoundState SoundStreamInstance::GetState() noexcept
 {
@@ -846,12 +854,10 @@ SoundState SoundStreamInstance::GetState() noexcept
     return state;
 }
 
-
 unsigned int SoundStreamInstance::GetChannelCount() const noexcept
 {
     return pImpl->mBase.GetChannelCount();
 }
-
 
 IVoiceNotify* SoundStreamInstance::GetVoiceNotify() const noexcept
 {

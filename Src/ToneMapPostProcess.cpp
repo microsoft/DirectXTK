@@ -23,13 +23,13 @@ using Microsoft::WRL::ComPtr;
 namespace
 {
     constexpr int Dirty_ConstantBuffer = 0x01;
-    constexpr int Dirty_Parameters = 0x02;
+    constexpr int Dirty_Parameters     = 0x02;
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    constexpr int PixelShaderCount = 15;
+    constexpr int PixelShaderCount       = 15;
     constexpr int ShaderPermutationCount = 24;
 #else
-    constexpr int PixelShaderCount = 9;
+    constexpr int PixelShaderCount       = 9;
     constexpr int ShaderPermutationCount = 12;
 #endif
 
@@ -45,30 +45,53 @@ namespace
     static_assert((sizeof(ToneMapConstants) % 16) == 0, "CB size not padded correctly");
 
     // HDTV to UHDTV (Rec.709 color primaries into Rec.2020)
-    constexpr float c_from709to2020[12] =
-    {
-        0.6274040f, 0.3292820f, 0.0433136f, 0.f,
-        0.0690970f, 0.9195400f, 0.0113612f, 0.f,
-        0.0163916f, 0.0880132f, 0.8955950f, 0.f,
+    constexpr float c_from709to2020[12] = {
+        0.6274040f,
+        0.3292820f,
+        0.0433136f,
+        0.f,
+        0.0690970f,
+        0.9195400f,
+        0.0113612f,
+        0.f,
+        0.0163916f,
+        0.0880132f,
+        0.8955950f,
+        0.f,
     };
 
     // DCI-P3-D65 https://en.wikipedia.org/wiki/DCI-P3 to UHDTV (DCI-P3-D65 color primaries into Rec.2020)
-    constexpr float c_fromP3D65to2020[12] =
-    {
-        0.753845f,    0.198593f,  0.047562f, 0.f,
-        0.0457456f,   0.941777f,  0.0124772f, 0.f,
-        -0.00121055f, 0.0176041f, 0.983607f, 0.f,
+    constexpr float c_fromP3D65to2020[12] = {
+        0.753845f,
+        0.198593f,
+        0.047562f,
+        0.f,
+        0.0457456f,
+        0.941777f,
+        0.0124772f,
+        0.f,
+        -0.00121055f,
+        0.0176041f,
+        0.983607f,
+        0.f,
     };
 
     // HDTV to DCI-P3-D65 (a.k.a. Display P3 or P3D65)
-    constexpr float c_from709toP3D65[12] =
-    {
-        0.822461969f, 0.1775380f,        0.f, 0.f,
-        0.033194199f, 0.9668058f,        0.f, 0.f,
-        0.017082631f, 0.0723974f, 0.9105199f, 0.f,
+    constexpr float c_from709toP3D65[12] = {
+        0.822461969f,
+        0.1775380f,
+        0.f,
+        0.f,
+        0.033194199f,
+        0.9668058f,
+        0.f,
+        0.f,
+        0.017082631f,
+        0.0723974f,
+        0.9105199f,
+        0.f,
     };
-}
-
+} // namespace
 
 #pragma region Shaders
 // Include the precompiled shader code.
@@ -105,60 +128,58 @@ namespace
 #include "ToneMap_PSACESFilmic_SRGB.inc"
 #include "ToneMap_PSHDR10.inc"
 #endif
-}
+} // namespace
 
 namespace
 {
     struct ShaderBytecode
     {
         void const* code;
-        size_t length;
+        size_t      length;
     };
 
-    const ShaderBytecode pixelShaders[] =
-    {
-        { ToneMap_PSCopy,                   sizeof(ToneMap_PSCopy) },
-        { ToneMap_PSSaturate,               sizeof(ToneMap_PSSaturate) },
-        { ToneMap_PSReinhard,               sizeof(ToneMap_PSReinhard) },
-        { ToneMap_PSACESFilmic,             sizeof(ToneMap_PSACESFilmic) },
-        { ToneMap_PS_SRGB,                  sizeof(ToneMap_PS_SRGB) },
-        { ToneMap_PSSaturate_SRGB,          sizeof(ToneMap_PSSaturate_SRGB) },
-        { ToneMap_PSReinhard_SRGB,          sizeof(ToneMap_PSReinhard_SRGB) },
-        { ToneMap_PSACESFilmic_SRGB,        sizeof(ToneMap_PSACESFilmic_SRGB) },
-        { ToneMap_PSHDR10,                  sizeof(ToneMap_PSHDR10) },
+    const ShaderBytecode pixelShaders[] = {
+        { ToneMap_PSCopy, sizeof(ToneMap_PSCopy) },
+        { ToneMap_PSSaturate, sizeof(ToneMap_PSSaturate) },
+        { ToneMap_PSReinhard, sizeof(ToneMap_PSReinhard) },
+        { ToneMap_PSACESFilmic, sizeof(ToneMap_PSACESFilmic) },
+        { ToneMap_PS_SRGB, sizeof(ToneMap_PS_SRGB) },
+        { ToneMap_PSSaturate_SRGB, sizeof(ToneMap_PSSaturate_SRGB) },
+        { ToneMap_PSReinhard_SRGB, sizeof(ToneMap_PSReinhard_SRGB) },
+        { ToneMap_PSACESFilmic_SRGB, sizeof(ToneMap_PSACESFilmic_SRGB) },
+        { ToneMap_PSHDR10, sizeof(ToneMap_PSHDR10) },
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
         // Shaders that generate both HDR10 and GameDVR SDR signals via Multiple Render Targets.
-        { ToneMap_PSHDR10_Saturate,         sizeof(ToneMap_PSHDR10_Saturate) },
-        { ToneMap_PSHDR10_Reinhard,         sizeof(ToneMap_PSHDR10_Reinhard) },
-        { ToneMap_PSHDR10_ACESFilmic,       sizeof(ToneMap_PSHDR10_ACESFilmic) },
-        { ToneMap_PSHDR10_Saturate_SRGB,    sizeof(ToneMap_PSHDR10_Saturate_SRGB) },
-        { ToneMap_PSHDR10_Reinhard_SRGB,    sizeof(ToneMap_PSHDR10_Reinhard_SRGB) },
-        { ToneMap_PSHDR10_ACESFilmic_SRGB,  sizeof(ToneMap_PSHDR10_ACESFilmic_SRGB) },
+        { ToneMap_PSHDR10_Saturate, sizeof(ToneMap_PSHDR10_Saturate) },
+        { ToneMap_PSHDR10_Reinhard, sizeof(ToneMap_PSHDR10_Reinhard) },
+        { ToneMap_PSHDR10_ACESFilmic, sizeof(ToneMap_PSHDR10_ACESFilmic) },
+        { ToneMap_PSHDR10_Saturate_SRGB, sizeof(ToneMap_PSHDR10_Saturate_SRGB) },
+        { ToneMap_PSHDR10_Reinhard_SRGB, sizeof(ToneMap_PSHDR10_Reinhard_SRGB) },
+        { ToneMap_PSHDR10_ACESFilmic_SRGB, sizeof(ToneMap_PSHDR10_ACESFilmic_SRGB) },
 #endif
     };
 
     static_assert(static_cast<int>(std::size(pixelShaders)) == PixelShaderCount, "array/max mismatch");
 
-    const int pixelShaderIndices[] =
-    {
+    const int pixelShaderIndices[] = {
         // Linear EOTF
-        0,  // Copy
-        1,  // Saturate
-        2,  // Reinhard
-        3,  // ACES Filmic
+        0, // Copy
+        1, // Saturate
+        2, // Reinhard
+        3, // ACES Filmic
 
         // Gamam22 EOTF
-        4,  // SRGB
-        5,  // Saturate_SRGB
-        6,  // Reinhard_SRGB
-        7,  // ACES Filmic
+        4, // SRGB
+        5, // Saturate_SRGB
+        6, // Reinhard_SRGB
+        7, // ACES Filmic
 
         // ST.2084 EOTF
-        8,  // HDR10
-        8,  // HDR10
-        8,  // HDR10
-        8,  // HDR10
+        8, // HDR10
+        8, // HDR10
+        8, // HDR10
+        8, // HDR10
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
         // MRT Linear EOTF
@@ -171,7 +192,7 @@ namespace
         12, // HDR10+Saturate_SRGB
         12, // HDR10+Saturate_SRGB
         13, // HDR10+Reinhard_SRGB
-        14,  // HDR10+ACESFilmic
+        14, // HDR10+ACESFilmic
 
         // MRT ST.2084 EOTF
         9,  // HDR10+Saturate
@@ -189,10 +210,10 @@ namespace
     public:
         DeviceResources(_In_ ID3D11Device* device)
             : stateObjects(device),
-            mDevice(device),
-            mVertexShader{},
-            mPixelShaders{},
-            mMutex{}
+              mDevice(device),
+              mVertexShader{},
+              mPixelShaders{},
+              mMutex{}
         {
             if (!device)
             {
@@ -205,16 +226,18 @@ namespace
             }
         }
 
-        DeviceResources(const DeviceResources&) = delete;
+        DeviceResources(const DeviceResources&)            = delete;
         DeviceResources& operator=(const DeviceResources&) = delete;
 
-        DeviceResources(DeviceResources&&) = delete;
+        DeviceResources(DeviceResources&&)            = delete;
         DeviceResources& operator=(DeviceResources&&) = delete;
 
         // Gets or lazily creates the vertex shader.
         ID3D11VertexShader* GetVertexShader()
         {
-            return DemandCreate(mVertexShader, mMutex, [&](ID3D11VertexShader** pResult) -> HRESULT
+            return DemandCreate(mVertexShader,
+                mMutex,
+                [&](ID3D11VertexShader** pResult) -> HRESULT
                 {
                     HRESULT hr = mDevice->CreateVertexShader(ToneMap_VSQuad, sizeof(ToneMap_VSQuad), nullptr, pResult);
 
@@ -234,9 +257,12 @@ namespace
             assert(shaderIndex >= 0 && shaderIndex < PixelShaderCount);
             _Analysis_assume_(shaderIndex >= 0 && shaderIndex < PixelShaderCount);
 
-            return DemandCreate(mPixelShaders[shaderIndex], mMutex, [&](ID3D11PixelShader** pResult) -> HRESULT
+            return DemandCreate(mPixelShaders[shaderIndex],
+                mMutex,
+                [&](ID3D11PixelShader** pResult) -> HRESULT
                 {
-                    HRESULT hr = mDevice->CreatePixelShader(pixelShaders[shaderIndex].code, pixelShaders[shaderIndex].length, nullptr, pResult);
+                    HRESULT hr
+                        = mDevice->CreatePixelShader(pixelShaders[shaderIndex].code, pixelShaders[shaderIndex].length, nullptr, pResult);
 
                     if (SUCCEEDED(hr))
                         SetDebugObjectName(*pResult, "ToneMapPostProcess");
@@ -245,27 +271,26 @@ namespace
                 });
         }
 
-        CommonStates                stateObjects;
+        CommonStates stateObjects;
 
     protected:
-        ComPtr<ID3D11Device>        mDevice;
-        ComPtr<ID3D11VertexShader>  mVertexShader;
-        ComPtr<ID3D11PixelShader>   mPixelShaders[PixelShaderCount];
-        std::mutex                  mMutex;
+        ComPtr<ID3D11Device>       mDevice;
+        ComPtr<ID3D11VertexShader> mVertexShader;
+        ComPtr<ID3D11PixelShader>  mPixelShaders[PixelShaderCount];
+        std::mutex                 mMutex;
     };
-}
+} // namespace
 #pragma endregion
-
 
 class ToneMapPostProcess::Impl : public AlignedNew<ToneMapConstants>
 {
 public:
     explicit Impl(_In_ ID3D11Device* device);
 
-    Impl(const Impl&) = delete;
+    Impl(const Impl&)            = delete;
     Impl& operator=(const Impl&) = delete;
 
-    Impl(Impl&&) = default;
+    Impl(Impl&&)            = default;
     Impl& operator=(Impl&&) = default;
 
     void Process(_In_ ID3D11DeviceContext* deviceContext, const std::function<void __cdecl()>& setCustomState);
@@ -275,53 +300,48 @@ public:
     int GetCurrentShaderPermutation() const noexcept;
 
     // Fields.
-    ToneMapConstants                        constants;
-    ComPtr<ID3D11ShaderResourceView>        hdrTexture;
-    float                                   linearExposure;
-    float                                   paperWhiteNits;
+    ToneMapConstants                 constants;
+    ComPtr<ID3D11ShaderResourceView> hdrTexture;
+    float                            linearExposure;
+    float                            paperWhiteNits;
 
-    Operator                                op;
-    TransferFunction                        func;
-    bool                                    mrt;
+    Operator         op;
+    TransferFunction func;
+    bool             mrt;
 
 private:
-    int                                     mDirtyFlags;
+    int mDirtyFlags;
 
-    ConstantBuffer<ToneMapConstants>        mConstantBuffer;
+    ConstantBuffer<ToneMapConstants> mConstantBuffer;
 
     // Per-device resources.
-    std::shared_ptr<DeviceResources>        mDeviceResources;
+    std::shared_ptr<DeviceResources> mDeviceResources;
 
     static SharedResourcePool<ID3D11Device*, DeviceResources> deviceResourcesPool;
 };
 
-
 // Global pool of per-device ToneMapPostProcess resources.
 SharedResourcePool<ID3D11Device*, DeviceResources> ToneMapPostProcess::Impl::deviceResourcesPool;
-
 
 // Constructor.
 ToneMapPostProcess::Impl::Impl(_In_ ID3D11Device* device)
     : constants{},
-    linearExposure(1.f),
-    paperWhiteNits(200.f),
-    op(None),
-    func(Linear),
-    mrt(false),
-    mDirtyFlags(INT_MAX),
-    mConstantBuffer(device),
-    mDeviceResources(deviceResourcesPool.DemandCreate(device))
+      linearExposure(1.f),
+      paperWhiteNits(200.f),
+      op(None),
+      func(Linear),
+      mrt(false),
+      mDirtyFlags(INT_MAX),
+      mConstantBuffer(device),
+      mDeviceResources(deviceResourcesPool.DemandCreate(device))
 {
     memcpy(constants.colorRotation, c_from709to2020, sizeof(c_from709to2020));
 
     SetDebugObjectName(mConstantBuffer.GetBuffer(), "ToneMapPostProcess");
 }
 
-
 // Sets our state onto the D3D device.
-void ToneMapPostProcess::Impl::Process(
-    _In_ ID3D11DeviceContext* deviceContext,
-    const std::function<void __cdecl()>& setCustomState)
+void ToneMapPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, const std::function<void __cdecl()>& setCustomState)
 {
     // Set the texture.
     ID3D11ShaderResourceView* textures[1] = { hdrTexture.Get() };
@@ -337,7 +357,7 @@ void ToneMapPostProcess::Impl::Process(
 
     // Set shaders.
     auto vertexShader = mDeviceResources->GetVertexShader();
-    auto pixelShader = mDeviceResources->GetPixelShader(GetCurrentShaderPermutation());
+    auto pixelShader  = mDeviceResources->GetPixelShader(GetCurrentShaderPermutation());
 
     deviceContext->VSSetShader(vertexShader, nullptr, 0);
     deviceContext->PSSetShader(pixelShader, nullptr, 0);
@@ -352,7 +372,7 @@ void ToneMapPostProcess::Impl::Process(
     }
 
 #if defined(_XBOX_ONE) && defined(_TITLE)
-    void *grfxMemory;
+    void* grfxMemory;
     mConstantBuffer.SetData(deviceContext, constants, &grfxMemory);
 
     ComPtr<ID3D11DeviceContextX> deviceContextX;
@@ -386,7 +406,6 @@ void ToneMapPostProcess::Impl::Process(
     deviceContext->Draw(3, 0);
 }
 
-
 int ToneMapPostProcess::Impl::GetCurrentShaderPermutation() const noexcept
 {
 #if defined(_XBOX_ONE) && defined(_TITLE)
@@ -397,26 +416,20 @@ int ToneMapPostProcess::Impl::GetCurrentShaderPermutation() const noexcept
 #endif
 }
 
-
 // Public constructor.
 ToneMapPostProcess::ToneMapPostProcess(_In_ ID3D11Device* device)
     : pImpl(std::make_unique<Impl>(device))
 {}
 
-
-ToneMapPostProcess::ToneMapPostProcess(ToneMapPostProcess&&) noexcept = default;
-ToneMapPostProcess& ToneMapPostProcess::operator= (ToneMapPostProcess&&) noexcept = default;
-ToneMapPostProcess::~ToneMapPostProcess() = default;
-
+ToneMapPostProcess::ToneMapPostProcess(ToneMapPostProcess&&) noexcept            = default;
+ToneMapPostProcess& ToneMapPostProcess::operator=(ToneMapPostProcess&&) noexcept = default;
+ToneMapPostProcess::~ToneMapPostProcess()                                        = default;
 
 // IPostProcess methods.
-void ToneMapPostProcess::Process(
-    _In_ ID3D11DeviceContext* deviceContext,
-    _In_ std::function<void __cdecl()> setCustomState)
+void ToneMapPostProcess::Process(_In_ ID3D11DeviceContext* deviceContext, _In_ std::function<void __cdecl()> setCustomState)
 {
     pImpl->Process(deviceContext, setCustomState);
 }
-
 
 // Shader control.
 void ToneMapPostProcess::SetOperator(Operator op)
@@ -427,7 +440,6 @@ void ToneMapPostProcess::SetOperator(Operator op)
     pImpl->op = op;
 }
 
-
 void ToneMapPostProcess::SetTransferFunction(TransferFunction func)
 {
     if (func >= TransferFunction_Max)
@@ -436,7 +448,6 @@ void ToneMapPostProcess::SetTransferFunction(TransferFunction func)
     pImpl->func = func;
 }
 
-
 #if defined(_XBOX_ONE) && defined(_TITLE)
 void ToneMapPostProcess::SetMRTOutput(bool value)
 {
@@ -444,43 +455,38 @@ void ToneMapPostProcess::SetMRTOutput(bool value)
 }
 #endif
 
-
 // Properties
 void ToneMapPostProcess::SetHDRSourceTexture(_In_opt_ ID3D11ShaderResourceView* value)
 {
     pImpl->hdrTexture = value;
 }
 
-
 void ToneMapPostProcess::SetColorRotation(ColorPrimaryRotation value)
 {
     switch (value)
     {
-    case DCI_P3_D65_to_UHDTV:   memcpy(pImpl->constants.colorRotation, c_fromP3D65to2020, sizeof(c_fromP3D65to2020)); break;
-    case HDTV_to_DCI_P3_D65:    memcpy(pImpl->constants.colorRotation, c_from709toP3D65, sizeof(c_from709toP3D65)); break;
-    default:                    memcpy(pImpl->constants.colorRotation, c_from709to2020, sizeof(c_from709to2020)); break;
+    case DCI_P3_D65_to_UHDTV: memcpy(pImpl->constants.colorRotation, c_fromP3D65to2020, sizeof(c_fromP3D65to2020)); break;
+    case HDTV_to_DCI_P3_D65:  memcpy(pImpl->constants.colorRotation, c_from709toP3D65, sizeof(c_from709toP3D65)); break;
+    default:                  memcpy(pImpl->constants.colorRotation, c_from709to2020, sizeof(c_from709to2020)); break;
     }
 
     pImpl->SetDirtyFlag();
 }
 
-
 void ToneMapPostProcess::SetColorRotation(CXMMATRIX value)
 {
-    const XMMATRIX transpose = XMMatrixTranspose(value);
+    const XMMATRIX transpose          = XMMatrixTranspose(value);
     pImpl->constants.colorRotation[0] = transpose.r[0];
     pImpl->constants.colorRotation[1] = transpose.r[1];
     pImpl->constants.colorRotation[2] = transpose.r[2];
     pImpl->SetDirtyFlag();
 }
 
-
 void ToneMapPostProcess::SetExposure(float exposureValue)
 {
     pImpl->linearExposure = powf(2.f, exposureValue);
     pImpl->SetDirtyFlag();
 }
-
 
 void ToneMapPostProcess::SetST2084Parameter(float paperWhiteNits)
 {

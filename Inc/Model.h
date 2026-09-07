@@ -35,13 +35,13 @@
 #ifndef DIRECTX_TOOLKIT_API
 #ifdef DIRECTX_TOOLKIT_EXPORT
 #ifdef __GNUC__
-#define DIRECTX_TOOLKIT_API __attribute__ ((dllexport))
+#define DIRECTX_TOOLKIT_API __attribute__((dllexport))
 #else
 #define DIRECTX_TOOLKIT_API __declspec(dllexport)
 #endif
 #elif defined(DIRECTX_TOOLKIT_IMPORT)
 #ifdef __GNUC__
-#define DIRECTX_TOOLKIT_API __attribute__ ((dllimport))
+#define DIRECTX_TOOLKIT_API __attribute__((dllimport))
 #else
 #define DIRECTX_TOOLKIT_API __declspec(dllimport)
 #endif
@@ -54,7 +54,6 @@
 #pragma warning(push)
 #pragma warning(disable : 4251)
 #endif
-
 
 namespace DirectX
 {
@@ -69,41 +68,44 @@ namespace DirectX
         // Model loading options
         enum ModelLoaderFlags : uint32_t
         {
-            ModelLoader_Clockwise = 0x0,
-            ModelLoader_CounterClockwise = 0x1,
-            ModelLoader_PremultipledAlpha = 0x2,
+            ModelLoader_Clockwise          = 0x0,
+            ModelLoader_CounterClockwise   = 0x1,
+            ModelLoader_PremultipledAlpha  = 0x2,
             ModelLoader_MaterialColorsSRGB = 0x4,
-            ModelLoader_AllowLargeModels = 0x8,
-            ModelLoader_IncludeBones = 0x10,
-            ModelLoader_DisableSkinning = 0x20,
+            ModelLoader_AllowLargeModels   = 0x8,
+            ModelLoader_IncludeBones       = 0x10,
+            ModelLoader_DisableSkinning    = 0x20,
         };
 
         //------------------------------------------------------------------------------
         // Frame hierarchy for rigid body and skeletal animation
         struct DIRECTX_TOOLKIT_API ModelBone
         {
-            ModelBone() noexcept :
-                parentIndex(c_Invalid),
-                childIndex(c_Invalid),
-                siblingIndex(c_Invalid)
+            ModelBone() noexcept
+                : parentIndex(c_Invalid),
+                  childIndex(c_Invalid),
+                  siblingIndex(c_Invalid)
             {}
 
-            ModelBone(uint32_t parent, uint32_t child, uint32_t sibling) noexcept :
-                parentIndex(parent),
-                childIndex(child),
-                siblingIndex(sibling)
+            ModelBone(uint32_t parent, uint32_t child, uint32_t sibling) noexcept
+                : parentIndex(parent),
+                  childIndex(child),
+                  siblingIndex(sibling)
             {}
 
-            uint32_t            parentIndex;
-            uint32_t            childIndex;
-            uint32_t            siblingIndex;
-            std::wstring        name;
+            uint32_t     parentIndex;
+            uint32_t     childIndex;
+            uint32_t     siblingIndex;
+            std::wstring name;
 
             using Collection = std::vector<ModelBone>;
 
             static constexpr uint32_t c_Invalid = uint32_t(-1);
 
-            struct aligned_deleter { void operator()(void* p) noexcept { _aligned_free(p); } };
+            struct aligned_deleter
+            {
+                void operator()(void* p) noexcept { _aligned_free(p); }
+            };
 
             using TransformArray = std::unique_ptr<XMMATRIX[], aligned_deleter>;
 
@@ -116,7 +118,6 @@ namespace DirectX
             }
         };
 
-
         //------------------------------------------------------------------------------
         // Each mesh part is a submesh with a single effect
         class DIRECTX_TOOLKIT_API ModelMeshPart
@@ -124,52 +125,51 @@ namespace DirectX
         public:
             ModelMeshPart() noexcept;
 
-            ModelMeshPart(ModelMeshPart&&) = default;
-            ModelMeshPart& operator= (ModelMeshPart&&) = default;
+            ModelMeshPart(ModelMeshPart&&)            = default;
+            ModelMeshPart& operator=(ModelMeshPart&&) = default;
 
-            ModelMeshPart(ModelMeshPart const&) = default;
-            ModelMeshPart& operator= (ModelMeshPart const&) = default;
+            ModelMeshPart(ModelMeshPart const&)            = default;
+            ModelMeshPart& operator=(ModelMeshPart const&) = default;
 
             virtual ~ModelMeshPart();
 
-            using Collection = std::vector<std::unique_ptr<ModelMeshPart>>;
+            using Collection            = std::vector<std::unique_ptr<ModelMeshPart>>;
             using InputLayoutCollection = std::vector<D3D11_INPUT_ELEMENT_DESC>;
 
-            uint32_t                                                indexCount;
-            uint32_t                                                startIndex;
-            int32_t                                                 vertexOffset;
-            uint32_t                                                vertexStride;
-            D3D_PRIMITIVE_TOPOLOGY                                  primitiveType;
-            DXGI_FORMAT                                             indexFormat;
-            Microsoft::WRL::ComPtr<ID3D11InputLayout>               inputLayout;
-            Microsoft::WRL::ComPtr<ID3D11Buffer>                    indexBuffer;
-            Microsoft::WRL::ComPtr<ID3D11Buffer>                    vertexBuffer;
-            std::shared_ptr<IEffect>                                effect;
-            std::shared_ptr<InputLayoutCollection>                  vbDecl;
-            bool                                                    isAlpha;
+            uint32_t                                  indexCount;
+            uint32_t                                  startIndex;
+            int32_t                                   vertexOffset;
+            uint32_t                                  vertexStride;
+            D3D_PRIMITIVE_TOPOLOGY                    primitiveType;
+            DXGI_FORMAT                               indexFormat;
+            Microsoft::WRL::ComPtr<ID3D11InputLayout> inputLayout;
+            Microsoft::WRL::ComPtr<ID3D11Buffer>      indexBuffer;
+            Microsoft::WRL::ComPtr<ID3D11Buffer>      vertexBuffer;
+            std::shared_ptr<IEffect>                  effect;
+            std::shared_ptr<InputLayoutCollection>    vbDecl;
+            bool                                      isAlpha;
 
             // Draw mesh part with custom effect
-            void __cdecl Draw(
-                _In_ ID3D11DeviceContext* deviceContext,
-                _In_ IEffect* ieffect,
-                _In_ ID3D11InputLayout* iinputLayout,
+            void __cdecl Draw(_In_ ID3D11DeviceContext* deviceContext,
+                _In_ IEffect*                           ieffect,
+                _In_ ID3D11InputLayout*                 iinputLayout,
                 _In_ std::function<void __cdecl()> setCustomState = nullptr) const;
 
-            void __cdecl DrawInstanced(
-                _In_ ID3D11DeviceContext* deviceContext,
-                _In_ IEffect* ieffect,
-                _In_ ID3D11InputLayout* iinputLayout,
-                uint32_t instanceCount,
-                uint32_t startInstanceLocation = 0,
-                _In_ std::function<void __cdecl()> setCustomState = nullptr) const;
+            void __cdecl DrawInstanced(_In_ ID3D11DeviceContext* deviceContext,
+                _In_ IEffect*                                    ieffect,
+                _In_ ID3D11InputLayout*                          iinputLayout,
+                uint32_t                                         instanceCount,
+                uint32_t                                         startInstanceLocation = 0,
+                _In_ std::function<void __cdecl()> setCustomState                      = nullptr) const;
 
             // Create input layout for drawing with a custom effect.
-            void __cdecl CreateInputLayout(_In_ ID3D11Device* device, _In_ IEffect* ieffect, _Outptr_ ID3D11InputLayout** iinputLayout) const;
+            void __cdecl CreateInputLayout(_In_ ID3D11Device* device,
+                _In_ IEffect*                                 ieffect,
+                _Outptr_ ID3D11InputLayout**                  iinputLayout) const;
 
             // Change effect used by part and regenerate input layout (be sure to call Model::Modified as well)
             void __cdecl ModifyEffect(_In_ ID3D11Device* device, _In_ const std::shared_ptr<IEffect>& ieffect, bool isalpha = false);
         };
-
 
         //------------------------------------------------------------------------------
         // A mesh consists of one or more model mesh parts
@@ -178,64 +178,64 @@ namespace DirectX
         public:
             ModelMesh() noexcept;
 
-            ModelMesh(ModelMesh&&) = default;
-            ModelMesh& operator= (ModelMesh&&) = default;
+            ModelMesh(ModelMesh&&)            = default;
+            ModelMesh& operator=(ModelMesh&&) = default;
 
-            ModelMesh(ModelMesh const&) = delete;
-            ModelMesh& operator= (ModelMesh const&) = delete;
+            ModelMesh(ModelMesh const&)            = delete;
+            ModelMesh& operator=(ModelMesh const&) = delete;
 
             virtual ~ModelMesh();
 
-            BoundingSphere              boundingSphere;
-            BoundingBox                 boundingBox;
-            ModelMeshPart::Collection   meshParts;
-            uint32_t                    boneIndex;
-            std::vector<uint32_t>       boneInfluences;
-            std::wstring                name;
-            bool                        ccw;
-            bool                        pmalpha;
+            BoundingSphere            boundingSphere;
+            BoundingBox               boundingBox;
+            ModelMeshPart::Collection meshParts;
+            uint32_t                  boneIndex;
+            std::vector<uint32_t>     boneInfluences;
+            std::wstring              name;
+            bool                      ccw;
+            bool                      pmalpha;
 
             using Collection = std::vector<std::shared_ptr<ModelMesh>>;
 
             // Setup states for drawing mesh
-            void __cdecl PrepareForRendering(
-                _In_ ID3D11DeviceContext* deviceContext,
-                const CommonStates& states,
-                bool alpha = false,
-                bool wireframe = false) const;
+            void __cdecl PrepareForRendering(_In_ ID3D11DeviceContext* deviceContext,
+                const CommonStates&                                    states,
+                bool                                                   alpha     = false,
+                bool                                                   wireframe = false) const;
 
             // Draw the mesh
-            void XM_CALLCONV Draw(
-                _In_ ID3D11DeviceContext* deviceContext,
-                FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection,
-                bool alpha = false,
+            void XM_CALLCONV Draw(_In_ ID3D11DeviceContext* deviceContext,
+                FXMMATRIX                                   world,
+                CXMMATRIX                                   view,
+                CXMMATRIX                                   projection,
+                bool                                        alpha = false,
                 _In_ std::function<void __cdecl()> setCustomState = nullptr) const;
 
             // Draw the mesh using model bones
-            void XM_CALLCONV Draw(
-                _In_ ID3D11DeviceContext* deviceContext,
-                size_t nbones, _In_reads_(nbones) const XMMATRIX* boneTransforms,
-                FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection,
-                bool alpha = false,
+            void XM_CALLCONV Draw(_In_ ID3D11DeviceContext* deviceContext,
+                size_t                                      nbones,
+                _In_reads_(nbones) const XMMATRIX*          boneTransforms,
+                FXMMATRIX                                   world,
+                CXMMATRIX                                   view,
+                CXMMATRIX                                   projection,
+                bool                                        alpha = false,
                 _In_ std::function<void __cdecl()> setCustomState = nullptr) const;
 
             // Draw the mesh using skinning
-            void XM_CALLCONV DrawSkinned(
-                _In_ ID3D11DeviceContext* deviceContext,
-                size_t nbones, _In_reads_(nbones) const XMMATRIX* boneTransforms,
-                FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection,
-                bool alpha = false,
-                _In_ std::function<void __cdecl()> setCustomState = nullptr) const;
+            void XM_CALLCONV DrawSkinned(_In_ ID3D11DeviceContext* deviceContext,
+                size_t                                             nbones,
+                _In_reads_(nbones) const XMMATRIX*                 boneTransforms,
+                FXMMATRIX                                          world,
+                CXMMATRIX                                          view,
+                CXMMATRIX                                          projection,
+                bool                                               alpha = false,
+                _In_ std::function<void __cdecl()> setCustomState        = nullptr) const;
 
-            static void SetDepthBufferMode(bool reverseZ)
-            {
-                s_reversez = reverseZ;
-            }
+            static void SetDepthBufferMode(bool reverseZ) { s_reversez = reverseZ; }
 
         private:
             static bool s_reversez;
         };
-
 
         //------------------------------------------------------------------------------
         // A model consists of one or more meshes
@@ -244,65 +244,63 @@ namespace DirectX
         public:
             Model() = default;
 
-            Model(Model&&) = default;
-            Model& operator= (Model&&) = default;
+            Model(Model&&)            = default;
+            Model& operator=(Model&&) = default;
 
             Model(Model const& other);
-            Model& operator= (Model const& rhs);
+            Model& operator=(Model const& rhs);
 
             virtual ~Model();
 
-            ModelMesh::Collection       meshes;
-            ModelBone::Collection       bones;
-            ModelBone::TransformArray   boneMatrices;
-            ModelBone::TransformArray   invBindPoseMatrices;
-            std::wstring                name;
+            ModelMesh::Collection     meshes;
+            ModelBone::Collection     bones;
+            ModelBone::TransformArray boneMatrices;
+            ModelBone::TransformArray invBindPoseMatrices;
+            std::wstring              name;
 
             // Draw all the meshes in the model
-            void XM_CALLCONV Draw(
-                _In_ ID3D11DeviceContext* deviceContext,
-                const CommonStates& states,
-                FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection,
-                bool wireframe = false,
-                _In_ std::function<void __cdecl()> setCustomState = nullptr) const;
+            void XM_CALLCONV Draw(_In_ ID3D11DeviceContext* deviceContext,
+                const CommonStates&                         states,
+                FXMMATRIX                                   world,
+                CXMMATRIX                                   view,
+                CXMMATRIX                                   projection,
+                bool                                        wireframe = false,
+                _In_ std::function<void __cdecl()> setCustomState     = nullptr) const;
 
             // Draw all the meshes using model bones
-            void XM_CALLCONV Draw(
-                _In_ ID3D11DeviceContext* deviceContext,
-                const CommonStates& states,
-                size_t nbones, _In_reads_(nbones) const XMMATRIX* boneTransforms,
-                FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection,
-                bool wireframe = false,
-                _In_ std::function<void __cdecl()> setCustomState = nullptr) const;
+            void XM_CALLCONV Draw(_In_ ID3D11DeviceContext* deviceContext,
+                const CommonStates&                         states,
+                size_t                                      nbones,
+                _In_reads_(nbones) const XMMATRIX*          boneTransforms,
+                FXMMATRIX                                   world,
+                CXMMATRIX                                   view,
+                CXMMATRIX                                   projection,
+                bool                                        wireframe = false,
+                _In_ std::function<void __cdecl()> setCustomState     = nullptr) const;
 
             // Draw all the meshes using skinning
-            void XM_CALLCONV DrawSkinned(
-                _In_ ID3D11DeviceContext* deviceContext,
-                const CommonStates& states,
-                size_t nbones, _In_reads_(nbones) const XMMATRIX* boneTransforms,
-                FXMMATRIX world, CXMMATRIX view, CXMMATRIX projection,
-                bool wireframe = false,
-                _In_ std::function<void __cdecl()> setCustomState = nullptr) const;
+            void XM_CALLCONV DrawSkinned(_In_ ID3D11DeviceContext* deviceContext,
+                const CommonStates&                                states,
+                size_t                                             nbones,
+                _In_reads_(nbones) const XMMATRIX*                 boneTransforms,
+                FXMMATRIX                                          world,
+                CXMMATRIX                                          view,
+                CXMMATRIX                                          projection,
+                bool                                               wireframe = false,
+                _In_ std::function<void __cdecl()> setCustomState            = nullptr) const;
 
             // Compute bone positions based on heirarchy and transform matrices
-            void __cdecl CopyAbsoluteBoneTransformsTo(
-                size_t nbones,
-                _Out_writes_(nbones) XMMATRIX* boneTransforms) const;
+            void __cdecl CopyAbsoluteBoneTransformsTo(size_t nbones, _Out_writes_(nbones) XMMATRIX* boneTransforms) const;
 
-            void __cdecl CopyAbsoluteBoneTransforms(
-                size_t nbones,
-                _In_reads_(nbones) const XMMATRIX* inBoneTransforms,
-                _Out_writes_(nbones) XMMATRIX* outBoneTransforms) const;
+            void __cdecl CopyAbsoluteBoneTransforms(size_t nbones,
+                _In_reads_(nbones) const XMMATRIX*         inBoneTransforms,
+                _Out_writes_(nbones) XMMATRIX*             outBoneTransforms) const;
 
             // Set bone matrices to a set of relative tansforms
-            void __cdecl CopyBoneTransformsFrom(
-                size_t nbones,
-                _In_reads_(nbones) const XMMATRIX* boneTransforms);
+            void __cdecl CopyBoneTransformsFrom(size_t nbones, _In_reads_(nbones) const XMMATRIX* boneTransforms);
 
             // Copies the relative bone matrices to a transform array
-            void __cdecl CopyBoneTransformsTo(
-                size_t nbones,
-                _Out_writes_(nbones) XMMATRIX* boneTransforms) const;
+            void __cdecl CopyBoneTransformsTo(size_t nbones, _Out_writes_(nbones) XMMATRIX* boneTransforms) const;
 
             // Notify model that effects, parts list, or mesh list has changed
             void __cdecl Modified() noexcept { mEffectCache.clear(); }
@@ -311,116 +309,111 @@ namespace DirectX
             void __cdecl UpdateEffects(_In_ std::function<void __cdecl(IEffect*)> setEffect);
 
             // Loads a model from a Visual Studio Starter Kit .CMO file
-            static std::unique_ptr<Model> __cdecl CreateFromCMO(
-                _In_ ID3D11Device* device,
-                _In_reads_bytes_(dataSize) const uint8_t* meshData, size_t dataSize,
-                _In_ IEffectFactory& fxFactory,
-                ModelLoaderFlags flags = ModelLoader_CounterClockwise,
-                _Out_opt_ size_t* animsOffset = nullptr);
-            static std::unique_ptr<Model> __cdecl CreateFromCMO(
-                _In_ ID3D11Device* device,
-                _In_z_ const wchar_t* szFileName,
-                _In_ IEffectFactory& fxFactory,
-                ModelLoaderFlags flags = ModelLoader_CounterClockwise,
-                _Out_opt_ size_t* animsOffset = nullptr);
+            static std::unique_ptr<Model> __cdecl CreateFromCMO(_In_ ID3D11Device* device,
+                _In_reads_bytes_(dataSize) const uint8_t*                          meshData,
+                size_t                                                             dataSize,
+                _In_ IEffectFactory&                                               fxFactory,
+                ModelLoaderFlags                                                   flags       = ModelLoader_CounterClockwise,
+                _Out_opt_ size_t*                                                  animsOffset = nullptr);
+            static std::unique_ptr<Model> __cdecl CreateFromCMO(_In_ ID3D11Device* device,
+                _In_z_ const wchar_t*                                              szFileName,
+                _In_ IEffectFactory&                                               fxFactory,
+                ModelLoaderFlags                                                   flags       = ModelLoader_CounterClockwise,
+                _Out_opt_ size_t*                                                  animsOffset = nullptr);
 
             // Loads a model from a DirectX SDK .SDKMESH file
-            static std::unique_ptr<Model> __cdecl CreateFromSDKMESH(
-                _In_ ID3D11Device* device,
-                _In_reads_bytes_(dataSize) const uint8_t* meshData, _In_ size_t dataSize,
-                _In_ IEffectFactory& fxFactory,
-                ModelLoaderFlags flags = ModelLoader_Clockwise);
-            static std::unique_ptr<Model> __cdecl CreateFromSDKMESH(
-                _In_ ID3D11Device* device,
-                _In_z_ const wchar_t* szFileName,
-                _In_ IEffectFactory& fxFactory,
-                ModelLoaderFlags flags = ModelLoader_Clockwise);
+            static std::unique_ptr<Model> __cdecl CreateFromSDKMESH(_In_ ID3D11Device* device,
+                _In_reads_bytes_(dataSize) const uint8_t*                              meshData,
+                _In_ size_t                                                            dataSize,
+                _In_ IEffectFactory&                                                   fxFactory,
+                ModelLoaderFlags                                                       flags = ModelLoader_Clockwise);
+            static std::unique_ptr<Model> __cdecl CreateFromSDKMESH(_In_ ID3D11Device* device,
+                _In_z_ const wchar_t*                                                  szFileName,
+                _In_ IEffectFactory&                                                   fxFactory,
+                ModelLoaderFlags                                                       flags = ModelLoader_Clockwise);
 
             // Loads a model from a .VBO file
-            static std::unique_ptr<Model> __cdecl CreateFromVBO(
-                _In_ ID3D11Device* device,
-                _In_reads_bytes_(dataSize) const uint8_t* meshData, _In_ size_t dataSize,
+            static std::unique_ptr<Model> __cdecl CreateFromVBO(_In_ ID3D11Device* device,
+                _In_reads_bytes_(dataSize) const uint8_t*                          meshData,
+                _In_ size_t                                                        dataSize,
                 _In_ std::shared_ptr<IEffect> ieffect = nullptr,
-                ModelLoaderFlags flags = ModelLoader_Clockwise);
-            static std::unique_ptr<Model> __cdecl CreateFromVBO(
-                _In_ ID3D11Device* device,
-                _In_z_ const wchar_t* szFileName,
+                ModelLoaderFlags              flags   = ModelLoader_Clockwise);
+            static std::unique_ptr<Model> __cdecl CreateFromVBO(_In_ ID3D11Device* device,
+                _In_z_ const wchar_t*                                              szFileName,
                 _In_ std::shared_ptr<IEffect> ieffect = nullptr,
-                ModelLoaderFlags flags = ModelLoader_Clockwise);
+                ModelLoaderFlags              flags   = ModelLoader_Clockwise);
 
-        #ifdef __cpp_lib_byte
-            static std::unique_ptr<Model> __cdecl CreateFromCMO(
-                _In_ ID3D11Device* device,
-                _In_reads_bytes_(dataSize) const std::byte* meshData, size_t dataSize,
-                _In_ IEffectFactory& fxFactory,
-                ModelLoaderFlags flags = ModelLoader_CounterClockwise,
-                _Out_opt_ size_t* animsOffset = nullptr)
+#ifdef __cpp_lib_byte
+            static std::unique_ptr<Model> __cdecl CreateFromCMO(_In_ ID3D11Device* device,
+                _In_reads_bytes_(dataSize) const std::byte*                        meshData,
+                size_t                                                             dataSize,
+                _In_ IEffectFactory&                                               fxFactory,
+                ModelLoaderFlags                                                   flags       = ModelLoader_CounterClockwise,
+                _Out_opt_ size_t*                                                  animsOffset = nullptr)
             {
                 return CreateFromCMO(device, reinterpret_cast<const uint8_t*>(meshData), dataSize, fxFactory, flags, animsOffset);
             }
 
-            static std::unique_ptr<Model> __cdecl CreateFromSDKMESH(
-                _In_ ID3D11Device* device,
-                _In_reads_bytes_(dataSize) const std::byte* meshData, _In_ size_t dataSize,
-                _In_ IEffectFactory& fxFactory,
-                ModelLoaderFlags flags = ModelLoader_Clockwise)
+            static std::unique_ptr<Model> __cdecl CreateFromSDKMESH(_In_ ID3D11Device* device,
+                _In_reads_bytes_(dataSize) const std::byte*                            meshData,
+                _In_ size_t                                                            dataSize,
+                _In_ IEffectFactory&                                                   fxFactory,
+                ModelLoaderFlags                                                       flags = ModelLoader_Clockwise)
             {
                 return CreateFromSDKMESH(device, reinterpret_cast<const uint8_t*>(meshData), dataSize, fxFactory, flags);
             }
 
-            static std::unique_ptr<Model> __cdecl CreateFromVBO(
-                _In_ ID3D11Device* device,
-                _In_reads_bytes_(dataSize) const std::byte* meshData, _In_ size_t dataSize,
+            static std::unique_ptr<Model> __cdecl CreateFromVBO(_In_ ID3D11Device* device,
+                _In_reads_bytes_(dataSize) const std::byte*                        meshData,
+                _In_ size_t                                                        dataSize,
                 _In_ std::shared_ptr<IEffect> ieffect = nullptr,
-                ModelLoaderFlags flags = ModelLoader_Clockwise)
+                ModelLoaderFlags              flags   = ModelLoader_Clockwise)
             {
                 return CreateFromVBO(device, reinterpret_cast<const uint8_t*>(meshData), dataSize, ieffect, flags);
             }
-        #endif // __cpp_lib_byte
+#endif // __cpp_lib_byte
 
-        #if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
-            static std::unique_ptr<Model> __cdecl CreateFromCMO(
-                _In_ ID3D11Device* device,
-                _In_z_ const __wchar_t* szFileName,
-                _In_ IEffectFactory& fxFactory,
-                ModelLoaderFlags flags = ModelLoader_CounterClockwise,
-                _Out_opt_ size_t* animsOffset = nullptr);
+#if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
+            static std::unique_ptr<Model> __cdecl CreateFromCMO(_In_ ID3D11Device* device,
+                _In_z_ const __wchar_t*                                            szFileName,
+                _In_ IEffectFactory&                                               fxFactory,
+                ModelLoaderFlags                                                   flags       = ModelLoader_CounterClockwise,
+                _Out_opt_ size_t*                                                  animsOffset = nullptr);
 
-            static std::unique_ptr<Model> __cdecl CreateFromSDKMESH(
-                _In_ ID3D11Device* device,
-                _In_z_ const __wchar_t* szFileName,
-                _In_ IEffectFactory& fxFactory,
-                ModelLoaderFlags flags = ModelLoader_Clockwise);
+            static std::unique_ptr<Model> __cdecl CreateFromSDKMESH(_In_ ID3D11Device* device,
+                _In_z_ const __wchar_t*                                                szFileName,
+                _In_ IEffectFactory&                                                   fxFactory,
+                ModelLoaderFlags                                                       flags = ModelLoader_Clockwise);
 
-            static std::unique_ptr<Model> __cdecl CreateFromVBO(
-                _In_ ID3D11Device* device,
-                _In_z_ const __wchar_t* szFileName,
+            static std::unique_ptr<Model> __cdecl CreateFromVBO(_In_ ID3D11Device* device,
+                _In_z_ const __wchar_t*                                            szFileName,
                 _In_ std::shared_ptr<IEffect> ieffect = nullptr,
-                ModelLoaderFlags flags = ModelLoader_Clockwise);
-        #endif // !_NATIVE_WCHAR_T_DEFINED
+                ModelLoaderFlags              flags   = ModelLoader_Clockwise);
+#endif // !_NATIVE_WCHAR_T_DEFINED
 
         private:
-            std::set<IEffect*>  mEffectCache;
+            std::set<IEffect*> mEffectCache;
 
-            void __cdecl ComputeAbsolute(uint32_t index,
-                CXMMATRIX local, size_t nbones,
+            void __cdecl ComputeAbsolute(uint32_t  index,
+                CXMMATRIX                          local,
+                size_t                             nbones,
                 _In_reads_(nbones) const XMMATRIX* inBoneTransforms,
-                _Inout_updates_(nbones) XMMATRIX* outBoneTransforms,
-                size_t& visited) const;
+                _Inout_updates_(nbones) XMMATRIX*  outBoneTransforms,
+                size_t&                            visited) const;
         };
 
-    #ifdef __clang__
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wdeprecated-dynamic-exception-spec"
-    #endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-dynamic-exception-spec"
+#endif
 
         DEFINE_ENUM_FLAG_OPERATORS(ModelLoaderFlags)
 
-        #ifdef __clang__
-        #pragma clang diagnostic pop
-        #endif
-    }
-}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+    } // namespace DX11
+} // namespace DirectX
 
 #if defined(DIRECTX_TOOLKIT_IMPORT) && defined(_MSC_VER)
 #pragma warning(pop)
