@@ -31,9 +31,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install VS 2022's version of clang-format
-        run: >
-          sudo apt install -y clang-format-19
-          clang-format --version
+        run: sudo apt install -y clang-format-19
 
       - name: Lint Code Base
         uses: super-linter/super-linter@4ce20838b8ab83717e78138c5b3a1407148e0918 # v8.7.0
