@@ -1,6 +1,36 @@
+<#
+
+.NOTES
+Copyright (c) Microsoft Corporation.
+Licensed under the MIT License.
+
+.SYNOPSIS
+Runs clang-format on the source code.
+
+.DESCRIPTION
+This is use to clang-format the code using the rules in .github\linters\.clang-format.
+
+The clang-format version must match the version used by GitHub Super-Linter or false positives can be found.
+You can install this version locally using:
+
+winget install --id=LLVM.LLVM --version 21.1.2
+
+.PARAMETER Check
+Runs clang-format without modifying the files in place.
+
+.PARAMETER LLVM
+Normally clang-format is found on the path. If you use this switch, then it looks for it in C:\Program Files\LLVM\bin.
+
+.LINKS
+https://github.com/microsoft/DirectXTK
+
+#>
+
 [CmdletBinding()]
 param(
-    [switch] $Check
+    [switch] $Check,
+    [Alias('UseLLVM')]
+    [switch] $LLVM
 )
 
 $ErrorActionPreference = 'Stop'
@@ -12,14 +42,24 @@ if (-not (Test-Path -LiteralPath $configFile -PathType Leaf)) {
     throw "clang-format configuration was not found: $configFile"
 }
 
-$clangFormat = Get-Command clang-format -ErrorAction SilentlyContinue
-if (-not $clangFormat) {
+$clangFormatPath = if ($LLVM) {
+    'C:\Program Files\LLVM\bin\clang-format.exe'
+}
+else {
+    (Get-Command clang-format -ErrorAction SilentlyContinue).Source
+}
+
+if (-not $clangFormatPath -or -not (Test-Path -LiteralPath $clangFormatPath -PathType Leaf)) {
+    if ($LLVM) {
+        throw "clang-format was not found at: $clangFormatPath"
+    }
+
     throw 'clang-format was not found on PATH.'
 }
 
 # This has to match the version used by GitHub super-linter or results will not match.
 $requiredClangFormatVersion = '21.1.2'
-$clangFormatVersion = (& $clangFormat.Source '--version' 2>&1 | Out-String).Trim()
+$clangFormatVersion = (& $clangFormatPath '--version' 2>&1 | Out-String).Trim()
 if ($LASTEXITCODE -ne 0) {
     throw "Unable to determine clang-format version."
 }
@@ -51,7 +91,7 @@ else {
 }
 
 foreach ($sourceFile in $sourceFiles) {
-    & $clangFormat.Source @arguments $sourceFile.FullName
+    & $clangFormatPath @arguments $sourceFile.FullName
     if ($LASTEXITCODE -ne 0) {
         throw "clang-format failed for $($sourceFile.FullName)."
     }
