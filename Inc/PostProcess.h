@@ -24,13 +24,13 @@
 #ifndef DIRECTX_TOOLKIT_API
 #ifdef DIRECTX_TOOLKIT_EXPORT
 #ifdef __GNUC__
-#define DIRECTX_TOOLKIT_API __attribute__ ((dllexport))
+#define DIRECTX_TOOLKIT_API __attribute__((dllexport))
 #else
 #define DIRECTX_TOOLKIT_API __declspec(dllexport)
 #endif
 #elif defined(DIRECTX_TOOLKIT_IMPORT)
 #ifdef __GNUC__
-#define DIRECTX_TOOLKIT_API __attribute__ ((dllimport))
+#define DIRECTX_TOOLKIT_API __attribute__((dllimport))
 #else
 #define DIRECTX_TOOLKIT_API __declspec(dllimport)
 #endif
@@ -38,7 +38,6 @@
 #define DIRECTX_TOOLKIT_API
 #endif
 #endif
-
 
 namespace DirectX
 {
@@ -51,19 +50,18 @@ namespace DirectX
         public:
             virtual ~IPostProcess() = default;
 
-            IPostProcess(const IPostProcess&) = delete;
+            IPostProcess(const IPostProcess&)            = delete;
             IPostProcess& operator=(const IPostProcess&) = delete;
 
-            virtual void __cdecl Process(
-                _In_ ID3D11DeviceContext* deviceContext,
-                _In_ std::function<void __cdecl()> setCustomState = nullptr) = 0;
+            virtual void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext,
+                _In_ std::function<void __cdecl()> setCustomState = nullptr)
+                = 0;
 
         protected:
-            IPostProcess() = default;
-            IPostProcess(IPostProcess&&) = default;
+            IPostProcess()                          = default;
+            IPostProcess(IPostProcess&&)            = default;
             IPostProcess& operator=(IPostProcess&&) = default;
         };
-
 
         //------------------------------------------------------------------------------
         // Basic post-process
@@ -85,17 +83,16 @@ namespace DirectX
 
             DIRECTX_TOOLKIT_API explicit BasicPostProcess(_In_ ID3D11Device* device);
 
-            DIRECTX_TOOLKIT_API BasicPostProcess(BasicPostProcess&&) noexcept;
-            DIRECTX_TOOLKIT_API BasicPostProcess& operator= (BasicPostProcess&&) noexcept;
+            DIRECTX_TOOLKIT_API                   BasicPostProcess(BasicPostProcess&&) noexcept;
+            DIRECTX_TOOLKIT_API BasicPostProcess& operator=(BasicPostProcess&&) noexcept;
 
-            BasicPostProcess(BasicPostProcess const&) = delete;
-            BasicPostProcess& operator= (BasicPostProcess const&) = delete;
+            BasicPostProcess(BasicPostProcess const&)            = delete;
+            BasicPostProcess& operator=(BasicPostProcess const&) = delete;
 
             DIRECTX_TOOLKIT_API ~BasicPostProcess() override;
 
             // IPostProcess methods.
-            DIRECTX_TOOLKIT_API void __cdecl Process(
-                _In_ ID3D11DeviceContext* deviceContext,
+            DIRECTX_TOOLKIT_API void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext,
                 _In_ std::function<void __cdecl()> setCustomState = nullptr) override;
 
             // Shader control
@@ -120,7 +117,6 @@ namespace DirectX
             std::unique_ptr<Impl> pImpl;
         };
 
-
         //------------------------------------------------------------------------------
         // Dual-texure post-process
         class DualPostProcess : public IPostProcess
@@ -135,17 +131,16 @@ namespace DirectX
 
             DIRECTX_TOOLKIT_API explicit DualPostProcess(_In_ ID3D11Device* device);
 
-            DIRECTX_TOOLKIT_API DualPostProcess(DualPostProcess&&) noexcept;
-            DIRECTX_TOOLKIT_API DualPostProcess& operator= (DualPostProcess&&) noexcept;
+            DIRECTX_TOOLKIT_API                  DualPostProcess(DualPostProcess&&) noexcept;
+            DIRECTX_TOOLKIT_API DualPostProcess& operator=(DualPostProcess&&) noexcept;
 
-            DualPostProcess(DualPostProcess const&) = delete;
-            DualPostProcess& operator= (DualPostProcess const&) = delete;
+            DualPostProcess(DualPostProcess const&)            = delete;
+            DualPostProcess& operator=(DualPostProcess const&) = delete;
 
             DIRECTX_TOOLKIT_API ~DualPostProcess() override;
 
             // IPostProcess methods.
-            DIRECTX_TOOLKIT_API void __cdecl Process(
-                _In_ ID3D11DeviceContext* deviceContext,
+            DIRECTX_TOOLKIT_API void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext,
                 _In_ std::function<void __cdecl()> setCustomState = nullptr) override;
 
             // Shader control
@@ -159,7 +154,8 @@ namespace DirectX
             DIRECTX_TOOLKIT_API void __cdecl SetMergeParameters(float weight1, float weight2);
 
             // Sets parameters for BloomCombine
-            DIRECTX_TOOLKIT_API void __cdecl SetBloomCombineParameters(float bloom, float base, float bloomSaturation, float baseSaturation);
+            DIRECTX_TOOLKIT_API void __cdecl
+            SetBloomCombineParameters(float bloom, float base, float bloomSaturation, float baseSaturation);
 
         private:
             // Private implementation.
@@ -167,7 +163,6 @@ namespace DirectX
 
             std::unique_ptr<Impl> pImpl;
         };
-
 
         //------------------------------------------------------------------------------
         // Tone-map post-process
@@ -177,9 +172,9 @@ namespace DirectX
             // Tone-mapping operator
             enum Operator : uint32_t
             {
-                None,               // Pass-through
-                Saturate,           // Clamp [0,1]
-                Reinhard,           // x/(1+x)
+                None,     // Pass-through
+                Saturate, // Clamp [0,1]
+                Reinhard, // x/(1+x)
                 ACESFilmic,
                 Operator_Max
             };
@@ -187,9 +182,9 @@ namespace DirectX
             // Electro-Optical Transfer Function (EOTF)
             enum TransferFunction : uint32_t
             {
-                Linear,             // Pass-through
-                SRGB,               // sRGB (Rec.709 and approximate sRGB display curve)
-                ST2084,             // HDR10 (Rec.2020 color primaries and ST.2084 display curve)
+                Linear, // Pass-through
+                SRGB,   // sRGB (Rec.709 and approximate sRGB display curve)
+                ST2084, // HDR10 (Rec.2020 color primaries and ST.2084 display curve)
                 TransferFunction_Max
             };
 
@@ -203,17 +198,16 @@ namespace DirectX
 
             DIRECTX_TOOLKIT_API explicit ToneMapPostProcess(_In_ ID3D11Device* device);
 
-            DIRECTX_TOOLKIT_API ToneMapPostProcess(ToneMapPostProcess&&) noexcept;
-            DIRECTX_TOOLKIT_API ToneMapPostProcess& operator= (ToneMapPostProcess&&) noexcept;
+            DIRECTX_TOOLKIT_API                     ToneMapPostProcess(ToneMapPostProcess&&) noexcept;
+            DIRECTX_TOOLKIT_API ToneMapPostProcess& operator=(ToneMapPostProcess&&) noexcept;
 
-            ToneMapPostProcess(ToneMapPostProcess const&) = delete;
-            ToneMapPostProcess& operator= (ToneMapPostProcess const&) = delete;
+            ToneMapPostProcess(ToneMapPostProcess const&)            = delete;
+            ToneMapPostProcess& operator=(ToneMapPostProcess const&) = delete;
 
             DIRECTX_TOOLKIT_API ~ToneMapPostProcess() override;
 
             // IPostProcess methods.
-            DIRECTX_TOOLKIT_API void __cdecl Process(
-                _In_ ID3D11DeviceContext* deviceContext,
+            DIRECTX_TOOLKIT_API void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext,
                 _In_ std::function<void __cdecl()> setCustomState = nullptr) override;
 
             // Shader control
@@ -221,10 +215,10 @@ namespace DirectX
 
             DIRECTX_TOOLKIT_API void __cdecl SetTransferFunction(TransferFunction func);
 
-        #if defined(_XBOX_ONE) && defined(_TITLE)
+#if defined(_XBOX_ONE) && defined(_TITLE)
             // Uses Multiple Render Targets to generate both HDR10 and GameDVR SDR signals
             DIRECTX_TOOLKIT_API void __cdecl SetMRTOutput(bool value = true);
-        #endif
+#endif
 
             // Properties
             DIRECTX_TOOLKIT_API void __cdecl SetHDRSourceTexture(_In_opt_ ID3D11ShaderResourceView* value);
@@ -245,5 +239,5 @@ namespace DirectX
 
             std::unique_ptr<Impl> pImpl;
         };
-    }
-}
+    } // namespace DX11
+} // namespace DirectX

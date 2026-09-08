@@ -13,13 +13,17 @@
 
 using namespace DirectX;
 
-
 namespace
 {
-    template <typename T> WORD ChannelsSpecifiedInMask(T x) noexcept
+    template<typename T>
+    WORD ChannelsSpecifiedInMask(T x) noexcept
     {
         WORD bitCount = 0;
-        while (x) { ++bitCount; x &= (x - 1); }
+        while (x)
+        {
+            ++bitCount;
+            x &= (x - 1);
+        }
         return bitCount;
     }
 
@@ -27,13 +31,12 @@ namespace
 
     constexpr uint16_t MSADPCM_FORMAT_EXTRA_BYTES = 32;
 
-    constexpr uint16_t MSADPCM_BITS_PER_SAMPLE = 4;
+    constexpr uint16_t MSADPCM_BITS_PER_SAMPLE  = 4;
     constexpr uint16_t MSADPCM_NUM_COEFFICIENTS = 7;
 
     constexpr uint16_t MSADPCM_MIN_SAMPLES_PER_BLOCK = 4;
     constexpr uint16_t MSADPCM_MAX_SAMPLES_PER_BLOCK = 64000;
-}
-
+} // namespace
 
 //======================================================================================
 // Wave format utilities
@@ -62,11 +65,12 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
         return false;
     }
 
-    if ((wfx->nSamplesPerSec < XAUDIO2_MIN_SAMPLE_RATE)
-        || (wfx->nSamplesPerSec > XAUDIO2_MAX_SAMPLE_RATE))
+    if ((wfx->nSamplesPerSec < XAUDIO2_MIN_SAMPLE_RATE) || (wfx->nSamplesPerSec > XAUDIO2_MAX_SAMPLE_RATE))
     {
         DebugTrace("ERROR: Wave format channel count must be in range %u..%u (%u)\n",
-            XAUDIO2_MIN_SAMPLE_RATE, XAUDIO2_MAX_SAMPLE_RATE, wfx->nSamplesPerSec);
+            XAUDIO2_MIN_SAMPLE_RATE,
+            XAUDIO2_MAX_SAMPLE_RATE,
+            wfx->nSamplesPerSec);
         return false;
     }
 
@@ -79,8 +83,7 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
         case 8:
         case 16:
         case 24:
-        case 32:
-            break;
+        case 32: break;
 
         default:
             DebugTrace("ERROR: Wave format integer PCM must have 8, 16, 24, or 32 bits per sample (%u)\n", wfx->wBitsPerSample);
@@ -90,14 +93,18 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
         if (wfx->nBlockAlign != (wfx->nChannels * wfx->wBitsPerSample / 8))
         {
             DebugTrace("ERROR: Wave format integer PCM - nBlockAlign (%u) != nChannels (%u) * wBitsPerSample (%u) / 8\n",
-                wfx->nBlockAlign, wfx->nChannels, wfx->wBitsPerSample);
+                wfx->nBlockAlign,
+                wfx->nChannels,
+                wfx->wBitsPerSample);
             return false;
         }
 
         if (wfx->nAvgBytesPerSec != (wfx->nSamplesPerSec * wfx->nBlockAlign))
         {
             DebugTrace("ERROR: Wave format integer PCM - nAvgBytesPerSec (%lu) != nSamplesPerSec (%lu) * nBlockAlign (%u)\n",
-                wfx->nAvgBytesPerSec, wfx->nSamplesPerSec, wfx->nBlockAlign);
+                wfx->nAvgBytesPerSec,
+                wfx->nSamplesPerSec,
+                wfx->nBlockAlign);
             return false;
         }
 
@@ -114,14 +121,18 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
         if (wfx->nBlockAlign != (wfx->nChannels * wfx->wBitsPerSample / 8))
         {
             DebugTrace("ERROR: Wave format float PCM - nBlockAlign (%u) != nChannels (%u) * wBitsPerSample (%u) / 8\n",
-                wfx->nBlockAlign, wfx->nChannels, wfx->wBitsPerSample);
+                wfx->nBlockAlign,
+                wfx->nChannels,
+                wfx->wBitsPerSample);
             return false;
         }
 
         if (wfx->nAvgBytesPerSec != (wfx->nSamplesPerSec * wfx->nBlockAlign))
         {
             DebugTrace("ERROR: Wave format float PCM - nAvgBytesPerSec (%lu) != nSamplesPerSec (%lu) * nBlockAlign (%u)\n",
-                wfx->nAvgBytesPerSec, wfx->nSamplesPerSec, wfx->nBlockAlign);
+                wfx->nAvgBytesPerSec,
+                wfx->nSamplesPerSec,
+                wfx->nBlockAlign);
             return false;
         }
 
@@ -160,11 +171,10 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
             for (size_t j = 0; j < MSADPCM_NUM_COEFFICIENTS; ++j)
             {
                 // Microsoft ADPCM standard encoding coefficients
-                static const short g_pAdpcmCoefficients1[] = { 256,  512, 0, 192, 240,  460,  392 };
-                static const short g_pAdpcmCoefficients2[] = { 0, -256, 0,  64,   0, -208, -232 };
+                static const short g_pAdpcmCoefficients1[] = { 256, 512, 0, 192, 240, 460, 392 };
+                static const short g_pAdpcmCoefficients2[] = { 0, -256, 0, 64, 0, -208, -232 };
 
-                if (wfadpcm->aCoef[j].iCoef1 != g_pAdpcmCoefficients1[j]
-                    || wfadpcm->aCoef[j].iCoef2 != g_pAdpcmCoefficients2[j])
+                if (wfadpcm->aCoef[j].iCoef1 != g_pAdpcmCoefficients1[j] || wfadpcm->aCoef[j].iCoef2 != g_pAdpcmCoefficients2[j])
                 {
                     valid = false;
                 }
@@ -176,8 +186,7 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
                 return false;
             }
 
-            if ((wfadpcm->wSamplesPerBlock < MSADPCM_MIN_SAMPLES_PER_BLOCK)
-                || (wfadpcm->wSamplesPerBlock > MSADPCM_MAX_SAMPLES_PER_BLOCK))
+            if ((wfadpcm->wSamplesPerBlock < MSADPCM_MIN_SAMPLES_PER_BLOCK) || (wfadpcm->wSamplesPerBlock > MSADPCM_MAX_SAMPLES_PER_BLOCK))
             {
                 DebugTrace("ERROR: Wave format ADPCM wSamplesPerBlock must be 4..64000 (%u)\n", wfadpcm->wSamplesPerBlock);
                 return false;
@@ -189,14 +198,17 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
                 return false;
             }
 
-            const int nHeaderBytes = MSADPCM_HEADER_LENGTH * wfx->nChannels;
-            const int nBitsPerFrame = MSADPCM_BITS_PER_SAMPLE * wfx->nChannels;
+            const int nHeaderBytes       = MSADPCM_HEADER_LENGTH * wfx->nChannels;
+            const int nBitsPerFrame      = MSADPCM_BITS_PER_SAMPLE * wfx->nChannels;
             const int nPcmFramesPerBlock = (wfx->nBlockAlign - nHeaderBytes) * 8 / nBitsPerFrame + 2;
 
             if (wfadpcm->wSamplesPerBlock != nPcmFramesPerBlock)
             {
                 DebugTrace("ERROR: Wave format ADPCM %u-channel with nBlockAlign = %u must have wSamplesPerBlock = %d (%u)\n",
-                    wfx->nChannels, wfx->nBlockAlign, nPcmFramesPerBlock, wfadpcm->wSamplesPerBlock);
+                    wfx->nChannels,
+                    wfx->nBlockAlign,
+                    nPcmFramesPerBlock,
+                    wfadpcm->wSamplesPerBlock);
                 return false;
             }
         }
@@ -205,7 +217,7 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
     case WAVE_FORMAT_WMAUDIO2:
     case WAVE_FORMAT_WMAUDIO3:
 
-    #ifdef DIRECTX_ENABLE_XWMA
+#ifdef DIRECTX_ENABLE_XWMA
 
         if (wfx->wBitsPerSample != 16)
         {
@@ -227,20 +239,23 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
 
         return true;
 
-    #else
+#else
         DebugTrace("ERROR: Wave format xWMA not supported by this version of DirectXTK for Audio\n");
         return false;
-    #endif
+#endif
 
     case 0x166 /* WAVE_FORMAT_XMA2 */:
 
-    #ifdef DIRECTX_ENABLE_XMA2
+#ifdef DIRECTX_ENABLE_XMA2
 
         static_assert(WAVE_FORMAT_XMA2 == 0x166, "Unrecognized XMA2 tag");
 
         if (wfx->nBlockAlign != wfx->nChannels * XMA_OUTPUT_SAMPLE_BYTES)
         {
-            DebugTrace("ERROR: Wave format XMA2 - nBlockAlign (%u) != nChannels(%u) * %u\n", wfx->nBlockAlign, wfx->nChannels, XMA_OUTPUT_SAMPLE_BYTES);
+            DebugTrace("ERROR: Wave format XMA2 - nBlockAlign (%u) != nChannels(%u) * %u\n",
+                wfx->nBlockAlign,
+                wfx->nChannels,
+                XMA_OUTPUT_SAMPLE_BYTES);
             return false;
         }
 
@@ -252,7 +267,9 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
 
         if (wfx->cbSize != (sizeof(XMA2WAVEFORMATEX) - sizeof(WAVEFORMATEX)))
         {
-            DebugTrace("ERROR: Wave format XMA2 - cbSize must be %zu (%u)\n", (sizeof(XMA2WAVEFORMATEX) - sizeof(WAVEFORMATEX)), wfx->cbSize);
+            DebugTrace("ERROR: Wave format XMA2 - cbSize must be %zu (%u)\n",
+                (sizeof(XMA2WAVEFORMATEX) - sizeof(WAVEFORMATEX)),
+                wfx->cbSize);
             return false;
         }
         else
@@ -283,44 +300,50 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
                 if (channelBits != wfx->nChannels)
                 {
                     DebugTrace("ERROR: Wave format XMA2 - nChannels=%u but ChannelMask (%08X) has %u bits set\n",
-                        xmaFmt->ChannelMask, wfx->nChannels, channelBits);
+                        xmaFmt->ChannelMask,
+                        wfx->nChannels,
+                        channelBits);
                     return false;
                 }
             }
 
             if (xmaFmt->NumStreams != ((wfx->nChannels + 1) / 2))
             {
-                DebugTrace("ERROR: Wave format XMA2 - NumStreams (%u) != ( nChannels(%u) + 1 ) / 2\n",
-                    xmaFmt->NumStreams, wfx->nChannels);
+                DebugTrace("ERROR: Wave format XMA2 - NumStreams (%u) != ( nChannels(%u) + 1 ) / 2\n", xmaFmt->NumStreams, wfx->nChannels);
                 return false;
             }
 
             if ((xmaFmt->PlayBegin + xmaFmt->PlayLength) > xmaFmt->SamplesEncoded)
             {
                 DebugTrace("ERROR: Wave format XMA2 play region too large (%u + %u > %u)\n",
-                    xmaFmt->PlayBegin, xmaFmt->PlayLength, xmaFmt->SamplesEncoded);
+                    xmaFmt->PlayBegin,
+                    xmaFmt->PlayLength,
+                    xmaFmt->SamplesEncoded);
                 return false;
             }
 
             if ((xmaFmt->LoopBegin + xmaFmt->LoopLength) > xmaFmt->SamplesEncoded)
             {
                 DebugTrace("ERROR: Wave format XMA2 loop region too large (%u + %u > %u)\n",
-                    xmaFmt->LoopBegin, xmaFmt->LoopLength, xmaFmt->SamplesEncoded);
+                    xmaFmt->LoopBegin,
+                    xmaFmt->LoopLength,
+                    xmaFmt->SamplesEncoded);
                 return false;
             }
         }
         return true;
 
-    #else
+#else
         DebugTrace("ERROR: Wave format XMA2 not supported by this version of DirectXTK for Audio\n");
         return false;
-    #endif
+#endif
 
     case WAVE_FORMAT_EXTENSIBLE:
         if (wfx->cbSize < (sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX)))
         {
             DebugTrace("ERROR: Wave format WAVE_FORMAT_EXTENSIBLE - cbSize must be %zu (%u)\n",
-                (sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX)), wfx->cbSize);
+                (sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX)),
+                wfx->cbSize);
             return false;
         }
         else
@@ -330,12 +353,24 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
             auto wfex = reinterpret_cast<const WAVEFORMATEXTENSIBLE*>(wfx);
 
             if (memcmp(reinterpret_cast<const BYTE*>(&wfex->SubFormat) + sizeof(DWORD),
-                reinterpret_cast<const BYTE*>(&s_wfexBase) + sizeof(DWORD), sizeof(GUID) - sizeof(DWORD)) != 0)
+                    reinterpret_cast<const BYTE*>(&s_wfexBase) + sizeof(DWORD),
+                    sizeof(GUID) - sizeof(DWORD))
+                != 0)
             {
-                DebugTrace("ERROR: Wave format WAVEFORMATEXTENSIBLE encountered with unknown GUID ({%8.8lX-%4.4X-%4.4X-%2.2X%2.2X-%2.2X%2.2X%2.2X%2.2X%2.2X%2.2X})\n",
-                    wfex->SubFormat.Data1, wfex->SubFormat.Data2, wfex->SubFormat.Data3,
-                    wfex->SubFormat.Data4[0], wfex->SubFormat.Data4[1], wfex->SubFormat.Data4[2], wfex->SubFormat.Data4[3],
-                    wfex->SubFormat.Data4[4], wfex->SubFormat.Data4[5], wfex->SubFormat.Data4[6], wfex->SubFormat.Data4[7]);
+                DebugTrace(
+                    "ERROR: Wave format WAVEFORMATEXTENSIBLE encountered with unknown GUID "
+                    "({%8.8lX-%4.4X-%4.4X-%2.2X%2.2X-%2.2X%2.2X%2.2X%2.2X%2.2X%2.2X})\n",
+                    wfex->SubFormat.Data1,
+                    wfex->SubFormat.Data2,
+                    wfex->SubFormat.Data3,
+                    wfex->SubFormat.Data4[0],
+                    wfex->SubFormat.Data4[1],
+                    wfex->SubFormat.Data4[2],
+                    wfex->SubFormat.Data4[3],
+                    wfex->SubFormat.Data4[4],
+                    wfex->SubFormat.Data4[5],
+                    wfex->SubFormat.Data4[6],
+                    wfex->SubFormat.Data4[7]);
                 return false;
             }
 
@@ -348,12 +383,10 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
                 case 8:
                 case 16:
                 case 24:
-                case 32:
-                    break;
+                case 32: break;
 
                 default:
-                    DebugTrace("ERROR: Wave format integer PCM must have 8, 16, 24, or 32 bits per sample (%u)\n",
-                        wfx->wBitsPerSample);
+                    DebugTrace("ERROR: Wave format integer PCM must have 8, 16, 24, or 32 bits per sample (%u)\n", wfx->wBitsPerSample);
                     return false;
                 }
 
@@ -364,8 +397,7 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
                 case 16:
                 case 20:
                 case 24:
-                case 32:
-                    break;
+                case 32: break;
 
                 default:
                     DebugTrace("ERROR: Wave format integer PCM must have 8, 16, 20, 24, or 32 valid bits per sample (%u)\n",
@@ -373,25 +405,29 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
                     return false;
                 }
 
-                if (wfex->Samples.wValidBitsPerSample
-                    && (wfex->Samples.wValidBitsPerSample > wfx->wBitsPerSample))
+                if (wfex->Samples.wValidBitsPerSample && (wfex->Samples.wValidBitsPerSample > wfx->wBitsPerSample))
                 {
                     DebugTrace("ERROR: Wave format ingter PCM wValidBitsPerSample (%u) is greater than wBitsPerSample (%u)\n",
-                        wfex->Samples.wValidBitsPerSample, wfx->wBitsPerSample);
+                        wfex->Samples.wValidBitsPerSample,
+                        wfx->wBitsPerSample);
                     return false;
                 }
 
                 if (wfx->nBlockAlign != (wfx->nChannels * wfx->wBitsPerSample / 8))
                 {
                     DebugTrace("ERROR: Wave format integer PCM - nBlockAlign (%u) != nChannels (%u) * wBitsPerSample (%u) / 8\n",
-                        wfx->nBlockAlign, wfx->nChannels, wfx->wBitsPerSample);
+                        wfx->nBlockAlign,
+                        wfx->nChannels,
+                        wfx->wBitsPerSample);
                     return false;
                 }
 
                 if (wfx->nAvgBytesPerSec != (wfx->nSamplesPerSec * wfx->nBlockAlign))
                 {
                     DebugTrace("ERROR: Wave format integer PCM - nAvgBytesPerSec (%lu) != nSamplesPerSec (%lu) * nBlockAlign (%u)\n",
-                        wfx->nAvgBytesPerSec, wfx->nSamplesPerSec, wfx->nBlockAlign);
+                        wfx->nAvgBytesPerSec,
+                        wfx->nSamplesPerSec,
+                        wfx->nBlockAlign);
                     return false;
                 }
 
@@ -408,39 +444,39 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
                 switch (wfex->Samples.wValidBitsPerSample)
                 {
                 case 0:
-                case 32:
-                    break;
+                case 32: break;
 
                 default:
-                    DebugTrace("ERROR: Wave format float PCM must have 32 valid bits per sample (%u)\n",
-                        wfex->Samples.wValidBitsPerSample);
+                    DebugTrace("ERROR: Wave format float PCM must have 32 valid bits per sample (%u)\n", wfex->Samples.wValidBitsPerSample);
                     return false;
                 }
 
                 if (wfx->nBlockAlign != (wfx->nChannels * wfx->wBitsPerSample / 8))
                 {
                     DebugTrace("ERROR: Wave format float PCM - nBlockAlign (%u) != nChannels (%u) * wBitsPerSample (%u) / 8\n",
-                        wfx->nBlockAlign, wfx->nChannels, wfx->wBitsPerSample);
+                        wfx->nBlockAlign,
+                        wfx->nChannels,
+                        wfx->wBitsPerSample);
                     return false;
                 }
 
                 if (wfx->nAvgBytesPerSec != (wfx->nSamplesPerSec * wfx->nBlockAlign))
                 {
                     DebugTrace("ERROR: Wave format float PCM - nAvgBytesPerSec (%lu) != nSamplesPerSec (%lu) * nBlockAlign (%u)\n",
-                        wfx->nAvgBytesPerSec, wfx->nSamplesPerSec, wfx->nBlockAlign);
+                        wfx->nAvgBytesPerSec,
+                        wfx->nSamplesPerSec,
+                        wfx->nBlockAlign);
                     return false;
                 }
 
                 break;
 
-            case WAVE_FORMAT_ADPCM:
-                DebugTrace("ERROR: Wave format ADPCM is not supported as a WAVEFORMATEXTENSIBLE\n");
-                return false;
+            case WAVE_FORMAT_ADPCM: DebugTrace("ERROR: Wave format ADPCM is not supported as a WAVEFORMATEXTENSIBLE\n"); return false;
 
             case WAVE_FORMAT_WMAUDIO2:
             case WAVE_FORMAT_WMAUDIO3:
 
-            #ifdef DIRECTX_ENABLE_XWMA
+#ifdef DIRECTX_ENABLE_XWMA
 
                 if (wfx->wBitsPerSample != 16)
                 {
@@ -462,18 +498,16 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
 
                 break;
 
-            #else
+#else
                 DebugTrace("ERROR: Wave format xWMA not supported by this version of DirectXTK for Audio\n");
                 return false;
-            #endif
+#endif
 
             case 0x166 /* WAVE_FORMAT_XMA2 */:
                 DebugTrace("ERROR: Wave format XMA2 is not supported as a WAVEFORMATEXTENSIBLE\n");
                 return false;
 
-            default:
-                DebugTrace("ERROR: Unknown WAVEFORMATEXTENSIBLE format tag (%u)\n", wfex->SubFormat.Data1);
-                return false;
+            default: DebugTrace("ERROR: Unknown WAVEFORMATEXTENSIBLE format tag (%u)\n", wfex->SubFormat.Data1); return false;
             }
 
             if (wfex->dwChannelMask)
@@ -481,8 +515,7 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
                 const auto channelBits = ChannelsSpecifiedInMask(wfex->dwChannelMask);
                 if (channelBits != wfx->nChannels)
                 {
-                    DebugTrace("ERROR: WAVEFORMATEXTENSIBLE: nChannels=%u but ChannelMask has %u bits set\n",
-                        wfx->nChannels, channelBits);
+                    DebugTrace("ERROR: WAVEFORMATEXTENSIBLE: nChannels=%u but ChannelMask has %u bits set\n", wfx->nChannels, channelBits);
                     return false;
                 }
             }
@@ -490,92 +523,71 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
             return true;
         }
 
-    default:
-        DebugTrace("ERROR: Unknown WAVEFORMATEX format tag (%u)\n", wfx->wFormatTag);
-        return false;
+    default: DebugTrace("ERROR: Unknown WAVEFORMATEX format tag (%u)\n", wfx->wFormatTag); return false;
     }
 }
-
 
 uint32_t DirectX::GetDefaultChannelMask(int channels) noexcept
 {
     switch (channels)
     {
-    case 1: return SPEAKER_MONO;
-    case 2: return SPEAKER_STEREO;
-    case 3: return SPEAKER_2POINT1;
-    case 4: return SPEAKER_QUAD;
-    case 5: return SPEAKER_4POINT1;
-    case 6: return SPEAKER_5POINT1;
-    case 7: return SPEAKER_5POINT1 | SPEAKER_BACK_CENTER;
-    case 8: return SPEAKER_7POINT1;
+    case 1:  return SPEAKER_MONO;
+    case 2:  return SPEAKER_STEREO;
+    case 3:  return SPEAKER_2POINT1;
+    case 4:  return SPEAKER_QUAD;
+    case 5:  return SPEAKER_4POINT1;
+    case 6:  return SPEAKER_5POINT1;
+    case 7:  return SPEAKER_5POINT1 | SPEAKER_BACK_CENTER;
+    case 8:  return SPEAKER_7POINT1;
     default: return 0;
     }
 }
 
-
-_Use_decl_annotations_
-void DirectX::CreateIntegerPCM(
-    WAVEFORMATEX* wfx,
-    int sampleRate,
-    int channels,
-    int sampleBits) noexcept
+_Use_decl_annotations_ void DirectX::CreateIntegerPCM(WAVEFORMATEX* wfx, int sampleRate, int channels, int sampleBits) noexcept
 {
     if (!wfx)
         return;
 
     const int blockAlign = channels * sampleBits / 8;
 
-    wfx->wFormatTag = WAVE_FORMAT_PCM;
-    wfx->nChannels = static_cast<WORD>(channels);
-    wfx->nSamplesPerSec = static_cast<DWORD>(sampleRate);
+    wfx->wFormatTag      = WAVE_FORMAT_PCM;
+    wfx->nChannels       = static_cast<WORD>(channels);
+    wfx->nSamplesPerSec  = static_cast<DWORD>(sampleRate);
     wfx->nAvgBytesPerSec = static_cast<DWORD>(blockAlign * sampleRate);
-    wfx->nBlockAlign = static_cast<WORD>(blockAlign);
-    wfx->wBitsPerSample = static_cast<WORD>(sampleBits);
-    wfx->cbSize = 0;
+    wfx->nBlockAlign     = static_cast<WORD>(blockAlign);
+    wfx->wBitsPerSample  = static_cast<WORD>(sampleBits);
+    wfx->cbSize          = 0;
 
     assert(IsValid(wfx));
 }
 
-
-_Use_decl_annotations_
-void DirectX::CreateFloatPCM(
-    WAVEFORMATEX* wfx,
-    int sampleRate,
-    int channels) noexcept
+_Use_decl_annotations_ void DirectX::CreateFloatPCM(WAVEFORMATEX* wfx, int sampleRate, int channels) noexcept
 {
     if (!wfx)
         return;
 
     const int blockAlign = channels * 4;
 
-    wfx->wFormatTag = WAVE_FORMAT_IEEE_FLOAT;
-    wfx->nChannels = static_cast<WORD>(channels);
-    wfx->nSamplesPerSec = static_cast<DWORD>(sampleRate);
+    wfx->wFormatTag      = WAVE_FORMAT_IEEE_FLOAT;
+    wfx->nChannels       = static_cast<WORD>(channels);
+    wfx->nSamplesPerSec  = static_cast<DWORD>(sampleRate);
     wfx->nAvgBytesPerSec = static_cast<DWORD>(blockAlign * sampleRate);
-    wfx->nBlockAlign = static_cast<WORD>(blockAlign);
-    wfx->wBitsPerSample = 32;
-    wfx->cbSize = 0;
+    wfx->nBlockAlign     = static_cast<WORD>(blockAlign);
+    wfx->wBitsPerSample  = 32;
+    wfx->cbSize          = 0;
 
     assert(IsValid(wfx));
 }
 
-
-_Use_decl_annotations_
-void DirectX::CreateADPCM(
-    WAVEFORMATEX* wfx,
-    size_t wfxSize,
-    int sampleRate,
-    int channels,
-    int samplesPerBlock) noexcept(false)
+_Use_decl_annotations_ void
+DirectX::CreateADPCM(WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int samplesPerBlock) noexcept(false)
 {
     if (!wfx)
         return;
 
     if (wfxSize < (sizeof(WAVEFORMATEX) + MSADPCM_FORMAT_EXTRA_BYTES))
     {
-        DebugTrace("CreateADPCM needs at least %zu bytes for the result\n",
-            (sizeof(WAVEFORMATEX) + MSADPCM_FORMAT_EXTRA_BYTES));
+        DebugTrace("CreateADPCM needs at least %zu bytes for the result\n", (sizeof(WAVEFORMATEX) + MSADPCM_FORMAT_EXTRA_BYTES));
         throw std::invalid_argument("ADPCMWAVEFORMAT");
     }
 
@@ -585,64 +597,54 @@ void DirectX::CreateADPCM(
         throw std::invalid_argument("ADPCMWAVEFORMAT");
     }
 
-    const int blockAlign = MSADPCM_HEADER_LENGTH * channels
-        + (samplesPerBlock - 2) * MSADPCM_BITS_PER_SAMPLE * channels / 8;
+    const int blockAlign = MSADPCM_HEADER_LENGTH * channels + (samplesPerBlock - 2) * MSADPCM_BITS_PER_SAMPLE * channels / 8;
 
-    wfx->wFormatTag = WAVE_FORMAT_ADPCM;
-    wfx->nChannels = static_cast<WORD>(channels);
-    wfx->nSamplesPerSec = static_cast<DWORD>(sampleRate);
+    wfx->wFormatTag      = WAVE_FORMAT_ADPCM;
+    wfx->nChannels       = static_cast<WORD>(channels);
+    wfx->nSamplesPerSec  = static_cast<DWORD>(sampleRate);
     wfx->nAvgBytesPerSec = static_cast<DWORD>(blockAlign * sampleRate / samplesPerBlock);
-    wfx->nBlockAlign = static_cast<WORD>(blockAlign);
-    wfx->wBitsPerSample = MSADPCM_BITS_PER_SAMPLE;
-    wfx->cbSize = MSADPCM_FORMAT_EXTRA_BYTES;
+    wfx->nBlockAlign     = static_cast<WORD>(blockAlign);
+    wfx->wBitsPerSample  = MSADPCM_BITS_PER_SAMPLE;
+    wfx->cbSize          = MSADPCM_FORMAT_EXTRA_BYTES;
 
-    auto adpcm = reinterpret_cast<ADPCMWAVEFORMAT*>(wfx);
+    auto adpcm              = reinterpret_cast<ADPCMWAVEFORMAT*>(wfx);
     adpcm->wSamplesPerBlock = static_cast<WORD>(samplesPerBlock);
-    adpcm->wNumCoef = MSADPCM_NUM_COEFFICIENTS;
+    adpcm->wNumCoef         = MSADPCM_NUM_COEFFICIENTS;
 
-    static ADPCMCOEFSET aCoef[7] = { { 256, 0}, {512, -256}, {0,0}, {192,64}, {240,0}, {460, -208}, {392,-232} };
-    memcpy(&adpcm->aCoef, aCoef, sizeof(aCoef)); // CodeQL [SM01947] Code scanner doesn't understand the 0-length MSVC array extension. MSADPCM_FORMAT_EXTRA_BYTES includes this memory.
+    static ADPCMCOEFSET aCoef[7] = { { 256, 0 }, { 512, -256 }, { 0, 0 }, { 192, 64 }, { 240, 0 }, { 460, -208 }, { 392, -232 } };
+    memcpy(&adpcm->aCoef, aCoef, sizeof(aCoef)); // CodeQL [SM01947] Code scanner doesn't understand the 0-length MSVC array extension.
+                                                 // MSADPCM_FORMAT_EXTRA_BYTES includes this memory.
 
     assert(IsValid(wfx));
 }
 
-
 #ifdef DIRECTX_ENABLE_XWMA
-_Use_decl_annotations_
-void DirectX::CreateXWMA(
-    WAVEFORMATEX* wfx,
-    int sampleRate,
-    int channels,
-    int blockAlign,
-    int avgBytes,
-    bool wma3) noexcept
+_Use_decl_annotations_ void
+DirectX::CreateXWMA(WAVEFORMATEX* wfx, int sampleRate, int channels, int blockAlign, int avgBytes, bool wma3) noexcept
 {
     if (!wfx)
         return;
 
-    wfx->wFormatTag = static_cast<WORD>((wma3) ? WAVE_FORMAT_WMAUDIO3 : WAVE_FORMAT_WMAUDIO2);
-    wfx->nChannels = static_cast<WORD>(channels);
-    wfx->nSamplesPerSec = static_cast<DWORD>(sampleRate);
+    wfx->wFormatTag      = static_cast<WORD>((wma3) ? WAVE_FORMAT_WMAUDIO3 : WAVE_FORMAT_WMAUDIO2);
+    wfx->nChannels       = static_cast<WORD>(channels);
+    wfx->nSamplesPerSec  = static_cast<DWORD>(sampleRate);
     wfx->nAvgBytesPerSec = static_cast<DWORD>(avgBytes);
-    wfx->nBlockAlign = static_cast<WORD>(blockAlign);
-    wfx->wBitsPerSample = 16;
-    wfx->cbSize = 0;
+    wfx->nBlockAlign     = static_cast<WORD>(blockAlign);
+    wfx->wBitsPerSample  = 16;
+    wfx->cbSize          = 0;
 
     assert(IsValid(wfx));
 }
 #endif
 
-
 #ifdef DIRECTX_ENABLE_XMA2
-_Use_decl_annotations_
-void DirectX::CreateXMA2(
-    WAVEFORMATEX* wfx,
-    size_t wfxSize,
-    int sampleRate,
-    int channels,
-    int bytesPerBlock,
-    int blockCount,
-    int samplesEncoded) noexcept(false)
+_Use_decl_annotations_ void DirectX::CreateXMA2(WAVEFORMATEX* wfx,
+    size_t                                                    wfxSize,
+    int                                                       sampleRate,
+    int                                                       channels,
+    int                                                       bytesPerBlock,
+    int                                                       blockCount,
+    int                                                       samplesEncoded) noexcept(false)
 {
     if (wfxSize < sizeof(XMA2WAVEFORMATEX))
     {
@@ -658,13 +660,13 @@ void DirectX::CreateXMA2(
 
     unsigned int blockAlign = (static_cast<unsigned int>(channels) * XMA_OUTPUT_SAMPLE_BITS) / 8u;
 
-    wfx->wFormatTag = WAVE_FORMAT_XMA2;
-    wfx->nChannels = static_cast<WORD>(channels);
-    wfx->nSamplesPerSec = static_cast<WORD>(sampleRate);
+    wfx->wFormatTag      = WAVE_FORMAT_XMA2;
+    wfx->nChannels       = static_cast<WORD>(channels);
+    wfx->nSamplesPerSec  = static_cast<WORD>(sampleRate);
     wfx->nAvgBytesPerSec = static_cast<DWORD>(blockAlign * static_cast<unsigned int>(sampleRate));
-    wfx->nBlockAlign = static_cast<WORD>(blockAlign);
-    wfx->wBitsPerSample = XMA_OUTPUT_SAMPLE_BITS;
-    wfx->cbSize = sizeof(XMA2WAVEFORMATEX) - sizeof(WAVEFORMATEX);
+    wfx->nBlockAlign     = static_cast<WORD>(blockAlign);
+    wfx->wBitsPerSample  = XMA_OUTPUT_SAMPLE_BITS;
+    wfx->cbSize          = sizeof(XMA2WAVEFORMATEX) - sizeof(WAVEFORMATEX);
 
     auto xmaFmt = reinterpret_cast<XMA2WAVEFORMATEX*>(wfx);
 
@@ -673,19 +675,16 @@ void DirectX::CreateXMA2(
     xmaFmt->ChannelMask = GetDefaultChannelMask(channels);
 
     xmaFmt->SamplesEncoded = static_cast<DWORD>(samplesEncoded);
-    xmaFmt->BytesPerBlock = static_cast<DWORD>(bytesPerBlock);
-    xmaFmt->PlayBegin = xmaFmt->PlayLength =
-        xmaFmt->LoopBegin = xmaFmt->LoopLength = xmaFmt->LoopCount = 0;
-    xmaFmt->EncoderVersion = 4 /* XMAENCODER_VERSION_XMA2 */;
-    xmaFmt->BlockCount = static_cast<WORD>(blockCount);
+    xmaFmt->BytesPerBlock  = static_cast<DWORD>(bytesPerBlock);
+    xmaFmt->PlayBegin = xmaFmt->PlayLength = xmaFmt->LoopBegin = xmaFmt->LoopLength = xmaFmt->LoopCount = 0;
+    xmaFmt->EncoderVersion                                                                              = 4 /* XMAENCODER_VERSION_XMA2 */;
+    xmaFmt->BlockCount                                                                                  = static_cast<WORD>(blockCount);
 
     assert(IsValid(wfx));
 }
 #endif // XMA2
 
-
-_Use_decl_annotations_
-bool DirectX::ComputePan(float pan, unsigned int channels, float* matrix) noexcept
+_Use_decl_annotations_ bool DirectX::ComputePan(float pan, unsigned int channels, float* matrix) noexcept
 {
     memset(matrix, 0, sizeof(float) * 16);
 
@@ -693,12 +692,12 @@ bool DirectX::ComputePan(float pan, unsigned int channels, float* matrix) noexce
     {
         // Mono panning
         float left = 1.f - pan;
-        left = std::min<float>(1.f, left);
-        left = std::max<float>(0.f, left);
+        left       = std::min<float>(1.f, left);
+        left       = std::max<float>(0.f, left);
 
         float right = pan + 1.f;
-        right = std::min<float>(1.f, right);
-        right = std::max<float>(0.f, right);
+        right       = std::min<float>(1.f, right);
+        right       = std::max<float>(0.f, right);
 
         matrix[0] = left;
         matrix[1] = right;
@@ -708,17 +707,17 @@ bool DirectX::ComputePan(float pan, unsigned int channels, float* matrix) noexce
         // Stereo panning
         if (-1.f <= pan && pan <= 0.f)
         {
-            matrix[0] = .5f * pan + 1.f;    // .5 when pan is -1, 1 when pan is 0
-            matrix[1] = .5f * -pan;         // .5 when pan is -1, 0 when pan is 0
-            matrix[2] = 0.f;                //  0 when pan is -1, 0 when pan is 0
-            matrix[3] = pan + 1.f;          //  0 when pan is -1, 1 when pan is 0
+            matrix[0] = .5f * pan + 1.f; // .5 when pan is -1, 1 when pan is 0
+            matrix[1] = .5f * -pan;      // .5 when pan is -1, 0 when pan is 0
+            matrix[2] = 0.f;             //  0 when pan is -1, 0 when pan is 0
+            matrix[3] = pan + 1.f;       //  0 when pan is -1, 1 when pan is 0
         }
         else
         {
-            matrix[0] = -pan + 1.f;         //  1 when pan is 0,   0 when pan is 1
-            matrix[1] = 0.f;                //  0 when pan is 0,   0 when pan is 1
-            matrix[2] = .5f * pan;          //  0 when pan is 0, .5f when pan is 1
-            matrix[3] = .5f * -pan + 1.f;   //  1 when pan is 0. .5f when pan is 1
+            matrix[0] = -pan + 1.f;       //  1 when pan is 0,   0 when pan is 1
+            matrix[1] = 0.f;              //  0 when pan is 0,   0 when pan is 1
+            matrix[2] = .5f * pan;        //  0 when pan is 0, .5f when pan is 1
+            matrix[3] = .5f * -pan + 1.f; //  1 when pan is 0. .5f when pan is 1
         }
     }
     else
@@ -732,7 +731,6 @@ bool DirectX::ComputePan(float pan, unsigned int channels, float* matrix) noexce
 
     return true;
 }
-
 
 //======================================================================================
 // SoundEffectInstanceBase
@@ -755,7 +753,6 @@ void SoundEffectInstanceBase::SetPan(float pan)
     }
 }
 
-
 void SoundEffectInstanceBase::Apply3D(const X3DAUDIO_LISTENER& listener, const X3DAUDIO_EMITTER& emitter, bool rhcoords)
 {
     if (!voice)
@@ -770,7 +767,7 @@ void SoundEffectInstanceBase::Apply3D(const X3DAUDIO_LISTENER& listener, const X
     float matrix[XAUDIO2_MAX_AUDIO_CHANNELS * 8] = {};
     assert(mDSPSettings.SrcChannelCount <= XAUDIO2_MAX_AUDIO_CHANNELS);
     assert(mDSPSettings.DstChannelCount <= 8);
-    mDSPSettings.DopplerFactor = 1.f;
+    mDSPSettings.DopplerFactor       = 1.f;
     mDSPSettings.pMatrixCoefficients = matrix;
 
     assert(engine != nullptr);
@@ -779,16 +776,16 @@ void SoundEffectInstanceBase::Apply3D(const X3DAUDIO_LISTENER& listener, const X
         X3DAUDIO_EMITTER lhEmitter;
         memcpy(&lhEmitter, &emitter, sizeof(X3DAUDIO_EMITTER));
         lhEmitter.OrientFront.z = -emitter.OrientFront.z;
-        lhEmitter.OrientTop.z = -emitter.OrientTop.z;
-        lhEmitter.Position.z = -emitter.Position.z;
-        lhEmitter.Velocity.z = -emitter.Velocity.z;
+        lhEmitter.OrientTop.z   = -emitter.OrientTop.z;
+        lhEmitter.Position.z    = -emitter.Position.z;
+        lhEmitter.Velocity.z    = -emitter.Velocity.z;
 
         X3DAUDIO_LISTENER lhListener;
         memcpy(&lhListener, &listener, sizeof(X3DAUDIO_LISTENER));
         lhListener.OrientFront.z = -listener.OrientFront.z;
-        lhListener.OrientTop.z = -listener.OrientTop.z;
-        lhListener.Position.z = -listener.Position.z;
-        lhListener.Velocity.z = -listener.Velocity.z;
+        lhListener.OrientTop.z   = -listener.OrientTop.z;
+        lhListener.Position.z    = -listener.Position.z;
+        lhListener.Velocity.z    = -listener.Velocity.z;
 
         X3DAudioCalculate(engine->Get3DHandle(), &lhListener, &lhEmitter, mX3DCalcFlags, &mDSPSettings);
     }
@@ -817,19 +814,20 @@ void SoundEffectInstanceBase::Apply3D(const X3DAUDIO_LISTENER& listener, const X
 
     if (mFlags & SoundEffectInstance_ReverbUseFilters)
     {
-        XAUDIO2_FILTER_PARAMETERS filterDirect = { LowPassFilter, 2.0f * sinf(X3DAUDIO_PI / 6.0f * mDSPSettings.LPFDirectCoefficient), 1.0f };
+        XAUDIO2_FILTER_PARAMETERS filterDirect
+            = { LowPassFilter, 2.0f * sinf(X3DAUDIO_PI / 6.0f * mDSPSettings.LPFDirectCoefficient), 1.0f };
         // see XAudio2CutoffFrequencyToRadians() in XAudio2.h for more information on the formula used here
         std::ignore = voice->SetOutputFilterParameters(direct, &filterDirect);
 
         if (reverb)
         {
-            XAUDIO2_FILTER_PARAMETERS filterReverb = { LowPassFilter, 2.0f * sinf(X3DAUDIO_PI / 6.0f * mDSPSettings.LPFReverbCoefficient), 1.0f };
+            XAUDIO2_FILTER_PARAMETERS filterReverb
+                = { LowPassFilter, 2.0f * sinf(X3DAUDIO_PI / 6.0f * mDSPSettings.LPFReverbCoefficient), 1.0f };
             // see XAudio2CutoffFrequencyToRadians() in XAudio2.h for more information on the formula used here
             std::ignore = voice->SetOutputFilterParameters(reverb, &filterReverb);
         }
     }
 }
-
 
 //======================================================================================
 // AudioListener/Emitter helpers
@@ -896,7 +894,7 @@ namespace
 
         return true;
     }
-}
+} // namespace
 
 void AudioListener::SetCone(const X3DAUDIO_CONE& listenerCone)
 {
@@ -904,7 +902,7 @@ void AudioListener::SetCone(const X3DAUDIO_CONE& listenerCone)
         throw std::invalid_argument("X3DAUDIO_CONE values out of range");
 
     ListenerCone = listenerCone;
-    pCone = &ListenerCone;
+    pCone        = &ListenerCone;
 }
 
 bool AudioListener::IsValid() const noexcept
@@ -952,7 +950,7 @@ void AudioEmitter::SetCone(const X3DAUDIO_CONE& emitterCone)
         throw std::invalid_argument("X3DAUDIO_CONE values out of range");
 
     EmitterCone = emitterCone;
-    pCone = &EmitterCone;
+    pCone       = &EmitterCone;
 }
 
 bool AudioEmitter::IsValid() const noexcept
@@ -1075,37 +1073,60 @@ namespace
     //           BACK
     //
 
-    constexpr float LEFT_AZIMUTH = 3 * X3DAUDIO_PI / 2;
-    constexpr float RIGHT_AZIMUTH = X3DAUDIO_PI / 2;
-    constexpr float FRONT_LEFT_AZIMUTH = 7 * X3DAUDIO_PI / 4;
-    constexpr float FRONT_RIGHT_AZIMUTH = X3DAUDIO_PI / 4;
-    constexpr float FRONT_CENTER_AZIMUTH = 0.0f;
+    constexpr float LEFT_AZIMUTH          = 3 * X3DAUDIO_PI / 2;
+    constexpr float RIGHT_AZIMUTH         = X3DAUDIO_PI / 2;
+    constexpr float FRONT_LEFT_AZIMUTH    = 7 * X3DAUDIO_PI / 4;
+    constexpr float FRONT_RIGHT_AZIMUTH   = X3DAUDIO_PI / 4;
+    constexpr float FRONT_CENTER_AZIMUTH  = 0.0f;
     constexpr float LOW_FREQUENCY_AZIMUTH = X3DAUDIO_2PI;
-    constexpr float BACK_LEFT_AZIMUTH = 5 * X3DAUDIO_PI / 4;
-    constexpr float BACK_RIGHT_AZIMUTH = 3 * X3DAUDIO_PI / 4;
-    constexpr float BACK_CENTER_AZIMUTH = X3DAUDIO_PI;
+    constexpr float BACK_LEFT_AZIMUTH     = 5 * X3DAUDIO_PI / 4;
+    constexpr float BACK_RIGHT_AZIMUTH    = 3 * X3DAUDIO_PI / 4;
+    constexpr float BACK_CENTER_AZIMUTH   = X3DAUDIO_PI;
 
-    constexpr float c_channelAzimuths[9][8] =
-    {
-        /* 0 */   { 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f },
-        /* 1 */   { 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f },
-        /* 2 */   { FRONT_LEFT_AZIMUTH, FRONT_RIGHT_AZIMUTH, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f },
+    constexpr float c_channelAzimuths[9][8] = {
+        /* 0 */ { 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f },
+        /* 1 */ { 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f },
+        /* 2 */ { FRONT_LEFT_AZIMUTH, FRONT_RIGHT_AZIMUTH, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f },
         /* 2.1 */ { FRONT_LEFT_AZIMUTH, FRONT_RIGHT_AZIMUTH, LOW_FREQUENCY_AZIMUTH, 0.f, 0.f, 0.f, 0.f, 0.f },
         /* 4.0 */ { FRONT_LEFT_AZIMUTH, FRONT_RIGHT_AZIMUTH, BACK_LEFT_AZIMUTH, BACK_RIGHT_AZIMUTH, 0.f, 0.f, 0.f, 0.f },
         /* 4.1 */ { FRONT_LEFT_AZIMUTH, FRONT_RIGHT_AZIMUTH, LOW_FREQUENCY_AZIMUTH, BACK_LEFT_AZIMUTH, BACK_RIGHT_AZIMUTH, 0.f, 0.f, 0.f },
-        /* 5.1 */ { FRONT_LEFT_AZIMUTH, FRONT_RIGHT_AZIMUTH, FRONT_CENTER_AZIMUTH, LOW_FREQUENCY_AZIMUTH, BACK_LEFT_AZIMUTH, BACK_RIGHT_AZIMUTH, 0.f, 0.f },
-        /* 6.1 */ { FRONT_LEFT_AZIMUTH, FRONT_RIGHT_AZIMUTH, FRONT_CENTER_AZIMUTH, LOW_FREQUENCY_AZIMUTH, BACK_LEFT_AZIMUTH, BACK_RIGHT_AZIMUTH, BACK_CENTER_AZIMUTH, 0.f },
-        /* 7.1 */ { FRONT_LEFT_AZIMUTH, FRONT_RIGHT_AZIMUTH, FRONT_CENTER_AZIMUTH, LOW_FREQUENCY_AZIMUTH, BACK_LEFT_AZIMUTH, BACK_RIGHT_AZIMUTH, LEFT_AZIMUTH, RIGHT_AZIMUTH }
+        /* 5.1 */
+        { FRONT_LEFT_AZIMUTH,
+            FRONT_RIGHT_AZIMUTH,
+            FRONT_CENTER_AZIMUTH,
+            LOW_FREQUENCY_AZIMUTH,
+            BACK_LEFT_AZIMUTH,
+            BACK_RIGHT_AZIMUTH,
+            0.f,
+            0.f },
+        /* 6.1 */
+        { FRONT_LEFT_AZIMUTH,
+            FRONT_RIGHT_AZIMUTH,
+            FRONT_CENTER_AZIMUTH,
+            LOW_FREQUENCY_AZIMUTH,
+            BACK_LEFT_AZIMUTH,
+            BACK_RIGHT_AZIMUTH,
+            BACK_CENTER_AZIMUTH,
+            0.f },
+        /* 7.1 */
+        { FRONT_LEFT_AZIMUTH,
+            FRONT_RIGHT_AZIMUTH,
+            FRONT_CENTER_AZIMUTH,
+            LOW_FREQUENCY_AZIMUTH,
+            BACK_LEFT_AZIMUTH,
+            BACK_RIGHT_AZIMUTH,
+            LEFT_AZIMUTH,
+            RIGHT_AZIMUTH }
     };
-}
+} // namespace
 
 void AudioEmitter::EnableDefaultMultiChannel(unsigned int channels, float radius)
 {
     if (channels > XAUDIO2_MAX_AUDIO_CHANNELS)
         throw std::invalid_argument("Invalid channel count");
 
-    ChannelCount = channels;
-    ChannelRadius = radius;
+    ChannelCount     = channels;
+    ChannelRadius    = radius;
     pChannelAzimuths = EmitterAzimuths;
 
     if (channels <= 8)
@@ -1122,23 +1143,23 @@ namespace
 {
     // **Note these match the defaults from xact3d3.h in the legacy DirectX SDK**
     constexpr X3DAUDIO_DISTANCE_CURVE_POINT c_defaultCurvePoints[2] = { { 0.0f, 1.0f }, { 1.0f, 1.0f } };
-    constexpr X3DAUDIO_DISTANCE_CURVE c_defaultCurve = { const_cast<X3DAUDIO_DISTANCE_CURVE_POINT*>(c_defaultCurvePoints), 2 };
+    constexpr X3DAUDIO_DISTANCE_CURVE       c_defaultCurve = { const_cast<X3DAUDIO_DISTANCE_CURVE_POINT*>(c_defaultCurvePoints), 2 };
 
     // **Note these match X3DAudioDefault_LinearCurvePoints from x3daudio.h**
     constexpr X3DAUDIO_DISTANCE_CURVE_POINT c_linearCurvePoints[2] = { { 0.0f, 1.0f }, { 1.0f, 0.0f } };
-    constexpr X3DAUDIO_DISTANCE_CURVE c_linearCurve = { const_cast<X3DAUDIO_DISTANCE_CURVE_POINT*>(c_linearCurvePoints), 2 };
-}
+    constexpr X3DAUDIO_DISTANCE_CURVE       c_linearCurve          = { const_cast<X3DAUDIO_DISTANCE_CURVE_POINT*>(c_linearCurvePoints), 2 };
+} // namespace
 
 void AudioEmitter::EnableDefaultCurves() noexcept
 {
-    pVolumeCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_defaultCurve);
-    pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_defaultCurve);
+    pVolumeCurve    = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_defaultCurve);
+    pLFECurve       = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_defaultCurve);
     pLPFDirectCurve = pLPFReverbCurve = pReverbCurve = nullptr;
 }
 
 void AudioEmitter::EnableLinearCurves() noexcept
 {
-    pVolumeCurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_linearCurve);
-    pLFECurve = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_linearCurve);
+    pVolumeCurve    = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_linearCurve);
+    pLFECurve       = const_cast<X3DAUDIO_DISTANCE_CURVE*>(&c_linearCurve);
     pLPFDirectCurve = pLPFReverbCurve = pReverbCurve = nullptr;
 }

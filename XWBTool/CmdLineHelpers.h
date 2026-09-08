@@ -27,16 +27,33 @@
 #error Define TOOL_VERSION before including this header
 #endif
 
-
 namespace Helpers
 {
-    struct handle_closer { void operator()(HANDLE h) { if (h) CloseHandle(h); } };
+    struct handle_closer
+    {
+        void operator()(HANDLE h)
+        {
+            if (h)
+                CloseHandle(h);
+        }
+    };
 
     using ScopedHandle = std::unique_ptr<void, handle_closer>;
 
-    inline HANDLE safe_handle(HANDLE h) noexcept { return (h == INVALID_HANDLE_VALUE) ? nullptr : h; }
+    inline HANDLE safe_handle(HANDLE h) noexcept
+    {
+        return (h == INVALID_HANDLE_VALUE) ? nullptr : h;
+    }
 
-    struct find_closer { void operator()(HANDLE h) noexcept { assert(h != INVALID_HANDLE_VALUE); if (h) FindClose(h); } };
+    struct find_closer
+    {
+        void operator()(HANDLE h) noexcept
+        {
+            assert(h != INVALID_HANDLE_VALUE);
+            if (h)
+                FindClose(h);
+        }
+    };
 
     using ScopedFindHandle = std::unique_ptr<void, find_closer>;
 
@@ -53,12 +70,12 @@ namespace Helpers
     template<typename T>
     struct SValue
     {
-        const wchar_t*  name;
-        T               value;
+        const wchar_t* name;
+        T              value;
     };
 
     template<typename T>
-    T LookupByName(const wchar_t _In_z_ *pName, const SValue<T> *pArray) noexcept
+    T LookupByName(const wchar_t _In_z_* pName, const SValue<T>* pArray) noexcept
     {
         while (pArray->name)
         {
@@ -72,7 +89,7 @@ namespace Helpers
     }
 
     template<typename T>
-    const wchar_t* LookupByValue(T value, const SValue<T> *pArray) noexcept
+    const wchar_t* LookupByValue(T value, const SValue<T>* pArray) noexcept
     {
         while (pArray->name)
         {
@@ -123,7 +140,7 @@ namespace Helpers
     }
 
     template<typename T>
-    void PrintList(size_t cch, const SValue<T> *pValue) noexcept
+    void PrintList(size_t cch, const SValue<T>* pValue) noexcept
     {
         while (pValue->name)
         {
@@ -156,8 +173,8 @@ namespace Helpers
                 auto verInfo = std::make_unique<uint8_t[]>(size);
                 if (GetFileVersionInfoW(appName, 0, size, verInfo.get()))
                 {
-                    LPVOID lpstr = nullptr;
-                    UINT strLen = 0;
+                    LPVOID lpstr  = nullptr;
+                    UINT   strLen = 0;
                     if (VerQueryValueW(verInfo.get(), L"\\StringFileInfo\\040904B0\\ProductVersion", &lpstr, &strLen))
                     {
                         wcsncpy_s(version, reinterpret_cast<const wchar_t*>(lpstr), strLen);
@@ -179,9 +196,9 @@ namespace Helpers
         {
             wprintf(L"%ls Version %ls\n", desc, version);
             wprintf(L"Copyright (C) Microsoft Corp.\n");
-        #ifdef _DEBUG
+#ifdef _DEBUG
             wprintf(L"*** Debug build ***\n");
-        #endif
+#endif
             wprintf(L"\n");
         }
     }
@@ -190,10 +207,8 @@ namespace Helpers
     {
         // Process files
         WIN32_FIND_DATAW findData = {};
-        ScopedFindHandle hFile(safe_handle(FindFirstFileExW(path.c_str(),
-            FindExInfoBasic, &findData,
-            FindExSearchNameMatch, nullptr,
-            FIND_FIRST_EX_LARGE_FETCH)));
+        ScopedFindHandle hFile(safe_handle(
+            FindFirstFileExW(path.c_str(), FindExInfoBasic, &findData, FindExSearchNameMatch, nullptr, FIND_FIRST_EX_LARGE_FETCH)));
         if (hFile)
         {
             for (;;)
@@ -201,7 +216,7 @@ namespace Helpers
                 if (!(findData.dwFileAttributes & (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_DIRECTORY)))
                 {
                     SConversion conv = {};
-                    conv.szSrc = path.parent_path().append(findData.cFileName).native();
+                    conv.szSrc       = path.parent_path().append(findData.cFileName).native();
                     if (folder)
                     {
                         conv.szFolder = folder;
@@ -220,8 +235,10 @@ namespace Helpers
             auto searchDir = path.parent_path().append(L"*");
 
             hFile.reset(safe_handle(FindFirstFileExW(searchDir.c_str(),
-                FindExInfoBasic, &findData,
-                FindExSearchLimitToDirectories, nullptr,
+                FindExInfoBasic,
+                &findData,
+                FindExSearchLimitToDirectories,
+                nullptr,
                 FIND_FIRST_EX_LARGE_FETCH)));
             if (!hFile)
                 return;
@@ -232,9 +249,10 @@ namespace Helpers
                 {
                     if (findData.cFileName[0] != L'.')
                     {
-                        auto subfolder = (folder)
-                            ? (std::wstring(folder) + std::wstring(findData.cFileName) + std::filesystem::path::preferred_separator)
-                            : (std::wstring(findData.cFileName) + std::filesystem::path::preferred_separator);
+                        auto subfolder
+                            = (folder) ?
+                                  (std::wstring(folder) + std::wstring(findData.cFileName) + std::filesystem::path::preferred_separator) :
+                                  (std::wstring(findData.cFileName) + std::filesystem::path::preferred_separator);
 
                         auto subdir = path.parent_path().append(findData.cFileName).append(path.filename().c_str());
 
@@ -273,7 +291,7 @@ namespace Helpers
                 else
                 {
                     std::filesystem::path path(fname.c_str() + 1);
-                    auto& npath = path.make_preferred();
+                    auto&                 npath = path.make_preferred();
                     if (wcspbrk(fname.c_str(), L"?*") != nullptr)
                     {
                         std::list<SConversion> removeFiles;
@@ -301,7 +319,7 @@ namespace Helpers
             }
             else
             {
-                SConversion conv = {};
+                SConversion           conv = {};
                 std::filesystem::path path(fname.c_str());
                 conv.szSrc = path.make_preferred().native();
                 flist.push_back(conv);
@@ -343,8 +361,12 @@ namespace Helpers
         LPWSTR errorText = nullptr;
 
         const DWORD result = FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_ALLOCATE_BUFFER,
-            nullptr, static_cast<DWORD>(hr),
-            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPWSTR>(&errorText), 0, nullptr);
+            nullptr,
+            static_cast<DWORD>(hr),
+            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+            reinterpret_cast<LPWSTR>(&errorText),
+            0,
+            nullptr);
 
         *desc = 0;
 
@@ -372,4 +394,4 @@ namespace Helpers
 
         return desc;
     }
-}
+} // namespace Helpers

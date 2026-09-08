@@ -20,13 +20,13 @@
 #ifndef DIRECTX_TOOLKIT_API
 #ifdef DIRECTX_TOOLKIT_EXPORT
 #ifdef __GNUC__
-#define DIRECTX_TOOLKIT_API __attribute__ ((dllexport))
+#define DIRECTX_TOOLKIT_API __attribute__((dllexport))
 #else
 #define DIRECTX_TOOLKIT_API __declspec(dllexport)
 #endif
 #elif defined(DIRECTX_TOOLKIT_IMPORT)
 #ifdef __GNUC__
-#define DIRECTX_TOOLKIT_API __attribute__ ((dllimport))
+#define DIRECTX_TOOLKIT_API __attribute__((dllimport))
 #else
 #define DIRECTX_TOOLKIT_API __declspec(dllimport)
 #endif
@@ -34,7 +34,6 @@
 #define DIRECTX_TOOLKIT_API
 #endif
 #endif
-
 
 namespace DirectX
 {
@@ -45,11 +44,11 @@ namespace DirectX
         public:
             DIRECTX_TOOLKIT_API explicit CommonStates(_In_ ID3D11Device* device);
 
-            DIRECTX_TOOLKIT_API CommonStates(CommonStates&&) noexcept;
-            DIRECTX_TOOLKIT_API CommonStates& operator= (CommonStates&&) noexcept;
+            DIRECTX_TOOLKIT_API               CommonStates(CommonStates&&) noexcept;
+            DIRECTX_TOOLKIT_API CommonStates& operator=(CommonStates&&) noexcept;
 
-            CommonStates(CommonStates const&) = delete;
-            CommonStates& operator= (CommonStates const&) = delete;
+            CommonStates(CommonStates const&)            = delete;
+            CommonStates& operator=(CommonStates const&) = delete;
 
             DIRECTX_TOOLKIT_API virtual ~CommonStates();
 
@@ -86,5 +85,5 @@ namespace DirectX
 
             std::shared_ptr<Impl> pImpl;
         };
-    }
-}
+    } // namespace DX11
+} // namespace DirectX

@@ -18,7 +18,6 @@
 #include <cstdint>
 #include <memory>
 
-
 namespace DirectX
 {
     class WaveBankReader
@@ -26,11 +25,11 @@ namespace DirectX
     public:
         WaveBankReader() noexcept(false);
 
-        WaveBankReader(WaveBankReader&&) = default;
-        WaveBankReader& operator= (WaveBankReader&&) = default;
+        WaveBankReader(WaveBankReader&&)            = default;
+        WaveBankReader& operator=(WaveBankReader&&) = default;
 
-        WaveBankReader(WaveBankReader const&) = delete;
-        WaveBankReader& operator= (WaveBankReader const&) = delete;
+        WaveBankReader(WaveBankReader const&)            = delete;
+        WaveBankReader& operator=(WaveBankReader const&) = delete;
 
         ~WaveBankReader();
 
@@ -44,9 +43,9 @@ namespace DirectX
         bool HasNames() const noexcept;
         bool IsStreamingBank() const noexcept;
 
-    #if (defined(_XBOX_ONE) && defined(_TITLE)) || defined(_GAMING_XBOX)
+#if (defined(_XBOX_ONE) && defined(_TITLE)) || defined(_GAMING_XBOX)
         bool HasXMA() const noexcept;
-    #endif
+#endif
 
         const char* BankName() const noexcept;
 
@@ -58,7 +57,8 @@ namespace DirectX
 
         HRESULT GetWaveData(_In_ uint32_t index, _Outptr_ const uint8_t** pData, _Out_ uint32_t& dataSize) const noexcept;
 
-        HRESULT GetSeekTable(_In_ uint32_t index, _Out_ const uint32_t** pData, _Out_ uint32_t& dataCount, _Out_ uint32_t& tag) const noexcept;
+        HRESULT
+        GetSeekTable(_In_ uint32_t index, _Out_ const uint32_t** pData, _Out_ uint32_t& dataCount, _Out_ uint32_t& tag) const noexcept;
 
         HANDLE GetAsyncHandle() const noexcept;
 
@@ -66,11 +66,11 @@ namespace DirectX
 
         struct Metadata
         {
-            uint32_t    duration;
-            uint32_t    loopStart;
-            uint32_t    loopLength;
-            uint32_t    offsetBytes;
-            uint32_t    lengthBytes;
+            uint32_t duration;
+            uint32_t loopStart;
+            uint32_t loopLength;
+            uint32_t offsetBytes;
+            uint32_t lengthBytes;
         };
         HRESULT GetMetadata(_In_ uint32_t index, _Out_ Metadata& metadata) const noexcept;
 
@@ -80,4 +80,4 @@ namespace DirectX
 
         std::unique_ptr<Impl> pImpl;
     };
-}
+} // namespace DirectX

@@ -25,28 +25,27 @@
 #include <shapexmacontext.h>
 #endif
 
-
 namespace
 {
 #pragma pack(push, 1)
 
     constexpr uint16_t MSADPCM_FORMAT_EXTRA_BYTES = 32;
-    constexpr uint16_t MSADPCM_NUM_COEFFICIENTS = 7;
+    constexpr uint16_t MSADPCM_NUM_COEFFICIENTS   = 7;
 
     constexpr size_t DVD_SECTOR_SIZE = 2048;
-    constexpr size_t DVD_BLOCK_SIZE = DVD_SECTOR_SIZE * 16;
+    constexpr size_t DVD_BLOCK_SIZE  = DVD_SECTOR_SIZE * 16;
 
     constexpr size_t ALIGNMENT_MIN = 4;
     constexpr size_t ALIGNMENT_MAX = 0xFFFF;
     constexpr size_t ALIGNMENT_DVD = DVD_SECTOR_SIZE;
 
-    constexpr size_t MAX_DATA_SEGMENT_SIZE = 0xFFFFFFFF;
+    constexpr size_t MAX_DATA_SEGMENT_SIZE         = 0xFFFFFFFF;
     constexpr size_t MAX_COMPACT_DATA_SEGMENT_SIZE = 0x001FFFFF;
 
     struct REGION
     {
-        uint32_t    dwOffset;   // Region offset, in bytes.
-        uint32_t    dwLength;   // Region length, in bytes.
+        uint32_t dwOffset; // Region offset, in bytes.
+        uint32_t dwLength; // Region length, in bytes.
 
         void BigEndian() noexcept
         {
@@ -57,42 +56,42 @@ namespace
 
     struct SAMPLEREGION
     {
-        uint32_t    dwStartSample;  // Start sample for the region.
-        uint32_t    dwTotalSamples; // Region length in samples.
+        uint32_t dwStartSample;  // Start sample for the region.
+        uint32_t dwTotalSamples; // Region length in samples.
 
         void BigEndian() noexcept
         {
-            dwStartSample = _byteswap_ulong(dwStartSample);
+            dwStartSample  = _byteswap_ulong(dwStartSample);
             dwTotalSamples = _byteswap_ulong(dwTotalSamples);
         }
     };
 
     struct HEADER
     {
-        static constexpr uint32_t SIGNATURE = MAKEFOURCC('W', 'B', 'N', 'D');
+        static constexpr uint32_t SIGNATURE    = MAKEFOURCC('W', 'B', 'N', 'D');
         static constexpr uint32_t BE_SIGNATURE = MAKEFOURCC('D', 'N', 'B', 'W');
-        static constexpr uint32_t VERSION = 44;
+        static constexpr uint32_t VERSION      = 44;
 
         enum SEGIDX
         {
-            SEGIDX_BANKDATA = 0,       // Bank data
-            SEGIDX_ENTRYMETADATA,      // Entry meta-data
-            SEGIDX_SEEKTABLES,         // Storage for seek tables for the encoded waves.
-            SEGIDX_ENTRYNAMES,         // Entry friendly names
-            SEGIDX_ENTRYWAVEDATA,      // Entry wave data
+            SEGIDX_BANKDATA = 0,  // Bank data
+            SEGIDX_ENTRYMETADATA, // Entry meta-data
+            SEGIDX_SEEKTABLES,    // Storage for seek tables for the encoded waves.
+            SEGIDX_ENTRYNAMES,    // Entry friendly names
+            SEGIDX_ENTRYWAVEDATA, // Entry wave data
             SEGIDX_COUNT
         };
 
-        uint32_t    dwSignature;            // File signature
-        uint32_t    dwVersion;              // Version of the tool that created the file
-        uint32_t    dwHeaderVersion;        // Version of the file format
-        REGION      Segments[SEGIDX_COUNT]; // Segment lookup table
+        uint32_t dwSignature;            // File signature
+        uint32_t dwVersion;              // Version of the tool that created the file
+        uint32_t dwHeaderVersion;        // Version of the file format
+        REGION   Segments[SEGIDX_COUNT]; // Segment lookup table
 
         void BigEndian() noexcept
         {
             // Leave dwSignature alone as indicator of BE vs. LE
 
-            dwVersion = _byteswap_ulong(dwVersion);
+            dwVersion       = _byteswap_ulong(dwVersion);
             dwHeaderVersion = _byteswap_ulong(dwHeaderVersion);
             for (size_t j = 0; j < SEGIDX_COUNT; ++j)
             {
@@ -102,36 +101,33 @@ namespace
     };
 
 #ifdef _MSC_VER
-#pragma warning( disable : 4201 4203 )
+#pragma warning(disable : 4201 4203)
 #endif
 
     union MINIWAVEFORMAT
     {
-        static constexpr uint32_t TAG_PCM = 0x0;
-        static constexpr uint32_t TAG_XMA = 0x1;
+        static constexpr uint32_t TAG_PCM   = 0x0;
+        static constexpr uint32_t TAG_XMA   = 0x1;
         static constexpr uint32_t TAG_ADPCM = 0x2;
-        static constexpr uint32_t TAG_WMA = 0x3;
+        static constexpr uint32_t TAG_WMA   = 0x3;
 
-        static constexpr uint32_t BITDEPTH_8 = 0x0; // PCM only
+        static constexpr uint32_t BITDEPTH_8  = 0x0; // PCM only
         static constexpr uint32_t BITDEPTH_16 = 0x1; // PCM only
 
         static constexpr size_t ADPCM_BLOCKALIGN_CONVERSION_OFFSET = 22;
 
         struct
         {
-            uint32_t       wFormatTag : 2;        // Format tag
-            uint32_t       nChannels : 3;        // Channel count (1 - 6)
-            uint32_t       nSamplesPerSec : 18;       // Sampling rate
-            uint32_t       wBlockAlign : 8;        // Block alignment.  For WMA, lower 6 bits block alignment index, upper 2 bits bytes-per-second index.
-            uint32_t       wBitsPerSample : 1;        // Bits per sample (8 vs. 16, PCM only); WMAudio2/WMAudio3 (for WMA)
+            uint32_t wFormatTag : 2;      // Format tag
+            uint32_t nChannels : 3;       // Channel count (1 - 6)
+            uint32_t nSamplesPerSec : 18; // Sampling rate
+            uint32_t wBlockAlign : 8; // Block alignment.  For WMA, lower 6 bits block alignment index, upper 2 bits bytes-per-second index.
+            uint32_t wBitsPerSample : 1; // Bits per sample (8 vs. 16, PCM only); WMAudio2/WMAudio3 (for WMA)
         };
 
-        uint32_t           dwValue;
+        uint32_t dwValue;
 
-        void BigEndian() noexcept
-        {
-            dwValue = _byteswap_ulong(dwValue);
-        }
+        void BigEndian() noexcept { dwValue = _byteswap_ulong(dwValue); }
 
         WORD BitsPerSample() const noexcept
         {
@@ -150,46 +146,23 @@ namespace
         {
             switch (wFormatTag)
             {
-            case TAG_PCM:
-                return wBlockAlign;
+            case TAG_PCM:   return wBlockAlign;
 
-            case TAG_XMA:
-                return (nChannels * 16 / 8); // XMA_OUTPUT_SAMPLE_BITS = 16
+            case TAG_XMA:   return (nChannels * 16 / 8); // XMA_OUTPUT_SAMPLE_BITS = 16
 
-            case TAG_ADPCM:
-                return (wBlockAlign + ADPCM_BLOCKALIGN_CONVERSION_OFFSET) * nChannels;
+            case TAG_ADPCM: return (wBlockAlign + ADPCM_BLOCKALIGN_CONVERSION_OFFSET) * nChannels;
 
-            case TAG_WMA:
-                {
-                    static const uint32_t aWMABlockAlign[17] =
-                    {
-                        929,
-                        1487,
-                        1280,
-                        2230,
-                        8917,
-                        8192,
-                        4459,
-                        5945,
-                        2304,
-                        1536,
-                        1485,
-                        1008,
-                        2731,
-                        4096,
-                        6827,
-                        5462,
-                        1280
-                    };
+            case TAG_WMA:   {
+                static const uint32_t aWMABlockAlign[17]
+                    = { 929, 1487, 1280, 2230, 8917, 8192, 4459, 5945, 2304, 1536, 1485, 1008, 2731, 4096, 6827, 5462, 1280 };
 
-                    const uint32_t dwBlockAlignIndex = wBlockAlign & 0x1F;
-                    if (dwBlockAlignIndex < 17)
-                        return aWMABlockAlign[dwBlockAlignIndex];
-                }
-                break;
+                const uint32_t dwBlockAlignIndex = wBlockAlign & 0x1F;
+                if (dwBlockAlignIndex < 17)
+                    return aWMABlockAlign[dwBlockAlignIndex];
+            }
+            break;
 
-            default:
-                break;
+            default: break;
             }
 
             return 0;
@@ -199,41 +172,27 @@ namespace
         {
             switch (wFormatTag)
             {
-            case TAG_PCM:
-                return nSamplesPerSec * wBlockAlign;
+            case TAG_PCM:   return nSamplesPerSec * wBlockAlign;
 
-            case TAG_XMA:
-                return nSamplesPerSec * BlockAlign();
+            case TAG_XMA:   return nSamplesPerSec * BlockAlign();
 
-            case TAG_ADPCM:
-                {
-                    const uint32_t blockAlign = BlockAlign();
-                    const uint32_t samplesPerAdpcmBlock = AdpcmSamplesPerBlock();
-                    return blockAlign * nSamplesPerSec / samplesPerAdpcmBlock;
-                }
+            case TAG_ADPCM: {
+                const uint32_t blockAlign           = BlockAlign();
+                const uint32_t samplesPerAdpcmBlock = AdpcmSamplesPerBlock();
+                return blockAlign * nSamplesPerSec / samplesPerAdpcmBlock;
+            }
 
-            case TAG_WMA:
-                {
-                    static const uint32_t aWMAAvgBytesPerSec[7] =
-                    {
-                        12000,
-                        24000,
-                        4000,
-                        6000,
-                        8000,
-                        20000,
-                        2500
-                    };
-                    // bitrate = entry * 8
+            case TAG_WMA: {
+                static const uint32_t aWMAAvgBytesPerSec[7] = { 12000, 24000, 4000, 6000, 8000, 20000, 2500 };
+                // bitrate = entry * 8
 
-                    const uint32_t dwBytesPerSecIndex = wBlockAlign >> 5;
-                    if (dwBytesPerSecIndex < 7)
-                        return aWMAAvgBytesPerSec[dwBytesPerSecIndex];
-                }
-                break;
+                const uint32_t dwBytesPerSecIndex = wBlockAlign >> 5;
+                if (dwBytesPerSecIndex < 7)
+                    return aWMAAvgBytesPerSec[dwBytesPerSecIndex];
+            }
+            break;
 
-            default:
-                break;
+            default: break;
             }
 
             return 0;
@@ -245,13 +204,14 @@ namespace
             return nBlockAlign * 2 / uint32_t(nChannels) - 12;
         }
 
-        void AdpcmFillCoefficientTable(ADPCMWAVEFORMAT *fmt) const noexcept
+        void AdpcmFillCoefficientTable(ADPCMWAVEFORMAT* fmt) const noexcept
         {
             // These are fixed since we are always using MS ADPCM
             fmt->wNumCoef = MSADPCM_NUM_COEFFICIENTS;
 
-            static ADPCMCOEFSET aCoef[7] = { { 256, 0}, {512, -256}, {0,0}, {192,64}, {240,0}, {460, -208}, {392,-232} };
-            memcpy(&fmt->aCoef, aCoef, sizeof(aCoef)); // CodeQL [SM01947] Code scanner doesn't understand the 0-length MSVC array extension. MSADPCM_FORMAT_EXTRA_BYTES includes this memory.
+            static ADPCMCOEFSET aCoef[7] = { { 256, 0 }, { 512, -256 }, { 0, 0 }, { 192, 64 }, { 240, 0 }, { 460, -208 }, { 392, -232 } };
+            memcpy(&fmt->aCoef, aCoef, sizeof(aCoef)); // CodeQL [SM01947] Code scanner doesn't understand the 0-length MSVC array
+                                                       // extension. MSADPCM_FORMAT_EXTRA_BYTES includes this memory.
         }
     };
 
@@ -259,52 +219,52 @@ namespace
     {
         static constexpr size_t BANKNAME_LENGTH = 64;
 
-        static constexpr uint32_t TYPE_BUFFER = 0x00000000;
+        static constexpr uint32_t TYPE_BUFFER    = 0x00000000;
         static constexpr uint32_t TYPE_STREAMING = 0x00000001;
-        static constexpr uint32_t TYPE_MASK = 0x00000001;
+        static constexpr uint32_t TYPE_MASK      = 0x00000001;
 
-        static constexpr uint32_t FLAGS_ENTRYNAMES = 0x00010000;
-        static constexpr uint32_t FLAGS_COMPACT = 0x00020000;
+        static constexpr uint32_t FLAGS_ENTRYNAMES    = 0x00010000;
+        static constexpr uint32_t FLAGS_COMPACT       = 0x00020000;
         static constexpr uint32_t FLAGS_SYNC_DISABLED = 0x00040000;
-        static constexpr uint32_t FLAGS_SEEKTABLES = 0x00080000;
-        static constexpr uint32_t FLAGS_MASK = 0x000F0000;
+        static constexpr uint32_t FLAGS_SEEKTABLES    = 0x00080000;
+        static constexpr uint32_t FLAGS_MASK          = 0x000F0000;
 
-        uint32_t        dwFlags;                        // Bank flags
-        uint32_t        dwEntryCount;                   // Number of entries in the bank
-        char            szBankName[BANKNAME_LENGTH];    // Bank friendly name
-        uint32_t        dwEntryMetaDataElementSize;     // Size of each entry meta-data element, in bytes
-        uint32_t        dwEntryNameElementSize;         // Size of each entry name element, in bytes
-        uint32_t        dwAlignment;                    // Entry alignment, in bytes
-        MINIWAVEFORMAT  CompactFormat;                  // Format data for compact bank
-        FILETIME        BuildTime;                      // Build timestamp
+        uint32_t       dwFlags;                     // Bank flags
+        uint32_t       dwEntryCount;                // Number of entries in the bank
+        char           szBankName[BANKNAME_LENGTH]; // Bank friendly name
+        uint32_t       dwEntryMetaDataElementSize;  // Size of each entry meta-data element, in bytes
+        uint32_t       dwEntryNameElementSize;      // Size of each entry name element, in bytes
+        uint32_t       dwAlignment;                 // Entry alignment, in bytes
+        MINIWAVEFORMAT CompactFormat;               // Format data for compact bank
+        FILETIME       BuildTime;                   // Build timestamp
 
         void BigEndian() noexcept
         {
-            dwFlags = _byteswap_ulong(dwFlags);
-            dwEntryCount = _byteswap_ulong(dwEntryCount);
+            dwFlags                    = _byteswap_ulong(dwFlags);
+            dwEntryCount               = _byteswap_ulong(dwEntryCount);
             dwEntryMetaDataElementSize = _byteswap_ulong(dwEntryMetaDataElementSize);
-            dwEntryNameElementSize = _byteswap_ulong(dwEntryNameElementSize);
-            dwAlignment = _byteswap_ulong(dwAlignment);
+            dwEntryNameElementSize     = _byteswap_ulong(dwEntryNameElementSize);
+            dwAlignment                = _byteswap_ulong(dwAlignment);
             CompactFormat.BigEndian();
-            BuildTime.dwLowDateTime = _byteswap_ulong(BuildTime.dwLowDateTime);
+            BuildTime.dwLowDateTime  = _byteswap_ulong(BuildTime.dwLowDateTime);
             BuildTime.dwHighDateTime = _byteswap_ulong(BuildTime.dwHighDateTime);
         }
     };
 
     struct ENTRY
     {
-        static constexpr uint32_t FLAGS_READAHEAD = 0x00000001;     // Enable stream read-ahead
-        static constexpr uint32_t FLAGS_LOOPCACHE = 0x00000002;     // One or more looping sounds use this wave
-        static constexpr uint32_t FLAGS_REMOVELOOPTAIL = 0x00000004;// Remove data after the end of the loop region
-        static constexpr uint32_t FLAGS_IGNORELOOP = 0x00000008;    // Used internally when the loop region can't be used
-        static constexpr uint32_t FLAGS_MASK = 0x00000008;
+        static constexpr uint32_t FLAGS_READAHEAD      = 0x00000001; // Enable stream read-ahead
+        static constexpr uint32_t FLAGS_LOOPCACHE      = 0x00000002; // One or more looping sounds use this wave
+        static constexpr uint32_t FLAGS_REMOVELOOPTAIL = 0x00000004; // Remove data after the end of the loop region
+        static constexpr uint32_t FLAGS_IGNORELOOP     = 0x00000008; // Used internally when the loop region can't be used
+        static constexpr uint32_t FLAGS_MASK           = 0x00000008;
 
         union
         {
             struct
             {
                 // Entry flags
-                uint32_t                   dwFlags : 4;
+                uint32_t dwFlags : 4;
 
                 // Duration of the wave, in units of one sample.
                 // For instance, a ten second long wave sampled
@@ -312,14 +272,14 @@ namespace
                 // This value is not affected by the number of
                 // channels, the number of bits per sample, or the
                 // compression format of the wave.
-                uint32_t                   Duration : 28;
+                uint32_t Duration : 28;
             };
             uint32_t dwFlagsAndDuration;
         };
 
-        MINIWAVEFORMAT  Format;         // Entry format.
-        REGION          PlayRegion;     // Region within the wave data segment that contains this entry.
-        SAMPLEREGION    LoopRegion;     // Region within the wave data (in samples) that should loop.
+        MINIWAVEFORMAT Format;     // Entry format.
+        REGION         PlayRegion; // Region within the wave data segment that contains this entry.
+        SAMPLEREGION   LoopRegion; // Region within the wave data (in samples) that should loop.
 
         void BigEndian() noexcept
         {
@@ -332,15 +292,17 @@ namespace
 
     struct ENTRYCOMPACT
     {
-        uint32_t       dwOffset : 21;       // Data offset, in multiplies of the bank alignment
-        uint32_t       dwLengthDeviation : 11;       // Data length deviation, in bytes
+        uint32_t dwOffset : 21;          // Data offset, in multiplies of the bank alignment
+        uint32_t dwLengthDeviation : 11; // Data length deviation, in bytes
 
-        void BigEndian() noexcept
-        {
-            *reinterpret_cast<uint32_t*>(this) = _byteswap_ulong(*reinterpret_cast<const uint32_t*>(this));
-        }
+        void BigEndian() noexcept { *reinterpret_cast<uint32_t*>(this) = _byteswap_ulong(*reinterpret_cast<const uint32_t*>(this)); }
 
-        void ComputeLocations(DWORD& offset, DWORD& length, uint32_t index, const HEADER& header, const BANKDATA& data, const ENTRYCOMPACT* entries) const noexcept
+        void ComputeLocations(DWORD& offset,
+            DWORD&                   length,
+            uint32_t                 index,
+            const HEADER&            header,
+            const BANKDATA&          data,
+            const ENTRYCOMPACT*      entries) const noexcept
         {
             offset = dwOffset * data.dwAlignment;
 
@@ -358,17 +320,16 @@ namespace
         {
             switch (data.CompactFormat.wFormatTag)
             {
-            case MINIWAVEFORMAT::TAG_ADPCM:
+            case MINIWAVEFORMAT::TAG_ADPCM: {
+                uint32_t       duration = (length / data.CompactFormat.BlockAlign()) * data.CompactFormat.AdpcmSamplesPerBlock();
+                const uint32_t partial  = length % data.CompactFormat.BlockAlign();
+                if (partial)
                 {
-                    uint32_t duration = (length / data.CompactFormat.BlockAlign()) * data.CompactFormat.AdpcmSamplesPerBlock();
-                    const uint32_t partial = length % data.CompactFormat.BlockAlign();
-                    if (partial)
-                    {
-                        if (partial >= (7u * data.CompactFormat.nChannels))
-                            duration += (partial * 2 / data.CompactFormat.nChannels - 12);
-                    }
-                    return duration;
+                    if (partial >= (7u * data.CompactFormat.nChannels))
+                        duration += (partial * 2 / data.CompactFormat.nChannels - 12);
                 }
+                return duration;
+            }
 
             case MINIWAVEFORMAT::TAG_WMA:
                 if (seekTable)
@@ -393,15 +354,16 @@ namespace
                 return 0;
 
             default:
-                return uint32_t((uint64_t(length) * 8)
-                    / (uint64_t(data.CompactFormat.BitsPerSample()) * uint64_t(data.CompactFormat.nChannels)));
+                return uint32_t(
+                    (uint64_t(length) * 8) / (uint64_t(data.CompactFormat.BitsPerSample()) * uint64_t(data.CompactFormat.nChannels)));
             }
         }
     };
 
 #pragma pack(pop)
 
-    inline const uint32_t* FindSeekTable(uint32_t index, _In_opt_ const uint8_t* seekTable, const HEADER& header, const BANKDATA& data) noexcept
+    inline const uint32_t*
+    FindSeekTable(uint32_t index, _In_opt_ const uint8_t* seekTable, const HEADER& header, const BANKDATA& data) noexcept
     {
         if (!seekTable || index >= data.dwEntryCount)
             return nullptr;
@@ -413,7 +375,7 @@ namespace
         if ((uint64_t(index) + 1u) * sizeof(uint32_t) > seekSize)
             return nullptr;
 
-        auto table = reinterpret_cast<const uint32_t*>(seekTable);
+        auto           table = reinterpret_cast<const uint32_t*>(seekTable);
         const uint32_t entry = table[index];
         if (entry == uint32_t(-1))
             return nullptr;
@@ -436,7 +398,7 @@ namespace
 
         return result;
     }
-}
+} // namespace
 
 static_assert(sizeof(REGION) == 8, "Mismatch with xact3wb.h");
 static_assert(sizeof(SAMPLEREGION) == 8, "Mismatch with xact3wb.h");
@@ -453,27 +415,28 @@ using namespace DirectX;
 class WaveBankReader::Impl
 {
 public:
-    Impl() noexcept :
-        m_async(INVALID_HANDLE_VALUE),
-        m_request{},
-        m_prepared(false),
-        m_header{},
-        m_data{}
-    #ifdef DIRECTX_ENABLE_XMA2
-        , m_xmaMemory(nullptr)
-    #endif
+    Impl() noexcept
+        : m_async(INVALID_HANDLE_VALUE),
+          m_request{},
+          m_prepared(false),
+          m_header{},
+          m_data{}
+#ifdef DIRECTX_ENABLE_XMA2
+          ,
+          m_xmaMemory(nullptr)
+#endif
     {}
 
-    Impl(Impl&&) = default;
-    Impl& operator= (Impl&&) = default;
+    Impl(Impl&&)            = default;
+    Impl& operator=(Impl&&) = default;
 
-    Impl(Impl const&) = delete;
-    Impl& operator= (Impl const&) = delete;
+    Impl(Impl const&)            = delete;
+    Impl& operator=(Impl const&) = delete;
 
     ~Impl() { Close(); }
 
     HRESULT Open(_In_z_ const wchar_t* szFileName) noexcept(false);
-    void Close() noexcept;
+    void    Close() noexcept;
 
     HRESULT GetFormat(_In_ uint32_t index, _Out_writes_bytes_(maxsize) WAVEFORMATEX* pFormat, _In_ size_t maxsize) const noexcept;
 
@@ -495,38 +458,36 @@ public:
         m_seekData.reset();
         m_waveData.reset();
 
-    #ifdef DIRECTX_ENABLE_XMA2
+#ifdef DIRECTX_ENABLE_XMA2
         if (m_xmaMemory)
         {
             ApuFree(m_xmaMemory);
             m_xmaMemory = nullptr;
         }
-    #endif
+#endif
     }
 
-    HANDLE                              m_async;
-    ScopedHandle                        m_event;
-    OVERLAPPED                          m_request;
-    bool                                m_prepared;
+    HANDLE       m_async;
+    ScopedHandle m_event;
+    OVERLAPPED   m_request;
+    bool         m_prepared;
 
-    HEADER                              m_header;
-    BANKDATA                            m_data;
-    std::map<std::string, uint32_t>     m_names;
+    HEADER                          m_header;
+    BANKDATA                        m_data;
+    std::map<std::string, uint32_t> m_names;
 
 private:
-    std::unique_ptr<uint8_t[]>          m_entries;
-    std::unique_ptr<uint8_t[]>          m_seekData;
-    std::unique_ptr<uint8_t[]>          m_waveData;
+    std::unique_ptr<uint8_t[]> m_entries;
+    std::unique_ptr<uint8_t[]> m_seekData;
+    std::unique_ptr<uint8_t[]> m_waveData;
 
 #ifdef DIRECTX_ENABLE_XMA2
 public:
-    void*                               m_xmaMemory;
+    void* m_xmaMemory;
 #endif
 };
 
-
-_Use_decl_annotations_
-HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
+_Use_decl_annotations_ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
 {
     Close();
     Clear();
@@ -543,12 +504,9 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
     }
 
     CREATEFILE2_EXTENDED_PARAMETERS params = { sizeof(CREATEFILE2_EXTENDED_PARAMETERS), 0, 0, 0, {}, nullptr };
-    params.dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
-    params.dwFileFlags = FILE_FLAG_OVERLAPPED | FILE_FLAG_SEQUENTIAL_SCAN;
-    ScopedHandle hFile(safe_handle(CreateFile2(
-        szFileName,
-        GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING,
-        &params)));
+    params.dwFileAttributes                = FILE_ATTRIBUTE_NORMAL;
+    params.dwFileFlags                     = FILE_FLAG_OVERLAPPED | FILE_FLAG_SEQUENTIAL_SCAN;
+    ScopedHandle hFile(safe_handle(CreateFile2(szFileName, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING, &params)));
     if (!hFile)
     {
         return HRESULT_FROM_WIN32(GetLastError());
@@ -556,7 +514,7 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
 
     // Read and verify header
     OVERLAPPED request = {};
-    request.hEvent = m_event.get();
+    request.hEvent     = m_event.get();
 
     if (!ReadFile(hFile.get(), &m_header, sizeof(m_header), nullptr, &request))
     {
@@ -566,7 +524,7 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
     }
 
     DWORD bytes;
-    BOOL result = GetOverlappedResultEx(hFile.get(), &request, &bytes, INFINITE, FALSE);
+    BOOL  result = GetOverlappedResultEx(hFile.get(), &request, &bytes, INFINITE, FALSE);
     if (!result || (bytes != sizeof(m_header)))
     {
         return HRESULT_FROM_WIN32(GetLastError());
@@ -801,12 +759,9 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
         hFile.reset();
 
         CREATEFILE2_EXTENDED_PARAMETERS params2 = { sizeof(CREATEFILE2_EXTENDED_PARAMETERS), 0, 0, 0, {}, nullptr };
-        params2.dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
-        params2.dwFileFlags = FILE_FLAG_OVERLAPPED | FILE_FLAG_NO_BUFFERING;
-        m_async = CreateFile2(
-            szFileName,
-            GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING,
-            &params2);
+        params2.dwFileAttributes                = FILE_ATTRIBUTE_NORMAL;
+        params2.dwFileFlags                     = FILE_FLAG_OVERLAPPED | FILE_FLAG_NO_BUFFERING;
+        m_async                                 = CreateFile2(szFileName, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING, &params2);
         if (m_async == INVALID_HANDLE_VALUE)
         {
             return HRESULT_FROM_WIN32(GetLastError());
@@ -819,7 +774,7 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
         // If in-memory, kick off read of wave data
         void* dest = nullptr;
 
-    #ifdef DIRECTX_ENABLE_XMA2
+#ifdef DIRECTX_ENABLE_XMA2
         bool xma = false;
         if (m_data.dwFlags & BANKDATA::FLAGS_COMPACT)
         {
@@ -851,7 +806,7 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
             dest = m_xmaMemory;
         }
         else
-        #endif // XMA2
+#endif // XMA2
         {
             m_waveData.reset(new (std::nothrow) uint8_t[waveLen]);
             if (!m_waveData)
@@ -882,7 +837,6 @@ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
     return S_OK;
 }
 
-
 void WaveBankReader::Impl::Close() noexcept
 {
     if (m_async != INVALID_HANDLE_VALUE)
@@ -907,9 +861,7 @@ void WaveBankReader::Impl::Close() noexcept
 #endif
 }
 
-
-_Use_decl_annotations_
-HRESULT WaveBankReader::Impl::GetFormat(uint32_t index, WAVEFORMATEX* pFormat, size_t maxsize) const noexcept
+_Use_decl_annotations_ HRESULT WaveBankReader::Impl::GetFormat(uint32_t index, WAVEFORMATEX* pFormat, size_t maxsize) const noexcept
 {
     if (!pFormat || !maxsize)
         return E_INVALIDARG;
@@ -919,7 +871,8 @@ HRESULT WaveBankReader::Impl::GetFormat(uint32_t index, WAVEFORMATEX* pFormat, s
         return E_FAIL;
     }
 
-    auto& miniFmt = (m_data.dwFlags & BANKDATA::FLAGS_COMPACT) ? m_data.CompactFormat : (reinterpret_cast<const ENTRY*>(m_entries.get())[index].Format);
+    auto& miniFmt = (m_data.dwFlags & BANKDATA::FLAGS_COMPACT) ? m_data.CompactFormat :
+                                                                 (reinterpret_cast<const ENTRY*>(m_entries.get())[index].Format);
 
     switch (miniFmt.wFormatTag)
     {
@@ -940,9 +893,9 @@ HRESULT WaveBankReader::Impl::GetFormat(uint32_t index, WAVEFORMATEX* pFormat, s
             return HRESULT_FROM_WIN32(ERROR_MORE_DATA);
 
         pFormat->wFormatTag = WAVE_FORMAT_ADPCM;
-        pFormat->cbSize = MSADPCM_FORMAT_EXTRA_BYTES;
+        pFormat->cbSize     = MSADPCM_FORMAT_EXTRA_BYTES;
         {
-            auto adpcmFmt = reinterpret_cast<ADPCMWAVEFORMAT*>(pFormat);
+            auto adpcmFmt              = reinterpret_cast<ADPCMWAVEFORMAT*>(pFormat);
             adpcmFmt->wSamplesPerBlock = static_cast<WORD>(miniFmt.AdpcmSamplesPerBlock());
             miniFmt.AdpcmFillCoefficientTable(adpcmFmt);
         }
@@ -953,21 +906,21 @@ HRESULT WaveBankReader::Impl::GetFormat(uint32_t index, WAVEFORMATEX* pFormat, s
             return HRESULT_FROM_WIN32(ERROR_MORE_DATA);
 
         pFormat->wFormatTag = static_cast<WORD>((miniFmt.wBitsPerSample & 0x1) ? WAVE_FORMAT_WMAUDIO3 : WAVE_FORMAT_WMAUDIO2);
-        pFormat->cbSize = 0;
+        pFormat->cbSize     = 0;
         break;
 
     case MINIWAVEFORMAT::TAG_XMA: // XMA2 is supported by Xbox One
-    #ifdef DIRECTX_ENABLE_XMA2
+#ifdef DIRECTX_ENABLE_XMA2
         if (maxsize < sizeof(XMA2WAVEFORMATEX))
             return HRESULT_FROM_WIN32(ERROR_MORE_DATA);
 
         pFormat->wFormatTag = WAVE_FORMAT_XMA2;
-        pFormat->cbSize = sizeof(XMA2WAVEFORMATEX) - sizeof(WAVEFORMATEX);
+        pFormat->cbSize     = sizeof(XMA2WAVEFORMATEX) - sizeof(WAVEFORMATEX);
         {
             auto xmaFmt = reinterpret_cast<XMA2WAVEFORMATEX*>(pFormat);
 
-            xmaFmt->NumStreams = static_cast<WORD>((miniFmt.nChannels + 1) / 2);
-            xmaFmt->BytesPerBlock = 65536 /* XACT_FIXED_XMA_BLOCK_SIZE */;
+            xmaFmt->NumStreams     = static_cast<WORD>((miniFmt.nChannels + 1) / 2);
+            xmaFmt->BytesPerBlock  = 65536 /* XACT_FIXED_XMA_BLOCK_SIZE */;
             xmaFmt->EncoderVersion = 4 /* XMAENCODER_VERSION_XMA2 */;
 
             auto seekTable = FindSeekTable(index, m_seekData.get(), m_header, m_data);
@@ -982,14 +935,14 @@ HRESULT WaveBankReader::Impl::GetFormat(uint32_t index, WAVEFORMATEX* pFormat, s
 
             switch (miniFmt.nChannels)
             {
-            case 1: xmaFmt->ChannelMask = SPEAKER_MONO; break;
-            case 2: xmaFmt->ChannelMask = SPEAKER_STEREO; break;
-            case 3: xmaFmt->ChannelMask = SPEAKER_2POINT1; break;
-            case 4: xmaFmt->ChannelMask = SPEAKER_QUAD; break;
-            case 5: xmaFmt->ChannelMask = SPEAKER_4POINT1; break;
-            case 6: xmaFmt->ChannelMask = SPEAKER_5POINT1; break;
-            case 7: xmaFmt->ChannelMask = SPEAKER_5POINT1 | SPEAKER_BACK_CENTER; break;
-            case 8: xmaFmt->ChannelMask = SPEAKER_7POINT1; break;
+            case 1:  xmaFmt->ChannelMask = SPEAKER_MONO; break;
+            case 2:  xmaFmt->ChannelMask = SPEAKER_STEREO; break;
+            case 3:  xmaFmt->ChannelMask = SPEAKER_2POINT1; break;
+            case 4:  xmaFmt->ChannelMask = SPEAKER_QUAD; break;
+            case 5:  xmaFmt->ChannelMask = SPEAKER_4POINT1; break;
+            case 6:  xmaFmt->ChannelMask = SPEAKER_5POINT1; break;
+            case 7:  xmaFmt->ChannelMask = SPEAKER_5POINT1 | SPEAKER_BACK_CENTER; break;
+            case 8:  xmaFmt->ChannelMask = SPEAKER_7POINT1; break;
             default: xmaFmt->ChannelMask = DWORD(-1); break;
             }
 
@@ -1002,22 +955,21 @@ HRESULT WaveBankReader::Impl::GetFormat(uint32_t index, WAVEFORMATEX* pFormat, s
 
                 xmaFmt->SamplesEncoded = entry.GetDuration(dwLength, m_data, seekTable);
 
-                xmaFmt->PlayBegin = xmaFmt->PlayLength =
-                    xmaFmt->LoopBegin = xmaFmt->LoopLength = xmaFmt->LoopCount = 0;
+                xmaFmt->PlayBegin = xmaFmt->PlayLength = xmaFmt->LoopBegin = xmaFmt->LoopLength = xmaFmt->LoopCount = 0;
             }
             else
             {
                 auto& entry = reinterpret_cast<const ENTRY*>(m_entries.get())[index];
 
                 xmaFmt->SamplesEncoded = entry.Duration;
-                xmaFmt->PlayBegin = 0;
-                xmaFmt->PlayLength = entry.PlayRegion.dwLength;
+                xmaFmt->PlayBegin      = 0;
+                xmaFmt->PlayLength     = entry.PlayRegion.dwLength;
 
                 if (entry.LoopRegion.dwTotalSamples > 0)
                 {
-                    xmaFmt->LoopBegin = entry.LoopRegion.dwStartSample;
+                    xmaFmt->LoopBegin  = entry.LoopRegion.dwStartSample;
                     xmaFmt->LoopLength = entry.LoopRegion.dwTotalSamples;
-                    xmaFmt->LoopCount = 0xff /* XACTLOOPCOUNT_INFINITE */;
+                    xmaFmt->LoopCount  = 0xff /* XACTLOOPCOUNT_INFINITE */;
                 }
                 else
                 {
@@ -1026,26 +978,23 @@ HRESULT WaveBankReader::Impl::GetFormat(uint32_t index, WAVEFORMATEX* pFormat, s
             }
         }
         break;
-    #else
+#else
         return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
-    #endif
+#endif
 
-    default:
-        return E_FAIL;
+    default: return E_FAIL;
     }
 
-    pFormat->nChannels = miniFmt.nChannels;
-    pFormat->wBitsPerSample = miniFmt.BitsPerSample();
-    pFormat->nBlockAlign = static_cast<WORD>(miniFmt.BlockAlign());
-    pFormat->nSamplesPerSec = miniFmt.nSamplesPerSec;
+    pFormat->nChannels       = miniFmt.nChannels;
+    pFormat->wBitsPerSample  = miniFmt.BitsPerSample();
+    pFormat->nBlockAlign     = static_cast<WORD>(miniFmt.BlockAlign());
+    pFormat->nSamplesPerSec  = miniFmt.nSamplesPerSec;
     pFormat->nAvgBytesPerSec = miniFmt.AvgBytesPerSec();
 
     return S_OK;
 }
 
-
-_Use_decl_annotations_
-HRESULT WaveBankReader::Impl::GetWaveData(uint32_t index, const uint8_t** pData, uint32_t& dataSize) const noexcept
+_Use_decl_annotations_ HRESULT WaveBankReader::Impl::GetWaveData(uint32_t index, const uint8_t** pData, uint32_t& dataSize) const noexcept
 {
     if (!pData)
         return E_INVALIDARG;
@@ -1086,35 +1035,37 @@ HRESULT WaveBankReader::Impl::GetWaveData(uint32_t index, const uint8_t** pData,
             return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
         }
 
-        *pData = &waveData[dwOffset];
+        *pData   = &waveData[dwOffset];
         dataSize = dwLength;
     }
     else
     {
         auto& entry = reinterpret_cast<const ENTRY*>(m_entries.get())[index];
 
-        if ((uint64_t(entry.PlayRegion.dwOffset) + uint64_t(entry.PlayRegion.dwLength)) > uint64_t(m_header.Segments[HEADER::SEGIDX_ENTRYWAVEDATA].dwLength))
+        if ((uint64_t(entry.PlayRegion.dwOffset) + uint64_t(entry.PlayRegion.dwLength))
+            > uint64_t(m_header.Segments[HEADER::SEGIDX_ENTRYWAVEDATA].dwLength))
         {
             return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
         }
 
-        *pData = &waveData[entry.PlayRegion.dwOffset];
+        *pData   = &waveData[entry.PlayRegion.dwOffset];
         dataSize = entry.PlayRegion.dwLength;
     }
 
     return S_OK;
 }
 
-
-_Use_decl_annotations_
-HRESULT WaveBankReader::Impl::GetSeekTable(uint32_t index, const uint32_t** pData, uint32_t& dataCount, uint32_t& tag) const noexcept
+_Use_decl_annotations_ HRESULT WaveBankReader::Impl::GetSeekTable(uint32_t index,
+    const uint32_t**                                                       pData,
+    uint32_t&                                                              dataCount,
+    uint32_t&                                                              tag) const noexcept
 {
     if (!pData)
         return E_INVALIDARG;
 
-    *pData = nullptr;
+    *pData    = nullptr;
     dataCount = 0;
-    tag = 0;
+    tag       = 0;
 
     if (index >= m_data.dwEntryCount || !m_entries)
     {
@@ -1124,7 +1075,8 @@ HRESULT WaveBankReader::Impl::GetSeekTable(uint32_t index, const uint32_t** pDat
     if (!m_seekData)
         return S_OK;
 
-    auto& miniFmt = (m_data.dwFlags & BANKDATA::FLAGS_COMPACT) ? m_data.CompactFormat : (reinterpret_cast<const ENTRY*>(m_entries.get())[index].Format);
+    auto& miniFmt = (m_data.dwFlags & BANKDATA::FLAGS_COMPACT) ? m_data.CompactFormat :
+                                                                 (reinterpret_cast<const ENTRY*>(m_entries.get())[index].Format);
 
     switch (miniFmt.wFormatTag)
     {
@@ -1132,12 +1084,9 @@ HRESULT WaveBankReader::Impl::GetSeekTable(uint32_t index, const uint32_t** pDat
         tag = static_cast<uint32_t>((miniFmt.wBitsPerSample & 0x1) ? WAVE_FORMAT_WMAUDIO3 : WAVE_FORMAT_WMAUDIO2);
         break;
 
-    case MINIWAVEFORMAT::TAG_XMA:
-        tag = 0x166 /* WAVE_FORMAT_XMA2 */;
-        break;
+    case MINIWAVEFORMAT::TAG_XMA: tag = 0x166 /* WAVE_FORMAT_XMA2 */; break;
 
-    default:
-        return S_OK;
+    default:                      return S_OK;
     }
 
     auto seekTable = FindSeekTable(index, m_seekData.get(), m_header, m_data);
@@ -1145,14 +1094,12 @@ HRESULT WaveBankReader::Impl::GetSeekTable(uint32_t index, const uint32_t** pDat
         return S_OK;
 
     dataCount = *seekTable;
-    *pData = seekTable + 1;
+    *pData    = seekTable + 1;
 
     return S_OK;
 }
 
-
-_Use_decl_annotations_
-HRESULT WaveBankReader::Impl::GetMetadata(uint32_t index, Metadata& metadata) const noexcept
+_Use_decl_annotations_ HRESULT WaveBankReader::Impl::GetMetadata(uint32_t index, Metadata& metadata) const noexcept
 {
     if (index >= m_data.dwEntryCount || !m_entries)
     {
@@ -1183,16 +1130,16 @@ HRESULT WaveBankReader::Impl::GetMetadata(uint32_t index, Metadata& metadata) co
             metadata.duration = entry.GetDuration(dwLength, m_data, nullptr);
         }
         metadata.loopStart = metadata.loopLength = 0;
-        metadata.offsetBytes = dwOffset;
-        metadata.lengthBytes = dwLength;
+        metadata.offsetBytes                     = dwOffset;
+        metadata.lengthBytes                     = dwLength;
     }
     else
     {
         auto& entry = reinterpret_cast<const ENTRY*>(m_entries.get())[index];
 
-        metadata.duration = entry.Duration;
-        metadata.loopStart = entry.LoopRegion.dwStartSample;
-        metadata.loopLength = entry.LoopRegion.dwTotalSamples;
+        metadata.duration    = entry.Duration;
+        metadata.loopStart   = entry.LoopRegion.dwStartSample;
+        metadata.loopLength  = entry.LoopRegion.dwTotalSamples;
         metadata.offsetBytes = entry.PlayRegion.dwOffset;
         metadata.lengthBytes = entry.PlayRegion.dwLength;
     }
@@ -1211,7 +1158,6 @@ HRESULT WaveBankReader::Impl::GetMetadata(uint32_t index, Metadata& metadata) co
     return S_OK;
 }
 
-
 bool WaveBankReader::Impl::UpdatePrepared() noexcept
 {
     if (m_prepared)
@@ -1223,7 +1169,7 @@ bool WaveBankReader::Impl::UpdatePrepared() noexcept
     if (m_request.hEvent)
     {
 
-        DWORD bytes;
+        DWORD      bytes;
         const BOOL result = GetOverlappedResultEx(m_async, &m_request, &bytes, 0, FALSE);
         if (result)
         {
@@ -1236,27 +1182,19 @@ bool WaveBankReader::Impl::UpdatePrepared() noexcept
     return m_prepared;
 }
 
-
-
 //--------------------------------------------------------------------------------------
-WaveBankReader::WaveBankReader() noexcept(false) :
-    pImpl(std::make_unique<Impl>())
+WaveBankReader::WaveBankReader() noexcept(false)
+    : pImpl(std::make_unique<Impl>())
 {}
 
+WaveBankReader::~WaveBankReader() {}
 
-WaveBankReader::~WaveBankReader()
-{}
-
-
-_Use_decl_annotations_
-HRESULT WaveBankReader::Open(const wchar_t* szFileName) noexcept
+_Use_decl_annotations_ HRESULT WaveBankReader::Open(const wchar_t* szFileName) noexcept
 {
     return pImpl->Open(szFileName);
 }
 
-
-_Use_decl_annotations_
-uint32_t WaveBankReader::Find(const char* name) const
+_Use_decl_annotations_ uint32_t WaveBankReader::Find(const char* name) const
 {
     if (name)
     {
@@ -1270,7 +1208,6 @@ uint32_t WaveBankReader::Find(const char* name) const
     return uint32_t(-1);
 }
 
-
 bool WaveBankReader::IsPrepared() noexcept
 {
     if (pImpl->m_prepared)
@@ -1278,7 +1215,6 @@ bool WaveBankReader::IsPrepared() noexcept
 
     return pImpl->UpdatePrepared();
 }
-
 
 void WaveBankReader::WaitOnPrepare() noexcept
 {
@@ -1293,18 +1229,15 @@ void WaveBankReader::WaitOnPrepare() noexcept
     }
 }
 
-
 bool WaveBankReader::HasNames() const noexcept
 {
     return !pImpl->m_names.empty();
 }
 
-
 bool WaveBankReader::IsStreamingBank() const noexcept
 {
-    return (pImpl->m_data.dwFlags  & BANKDATA::TYPE_STREAMING) != 0;
+    return (pImpl->m_data.dwFlags & BANKDATA::TYPE_STREAMING) != 0;
 }
-
 
 #ifdef DIRECTX_ENABLE_XMA2
 bool WaveBankReader::HasXMA() const noexcept
@@ -1313,58 +1246,48 @@ bool WaveBankReader::HasXMA() const noexcept
 }
 #endif
 
-
 const char* WaveBankReader::BankName() const noexcept
 {
     return pImpl->m_data.szBankName;
 }
-
 
 uint32_t WaveBankReader::Count() const noexcept
 {
     return pImpl->m_data.dwEntryCount;
 }
 
-
 uint32_t WaveBankReader::BankAudioSize() const noexcept
 {
     return pImpl->m_header.Segments[HEADER::SEGIDX_ENTRYWAVEDATA].dwLength;
 }
 
-
-_Use_decl_annotations_
-HRESULT WaveBankReader::GetFormat(uint32_t index, WAVEFORMATEX* pFormat, size_t maxsize) const noexcept
+_Use_decl_annotations_ HRESULT WaveBankReader::GetFormat(uint32_t index, WAVEFORMATEX* pFormat, size_t maxsize) const noexcept
 {
     return pImpl->GetFormat(index, pFormat, maxsize);
 }
 
-
-_Use_decl_annotations_
-HRESULT WaveBankReader::GetWaveData(uint32_t index, const uint8_t** pData, uint32_t& dataSize) const noexcept
+_Use_decl_annotations_ HRESULT WaveBankReader::GetWaveData(uint32_t index, const uint8_t** pData, uint32_t& dataSize) const noexcept
 {
     return pImpl->GetWaveData(index, pData, dataSize);
 }
 
-
-_Use_decl_annotations_
-HRESULT WaveBankReader::GetSeekTable(uint32_t index, const uint32_t** pData, uint32_t& dataCount, uint32_t& tag) const noexcept
+_Use_decl_annotations_ HRESULT WaveBankReader::GetSeekTable(uint32_t index,
+    const uint32_t**                                                 pData,
+    uint32_t&                                                        dataCount,
+    uint32_t&                                                        tag) const noexcept
 {
     return pImpl->GetSeekTable(index, pData, dataCount, tag);
 }
 
-
-_Use_decl_annotations_
-HRESULT WaveBankReader::GetMetadata(uint32_t index, Metadata& metadata) const noexcept
+_Use_decl_annotations_ HRESULT WaveBankReader::GetMetadata(uint32_t index, Metadata& metadata) const noexcept
 {
     return pImpl->GetMetadata(index, metadata);
 }
-
 
 HANDLE WaveBankReader::GetAsyncHandle() const noexcept
 {
     return (pImpl->m_data.dwFlags & BANKDATA::TYPE_STREAMING) ? pImpl->m_async : INVALID_HANDLE_VALUE;
 }
-
 
 uint32_t WaveBankReader::GetWaveAlignment() const noexcept
 {
