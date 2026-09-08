@@ -102,6 +102,7 @@ jobs:
           -DBUILD_SHARED_LIBS=${{ matrix.shared }} -DBUILD_GAMEINPUT=${{ matrix.gameinput }}
           -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_MANIFEST_DIR="${{ github.workspace }}/build"
           -DVCPKG_TARGET_TRIPLET="${env:VCPKG_DEFAULT_TRIPLET}"
+          -DBUILD_BINPLACE=OFF
 
       - name: 'Build'
         working-directory: ${{ github.workspace }}
