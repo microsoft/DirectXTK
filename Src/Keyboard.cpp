@@ -45,8 +45,7 @@ namespace
         const unsigned int bf = 1u << (key & 0x1f);
         ptr[(key >> 5)] &= ~bf;
     }
-}
-
+} // namespace
 
 #pragma region Implementations
 #ifdef USING_GAMEINPUT
@@ -63,7 +62,7 @@ using namespace GameInput::v2;
 using namespace GameInput::v3;
 #endif
 
-using GameInputCreateFn = HRESULT(*)(IGameInput**);
+using GameInputCreateFn = HRESULT (*)(IGameInput**);
 
 #ifdef __clang__
 #pragma clang diagnostic ignored "-Wmicrosoft-cast"
@@ -72,11 +71,11 @@ using GameInputCreateFn = HRESULT(*)(IGameInput**);
 class Keyboard::Impl
 {
 public:
-    Impl(Keyboard* owner) :
-        mOwner(owner),
-        mConnected(0),
-        mDeviceToken(0),
-        mKeyState{}
+    Impl(Keyboard* owner)
+        : mOwner(owner),
+          mConnected(0),
+          mDeviceToken(0),
+          mKeyState{}
     {
         if (s_keyboard)
         {
@@ -85,15 +84,16 @@ public:
 
         s_keyboard = this;
 
-    #if defined(_GAMING_XBOX) || defined(GAMEINPUT_API_VERSION)
+#if defined(_GAMING_XBOX) || defined(GAMEINPUT_API_VERSION)
         HRESULT hr = GameInputCreate(mGameInput.GetAddressOf());
-    #else
+#else
         if (!s_gameInputCreate)
         {
             s_gameInputModule = LoadLibraryExW(L"GameInput.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
             if (s_gameInputModule)
             {
-                s_gameInputCreate = reinterpret_cast<GameInputCreateFn>(reinterpret_cast<void*>(GetProcAddress(s_gameInputModule, "GameInputCreate")));
+                s_gameInputCreate
+                    = reinterpret_cast<GameInputCreateFn>(reinterpret_cast<void*>(GetProcAddress(s_gameInputModule, "GameInputCreate")));
             }
 
             if (!s_gameInputCreate)
@@ -104,11 +104,10 @@ public:
         }
 
         HRESULT hr = s_gameInputCreate(mGameInput.GetAddressOf());
-    #endif
+#endif
         if (SUCCEEDED(hr))
         {
-            ThrowIfFailed(mGameInput->RegisterDeviceCallback(
-                nullptr,
+            ThrowIfFailed(mGameInput->RegisterDeviceCallback(nullptr,
                 GameInputKindKeyboard,
                 GameInputDeviceConnected,
                 GameInputBlockingEnumeration,
@@ -119,21 +118,21 @@ public:
         else
         {
             DebugTrace("ERROR: GameInputCreate [keyboard] failed with %08X\n", static_cast<unsigned int>(hr));
-        #ifdef _GAMING_XBOX
+#ifdef _GAMING_XBOX
             throw com_exception(hr);
-        #else
+#else
             DebugTrace(
                 "\t**** Install the latest GameInputRedist package on this system.       ****\n"
                 "\t**** NOTE: All calls to GetState will be reported as 'not connected'. ****\n");
-        #endif
+#endif
         }
     }
 
-    Impl(Impl&&) = default;
-    Impl& operator= (Impl&&) = default;
+    Impl(Impl&&)            = default;
+    Impl& operator=(Impl&&) = default;
 
-    Impl(Impl const&) = delete;
-    Impl& operator= (Impl const&) = delete;
+    Impl(Impl const&)            = delete;
+    Impl& operator=(Impl const&) = delete;
 
     ~Impl()
     {
@@ -141,11 +140,11 @@ public:
         {
             if (mGameInput)
             {
-            #if defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION >= 1)
+#if defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION >= 1)
                 if (!mGameInput->UnregisterCallback(mDeviceToken))
-            #else
+#else
                 if (!mGameInput->UnregisterCallback(mDeviceToken, UINT64_MAX))
-            #endif
+#endif
                 {
                     DebugTrace("ERROR: GameInput::UnregisterCallback [keyboard] failed");
                 }
@@ -179,7 +178,7 @@ public:
                     {
                     case 0xe036: vk = VK_RSHIFT; break;
                     case 0xe045: vk = VK_NUMLOCK; break;
-                    default: break;
+                    default:     break;
                     }
                 }
 
@@ -188,39 +187,34 @@ public:
         }
     }
 
-    void Reset() noexcept
-    {}
+    void Reset() noexcept {}
 
-    bool IsConnected() const
-    {
-        return mConnected > 0;
-    }
+    bool IsConnected() const { return mConnected > 0; }
 
-    Keyboard*       mOwner;
-    uint32_t        mConnected;
+    Keyboard* mOwner;
+    uint32_t  mConnected;
 
     static Keyboard::Impl* s_keyboard;
 
 private:
-    static constexpr size_t     c_MaxSimultaneousKeys = 16;
+    static constexpr size_t c_MaxSimultaneousKeys = 16;
 
-    ComPtr<IGameInput>          mGameInput;
-    GameInputCallbackToken      mDeviceToken;
+    ComPtr<IGameInput>     mGameInput;
+    GameInputCallbackToken mDeviceToken;
 
-    mutable GameInputKeyState   mKeyState[c_MaxSimultaneousKeys];
+    mutable GameInputKeyState mKeyState[c_MaxSimultaneousKeys];
 
-    static void CALLBACK OnGameInputDevice(
-        _In_ GameInputCallbackToken,
-        _In_ void * context,
-        _In_ IGameInputDevice *,
-        _In_ uint64_t,
+    static void CALLBACK OnGameInputDevice(_In_ GameInputCallbackToken,
+        _In_ void*                              context,
+        _In_ IGameInputDevice*,
+        _In_                       uint64_t,
         _In_ GameInputDeviceStatus currentStatus,
         _In_ GameInputDeviceStatus previousStatus) noexcept
     {
         auto impl = reinterpret_cast<Keyboard::Impl*>(context);
 
         const bool wasConnected = (previousStatus & GameInputDeviceConnected) != 0;
-        const bool isConnected = (currentStatus & GameInputDeviceConnected) != 0;
+        const bool isConnected  = (currentStatus & GameInputDeviceConnected) != 0;
 
         if (isConnected && !wasConnected)
         {
@@ -233,7 +227,7 @@ private:
     }
 
 #if !defined(_GAMING_XBOX) && !defined(GAMEINPUT_API_VERSION)
-    static HMODULE s_gameInputModule;
+    static HMODULE           s_gameInputModule;
     static GameInputCreateFn s_gameInputCreate;
 #endif
 };
@@ -241,7 +235,7 @@ private:
 Keyboard::Impl* Keyboard::Impl::s_keyboard = nullptr;
 
 #if !defined(_GAMING_XBOX) && !defined(GAMEINPUT_API_VERSION)
-HMODULE Keyboard::Impl::s_gameInputModule = nullptr;
+HMODULE           Keyboard::Impl::s_gameInputModule = nullptr;
 GameInputCreateFn Keyboard::Impl::s_gameInputCreate = nullptr;
 #endif
 
@@ -249,7 +243,6 @@ void Keyboard::ProcessMessage(UINT, WPARAM, LPARAM) noexcept
 {
     // GameInput for Keyboard doesn't require Win32 messages, but this simplifies integration.
 }
-
 
 #elif defined(USING_COREWINDOW)
 
@@ -271,11 +264,11 @@ void Keyboard::ProcessMessage(UINT, WPARAM, LPARAM) noexcept
 class Keyboard::Impl
 {
 public:
-    Impl(Keyboard* owner) :
-        mState{},
-        mOwner(owner),
-        mAcceleratorKeyToken{},
-        mActivatedToken{}
+    Impl(Keyboard* owner)
+        : mState{},
+          mOwner(owner),
+          mAcceleratorKeyToken{},
+          mActivatedToken{}
     {
         if (s_keyboard)
         {
@@ -292,15 +285,9 @@ public:
         RemoveHandlers();
     }
 
-    void GetState(State& state) const
-    {
-        memcpy(&state, &mState, sizeof(State));
-    }
+    void GetState(State& state) const { memcpy(&state, &mState, sizeof(State)); }
 
-    void Reset() noexcept
-    {
-        memset(&mState, 0, sizeof(State));
-    }
+    void Reset() noexcept { memset(&mState, 0, sizeof(State)); }
 
     bool IsConnected() const
     {
@@ -350,13 +337,14 @@ public:
         hr = dispatcher.As(&keys);
         ThrowIfFailed(hr);
 
-        typedef __FITypedEventHandler_2_Windows__CUI__CCore__CCoreDispatcher_Windows__CUI__CCore__CAcceleratorKeyEventArgs AcceleratorKeyHandler;
+        typedef __FITypedEventHandler_2_Windows__CUI__CCore__CCoreDispatcher_Windows__CUI__CCore__CAcceleratorKeyEventArgs
+            AcceleratorKeyHandler;
         hr = keys->add_AcceleratorKeyActivated(Callback<AcceleratorKeyHandler>(AcceleratorKeyEvent).Get(), &mAcceleratorKeyToken);
         ThrowIfFailed(hr);
     }
 
-    State       mState;
-    Keyboard*   mOwner;
+    State     mState;
+    Keyboard* mOwner;
 
     static Keyboard::Impl* s_keyboard;
 
@@ -373,17 +361,17 @@ private:
             using namespace ABI::Windows::UI::Core;
 
             ComPtr<ICoreDispatcher> dispatcher;
-            HRESULT hr = mWindow->get_Dispatcher(dispatcher.GetAddressOf());
+            HRESULT                 hr = mWindow->get_Dispatcher(dispatcher.GetAddressOf());
             ThrowIfFailed(hr);
 
-            std::ignore = mWindow->remove_Activated(mActivatedToken);
+            std::ignore           = mWindow->remove_Activated(mActivatedToken);
             mActivatedToken.value = 0;
 
             ComPtr<ICoreAcceleratorKeys> keys;
             hr = dispatcher.As(&keys);
             ThrowIfFailed(hr);
 
-            std::ignore = keys->remove_AcceleratorKeyActivated(mAcceleratorKeyToken);
+            std::ignore                = keys->remove_AcceleratorKeyActivated(mAcceleratorKeyToken);
             mAcceleratorKeyToken.value = 0;
         }
     }
@@ -411,7 +399,7 @@ private:
             return S_OK;
 
         CoreAcceleratorKeyEventType evtType;
-        HRESULT hr = args->get_EventType(&evtType);
+        HRESULT                     hr = args->get_EventType(&evtType);
         ThrowIfFailed(hr);
 
         bool down = false;
@@ -419,16 +407,12 @@ private:
         switch (evtType)
         {
         case CoreAcceleratorKeyEventType_KeyDown:
-        case CoreAcceleratorKeyEventType_SystemKeyDown:
-            down = true;
-            break;
+        case CoreAcceleratorKeyEventType_SystemKeyDown: down = true; break;
 
         case CoreAcceleratorKeyEventType_KeyUp:
-        case CoreAcceleratorKeyEventType_SystemKeyUp:
-            break;
+        case CoreAcceleratorKeyEventType_SystemKeyUp:   break;
 
-        default:
-            return S_OK;
+        default:                                        return S_OK;
         }
 
         CorePhysicalKeyStatus status;
@@ -453,13 +437,9 @@ private:
             }
             break;
 
-        case VK_CONTROL:
-            vk = (status.IsExtendedKey) ? VK_RCONTROL : VK_LCONTROL;
-            break;
+        case VK_CONTROL: vk = (status.IsExtendedKey) ? VK_RCONTROL : VK_LCONTROL; break;
 
-        case VK_MENU:
-            vk = (status.IsExtendedKey) ? VK_RMENU : VK_LMENU;
-            break;
+        case VK_MENU:    vk = (status.IsExtendedKey) ? VK_RMENU : VK_LMENU; break;
         }
 
         if (down)
@@ -475,15 +455,12 @@ private:
     }
 };
 
-
 Keyboard::Impl* Keyboard::Impl::s_keyboard = nullptr;
-
 
 void Keyboard::SetWindow(ABI::Windows::UI::Core::ICoreWindow* window)
 {
     pImpl->SetWindow(window);
 }
-
 
 #else
 
@@ -518,9 +495,9 @@ void Keyboard::SetWindow(ABI::Windows::UI::Core::ICoreWindow* window)
 class Keyboard::Impl
 {
 public:
-    Impl(Keyboard* owner) :
-        mState{},
-        mOwner(owner)
+    Impl(Keyboard* owner)
+        : mState{},
+          mOwner(owner)
     {
         if (s_keyboard)
         {
@@ -530,41 +507,27 @@ public:
         s_keyboard = this;
     }
 
-    Impl(Impl&&) = default;
-    Impl& operator= (Impl&&) = default;
+    Impl(Impl&&)            = default;
+    Impl& operator=(Impl&&) = default;
 
-    Impl(Impl const&) = delete;
-    Impl& operator= (Impl const&) = delete;
+    Impl(Impl const&)            = delete;
+    Impl& operator=(Impl const&) = delete;
 
-    ~Impl()
-    {
-        s_keyboard = nullptr;
-    }
+    ~Impl() { s_keyboard = nullptr; }
 
-    void GetState(State& state) const
-    {
-        memcpy(&state, &mState, sizeof(State));
-    }
+    void GetState(State& state) const { memcpy(&state, &mState, sizeof(State)); }
 
-    void Reset() noexcept
-    {
-        memset(&mState, 0, sizeof(State));
-    }
+    void Reset() noexcept { memset(&mState, 0, sizeof(State)); }
 
-    bool IsConnected() const
-    {
-        return true;
-    }
+    bool IsConnected() const { return true; }
 
-    State           mState;
-    Keyboard*       mOwner;
+    State     mState;
+    Keyboard* mOwner;
 
     static Keyboard::Impl* s_keyboard;
 };
 
-
 Keyboard::Impl* Keyboard::Impl::s_keyboard = nullptr;
-
 
 void Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam) noexcept
 {
@@ -578,21 +541,15 @@ void Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam) noexce
     switch (message)
     {
     case WM_ACTIVATE:
-    case WM_ACTIVATEAPP:
-        pImpl->Reset();
-        return;
+    case WM_ACTIVATEAPP: pImpl->Reset(); return;
 
     case WM_KEYDOWN:
-    case WM_SYSKEYDOWN:
-        down = true;
-        break;
+    case WM_SYSKEYDOWN:  down = true; break;
 
     case WM_KEYUP:
-    case WM_SYSKEYUP:
-        break;
+    case WM_SYSKEYUP:    break;
 
-    default:
-        return;
+    default:             return;
     }
 
     int vk = LOWORD(wParam);
@@ -601,23 +558,21 @@ void Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam) noexce
     {
     case VK_SHIFT:
     case VK_CONTROL:
-    case VK_MENU:
+    case VK_MENU:    {
+        if (vk == VK_SHIFT && !down)
         {
-            if (vk == VK_SHIFT && !down)
-            {
-                // Workaround to ensure left vs. right shift get cleared when both were pressed at same time
-                KeyUp(VK_LSHIFT, pImpl->mState);
-                KeyUp(VK_RSHIFT, pImpl->mState);
-            }
-
-            bool isExtendedKey = (HIWORD(lParam) & KF_EXTENDED) == KF_EXTENDED;
-            int scanCode = LOBYTE(HIWORD(lParam)) | (isExtendedKey ? 0xe000 : 0);
-            vk = LOWORD(MapVirtualKeyW(static_cast<UINT>(scanCode), MAPVK_VSC_TO_VK_EX));
+            // Workaround to ensure left vs. right shift get cleared when both were pressed at same time
+            KeyUp(VK_LSHIFT, pImpl->mState);
+            KeyUp(VK_RSHIFT, pImpl->mState);
         }
-        break;
 
-    default:
-        break;
+        bool isExtendedKey = (HIWORD(lParam) & KF_EXTENDED) == KF_EXTENDED;
+        int  scanCode      = LOBYTE(HIWORD(lParam)) | (isExtendedKey ? 0xe000 : 0);
+        vk                 = LOWORD(MapVirtualKeyW(static_cast<UINT>(scanCode), MAPVK_VSC_TO_VK_EX));
+    }
+    break;
+
+    default: break;
     }
 
     if (down)
@@ -634,14 +589,13 @@ void Keyboard::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam) noexce
 #pragma endregion
 
 #ifdef _MSC_VER
-#pragma warning( disable : 4355 )
+#pragma warning(disable : 4355)
 #endif
 
 // Public constructor.
 Keyboard::Keyboard() noexcept(false)
     : pImpl(std::make_unique<Impl>(this))
 {}
-
 
 // Move constructor.
 Keyboard::Keyboard(Keyboard&& moveFrom) noexcept
@@ -650,19 +604,16 @@ Keyboard::Keyboard(Keyboard&& moveFrom) noexcept
     pImpl->mOwner = this;
 }
 
-
 // Move assignment.
-Keyboard& Keyboard::operator= (Keyboard&& moveFrom) noexcept
+Keyboard& Keyboard::operator=(Keyboard&& moveFrom) noexcept
 {
-    pImpl = std::move(moveFrom.pImpl);
+    pImpl         = std::move(moveFrom.pImpl);
     pImpl->mOwner = this;
     return *this;
 }
 
-
 // Public destructor.
 Keyboard::~Keyboard() = default;
-
 
 Keyboard::State Keyboard::GetState() const
 {
@@ -671,12 +622,10 @@ Keyboard::State Keyboard::GetState() const
     return state;
 }
 
-
 void Keyboard::Reset() noexcept
 {
     pImpl->Reset();
 }
-
 
 bool Keyboard::IsConnected() const
 {
@@ -691,21 +640,19 @@ Keyboard& Keyboard::Get()
     return *Impl::s_keyboard->mOwner;
 }
 
-
-
 //======================================================================================
 // KeyboardStateTracker
 //======================================================================================
 
 void Keyboard::KeyboardStateTracker::Update(const State& state) noexcept
 {
-    auto currPtr = reinterpret_cast<const uint32_t*>(&state);
-    auto prevPtr = reinterpret_cast<const uint32_t*>(&lastState);
+    auto currPtr     = reinterpret_cast<const uint32_t*>(&state);
+    auto prevPtr     = reinterpret_cast<const uint32_t*>(&lastState);
     auto releasedPtr = reinterpret_cast<uint32_t*>(&released);
-    auto pressedPtr = reinterpret_cast<uint32_t*>(&pressed);
+    auto pressedPtr  = reinterpret_cast<uint32_t*>(&pressed);
     for (size_t j = 0; j < (256 / 32); ++j)
     {
-        *pressedPtr = *currPtr & ~(*prevPtr);
+        *pressedPtr  = *currPtr & ~(*prevPtr);
         *releasedPtr = ~(*currPtr) & *prevPtr;
 
         ++currPtr;

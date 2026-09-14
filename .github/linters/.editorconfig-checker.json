@@ -4,5 +4,8 @@
         ".git",
         "LICENSE",
         "Tests"
-    ]
+    ],
+    "Disable": {
+        "IndentSize": true
+    }
 }

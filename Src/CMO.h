@@ -20,7 +20,6 @@
 
 #include <cstdint>
 
-
 namespace VSD3DStarter
 {
     // .CMO files
@@ -82,7 +81,7 @@ namespace VSD3DStarter
     //      }
     // }
 
-#pragma pack(push,1)
+#pragma pack(push, 1)
 
     struct Material
     {
@@ -114,14 +113,14 @@ namespace VSD3DStarter
         DirectX::XMFLOAT3 position;
         DirectX::XMFLOAT3 normal;
         DirectX::XMFLOAT4 tangent;
-        uint32_t color;
+        uint32_t          color;
         DirectX::XMFLOAT2 textureCoordinate;
     };
 
     struct SkinningVertex
     {
         uint32_t boneIndex[NUM_BONE_INFLUENCES];
-        float boneWeight[NUM_BONE_INFLUENCES];
+        float    boneWeight[NUM_BONE_INFLUENCES];
     };
 
     struct MeshExtents
@@ -135,7 +134,7 @@ namespace VSD3DStarter
 
     struct Bone
     {
-        int32_t ParentIndex;
+        int32_t             ParentIndex;
         DirectX::XMFLOAT4X4 InvBindPos;
         DirectX::XMFLOAT4X4 BindPos;
         DirectX::XMFLOAT4X4 LocalTransform;
@@ -143,35 +142,29 @@ namespace VSD3DStarter
 
     struct Clip
     {
-        float StartTime;
-        float EndTime;
+        float    StartTime;
+        float    EndTime;
         uint32_t keys;
     };
 
     struct Keyframe
     {
-        uint32_t BoneIndex;
-        float Time;
+        uint32_t            BoneIndex;
+        float               Time;
         DirectX::XMFLOAT4X4 Transform;
     };
 
 #pragma pack(pop)
 
-    const Material s_defMaterial =
-    {
+    const Material s_defMaterial = {
         { 0.2f, 0.2f, 0.2f, 1.f },
         { 0.8f, 0.8f, 0.8f, 1.f },
         { 0.0f, 0.0f, 0.0f, 1.f },
         1.f,
         { 0.0f, 0.0f, 0.0f, 1.0f },
-        {
-            1.f, 0.f, 0.f, 0.f,
-            0.f, 1.f, 0.f, 0.f,
-            0.f, 0.f, 1.f, 0.f,
-            0.f, 0.f, 0.f, 1.f
-        },
+        { 1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f },
     };
-} // namespace
+} // namespace VSD3DStarter
 
 static_assert(sizeof(VSD3DStarter::Material) == 132, "CMO Mesh structure size incorrect");
 static_assert(sizeof(VSD3DStarter::SubMesh) == 20, "CMO Mesh structure size incorrect");

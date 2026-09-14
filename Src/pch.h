@@ -11,7 +11,8 @@
 
 #ifdef _MSC_VER
 // Off by default warnings
-#pragma warning(disable : 4619 4616 4061 4265 4365 4571 4623 4625 4626 4628 4668 4710 4711 4746 4774 4820 4865 4987 5026 5027 5031 5032 5039 5045 5219 5264 26812)
+#pragma warning(disable \
+    : 4619 4616 4061 4265 4365 4571 4623 4625 4626 4628 4668 4710 4711 4746 4774 4820 4865 4987 5026 5027 5031 5032 5039 5045 5219 5264 26812)
 // C4619/4616 #pragma warning warnings
 // C4061 enumerator 'X' in switch of enum 'X' is not explicitly handled by a case label
 // C4265 class has virtual functions, but destructor is not virtual
@@ -49,11 +50,11 @@
 // C5038 data member 'X' will be initialized after data member 'Y'
 // C5040 dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
 // C5043 exception specification does not match previous declaration
-// C5204 class has virtual functions, but its trivial destructor is not virtual; instances of objects derived from this class may not be destructed correctly
-// C5246 'anonymous struct or union': the initialization of a subobject should be wrapped in braces
-// C5256 a non-defining declaration of an enumeration with a fixed underlying type is only permitted as a standalone declaration
-// C5262 implicit fall-through occurs here; are you missing a break statement?
-// C5267 definition of implicit copy constructor for 'X' is deprecated because it has a user-provided assignment operator
+// C5204 class has virtual functions, but its trivial destructor is not virtual; instances of objects derived from this class may not be
+// destructed correctly C5246 'anonymous struct or union': the initialization of a subobject should be wrapped in braces C5256 a
+// non-defining declaration of an enumeration with a fixed underlying type is only permitted as a standalone declaration C5262 implicit
+// fall-through occurs here; are you missing a break statement? C5267 definition of implicit copy constructor for 'X' is deprecated because
+// it has a user-provided assignment operator
 #endif // _XBOX_ONE && _TITLE
 #endif // _MSC_VER
 
@@ -191,17 +192,24 @@
 #endif
 
 #if defined(USING_GAMEINPUT) && defined(__MINGW32__)
-namespace GameInput { namespace v1 { interface IGameInput; } }
-template<> inline auto __mingw_uuidof<GameInput::v1::IGameInput>() -> GUID const&
+namespace GameInput
 {
-    static constexpr GUID the_uuid = { 0x40ffb7e4,0x6150,0x407a,0xb4,0x39,0x13,0x2b,0xad,0xc0,0x8d,0x2d };
+    namespace v1
+    {
+        interface IGameInput;
+    }
+} // namespace GameInput
+template<>
+inline auto __mingw_uuidof<GameInput::v1::IGameInput>() -> GUID const&
+{
+    static constexpr GUID the_uuid = { 0x40ffb7e4, 0x6150, 0x407a, 0xb4, 0x39, 0x13, 0x2b, 0xad, 0xc0, 0x8d, 0x2d };
     return the_uuid;
 }
 #endif
 
 #if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)) || (defined(_XBOX_ONE) && defined(_TITLE))
 #pragma warning(push)
-#pragma warning(disable: 4471 5204 5256)
+#pragma warning(disable : 4471 5204 5256)
 #include <Windows.UI.Core.h>
 #pragma warning(pop)
 #endif

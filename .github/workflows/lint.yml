@@ -38,6 +38,7 @@ jobs:
           IGNORE_GITIGNORED_FILES: true
           VALIDATE_ALL_CODEBASE: true
           VALIDATE_CHECKOV: true
+          VALIDATE_CLANG_FORMAT: true
           VALIDATE_EDITORCONFIG: true
           VALIDATE_CSHARP: true
           VALIDATE_GITHUB_ACTIONS: true
