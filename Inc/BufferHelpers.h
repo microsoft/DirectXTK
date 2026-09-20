@@ -19,7 +19,7 @@
 #include <d3d11_1.h>
 #endif
 
-#include <wrl\client.h>
+#include <wrl/client.h>
 
 #ifndef DIRECTX_TOOLKIT_API
 #ifdef DIRECTX_TOOLKIT_EXPORT

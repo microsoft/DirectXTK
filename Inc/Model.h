@@ -27,7 +27,7 @@
 
 #include <malloc.h>
 
-#include <wrl\client.h>
+#include <wrl/client.h>
 
 #include <DirectXMath.h>
 #include <DirectXCollision.h>
