@@ -21,11 +21,10 @@ using Microsoft::WRL::ComPtr;
 namespace
 {
     template<typename T>
-    void SetPBRProperties(
-        _In_ T* effect,
+    void SetPBRProperties(_In_ T*        effect,
         const EffectFactory::EffectInfo& info,
-        _In_ IEffectFactory* factory,
-        _In_opt_ ID3D11DeviceContext* deviceContext)
+        _In_ IEffectFactory*             factory,
+        _In_opt_ ID3D11DeviceContext*    deviceContext)
     {
         // We don't use EnableDefaultLighting generally for PBR as it uses Image-Based Lighting instead.
 
@@ -83,7 +82,7 @@ namespace
             effect->SetBiasedVertexNormals(true);
         }
     }
-}
+} // namespace
 
 // Internal PBREffectFactory implementation class. Only one of these helpers is allocated
 // per D3D device, even if there are multiple public facing PBREffectFactory instances.
@@ -92,28 +91,26 @@ class PBREffectFactory::Impl
 public:
     explicit Impl(_In_ ID3D11Device* device)
         : mPath{},
-        mDevice(device),
-        mSharing(true),
-        mForceSRGB(false)
+          mDevice(device),
+          mSharing(true),
+          mForceSRGB(false)
     {
         if (!device)
             throw std::invalid_argument("Direct3D device is null");
     }
 
-    Impl(const Impl&) = delete;
+    Impl(const Impl&)            = delete;
     Impl& operator=(const Impl&) = delete;
 
-    Impl(Impl&&) = delete;
+    Impl(Impl&&)            = delete;
     Impl& operator=(Impl&&) = delete;
 
-    std::shared_ptr<IEffect> CreateEffect(
-        _In_ IEffectFactory* factory,
-        _In_ const IEffectFactory::EffectInfo& info,
-        _In_opt_ ID3D11DeviceContext* deviceContext);
+    std::shared_ptr<IEffect>
+    CreateEffect(_In_ IEffectFactory* factory, _In_ const IEffectFactory::EffectInfo& info, _In_opt_ ID3D11DeviceContext* deviceContext);
 
     void CreateTexture(_In_z_ const wchar_t* texture,
-        _In_opt_ ID3D11DeviceContext* deviceContext,
-        _Outptr_ ID3D11ShaderResourceView** textureView);
+        _In_opt_ ID3D11DeviceContext*        deviceContext,
+        _Outptr_ ID3D11ShaderResourceView**  textureView);
 
     void ReleaseCache();
 
@@ -127,8 +124,8 @@ public:
     bool mForceSRGB;
 
 private:
-    using EffectCache = std::map< std::wstring, std::shared_ptr<IEffect> >;
-    using TextureCache = std::map< std::wstring, ComPtr<ID3D11ShaderResourceView> >;
+    using EffectCache  = std::map<std::wstring, std::shared_ptr<IEffect>>;
+    using TextureCache = std::map<std::wstring, ComPtr<ID3D11ShaderResourceView>>;
 
     EffectCache  mEffectCache;
     EffectCache  mEffectCacheSkinning;
@@ -137,16 +134,11 @@ private:
     std::mutex mutex;
 };
 
-
 // Global instance pool.
 SharedResourcePool<ID3D11Device*, PBREffectFactory::Impl> PBREffectFactory::Impl::instancePool;
 
-
-_Use_decl_annotations_
-std::shared_ptr<IEffect> PBREffectFactory::Impl::CreateEffect(
-    IEffectFactory* factory,
-    const IEffectFactory::EffectInfo& info,
-    ID3D11DeviceContext* deviceContext)
+_Use_decl_annotations_ std::shared_ptr<IEffect>
+PBREffectFactory::Impl::CreateEffect(IEffectFactory* factory, const IEffectFactory::EffectInfo& info, ID3D11DeviceContext* deviceContext)
 {
     // info.perVertexColor and info.enableDualTexture are ignored by PBREffectFactory
 
@@ -169,7 +161,7 @@ std::shared_ptr<IEffect> PBREffectFactory::Impl::CreateEffect(
         if (mSharing && info.name && *info.name)
         {
             std::lock_guard<std::mutex> lock(mutex);
-            EffectCache::value_type v(info.name, effect);
+            EffectCache::value_type     v(info.name, effect);
             mEffectCacheSkinning.insert(v);
         }
 
@@ -194,7 +186,7 @@ std::shared_ptr<IEffect> PBREffectFactory::Impl::CreateEffect(
         if (mSharing && info.name && *info.name)
         {
             std::lock_guard<std::mutex> lock(mutex);
-            EffectCache::value_type v(info.name, effect);
+            EffectCache::value_type     v(info.name, effect);
             mEffectCache.insert(v);
         }
 
@@ -202,11 +194,8 @@ std::shared_ptr<IEffect> PBREffectFactory::Impl::CreateEffect(
     }
 }
 
-_Use_decl_annotations_
-void PBREffectFactory::Impl::CreateTexture(
-    const wchar_t* name,
-    ID3D11DeviceContext* deviceContext,
-    ID3D11ShaderResourceView** textureView)
+_Use_decl_annotations_ void
+PBREffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView)
 {
     if (!name || !textureView)
         throw std::invalid_argument("name and textureView parameters can't be null");
@@ -237,7 +226,8 @@ void PBREffectFactory::Impl::CreateTexture(
             if (!GetFileAttributesExW(fullName, GetFileExInfoStandard, &fileAttr))
             {
                 DebugTrace("ERROR: PBREffectFactory could not find texture file '%ls'\n", name);
-                throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "PBREffectFactory::CreateTexture");
+                throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()),
+                    "PBREffectFactory::CreateTexture");
             }
         }
 
@@ -247,43 +237,59 @@ void PBREffectFactory::Impl::CreateTexture(
 
         if (isdds)
         {
-            HRESULT hr = CreateDDSTextureFromFileEx(
-                mDevice.Get(), fullName, 0,
-                D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
-                mForceSRGB ? DDS_LOADER_FORCE_SRGB : DDS_LOADER_DEFAULT, nullptr, textureView);
+            HRESULT hr = CreateDDSTextureFromFileEx(mDevice.Get(),
+                fullName,
+                0,
+                D3D11_USAGE_DEFAULT,
+                D3D11_BIND_SHADER_RESOURCE,
+                0,
+                0,
+                mForceSRGB ? DDS_LOADER_FORCE_SRGB : DDS_LOADER_DEFAULT,
+                nullptr,
+                textureView);
             if (FAILED(hr))
             {
-                DebugTrace("ERROR: CreateDDSTextureFromFile failed (%08X) for '%ls'\n",
-                    static_cast<unsigned int>(hr), fullName);
+                DebugTrace("ERROR: CreateDDSTextureFromFile failed (%08X) for '%ls'\n", static_cast<unsigned int>(hr), fullName);
                 throw std::runtime_error("PBREffectFactory::CreateDDSTextureFromFile");
             }
         }
-    #if !defined(_XBOX_ONE) || !defined(_TITLE)
+#if !defined(_XBOX_ONE) || !defined(_TITLE)
         else if (deviceContext)
         {
             std::lock_guard<std::mutex> lock(mutex);
-            HRESULT hr = CreateWICTextureFromFileEx(
-                mDevice.Get(), deviceContext, fullName, 0,
-                D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
-                mForceSRGB ? WIC_LOADER_FORCE_SRGB : WIC_LOADER_DEFAULT, nullptr, textureView);
+            HRESULT                     hr = CreateWICTextureFromFileEx(mDevice.Get(),
+                deviceContext,
+                fullName,
+                0,
+                D3D11_USAGE_DEFAULT,
+                D3D11_BIND_SHADER_RESOURCE,
+                0,
+                0,
+                mForceSRGB ? WIC_LOADER_FORCE_SRGB : WIC_LOADER_DEFAULT,
+                nullptr,
+                textureView);
             if (FAILED(hr))
             {
-                DebugTrace("ERROR: CreateWICTextureFromFile failed (%08X) for '%ls'\n",
-                    static_cast<unsigned int>(hr), fullName);
+                DebugTrace("ERROR: CreateWICTextureFromFile failed (%08X) for '%ls'\n", static_cast<unsigned int>(hr), fullName);
                 throw std::runtime_error("PBREffectFactory::CreateWICTextureFromFile");
             }
         }
-    #endif
+#endif
         else
         {
-            HRESULT hr = CreateWICTextureFromFileEx(
-                mDevice.Get(), fullName, 0,
-                D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, 0,
-                mForceSRGB ? WIC_LOADER_FORCE_SRGB : WIC_LOADER_DEFAULT, nullptr, textureView);
+            HRESULT hr = CreateWICTextureFromFileEx(mDevice.Get(),
+                fullName,
+                0,
+                D3D11_USAGE_DEFAULT,
+                D3D11_BIND_SHADER_RESOURCE,
+                0,
+                0,
+                mForceSRGB ? WIC_LOADER_FORCE_SRGB : WIC_LOADER_DEFAULT,
+                nullptr,
+                textureView);
             if (FAILED(hr))
             {
-                DebugTrace("ERROR: CreateWICTextureFromFile failed (%08X) for '%ls'\n",
-                    static_cast<unsigned int>(hr), fullName);
+                DebugTrace("ERROR: CreateWICTextureFromFile failed (%08X) for '%ls'\n", static_cast<unsigned int>(hr), fullName);
                 throw std::runtime_error("PBREffectFactory::CreateWICTextureFromFile");
             }
         }
@@ -291,7 +297,7 @@ void PBREffectFactory::Impl::CreateTexture(
         if (mSharing && *name && it == mTextureCache.end())
         {
             std::lock_guard<std::mutex> lock(mutex);
-            TextureCache::value_type v(name, *textureView);
+            TextureCache::value_type    v(name, *textureView);
             mTextureCache.insert(v);
         }
     }
@@ -305,8 +311,6 @@ void PBREffectFactory::Impl::ReleaseCache()
     mTextureCache.clear();
 }
 
-
-
 //--------------------------------------------------------------------------------------
 // PBREffectFactory
 //--------------------------------------------------------------------------------------
@@ -315,19 +319,17 @@ PBREffectFactory::PBREffectFactory(_In_ ID3D11Device* device)
     : pImpl(Impl::instancePool.DemandCreate(device))
 {}
 
-PBREffectFactory::PBREffectFactory(PBREffectFactory&&) noexcept = default;
-PBREffectFactory& PBREffectFactory::operator= (PBREffectFactory&&) noexcept = default;
-PBREffectFactory::~PBREffectFactory() = default;
+PBREffectFactory::PBREffectFactory(PBREffectFactory&&) noexcept            = default;
+PBREffectFactory& PBREffectFactory::operator=(PBREffectFactory&&) noexcept = default;
+PBREffectFactory::~PBREffectFactory()                                      = default;
 
-
-_Use_decl_annotations_
-std::shared_ptr<IEffect> PBREffectFactory::CreateEffect(const EffectInfo& info, ID3D11DeviceContext* deviceContext)
+_Use_decl_annotations_ std::shared_ptr<IEffect> PBREffectFactory::CreateEffect(const EffectInfo& info, ID3D11DeviceContext* deviceContext)
 {
     return pImpl->CreateEffect(this, info, deviceContext);
 }
 
-_Use_decl_annotations_
-void PBREffectFactory::CreateTexture(const wchar_t* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView)
+_Use_decl_annotations_ void
+PBREffectFactory::CreateTexture(const wchar_t* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView)
 {
     return pImpl->CreateTexture(name, deviceContext, textureView);
 }
@@ -358,7 +360,7 @@ void PBREffectFactory::SetDirectory(_In_opt_z_ const wchar_t* path) noexcept
             // Ensure it has a trailing slash
             if (pImpl->mPath[len - 1] != L'\\')
             {
-                pImpl->mPath[len] = L'\\';
+                pImpl->mPath[len]     = L'\\';
                 pImpl->mPath[len + 1] = 0;
             }
         }

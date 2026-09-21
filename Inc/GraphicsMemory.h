@@ -21,13 +21,13 @@
 #ifndef DIRECTX_TOOLKIT_API
 #ifdef DIRECTX_TOOLKIT_EXPORT
 #ifdef __GNUC__
-#define DIRECTX_TOOLKIT_API __attribute__ ((dllexport))
+#define DIRECTX_TOOLKIT_API __attribute__((dllexport))
 #else
 #define DIRECTX_TOOLKIT_API __declspec(dllexport)
 #endif
 #elif defined(DIRECTX_TOOLKIT_IMPORT)
 #ifdef __GNUC__
-#define DIRECTX_TOOLKIT_API __attribute__ ((dllimport))
+#define DIRECTX_TOOLKIT_API __attribute__((dllimport))
 #else
 #define DIRECTX_TOOLKIT_API __declspec(dllimport)
 #endif
@@ -35,7 +35,6 @@
 #define DIRECTX_TOOLKIT_API
 #endif
 #endif
-
 
 namespace DirectX
 {
@@ -45,28 +44,21 @@ namespace DirectX
         {
         public:
             DIRECTX_TOOLKIT_API
-            #if defined(_XBOX_ONE) && defined(_TITLE)
-                GraphicsMemory(
-                    _In_ ID3D11DeviceX* device,
-                    unsigned int backBufferCount = 2);
-        #else
-                GraphicsMemory(
-                    _In_ ID3D11Device* device,
-                    unsigned int backBufferCount = 2);
-        #endif
+#if defined(_XBOX_ONE) && defined(_TITLE)
+            GraphicsMemory(_In_ ID3D11DeviceX* device, unsigned int backBufferCount = 2);
+#else
+            GraphicsMemory(_In_ ID3D11Device* device, unsigned int backBufferCount = 2);
+#endif
 
-            DIRECTX_TOOLKIT_API GraphicsMemory(GraphicsMemory&&) noexcept;
-            DIRECTX_TOOLKIT_API GraphicsMemory& operator= (GraphicsMemory&&) noexcept;
+            DIRECTX_TOOLKIT_API                 GraphicsMemory(GraphicsMemory&&) noexcept;
+            DIRECTX_TOOLKIT_API GraphicsMemory& operator=(GraphicsMemory&&) noexcept;
 
-            GraphicsMemory(GraphicsMemory const&) = delete;
+            GraphicsMemory(GraphicsMemory const&)            = delete;
             GraphicsMemory& operator=(GraphicsMemory const&) = delete;
 
             DIRECTX_TOOLKIT_API virtual ~GraphicsMemory();
 
-            DIRECTX_TOOLKIT_API void* __cdecl Allocate(
-                _In_opt_ ID3D11DeviceContext* context,
-                size_t size,
-                int alignment);
+            DIRECTX_TOOLKIT_API void* __cdecl Allocate(_In_opt_ ID3D11DeviceContext* context, size_t size, int alignment);
 
             DIRECTX_TOOLKIT_API void __cdecl Commit();
 
@@ -79,5 +71,5 @@ namespace DirectX
 
             std::unique_ptr<Impl> pImpl;
         };
-    }
-}
+    } // namespace DX11
+} // namespace DirectX

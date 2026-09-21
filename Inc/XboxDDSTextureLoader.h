@@ -29,13 +29,13 @@
 #ifndef DIRECTX_TOOLKIT_API
 #ifdef DIRECTX_TOOLKIT_EXPORT
 #ifdef __GNUC__
-#define DIRECTX_TOOLKIT_API __attribute__ ((dllexport))
+#define DIRECTX_TOOLKIT_API __attribute__((dllexport))
 #else
 #define DIRECTX_TOOLKIT_API __declspec(dllexport)
 #endif
 #elif defined(DIRECTX_TOOLKIT_IMPORT)
 #ifdef __GNUC__
-#define DIRECTX_TOOLKIT_API __attribute__ ((dllimport))
+#define DIRECTX_TOOLKIT_API __attribute__((dllimport))
 #else
 #define DIRECTX_TOOLKIT_API __declspec(dllimport)
 #endif
@@ -50,57 +50,60 @@ namespace DirectX
 {
     enum DDS_ALPHA_MODE : uint32_t
     {
-        DDS_ALPHA_MODE_UNKNOWN = 0,
-        DDS_ALPHA_MODE_STRAIGHT = 1,
+        DDS_ALPHA_MODE_UNKNOWN       = 0,
+        DDS_ALPHA_MODE_STRAIGHT      = 1,
         DDS_ALPHA_MODE_PREMULTIPLIED = 2,
-        DDS_ALPHA_MODE_OPAQUE = 3,
-        DDS_ALPHA_MODE_CUSTOM = 4,
+        DDS_ALPHA_MODE_OPAQUE        = 3,
+        DDS_ALPHA_MODE_CUSTOM        = 4,
     };
 }
 #endif
-
 
 namespace Xbox
 {
     using DirectX::DDS_ALPHA_MODE;
 
     DIRECTX_TOOLKIT_API
-        HRESULT __cdecl CreateDDSTextureFromMemory(
-            _In_ ID3D11DeviceX* d3dDevice,
-            _In_reads_bytes_(ddsDataSize) const uint8_t* ddsData,
-            _In_ size_t ddsDataSize,
-            _Outptr_opt_ ID3D11Resource** texture,
-            _Outptr_opt_ ID3D11ShaderResourceView** textureView,
-            _Outptr_ void** grfxMemory,
-            _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr,
-            _In_ bool forceSRGB = false) noexcept;
+    HRESULT __cdecl CreateDDSTextureFromMemory(_In_ ID3D11DeviceX* d3dDevice,
+        _In_reads_bytes_(ddsDataSize) const uint8_t*               ddsData,
+        _In_ size_t                                                ddsDataSize,
+        _Outptr_opt_ ID3D11Resource**                              texture,
+        _Outptr_opt_ ID3D11ShaderResourceView**                    textureView,
+        _Outptr_ void**                                            grfxMemory,
+        _Out_opt_ DDS_ALPHA_MODE*                                  alphaMode = nullptr,
+        _In_ bool                                                  forceSRGB = false) noexcept;
 
     DIRECTX_TOOLKIT_API
-        HRESULT __cdecl CreateDDSTextureFromFile(
-            _In_ ID3D11DeviceX* d3dDevice,
-            _In_z_ const wchar_t* szFileName,
-            _Outptr_opt_ ID3D11Resource** texture,
-            _Outptr_opt_ ID3D11ShaderResourceView** textureView,
-            _Outptr_ void** grfxMemory,
-            _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr,
-            _In_ bool forceSRGB = false) noexcept;
+    HRESULT __cdecl CreateDDSTextureFromFile(_In_ ID3D11DeviceX* d3dDevice,
+        _In_z_ const wchar_t*                                    szFileName,
+        _Outptr_opt_ ID3D11Resource**                            texture,
+        _Outptr_opt_ ID3D11ShaderResourceView**                  textureView,
+        _Outptr_ void**                                          grfxMemory,
+        _Out_opt_ DDS_ALPHA_MODE*                                alphaMode = nullptr,
+        _In_ bool                                                forceSRGB = false) noexcept;
 
     DIRECTX_TOOLKIT_API
-        void FreeDDSTextureMemory(_In_opt_ void* grfxMemory) noexcept;
+    void FreeDDSTextureMemory(_In_opt_ void* grfxMemory) noexcept;
 
 #ifdef __cpp_lib_byte
     DIRECTX_TOOLKIT_API
-        inline HRESULT __cdecl CreateDDSTextureFromMemory(
-            _In_ ID3D11DeviceX* d3dDevice,
-            _In_reads_bytes_(ddsDataSize) const std::byte* ddsData,
-            _In_ size_t ddsDataSize,
-            _Outptr_opt_ ID3D11Resource** texture,
-            _Outptr_opt_ ID3D11ShaderResourceView** textureView,
-            _Outptr_ void** grfxMemory,
-            _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr,
-            _In_ bool forceSRGB = false) noexcept
+    inline HRESULT __cdecl CreateDDSTextureFromMemory(_In_ ID3D11DeviceX* d3dDevice,
+        _In_reads_bytes_(ddsDataSize) const std::byte*                    ddsData,
+        _In_ size_t                                                       ddsDataSize,
+        _Outptr_opt_ ID3D11Resource**                                     texture,
+        _Outptr_opt_ ID3D11ShaderResourceView**                           textureView,
+        _Outptr_ void**                                                   grfxMemory,
+        _Out_opt_ DDS_ALPHA_MODE*                                         alphaMode = nullptr,
+        _In_ bool                                                         forceSRGB = false) noexcept
     {
-        return CreateDDSTextureFromMemory(d3dDevice, reinterpret_cast<const uint8_t*>(ddsData), ddsDataSize, texture, textureView, grfxMemory, alphaMode, forceSRGB);
+        return CreateDDSTextureFromMemory(d3dDevice,
+            reinterpret_cast<const uint8_t*>(ddsData),
+            ddsDataSize,
+            texture,
+            textureView,
+            grfxMemory,
+            alphaMode,
+            forceSRGB);
     }
 #endif // __cpp_lib_byte
-}
+} // namespace Xbox

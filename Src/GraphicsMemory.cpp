@@ -16,7 +16,6 @@
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
-
 #if defined(_XBOX_ONE) && defined(_TITLE)
 
 //======================================================================================
@@ -26,9 +25,9 @@ using Microsoft::WRL::ComPtr;
 class GraphicsMemory::Impl
 {
 public:
-    Impl(GraphicsMemory* owner) :
-        mOwner(owner),
-        mCurrentFrame(0)
+    Impl(GraphicsMemory* owner)
+        : mOwner(owner),
+          mCurrentFrame(0)
     {
         if (s_graphicsMemory)
         {
@@ -56,10 +55,10 @@ public:
         s_graphicsMemory = nullptr;
     }
 
-    Impl(const Impl&) = delete;
+    Impl(const Impl&)            = delete;
     Impl& operator=(const Impl&) = delete;
 
-    Impl(Impl&&) = default;
+    Impl(Impl&&)            = default;
     Impl& operator=(Impl&&) = default;
 
     void Initialize(_In_ ID3D11DeviceX* device, unsigned int backBufferCount)
@@ -101,13 +100,16 @@ public:
         mFrames[mCurrentFrame].Clear();
     }
 
-    GraphicsMemory*  mOwner;
+    GraphicsMemory* mOwner;
 
     std::mutex mGuard;
 
     struct MemoryPage
     {
-        MemoryPage() noexcept : mPageSize(0), mGrfxMemory(nullptr) {}
+        MemoryPage() noexcept
+            : mPageSize(0),
+              mGrfxMemory(nullptr)
+        {}
 
         void Initialize(size_t reqSize)
         {
@@ -117,7 +119,8 @@ public:
                 mPageSize = AlignUp(reqSize, 65536);
             }
 
-            mGrfxMemory = VirtualAlloc(nullptr, mPageSize,
+            mGrfxMemory = VirtualAlloc(nullptr,
+                mPageSize,
                 MEM_LARGE_PAGES | MEM_GRAPHICS | MEM_RESERVE | MEM_COMMIT,
                 PAGE_WRITECOMBINE | PAGE_READWRITE | PAGE_GPU_READONLY);
             if (!mGrfxMemory)
@@ -125,12 +128,15 @@ public:
         }
 
         size_t mPageSize;
-        void* mGrfxMemory;
+        void*  mGrfxMemory;
     };
 
     struct MemoryFrame
     {
-        MemoryFrame() noexcept : mCurOffset(0), mFence(0) {}
+        MemoryFrame() noexcept
+            : mCurOffset(0),
+              mFence(0)
+        {}
 
         ~MemoryFrame() { Clear(); }
 
@@ -205,10 +211,10 @@ public:
         std::list<MemoryPage> mPages;
     };
 
-    UINT mCurrentFrame;
+    UINT                     mCurrentFrame;
     std::vector<MemoryFrame> mFrames;
 
-    ComPtr<ID3D11DeviceX> mDevice;
+    ComPtr<ID3D11DeviceX>        mDevice;
     ComPtr<ID3D11DeviceContextX> mDeviceContext;
 
     static GraphicsMemory::Impl* s_graphicsMemory;
@@ -225,8 +231,8 @@ GraphicsMemory::Impl* GraphicsMemory::Impl::s_graphicsMemory = nullptr;
 class GraphicsMemory::Impl
 {
 public:
-    Impl(GraphicsMemory* owner) :
-        mOwner(owner)
+    Impl(GraphicsMemory* owner)
+        : mOwner(owner)
     {
         if (s_graphicsMemory)
         {
@@ -236,16 +242,13 @@ public:
         s_graphicsMemory = this;
     }
 
-    Impl(Impl&&) = default;
-    Impl& operator= (Impl&&) = default;
+    Impl(Impl&&)            = default;
+    Impl& operator=(Impl&&) = default;
 
-    Impl(Impl const&) = delete;
-    Impl& operator= (Impl const&) = delete;
+    Impl(Impl const&)            = delete;
+    Impl& operator=(Impl const&) = delete;
 
-    ~Impl()
-    {
-        s_graphicsMemory = nullptr;
-    }
+    ~Impl() { s_graphicsMemory = nullptr; }
 
     void Initialize(_In_ ID3D11Device* device, unsigned int backBufferCount)
     {
@@ -270,10 +273,9 @@ public:
         return nullptr;
     }
 
-    void Commit() noexcept
-    {}
+    void Commit() noexcept {}
 
-    GraphicsMemory*  mOwner;
+    GraphicsMemory* mOwner;
 
     static GraphicsMemory::Impl* s_graphicsMemory;
 };
@@ -282,11 +284,10 @@ GraphicsMemory::Impl* GraphicsMemory::Impl::s_graphicsMemory = nullptr;
 
 #endif
 
-
 //--------------------------------------------------------------------------------------
 
 #ifdef _MSC_VER
-#pragma warning( disable : 4355 )
+#pragma warning(disable : 4355)
 #endif
 
 // Public constructor.
@@ -300,7 +301,6 @@ GraphicsMemory::GraphicsMemory(_In_ ID3D11Device* device, unsigned int backBuffe
     pImpl->Initialize(device, backBufferCount);
 }
 
-
 // Move constructor.
 GraphicsMemory::GraphicsMemory(GraphicsMemory&& moveFrom) noexcept
     : pImpl(std::move(moveFrom.pImpl))
@@ -308,31 +308,26 @@ GraphicsMemory::GraphicsMemory(GraphicsMemory&& moveFrom) noexcept
     pImpl->mOwner = this;
 }
 
-
 // Move assignment.
-GraphicsMemory& GraphicsMemory::operator= (GraphicsMemory&& moveFrom) noexcept
+GraphicsMemory& GraphicsMemory::operator=(GraphicsMemory&& moveFrom) noexcept
 {
-    pImpl = std::move(moveFrom.pImpl);
+    pImpl         = std::move(moveFrom.pImpl);
     pImpl->mOwner = this;
     return *this;
 }
 
-
 // Public destructor.
 GraphicsMemory::~GraphicsMemory() = default;
-
 
 void* GraphicsMemory::Allocate(_In_opt_ ID3D11DeviceContext* context, size_t size, int alignment)
 {
     return pImpl->Allocate(context, size, alignment);
 }
 
-
 void GraphicsMemory::Commit()
 {
     pImpl->Commit();
 }
-
 
 GraphicsMemory& GraphicsMemory::Get()
 {

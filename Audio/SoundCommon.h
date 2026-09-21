@@ -30,13 +30,13 @@
 #ifndef DIRECTX_TOOLKIT_API
 #ifdef DIRECTX_TOOLKIT_EXPORT
 #ifdef __GNUC__
-#define DIRECTX_TOOLKIT_API __attribute__ ((dllexport))
+#define DIRECTX_TOOLKIT_API __attribute__((dllexport))
 #else
 #define DIRECTX_TOOLKIT_API __declspec(dllexport)
 #endif
 #elif defined(DIRECTX_TOOLKIT_IMPORT)
 #ifdef __GNUC__
-#define DIRECTX_TOOLKIT_API __attribute__ ((dllimport))
+#define DIRECTX_TOOLKIT_API __attribute__((dllimport))
 #else
 #define DIRECTX_TOOLKIT_API __declspec(dllimport)
 #endif
@@ -44,7 +44,6 @@
 #define DIRECTX_TOOLKIT_API
 #endif
 #endif
-
 
 namespace DirectX
 {
@@ -61,7 +60,9 @@ namespace DirectX
             auto wfex = reinterpret_cast<const WAVEFORMATEXTENSIBLE*>(wfx);
 
             if (memcmp(reinterpret_cast<const BYTE*>(&wfex->SubFormat) + sizeof(DWORD),
-                reinterpret_cast<const BYTE*>(&s_wfexBase) + sizeof(DWORD), sizeof(GUID) - sizeof(DWORD)) != 0)
+                    reinterpret_cast<const BYTE*>(&s_wfexBase) + sizeof(DWORD),
+                    sizeof(GUID) - sizeof(DWORD))
+                != 0)
             {
                 return 0;
             }
@@ -74,29 +75,29 @@ namespace DirectX
         }
     }
 
-
     // Helper for validating wave format structure
     DIRECTX_TOOLKIT_API bool __cdecl IsValid(_In_ const WAVEFORMATEX* wfx) noexcept;
-
 
     // Helper for getting a default channel mask from channels
     DIRECTX_TOOLKIT_API uint32_t __cdecl GetDefaultChannelMask(int channels) noexcept;
 
-
     // Helpers for creating various wave format structures
-    void __cdecl CreateIntegerPCM(_Out_ WAVEFORMATEX* wfx,
-        int sampleRate, int channels, int sampleBits) noexcept;
-    void __cdecl CreateFloatPCM(_Out_ WAVEFORMATEX* wfx,
-        int sampleRate, int channels) noexcept;
-    void __cdecl CreateADPCM(_Out_writes_bytes_(wfxSize) WAVEFORMATEX* wfx, size_t wfxSize,
-        int sampleRate, int channels, int samplesPerBlock) noexcept(false);
+    void __cdecl CreateIntegerPCM(_Out_ WAVEFORMATEX* wfx, int sampleRate, int channels, int sampleBits) noexcept;
+    void __cdecl CreateFloatPCM(_Out_ WAVEFORMATEX* wfx, int sampleRate, int channels) noexcept;
+    void __cdecl
+    CreateADPCM(_Out_writes_bytes_(wfxSize) WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int channels, int samplesPerBlock) noexcept(
+        false);
 #ifdef DIRECTX_ENABLE_XWMA
-    void __cdecl CreateXWMA(_Out_ WAVEFORMATEX* wfx,
-        int sampleRate, int channels, int blockAlign, int avgBytes, bool wma3) noexcept;
+    void __cdecl CreateXWMA(_Out_ WAVEFORMATEX* wfx, int sampleRate, int channels, int blockAlign, int avgBytes, bool wma3) noexcept;
 #endif
 #ifdef DIRECTX_ENABLE_XMA2
-    void __cdecl CreateXMA2(_Out_writes_bytes_(wfxSize) WAVEFORMATEX* wfx, size_t wfxSize,
-        int sampleRate, int channels, int bytesPerBlock, int blockCount, int samplesEncoded) noexcept(false);
+    void __cdecl CreateXMA2(_Out_writes_bytes_(wfxSize) WAVEFORMATEX* wfx,
+        size_t                                                        wfxSize,
+        int                                                           sampleRate,
+        int                                                           channels,
+        int                                                           bytesPerBlock,
+        int                                                           blockCount,
+        int                                                           samplesEncoded) noexcept(false);
 #endif
 
     // Helper for computing pan volume matrix
@@ -106,31 +107,28 @@ namespace DirectX
     class SoundEffectInstanceBase
     {
     public:
-        SoundEffectInstanceBase() noexcept :
-            voice(nullptr),
-            state(STOPPED),
-            engine(nullptr),
-            mVolume(1.f),
-            mPitch(0.f),
-            mFreqRatio(1.f),
-            mPan(0.f),
-            mFlags(SoundEffectInstance_Default),
-            mX3DCalcFlags(0),
-            mDirectVoice(nullptr),
-            mReverbVoice(nullptr),
-            mDSPSettings{}
+        SoundEffectInstanceBase() noexcept
+            : voice(nullptr),
+              state(STOPPED),
+              engine(nullptr),
+              mVolume(1.f),
+              mPitch(0.f),
+              mFreqRatio(1.f),
+              mPan(0.f),
+              mFlags(SoundEffectInstance_Default),
+              mX3DCalcFlags(0),
+              mDirectVoice(nullptr),
+              mReverbVoice(nullptr),
+              mDSPSettings{}
         {}
 
-        SoundEffectInstanceBase(SoundEffectInstanceBase&&) = default;
-        SoundEffectInstanceBase& operator= (SoundEffectInstanceBase&&) = default;
+        SoundEffectInstanceBase(SoundEffectInstanceBase&&)            = default;
+        SoundEffectInstanceBase& operator=(SoundEffectInstanceBase&&) = default;
 
-        SoundEffectInstanceBase(SoundEffectInstanceBase const&) = delete;
-        SoundEffectInstanceBase& operator= (SoundEffectInstanceBase const&) = delete;
+        SoundEffectInstanceBase(SoundEffectInstanceBase const&)            = delete;
+        SoundEffectInstanceBase& operator=(SoundEffectInstanceBase const&) = delete;
 
-        ~SoundEffectInstanceBase()
-        {
-            assert(voice == nullptr);
-        }
+        ~SoundEffectInstanceBase() { assert(voice == nullptr); }
 
         void Initialize(_In_ AudioEngine* eng, _In_ const WAVEFORMATEX* wfx, SOUND_EFFECT_INSTANCE_FLAGS flags) noexcept
         {
@@ -218,13 +216,13 @@ namespace DirectX
 
             if (immediate)
             {
-                state = STOPPED;
+                state       = STOPPED;
                 std::ignore = voice->Stop(0);
                 std::ignore = voice->FlushSourceBuffers();
             }
             else if (looped)
             {
-                looped = false;
+                looped      = false;
                 std::ignore = voice->ExitLoop();
             }
             else
@@ -302,7 +300,7 @@ namespace DirectX
                 {
                     // Automatic stop if the buffer has finished playing
                     std::ignore = voice->Stop();
-                    state = STOPPED;
+                    state       = STOPPED;
                 }
             }
 
@@ -319,10 +317,7 @@ namespace DirectX
             return static_cast<int>(xstate.BuffersQueued);
         }
 
-        unsigned int GetChannelCount() const noexcept
-        {
-            return mDSPSettings.SrcChannelCount;
-        }
+        unsigned int GetChannelCount() const noexcept { return mDSPSettings.SrcChannelCount; }
 
         void OnCriticalError() noexcept
         {
@@ -331,7 +326,7 @@ namespace DirectX
                 voice->DestroyVoice();
                 voice = nullptr;
             }
-            state = STOPPED;
+            state        = STOPPED;
             mDirectVoice = nullptr;
             mReverbVoice = nullptr;
         }
@@ -356,8 +351,8 @@ namespace DirectX
                 voice->DestroyVoice();
                 voice = nullptr;
             }
-            state = STOPPED;
-            engine = nullptr;
+            state        = STOPPED;
+            engine       = nullptr;
             mDirectVoice = nullptr;
             mReverbVoice = nullptr;
         }
@@ -386,9 +381,9 @@ namespace DirectX
             }
         }
 
-        IXAudio2SourceVoice*        voice;
-        SoundState                  state;
-        AudioEngine*                engine;
+        IXAudio2SourceVoice* voice;
+        SoundState           state;
+        AudioEngine*         engine;
 
     private:
         float                       mVolume;
@@ -423,4 +418,4 @@ namespace DirectX
         const uint32_t* seekTable;
         uint32_t        tag;
     };
-}
+} // namespace DirectX

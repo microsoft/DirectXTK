@@ -14,19 +14,17 @@
 
 using namespace DirectX;
 
-
 // Constructor reads from the filesystem.
-BinaryReader::BinaryReader(_In_z_ wchar_t const* fileName) noexcept(false) :
-    mPos(nullptr),
-    mEnd(nullptr)
+BinaryReader::BinaryReader(_In_z_ wchar_t const* fileName) noexcept(false)
+    : mPos(nullptr),
+      mEnd(nullptr)
 {
     size_t dataSize;
 
     HRESULT hr = ReadEntireFile(fileName, mOwnedData, &dataSize);
     if (FAILED(hr))
     {
-        DebugTrace("ERROR: BinaryReader failed (%08X) to load '%ls'\n",
-            static_cast<unsigned int>(hr), fileName);
+        DebugTrace("ERROR: BinaryReader failed (%08X) to load '%ls'\n", static_cast<unsigned int>(hr), fileName);
         throw std::runtime_error("BinaryReader");
     }
 
@@ -34,19 +32,14 @@ BinaryReader::BinaryReader(_In_z_ wchar_t const* fileName) noexcept(false) :
     mEnd = mOwnedData.get() + dataSize;
 }
 
-
 // Constructor reads from an existing memory buffer.
-BinaryReader::BinaryReader(_In_reads_bytes_(dataSize) uint8_t const* dataBlob, size_t dataSize) noexcept :
-    mPos(dataBlob),
-    mEnd(dataBlob + dataSize)
+BinaryReader::BinaryReader(_In_reads_bytes_(dataSize) uint8_t const* dataBlob, size_t dataSize) noexcept
+    : mPos(dataBlob),
+      mEnd(dataBlob + dataSize)
 {}
 
-
 // Reads from the filesystem into memory.
-HRESULT BinaryReader::ReadEntireFile(
-    _In_z_ wchar_t const* fileName,
-    _Inout_ std::unique_ptr<uint8_t[]>& data,
-    _Out_ size_t* dataSize)
+HRESULT BinaryReader::ReadEntireFile(_In_z_ wchar_t const* fileName, _Inout_ std::unique_ptr<uint8_t[]>& data, _Out_ size_t* dataSize)
 {
     if (!fileName || !dataSize)
         return E_INVALIDARG;
@@ -54,10 +47,7 @@ HRESULT BinaryReader::ReadEntireFile(
     *dataSize = 0;
 
     // Open the file.
-    ScopedHandle hFile(safe_handle(CreateFile2(
-        fileName,
-        GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING,
-        nullptr)));
+    ScopedHandle hFile(safe_handle(CreateFile2(fileName, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING, nullptr)));
     if (!hFile)
         return HRESULT_FROM_WIN32(GetLastError());
 

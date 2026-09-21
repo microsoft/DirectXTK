@@ -23,20 +23,22 @@ namespace
 {
     enum : unsigned int
     {
-        PER_VERTEX_COLOR = 0x1,
-        SKINNING = 0x2,
-        DUAL_TEXTURE = 0x4,
-        NORMAL_MAPS = 0x8,
+        PER_VERTEX_COLOR      = 0x1,
+        SKINNING              = 0x2,
+        DUAL_TEXTURE          = 0x4,
+        NORMAL_MAPS           = 0x8,
         BIASED_VERTEX_NORMALS = 0x10,
-        USES_OBSOLETE_DEC3N = 0x20,
+        USES_OBSOLETE_DEC3N   = 0x20,
     };
 
     struct MaterialRecordSDKMESH
     {
         std::shared_ptr<IEffect> effect;
-        bool alpha;
+        bool                     alpha;
 
-        MaterialRecordSDKMESH() noexcept : alpha(false) {}
+        MaterialRecordSDKMESH() noexcept
+            : alpha(false)
+        {}
     };
 
     inline XMFLOAT3 GetMaterialColor(float r, float g, float b, bool srgb)
@@ -44,7 +46,7 @@ namespace
         if (srgb)
         {
             XMVECTOR v = XMVectorSet(r, g, b, 1.f);
-            v = XMColorSRGBToRGB(v);
+            v          = XMColorSRGBToRGB(v);
 
             XMFLOAT3 result;
             XMStoreFloat3(&result, v);
@@ -57,21 +59,17 @@ namespace
     }
 
     template<size_t sizeOfBuffer>
-    inline void ASCIIToWChar(wchar_t(&buffer)[sizeOfBuffer], const char *ascii)
+    inline void ASCIIToWChar(wchar_t (&buffer)[sizeOfBuffer], const char* ascii)
     {
-    #ifdef _WIN32
+#ifdef _WIN32
         MultiByteToWideChar(CP_UTF8, 0, ascii, -1, buffer, sizeOfBuffer);
-    #else
+#else
         mbtowc(nullptr, nullptr, 0);
         mbtowc(buffer, ascii, sizeOfBuffer);
-    #endif
+#endif
     }
 
-    void LoadMaterial(const DXUT::SDKMESH_MATERIAL& mh,
-        unsigned int flags,
-        IEffectFactory& fxFactory,
-        MaterialRecordSDKMESH& m,
-        bool srgb)
+    void LoadMaterial(const DXUT::SDKMESH_MATERIAL& mh, unsigned int flags, IEffectFactory& fxFactory, MaterialRecordSDKMESH& m, bool srgb)
     {
         wchar_t matName[DXUT::MAX_MATERIAL_NAME] = {};
         ASCIIToWChar(matName, mh.Name);
@@ -97,24 +95,24 @@ namespace
         }
 
         EffectFactory::EffectInfo info;
-        info.name = matName;
-        info.perVertexColor = (flags & PER_VERTEX_COLOR) != 0;
-        info.enableSkinning = (flags & SKINNING) != 0;
-        info.enableDualTexture = (flags & DUAL_TEXTURE) != 0;
-        info.enableNormalMaps = (flags & NORMAL_MAPS) != 0;
+        info.name                = matName;
+        info.perVertexColor      = (flags & PER_VERTEX_COLOR) != 0;
+        info.enableSkinning      = (flags & SKINNING) != 0;
+        info.enableDualTexture   = (flags & DUAL_TEXTURE) != 0;
+        info.enableNormalMaps    = (flags & NORMAL_MAPS) != 0;
         info.biasedVertexNormals = (flags & BIASED_VERTEX_NORMALS) != 0;
 
-        if (mh.Ambient.x == 0 && mh.Ambient.y == 0 && mh.Ambient.z == 0 && mh.Ambient.w == 0
-            && mh.Diffuse.x == 0 && mh.Diffuse.y == 0 && mh.Diffuse.z == 0 && mh.Diffuse.w == 0)
+        if (mh.Ambient.x == 0 && mh.Ambient.y == 0 && mh.Ambient.z == 0 && mh.Ambient.w == 0 && mh.Diffuse.x == 0 && mh.Diffuse.y == 0
+            && mh.Diffuse.z == 0 && mh.Diffuse.w == 0)
         {
             // SDKMESH material color block is uninitalized; assume defaults
             info.diffuseColor = XMFLOAT3(1.f, 1.f, 1.f);
-            info.alpha = 1.f;
+            info.alpha        = 1.f;
         }
         else
         {
-            info.ambientColor = GetMaterialColor(mh.Ambient.x, mh.Ambient.y, mh.Ambient.z, srgb);
-            info.diffuseColor = GetMaterialColor(mh.Diffuse.x, mh.Diffuse.y, mh.Diffuse.z, srgb);
+            info.ambientColor  = GetMaterialColor(mh.Ambient.x, mh.Ambient.y, mh.Ambient.z, srgb);
+            info.diffuseColor  = GetMaterialColor(mh.Diffuse.x, mh.Diffuse.y, mh.Diffuse.z, srgb);
             info.emissiveColor = GetMaterialColor(mh.Emissive.x, mh.Emissive.y, mh.Emissive.z, srgb);
 
             if (mh.Diffuse.w != 1.f && mh.Diffuse.w != 0.f)
@@ -131,18 +129,15 @@ namespace
             }
         }
 
-        info.diffuseTexture = diffuseName;
+        info.diffuseTexture  = diffuseName;
         info.specularTexture = specularName;
-        info.normalTexture = normalName;
+        info.normalTexture   = normalName;
 
         m.effect = fxFactory.CreateEffect(info, nullptr);
-        m.alpha = (info.alpha < 1.f);
+        m.alpha  = (info.alpha < 1.f);
     }
 
-    void LoadMaterial(const DXUT::SDKMESH_MATERIAL_V2& mh,
-        unsigned int flags,
-        IEffectFactory& fxFactory,
-        MaterialRecordSDKMESH& m)
+    void LoadMaterial(const DXUT::SDKMESH_MATERIAL_V2& mh, unsigned int flags, IEffectFactory& fxFactory, MaterialRecordSDKMESH& m)
     {
         wchar_t matName[DXUT::MAX_MATERIAL_NAME] = {};
         ASCIIToWChar(matName, mh.Name);
@@ -160,53 +155,48 @@ namespace
         ASCIIToWChar(emissiveName, mh.EmissiveTexture);
 
         EffectFactory::EffectInfo info;
-        info.name = matName;
-        info.perVertexColor = false;
-        info.enableSkinning = (flags & SKINNING) != 0;
-        info.enableDualTexture = false;
-        info.enableNormalMaps = true;
+        info.name                = matName;
+        info.perVertexColor      = false;
+        info.enableSkinning      = (flags & SKINNING) != 0;
+        info.enableDualTexture   = false;
+        info.enableNormalMaps    = true;
         info.biasedVertexNormals = (flags & BIASED_VERTEX_NORMALS) != 0;
-        info.alpha = (mh.Alpha == 0.f) ? 1.f : mh.Alpha;
+        info.alpha               = (mh.Alpha == 0.f) ? 1.f : mh.Alpha;
 
-        info.diffuseTexture = albedoTexture;
+        info.diffuseTexture  = albedoTexture;
         info.specularTexture = rmaName;
-        info.normalTexture = normalName;
+        info.normalTexture   = normalName;
         info.emissiveTexture = emissiveName;
 
         m.effect = fxFactory.CreateEffect(info, nullptr);
-        m.alpha = (info.alpha < 1.f);
+        m.alpha  = (info.alpha < 1.f);
     }
-
 
     //--------------------------------------------------------------------------------------
     // Direct3D 9 Vertex Declaration to Direct3D 11 Input Layout mapping
-
 
 #ifndef __MINGW32__
     static_assert(D3D11_IA_VERTEX_INPUT_STRUCTURE_ELEMENT_COUNT >= 32, "SDKMESH supports decls up to 32 entries");
 #endif
 
-    unsigned int GetInputLayoutDesc(
-        _In_reads_(32) const DXUT::D3DVERTEXELEMENT9 decl[],
-        ModelMeshPart::InputLayoutCollection& inputDesc)
+    unsigned int GetInputLayoutDesc(_In_reads_(32) const DXUT::D3DVERTEXELEMENT9 decl[], ModelMeshPart::InputLayoutCollection& inputDesc)
     {
-        static const D3D11_INPUT_ELEMENT_DESC s_elements[] =
-        {
-            { "SV_Position",  0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-            { "NORMAL",       0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-            { "COLOR",        0, DXGI_FORMAT_B8G8R8A8_UNORM,  0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-            { "TANGENT",      0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-            { "BINORMAL",     0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-            { "TEXCOORD",     0, DXGI_FORMAT_R32G32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-            { "BLENDINDICES", 0, DXGI_FORMAT_R8G8B8A8_UINT,   0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-            { "BLENDWEIGHT",  0, DXGI_FORMAT_R8G8B8A8_UNORM,  0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        static const D3D11_INPUT_ELEMENT_DESC s_elements[] = {
+            { "SV_Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "COLOR", 0, DXGI_FORMAT_B8G8R8A8_UNORM, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "BINORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "BLENDINDICES", 0, DXGI_FORMAT_R8G8B8A8_UINT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "BLENDWEIGHT", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         };
 
         using namespace DXUT;
 
-        uint32_t offset = 0;
-        uint32_t texcoords = 0;
-        unsigned int flags = 0;
+        uint32_t     offset    = 0;
+        uint32_t     texcoords = 0;
+        unsigned int flags     = 0;
 
         bool posfound = false;
 
@@ -232,9 +222,8 @@ namespace
                 else
                     break;
             }
-            else if (decl[index].Usage == D3DDECLUSAGE_NORMAL
-                || decl[index].Usage == D3DDECLUSAGE_TANGENT
-                || decl[index].Usage == D3DDECLUSAGE_BINORMAL)
+            else if (decl[index].Usage == D3DDECLUSAGE_NORMAL || decl[index].Usage == D3DDECLUSAGE_TANGENT
+                     || decl[index].Usage == D3DDECLUSAGE_BINORMAL)
             {
                 size_t base = 1;
                 if (decl[index].Usage == D3DDECLUSAGE_TANGENT)
@@ -247,24 +236,56 @@ namespace
                 bool unk = false;
                 switch (decl[index].Type)
                 {
-                case D3DDECLTYPE_FLOAT3:                 assert(desc.Format == DXGI_FORMAT_R32G32B32_FLOAT); offset += 12; break;
-                case D3DDECLTYPE_UBYTE4N:                desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; flags |= BIASED_VERTEX_NORMALS; offset += 4; break;
-                case D3DDECLTYPE_SHORT4N:                desc.Format = DXGI_FORMAT_R16G16B16A16_SNORM; offset += 8; break;
-                case D3DDECLTYPE_FLOAT16_4:              desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT; offset += 8; break;
-                case D3DDECLTYPE_DXGI_R10G10B10A2_UNORM: desc.Format = DXGI_FORMAT_R10G10B10A2_UNORM; flags |= BIASED_VERTEX_NORMALS; offset += 4; break;
-                case D3DDECLTYPE_DXGI_R11G11B10_FLOAT:   desc.Format = DXGI_FORMAT_R11G11B10_FLOAT; flags |= BIASED_VERTEX_NORMALS; offset += 4; break;
-                case D3DDECLTYPE_DXGI_R8G8B8A8_SNORM:    desc.Format = DXGI_FORMAT_R8G8B8A8_SNORM; offset += 4; break;
-
-                #if defined(_XBOX_ONE) && defined(_TITLE)
-                case D3DDECLTYPE_DEC3N:                  desc.Format = DXGI_FORMAT_R10G10B10_SNORM_A2_UNORM; offset += 4; break;
-                case (32 + DXGI_FORMAT_R10G10B10_SNORM_A2_UNORM): desc.Format = DXGI_FORMAT_R10G10B10_SNORM_A2_UNORM; offset += 4; break;
-                #else
-                case D3DDECLTYPE_DEC3N:                  desc.Format = DXGI_FORMAT_R10G10B10A2_UNORM; flags |= USES_OBSOLETE_DEC3N; offset += 4; break;
-                #endif
-
-                default:
-                    unk = true;
+                case D3DDECLTYPE_FLOAT3:
+                    assert(desc.Format == DXGI_FORMAT_R32G32B32_FLOAT);
+                    offset += 12;
                     break;
+                case D3DDECLTYPE_UBYTE4N:
+                    desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+                    flags |= BIASED_VERTEX_NORMALS;
+                    offset += 4;
+                    break;
+                case D3DDECLTYPE_SHORT4N:
+                    desc.Format = DXGI_FORMAT_R16G16B16A16_SNORM;
+                    offset += 8;
+                    break;
+                case D3DDECLTYPE_FLOAT16_4:
+                    desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+                    offset += 8;
+                    break;
+                case D3DDECLTYPE_DXGI_R10G10B10A2_UNORM:
+                    desc.Format = DXGI_FORMAT_R10G10B10A2_UNORM;
+                    flags |= BIASED_VERTEX_NORMALS;
+                    offset += 4;
+                    break;
+                case D3DDECLTYPE_DXGI_R11G11B10_FLOAT:
+                    desc.Format = DXGI_FORMAT_R11G11B10_FLOAT;
+                    flags |= BIASED_VERTEX_NORMALS;
+                    offset += 4;
+                    break;
+                case D3DDECLTYPE_DXGI_R8G8B8A8_SNORM:
+                    desc.Format = DXGI_FORMAT_R8G8B8A8_SNORM;
+                    offset += 4;
+                    break;
+
+#if defined(_XBOX_ONE) && defined(_TITLE)
+                case D3DDECLTYPE_DEC3N:
+                    desc.Format = DXGI_FORMAT_R10G10B10_SNORM_A2_UNORM;
+                    offset += 4;
+                    break;
+                case (32 + DXGI_FORMAT_R10G10B10_SNORM_A2_UNORM):
+                    desc.Format = DXGI_FORMAT_R10G10B10_SNORM_A2_UNORM;
+                    offset += 4;
+                    break;
+#else
+                case D3DDECLTYPE_DEC3N:
+                    desc.Format = DXGI_FORMAT_R10G10B10A2_UNORM;
+                    flags |= USES_OBSOLETE_DEC3N;
+                    offset += 4;
+                    break;
+#endif
+
+                default: unk = true; break;
                 }
 
                 if (unk)
@@ -279,16 +300,32 @@ namespace
                 bool unk = false;
                 switch (decl[index].Type)
                 {
-                case D3DDECLTYPE_FLOAT4:                 desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT; offset += 16; break;
-                case D3DDECLTYPE_D3DCOLOR:               assert(desc.Format == DXGI_FORMAT_B8G8R8A8_UNORM); offset += 4; break;
-                case D3DDECLTYPE_UBYTE4N:                desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; offset += 4; break;
-                case D3DDECLTYPE_FLOAT16_4:              desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT; offset += 8; break;
-                case D3DDECLTYPE_DXGI_R10G10B10A2_UNORM: desc.Format = DXGI_FORMAT_R10G10B10A2_UNORM; offset += 4; break;
-                case D3DDECLTYPE_DXGI_R11G11B10_FLOAT:   desc.Format = DXGI_FORMAT_R11G11B10_FLOAT; offset += 4; break;
-
-                default:
-                    unk = true;
+                case D3DDECLTYPE_FLOAT4:
+                    desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+                    offset += 16;
                     break;
+                case D3DDECLTYPE_D3DCOLOR:
+                    assert(desc.Format == DXGI_FORMAT_B8G8R8A8_UNORM);
+                    offset += 4;
+                    break;
+                case D3DDECLTYPE_UBYTE4N:
+                    desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+                    offset += 4;
+                    break;
+                case D3DDECLTYPE_FLOAT16_4:
+                    desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+                    offset += 8;
+                    break;
+                case D3DDECLTYPE_DXGI_R10G10B10A2_UNORM:
+                    desc.Format = DXGI_FORMAT_R10G10B10A2_UNORM;
+                    offset += 4;
+                    break;
+                case D3DDECLTYPE_DXGI_R11G11B10_FLOAT:
+                    desc.Format = DXGI_FORMAT_R11G11B10_FLOAT;
+                    offset += 4;
+                    break;
+
+                default: unk = true; break;
                 }
 
                 if (unk)
@@ -301,21 +338,37 @@ namespace
             else if (decl[index].Usage == D3DDECLUSAGE_TEXCOORD)
             {
                 D3D11_INPUT_ELEMENT_DESC desc = s_elements[5];
-                desc.SemanticIndex = decl[index].UsageIndex;
+                desc.SemanticIndex            = decl[index].UsageIndex;
 
                 bool unk = false;
                 switch (decl[index].Type)
                 {
-                case D3DDECLTYPE_FLOAT1:    desc.Format = DXGI_FORMAT_R32_FLOAT; offset += 4; break;
-                case D3DDECLTYPE_FLOAT2:    assert(desc.Format == DXGI_FORMAT_R32G32_FLOAT); offset += 8; break;
-                case D3DDECLTYPE_FLOAT3:    desc.Format = DXGI_FORMAT_R32G32B32_FLOAT; offset += 12; break;
-                case D3DDECLTYPE_FLOAT4:    desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT; offset += 16; break;
-                case D3DDECLTYPE_FLOAT16_2: desc.Format = DXGI_FORMAT_R16G16_FLOAT; offset += 4; break;
-                case D3DDECLTYPE_FLOAT16_4: desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT; offset += 8; break;
-
-                default:
-                    unk = true;
+                case D3DDECLTYPE_FLOAT1:
+                    desc.Format = DXGI_FORMAT_R32_FLOAT;
+                    offset += 4;
                     break;
+                case D3DDECLTYPE_FLOAT2:
+                    assert(desc.Format == DXGI_FORMAT_R32G32_FLOAT);
+                    offset += 8;
+                    break;
+                case D3DDECLTYPE_FLOAT3:
+                    desc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+                    offset += 12;
+                    break;
+                case D3DDECLTYPE_FLOAT4:
+                    desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+                    offset += 16;
+                    break;
+                case D3DDECLTYPE_FLOAT16_2:
+                    desc.Format = DXGI_FORMAT_R16G16_FLOAT;
+                    offset += 4;
+                    break;
+                case D3DDECLTYPE_FLOAT16_4:
+                    desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+                    offset += 8;
+                    break;
+
+                default: unk = true; break;
                 }
 
                 if (unk)
@@ -361,20 +414,17 @@ namespace
 
         return flags;
     }
-}
-
+} // namespace
 
 //======================================================================================
 // Model Loader
 //======================================================================================
 
-_Use_decl_annotations_
-std::unique_ptr<Model> Model::CreateFromSDKMESH(
-    ID3D11Device* d3dDevice,
-    const uint8_t* meshData,
-    size_t idataSize,
-    IEffectFactory& fxFactory,
-    ModelLoaderFlags flags)
+_Use_decl_annotations_ std::unique_ptr<Model> Model::CreateFromSDKMESH(ID3D11Device* d3dDevice,
+    const uint8_t*                                                                   meshData,
+    size_t                                                                           idataSize,
+    IEffectFactory&                                                                  fxFactory,
+    ModelLoaderFlags                                                                 flags)
 {
     if (!d3dDevice || !meshData)
         throw std::invalid_argument("Device and meshData cannot be null");
@@ -387,8 +437,8 @@ std::unique_ptr<Model> Model::CreateFromSDKMESH(
     auto header = reinterpret_cast<const DXUT::SDKMESH_HEADER*>(meshData);
 
     const uint64_t headerSize = sizeof(DXUT::SDKMESH_HEADER)
-        + uint64_t(header->NumVertexBuffers) * sizeof(DXUT::SDKMESH_VERTEX_BUFFER_HEADER)
-        + uint64_t(header->NumIndexBuffers) * sizeof(DXUT::SDKMESH_INDEX_BUFFER_HEADER);
+                                + uint64_t(header->NumVertexBuffers) * sizeof(DXUT::SDKMESH_VERTEX_BUFFER_HEADER)
+                                + uint64_t(header->NumIndexBuffers) * sizeof(DXUT::SDKMESH_INDEX_BUFFER_HEADER);
     if (header->HeaderSize != headerSize)
         throw std::runtime_error("Not a valid SDKMESH file");
 
@@ -421,8 +471,7 @@ std::unique_ptr<Model> Model::CreateFromSDKMESH(
     if (sizeBytes > UINT32_MAX)
         throw std::overflow_error("Too many vertex buffers");
 
-    if (dataSize < header->VertexStreamHeadersOffset
-        || (dataSize < (header->VertexStreamHeadersOffset + sizeBytes)))
+    if (dataSize < header->VertexStreamHeadersOffset || (dataSize < (header->VertexStreamHeadersOffset + sizeBytes)))
         throw std::runtime_error("End of file");
     auto vbArray = reinterpret_cast<const DXUT::SDKMESH_VERTEX_BUFFER_HEADER*>(meshData + header->VertexStreamHeadersOffset);
 
@@ -430,8 +479,7 @@ std::unique_ptr<Model> Model::CreateFromSDKMESH(
     if (sizeBytes > UINT32_MAX)
         throw std::runtime_error("Too many index buffers");
 
-    if (dataSize < header->IndexStreamHeadersOffset
-        || (dataSize < (header->IndexStreamHeadersOffset + sizeBytes)))
+    if (dataSize < header->IndexStreamHeadersOffset || (dataSize < (header->IndexStreamHeadersOffset + sizeBytes)))
         throw std::runtime_error("End of file");
     auto ibArray = reinterpret_cast<const DXUT::SDKMESH_INDEX_BUFFER_HEADER*>(meshData + header->IndexStreamHeadersOffset);
 
@@ -439,8 +487,7 @@ std::unique_ptr<Model> Model::CreateFromSDKMESH(
     if (sizeBytes > UINT32_MAX)
         throw std::runtime_error("Too many meshes");
 
-    if (dataSize < header->MeshDataOffset
-        || (dataSize < (header->MeshDataOffset + sizeBytes)))
+    if (dataSize < header->MeshDataOffset || (dataSize < (header->MeshDataOffset + sizeBytes)))
         throw std::runtime_error("End of file");
     auto meshArray = reinterpret_cast<const DXUT::SDKMESH_MESH*>(meshData + header->MeshDataOffset);
 
@@ -448,8 +495,7 @@ std::unique_ptr<Model> Model::CreateFromSDKMESH(
     if (sizeBytes > UINT32_MAX)
         throw std::runtime_error("Too many subsets");
 
-    if (dataSize < header->SubsetDataOffset
-        || (dataSize < (header->SubsetDataOffset + sizeBytes)))
+    if (dataSize < header->SubsetDataOffset || (dataSize < (header->SubsetDataOffset + sizeBytes)))
         throw std::runtime_error("End of file");
     auto subsetArray = reinterpret_cast<const DXUT::SDKMESH_SUBSET*>(meshData + header->SubsetDataOffset);
 
@@ -460,8 +506,7 @@ std::unique_ptr<Model> Model::CreateFromSDKMESH(
         if (sizeBytes > UINT32_MAX)
             throw std::runtime_error("Too many frames");
 
-        if (dataSize < header->FrameDataOffset
-            || (dataSize < (header->FrameDataOffset + sizeBytes)))
+        if (dataSize < header->FrameDataOffset || (dataSize < (header->FrameDataOffset + sizeBytes)))
             throw std::runtime_error("End of file");
 
         if (flags & ModelLoader_IncludeBones)
@@ -474,11 +519,10 @@ std::unique_ptr<Model> Model::CreateFromSDKMESH(
     if (sizeBytes > UINT32_MAX)
         throw std::runtime_error("Too many materials");
 
-    if (dataSize < header->MaterialDataOffset
-        || (dataSize < (header->MaterialDataOffset + sizeBytes)))
+    if (dataSize < header->MaterialDataOffset || (dataSize < (header->MaterialDataOffset + sizeBytes)))
         throw std::runtime_error("End of file");
 
-    const DXUT::SDKMESH_MATERIAL* materialArray = nullptr;
+    const DXUT::SDKMESH_MATERIAL*    materialArray    = nullptr;
     const DXUT::SDKMESH_MATERIAL_V2* materialArray_v2 = nullptr;
     if (header->Version == DXUT::SDKMESH_FILE_VERSION_V2)
     {
@@ -491,8 +535,7 @@ std::unique_ptr<Model> Model::CreateFromSDKMESH(
 
     // Buffer data
     const uint64_t bufferDataOffset = header->HeaderSize + header->NonBufferDataSize;
-    if ((dataSize < bufferDataOffset)
-        || (dataSize < bufferDataOffset + header->BufferDataSize))
+    if ((dataSize < bufferDataOffset) || (dataSize < bufferDataOffset + header->BufferDataSize))
         throw std::runtime_error("End of file");
     const uint8_t* bufferData = meshData + bufferDataOffset;
 
@@ -520,11 +563,10 @@ std::unique_ptr<Model> Model::CreateFromSDKMESH(
                 throw std::runtime_error("VB too large for DirectX 11");
         }
 
-        if (dataSize < vh.DataOffset
-            || (dataSize < vh.DataOffset + vh.SizeBytes))
+        if (dataSize < vh.DataOffset || (dataSize < vh.DataOffset + vh.SizeBytes))
             throw std::runtime_error("End of file");
 
-        vbDecls[j] = std::make_shared<ModelMeshPart::InputLayoutCollection>();
+        vbDecls[j]           = std::make_shared<ModelMeshPart::InputLayoutCollection>();
         unsigned int ilflags = GetInputLayoutDesc(vh.Decl, *vbDecls[j].get());
 
         if (flags & ModelLoader_DisableSkinning)
@@ -546,22 +588,21 @@ std::unique_ptr<Model> Model::CreateFromSDKMESH(
         auto verts = bufferData + (vh.DataOffset - bufferDataOffset);
 
         D3D11_BUFFER_DESC desc = {};
-        desc.Usage = D3D11_USAGE_DEFAULT;
-        desc.ByteWidth = static_cast<UINT>(vh.SizeBytes);
-        desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+        desc.Usage             = D3D11_USAGE_DEFAULT;
+        desc.ByteWidth         = static_cast<UINT>(vh.SizeBytes);
+        desc.BindFlags         = D3D11_BIND_VERTEX_BUFFER;
 
         D3D11_SUBRESOURCE_DATA initData = { verts, 0, 0 };
 
-        ThrowIfFailed(
-            d3dDevice->CreateBuffer(&desc, &initData, &vbs[j])
-        );
+        ThrowIfFailed(d3dDevice->CreateBuffer(&desc, &initData, &vbs[j]));
 
         SetDebugObjectName(vbs[j].Get(), "ModelSDKMESH");
     }
 
     if (dec3nwarning)
     {
-        DebugTrace("WARNING: Vertex declaration uses legacy Direct3D 9 D3DDECLTYPE_DEC3N which has no DXGI equivalent\n"
+        DebugTrace(
+            "WARNING: Vertex declaration uses legacy Direct3D 9 D3DDECLTYPE_DEC3N which has no DXGI equivalent\n"
             "         (treating as DXGI_FORMAT_R10G10B10A2_UNORM which is not a signed format)\n");
     }
 
@@ -582,8 +623,7 @@ std::unique_ptr<Model> Model::CreateFromSDKMESH(
                 throw std::runtime_error("IB too large for DirectX 11");
         }
 
-        if (dataSize < ih.DataOffset
-            || (dataSize < ih.DataOffset + ih.SizeBytes))
+        if (dataSize < ih.DataOffset || (dataSize < ih.DataOffset + ih.SizeBytes))
             throw std::runtime_error("End of file");
 
         if (ih.IndexType != DXUT::IT_16BIT && ih.IndexType != DXUT::IT_32BIT)
@@ -592,15 +632,13 @@ std::unique_ptr<Model> Model::CreateFromSDKMESH(
         auto indices = bufferData + (ih.DataOffset - bufferDataOffset);
 
         D3D11_BUFFER_DESC desc = {};
-        desc.Usage = D3D11_USAGE_DEFAULT;
-        desc.ByteWidth = static_cast<UINT>(ih.SizeBytes);
-        desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+        desc.Usage             = D3D11_USAGE_DEFAULT;
+        desc.ByteWidth         = static_cast<UINT>(ih.SizeBytes);
+        desc.BindFlags         = D3D11_BIND_INDEX_BUFFER;
 
         D3D11_SUBRESOURCE_DATA initData = { indices, 0, 0 };
 
-        ThrowIfFailed(
-            d3dDevice->CreateBuffer(&desc, &initData, &ibs[j])
-        );
+        ThrowIfFailed(d3dDevice->CreateBuffer(&desc, &initData, &ibs[j]));
 
         SetDebugObjectName(ibs[j].Get(), "ModelSDKMESH");
     }
@@ -616,9 +654,7 @@ std::unique_ptr<Model> Model::CreateFromSDKMESH(
     {
         auto& mh = meshArray[meshIndex];
 
-        if (!mh.NumSubsets
-            || !mh.NumVertexBuffers
-            || mh.IndexBuffer >= header->NumIndexBuffers
+        if (!mh.NumSubsets || !mh.NumVertexBuffers || mh.IndexBuffer >= header->NumIndexBuffers
             || mh.VertexBuffers[0] >= header->NumVertexBuffers)
             throw std::out_of_range("Invalid mesh found");
 
@@ -628,8 +664,7 @@ std::unique_ptr<Model> Model::CreateFromSDKMESH(
         if (sizeBytes >= UINT32_MAX)
             throw std::runtime_error("Too many subsets");
 
-        if (dataSize < mh.SubsetOffset
-            || (dataSize < mh.SubsetOffset + sizeBytes))
+        if (dataSize < mh.SubsetOffset || (dataSize < mh.SubsetOffset + sizeBytes))
             throw std::runtime_error("End of file");
 
         auto subsets = reinterpret_cast<const uint32_t*>(meshData + mh.SubsetOffset);
@@ -641,8 +676,7 @@ std::unique_ptr<Model> Model::CreateFromSDKMESH(
             if (sizeBytes >= UINT32_MAX)
                 throw std::runtime_error("Too many frame influences");
 
-            if (dataSize < mh.FrameInfluenceOffset
-                || (dataSize < mh.FrameInfluenceOffset + sizeBytes))
+            if (dataSize < mh.FrameInfluenceOffset || (dataSize < mh.FrameInfluenceOffset + sizeBytes))
                 throw std::runtime_error("End of file");
 
             if (flags & ModelLoader_IncludeBones)
@@ -651,15 +685,15 @@ std::unique_ptr<Model> Model::CreateFromSDKMESH(
             }
         }
 
-        auto mesh = std::make_shared<ModelMesh>();
+        auto    mesh                          = std::make_shared<ModelMesh>();
         wchar_t meshName[DXUT::MAX_MESH_NAME] = {};
         ASCIIToWChar(meshName, mh.Name);
-        mesh->name = meshName;
-        mesh->ccw = (flags & ModelLoader_CounterClockwise) != 0;
+        mesh->name    = meshName;
+        mesh->ccw     = (flags & ModelLoader_CounterClockwise) != 0;
         mesh->pmalpha = (flags & ModelLoader_PremultipledAlpha) != 0;
 
         // Extents
-        mesh->boundingBox.Center = mh.BoundingBoxCenter;
+        mesh->boundingBox.Center  = mh.BoundingBoxCenter;
         mesh->boundingBox.Extents = mh.BoundingBoxExtents;
         BoundingSphere::CreateFromBoundingBox(mesh->boundingSphere, mesh->boundingBox);
 
@@ -682,22 +716,20 @@ std::unique_ptr<Model> Model::CreateFromSDKMESH(
             D3D11_PRIMITIVE_TOPOLOGY primType;
             switch (subset.PrimitiveType)
             {
-            case DXUT::PT_TRIANGLE_LIST:        primType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;       break;
-            case DXUT::PT_TRIANGLE_STRIP:       primType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;      break;
-            case DXUT::PT_LINE_LIST:            primType = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;           break;
-            case DXUT::PT_LINE_STRIP:           primType = D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP;          break;
-            case DXUT::PT_POINT_LIST:           primType = D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;          break;
-            case DXUT::PT_TRIANGLE_LIST_ADJ:    primType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST_ADJ;   break;
-            case DXUT::PT_TRIANGLE_STRIP_ADJ:   primType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP_ADJ;  break;
-            case DXUT::PT_LINE_LIST_ADJ:        primType = D3D11_PRIMITIVE_TOPOLOGY_LINELIST_ADJ;       break;
-            case DXUT::PT_LINE_STRIP_ADJ:       primType = D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP_ADJ;      break;
+            case DXUT::PT_TRIANGLE_LIST:       primType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST; break;
+            case DXUT::PT_TRIANGLE_STRIP:      primType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP; break;
+            case DXUT::PT_LINE_LIST:           primType = D3D11_PRIMITIVE_TOPOLOGY_LINELIST; break;
+            case DXUT::PT_LINE_STRIP:          primType = D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP; break;
+            case DXUT::PT_POINT_LIST:          primType = D3D11_PRIMITIVE_TOPOLOGY_POINTLIST; break;
+            case DXUT::PT_TRIANGLE_LIST_ADJ:   primType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST_ADJ; break;
+            case DXUT::PT_TRIANGLE_STRIP_ADJ:  primType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP_ADJ; break;
+            case DXUT::PT_LINE_LIST_ADJ:       primType = D3D11_PRIMITIVE_TOPOLOGY_LINELIST_ADJ; break;
+            case DXUT::PT_LINE_STRIP_ADJ:      primType = D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP_ADJ; break;
 
             case DXUT::PT_QUAD_PATCH_LIST:
-            case DXUT::PT_TRIANGLE_PATCH_LIST:
-                throw std::runtime_error("Direct3D9 era tessellation not supported");
+            case DXUT::PT_TRIANGLE_PATCH_LIST: throw std::runtime_error("Direct3D9 era tessellation not supported");
 
-            default:
-                throw std::runtime_error("Unknown primitive type");
+            default:                           throw std::runtime_error("Unknown primitive type");
             }
 
             if (subset.MaterialID >= header->NumMaterials)
@@ -711,16 +743,11 @@ std::unique_ptr<Model> Model::CreateFromSDKMESH(
 
                 if (materialArray_v2)
                 {
-                    LoadMaterial(
-                        materialArray_v2[subset.MaterialID],
-                        materialFlags[vi],
-                        fxFactory,
-                        mat);
+                    LoadMaterial(materialArray_v2[subset.MaterialID], materialFlags[vi], fxFactory, mat);
                 }
                 else
                 {
-                    LoadMaterial(
-                        materialArray[subset.MaterialID],
+                    LoadMaterial(materialArray[subset.MaterialID],
                         materialFlags[vi],
                         fxFactory,
                         mat,
@@ -729,27 +756,28 @@ std::unique_ptr<Model> Model::CreateFromSDKMESH(
             }
 
             ComPtr<ID3D11InputLayout> il;
-            ThrowIfFailed(
-                CreateInputLayoutFromEffect(d3dDevice, mat.effect.get(),
-                    vbDecls[mh.VertexBuffers[0]]->data(), vbDecls[mh.VertexBuffers[0]]->size(), il.GetAddressOf())
-            );
+            ThrowIfFailed(CreateInputLayoutFromEffect(d3dDevice,
+                mat.effect.get(),
+                vbDecls[mh.VertexBuffers[0]]->data(),
+                vbDecls[mh.VertexBuffers[0]]->size(),
+                il.GetAddressOf()));
 
             SetDebugObjectName(il.Get(), "ModelSDKMESH");
 
-            auto part = std::make_unique<ModelMeshPart>();
+            auto part     = std::make_unique<ModelMeshPart>();
             part->isAlpha = mat.alpha;
 
-            part->indexCount = static_cast<uint32_t>(subset.IndexCount);
-            part->startIndex = static_cast<uint32_t>(subset.IndexStart);
-            part->vertexOffset = static_cast<int32_t>(subset.VertexStart);
-            part->vertexStride = static_cast<uint32_t>(vbArray[mh.VertexBuffers[0]].StrideBytes);
-            part->indexFormat = (ibArray[mh.IndexBuffer].IndexType == DXUT::IT_32BIT) ? DXGI_FORMAT_R32_UINT : DXGI_FORMAT_R16_UINT;
+            part->indexCount    = static_cast<uint32_t>(subset.IndexCount);
+            part->startIndex    = static_cast<uint32_t>(subset.IndexStart);
+            part->vertexOffset  = static_cast<int32_t>(subset.VertexStart);
+            part->vertexStride  = static_cast<uint32_t>(vbArray[mh.VertexBuffers[0]].StrideBytes);
+            part->indexFormat   = (ibArray[mh.IndexBuffer].IndexType == DXUT::IT_32BIT) ? DXGI_FORMAT_R32_UINT : DXGI_FORMAT_R16_UINT;
             part->primitiveType = primType;
-            part->inputLayout = il;
-            part->indexBuffer = ibs[mh.IndexBuffer];
-            part->vertexBuffer = vbs[mh.VertexBuffers[0]];
-            part->effect = mat.effect;
-            part->vbDecl = vbDecls[mh.VertexBuffers[0]];
+            part->inputLayout   = il;
+            part->indexBuffer   = ibs[mh.IndexBuffer];
+            part->vertexBuffer  = vbs[mh.VertexBuffers[0]];
+            part->effect        = mat.effect;
+            part->vbDecl        = vbDecls[mh.VertexBuffers[0]];
 
             mesh->meshParts.emplace_back(std::move(part));
         }
@@ -768,10 +796,7 @@ std::unique_ptr<Model> Model::CreateFromSDKMESH(
 
         for (uint32_t j = 0; j < header->NumFrames; ++j)
         {
-            ModelBone bone(
-                frameArray[j].ParentFrame,
-                frameArray[j].ChildFrame,
-                frameArray[j].SiblingFrame);
+            ModelBone bone(frameArray[j].ParentFrame, frameArray[j].ChildFrame, frameArray[j].SiblingFrame);
 
             wchar_t boneName[DXUT::MAX_FRAME_NAME] = {};
             ASCIIToWChar(boneName, frameArray[j].Name);
@@ -815,22 +840,16 @@ std::unique_ptr<Model> Model::CreateFromSDKMESH(
     return model;
 }
 
-
 //--------------------------------------------------------------------------------------
-_Use_decl_annotations_
-std::unique_ptr<Model> Model::CreateFromSDKMESH(
-    ID3D11Device* device,
-    const wchar_t* szFileName,
-    IEffectFactory& fxFactory,
-    ModelLoaderFlags flags)
+_Use_decl_annotations_ std::unique_ptr<Model>
+Model::CreateFromSDKMESH(ID3D11Device* device, const wchar_t* szFileName, IEffectFactory& fxFactory, ModelLoaderFlags flags)
 {
-    size_t dataSize = 0;
+    size_t                     dataSize = 0;
     std::unique_ptr<uint8_t[]> data;
-    HRESULT hr = BinaryReader::ReadEntireFile(szFileName, data, &dataSize);
+    HRESULT                    hr = BinaryReader::ReadEntireFile(szFileName, data, &dataSize);
     if (FAILED(hr))
     {
-        DebugTrace("ERROR: CreateFromSDKMESH failed (%08X) loading '%ls'\n",
-            static_cast<unsigned int>(hr), szFileName);
+        DebugTrace("ERROR: CreateFromSDKMESH failed (%08X) loading '%ls'\n", static_cast<unsigned int>(hr), szFileName);
         throw std::runtime_error("CreateFromSDKMESH");
     }
 
@@ -841,19 +860,13 @@ std::unique_ptr<Model> Model::CreateFromSDKMESH(
     return model;
 }
 
-
-
 //--------------------------------------------------------------------------------------
 // Adapters for /Zc:wchar_t- clients
 
 #if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
 
-_Use_decl_annotations_
-std::unique_ptr<Model> Model::CreateFromSDKMESH(
-    ID3D11Device* device,
-    const __wchar_t* szFileName,
-    IEffectFactory& fxFactory,
-    ModelLoaderFlags flags)
+_Use_decl_annotations_ std::unique_ptr<Model>
+Model::CreateFromSDKMESH(ID3D11Device* device, const __wchar_t* szFileName, IEffectFactory& fxFactory, ModelLoaderFlags flags)
 {
     return CreateFromSDKMESH(device, reinterpret_cast<const unsigned short*>(szFileName), fxFactory, flags);
 }

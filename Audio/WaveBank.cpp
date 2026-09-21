@@ -18,7 +18,6 @@
 
 using namespace DirectX;
 
-
 //======================================================================================
 // WaveBank
 //======================================================================================
@@ -27,11 +26,11 @@ using namespace DirectX;
 class WaveBank::Impl : public IVoiceNotify
 {
 public:
-    explicit Impl(_In_ AudioEngine* engine) :
-        mEngine(engine),
-        mOneShots(0),
-        mPrepared(false),
-        mStreaming(false)
+    explicit Impl(_In_ AudioEngine* engine)
+        : mEngine(engine),
+          mOneShots(0),
+          mPrepared(false),
+          mStreaming(false)
     {
         if (!engine)
             throw std::invalid_argument("AudioEngine is required");
@@ -39,18 +38,17 @@ public:
         mEngine->RegisterNotify(this, false);
     }
 
-    Impl(Impl&&) = default;
-    Impl& operator= (Impl&&) = default;
+    Impl(Impl&&)            = default;
+    Impl& operator=(Impl&&) = default;
 
-    Impl(Impl const&) = delete;
-    Impl& operator= (Impl const&) = delete;
+    Impl(Impl const&)            = delete;
+    Impl& operator=(Impl const&) = delete;
 
     ~Impl() override
     {
         if (!mInstances.empty())
         {
-            DebugTrace("WARNING: Destroying WaveBank \"%hs\" with %zu outstanding instances\n",
-                mReader.BankName(), mInstances.size());
+            DebugTrace("WARNING: Destroying WaveBank \"%hs\" with %zu outstanding instances\n", mReader.BankName(), mInstances.size());
 
             for (auto it : mInstances)
             {
@@ -63,8 +61,7 @@ public:
 
         if (mOneShots > 0)
         {
-            DebugTrace("WARNING: Destroying WaveBank \"%hs\" with %u outstanding one shot effects\n",
-                mReader.BankName(), mOneShots);
+            DebugTrace("WARNING: Destroying WaveBank \"%hs\" with %u outstanding one shot effects\n", mReader.BankName(), mOneShots);
         }
 
         if (mEngine)
@@ -79,15 +76,9 @@ public:
     void Play(unsigned int index, float volume, float pitch, float pan);
 
     // IVoiceNotify
-    void __cdecl OnBufferEnd() override
-    {
-        InterlockedDecrement(&mOneShots);
-    }
+    void __cdecl OnBufferEnd() override { InterlockedDecrement(&mOneShots); }
 
-    void __cdecl OnCriticalError() override
-    {
-        mOneShots = 0;
-    }
+    void __cdecl OnCriticalError() override { mOneShots = 0; }
 
     void __cdecl OnReset() override
     {
@@ -102,7 +93,7 @@ public:
 
     void __cdecl OnDestroyEngine() noexcept override
     {
-        mEngine = nullptr;
+        mEngine   = nullptr;
         mOneShots = 0;
     }
 
@@ -119,27 +110,24 @@ public:
         {
             stats.audioBytes += mReader.BankAudioSize();
 
-        #ifdef DIRECTX_ENABLE_XMA2
+#ifdef DIRECTX_ENABLE_XMA2
             if (mReader.HasXMA())
                 stats.xmaAudioBytes += mReader.BankAudioSize();
-        #endif
+#endif
         }
     }
 
-    void __cdecl OnDestroyParent() noexcept override
-    {}
+    void __cdecl OnDestroyParent() noexcept override {}
 
-    AudioEngine*                        mEngine;
-    std::list<IVoiceNotify*>            mInstances;
-    WaveBankReader                      mReader;
-    uint32_t                            mOneShots;
-    bool                                mPrepared;
-    bool                                mStreaming;
+    AudioEngine*             mEngine;
+    std::list<IVoiceNotify*> mInstances;
+    WaveBankReader           mReader;
+    uint32_t                 mOneShots;
+    bool                     mPrepared;
+    bool                     mStreaming;
 };
 
-
-_Use_decl_annotations_
-HRESULT WaveBank::Impl::Initialize(const AudioEngine* engine, const wchar_t* wbFileName) noexcept
+_Use_decl_annotations_ HRESULT WaveBank::Impl::Initialize(const AudioEngine* engine, const wchar_t* wbFileName) noexcept
 {
     if (!engine || !wbFileName)
         return E_INVALIDARG;
@@ -152,7 +140,6 @@ HRESULT WaveBank::Impl::Initialize(const AudioEngine* engine, const wchar_t* wbF
 
     return S_OK;
 }
-
 
 void WaveBank::Impl::Play(unsigned int index, float volume, float pitch, float pan)
 {
@@ -168,8 +155,7 @@ void WaveBank::Impl::Play(unsigned int index, float volume, float pitch, float p
 
     if (index >= mReader.Count())
     {
-        DebugTrace("WARNING: Index %u not found in wave bank with only %u entries, one-shot not triggered\n",
-            index, mReader.Count());
+        DebugTrace("WARNING: Index %u not found in wave bank with only %u entries, one-shot not triggered\n", index, mReader.Count());
         return;
     }
 
@@ -179,9 +165,9 @@ void WaveBank::Impl::Play(unsigned int index, float volume, float pitch, float p
         mPrepared = true;
     }
 
-    char wfxbuff[64] = {};
-    auto wfx = reinterpret_cast<WAVEFORMATEX*>(wfxbuff);
-    HRESULT hr = mReader.GetFormat(index, wfx, sizeof(wfxbuff));
+    char    wfxbuff[64] = {};
+    auto    wfx         = reinterpret_cast<WAVEFORMATEX*>(wfxbuff);
+    HRESULT hr          = mReader.GetFormat(index, wfx, sizeof(wfxbuff));
     ThrowIfFailed(hr);
 
     IXAudio2SourceVoice* voice = nullptr;
@@ -218,14 +204,14 @@ void WaveBank::Impl::Play(unsigned int index, float volume, float pitch, float p
     ThrowIfFailed(hr);
 
     XAUDIO2_BUFFER buffer = {};
-    hr = mReader.GetWaveData(index, &buffer.pAudioData, buffer.AudioBytes);
+    hr                    = mReader.GetWaveData(index, &buffer.pAudioData, buffer.AudioBytes);
     ThrowIfFailed(hr);
 
     WaveBankReader::Metadata metadata;
     hr = mReader.GetMetadata(index, metadata);
     ThrowIfFailed(hr);
 
-    buffer.Flags = XAUDIO2_END_OF_STREAM;
+    buffer.Flags    = XAUDIO2_END_OF_STREAM;
     buffer.pContext = this;
 
 #ifdef DIRECTX_ENABLE_XWMA
@@ -241,7 +227,7 @@ void WaveBank::Impl::Play(unsigned int index, float volume, float pitch, float p
         hr = voice->SubmitSourceBuffer(&buffer, &wmaBuffer);
     }
     else
-    #endif // xWMA
+#endif // xWMA
     {
         hr = voice->SubmitSourceBuffer(&buffer, nullptr);
     }
@@ -249,40 +235,41 @@ void WaveBank::Impl::Play(unsigned int index, float volume, float pitch, float p
     {
         DebugTrace("ERROR: WaveBank failed (%08X) when submitting buffer:\n", static_cast<unsigned int>(hr));
         DebugTrace("\tFormat Tag %u, %u channels, %u-bit, %u Hz, %u bytes\n",
-            wfx->wFormatTag, wfx->nChannels, wfx->wBitsPerSample, wfx->nSamplesPerSec, metadata.lengthBytes);
+            wfx->wFormatTag,
+            wfx->nChannels,
+            wfx->wBitsPerSample,
+            wfx->nSamplesPerSec,
+            metadata.lengthBytes);
         throw std::runtime_error("SubmitSourceBuffer");
     }
 
     InterlockedIncrement(&mOneShots);
 }
 
-
 //--------------------------------------------------------------------------------------
 // WaveBank
 //--------------------------------------------------------------------------------------
 
 // Public constructors.
-_Use_decl_annotations_
-WaveBank::WaveBank(AudioEngine* engine, const wchar_t* wbFileName)
+_Use_decl_annotations_ WaveBank::WaveBank(AudioEngine* engine, const wchar_t* wbFileName)
     : pImpl(std::make_unique<Impl>(engine))
 {
     HRESULT hr = pImpl->Initialize(engine, wbFileName);
     if (FAILED(hr))
     {
-        DebugTrace("ERROR: WaveBank failed (%08X) to intialize from .xwb file \"%ls\"\n",
-            static_cast<unsigned int>(hr), wbFileName);
+        DebugTrace("ERROR: WaveBank failed (%08X) to intialize from .xwb file \"%ls\"\n", static_cast<unsigned int>(hr), wbFileName);
         throw std::runtime_error("WaveBank");
     }
 
     DebugTrace("INFO: WaveBank \"%hs\" with %u entries loaded from .xwb file \"%ls\"\n",
-        pImpl->mReader.BankName(), pImpl->mReader.Count(), wbFileName);
+        pImpl->mReader.BankName(),
+        pImpl->mReader.Count(),
+        wbFileName);
 }
 
-
-WaveBank::WaveBank(WaveBank&&) noexcept = default;
-WaveBank& WaveBank::operator= (WaveBank&&) noexcept = default;
-WaveBank::~WaveBank() = default;
-
+WaveBank::WaveBank(WaveBank&&) noexcept            = default;
+WaveBank& WaveBank::operator=(WaveBank&&) noexcept = default;
+WaveBank::~WaveBank()                              = default;
 
 // Public methods (one-shots)
 void WaveBank::Play(unsigned int index)
@@ -290,12 +277,10 @@ void WaveBank::Play(unsigned int index)
     pImpl->Play(index, 1.f, 0.f, 0.f);
 }
 
-
 void WaveBank::Play(unsigned int index, float volume, float pitch, float pan)
 {
     pImpl->Play(index, volume, pitch, pan);
 }
-
 
 void WaveBank::Play(_In_z_ const char* name)
 {
@@ -309,7 +294,6 @@ void WaveBank::Play(_In_z_ const char* name)
     pImpl->Play(index, 1.f, 0.f, 0.f);
 }
 
-
 void WaveBank::Play(_In_z_ const char* name, float volume, float pitch, float pan)
 {
     const unsigned int index = pImpl->mReader.Find(name);
@@ -321,7 +305,6 @@ void WaveBank::Play(_In_z_ const char* name, float volume, float pitch, float pa
 
     pImpl->Play(index, volume, pitch, pan);
 }
-
 
 // Public methods (sound effect instance)
 std::unique_ptr<SoundEffectInstance> WaveBank::CreateInstance(unsigned int index, SOUND_EFFECT_INSTANCE_FLAGS flags)
@@ -352,7 +335,6 @@ std::unique_ptr<SoundEffectInstance> WaveBank::CreateInstance(unsigned int index
     return std::unique_ptr<SoundEffectInstance>(effect);
 }
 
-
 std::unique_ptr<SoundEffectInstance> WaveBank::CreateInstance(_In_z_ const char* name, SOUND_EFFECT_INSTANCE_FLAGS flags)
 {
     const unsigned int index = pImpl->mReader.Find(name);
@@ -364,7 +346,6 @@ std::unique_ptr<SoundEffectInstance> WaveBank::CreateInstance(_In_z_ const char*
 
     return CreateInstance(index, flags);
 }
-
 
 // Public methods (sound stream instance)
 std::unique_ptr<SoundStreamInstance> WaveBank::CreateStreamInstance(unsigned int index, SOUND_EFFECT_INSTANCE_FLAGS flags)
@@ -395,7 +376,6 @@ std::unique_ptr<SoundStreamInstance> WaveBank::CreateStreamInstance(unsigned int
     return std::unique_ptr<SoundStreamInstance>(effect);
 }
 
-
 std::unique_ptr<SoundStreamInstance> WaveBank::CreateStreamInstance(_In_z_ const char* name, SOUND_EFFECT_INSTANCE_FLAGS flags)
 {
     const unsigned int index = pImpl->mReader.Find(name);
@@ -408,7 +388,6 @@ std::unique_ptr<SoundStreamInstance> WaveBank::CreateStreamInstance(_In_z_ const
     return CreateStreamInstance(index, flags);
 }
 
-
 void WaveBank::UnregisterInstance(_In_ IVoiceNotify* instance)
 {
     auto it = std::find(pImpl->mInstances.begin(), pImpl->mInstances.end(), instance);
@@ -417,7 +396,6 @@ void WaveBank::UnregisterInstance(_In_ IVoiceNotify* instance)
 
     pImpl->mInstances.erase(it);
 }
-
 
 // Public accessors.
 bool WaveBank::IsPrepared() const noexcept
@@ -432,24 +410,20 @@ bool WaveBank::IsPrepared() const noexcept
     return true;
 }
 
-
 bool WaveBank::IsInUse() const noexcept
 {
     return (pImpl->mOneShots > 0) || !pImpl->mInstances.empty();
 }
-
 
 bool WaveBank::IsStreamingBank() const noexcept
 {
     return pImpl->mReader.IsStreamingBank();
 }
 
-
 bool WaveBank::IsAdvancedFormat() const noexcept
 {
     return (pImpl->mReader.GetWaveAlignment() == 4096);
 }
-
 
 size_t WaveBank::GetSampleSizeInBytes(unsigned int index) const noexcept
 {
@@ -457,13 +431,12 @@ size_t WaveBank::GetSampleSizeInBytes(unsigned int index) const noexcept
         return 0;
 
     WaveBankReader::Metadata metadata;
-    HRESULT hr = pImpl->mReader.GetMetadata(index, metadata);
+    HRESULT                  hr = pImpl->mReader.GetMetadata(index, metadata);
     if (FAILED(hr))
         return 0;
 
     return metadata.lengthBytes;
 }
-
 
 size_t WaveBank::GetSampleDuration(unsigned int index) const noexcept
 {
@@ -471,22 +444,21 @@ size_t WaveBank::GetSampleDuration(unsigned int index) const noexcept
         return 0;
 
     WaveBankReader::Metadata metadata;
-    HRESULT hr = pImpl->mReader.GetMetadata(index, metadata);
+    HRESULT                  hr = pImpl->mReader.GetMetadata(index, metadata);
     if (FAILED(hr))
         return 0;
 
     return metadata.duration;
 }
 
-
 size_t WaveBank::GetSampleDurationMS(unsigned int index) const noexcept
 {
     if (index >= pImpl->mReader.Count())
         return 0;
 
-    char buff[64] = {};
-    auto wfx = reinterpret_cast<WAVEFORMATEX*>(buff);
-    HRESULT hr = pImpl->mReader.GetFormat(index, wfx, sizeof(buff));
+    char    buff[64] = {};
+    auto    wfx      = reinterpret_cast<WAVEFORMATEX*>(buff);
+    HRESULT hr       = pImpl->mReader.GetFormat(index, wfx, sizeof(buff));
     if (FAILED(hr))
         return 0;
 
@@ -498,9 +470,7 @@ size_t WaveBank::GetSampleDurationMS(unsigned int index) const noexcept
     return static_cast<size_t>((uint64_t(metadata.duration) * 1000) / wfx->nSamplesPerSec);
 }
 
-
-_Use_decl_annotations_
-const WAVEFORMATEX* WaveBank::GetFormat(unsigned int index, WAVEFORMATEX* wfx, size_t maxsize) const noexcept
+_Use_decl_annotations_ const WAVEFORMATEX* WaveBank::GetFormat(unsigned int index, WAVEFORMATEX* wfx, size_t maxsize) const noexcept
 {
     if (index >= pImpl->mReader.Count())
         return nullptr;
@@ -512,18 +482,14 @@ const WAVEFORMATEX* WaveBank::GetFormat(unsigned int index, WAVEFORMATEX* wfx, s
     return wfx;
 }
 
-
-_Use_decl_annotations_
-int WaveBank::Find(const char* name) const
+_Use_decl_annotations_ int WaveBank::Find(const char* name) const
 {
     return static_cast<int>(pImpl->mReader.Find(name));
 }
 
-
 #ifdef DIRECTX_ENABLE_XWMA
 
-_Use_decl_annotations_
-bool WaveBank::FillSubmitBuffer(unsigned int index, XAUDIO2_BUFFER& buffer, XAUDIO2_BUFFER_WMA& wmaBuffer) const
+_Use_decl_annotations_ bool WaveBank::FillSubmitBuffer(unsigned int index, XAUDIO2_BUFFER& buffer, XAUDIO2_BUFFER_WMA& wmaBuffer) const
 {
     memset(&buffer, 0, sizeof(buffer));
     memset(&wmaBuffer, 0, sizeof(wmaBuffer));
@@ -535,7 +501,7 @@ bool WaveBank::FillSubmitBuffer(unsigned int index, XAUDIO2_BUFFER& buffer, XAUD
     hr = pImpl->mReader.GetMetadata(index, metadata);
     ThrowIfFailed(hr);
 
-    buffer.LoopBegin = metadata.loopStart;
+    buffer.LoopBegin  = metadata.loopStart;
     buffer.LoopLength = metadata.loopLength;
 
     uint32_t tag;
@@ -547,8 +513,7 @@ bool WaveBank::FillSubmitBuffer(unsigned int index, XAUDIO2_BUFFER& buffer, XAUD
 
 #else // !xWMA
 
-_Use_decl_annotations_
-void WaveBank::FillSubmitBuffer(unsigned int index, XAUDIO2_BUFFER& buffer) const
+_Use_decl_annotations_ void WaveBank::FillSubmitBuffer(unsigned int index, XAUDIO2_BUFFER& buffer) const
 {
     memset(&buffer, 0, sizeof(buffer));
 
@@ -559,12 +524,11 @@ void WaveBank::FillSubmitBuffer(unsigned int index, XAUDIO2_BUFFER& buffer) cons
     hr = pImpl->mReader.GetMetadata(index, metadata);
     ThrowIfFailed(hr);
 
-    buffer.LoopBegin = metadata.loopStart;
+    buffer.LoopBegin  = metadata.loopStart;
     buffer.LoopLength = metadata.loopLength;
 }
 
 #endif
-
 
 HANDLE WaveBank::GetAsyncHandle() const noexcept
 {
@@ -576,9 +540,7 @@ HANDLE WaveBank::GetAsyncHandle() const noexcept
     return nullptr;
 }
 
-
-_Use_decl_annotations_
-bool WaveBank::GetPrivateData(unsigned int index, void* data, size_t datasize)
+_Use_decl_annotations_ bool WaveBank::GetPrivateData(unsigned int index, void* data, size_t datasize)
 {
     if (index >= pImpl->mReader.Count())
         return false;
@@ -588,31 +550,26 @@ bool WaveBank::GetPrivateData(unsigned int index, void* data, size_t datasize)
 
     switch (datasize)
     {
-        case sizeof(WaveBankReader::Metadata) :
-        {
-            auto ptr = reinterpret_cast<WaveBankReader::Metadata*>(data);
-            return SUCCEEDED(pImpl->mReader.GetMetadata(index, *ptr));
-        }
+    case sizeof(WaveBankReader::Metadata): {
+        auto ptr = reinterpret_cast<WaveBankReader::Metadata*>(data);
+        return SUCCEEDED(pImpl->mReader.GetMetadata(index, *ptr));
+    }
 
-        case sizeof(WaveBankSeekData) :
-        {
-            auto ptr = reinterpret_cast<WaveBankSeekData*>(data);
-            return SUCCEEDED(pImpl->mReader.GetSeekTable(index, &ptr->seekTable, ptr->seekCount, ptr->tag));
-        }
+    case sizeof(WaveBankSeekData): {
+        auto ptr = reinterpret_cast<WaveBankSeekData*>(data);
+        return SUCCEEDED(pImpl->mReader.GetSeekTable(index, &ptr->seekTable, ptr->seekCount, ptr->tag));
+    }
 
-        default:
-            return false;
+    default: return false;
     }
 }
-
 
 //--------------------------------------------------------------------------------------
 // Adapters for /Zc:wchar_t- clients
 #if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
 
-_Use_decl_annotations_
-WaveBank::WaveBank(AudioEngine* engine, const __wchar_t* wbFileName) :
-    WaveBank(engine, reinterpret_cast<const unsigned short*>(wbFileName))
+_Use_decl_annotations_ WaveBank::WaveBank(AudioEngine* engine, const __wchar_t* wbFileName)
+    : WaveBank(engine, reinterpret_cast<const unsigned short*>(wbFileName))
 {}
 
 #endif // !_NATIVE_WCHAR_T_DEFINED

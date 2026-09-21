@@ -12,16 +12,13 @@
 #include "Effects.h"
 #include "PlatformHelpers.h"
 
-
 using namespace DirectX;
 
-_Use_decl_annotations_
-HRESULT DirectX::CreateInputLayoutFromEffect(
-    ID3D11Device* device,
-    IEffect* effect,
-    const D3D11_INPUT_ELEMENT_DESC* desc,
-    size_t count,
-    ID3D11InputLayout** pInputLayout) noexcept
+_Use_decl_annotations_ HRESULT DirectX::CreateInputLayoutFromEffect(ID3D11Device* device,
+    IEffect*                                                                      effect,
+    const D3D11_INPUT_ELEMENT_DESC*                                               desc,
+    size_t                                                                        count,
+    ID3D11InputLayout**                                                           pInputLayout) noexcept
 {
     if (!pInputLayout)
         return E_INVALIDARG;
@@ -32,7 +29,7 @@ HRESULT DirectX::CreateInputLayoutFromEffect(
         return E_INVALIDARG;
 
     void const* shaderByteCode;
-    size_t byteCodeLength;
+    size_t      byteCodeLength;
 
     try
     {
@@ -47,8 +44,5 @@ HRESULT DirectX::CreateInputLayoutFromEffect(
         return E_FAIL;
     }
 
-    return device->CreateInputLayout(
-        desc, static_cast<UINT>(count),
-        shaderByteCode, byteCodeLength,
-        pInputLayout);
+    return device->CreateInputLayout(desc, static_cast<UINT>(count), shaderByteCode, byteCodeLength, pInputLayout);
 }

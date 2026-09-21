@@ -20,7 +20,7 @@
 
 namespace VBO
 {
-#pragma pack(push,1)
+#pragma pack(push, 1)
 
     struct header_t
     {
@@ -37,7 +37,7 @@ namespace VBO
 
 #pragma pack(pop)
 
-} // namespace
+} // namespace VBO
 
 static_assert(sizeof(VBO::header_t) == 8, "VBO header size mismatch");
 static_assert(sizeof(VBO::vertex_t) == 32, "VBO vertex size mismatch");
