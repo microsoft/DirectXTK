@@ -128,9 +128,3 @@ jobs:
         run: >
           msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=ARM64
           DirectXTK_Desktop_2022_Win10.slnx
-
-      - name: 'Build (UWP)'
-        working-directory: ${{ github.workspace }}
-        run: >
-          msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=ARM64
-          DirectXTK_Windows10_2022.slnx
