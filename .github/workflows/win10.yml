@@ -94,7 +94,7 @@ jobs:
 
       - name: 'Clean up'
         working-directory: ${{ github.workspace }}
-        run: Remove-Item -Path out -Recurse -Force
+        run: .\build\PurgeFolder.ps1 -Path out
 
       - if: matrix.arch != 'amd64_arm64'
         name: 'Configure CMake (Spectre)'
@@ -109,7 +109,7 @@ jobs:
       - if: matrix.arch != 'amd64_arm64'
         name: 'Clean up'
         working-directory: ${{ github.workspace }}
-        run: Remove-Item -Path out -Recurse -Force
+        run: .\build\PurgeFolder.ps1 -Path out
 
       - name: 'Configure CMake (DLL)'
         working-directory: ${{ github.workspace }}
@@ -158,7 +158,7 @@ jobs:
 
       - name: 'Clean up'
         working-directory: ${{ github.workspace }}
-        run: Remove-Item -Path out -Recurse -Force
+        run: .\build\PurgeFolder.ps1 -Path out
 
       - if: matrix.arch != 'amd64_arm64'
         name: 'Configure CMake (Spectre)'
@@ -173,7 +173,7 @@ jobs:
       - if: matrix.arch != 'amd64_arm64'
         name: 'Clean up'
         working-directory: ${{ github.workspace }}
-        run: Remove-Item -Path out -Recurse -Force
+        run: .\build\PurgeFolder.ps1 -Path out
 
       - name: 'Configure CMake (DLL)'
         working-directory: ${{ github.workspace }}
