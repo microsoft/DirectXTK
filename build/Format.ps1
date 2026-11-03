@@ -22,7 +22,7 @@ Runs clang-format without modifying the files in place.
 Normally clang-format is found on the path. If you use this switch, then it looks for it in C:\Program Files\LLVM\bin.
 
 .LINKS
-https://github.com/microsoft/DirectXTK12
+https://github.com/microsoft/DirectXTK
 
 #>
 
