@@ -73,8 +73,8 @@ namespace
         VoiceCallback(VoiceCallback&&)            = default;
         VoiceCallback& operator=(VoiceCallback&&) = default;
 
-        VoiceCallback(const VoiceCallback&)            = delete;
-        VoiceCallback& operator=(const VoiceCallback&) = delete;
+        VoiceCallback(VoiceCallback const&)            = delete;
+        VoiceCallback& operator=(VoiceCallback const&) = delete;
 
         virtual ~VoiceCallback() {}
 
@@ -189,7 +189,7 @@ namespace
                 return 0;
         }
 
-        const uint32_t tag = GetFormatTag(wfx);
+        uint32_t const tag = GetFormatTag(wfx);
         switch (tag)
         {
         case WAVE_FORMAT_PCM:
@@ -244,7 +244,7 @@ namespace
         return result.key;
     }
 
-    void GetDeviceOutputFormat(const wchar_t* deviceId, WAVEFORMATEX& wfx);
+    void GetDeviceOutputFormat(wchar_t const* deviceId, WAVEFORMATEX& wfx);
 } // namespace
 
 static_assert(static_cast<unsigned int>(std::size(gReverbPresets)) == Reverb_MAX, "AUDIO_ENGINE_REVERB enum mismatch");
@@ -367,7 +367,7 @@ private:
 
 _Use_decl_annotations_ HRESULT AudioEngine::Impl::Initialize(AUDIO_ENGINE_FLAGS flags,
     const WAVEFORMATEX*                                                         wfx,
-    const wchar_t*                                                              deviceId,
+    wchar_t const*                                                              deviceId,
     AUDIO_STREAM_CATEGORY                                                       category)
 {
     mEngineFlags = flags;
@@ -376,7 +376,7 @@ _Use_decl_annotations_ HRESULT AudioEngine::Impl::Initialize(AUDIO_ENGINE_FLAGS 
     return Reset(wfx, deviceId);
 }
 
-_Use_decl_annotations_ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceId)
+_Use_decl_annotations_ HRESULT AudioEngine::Impl::Reset(const WAVEFORMATEX* wfx, wchar_t const* deviceId)
 {
     if (wfx)
     {
@@ -828,7 +828,7 @@ AudioStatistics AudioEngine::Impl::GetStatistics() const
     stats.allocatedVoices = stats.allocatedVoicesOneShot = mOneShots.size() + mVoicePool.size();
     stats.allocatedVoicesIdle                            = mVoicePool.size();
 
-    for (const auto it : mNotifyObjects)
+    for (auto const it : mNotifyObjects)
     {
         assert(it != nullptr);
         it->GatherStatistics(stats);
@@ -872,7 +872,7 @@ AudioEngine::Impl::AllocateVoice(const WAVEFORMATEX* wfx, SOUND_EFFECT_INSTANCE_
         return;
 
 #ifndef NDEBUG
-    const float maxFrequencyRatio = XAudio2SemitonesToFrequencyRatio(12);
+    float const maxFrequencyRatio = XAudio2SemitonesToFrequencyRatio(12);
     assert(maxFrequencyRatio <= XAUDIO2_DEFAULT_FREQ_RATIO);
 #endif
 
@@ -952,7 +952,7 @@ AudioEngine::Impl::AllocateVoice(const WAVEFORMATEX* wfx, SOUND_EFFECT_INSTANCE_
                     char buff[64] = {};
                     auto wfmt     = reinterpret_cast<WAVEFORMATEX*>(buff);
 
-                    const uint32_t tag = GetFormatTag(wfx);
+                    uint32_t const tag = GetFormatTag(wfx);
                     switch (tag)
                     {
                     case WAVE_FORMAT_PCM:        CreateIntegerPCM(wfmt, defaultRate, wfx->nChannels, wfx->wBitsPerSample); break;
@@ -1082,7 +1082,7 @@ void AudioEngine::Impl::DestroyVoice(_In_ IXAudio2SourceVoice* voice) noexcept
         return;
 
 #ifndef NDEBUG
-    for (const auto& it : mOneShots)
+    for (auto const& it : mOneShots)
     {
         if (it.second == voice)
         {
@@ -1091,7 +1091,7 @@ void AudioEngine::Impl::DestroyVoice(_In_ IXAudio2SourceVoice* voice) noexcept
         }
     }
 
-    for (const auto& it : mVoicePool)
+    for (auto const& it : mVoicePool)
     {
         if (it.second == voice)
         {
@@ -1162,14 +1162,14 @@ void AudioEngine::Impl::UnregisterNotify(_In_ IVoiceNotify* notify, bool usesOne
 // Public constructor.
 _Use_decl_annotations_ AudioEngine::AudioEngine(AUDIO_ENGINE_FLAGS flags,
     const WAVEFORMATEX*                                            wfx,
-    const wchar_t*                                                 deviceId,
+    wchar_t const*                                                 deviceId,
     AUDIO_STREAM_CATEGORY                                          category) noexcept(false)
     : pImpl(std::make_unique<Impl>())
 {
     HRESULT hr = pImpl->Initialize(flags, wfx, deviceId, category);
     if (FAILED(hr))
     {
-        const wchar_t* deviceName = (deviceId) ? deviceId : L"default";
+        wchar_t const* deviceName = (deviceId) ? deviceId : L"default";
         if (hr == HRESULT_FROM_WIN32(ERROR_NOT_FOUND))
         {
             if (flags & AudioEngine_ThrowOnNoAudioHW)
@@ -1221,7 +1221,7 @@ bool AudioEngine::Update()
     return pImpl->Update();
 }
 
-_Use_decl_annotations_ bool AudioEngine::Reset(const WAVEFORMATEX* wfx, const wchar_t* deviceId)
+_Use_decl_annotations_ bool AudioEngine::Reset(const WAVEFORMATEX* wfx, wchar_t const* deviceId)
 {
     if (pImpl->xaudio2)
     {
@@ -1232,7 +1232,7 @@ _Use_decl_annotations_ bool AudioEngine::Reset(const WAVEFORMATEX* wfx, const wc
     HRESULT hr = pImpl->Reset(wfx, deviceId);
     if (FAILED(hr))
     {
-        const wchar_t* deviceName = (deviceId) ? deviceId : L"default";
+        wchar_t const* deviceName = (deviceId) ? deviceId : L"default";
         if (hr == HRESULT_FROM_WIN32(ERROR_NOT_FOUND))
         {
             if (pImpl->mEngineFlags & AudioEngine_ThrowOnNoAudioHW)
@@ -1499,7 +1499,7 @@ uint32_t AudioEngine::Get3DCalculateFlags() const noexcept
 
 namespace
 {
-    const wchar_t* c_PKEY_AudioEngine_DeviceFormat = L"{f19f064d-082c-4e27-bc73-6882a1bb8e4c} 0";
+    wchar_t const* c_PKEY_AudioEngine_DeviceFormat = L"{f19f064d-082c-4e27-bc73-6882a1bb8e4c} 0";
 
     class PropertyIterator : public Microsoft::WRL::RuntimeClass<ABI::Windows::Foundation::Collections::IIterator<HSTRING>>
     {
@@ -1575,7 +1575,7 @@ namespace
         ~PropertyList() override = default;
     };
 
-    void GetDeviceOutputFormat(const wchar_t* deviceId, WAVEFORMATEX& wfx)
+    void GetDeviceOutputFormat(wchar_t const* deviceId, WAVEFORMATEX& wfx)
     {
         using namespace Microsoft::WRL;
         using namespace Microsoft::WRL::Wrappers;
@@ -1761,7 +1761,7 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
 
 namespace
 {
-    void GetDeviceOutputFormat(const wchar_t*, WAVEFORMATEX& wfx)
+    void GetDeviceOutputFormat(wchar_t const*, WAVEFORMATEX& wfx)
     {
         wfx.nSamplesPerSec = 48000;
         wfx.wBitsPerSample = 24;
@@ -1799,7 +1799,7 @@ std::vector<AudioEngine::RendererDetail> AudioEngine::GetRendererDetails()
 
 namespace
 {
-    void GetDeviceOutputFormat(const wchar_t* deviceId, WAVEFORMATEX& wfx)
+    void GetDeviceOutputFormat(wchar_t const* deviceId, WAVEFORMATEX& wfx)
     {
         ComPtr<IMMDeviceEnumerator> devEnum;
         if (FAILED(CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(devEnum.GetAddressOf()))))
@@ -1910,12 +1910,12 @@ _Use_decl_annotations_ AudioEngine::AudioEngine(AUDIO_ENGINE_FLAGS flags,
     const WAVEFORMATEX*                                            wfx,
     const __wchar_t*                                               deviceId,
     AUDIO_STREAM_CATEGORY                                          category) noexcept(false)
-    : AudioEngine(flags, wfx, reinterpret_cast<const unsigned short*>(deviceId), category)
+    : AudioEngine(flags, wfx, reinterpret_cast<unsigned short const*>(deviceId), category)
 {}
 
 _Use_decl_annotations_ bool AudioEngine::Reset(const WAVEFORMATEX* wfx, const __wchar_t* deviceId)
 {
-    return Reset(wfx, reinterpret_cast<const unsigned short*>(deviceId));
+    return Reset(wfx, reinterpret_cast<unsigned short const*>(deviceId));
 }
 
 #endif // !_NATIVE_WCHAR_T_DEFINED

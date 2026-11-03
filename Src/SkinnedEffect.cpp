@@ -56,8 +56,8 @@ class SkinnedEffect::Impl : public EffectBase<SkinnedEffectTraits>
 public:
     explicit Impl(_In_ ID3D11Device* device);
 
-    Impl(const Impl&)            = delete;
-    Impl& operator=(const Impl&) = delete;
+    Impl(Impl const&)            = delete;
+    Impl& operator=(Impl const&) = delete;
 
     Impl(Impl&&)            = default;
     Impl& operator=(Impl&&) = default;
@@ -137,7 +137,7 @@ namespace
 } // namespace
 
 template<>
-const ShaderBytecode EffectBase<SkinnedEffectTraits>::VertexShaderBytecode[] = {
+ShaderBytecode const EffectBase<SkinnedEffectTraits>::VertexShaderBytecode[] = {
     { SkinnedEffect_VSSkinnedVertexLightingOneBone, sizeof(SkinnedEffect_VSSkinnedVertexLightingOneBone) },
     { SkinnedEffect_VSSkinnedVertexLightingTwoBones, sizeof(SkinnedEffect_VSSkinnedVertexLightingTwoBones) },
     { SkinnedEffect_VSSkinnedVertexLightingFourBones, sizeof(SkinnedEffect_VSSkinnedVertexLightingFourBones) },
@@ -165,7 +165,7 @@ const ShaderBytecode EffectBase<SkinnedEffectTraits>::VertexShaderBytecode[] = {
 };
 
 template<>
-const int EffectBase<SkinnedEffectTraits>::VertexShaderIndices[] = {
+int const EffectBase<SkinnedEffectTraits>::VertexShaderIndices[] = {
     0,  // vertex lighting, one bone
     0,  // vertex lighting, one bone, no fog
     1,  // vertex lighting, two bones
@@ -210,14 +210,14 @@ const int EffectBase<SkinnedEffectTraits>::VertexShaderIndices[] = {
 };
 
 template<>
-const ShaderBytecode EffectBase<SkinnedEffectTraits>::PixelShaderBytecode[] = {
+ShaderBytecode const EffectBase<SkinnedEffectTraits>::PixelShaderBytecode[] = {
     { SkinnedEffect_PSSkinnedVertexLighting, sizeof(SkinnedEffect_PSSkinnedVertexLighting) },
     { SkinnedEffect_PSSkinnedVertexLightingNoFog, sizeof(SkinnedEffect_PSSkinnedVertexLightingNoFog) },
     { SkinnedEffect_PSSkinnedPixelLighting, sizeof(SkinnedEffect_PSSkinnedPixelLighting) },
 };
 
 template<>
-const int EffectBase<SkinnedEffectTraits>::PixelShaderIndices[] = {
+int const EffectBase<SkinnedEffectTraits>::PixelShaderIndices[] = {
     0, // vertex lighting, one bone
     1, // vertex lighting, one bone, no fog
     0, // vertex lighting, two bones

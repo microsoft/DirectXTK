@@ -33,7 +33,7 @@ namespace DirectX
         // Allocate aligned memory.
         static void* operator new(size_t size)
         {
-            const size_t alignment = alignof(TDerived);
+            size_t const alignment = alignof(TDerived);
 
             static_assert(alignment > 8,
                 "AlignedNew is only useful for types with > 8 byte alignment. Did you forget a __declspec(align) on TDerived?");

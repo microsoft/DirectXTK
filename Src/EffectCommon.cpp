@@ -457,7 +457,7 @@ ID3D11ShaderResourceView* EffectDeviceResources::GetDefaultTexture()
         mMutex,
         [&](ID3D11ShaderResourceView** pResult) -> HRESULT
         {
-            static const uint32_t s_pixel = 0xffffffff;
+            static uint32_t const s_pixel = 0xffffffff;
 
             D3D11_SUBRESOURCE_DATA initData = { &s_pixel, sizeof(uint32_t), 0 };
 
@@ -495,7 +495,7 @@ ID3D11ShaderResourceView* EffectDeviceResources::GetDefaultNormalTexture()
         mMutex,
         [&](ID3D11ShaderResourceView** pResult) -> HRESULT
         {
-            static const uint16_t s_pixel = 0x7f7f;
+            static uint16_t const s_pixel = 0x7f7f;
 
             D3D11_SUBRESOURCE_DATA initData = { &s_pixel, sizeof(uint16_t), 0 };
 

@@ -50,8 +50,8 @@ namespace DirectX
         public:
             virtual ~IPostProcess() = default;
 
-            IPostProcess(const IPostProcess&)            = delete;
-            IPostProcess& operator=(const IPostProcess&) = delete;
+            IPostProcess(IPostProcess const&)            = delete;
+            IPostProcess& operator=(IPostProcess const&) = delete;
 
             virtual void __cdecl Process(_In_ ID3D11DeviceContext* deviceContext,
                 _In_ std::function<void __cdecl()> setCustomState = nullptr) = 0;

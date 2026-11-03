@@ -21,7 +21,7 @@ using Microsoft::WRL::ComPtr;
 namespace
 {
     template<typename T>
-    void SetMaterialProperties(_In_ T* effect, const EffectFactory::EffectInfo& info)
+    void SetMaterialProperties(_In_ T* effect, EffectFactory::EffectInfo const& info)
     {
         effect->EnableDefaultLighting();
 
@@ -72,8 +72,8 @@ public:
             throw std::invalid_argument("Direct3D device is null");
     }
 
-    Impl(const Impl&)            = delete;
-    Impl& operator=(const Impl&) = delete;
+    Impl(Impl const&)            = delete;
+    Impl& operator=(Impl const&) = delete;
 
     Impl(Impl&&)            = delete;
     Impl& operator=(Impl&&) = delete;
@@ -114,7 +114,7 @@ private:
 SharedResourcePool<ID3D11Device*, EffectFactory::Impl> EffectFactory::Impl::instancePool;
 
 _Use_decl_annotations_ std::shared_ptr<IEffect>
-EffectFactory::Impl::CreateEffect(IEffectFactory* factory, const IEffectFactory::EffectInfo& info, ID3D11DeviceContext* deviceContext)
+EffectFactory::Impl::CreateEffect(IEffectFactory* factory, IEffectFactory::EffectInfo const& info, ID3D11DeviceContext* deviceContext)
 {
     if (info.enableSkinning)
     {
@@ -369,7 +369,7 @@ EffectFactory::Impl::CreateEffect(IEffectFactory* factory, const IEffectFactory:
 }
 
 _Use_decl_annotations_ void
-EffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView)
+EffectFactory::Impl::CreateTexture(wchar_t const* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView)
 {
     if (!name || !textureView)
         throw std::invalid_argument("name and textureView parameters can't be null");
@@ -407,7 +407,7 @@ EffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext* dev
 
         wchar_t ext[_MAX_EXT] = {};
         _wsplitpath_s(name, nullptr, 0, nullptr, 0, nullptr, 0, ext, _MAX_EXT);
-        const bool isdds = _wcsicmp(ext, L".dds") == 0;
+        bool const isdds = _wcsicmp(ext, L".dds") == 0;
 
         if (isdds)
         {
@@ -500,13 +500,13 @@ EffectFactory::EffectFactory(EffectFactory&&) noexcept            = default;
 EffectFactory& EffectFactory::operator=(EffectFactory&&) noexcept = default;
 EffectFactory::~EffectFactory()                                   = default;
 
-_Use_decl_annotations_ std::shared_ptr<IEffect> EffectFactory::CreateEffect(const EffectInfo& info, ID3D11DeviceContext* deviceContext)
+_Use_decl_annotations_ std::shared_ptr<IEffect> EffectFactory::CreateEffect(EffectInfo const& info, ID3D11DeviceContext* deviceContext)
 {
     return pImpl->CreateEffect(this, info, deviceContext);
 }
 
 _Use_decl_annotations_ void
-EffectFactory::CreateTexture(const wchar_t* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView)
+EffectFactory::CreateTexture(wchar_t const* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView)
 {
     return pImpl->CreateTexture(name, deviceContext, textureView);
 }

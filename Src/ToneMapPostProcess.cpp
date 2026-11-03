@@ -138,7 +138,7 @@ namespace
         size_t      length;
     };
 
-    const ShaderBytecode pixelShaders[] = {
+    ShaderBytecode const pixelShaders[] = {
         { ToneMap_PSCopy, sizeof(ToneMap_PSCopy) },
         { ToneMap_PSSaturate, sizeof(ToneMap_PSSaturate) },
         { ToneMap_PSReinhard, sizeof(ToneMap_PSReinhard) },
@@ -162,7 +162,7 @@ namespace
 
     static_assert(static_cast<int>(std::size(pixelShaders)) == PixelShaderCount, "array/max mismatch");
 
-    const int pixelShaderIndices[] = {
+    int const pixelShaderIndices[] = {
         // Linear EOTF
         0, // Copy
         1, // Saturate
@@ -226,8 +226,8 @@ namespace
             }
         }
 
-        DeviceResources(const DeviceResources&)            = delete;
-        DeviceResources& operator=(const DeviceResources&) = delete;
+        DeviceResources(DeviceResources const&)            = delete;
+        DeviceResources& operator=(DeviceResources const&) = delete;
 
         DeviceResources(DeviceResources&&)            = delete;
         DeviceResources& operator=(DeviceResources&&) = delete;
@@ -287,13 +287,13 @@ class ToneMapPostProcess::Impl : public AlignedNew<ToneMapConstants>
 public:
     explicit Impl(_In_ ID3D11Device* device);
 
-    Impl(const Impl&)            = delete;
-    Impl& operator=(const Impl&) = delete;
+    Impl(Impl const&)            = delete;
+    Impl& operator=(Impl const&) = delete;
 
     Impl(Impl&&)            = default;
     Impl& operator=(Impl&&) = default;
 
-    void Process(_In_ ID3D11DeviceContext* deviceContext, const std::function<void __cdecl()>& setCustomState);
+    void Process(_In_ ID3D11DeviceContext* deviceContext, std::function<void __cdecl()> const& setCustomState);
 
     void SetDirtyFlag() noexcept { mDirtyFlags = INT_MAX; }
 
@@ -341,7 +341,7 @@ ToneMapPostProcess::Impl::Impl(_In_ ID3D11Device* device)
 }
 
 // Sets our state onto the D3D device.
-void ToneMapPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, const std::function<void __cdecl()>& setCustomState)
+void ToneMapPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, std::function<void __cdecl()> const& setCustomState)
 {
     // Set the texture.
     ID3D11ShaderResourceView* textures[1] = { hdrTexture.Get() };

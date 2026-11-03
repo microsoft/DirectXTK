@@ -86,11 +86,11 @@ namespace Bezier
 
         for (size_t i = 0; i <= tessellation; i++)
         {
-            const float u = float(i) / float(tessellation);
+            float const u = float(i) / float(tessellation);
 
             for (size_t j = 0; j <= tessellation; j++)
             {
-                const float v = float(j) / float(tessellation);
+                float const v = float(j) / float(tessellation);
 
                 // Perform four horizontal bezier interpolations
                 // between the control points of this patch.
@@ -145,7 +145,7 @@ namespace Bezier
                 }
 
                 // Compute the texture coordinate.
-                const float mirroredU = isMirrored ? 1 - u : u;
+                float const mirroredU = isMirrored ? 1 - u : u;
 
                 const XMVECTOR textureCoordinate = XMVectorSet(mirroredU, v, 0, 0);
 

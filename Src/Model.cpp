@@ -122,7 +122,7 @@ ModelMeshPart::CreateInputLayout(ID3D11Device* d3dDevice, IEffect* ieffect, ID3D
 }
 
 // Assigns a new effect and re-generates input layout.
-_Use_decl_annotations_ void ModelMeshPart::ModifyEffect(ID3D11Device* d3dDevice, const std::shared_ptr<IEffect>& ieffect, bool isalpha)
+_Use_decl_annotations_ void ModelMeshPart::ModifyEffect(ID3D11Device* d3dDevice, std::shared_ptr<IEffect> const& ieffect, bool isalpha)
 {
     if (!vbDecl || vbDecl->empty())
         throw std::runtime_error("Model mesh part missing vertex buffer input elements data");
@@ -156,7 +156,7 @@ ModelMesh::~ModelMesh() {}
 
 // Set render state for mesh part rendering.
 _Use_decl_annotations_ void
-ModelMesh::PrepareForRendering(ID3D11DeviceContext* deviceContext, const CommonStates& states, bool alpha, bool wireframe) const
+ModelMesh::PrepareForRendering(ID3D11DeviceContext* deviceContext, CommonStates const& states, bool alpha, bool wireframe) const
 {
     assert(deviceContext != nullptr);
 
@@ -210,7 +210,7 @@ _Use_decl_annotations_ void XM_CALLCONV ModelMesh::Draw(ID3D11DeviceContext* dev
 {
     assert(deviceContext != nullptr);
 
-    for (const auto& it : meshParts)
+    for (auto const& it : meshParts)
     {
         auto part = it.get();
         assert(part != nullptr);
@@ -258,7 +258,7 @@ _Use_decl_annotations_ void XM_CALLCONV ModelMesh::Draw(ID3D11DeviceContext* dev
         local = world;
     }
 
-    for (const auto& it : meshParts)
+    for (auto const& it : meshParts)
     {
         auto part = it.get();
         assert(part != nullptr);
@@ -298,7 +298,7 @@ _Use_decl_annotations_ void XM_CALLCONV ModelMesh::DrawSkinned(ID3D11DeviceConte
 
     ModelBone::TransformArray temp;
 
-    for (const auto& mit : meshParts)
+    for (auto const& mit : meshParts)
     {
         auto part = mit.get();
         assert(part != nullptr);
@@ -377,7 +377,7 @@ Model::Model(Model const& other)
       name(other.name),
       mEffectCache(other.mEffectCache)
 {
-    const size_t nbones = other.bones.size();
+    size_t const nbones = other.bones.size();
     if (nbones > 0)
     {
         if (other.boneMatrices)
@@ -410,7 +410,7 @@ Model& Model::operator=(Model const& rhs)
 
 // Draw all meshes in model given worldViewProjection matrices.
 _Use_decl_annotations_ void XM_CALLCONV Model::Draw(ID3D11DeviceContext* deviceContext,
-    const CommonStates&                                                  states,
+    CommonStates const&                                                  states,
     FXMMATRIX                                                            world,
     CXMMATRIX                                                            view,
     CXMMATRIX                                                            projection,
@@ -420,9 +420,9 @@ _Use_decl_annotations_ void XM_CALLCONV Model::Draw(ID3D11DeviceContext* deviceC
     assert(deviceContext != nullptr);
 
     // Draw opaque parts
-    for (const auto& it : meshes)
+    for (auto const& it : meshes)
     {
-        const auto* mesh = it.get();
+        auto const* mesh = it.get();
         assert(mesh != nullptr);
 
         mesh->PrepareForRendering(deviceContext, states, false, wireframe);
@@ -431,9 +431,9 @@ _Use_decl_annotations_ void XM_CALLCONV Model::Draw(ID3D11DeviceContext* deviceC
     }
 
     // Draw alpha parts
-    for (const auto& it : meshes)
+    for (auto const& it : meshes)
     {
-        const auto* mesh = it.get();
+        auto const* mesh = it.get();
         assert(mesh != nullptr);
 
         mesh->PrepareForRendering(deviceContext, states, true, wireframe);
@@ -444,7 +444,7 @@ _Use_decl_annotations_ void XM_CALLCONV Model::Draw(ID3D11DeviceContext* deviceC
 
 // Draw all meshes in model using rigid-body animation given bone transform array.
 _Use_decl_annotations_ void XM_CALLCONV Model::Draw(ID3D11DeviceContext* deviceContext,
-    const CommonStates&                                                  states,
+    CommonStates const&                                                  states,
     size_t                                                               nbones,
     const XMMATRIX*                                                      boneTransforms,
     FXMMATRIX                                                            world,
@@ -456,9 +456,9 @@ _Use_decl_annotations_ void XM_CALLCONV Model::Draw(ID3D11DeviceContext* deviceC
     assert(deviceContext != nullptr);
 
     // Draw opaque parts
-    for (const auto& it : meshes)
+    for (auto const& it : meshes)
     {
-        const auto* mesh = it.get();
+        auto const* mesh = it.get();
         assert(mesh != nullptr);
 
         mesh->PrepareForRendering(deviceContext, states, false, wireframe);
@@ -467,9 +467,9 @@ _Use_decl_annotations_ void XM_CALLCONV Model::Draw(ID3D11DeviceContext* deviceC
     }
 
     // Draw alpha parts
-    for (const auto& it : meshes)
+    for (auto const& it : meshes)
     {
-        const auto* mesh = it.get();
+        auto const* mesh = it.get();
         assert(mesh != nullptr);
 
         mesh->PrepareForRendering(deviceContext, states, true, wireframe);
@@ -480,7 +480,7 @@ _Use_decl_annotations_ void XM_CALLCONV Model::Draw(ID3D11DeviceContext* deviceC
 
 // Draw all meshes in model using skinning given bone transform array.
 _Use_decl_annotations_ void XM_CALLCONV Model::DrawSkinned(ID3D11DeviceContext* deviceContext,
-    const CommonStates&                                                         states,
+    CommonStates const&                                                         states,
     size_t                                                                      nbones,
     const XMMATRIX*                                                             boneTransforms,
     FXMMATRIX                                                                   world,
@@ -492,9 +492,9 @@ _Use_decl_annotations_ void XM_CALLCONV Model::DrawSkinned(ID3D11DeviceContext* 
     assert(deviceContext != nullptr);
 
     // Draw opaque parts
-    for (const auto& it : meshes)
+    for (auto const& it : meshes)
     {
-        const auto* mesh = it.get();
+        auto const* mesh = it.get();
         assert(mesh != nullptr);
 
         mesh->PrepareForRendering(deviceContext, states, false, wireframe);
@@ -503,9 +503,9 @@ _Use_decl_annotations_ void XM_CALLCONV Model::DrawSkinned(ID3D11DeviceContext* 
     }
 
     // Draw alpha parts
-    for (const auto& it : meshes)
+    for (auto const& it : meshes)
     {
-        const auto* mesh = it.get();
+        auto const* mesh = it.get();
         assert(mesh != nullptr);
 
         mesh->PrepareForRendering(deviceContext, states, true, wireframe);
@@ -653,12 +653,12 @@ void Model::UpdateEffects(_In_ std::function<void(IEffect*)> setEffect)
     if (mEffectCache.empty())
     {
         // This cache ensures we only set each effect once (could be shared)
-        for (const auto& mit : meshes)
+        for (auto const& mit : meshes)
         {
             auto mesh = mit.get();
             assert(mesh != nullptr);
 
-            for (const auto& it : mesh->meshParts)
+            for (auto const& it : mesh->meshParts)
             {
                 if (it->effect)
                     mEffectCache.insert(it->effect.get());
@@ -668,7 +668,7 @@ void Model::UpdateEffects(_In_ std::function<void(IEffect*)> setEffect)
 
     assert(setEffect != nullptr);
 
-    for (const auto it : mEffectCache)
+    for (auto const it : mEffectCache)
     {
         setEffect(it);
     }

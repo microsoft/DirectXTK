@@ -27,13 +27,13 @@ public:
         : mIndexCount(0)
     {}
 
-    Impl(const Impl&)            = delete;
-    Impl& operator=(const Impl&) = delete;
+    Impl(Impl const&)            = delete;
+    Impl& operator=(Impl const&) = delete;
 
     Impl(Impl&&)            = default;
     Impl& operator=(Impl&&) = default;
 
-    void Initialize(_In_ ID3D11DeviceContext* deviceContext, const VertexCollection& vertices, const IndexCollection& indices);
+    void Initialize(_In_ ID3D11DeviceContext* deviceContext, VertexCollection const& vertices, IndexCollection const& indices);
 
     void XM_CALLCONV Draw(FXMMATRIX        world,
         CXMMATRIX                          view,
@@ -41,13 +41,13 @@ public:
         FXMVECTOR                          color,
         _In_opt_ ID3D11ShaderResourceView* texture,
         bool                               wireframe,
-        const std::function<void()>&       setCustomState) const;
+        std::function<void()> const&       setCustomState) const;
 
     void Draw(_In_ IEffect*          effect,
         _In_ ID3D11InputLayout*      inputLayout,
         bool                         alpha,
         bool                         wireframe,
-        const std::function<void()>& setCustomState) const;
+        std::function<void()> const& setCustomState) const;
 
     void DrawInstanced(_In_ IEffect* effect,
         _In_ ID3D11InputLayout*      inputLayout,
@@ -55,7 +55,7 @@ public:
         bool                         alpha,
         bool                         wireframe,
         uint32_t                     startInstanceLocation,
-        const std::function<void()>& setCustomState) const;
+        std::function<void()> const& setCustomState) const;
 
     void CreateInputLayout(_In_ IEffect* effect, _Outptr_ ID3D11InputLayout** inputLayout) const;
 
@@ -154,7 +154,7 @@ void GeometricPrimitive::Impl::SharedResources::PrepareForRendering(bool alpha, 
 
 // Initializes a geometric primitive instance that will draw the specified vertex and index data.
 _Use_decl_annotations_ void
-GeometricPrimitive::Impl::Initialize(ID3D11DeviceContext* deviceContext, const VertexCollection& vertices, const IndexCollection& indices)
+GeometricPrimitive::Impl::Initialize(ID3D11DeviceContext* deviceContext, VertexCollection const& vertices, IndexCollection const& indices)
 {
     if (!deviceContext)
         throw std::invalid_argument("Direct3D device context is null");
@@ -187,7 +187,7 @@ _Use_decl_annotations_ void XM_CALLCONV GeometricPrimitive::Impl::Draw(FXMMATRIX
     FXMVECTOR                                                                    color,
     ID3D11ShaderResourceView*                                                    texture,
     bool                                                                         wireframe,
-    const std::function<void()>&                                                 setCustomState) const
+    std::function<void()> const&                                                 setCustomState) const
 {
     assert(mResources);
     auto effect = mResources->effect.get();
@@ -213,7 +213,7 @@ _Use_decl_annotations_ void XM_CALLCONV GeometricPrimitive::Impl::Draw(FXMMATRIX
 
     effect->SetColorAndAlpha(color);
 
-    const float alpha = XMVectorGetW(color);
+    float const alpha = XMVectorGetW(color);
     Draw(effect, inputLayout, (alpha < 1.f), wireframe, setCustomState);
 }
 
@@ -222,7 +222,7 @@ _Use_decl_annotations_ void GeometricPrimitive::Impl::Draw(IEffect* effect,
     ID3D11InputLayout*                                              inputLayout,
     bool                                                            alpha,
     bool                                                            wireframe,
-    const std::function<void()>&                                    setCustomState) const
+    std::function<void()> const&                                    setCustomState) const
 {
     assert(mResources);
     auto deviceContext = mResources->mDeviceContext.Get();
@@ -266,7 +266,7 @@ _Use_decl_annotations_ void GeometricPrimitive::Impl::DrawInstanced(IEffect* eff
     bool                                                                     alpha,
     bool                                                                     wireframe,
     uint32_t                                                                 startInstanceLocation,
-    const std::function<void()>&                                             setCustomState) const
+    std::function<void()> const&                                             setCustomState) const
 {
     assert(mResources);
     auto deviceContext = mResources->mDeviceContext.Get();
@@ -688,7 +688,7 @@ void GeometricPrimitive::CreateTeapot(VertexCollection& vertices, IndexCollectio
 //--------------------------------------------------------------------------------------
 
 _Use_decl_annotations_ std::unique_ptr<GeometricPrimitive>
-GeometricPrimitive::CreateCustom(ID3D11DeviceContext* deviceContext, const VertexCollection& vertices, const IndexCollection& indices)
+GeometricPrimitive::CreateCustom(ID3D11DeviceContext* deviceContext, VertexCollection const& vertices, IndexCollection const& indices)
 {
     // Extra validation
     if (vertices.empty() || indices.empty())
@@ -697,11 +697,11 @@ GeometricPrimitive::CreateCustom(ID3D11DeviceContext* deviceContext, const Verte
     if (indices.size() % 3)
         throw std::invalid_argument("Expected triangular faces");
 
-    const size_t nVerts = vertices.size();
+    size_t const nVerts = vertices.size();
     if (nVerts >= USHRT_MAX)
         throw std::out_of_range("Too many vertices for 16-bit index buffer");
 
-    for (const auto it : indices)
+    for (auto const it : indices)
     {
         if (it >= nVerts)
         {

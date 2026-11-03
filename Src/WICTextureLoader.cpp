@@ -309,7 +309,7 @@ namespace
         }
         else if (width > maxsize || height > maxsize)
         {
-            const float ar = static_cast<float>(height) / static_cast<float>(width);
+            float const ar = static_cast<float>(height) / static_cast<float>(width);
             if (width > height)
             {
                 twidth  = static_cast<UINT>(maxsize);
@@ -512,14 +512,14 @@ namespace
         }
 
         // Allocate temporary memory for image
-        const uint64_t rowBytes = (uint64_t(twidth) * uint64_t(bpp) + 7u) / 8u;
-        const uint64_t numBytes = rowBytes * uint64_t(theight);
+        uint64_t const rowBytes = (uint64_t(twidth) * uint64_t(bpp) + 7u) / 8u;
+        uint64_t const numBytes = rowBytes * uint64_t(theight);
 
         if (rowBytes > UINT32_MAX || numBytes > UINT32_MAX)
             return HRESULT_FROM_WIN32(ERROR_ARITHMETIC_OVERFLOW);
 
-        const auto rowPitch  = static_cast<size_t>(rowBytes);
-        const auto imageSize = static_cast<size_t>(numBytes);
+        auto const rowPitch  = static_cast<size_t>(rowBytes);
+        auto const imageSize = static_cast<size_t>(numBytes);
 
         std::unique_ptr<uint8_t[]> temp(new (std::nothrow) uint8_t[imageSize]);
         if (!temp)
@@ -741,7 +741,7 @@ namespace
             }
 #else
             CHAR      strFileA[MAX_PATH];
-            const int result = WideCharToMultiByte(CP_UTF8, WC_NO_BEST_FIT_CHARS, fileName, -1, strFileA, MAX_PATH, nullptr, nullptr);
+            int const result = WideCharToMultiByte(CP_UTF8, WC_NO_BEST_FIT_CHARS, fileName, -1, strFileA, MAX_PATH, nullptr, nullptr);
             if (result > 0)
             {
                 if (texture && *texture)
@@ -766,7 +766,7 @@ namespace
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_ HRESULT DirectX::CreateWICTextureFromMemory(ID3D11Device* d3dDevice,
-    const uint8_t*                                                               wicData,
+    uint8_t const*                                                               wicData,
     size_t                                                                       wicDataSize,
     ID3D11Resource**                                                             texture,
     ID3D11ShaderResourceView**                                                   textureView,
@@ -814,7 +814,7 @@ _Use_decl_annotations_
 }
 
 _Use_decl_annotations_ HRESULT DirectX::CreateWICTextureFromMemoryEx(ID3D11Device* d3dDevice,
-    const uint8_t*                                                                 wicData,
+    uint8_t const*                                                                 wicData,
     size_t                                                                         wicDataSize,
     size_t                                                                         maxsize,
     D3D11_USAGE                                                                    usage,
@@ -1008,7 +1008,7 @@ _Use_decl_annotations_
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_ HRESULT DirectX::CreateWICTextureFromFile(ID3D11Device* d3dDevice,
-    const wchar_t*                                                             fileName,
+    wchar_t const*                                                             fileName,
     ID3D11Resource**                                                           texture,
     ID3D11ShaderResourceView**                                                 textureView,
     size_t                                                                     maxsize) noexcept
@@ -1052,7 +1052,7 @@ _Use_decl_annotations_
 }
 
 _Use_decl_annotations_ HRESULT DirectX::CreateWICTextureFromFileEx(ID3D11Device* d3dDevice,
-    const wchar_t*                                                               fileName,
+    wchar_t const*                                                               fileName,
     size_t                                                                       maxsize,
     D3D11_USAGE                                                                  usage,
     unsigned int                                                                 bindFlags,
@@ -1209,7 +1209,7 @@ namespace DirectX
         _Outptr_opt_ ID3D11ShaderResourceView**                 textureView,
         _In_ size_t                                             maxsize) noexcept
     {
-        return CreateWICTextureFromFile(d3dDevice, reinterpret_cast<const unsigned short*>(szFileName), texture, textureView, maxsize);
+        return CreateWICTextureFromFile(d3dDevice, reinterpret_cast<unsigned short const*>(szFileName), texture, textureView, maxsize);
     }
 
     HRESULT __cdecl CreateWICTextureFromFile(
@@ -1227,7 +1227,7 @@ namespace DirectX
     {
         return CreateWICTextureFromFile(d3dDevice,
             d3dContext,
-            reinterpret_cast<const unsigned short*>(szFileName),
+            reinterpret_cast<unsigned short const*>(szFileName),
             texture,
             textureView,
             maxsize);
@@ -1245,7 +1245,7 @@ namespace DirectX
         _Outptr_opt_ ID3D11ShaderResourceView**                   textureView) noexcept
     {
         return CreateWICTextureFromFileEx(d3dDevice,
-            reinterpret_cast<const unsigned short*>(szFileName),
+            reinterpret_cast<unsigned short const*>(szFileName),
             maxsize,
             usage,
             bindFlags,
@@ -1276,7 +1276,7 @@ namespace DirectX
     {
         return CreateWICTextureFromFileEx(d3dDevice,
             d3dContext,
-            reinterpret_cast<const unsigned short*>(szFileName),
+            reinterpret_cast<unsigned short const*>(szFileName),
             maxsize,
             usage,
             bindFlags,

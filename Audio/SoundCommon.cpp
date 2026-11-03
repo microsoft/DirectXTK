@@ -171,8 +171,8 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
             for (size_t j = 0; j < MSADPCM_NUM_COEFFICIENTS; ++j)
             {
                 // Microsoft ADPCM standard encoding coefficients
-                static const short g_pAdpcmCoefficients1[] = { 256, 512, 0, 192, 240, 460, 392 };
-                static const short g_pAdpcmCoefficients2[] = { 0, -256, 0, 64, 0, -208, -232 };
+                static short const g_pAdpcmCoefficients1[] = { 256, 512, 0, 192, 240, 460, 392 };
+                static short const g_pAdpcmCoefficients2[] = { 0, -256, 0, 64, 0, -208, -232 };
 
                 if (wfadpcm->aCoef[j].iCoef1 != g_pAdpcmCoefficients1[j] || wfadpcm->aCoef[j].iCoef2 != g_pAdpcmCoefficients2[j])
                 {
@@ -198,9 +198,9 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
                 return false;
             }
 
-            const int nHeaderBytes       = MSADPCM_HEADER_LENGTH * wfx->nChannels;
-            const int nBitsPerFrame      = MSADPCM_BITS_PER_SAMPLE * wfx->nChannels;
-            const int nPcmFramesPerBlock = (wfx->nBlockAlign - nHeaderBytes) * 8 / nBitsPerFrame + 2;
+            int const nHeaderBytes       = MSADPCM_HEADER_LENGTH * wfx->nChannels;
+            int const nBitsPerFrame      = MSADPCM_BITS_PER_SAMPLE * wfx->nChannels;
+            int const nPcmFramesPerBlock = (wfx->nBlockAlign - nHeaderBytes) * 8 / nBitsPerFrame + 2;
 
             if (wfadpcm->wSamplesPerBlock != nPcmFramesPerBlock)
             {
@@ -512,7 +512,7 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
 
             if (wfex->dwChannelMask)
             {
-                const auto channelBits = ChannelsSpecifiedInMask(wfex->dwChannelMask);
+                auto const channelBits = ChannelsSpecifiedInMask(wfex->dwChannelMask);
                 if (channelBits != wfx->nChannels)
                 {
                     DebugTrace("ERROR: WAVEFORMATEXTENSIBLE: nChannels=%u but ChannelMask has %u bits set\n", wfx->nChannels, channelBits);
@@ -548,7 +548,7 @@ _Use_decl_annotations_ void DirectX::CreateIntegerPCM(WAVEFORMATEX* wfx, int sam
     if (!wfx)
         return;
 
-    const int blockAlign = channels * sampleBits / 8;
+    int const blockAlign = channels * sampleBits / 8;
 
     wfx->wFormatTag      = WAVE_FORMAT_PCM;
     wfx->nChannels       = static_cast<WORD>(channels);
@@ -566,7 +566,7 @@ _Use_decl_annotations_ void DirectX::CreateFloatPCM(WAVEFORMATEX* wfx, int sampl
     if (!wfx)
         return;
 
-    const int blockAlign = channels * 4;
+    int const blockAlign = channels * 4;
 
     wfx->wFormatTag      = WAVE_FORMAT_IEEE_FLOAT;
     wfx->nChannels       = static_cast<WORD>(channels);
@@ -597,7 +597,7 @@ DirectX::CreateADPCM(WAVEFORMATEX* wfx, size_t wfxSize, int sampleRate, int chan
         throw std::invalid_argument("ADPCMWAVEFORMAT");
     }
 
-    const int blockAlign = MSADPCM_HEADER_LENGTH * channels + (samplesPerBlock - 2) * MSADPCM_BITS_PER_SAMPLE * channels / 8;
+    int const blockAlign = MSADPCM_HEADER_LENGTH * channels + (samplesPerBlock - 2) * MSADPCM_BITS_PER_SAMPLE * channels / 8;
 
     wfx->wFormatTag      = WAVE_FORMAT_ADPCM;
     wfx->nChannels       = static_cast<WORD>(channels);

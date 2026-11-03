@@ -43,8 +43,8 @@ class DualTextureEffect::Impl : public EffectBase<DualTextureEffectTraits>
 public:
     explicit Impl(_In_ ID3D11Device* device);
 
-    Impl(const Impl&)            = delete;
-    Impl& operator=(const Impl&) = delete;
+    Impl(Impl const&)            = delete;
+    Impl& operator=(Impl const&) = delete;
 
     Impl(Impl&&)            = default;
     Impl& operator=(Impl&&) = default;
@@ -84,7 +84,7 @@ namespace
 } // namespace
 
 template<>
-const ShaderBytecode EffectBase<DualTextureEffectTraits>::VertexShaderBytecode[] = {
+ShaderBytecode const EffectBase<DualTextureEffectTraits>::VertexShaderBytecode[] = {
     { DualTextureEffect_VSDualTexture, sizeof(DualTextureEffect_VSDualTexture) },
     { DualTextureEffect_VSDualTextureNoFog, sizeof(DualTextureEffect_VSDualTextureNoFog) },
     { DualTextureEffect_VSDualTextureVc, sizeof(DualTextureEffect_VSDualTextureVc) },
@@ -93,7 +93,7 @@ const ShaderBytecode EffectBase<DualTextureEffectTraits>::VertexShaderBytecode[]
 };
 
 template<>
-const int EffectBase<DualTextureEffectTraits>::VertexShaderIndices[] = {
+int const EffectBase<DualTextureEffectTraits>::VertexShaderIndices[] = {
     0, // basic
     1, // no fog
     2, // vertex color
@@ -101,14 +101,14 @@ const int EffectBase<DualTextureEffectTraits>::VertexShaderIndices[] = {
 };
 
 template<>
-const ShaderBytecode EffectBase<DualTextureEffectTraits>::PixelShaderBytecode[] = {
+ShaderBytecode const EffectBase<DualTextureEffectTraits>::PixelShaderBytecode[] = {
     { DualTextureEffect_PSDualTexture, sizeof(DualTextureEffect_PSDualTexture) },
     { DualTextureEffect_PSDualTextureNoFog, sizeof(DualTextureEffect_PSDualTextureNoFog) },
 
 };
 
 template<>
-const int EffectBase<DualTextureEffectTraits>::PixelShaderIndices[] = {
+int const EffectBase<DualTextureEffectTraits>::PixelShaderIndices[] = {
     0, // basic
     1, // no fog
     0, // vertex color

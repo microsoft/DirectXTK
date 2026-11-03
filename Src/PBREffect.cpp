@@ -73,8 +73,8 @@ class PBREffect::Impl : public EffectBase<PBREffectTraits>
 public:
     explicit Impl(_In_ ID3D11Device* device);
 
-    Impl(const Impl&)            = delete;
-    Impl& operator=(const Impl&) = delete;
+    Impl(Impl const&)            = delete;
+    Impl& operator=(Impl const&) = delete;
 
     Impl(Impl&&)            = default;
     Impl& operator=(Impl&&) = default;
@@ -150,7 +150,7 @@ namespace
 } // namespace
 
 template<>
-const ShaderBytecode EffectBase<PBREffectTraits>::VertexShaderBytecode[] = {
+ShaderBytecode const EffectBase<PBREffectTraits>::VertexShaderBytecode[] = {
     { PBREffect_VSConstant, sizeof(PBREffect_VSConstant) },
     { PBREffect_VSConstantVelocity, sizeof(PBREffect_VSConstantVelocity) },
     { PBREffect_VSConstantBn, sizeof(PBREffect_VSConstantBn) },
@@ -164,7 +164,7 @@ const ShaderBytecode EffectBase<PBREffectTraits>::VertexShaderBytecode[] = {
 };
 
 template<>
-const int EffectBase<PBREffectTraits>::VertexShaderIndices[] = {
+int const EffectBase<PBREffectTraits>::VertexShaderIndices[] = {
     0, // constant
     0, // textured
     0, // textured + emissive
@@ -197,7 +197,7 @@ const int EffectBase<PBREffectTraits>::VertexShaderIndices[] = {
 };
 
 template<>
-const ShaderBytecode EffectBase<PBREffectTraits>::PixelShaderBytecode[] = {
+ShaderBytecode const EffectBase<PBREffectTraits>::PixelShaderBytecode[] = {
     { PBREffect_PSConstant, sizeof(PBREffect_PSConstant) },
     { PBREffect_PSTextured, sizeof(PBREffect_PSTextured) },
     { PBREffect_PSTexturedEmissive, sizeof(PBREffect_PSTexturedEmissive) },
@@ -206,7 +206,7 @@ const ShaderBytecode EffectBase<PBREffectTraits>::PixelShaderBytecode[] = {
 };
 
 template<>
-const int EffectBase<PBREffectTraits>::PixelShaderIndices[] = {
+int const EffectBase<PBREffectTraits>::PixelShaderIndices[] = {
     0, // constant
     1, // textured
     2, // textured + emissive

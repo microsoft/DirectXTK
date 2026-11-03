@@ -31,7 +31,7 @@ namespace
 
         auto ptr = reinterpret_cast<uint32_t*>(&state);
 
-        const unsigned int bf = 1u << (key & 0x1f);
+        unsigned int const bf = 1u << (key & 0x1f);
         ptr[(key >> 5)] |= bf;
     }
 
@@ -42,7 +42,7 @@ namespace
 
         auto ptr = reinterpret_cast<uint32_t*>(&state);
 
-        const unsigned int bf = 1u << (key & 0x1f);
+        unsigned int const bf = 1u << (key & 0x1f);
         ptr[(key >> 5)] &= ~bf;
     }
 } // namespace
@@ -213,8 +213,8 @@ private:
     {
         auto impl = reinterpret_cast<Keyboard::Impl*>(context);
 
-        const bool wasConnected = (previousStatus & GameInputDeviceConnected) != 0;
-        const bool isConnected  = (currentStatus & GameInputDeviceConnected) != 0;
+        bool const wasConnected = (previousStatus & GameInputDeviceConnected) != 0;
+        bool const isConnected  = (currentStatus & GameInputDeviceConnected) != 0;
 
         if (isConnected && !wasConnected)
         {
@@ -644,10 +644,10 @@ Keyboard& Keyboard::Get()
 // KeyboardStateTracker
 //======================================================================================
 
-void Keyboard::KeyboardStateTracker::Update(const State& state) noexcept
+void Keyboard::KeyboardStateTracker::Update(State const& state) noexcept
 {
-    auto currPtr     = reinterpret_cast<const uint32_t*>(&state);
-    auto prevPtr     = reinterpret_cast<const uint32_t*>(&lastState);
+    auto currPtr     = reinterpret_cast<uint32_t const*>(&state);
+    auto prevPtr     = reinterpret_cast<uint32_t const*>(&lastState);
     auto releasedPtr = reinterpret_cast<uint32_t*>(&released);
     auto pressedPtr  = reinterpret_cast<uint32_t*>(&pressed);
     for (size_t j = 0; j < (256 / 32); ++j)

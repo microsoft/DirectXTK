@@ -23,8 +23,8 @@ class PrimitiveBatchBase::Impl
 public:
     Impl(_In_ ID3D11DeviceContext* deviceContext, size_t maxIndices, size_t maxVertices, size_t vertexSize);
 
-    Impl(const Impl&)            = delete;
-    Impl& operator=(const Impl&) = delete;
+    Impl(Impl const&)            = delete;
+    Impl& operator=(Impl const&) = delete;
 
     Impl(Impl&&)            = default;
     Impl& operator=(Impl&&) = default;
@@ -142,11 +142,11 @@ PrimitiveBatchBase::Impl::Impl(_In_ ID3D11DeviceContext* deviceContext, size_t m
     if (vertexSize > D3D11_REQ_MULTI_ELEMENT_STRUCTURE_SIZE_IN_BYTES)
         throw std::invalid_argument("Vertex size is too large for DirectX 11");
 
-    const uint64_t ibBytes = uint64_t(maxIndices) * sizeof(uint16_t);
+    uint64_t const ibBytes = uint64_t(maxIndices) * sizeof(uint16_t);
     if (ibBytes > uint64_t(D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u) || ibBytes > UINT32_MAX)
         throw std::invalid_argument("IB too large for DirectX 11");
 
-    const uint64_t vbBytes = uint64_t(maxVertices) * uint64_t(vertexSize);
+    uint64_t const vbBytes = uint64_t(maxVertices) * uint64_t(vertexSize);
     if (vbBytes > uint64_t(D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u) || vbBytes > UINT32_MAX)
         throw std::invalid_argument("VB too large for DirectX 11");
 
@@ -284,8 +284,8 @@ _Use_decl_annotations_ void PrimitiveBatchBase::Impl::Draw(D3D11_PRIMITIVE_TOPOL
         throw std::logic_error("Begin must be called before Draw");
 
     // Can we merge this primitive in with an existing batch, or must we flush first?
-    const bool wrapIndexBuffer  = (mCurrentIndex + indexCount > mMaxIndices);
-    const bool wrapVertexBuffer = (mCurrentVertex + vertexCount > mMaxVertices);
+    bool const wrapIndexBuffer  = (mCurrentIndex + indexCount > mMaxIndices);
+    bool const wrapVertexBuffer = (mCurrentVertex + vertexCount > mMaxVertices);
 
     if ((topology != mCurrentTopology) || (isIndexed != mCurrentlyIndexed) || !CanBatchPrimitives(topology) || wrapIndexBuffer
         || wrapVertexBuffer)

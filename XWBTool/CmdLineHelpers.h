@@ -70,12 +70,12 @@ namespace Helpers
     template<typename T>
     struct SValue
     {
-        const wchar_t* name;
+        wchar_t const* name;
         T              value;
     };
 
     template<typename T>
-    T LookupByName(const wchar_t _In_z_* pName, const SValue<T>* pArray) noexcept
+    T LookupByName(wchar_t const _In_z_* pName, SValue<T> const* pArray) noexcept
     {
         while (pArray->name)
         {
@@ -89,7 +89,7 @@ namespace Helpers
     }
 
     template<typename T>
-    const wchar_t* LookupByValue(T value, const SValue<T>* pArray) noexcept
+    wchar_t const* LookupByValue(T value, SValue<T> const* pArray) noexcept
     {
         while (pArray->name)
         {
@@ -102,7 +102,7 @@ namespace Helpers
         return L"";
     }
 
-    void PrintFormat(DXGI_FORMAT Format, const SValue<DXGI_FORMAT>* pFormatList) noexcept
+    void PrintFormat(DXGI_FORMAT Format, SValue<DXGI_FORMAT> const* pFormatList) noexcept
     {
         for (auto pFormat = pFormatList; pFormat->name; pFormat++)
         {
@@ -116,7 +116,7 @@ namespace Helpers
         wprintf(L"*UNKNOWN*");
     }
 
-    void PrintFormat(DXGI_FORMAT Format, const SValue<DXGI_FORMAT>* pFormatList1, const SValue<DXGI_FORMAT>* pFormatList2) noexcept
+    void PrintFormat(DXGI_FORMAT Format, SValue<DXGI_FORMAT> const* pFormatList1, SValue<DXGI_FORMAT> const* pFormatList2) noexcept
     {
         for (auto pFormat = pFormatList1; pFormat->name; pFormat++)
         {
@@ -140,11 +140,11 @@ namespace Helpers
     }
 
     template<typename T>
-    void PrintList(size_t cch, const SValue<T>* pValue) noexcept
+    void PrintList(size_t cch, SValue<T> const* pValue) noexcept
     {
         while (pValue->name)
         {
-            const size_t cchName = wcslen(pValue->name);
+            size_t const cchName = wcslen(pValue->name);
 
             if (cch + cchName + 2 >= 80)
             {
@@ -177,7 +177,7 @@ namespace Helpers
                     UINT   strLen = 0;
                     if (VerQueryValueW(verInfo.get(), L"\\StringFileInfo\\040904B0\\ProductVersion", &lpstr, &strLen))
                     {
-                        wcsncpy_s(version, reinterpret_cast<const wchar_t*>(lpstr), strLen);
+                        wcsncpy_s(version, reinterpret_cast<wchar_t const*>(lpstr), strLen);
                     }
                 }
             }
@@ -203,7 +203,7 @@ namespace Helpers
         }
     }
 
-    void SearchForFiles(const std::filesystem::path& path, std::list<SConversion>& files, bool recursive, _In_opt_z_ const wchar_t* folder)
+    void SearchForFiles(std::filesystem::path const& path, std::list<SConversion>& files, bool recursive, _In_opt_z_ const wchar_t* folder)
     {
         // Process files
         WIN32_FIND_DATAW findData = {};
@@ -354,7 +354,7 @@ namespace Helpers
         }
     }
 
-    const wchar_t* GetErrorDesc(HRESULT hr) noexcept
+    wchar_t const* GetErrorDesc(HRESULT hr) noexcept
     {
         static wchar_t desc[1024] = {};
 

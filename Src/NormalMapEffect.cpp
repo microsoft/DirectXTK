@@ -70,8 +70,8 @@ class NormalMapEffect::Impl : public EffectBase<NormalMapEffectTraits>
 public:
     explicit Impl(_In_ ID3D11Device* device);
 
-    Impl(const Impl&)            = delete;
-    Impl& operator=(const Impl&) = delete;
+    Impl(Impl const&)            = delete;
+    Impl& operator=(Impl const&) = delete;
 
     Impl(Impl&&)            = default;
     Impl& operator=(Impl&&) = default;
@@ -146,7 +146,7 @@ namespace
 } // namespace
 
 template<>
-const ShaderBytecode EffectBase<NormalMapEffectTraits>::VertexShaderBytecode[] = {
+ShaderBytecode const EffectBase<NormalMapEffectTraits>::VertexShaderBytecode[] = {
     { NormalMapEffect_VSNormalPixelLightingTx, sizeof(NormalMapEffect_VSNormalPixelLightingTx) },
     { NormalMapEffect_VSNormalPixelLightingTxVc, sizeof(NormalMapEffect_VSNormalPixelLightingTxVc) },
 
@@ -164,7 +164,7 @@ const ShaderBytecode EffectBase<NormalMapEffectTraits>::VertexShaderBytecode[] =
 };
 
 template<>
-const int EffectBase<NormalMapEffectTraits>::VertexShaderIndices[] = {
+int const EffectBase<NormalMapEffectTraits>::VertexShaderIndices[] = {
     0, // pixel lighting + texture
     0, // pixel lighting + texture, no fog
     0, // pixel lighting + texture, no specular
@@ -217,7 +217,7 @@ const int EffectBase<NormalMapEffectTraits>::VertexShaderIndices[] = {
 };
 
 template<>
-const ShaderBytecode EffectBase<NormalMapEffectTraits>::PixelShaderBytecode[] = {
+ShaderBytecode const EffectBase<NormalMapEffectTraits>::PixelShaderBytecode[] = {
     { NormalMapEffect_PSNormalPixelLightingTx, sizeof(NormalMapEffect_PSNormalPixelLightingTx) },
     { NormalMapEffect_PSNormalPixelLightingTxNoFog, sizeof(NormalMapEffect_PSNormalPixelLightingTxNoFog) },
     { NormalMapEffect_PSNormalPixelLightingTxNoSpec, sizeof(NormalMapEffect_PSNormalPixelLightingTxNoSpec) },
@@ -225,7 +225,7 @@ const ShaderBytecode EffectBase<NormalMapEffectTraits>::PixelShaderBytecode[] = 
 };
 
 template<>
-const int EffectBase<NormalMapEffectTraits>::PixelShaderIndices[] = {
+int const EffectBase<NormalMapEffectTraits>::PixelShaderIndices[] = {
     0, // pixel lighting + texture
     1, // pixel lighting + texture, no fog
     2, // pixel lighting + texture, no specular

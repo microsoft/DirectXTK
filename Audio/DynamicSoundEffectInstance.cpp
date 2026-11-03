@@ -159,7 +159,7 @@ void DynamicSoundEffectInstance::Impl::Resume()
     }
 }
 
-_Use_decl_annotations_ void DynamicSoundEffectInstance::Impl::SubmitBuffer(const uint8_t* pAudioData, uint32_t offset, size_t audioBytes)
+_Use_decl_annotations_ void DynamicSoundEffectInstance::Impl::SubmitBuffer(uint8_t const* pAudioData, uint32_t offset, size_t audioBytes)
 {
     if (!pAudioData || !audioBytes)
         throw std::invalid_argument("Invalid audio data buffer");
@@ -283,12 +283,12 @@ void DynamicSoundEffectInstance::Apply3D(const X3DAUDIO_LISTENER& listener, cons
     pImpl->mBase.Apply3D(listener, emitter, rhcoords);
 }
 
-_Use_decl_annotations_ void DynamicSoundEffectInstance::SubmitBuffer(const uint8_t* pAudioData, size_t audioBytes)
+_Use_decl_annotations_ void DynamicSoundEffectInstance::SubmitBuffer(uint8_t const* pAudioData, size_t audioBytes)
 {
     pImpl->SubmitBuffer(pAudioData, 0, audioBytes);
 }
 
-_Use_decl_annotations_ void DynamicSoundEffectInstance::SubmitBuffer(const uint8_t* pAudioData, uint32_t offset, size_t audioBytes)
+_Use_decl_annotations_ void DynamicSoundEffectInstance::SubmitBuffer(uint8_t const* pAudioData, uint32_t offset, size_t audioBytes)
 {
     pImpl->SubmitBuffer(pAudioData, offset, audioBytes);
 }

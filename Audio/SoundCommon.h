@@ -415,7 +415,7 @@ namespace DirectX
     struct WaveBankSeekData
     {
         uint32_t        seekCount;
-        const uint32_t* seekTable;
+        uint32_t const* seekTable;
         uint32_t        tag;
     };
 } // namespace DirectX

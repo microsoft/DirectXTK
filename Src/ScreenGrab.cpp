@@ -171,7 +171,7 @@ namespace
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_ HRESULT DirectX::SaveDDSTextureToFile(ID3D11DeviceContext* pContext,
     ID3D11Resource*                                                               pSource,
-    const wchar_t*                                                                fileName) noexcept
+    wchar_t const*                                                                fileName) noexcept
 {
     if (!fileName)
         return E_INVALIDARG;
@@ -323,7 +323,7 @@ _Use_decl_annotations_ HRESULT DirectX::SaveDDSTextureToFile(ID3D11DeviceContext
     if (FAILED(hr))
         return hr;
 
-    auto sptr = static_cast<const uint8_t*>(mapped.pData);
+    auto sptr = static_cast<uint8_t const*>(mapped.pData);
     if (!sptr)
     {
         pContext->Unmap(pStaging.Get(), 0);
@@ -332,7 +332,7 @@ _Use_decl_annotations_ HRESULT DirectX::SaveDDSTextureToFile(ID3D11DeviceContext
 
     uint8_t* dptr = pixels.get();
 
-    const size_t msize = std::min<size_t>(rowPitch, mapped.RowPitch);
+    size_t const msize = std::min<size_t>(rowPitch, mapped.RowPitch);
     for (size_t h = 0; h < rowCount; ++h)
     {
         memcpy(dptr, sptr, msize);
@@ -377,7 +377,7 @@ namespace DirectX
 _Use_decl_annotations_ HRESULT DirectX::SaveWICTextureToFile(ID3D11DeviceContext* pContext,
     ID3D11Resource*                                                               pSource,
     REFGUID                                                                       guidContainerFormat,
-    const wchar_t*                                                                fileName,
+    wchar_t const*                                                                fileName,
     const GUID*                                                                   targetFormat,
     std::function<void(IPropertyBag2*)>                                           setCustomProps,
     bool                                                                          forceSRGB)
@@ -630,7 +630,7 @@ _Use_decl_annotations_ HRESULT DirectX::SaveWICTextureToFile(ID3D11DeviceContext
     if (FAILED(hr))
         return hr;
 
-    const uint64_t imageSize = uint64_t(mapped.RowPitch) * uint64_t(desc.Height);
+    uint64_t const imageSize = uint64_t(mapped.RowPitch) * uint64_t(desc.Height);
     if (imageSize > UINT32_MAX)
     {
         pContext->Unmap(pStaging.Get(), 0);
@@ -714,7 +714,7 @@ namespace DirectX
     HRESULT __cdecl
     SaveDDSTextureToFile(_In_ ID3D11DeviceContext* pContext, _In_ ID3D11Resource* pSource, _In_z_ const __wchar_t* fileName) noexcept
     {
-        return SaveDDSTextureToFile(pContext, pSource, reinterpret_cast<const unsigned short*>(fileName));
+        return SaveDDSTextureToFile(pContext, pSource, reinterpret_cast<unsigned short const*>(fileName));
     }
 
     HRESULT __cdecl SaveWICTextureToFile(_In_ ID3D11DeviceContext* pContext,
@@ -728,7 +728,7 @@ namespace DirectX
         return SaveWICTextureToFile(pContext,
             pSource,
             guidContainerFormat,
-            reinterpret_cast<const unsigned short*>(fileName),
+            reinterpret_cast<unsigned short const*>(fileName),
             targetFormat,
             setCustomProps,
             forceSRGB);

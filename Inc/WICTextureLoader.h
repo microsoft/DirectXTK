@@ -191,7 +191,7 @@ namespace DirectX
         _Outptr_opt_ ID3D11ShaderResourceView**                          textureView,
         _In_ size_t                                                      maxsize = 0) noexcept
     {
-        return CreateWICTextureFromMemory(d3dDevice, reinterpret_cast<const uint8_t*>(wicData), wicDataSize, texture, textureView, maxsize);
+        return CreateWICTextureFromMemory(d3dDevice, reinterpret_cast<uint8_t const*>(wicData), wicDataSize, texture, textureView, maxsize);
     }
 
     DIRECTX_TOOLKIT_API
@@ -211,7 +211,7 @@ namespace DirectX
     {
         return CreateWICTextureFromMemory(d3dDevice,
             d3dContext,
-            reinterpret_cast<const uint8_t*>(wicData),
+            reinterpret_cast<uint8_t const*>(wicData),
             wicDataSize,
             texture,
             textureView,
@@ -232,7 +232,7 @@ namespace DirectX
         _Outptr_opt_ ID3D11ShaderResourceView**                            textureView) noexcept
     {
         return CreateWICTextureFromMemoryEx(d3dDevice,
-            reinterpret_cast<const uint8_t*>(wicData),
+            reinterpret_cast<uint8_t const*>(wicData),
             wicDataSize,
             maxsize,
             usage,
@@ -266,7 +266,7 @@ namespace DirectX
     {
         return CreateWICTextureFromMemoryEx(d3dDevice,
             d3dContext,
-            reinterpret_cast<const uint8_t*>(wicData),
+            reinterpret_cast<uint8_t const*>(wicData),
             wicDataSize,
             maxsize,
             usage,

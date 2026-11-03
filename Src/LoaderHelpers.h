@@ -299,7 +299,7 @@ namespace DirectX
         inline HRESULT LoadTextureDataFromMemory(_In_reads_(ddsDataSize) const uint8_t* ddsData,
             size_t                                                                      ddsDataSize,
             const DDS_HEADER**                                                          header,
-            const uint8_t**                                                             bitData,
+            uint8_t const**                                                             bitData,
             size_t*                                                                     bitSize) noexcept
         {
             if (!header || !bitData || !bitSize)
@@ -320,7 +320,7 @@ namespace DirectX
             }
 
             // DDS files always start with the same magic number ("DDS ")
-            const auto dwMagicNumber = *reinterpret_cast<const uint32_t*>(ddsData);
+            auto const dwMagicNumber = *reinterpret_cast<uint32_t const*>(ddsData);
             if (dwMagicNumber != DDS_MAGIC)
             {
                 return E_FAIL;
@@ -360,7 +360,7 @@ namespace DirectX
         inline HRESULT LoadTextureDataFromFile(_In_z_ const wchar_t* fileName,
             std::unique_ptr<uint8_t[]>&                              ddsData,
             const DDS_HEADER**                                       header,
-            const uint8_t**                                          bitData,
+            uint8_t const**                                          bitData,
             size_t*                                                  bitSize) noexcept
         {
             if (!header || !bitData || !bitSize)
@@ -418,7 +418,7 @@ namespace DirectX
             }
 
             // DDS files always start with the same magic number ("DDS ")
-            const auto dwMagicNumber = *reinterpret_cast<const uint32_t*>(ddsData.get());
+            auto const dwMagicNumber = *reinterpret_cast<uint32_t const*>(ddsData.get());
             if (dwMagicNumber != DDS_MAGIC)
             {
                 ddsData.reset();
@@ -602,7 +602,7 @@ namespace DirectX
             }
             else
             {
-                const size_t bpp = BitsPerPixel(fmt);
+                size_t const bpp = BitsPerPixel(fmt);
                 if (!bpp)
                     return E_INVALIDARG;
 
@@ -921,8 +921,8 @@ namespace DirectX
                 if (MAKEFOURCC('D', 'X', '1', '0') == header->ddspf.fourCC)
                 {
                     auto d3d10ext
-                        = reinterpret_cast<const DDS_HEADER_DXT10*>(reinterpret_cast<const uint8_t*>(header) + sizeof(DDS_HEADER));
-                    const auto mode = static_cast<DDS_ALPHA_MODE>(d3d10ext->miscFlags2 & DDS_MISC_FLAGS2_ALPHA_MODE_MASK);
+                        = reinterpret_cast<const DDS_HEADER_DXT10*>(reinterpret_cast<uint8_t const*>(header) + sizeof(DDS_HEADER));
+                    auto const mode = static_cast<DDS_ALPHA_MODE>(d3d10ext->miscFlags2 & DDS_MISC_FLAGS2_ALPHA_MODE_MASK);
                     switch (mode)
                     {
                     case DDS_ALPHA_MODE_STRAIGHT:
@@ -952,11 +952,11 @@ namespace DirectX
                 : m_handle(hFile)
             {}
 
-            auto_delete_file(const auto_delete_file&)            = delete;
-            auto_delete_file& operator=(const auto_delete_file&) = delete;
+            auto_delete_file(auto_delete_file const&)            = delete;
+            auto_delete_file& operator=(auto_delete_file const&) = delete;
 
-            auto_delete_file(const auto_delete_file&&)            = delete;
-            auto_delete_file& operator=(const auto_delete_file&&) = delete;
+            auto_delete_file(auto_delete_file const&&)            = delete;
+            auto_delete_file& operator=(auto_delete_file const&&) = delete;
 
             ~auto_delete_file()
             {
@@ -982,11 +982,11 @@ namespace DirectX
                   m_handle(hFile)
             {}
 
-            auto_delete_file_wic(const auto_delete_file_wic&)            = delete;
-            auto_delete_file_wic& operator=(const auto_delete_file_wic&) = delete;
+            auto_delete_file_wic(auto_delete_file_wic const&)            = delete;
+            auto_delete_file_wic& operator=(auto_delete_file_wic const&) = delete;
 
-            auto_delete_file_wic(const auto_delete_file_wic&&)            = delete;
-            auto_delete_file_wic& operator=(const auto_delete_file_wic&&) = delete;
+            auto_delete_file_wic(auto_delete_file_wic const&&)            = delete;
+            auto_delete_file_wic& operator=(auto_delete_file_wic const&&) = delete;
 
             ~auto_delete_file_wic()
             {
@@ -1021,7 +1021,7 @@ namespace DirectX
 
         inline void FitPowerOf2(UINT origx, UINT origy, _Inout_ UINT& targetx, _Inout_ UINT& targety, size_t maxsize)
         {
-            const float origAR = float(origx) / float(origy);
+            float const origAR = float(origx) / float(origy);
 
             if (origx > origy)
             {
@@ -1036,7 +1036,7 @@ namespace DirectX
                 float bestScore = FLT_MAX;
                 for (size_t y = maxsize; y > 0; y >>= 1)
                 {
-                    const float score = fabsf((float(x) / float(y)) - origAR);
+                    float const score = fabsf((float(x) / float(y)) - origAR);
                     if (score < bestScore)
                     {
                         bestScore = score;
@@ -1057,7 +1057,7 @@ namespace DirectX
                 float bestScore = FLT_MAX;
                 for (size_t x = maxsize; x > 0; x >>= 1)
                 {
-                    const float score = fabsf((float(x) / float(y)) - origAR);
+                    float const score = fabsf((float(x) / float(y)) - origAR);
                     if (score < bestScore)
                     {
                         bestScore = score;

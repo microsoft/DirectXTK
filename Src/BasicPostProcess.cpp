@@ -78,7 +78,7 @@ namespace
         size_t      length;
     };
 
-    const ShaderBytecode pixelShaders[] = {
+    ShaderBytecode const pixelShaders[] = {
         { PostProcess_PSCopy, sizeof(PostProcess_PSCopy) },
         { PostProcess_PSMonochrome, sizeof(PostProcess_PSMonochrome) },
         { PostProcess_PSSepia, sizeof(PostProcess_PSSepia) },
@@ -113,8 +113,8 @@ namespace
             }
         }
 
-        DeviceResources(const DeviceResources&)            = delete;
-        DeviceResources& operator=(const DeviceResources&) = delete;
+        DeviceResources(DeviceResources const&)            = delete;
+        DeviceResources& operator=(DeviceResources const&) = delete;
 
         DeviceResources(DeviceResources&&)            = delete;
         DeviceResources& operator=(DeviceResources&&) = delete;
@@ -171,13 +171,13 @@ class BasicPostProcess::Impl : public AlignedNew<PostProcessConstants>
 public:
     explicit Impl(_In_ ID3D11Device* device);
 
-    Impl(const Impl&)            = delete;
-    Impl& operator=(const Impl&) = delete;
+    Impl(Impl const&)            = delete;
+    Impl& operator=(Impl const&) = delete;
 
     Impl(Impl&&)            = default;
     Impl& operator=(Impl&&) = default;
 
-    void Process(_In_ ID3D11DeviceContext* deviceContext, const std::function<void __cdecl()>& setCustomState);
+    void Process(_In_ ID3D11DeviceContext* deviceContext, std::function<void __cdecl()> const& setCustomState);
 
     void SetConstants(bool value = true) noexcept
     {
@@ -238,7 +238,7 @@ BasicPostProcess::Impl::Impl(_In_ ID3D11Device* device)
 }
 
 // Sets our state onto the D3D device.
-void BasicPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, const std::function<void __cdecl()>& setCustomState)
+void BasicPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, std::function<void __cdecl()> const& setCustomState)
 {
     // Set the texture.
     ID3D11ShaderResourceView* textures[1] = { texture.Get() };
@@ -328,8 +328,8 @@ void BasicPostProcess::Impl::DownScale2x2()
         throw std::logic_error("Call SetSourceTexture before setting post-process effect");
     }
 
-    const float tu = 1.0f / float(texWidth);
-    const float tv = 1.0f / float(texHeight);
+    float const tu = 1.0f / float(texWidth);
+    float const tv = 1.0f / float(texHeight);
 
     // Sample from the 4 surrounding points. Since the center point will be in the exact
     // center of 4 texels, a 0.5f offset is needed to specify a texel center.
@@ -354,8 +354,8 @@ void BasicPostProcess::Impl::DownScale4x4()
         throw std::logic_error("Call SetSourceTexture before setting post-process effect");
     }
 
-    const float tu = 1.0f / float(texWidth);
-    const float tv = 1.0f / float(texHeight);
+    float const tu = 1.0f / float(texWidth);
+    float const tv = 1.0f / float(texHeight);
 
     // Sample from the 16 surrounding points. Since the center point will be in the
     // exact center of 16 texels, a 1.5f offset is needed to specify a texel center.
@@ -380,8 +380,8 @@ void BasicPostProcess::Impl::GaussianBlur5x5(float multiplier)
         throw std::logic_error("Call SetSourceTexture before setting post-process effect");
     }
 
-    const float tu = 1.0f / float(texWidth);
-    const float tv = 1.0f / float(texHeight);
+    float const tu = 1.0f / float(texWidth);
+    float const tv = 1.0f / float(texHeight);
 
     float  totalWeight = 0.0f;
     size_t index       = 0;
@@ -404,7 +404,7 @@ void BasicPostProcess::Impl::GaussianBlur5x5(float multiplier)
             offsets[index].z = 0.0f;
             offsets[index].w = 0.0f;
 
-            const float g  = GaussianDistribution(float(x), float(y), 1.0f);
+            float const g  = GaussianDistribution(float(x), float(y), 1.0f);
             weights[index] = XMVectorReplicate(g);
 
             totalWeight += XMVectorGetX(weights[index]);

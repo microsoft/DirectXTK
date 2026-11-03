@@ -207,7 +207,7 @@ namespace DirectX
             assert(pShaderByteCode != nullptr && pByteCodeLength != nullptr);
             assert(permutation >= 0 && permutation < Traits::ShaderPermutationCount);
             _Analysis_assume_(permutation >= 0 && permutation < Traits::ShaderPermutationCount);
-            const int shaderIndex = VertexShaderIndices[permutation];
+            int const shaderIndex = VertexShaderIndices[permutation];
             assert(shaderIndex >= 0 && shaderIndex < Traits::VertexShaderCount);
             _Analysis_assume_(shaderIndex >= 0 && shaderIndex < Traits::VertexShaderCount);
 
@@ -262,11 +262,11 @@ namespace DirectX
 
     protected:
         // Static arrays hold all the precompiled shader permutations.
-        static const ShaderBytecode VertexShaderBytecode[Traits::VertexShaderCount];
-        static const ShaderBytecode PixelShaderBytecode[Traits::PixelShaderCount];
+        static ShaderBytecode const VertexShaderBytecode[Traits::VertexShaderCount];
+        static ShaderBytecode const PixelShaderBytecode[Traits::PixelShaderCount];
 
-        static const int VertexShaderIndices[Traits::ShaderPermutationCount];
-        static const int PixelShaderIndices[Traits::ShaderPermutationCount];
+        static int const VertexShaderIndices[Traits::ShaderPermutationCount];
+        static int const PixelShaderIndices[Traits::ShaderPermutationCount];
 
     private:
         // D3D constant buffer holds a copy of the same data as the public 'constants' field.
