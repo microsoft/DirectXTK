@@ -97,7 +97,7 @@ For a full change history, see [CHANGELOG.md](https://github.com/microsoft/Direc
 * clang-format use for this project must match the version use by GitHub Super-Linter to pass the validation. VS 2022 and VS 2026 come with different versions, so to match use:
 
 ```cmd
-winget install --id=LLVM.LLVM --version 21.1.2
+winget install --id=LLVM.LLVM --version 22.1.3
 powershell -File build/Format.ps1 -LLVM
 ```
 
