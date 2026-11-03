@@ -80,3 +80,4 @@ SpacesInParentheses: false
 Standard: c++17
 TabWidth: 4
 UseTab: Never
+QualifierAlignment: Right
