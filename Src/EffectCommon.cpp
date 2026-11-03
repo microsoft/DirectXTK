@@ -150,7 +150,8 @@ _Use_decl_annotations_ void XM_CALLCONV EffectFog::SetConstants(int& dirtyFlags,
 // Constructor initializes default material color settings.
 EffectColor::EffectColor() noexcept
     : diffuseColor(g_XMOne),
-      alpha(1.f)
+      alpha(1.f),
+      padding(0)
 {}
 
 // Lazily recomputes the material color parameter for shaders that do not support realtime lighting.
