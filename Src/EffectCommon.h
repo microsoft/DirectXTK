@@ -77,6 +77,7 @@ namespace DirectX
 
         XMVECTOR diffuseColor;
         float    alpha;
+        uint64_t padding; // Pad to 16-byte boundary (needed for ARM64)
 
         void SetConstants(_Inout_ int& dirtyFlags, _Inout_ XMVECTOR& diffuseColorConstant);
     };
@@ -177,7 +178,8 @@ namespace DirectX
             : constants{},
               dirtyFlags(INT_MAX),
               mConstantBuffer(device),
-              mDeviceResources(deviceResourcesPool.DemandCreate(device))
+              mDeviceResources(deviceResourcesPool.DemandCreate(device)),
+              padding(0)
         {
             SetDebugObjectName(mConstantBuffer.GetBuffer(), "Effect");
         }
@@ -316,6 +318,8 @@ namespace DirectX
 
         // Per-device resources.
         std::shared_ptr<DeviceResources> mDeviceResources;
+
+        uint64_t padding; // Pad to 16-byte boundary (needed for ARM64)
 
         static SharedResourcePool<ID3D11Device*, DeviceResources> deviceResourcesPool;
     };
