@@ -21,33 +21,33 @@ namespace DirectX
 {
     namespace SimpleMath
     {
-        const Vector2 Vector2::Zero  = { 0.f, 0.f };
-        const Vector2 Vector2::One   = { 1.f, 1.f };
-        const Vector2 Vector2::UnitX = { 1.f, 0.f };
-        const Vector2 Vector2::UnitY = { 0.f, 1.f };
+        Vector2 const Vector2::Zero  = { 0.f, 0.f };
+        Vector2 const Vector2::One   = { 1.f, 1.f };
+        Vector2 const Vector2::UnitX = { 1.f, 0.f };
+        Vector2 const Vector2::UnitY = { 0.f, 1.f };
 
-        const Vector3 Vector3::Zero     = { 0.f, 0.f, 0.f };
-        const Vector3 Vector3::One      = { 1.f, 1.f, 1.f };
-        const Vector3 Vector3::UnitX    = { 1.f, 0.f, 0.f };
-        const Vector3 Vector3::UnitY    = { 0.f, 1.f, 0.f };
-        const Vector3 Vector3::UnitZ    = { 0.f, 0.f, 1.f };
-        const Vector3 Vector3::Up       = { 0.f, 1.f, 0.f };
-        const Vector3 Vector3::Down     = { 0.f, -1.f, 0.f };
-        const Vector3 Vector3::Right    = { 1.f, 0.f, 0.f };
-        const Vector3 Vector3::Left     = { -1.f, 0.f, 0.f };
-        const Vector3 Vector3::Forward  = { 0.f, 0.f, -1.f };
-        const Vector3 Vector3::Backward = { 0.f, 0.f, 1.f };
+        Vector3 const Vector3::Zero     = { 0.f, 0.f, 0.f };
+        Vector3 const Vector3::One      = { 1.f, 1.f, 1.f };
+        Vector3 const Vector3::UnitX    = { 1.f, 0.f, 0.f };
+        Vector3 const Vector3::UnitY    = { 0.f, 1.f, 0.f };
+        Vector3 const Vector3::UnitZ    = { 0.f, 0.f, 1.f };
+        Vector3 const Vector3::Up       = { 0.f, 1.f, 0.f };
+        Vector3 const Vector3::Down     = { 0.f, -1.f, 0.f };
+        Vector3 const Vector3::Right    = { 1.f, 0.f, 0.f };
+        Vector3 const Vector3::Left     = { -1.f, 0.f, 0.f };
+        Vector3 const Vector3::Forward  = { 0.f, 0.f, -1.f };
+        Vector3 const Vector3::Backward = { 0.f, 0.f, 1.f };
 
-        const Vector4 Vector4::Zero  = { 0.f, 0.f, 0.f, 0.f };
-        const Vector4 Vector4::One   = { 1.f, 1.f, 1.f, 1.f };
-        const Vector4 Vector4::UnitX = { 1.f, 0.f, 0.f, 0.f };
-        const Vector4 Vector4::UnitY = { 0.f, 1.f, 0.f, 0.f };
-        const Vector4 Vector4::UnitZ = { 0.f, 0.f, 1.f, 0.f };
-        const Vector4 Vector4::UnitW = { 0.f, 0.f, 0.f, 1.f };
+        Vector4 const Vector4::Zero  = { 0.f, 0.f, 0.f, 0.f };
+        Vector4 const Vector4::One   = { 1.f, 1.f, 1.f, 1.f };
+        Vector4 const Vector4::UnitX = { 1.f, 0.f, 0.f, 0.f };
+        Vector4 const Vector4::UnitY = { 0.f, 1.f, 0.f, 0.f };
+        Vector4 const Vector4::UnitZ = { 0.f, 0.f, 1.f, 0.f };
+        Vector4 const Vector4::UnitW = { 0.f, 0.f, 0.f, 1.f };
 
-        const Matrix Matrix::Identity = { 1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f };
+        Matrix const Matrix::Identity = { 1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f };
 
-        const Quaternion Quaternion::Identity = { 0.f, 0.f, 0.f, 1.f };
+        Quaternion const Quaternion::Identity = { 0.f, 0.f, 0.f, 1.f };
     } // namespace SimpleMath
 } // namespace DirectX
 
@@ -60,16 +60,16 @@ using namespace DirectX::SimpleMath;
  *
  ****************************************************************************/
 
-void Quaternion::RotateTowards(const Quaternion& target, float maxAngle, Quaternion& result) const noexcept
+void Quaternion::RotateTowards(Quaternion const& target, float maxAngle, Quaternion& result) const noexcept
 {
     const XMVECTOR T = XMLoadFloat4(this);
 
     // We can use the conjugate here instead of inverse assuming q1 & q2 are normalized.
     const XMVECTOR R = XMQuaternionMultiply(XMQuaternionConjugate(T), target);
 
-    const float    rs    = XMVectorGetW(R);
+    float const    rs    = XMVectorGetW(R);
     const XMVECTOR L     = XMVector3Length(R);
-    const float    angle = 2.f * atan2f(XMVectorGetX(L), rs);
+    float const    angle = 2.f * atan2f(XMVectorGetX(L), rs);
     if (angle > maxAngle)
     {
         const XMVECTOR delta = XMQuaternionRotationAxis(R, maxAngle);
@@ -83,14 +83,14 @@ void Quaternion::RotateTowards(const Quaternion& target, float maxAngle, Quatern
     }
 }
 
-void Quaternion::FromToRotation(const Vector3& fromDir, const Vector3& toDir, Quaternion& result) noexcept
+void Quaternion::FromToRotation(Vector3 const& fromDir, Vector3 const& toDir, Quaternion& result) noexcept
 {
     // Melax, "The Shortest Arc Quaternion", Game Programming Gems, Charles River Media (2000).
 
     const XMVECTOR F = XMVector3Normalize(fromDir);
     const XMVECTOR T = XMVector3Normalize(toDir);
 
-    const float dot = XMVectorGetX(XMVector3Dot(F, T));
+    float const dot = XMVectorGetX(XMVector3Dot(F, T));
     if (dot >= 1.f)
     {
         result = Identity;
@@ -111,7 +111,7 @@ void Quaternion::FromToRotation(const Vector3& fromDir, const Vector3& toDir, Qu
         const XMVECTOR C = XMVector3Cross(F, T);
         XMStoreFloat4(&result, C);
 
-        const float s = sqrtf((1.f + dot) * 2.f);
+        float const s = sqrtf((1.f + dot) * 2.f);
         result.x /= s;
         result.y /= s;
         result.z /= s;
@@ -119,7 +119,7 @@ void Quaternion::FromToRotation(const Vector3& fromDir, const Vector3& toDir, Qu
     }
 }
 
-void Quaternion::LookRotation(const Vector3& forward, const Vector3& up, Quaternion& result) noexcept
+void Quaternion::LookRotation(Vector3 const& forward, Vector3 const& up, Quaternion& result) noexcept
 {
     Quaternion q1;
     FromToRotation(Vector3::Forward, forward, q1);
@@ -190,7 +190,7 @@ RECT Viewport::ComputeDisplayArea(DXGI_SCALING scaling,
         // Note: This scaling option is not supported for legacy Win32 windows swap chains
         {
             assert(backBufferHeight > 0);
-            const float aspectRatio = float(backBufferWidth) / float(backBufferHeight);
+            float const aspectRatio = float(backBufferWidth) / float(backBufferHeight);
 
             // Horizontal fill
             float scaledWidth  = float(outputWidth);
@@ -202,8 +202,8 @@ RECT Viewport::ComputeDisplayArea(DXGI_SCALING scaling,
                 scaledHeight = float(outputHeight);
             }
 
-            const float offsetX = (float(outputWidth) - scaledWidth) * 0.5f;
-            const float offsetY = (float(outputHeight) - scaledHeight) * 0.5f;
+            float const offsetX = (float(outputWidth) - scaledWidth) * 0.5f;
+            float const offsetY = (float(outputHeight) - scaledHeight) * 0.5f;
 
             rct.left   = static_cast<LONG>(offsetX);
             rct.top    = static_cast<LONG>(offsetY);
@@ -234,8 +234,8 @@ RECT Viewport::ComputeDisplayArea(DXGI_SCALING scaling,
 
 RECT Viewport::ComputeTitleSafeArea(UINT backBufferWidth, UINT backBufferHeight) noexcept
 {
-    const float safew = (float(backBufferWidth) + 19.f) / 20.f;
-    const float safeh = (float(backBufferHeight) + 19.f) / 20.f;
+    float const safew = (float(backBufferWidth) + 19.f) / 20.f;
+    float const safeh = (float(backBufferHeight) + 19.f) / 20.f;
 
     RECT rct;
     rct.left   = static_cast<LONG>(safew);

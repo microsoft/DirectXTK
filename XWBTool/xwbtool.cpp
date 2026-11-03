@@ -318,10 +318,10 @@ namespace
 
     DWORD EncodeWMABlockAlign(DWORD dwBlockAlign, DWORD dwAvgBytesPerSec) noexcept
     {
-        static const uint32_t aWMABlockAlign[17]
+        static uint32_t const aWMABlockAlign[17]
             = { 929, 1487, 1280, 2230, 8917, 8192, 4459, 5945, 2304, 1536, 1485, 1008, 2731, 4096, 6827, 5462, 1280 };
 
-        static const uint32_t aWMAAvgBytesPerSec[7] = { 12000, 24000, 4000, 6000, 8000, 20000, 2500 };
+        static uint32_t const aWMAAvgBytesPerSec[7] = { 12000, 24000, 4000, 6000, 8000, 20000, 2500 };
 
         auto bit = std::find(std::begin(aWMABlockAlign), std::end(aWMABlockAlign), dwBlockAlign);
         if (bit == std::end(aWMABlockAlign))
@@ -443,8 +443,8 @@ namespace
                 for (int j = 0; j < 7 /*MSADPCM_NUM_COEFFICIENTS*/; ++j)
                 {
                     // Microsoft ADPCM standard encoding coefficients
-                    static const short g_pAdpcmCoefficients1[] = { 256, 512, 0, 192, 240, 460, 392 };
-                    static const short g_pAdpcmCoefficients2[] = { 0, -256, 0, 64, 0, -208, -232 };
+                    static short const g_pAdpcmCoefficients1[] = { 256, 512, 0, 192, 240, 460, 392 };
+                    static short const g_pAdpcmCoefficients2[] = { 0, -256, 0, 64, 0, -208, -232 };
 
                     if (wfadpcm->aCoef[j].iCoef1 != g_pAdpcmCoefficients1[j] || wfadpcm->aCoef[j].iCoef2 != g_pAdpcmCoefficients2[j])
                     {
@@ -794,9 +794,9 @@ namespace
     //////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////
 
-    const wchar_t* g_ToolName    = L"xwbtool";
-    const wchar_t* g_Description = L"Microsoft (R) XACT-style Wave Bank Tool [DirectXTK]";
-    const wchar_t* g_FeedbackURL = L"https://github.com/microsoft/DirectXTK/issues";
+    wchar_t const* g_ToolName    = L"xwbtool";
+    wchar_t const* g_Description = L"Microsoft (R) XACT-style Wave Bank Tool [DirectXTK]";
+    wchar_t const* g_FeedbackURL = L"https://github.com/microsoft/DirectXTK/issues";
 
     enum OPTIONS : uint32_t
     {
@@ -896,9 +896,9 @@ namespace
     {
         PrintLogo(false, g_ToolName, g_Description);
 
-        static const wchar_t* const s_usage = L"Usage: xwbtool <options> [--] <wav-files>\n\n";
+        static wchar_t const* const s_usage = L"Usage: xwbtool <options> [--] <wav-files>\n\n";
 
-        static const wchar_t* const s_fullUsage
+        static wchar_t const* const s_fullUsage
             = L"   -r                  wildcard filename search is recursive\n"
               L"   -flist <filename>, --file-list <filename>\n"
               L"                       use text file with a list of input files (one per line)\n"
@@ -928,7 +928,7 @@ namespace
         wprintf(L"%ls", s_fullUsage);
     }
 
-    const char* GetFormatTagName(WORD wFormatTag) noexcept
+    char const* GetFormatTagName(WORD wFormatTag) noexcept
     {
         switch (wFormatTag)
         {
@@ -947,7 +947,7 @@ namespace
         }
     }
 
-    const char* ChannelDesc(DWORD dwChannelMask) noexcept
+    char const* ChannelDesc(DWORD dwChannelMask) noexcept
     {
         switch (dwChannelMask)
         {
@@ -965,7 +965,7 @@ namespace
         }
     }
 
-    void PrintInfo(const WaveFile& wave) noexcept
+    void PrintInfo(WaveFile const& wave) noexcept
     {
         if (wave.data.wfx->wFormatTag == WAVE_FORMAT_EXTENSIBLE
             && (wave.data.wfx->cbSize >= (sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX))))

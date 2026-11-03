@@ -153,10 +153,10 @@ namespace
             case TAG_ADPCM: return (wBlockAlign + ADPCM_BLOCKALIGN_CONVERSION_OFFSET) * nChannels;
 
             case TAG_WMA:   {
-                static const uint32_t aWMABlockAlign[17]
+                static uint32_t const aWMABlockAlign[17]
                     = { 929, 1487, 1280, 2230, 8917, 8192, 4459, 5945, 2304, 1536, 1485, 1008, 2731, 4096, 6827, 5462, 1280 };
 
-                const uint32_t dwBlockAlignIndex = wBlockAlign & 0x1F;
+                uint32_t const dwBlockAlignIndex = wBlockAlign & 0x1F;
                 if (dwBlockAlignIndex < 17)
                     return aWMABlockAlign[dwBlockAlignIndex];
             }
@@ -177,16 +177,16 @@ namespace
             case TAG_XMA:   return nSamplesPerSec * BlockAlign();
 
             case TAG_ADPCM: {
-                const uint32_t blockAlign           = BlockAlign();
-                const uint32_t samplesPerAdpcmBlock = AdpcmSamplesPerBlock();
+                uint32_t const blockAlign           = BlockAlign();
+                uint32_t const samplesPerAdpcmBlock = AdpcmSamplesPerBlock();
                 return blockAlign * nSamplesPerSec / samplesPerAdpcmBlock;
             }
 
             case TAG_WMA: {
-                static const uint32_t aWMAAvgBytesPerSec[7] = { 12000, 24000, 4000, 6000, 8000, 20000, 2500 };
+                static uint32_t const aWMAAvgBytesPerSec[7] = { 12000, 24000, 4000, 6000, 8000, 20000, 2500 };
                 // bitrate = entry * 8
 
-                const uint32_t dwBytesPerSecIndex = wBlockAlign >> 5;
+                uint32_t const dwBytesPerSecIndex = wBlockAlign >> 5;
                 if (dwBytesPerSecIndex < 7)
                     return aWMAAvgBytesPerSec[dwBytesPerSecIndex];
             }
@@ -200,7 +200,7 @@ namespace
 
         DWORD AdpcmSamplesPerBlock() const noexcept
         {
-            const uint32_t nBlockAlign = (wBlockAlign + ADPCM_BLOCKALIGN_CONVERSION_OFFSET) * nChannels;
+            uint32_t const nBlockAlign = (wBlockAlign + ADPCM_BLOCKALIGN_CONVERSION_OFFSET) * nChannels;
             return nBlockAlign * 2 / uint32_t(nChannels) - 12;
         }
 
@@ -295,7 +295,7 @@ namespace
         uint32_t dwOffset : 21;          // Data offset, in multiplies of the bank alignment
         uint32_t dwLengthDeviation : 11; // Data length deviation, in bytes
 
-        void BigEndian() noexcept { *reinterpret_cast<uint32_t*>(this) = _byteswap_ulong(*reinterpret_cast<const uint32_t*>(this)); }
+        void BigEndian() noexcept { *reinterpret_cast<uint32_t*>(this) = _byteswap_ulong(*reinterpret_cast<uint32_t const*>(this)); }
 
         void ComputeLocations(DWORD& offset,
             DWORD&                   length,
@@ -322,7 +322,7 @@ namespace
             {
             case MINIWAVEFORMAT::TAG_ADPCM: {
                 uint32_t       duration = (length / data.CompactFormat.BlockAlign()) * data.CompactFormat.AdpcmSamplesPerBlock();
-                const uint32_t partial  = length % data.CompactFormat.BlockAlign();
+                uint32_t const partial  = length % data.CompactFormat.BlockAlign();
                 if (partial)
                 {
                     if (partial >= (7u * data.CompactFormat.nChannels))
@@ -334,7 +334,7 @@ namespace
             case MINIWAVEFORMAT::TAG_WMA:
                 if (seekTable)
                 {
-                    const uint32_t seekCount = *seekTable;
+                    uint32_t const seekCount = *seekTable;
                     if (seekCount > 0)
                     {
                         return seekTable[seekCount] / uint32_t(2 * data.CompactFormat.nChannels);
@@ -345,7 +345,7 @@ namespace
             case MINIWAVEFORMAT::TAG_XMA:
                 if (seekTable)
                 {
-                    const uint32_t seekCount = *seekTable;
+                    uint32_t const seekCount = *seekTable;
                     if (seekCount > 0)
                     {
                         return seekTable[seekCount];
@@ -362,34 +362,34 @@ namespace
 
 #pragma pack(pop)
 
-    inline const uint32_t*
+    inline uint32_t const*
     FindSeekTable(uint32_t index, _In_opt_ const uint8_t* seekTable, const HEADER& header, const BANKDATA& data) noexcept
     {
         if (!seekTable || index >= data.dwEntryCount)
             return nullptr;
 
-        const uint32_t seekSize = header.Segments[HEADER::SEGIDX_SEEKTABLES].dwLength;
+        uint32_t const seekSize = header.Segments[HEADER::SEGIDX_SEEKTABLES].dwLength;
 
         // The segment opens with dwEntryCount uint32_t offsets. Require the whole element
         // to be inside the segment, not merely its first byte.
         if ((uint64_t(index) + 1u) * sizeof(uint32_t) > seekSize)
             return nullptr;
 
-        auto           table = reinterpret_cast<const uint32_t*>(seekTable);
-        const uint32_t entry = table[index];
+        auto           table = reinterpret_cast<uint32_t const*>(seekTable);
+        uint32_t const entry = table[index];
         if (entry == uint32_t(-1))
             return nullptr;
 
         // Both terms come from the file and their sum exceeds a uint32_t for large values,
         // so accumulate in 64-bit; a truncated sum would wrap past the bounds check below.
-        const uint64_t offset = uint64_t(entry) + uint64_t(sizeof(uint32_t)) * uint64_t(data.dwEntryCount);
+        uint64_t const offset = uint64_t(entry) + uint64_t(sizeof(uint32_t)) * uint64_t(data.dwEntryCount);
 
         // The subtable leads with its own entry count, so that value must itself be fully
         // inside the segment before anything may read it.
         if ((offset + sizeof(uint32_t)) > seekSize)
             return nullptr;
 
-        auto result = reinterpret_cast<const uint32_t*>(seekTable + offset);
+        auto result = reinterpret_cast<uint32_t const*>(seekTable + offset);
 
         // Validate the declared count against the bytes actually remaining. Consumers index
         // result[0] through result[*result], so that many elements plus the count must fit.
@@ -487,7 +487,7 @@ public:
 #endif
 };
 
-_Use_decl_annotations_ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileName) noexcept(false)
+_Use_decl_annotations_ HRESULT WaveBankReader::Impl::Open(wchar_t const* szFileName) noexcept(false)
 {
     Close();
     Clear();
@@ -535,7 +535,7 @@ _Use_decl_annotations_ HRESULT WaveBankReader::Impl::Open(const wchar_t* szFileN
         return E_FAIL;
     }
 
-    const bool be = (m_header.dwSignature == HEADER::BE_SIGNATURE);
+    bool const be = (m_header.dwSignature == HEADER::BE_SIGNATURE);
     if (be)
     {
         DebugTrace("INFO: \"%ls\" is a big-endian (Xbox 360) wave bank\n", szFileName);
@@ -994,7 +994,7 @@ _Use_decl_annotations_ HRESULT WaveBankReader::Impl::GetFormat(uint32_t index, W
     return S_OK;
 }
 
-_Use_decl_annotations_ HRESULT WaveBankReader::Impl::GetWaveData(uint32_t index, const uint8_t** pData, uint32_t& dataSize) const noexcept
+_Use_decl_annotations_ HRESULT WaveBankReader::Impl::GetWaveData(uint32_t index, uint8_t const** pData, uint32_t& dataSize) const noexcept
 {
     if (!pData)
         return E_INVALIDARG;
@@ -1005,9 +1005,9 @@ _Use_decl_annotations_ HRESULT WaveBankReader::Impl::GetWaveData(uint32_t index,
     }
 
 #ifdef DIRECTX_ENABLE_XMA2
-    const uint8_t* waveData = (m_xmaMemory) ? reinterpret_cast<uint8_t*>(m_xmaMemory) : m_waveData.get();
+    uint8_t const* waveData = (m_xmaMemory) ? reinterpret_cast<uint8_t*>(m_xmaMemory) : m_waveData.get();
 #else
-    const uint8_t* waveData = m_waveData.get();
+    uint8_t const* waveData = m_waveData.get();
 #endif
 
     if (!waveData)
@@ -1056,7 +1056,7 @@ _Use_decl_annotations_ HRESULT WaveBankReader::Impl::GetWaveData(uint32_t index,
 }
 
 _Use_decl_annotations_ HRESULT WaveBankReader::Impl::GetSeekTable(uint32_t index,
-    const uint32_t**                                                       pData,
+    uint32_t const**                                                       pData,
     uint32_t&                                                              dataCount,
     uint32_t&                                                              tag) const noexcept
 {
@@ -1146,7 +1146,7 @@ _Use_decl_annotations_ HRESULT WaveBankReader::Impl::GetMetadata(uint32_t index,
 
     if (m_data.dwFlags & BANKDATA::TYPE_STREAMING)
     {
-        const uint64_t offset = uint64_t(metadata.offsetBytes) + uint64_t(m_header.Segments[HEADER::SEGIDX_ENTRYWAVEDATA].dwOffset);
+        uint64_t const offset = uint64_t(metadata.offsetBytes) + uint64_t(m_header.Segments[HEADER::SEGIDX_ENTRYWAVEDATA].dwOffset);
         if (offset > UINT32_MAX)
         {
             return HRESULT_FROM_WIN32(ERROR_ARITHMETIC_OVERFLOW);
@@ -1189,12 +1189,12 @@ WaveBankReader::WaveBankReader() noexcept(false)
 
 WaveBankReader::~WaveBankReader() {}
 
-_Use_decl_annotations_ HRESULT WaveBankReader::Open(const wchar_t* szFileName) noexcept
+_Use_decl_annotations_ HRESULT WaveBankReader::Open(wchar_t const* szFileName) noexcept
 {
     return pImpl->Open(szFileName);
 }
 
-_Use_decl_annotations_ uint32_t WaveBankReader::Find(const char* name) const
+_Use_decl_annotations_ uint32_t WaveBankReader::Find(char const* name) const
 {
     if (name)
     {
@@ -1246,7 +1246,7 @@ bool WaveBankReader::HasXMA() const noexcept
 }
 #endif
 
-const char* WaveBankReader::BankName() const noexcept
+char const* WaveBankReader::BankName() const noexcept
 {
     return pImpl->m_data.szBankName;
 }
@@ -1266,13 +1266,13 @@ _Use_decl_annotations_ HRESULT WaveBankReader::GetFormat(uint32_t index, WAVEFOR
     return pImpl->GetFormat(index, pFormat, maxsize);
 }
 
-_Use_decl_annotations_ HRESULT WaveBankReader::GetWaveData(uint32_t index, const uint8_t** pData, uint32_t& dataSize) const noexcept
+_Use_decl_annotations_ HRESULT WaveBankReader::GetWaveData(uint32_t index, uint8_t const** pData, uint32_t& dataSize) const noexcept
 {
     return pImpl->GetWaveData(index, pData, dataSize);
 }
 
 _Use_decl_annotations_ HRESULT WaveBankReader::GetSeekTable(uint32_t index,
-    const uint32_t**                                                 pData,
+    uint32_t const**                                                 pData,
     uint32_t&                                                        dataCount,
     uint32_t&                                                        tag) const noexcept
 {

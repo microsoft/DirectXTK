@@ -109,7 +109,7 @@ namespace
     static_assert(sizeof(RIFFMIDISample) == 36, "structure size mismatch");
 
     //---------------------------------------------------------------------------------
-    const RIFFChunk* FindChunk(_In_reads_bytes_(sizeBytes) const uint8_t* data,
+    RIFFChunk const* FindChunk(_In_reads_bytes_(sizeBytes) const uint8_t* data,
         _In_ size_t                                                       sizeBytes,
         _In_ const uint8_t*                                               upperBound,
         _In_ uint32_t                                                     tag) noexcept
@@ -120,8 +120,8 @@ namespace
         if (sizeBytes < sizeof(RIFFChunk))
             return nullptr;
 
-        const uint8_t* ptr = data;
-        const uint8_t* end = data + sizeBytes;
+        uint8_t const* ptr = data;
+        uint8_t const* end = data + sizeBytes;
 
         if (end > upperBound)
             return nullptr;
@@ -133,11 +133,11 @@ namespace
             if ((current + sizeof(RIFFChunk)) >= sizeBytes)
                 return nullptr;
 
-            auto header = reinterpret_cast<const RIFFChunk*>(ptr);
+            auto header = reinterpret_cast<RIFFChunk const*>(ptr);
             if (header->tag == tag)
                 return header;
 
-            const uint64_t offset = static_cast<const uint64_t>(header->size) + sizeof(RIFFChunk);
+            uint64_t const offset = static_cast<uint64_t const>(header->size) + sizeof(RIFFChunk);
             current += offset;
             if (current >= sizeBytes)
                 return nullptr;
@@ -170,7 +170,7 @@ namespace
             return E_FAIL;
         }
 
-        const uint8_t* wavEnd = wavData + wavDataSize;
+        uint8_t const* wavEnd = wavData + wavDataSize;
 
         // Locate RIFF 'WAVE'
         auto riffChunk = FindChunk(wavData, wavDataSize, wavEnd, FOURCC_RIFF_TAG);
@@ -179,19 +179,19 @@ namespace
             return E_FAIL;
         }
 
-        if ((reinterpret_cast<const uint8_t*>(riffChunk) + sizeof(RIFFChunkHeader)) > wavEnd)
+        if ((reinterpret_cast<uint8_t const*>(riffChunk) + sizeof(RIFFChunkHeader)) > wavEnd)
         {
             return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
         }
 
-        auto riffHeader = reinterpret_cast<const RIFFChunkHeader*>(riffChunk);
+        auto riffHeader = reinterpret_cast<RIFFChunkHeader const*>(riffChunk);
         if (riffHeader->riff != FOURCC_WAVE_FILE_TAG && riffHeader->riff != FOURCC_XWMA_FILE_TAG)
         {
             return E_FAIL;
         }
 
         // Locate 'fmt '
-        auto ptr = reinterpret_cast<const uint8_t*>(riffHeader) + sizeof(RIFFChunkHeader);
+        auto ptr = reinterpret_cast<uint8_t const*>(riffHeader) + sizeof(RIFFChunkHeader);
 
         auto fmtChunk = FindChunk(ptr, riffChunk->size - 4, wavEnd, FOURCC_FORMAT_TAG);
         if (!fmtChunk || fmtChunk->size < sizeof(PCMWAVEFORMAT))
@@ -199,12 +199,12 @@ namespace
             return E_FAIL;
         }
 
-        if ((reinterpret_cast<const uint8_t*>(fmtChunk) + sizeof(RIFFChunk) + sizeof(PCMWAVEFORMAT)) > wavEnd)
+        if ((reinterpret_cast<uint8_t const*>(fmtChunk) + sizeof(RIFFChunk) + sizeof(PCMWAVEFORMAT)) > wavEnd)
         {
             return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
         }
 
-        ptr = reinterpret_cast<const uint8_t*>(fmtChunk) + sizeof(RIFFChunk);
+        ptr = reinterpret_cast<uint8_t const*>(fmtChunk) + sizeof(RIFFChunk);
         if (ptr + fmtChunk->size > wavEnd)
         {
             return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
@@ -322,7 +322,7 @@ namespace
         }
 
         // Locate 'data'
-        ptr = reinterpret_cast<const uint8_t*>(riffHeader) + sizeof(RIFFChunkHeader);
+        ptr = reinterpret_cast<uint8_t const*>(riffHeader) + sizeof(RIFFChunkHeader);
         if ((ptr + sizeof(RIFFChunk)) > wavEnd)
         {
             return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
@@ -334,7 +334,7 @@ namespace
             return HRESULT_FROM_WIN32(ERROR_INVALID_DATA);
         }
 
-        ptr = reinterpret_cast<const uint8_t*>(dataChunk) + sizeof(RIFFChunk);
+        ptr = reinterpret_cast<uint8_t const*>(dataChunk) + sizeof(RIFFChunk);
         if (ptr + dataChunk->size > wavEnd)
         {
             return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
@@ -363,7 +363,7 @@ namespace
         *pLoopStart  = 0;
         *pLoopLength = 0;
 
-        const uint8_t* wavEnd = wavData + wavDataSize;
+        uint8_t const* wavEnd = wavData + wavDataSize;
 
         // Locate RIFF 'WAVE'
         auto riffChunk = FindChunk(wavData, wavDataSize, wavEnd, FOURCC_RIFF_TAG);
@@ -372,7 +372,7 @@ namespace
             return E_FAIL;
         }
 
-        auto riffHeader = reinterpret_cast<const RIFFChunkHeader*>(riffChunk);
+        auto riffHeader = reinterpret_cast<RIFFChunkHeader const*>(riffChunk);
         if (riffHeader->riff == FOURCC_XWMA_FILE_TAG)
         {
             // xWMA files do not contain loop information
@@ -385,7 +385,7 @@ namespace
         }
 
         // Locate 'wsmp' (DLS Chunk)
-        auto ptr = reinterpret_cast<const uint8_t*>(riffHeader) + sizeof(RIFFChunkHeader);
+        auto ptr = reinterpret_cast<uint8_t const*>(riffHeader) + sizeof(RIFFChunkHeader);
         if ((ptr + sizeof(RIFFChunk)) > wavEnd)
         {
             return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
@@ -394,7 +394,7 @@ namespace
         auto dlsChunk = FindChunk(ptr, riffChunk->size - 4, wavEnd, FOURCC_DLS_SAMPLE);
         if (dlsChunk)
         {
-            ptr = reinterpret_cast<const uint8_t*>(dlsChunk) + sizeof(RIFFChunk);
+            ptr = reinterpret_cast<uint8_t const*>(dlsChunk) + sizeof(RIFFChunk);
             if (ptr + dlsChunk->size > wavEnd)
             {
                 return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
@@ -402,11 +402,11 @@ namespace
 
             if (dlsChunk->size >= sizeof(RIFFDLSSample))
             {
-                auto dlsSample = reinterpret_cast<const RIFFDLSSample*>(ptr);
+                auto dlsSample = reinterpret_cast<RIFFDLSSample const*>(ptr);
 
                 if (dlsChunk->size >= (dlsSample->size + dlsSample->loopCount * sizeof(DLSLoop)))
                 {
-                    auto loops = reinterpret_cast<const DLSLoop*>(ptr + dlsSample->size);
+                    auto loops = reinterpret_cast<DLSLoop const*>(ptr + dlsSample->size);
                     for (uint32_t j = 0; j < dlsSample->loopCount; ++j)
                     {
                         if ((loops[j].loopType == DLSLoop::LOOP_TYPE_FORWARD || loops[j].loopType == DLSLoop::LOOP_TYPE_RELEASE))
@@ -425,7 +425,7 @@ namespace
         auto midiChunk = FindChunk(ptr, riffChunk->size - 4, wavEnd, FOURCC_MIDI_SAMPLE);
         if (midiChunk)
         {
-            ptr = reinterpret_cast<const uint8_t*>(midiChunk) + sizeof(RIFFChunk);
+            ptr = reinterpret_cast<uint8_t const*>(midiChunk) + sizeof(RIFFChunk);
             if (ptr + midiChunk->size > wavEnd)
             {
                 return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
@@ -433,11 +433,11 @@ namespace
 
             if (midiChunk->size >= sizeof(RIFFMIDISample))
             {
-                auto midiSample = reinterpret_cast<const RIFFMIDISample*>(ptr);
+                auto midiSample = reinterpret_cast<RIFFMIDISample const*>(ptr);
 
                 if (midiChunk->size >= (sizeof(RIFFMIDISample) + midiSample->loopCount * sizeof(MIDILoop)))
                 {
-                    auto loops = reinterpret_cast<const MIDILoop*>(ptr + sizeof(RIFFMIDISample));
+                    auto loops = reinterpret_cast<MIDILoop const*>(ptr + sizeof(RIFFMIDISample));
                     for (uint32_t j = 0; j < midiSample->loopCount; ++j)
                     {
                         if (loops[j].type == MIDILoop::LOOP_TYPE_FORWARD)
@@ -473,7 +473,7 @@ namespace
         *pData     = nullptr;
         *dataCount = 0;
 
-        const uint8_t* wavEnd = wavData + wavDataSize;
+        uint8_t const* wavEnd = wavData + wavDataSize;
 
         // Locate RIFF 'WAVE'
         auto riffChunk = FindChunk(wavData, wavDataSize, wavEnd, FOURCC_RIFF_TAG);
@@ -482,14 +482,14 @@ namespace
             return E_FAIL;
         }
 
-        auto riffHeader = reinterpret_cast<const RIFFChunkHeader*>(riffChunk);
+        auto riffHeader = reinterpret_cast<RIFFChunkHeader const*>(riffChunk);
         if (riffHeader->riff != FOURCC_WAVE_FILE_TAG && riffHeader->riff != FOURCC_XWMA_FILE_TAG)
         {
             return E_FAIL;
         }
 
         // Locate tag
-        auto ptr = reinterpret_cast<const uint8_t*>(riffHeader) + sizeof(RIFFChunkHeader);
+        auto ptr = reinterpret_cast<uint8_t const*>(riffHeader) + sizeof(RIFFChunkHeader);
         if ((ptr + sizeof(RIFFChunk)) > wavEnd)
         {
             return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
@@ -498,7 +498,7 @@ namespace
         auto tableChunk = FindChunk(ptr, riffChunk->size - 4, wavEnd, tag);
         if (tableChunk)
         {
-            ptr = reinterpret_cast<const uint8_t*>(tableChunk) + sizeof(RIFFChunk);
+            ptr = reinterpret_cast<uint8_t const*>(tableChunk) + sizeof(RIFFChunk);
             if (ptr + tableChunk->size > wavEnd)
             {
                 return HRESULT_FROM_WIN32(ERROR_HANDLE_EOF);
@@ -509,7 +509,7 @@ namespace
                 return E_FAIL;
             }
 
-            *pData     = reinterpret_cast<const uint32_t*>(ptr);
+            *pData     = reinterpret_cast<uint32_t const*>(ptr);
             *dataCount = tableChunk->size / 4;
         }
 
@@ -567,10 +567,10 @@ namespace
 } // namespace
 
 //-------------------------------------------------------------------------------------
-_Use_decl_annotations_ HRESULT DirectX::LoadWAVAudioInMemory(const uint8_t* wavData,
+_Use_decl_annotations_ HRESULT DirectX::LoadWAVAudioInMemory(uint8_t const* wavData,
     size_t                                                                  wavDataSize,
     const WAVEFORMATEX**                                                    wfx,
-    const uint8_t**                                                         startAudio,
+    uint8_t const**                                                         startAudio,
     uint32_t*                                                               audioBytes) noexcept
 {
     if (!wavData || !wfx || !startAudio || !audioBytes)
@@ -595,10 +595,10 @@ _Use_decl_annotations_ HRESULT DirectX::LoadWAVAudioInMemory(const uint8_t* wavD
 }
 
 //-------------------------------------------------------------------------------------
-_Use_decl_annotations_ HRESULT DirectX::LoadWAVAudioFromFile(const wchar_t* szFileName,
+_Use_decl_annotations_ HRESULT DirectX::LoadWAVAudioFromFile(wchar_t const* szFileName,
     std::unique_ptr<uint8_t[]>&                                             wavData,
     const WAVEFORMATEX**                                                    wfx,
-    const uint8_t**                                                         startAudio,
+    uint8_t const**                                                         startAudio,
     uint32_t*                                                               audioBytes) noexcept
 {
     if (!szFileName || !wfx || !startAudio || !audioBytes)
@@ -624,7 +624,7 @@ _Use_decl_annotations_ HRESULT DirectX::LoadWAVAudioFromFile(const wchar_t* szFi
 }
 
 //-------------------------------------------------------------------------------------
-_Use_decl_annotations_ HRESULT DirectX::LoadWAVAudioInMemoryEx(const uint8_t* wavData,
+_Use_decl_annotations_ HRESULT DirectX::LoadWAVAudioInMemoryEx(uint8_t const* wavData,
     size_t                                                                    wavDataSize,
     DirectX::WAVData&                                                         result) noexcept
 {
@@ -665,7 +665,7 @@ _Use_decl_annotations_ HRESULT DirectX::LoadWAVAudioInMemoryEx(const uint8_t* wa
 }
 
 //-------------------------------------------------------------------------------------
-_Use_decl_annotations_ HRESULT DirectX::LoadWAVAudioFromFileEx(const wchar_t* szFileName,
+_Use_decl_annotations_ HRESULT DirectX::LoadWAVAudioFromFileEx(wchar_t const* szFileName,
     std::unique_ptr<uint8_t[]>&                                               wavData,
     DirectX::WAVData&                                                         result) noexcept
 {

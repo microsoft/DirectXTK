@@ -468,8 +468,8 @@ namespace DirectX
             {
                 if (key <= 0xfe)
                 {
-                    auto               ptr = reinterpret_cast<const uint32_t*>(this);
-                    const unsigned int bf  = 1u << (key & 0x1f);
+                    auto               ptr = reinterpret_cast<uint32_t const*>(this);
+                    unsigned int const bf  = 1u << (key & 0x1f);
                     return (ptr[(key >> 5)] & bf) != 0;
                 }
                 return false;
@@ -479,8 +479,8 @@ namespace DirectX
             {
                 if (key <= 0xfe)
                 {
-                    auto               ptr = reinterpret_cast<const uint32_t*>(this);
-                    const unsigned int bf  = 1u << (key & 0x1f);
+                    auto               ptr = reinterpret_cast<uint32_t const*>(this);
+                    unsigned int const bf  = 1u << (key & 0x1f);
                     return (ptr[(key >> 5)] & bf) == 0;
                 }
                 return false;
@@ -506,7 +506,7 @@ namespace DirectX
 #pragma prefast(pop)
 #endif
 
-            void __cdecl Update(const State& state) noexcept;
+            void __cdecl Update(State const& state) noexcept;
 
             void __cdecl Reset() noexcept;
 

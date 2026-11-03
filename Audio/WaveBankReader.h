@@ -47,7 +47,7 @@ namespace DirectX
         bool HasXMA() const noexcept;
 #endif
 
-        const char* BankName() const noexcept;
+        char const* BankName() const noexcept;
 
         uint32_t Count() const noexcept;
 

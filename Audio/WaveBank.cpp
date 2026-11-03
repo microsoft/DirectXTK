@@ -127,7 +127,7 @@ public:
     bool                     mStreaming;
 };
 
-_Use_decl_annotations_ HRESULT WaveBank::Impl::Initialize(const AudioEngine* engine, const wchar_t* wbFileName) noexcept
+_Use_decl_annotations_ HRESULT WaveBank::Impl::Initialize(AudioEngine const* engine, wchar_t const* wbFileName) noexcept
 {
     if (!engine || !wbFileName)
         return E_INVALIDARG;
@@ -184,7 +184,7 @@ void WaveBank::Impl::Play(unsigned int index, float volume, float pitch, float p
 
     if (pitch != 0.f)
     {
-        const float fr = XAudio2SemitonesToFrequencyRatio(pitch * 12.f);
+        float const fr = XAudio2SemitonesToFrequencyRatio(pitch * 12.f);
 
         hr = voice->SetFrequencyRatio(fr);
         ThrowIfFailed(hr);
@@ -251,7 +251,7 @@ void WaveBank::Impl::Play(unsigned int index, float volume, float pitch, float p
 //--------------------------------------------------------------------------------------
 
 // Public constructors.
-_Use_decl_annotations_ WaveBank::WaveBank(AudioEngine* engine, const wchar_t* wbFileName)
+_Use_decl_annotations_ WaveBank::WaveBank(AudioEngine* engine, wchar_t const* wbFileName)
     : pImpl(std::make_unique<Impl>(engine))
 {
     HRESULT hr = pImpl->Initialize(engine, wbFileName);
@@ -284,7 +284,7 @@ void WaveBank::Play(unsigned int index, float volume, float pitch, float pan)
 
 void WaveBank::Play(_In_z_ const char* name)
 {
-    const unsigned int index = pImpl->mReader.Find(name);
+    unsigned int const index = pImpl->mReader.Find(name);
     if (index == unsigned(-1))
     {
         DebugTrace("WARNING: Name '%hs' not found in wave bank, one-shot not triggered\n", name);
@@ -296,7 +296,7 @@ void WaveBank::Play(_In_z_ const char* name)
 
 void WaveBank::Play(_In_z_ const char* name, float volume, float pitch, float pan)
 {
-    const unsigned int index = pImpl->mReader.Find(name);
+    unsigned int const index = pImpl->mReader.Find(name);
     if (index == unsigned(-1))
     {
         DebugTrace("WARNING: Name '%hs' not found in wave bank, one-shot not triggered\n", name);
@@ -337,7 +337,7 @@ std::unique_ptr<SoundEffectInstance> WaveBank::CreateInstance(unsigned int index
 
 std::unique_ptr<SoundEffectInstance> WaveBank::CreateInstance(_In_z_ const char* name, SOUND_EFFECT_INSTANCE_FLAGS flags)
 {
-    const unsigned int index = pImpl->mReader.Find(name);
+    unsigned int const index = pImpl->mReader.Find(name);
     if (index == unsigned(-1))
     {
         // We don't throw an exception here as titles often simply ignore missing assets rather than fail
@@ -378,7 +378,7 @@ std::unique_ptr<SoundStreamInstance> WaveBank::CreateStreamInstance(unsigned int
 
 std::unique_ptr<SoundStreamInstance> WaveBank::CreateStreamInstance(_In_z_ const char* name, SOUND_EFFECT_INSTANCE_FLAGS flags)
 {
-    const unsigned int index = pImpl->mReader.Find(name);
+    unsigned int const index = pImpl->mReader.Find(name);
     if (index == unsigned(-1))
     {
         // We don't throw an exception here as titles often simply ignore missing assets rather than fail
@@ -482,7 +482,7 @@ _Use_decl_annotations_ const WAVEFORMATEX* WaveBank::GetFormat(unsigned int inde
     return wfx;
 }
 
-_Use_decl_annotations_ int WaveBank::Find(const char* name) const
+_Use_decl_annotations_ int WaveBank::Find(char const* name) const
 {
     return static_cast<int>(pImpl->mReader.Find(name));
 }
@@ -569,7 +569,7 @@ _Use_decl_annotations_ bool WaveBank::GetPrivateData(unsigned int index, void* d
 #if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
 
 _Use_decl_annotations_ WaveBank::WaveBank(AudioEngine* engine, const __wchar_t* wbFileName)
-    : WaveBank(engine, reinterpret_cast<const unsigned short*>(wbFileName))
+    : WaveBank(engine, reinterpret_cast<unsigned short const*>(wbFileName))
 {}
 
 #endif // !_NATIVE_WCHAR_T_DEFINED

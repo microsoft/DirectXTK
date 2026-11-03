@@ -199,7 +199,7 @@ namespace DirectX
         _Out_opt_ DDS_ALPHA_MODE*                                        alphaMode = nullptr) noexcept
     {
         return CreateDDSTextureFromMemory(d3dDevice,
-            reinterpret_cast<const uint8_t*>(ddsData),
+            reinterpret_cast<uint8_t const*>(ddsData),
             ddsDataSize,
             texture,
             textureView,
@@ -225,7 +225,7 @@ namespace DirectX
     {
         return CreateDDSTextureFromMemory(d3dDevice,
             d3dContext,
-            reinterpret_cast<const uint8_t*>(ddsData),
+            reinterpret_cast<uint8_t const*>(ddsData),
             ddsDataSize,
             texture,
             textureView,
@@ -248,7 +248,7 @@ namespace DirectX
         _Out_opt_ DDS_ALPHA_MODE*                                          alphaMode = nullptr) noexcept
     {
         return CreateDDSTextureFromMemoryEx(d3dDevice,
-            reinterpret_cast<const uint8_t*>(ddsData),
+            reinterpret_cast<uint8_t const*>(ddsData),
             ddsDataSize,
             maxsize,
             usage,
@@ -284,7 +284,7 @@ namespace DirectX
     {
         return CreateDDSTextureFromMemoryEx(d3dDevice,
             d3dContext,
-            reinterpret_cast<const uint8_t*>(ddsData),
+            reinterpret_cast<uint8_t const*>(ddsData),
             ddsDataSize,
             maxsize,
             usage,

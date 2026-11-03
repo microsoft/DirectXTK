@@ -96,7 +96,7 @@ namespace DirectX
             DIRECTX_TOOLKIT_API static std::unique_ptr<GeometricPrimitive> __cdecl
             CreateTeapot(_In_ ID3D11DeviceContext* deviceContext, float size = 1, size_t tessellation = 8, bool rhcoords = true);
             DIRECTX_TOOLKIT_API static std::unique_ptr<GeometricPrimitive> __cdecl
-            CreateCustom(_In_ ID3D11DeviceContext* deviceContext, const VertexCollection& vertices, const IndexCollection& indices);
+            CreateCustom(_In_ ID3D11DeviceContext* deviceContext, VertexCollection const& vertices, IndexCollection const& indices);
 
             // Vertex/Index methods.
             DIRECTX_TOOLKIT_API static void __cdecl

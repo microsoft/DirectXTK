@@ -61,8 +61,8 @@ namespace
 
         size_t         NumBytes = 0;
         size_t         RowBytes = 0;
-        const uint8_t* pSrcBits = bitData;
-        const uint8_t* pEndBits = bitData + bitSize;
+        uint8_t const* pSrcBits = bitData;
+        uint8_t const* pEndBits = bitData + bitSize;
 
         size_t index = 0;
         for (size_t j = 0; j < arraySize; j++)
@@ -385,7 +385,7 @@ namespace
 
         if ((header->ddspf.flags & DDS_FOURCC) && (MAKEFOURCC('D', 'X', '1', '0') == header->ddspf.fourCC))
         {
-            auto d3d10ext = reinterpret_cast<const DDS_HEADER_DXT10*>(reinterpret_cast<const char*>(header) + sizeof(DDS_HEADER));
+            auto d3d10ext = reinterpret_cast<const DDS_HEADER_DXT10*>(reinterpret_cast<char const*>(header) + sizeof(DDS_HEADER));
 
             arraySize = d3d10ext->arraySize;
             if (arraySize == 0)
@@ -681,8 +681,8 @@ namespace
                     return E_OUTOFMEMORY;
                 }
 
-                const uint8_t* pSrcBits = bitData;
-                const uint8_t* pEndBits = bitData + bitSize;
+                uint8_t const* pSrcBits = bitData;
+                uint8_t const* pEndBits = bitData + bitSize;
                 for (UINT item = 0; item < arraySize; ++item)
                 {
                     if ((pSrcBits + numBytes) > pEndBits)
@@ -758,8 +758,8 @@ namespace
 #else
                 if (arraySize > 1)
                 {
-                    const uint8_t* pSrcBits = bitData;
-                    const uint8_t* pEndBits = bitData + bitSize;
+                    uint8_t const* pSrcBits = bitData;
+                    uint8_t const* pEndBits = bitData + bitSize;
                     for (UINT item = 0; item < arraySize; ++item)
                     {
                         if ((pSrcBits + numBytes) > pEndBits)
@@ -924,7 +924,7 @@ namespace
             }
 #else
             CHAR      strFileA[MAX_PATH];
-            const int result = WideCharToMultiByte(CP_UTF8, WC_NO_BEST_FIT_CHARS, fileName, -1, strFileA, MAX_PATH, nullptr, nullptr);
+            int const result = WideCharToMultiByte(CP_UTF8, WC_NO_BEST_FIT_CHARS, fileName, -1, strFileA, MAX_PATH, nullptr, nullptr);
             if (result > 0)
             {
                 if (texture && *texture)
@@ -949,7 +949,7 @@ namespace
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_ HRESULT DirectX::CreateDDSTextureFromMemory(ID3D11Device* d3dDevice,
-    const uint8_t*                                                               ddsData,
+    uint8_t const*                                                               ddsData,
     size_t                                                                       ddsDataSize,
     ID3D11Resource**                                                             texture,
     ID3D11ShaderResourceView**                                                   textureView,
@@ -1001,7 +1001,7 @@ _Use_decl_annotations_
 }
 
 _Use_decl_annotations_ HRESULT DirectX::CreateDDSTextureFromMemoryEx(ID3D11Device* d3dDevice,
-    const uint8_t*                                                                 ddsData,
+    uint8_t const*                                                                 ddsData,
     size_t                                                                         ddsDataSize,
     size_t                                                                         maxsize,
     D3D11_USAGE                                                                    usage,
@@ -1038,7 +1038,7 @@ _Use_decl_annotations_ HRESULT DirectX::CreateDDSTextureFromMemoryEx(ID3D11Devic
 
     // Validate DDS file in memory
     const DDS_HEADER* header  = nullptr;
-    const uint8_t*    bitData = nullptr;
+    uint8_t const*    bitData = nullptr;
     size_t            bitSize = 0;
 
     HRESULT hr = LoadTextureDataFromMemory(ddsData, ddsDataSize, &header, &bitData, &bitSize);
@@ -1128,7 +1128,7 @@ _Use_decl_annotations_
 
     // Validate DDS file in memory
     const DDS_HEADER* header  = nullptr;
-    const uint8_t*    bitData = nullptr;
+    uint8_t const*    bitData = nullptr;
     size_t            bitSize = 0;
 
     HRESULT hr = LoadTextureDataFromMemory(ddsData, ddsDataSize, &header, &bitData, &bitSize);
@@ -1175,7 +1175,7 @@ _Use_decl_annotations_
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_ HRESULT DirectX::CreateDDSTextureFromFile(ID3D11Device* d3dDevice,
-    const wchar_t*                                                             fileName,
+    wchar_t const*                                                             fileName,
     ID3D11Resource**                                                           texture,
     ID3D11ShaderResourceView**                                                 textureView,
     size_t                                                                     maxsize,
@@ -1223,7 +1223,7 @@ _Use_decl_annotations_
 }
 
 _Use_decl_annotations_ HRESULT DirectX::CreateDDSTextureFromFileEx(ID3D11Device* d3dDevice,
-    const wchar_t*                                                               fileName,
+    wchar_t const*                                                               fileName,
     size_t                                                                       maxsize,
     D3D11_USAGE                                                                  usage,
     unsigned int                                                                 bindFlags,
@@ -1258,7 +1258,7 @@ _Use_decl_annotations_ HRESULT DirectX::CreateDDSTextureFromFileEx(ID3D11Device*
     }
 
     const DDS_HEADER* header  = nullptr;
-    const uint8_t*    bitData = nullptr;
+    uint8_t const*    bitData = nullptr;
     size_t            bitSize = 0;
 
     std::unique_ptr<uint8_t[]> ddsData;
@@ -1340,7 +1340,7 @@ _Use_decl_annotations_
     }
 
     const DDS_HEADER* header  = nullptr;
-    const uint8_t*    bitData = nullptr;
+    uint8_t const*    bitData = nullptr;
     size_t            bitSize = 0;
 
     std::unique_ptr<uint8_t[]> ddsData;
@@ -1394,7 +1394,7 @@ namespace DirectX
         _Out_opt_ DDS_ALPHA_MODE*                               alphaMode) noexcept
     {
         return CreateDDSTextureFromFile(d3dDevice,
-            reinterpret_cast<const unsigned short*>(szFileName),
+            reinterpret_cast<unsigned short const*>(szFileName),
             texture,
             textureView,
             maxsize,
@@ -1417,7 +1417,7 @@ namespace DirectX
     {
         return CreateDDSTextureFromFile(d3dDevice,
             d3dContext,
-            reinterpret_cast<const unsigned short*>(szFileName),
+            reinterpret_cast<unsigned short const*>(szFileName),
             texture,
             textureView,
             maxsize,
@@ -1437,7 +1437,7 @@ namespace DirectX
         _Out_opt_ DDS_ALPHA_MODE*                                 alphaMode) noexcept
     {
         return CreateDDSTextureFromFileEx(d3dDevice,
-            reinterpret_cast<const unsigned short*>(szFileName),
+            reinterpret_cast<unsigned short const*>(szFileName),
             maxsize,
             usage,
             bindFlags,
@@ -1470,7 +1470,7 @@ namespace DirectX
     {
         return CreateDDSTextureFromFileEx(d3dDevice,
             d3dContext,
-            reinterpret_cast<const unsigned short*>(szFileName),
+            reinterpret_cast<unsigned short const*>(szFileName),
             maxsize,
             usage,
             bindFlags,

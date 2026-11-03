@@ -22,7 +22,7 @@ namespace
 {
     template<typename T>
     void SetPBRProperties(_In_ T*        effect,
-        const EffectFactory::EffectInfo& info,
+        EffectFactory::EffectInfo const& info,
         _In_ IEffectFactory*             factory,
         _In_opt_ ID3D11DeviceContext*    deviceContext)
     {
@@ -70,7 +70,7 @@ namespace
                 // Derived from specularPower = 2 / roughness ^ 4 - 2
                 // http://graphicrants.blogspot.com/2013/08/specular-brdf-reference.html
 
-                const float roughness = powf(2.f / (info.specularPower + 2.f), 1.f / 4.f);
+                float const roughness = powf(2.f / (info.specularPower + 2.f), 1.f / 4.f);
                 effect->SetConstantRoughness(roughness);
             }
 
@@ -99,8 +99,8 @@ public:
             throw std::invalid_argument("Direct3D device is null");
     }
 
-    Impl(const Impl&)            = delete;
-    Impl& operator=(const Impl&) = delete;
+    Impl(Impl const&)            = delete;
+    Impl& operator=(Impl const&) = delete;
 
     Impl(Impl&&)            = delete;
     Impl& operator=(Impl&&) = delete;
@@ -138,7 +138,7 @@ private:
 SharedResourcePool<ID3D11Device*, PBREffectFactory::Impl> PBREffectFactory::Impl::instancePool;
 
 _Use_decl_annotations_ std::shared_ptr<IEffect>
-PBREffectFactory::Impl::CreateEffect(IEffectFactory* factory, const IEffectFactory::EffectInfo& info, ID3D11DeviceContext* deviceContext)
+PBREffectFactory::Impl::CreateEffect(IEffectFactory* factory, IEffectFactory::EffectInfo const& info, ID3D11DeviceContext* deviceContext)
 {
     // info.perVertexColor and info.enableDualTexture are ignored by PBREffectFactory
 
@@ -195,7 +195,7 @@ PBREffectFactory::Impl::CreateEffect(IEffectFactory* factory, const IEffectFacto
 }
 
 _Use_decl_annotations_ void
-PBREffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView)
+PBREffectFactory::Impl::CreateTexture(wchar_t const* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView)
 {
     if (!name || !textureView)
         throw std::invalid_argument("name and textureView parameters can't be null");
@@ -233,7 +233,7 @@ PBREffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext* 
 
         wchar_t ext[_MAX_EXT] = {};
         _wsplitpath_s(name, nullptr, 0, nullptr, 0, nullptr, 0, ext, _MAX_EXT);
-        const bool isdds = _wcsicmp(ext, L".dds") == 0;
+        bool const isdds = _wcsicmp(ext, L".dds") == 0;
 
         if (isdds)
         {
@@ -323,13 +323,13 @@ PBREffectFactory::PBREffectFactory(PBREffectFactory&&) noexcept            = def
 PBREffectFactory& PBREffectFactory::operator=(PBREffectFactory&&) noexcept = default;
 PBREffectFactory::~PBREffectFactory()                                      = default;
 
-_Use_decl_annotations_ std::shared_ptr<IEffect> PBREffectFactory::CreateEffect(const EffectInfo& info, ID3D11DeviceContext* deviceContext)
+_Use_decl_annotations_ std::shared_ptr<IEffect> PBREffectFactory::CreateEffect(EffectInfo const& info, ID3D11DeviceContext* deviceContext)
 {
     return pImpl->CreateEffect(this, info, deviceContext);
 }
 
 _Use_decl_annotations_ void
-PBREffectFactory::CreateTexture(const wchar_t* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView)
+PBREffectFactory::CreateTexture(wchar_t const* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView)
 {
     return pImpl->CreateTexture(name, deviceContext, textureView);
 }

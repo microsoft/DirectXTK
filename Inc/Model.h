@@ -198,7 +198,7 @@ namespace DirectX
 
             // Setup states for drawing mesh
             void __cdecl PrepareForRendering(_In_ ID3D11DeviceContext* deviceContext,
-                const CommonStates&                                    states,
+                CommonStates const&                                    states,
                 bool                                                   alpha     = false,
                 bool                                                   wireframe = false) const;
 
@@ -259,7 +259,7 @@ namespace DirectX
 
             // Draw all the meshes in the model
             void XM_CALLCONV Draw(_In_ ID3D11DeviceContext* deviceContext,
-                const CommonStates&                         states,
+                CommonStates const&                         states,
                 FXMMATRIX                                   world,
                 CXMMATRIX                                   view,
                 CXMMATRIX                                   projection,
@@ -268,7 +268,7 @@ namespace DirectX
 
             // Draw all the meshes using model bones
             void XM_CALLCONV Draw(_In_ ID3D11DeviceContext* deviceContext,
-                const CommonStates&                         states,
+                CommonStates const&                         states,
                 size_t                                      nbones,
                 _In_reads_(nbones) const XMMATRIX*          boneTransforms,
                 FXMMATRIX                                   world,
@@ -279,7 +279,7 @@ namespace DirectX
 
             // Draw all the meshes using skinning
             void XM_CALLCONV DrawSkinned(_In_ ID3D11DeviceContext* deviceContext,
-                const CommonStates&                                states,
+                CommonStates const&                                states,
                 size_t                                             nbones,
                 _In_reads_(nbones) const XMMATRIX*                 boneTransforms,
                 FXMMATRIX                                          world,
@@ -350,7 +350,7 @@ namespace DirectX
                 ModelLoaderFlags                                                   flags       = ModelLoader_CounterClockwise,
                 _Out_opt_ size_t*                                                  animsOffset = nullptr)
             {
-                return CreateFromCMO(device, reinterpret_cast<const uint8_t*>(meshData), dataSize, fxFactory, flags, animsOffset);
+                return CreateFromCMO(device, reinterpret_cast<uint8_t const*>(meshData), dataSize, fxFactory, flags, animsOffset);
             }
 
             static std::unique_ptr<Model> __cdecl CreateFromSDKMESH(_In_ ID3D11Device* device,
@@ -359,7 +359,7 @@ namespace DirectX
                 _In_ IEffectFactory&                                                   fxFactory,
                 ModelLoaderFlags                                                       flags = ModelLoader_Clockwise)
             {
-                return CreateFromSDKMESH(device, reinterpret_cast<const uint8_t*>(meshData), dataSize, fxFactory, flags);
+                return CreateFromSDKMESH(device, reinterpret_cast<uint8_t const*>(meshData), dataSize, fxFactory, flags);
             }
 
             static std::unique_ptr<Model> __cdecl CreateFromVBO(_In_ ID3D11Device* device,
@@ -368,7 +368,7 @@ namespace DirectX
                 _In_ std::shared_ptr<IEffect> ieffect = nullptr,
                 ModelLoaderFlags              flags   = ModelLoader_Clockwise)
             {
-                return CreateFromVBO(device, reinterpret_cast<const uint8_t*>(meshData), dataSize, ieffect, flags);
+                return CreateFromVBO(device, reinterpret_cast<uint8_t const*>(meshData), dataSize, ieffect, flags);
             }
 #endif // __cpp_lib_byte
 

@@ -58,8 +58,8 @@ namespace DirectX
         public:
             virtual ~IEffect() = default;
 
-            IEffect(const IEffect&)            = delete;
-            IEffect& operator=(const IEffect&) = delete;
+            IEffect(IEffect const&)            = delete;
+            IEffect& operator=(IEffect const&) = delete;
 
             virtual void __cdecl Apply(_In_ ID3D11DeviceContext* deviceContext) = 0;
 
@@ -77,8 +77,8 @@ namespace DirectX
         public:
             virtual ~IEffectMatrices() = default;
 
-            IEffectMatrices(const IEffectMatrices&)            = delete;
-            IEffectMatrices& operator=(const IEffectMatrices&) = delete;
+            IEffectMatrices(IEffectMatrices const&)            = delete;
+            IEffectMatrices& operator=(IEffectMatrices const&) = delete;
 
             virtual void XM_CALLCONV SetWorld(FXMMATRIX value)      = 0;
             virtual void XM_CALLCONV SetView(FXMMATRIX value)       = 0;
@@ -97,8 +97,8 @@ namespace DirectX
         public:
             virtual ~IEffectLights() = default;
 
-            IEffectLights(const IEffectLights&)            = delete;
-            IEffectLights& operator=(const IEffectLights&) = delete;
+            IEffectLights(IEffectLights const&)            = delete;
+            IEffectLights& operator=(IEffectLights const&) = delete;
 
             virtual void __cdecl     SetLightingEnabled(bool value)        = 0;
             virtual void __cdecl     SetPerPixelLighting(bool value)       = 0;
@@ -125,8 +125,8 @@ namespace DirectX
         public:
             virtual ~IEffectFog() = default;
 
-            IEffectFog(const IEffectFog&)            = delete;
-            IEffectFog& operator=(const IEffectFog&) = delete;
+            IEffectFog(IEffectFog const&)            = delete;
+            IEffectFog& operator=(IEffectFog const&) = delete;
 
             virtual void __cdecl     SetFogEnabled(bool value)    = 0;
             virtual void __cdecl     SetFogStart(float value)     = 0;
@@ -145,8 +145,8 @@ namespace DirectX
         public:
             virtual ~IEffectSkinning() = default;
 
-            IEffectSkinning(const IEffectSkinning&)            = delete;
-            IEffectSkinning& operator=(const IEffectSkinning&) = delete;
+            IEffectSkinning(IEffectSkinning const&)            = delete;
+            IEffectSkinning& operator=(IEffectSkinning const&) = delete;
 
             virtual void __cdecl SetWeightsPerVertex(int value)                                           = 0;
             virtual void __cdecl SetBoneTransforms(_In_reads_(count) XMMATRIX const* value, size_t count) = 0;
@@ -983,12 +983,12 @@ namespace DirectX
         public:
             virtual ~IEffectFactory() = default;
 
-            IEffectFactory(const IEffectFactory&)            = delete;
-            IEffectFactory& operator=(const IEffectFactory&) = delete;
+            IEffectFactory(IEffectFactory const&)            = delete;
+            IEffectFactory& operator=(IEffectFactory const&) = delete;
 
             struct DIRECTX_TOOLKIT_API EffectInfo
             {
-                const wchar_t* name;
+                wchar_t const* name;
                 bool           perVertexColor;
                 bool           enableSkinning;
                 bool           enableDualTexture;
@@ -1000,10 +1000,10 @@ namespace DirectX
                 XMFLOAT3       diffuseColor;
                 XMFLOAT3       specularColor;
                 XMFLOAT3       emissiveColor;
-                const wchar_t* diffuseTexture;
-                const wchar_t* specularTexture;
-                const wchar_t* normalTexture;
-                const wchar_t* emissiveTexture;
+                wchar_t const* diffuseTexture;
+                wchar_t const* specularTexture;
+                wchar_t const* normalTexture;
+                wchar_t const* emissiveTexture;
 
                 EffectInfo() noexcept
                     : name(nullptr),
@@ -1191,8 +1191,8 @@ namespace DirectX
             {
                 static constexpr int BaseTextureOffset = 4;
 
-                const wchar_t* textures[DGSLEffect::MaxTextures - BaseTextureOffset];
-                const wchar_t* pixelShader;
+                wchar_t const* textures[DGSLEffect::MaxTextures - BaseTextureOffset];
+                wchar_t const* pixelShader;
 
                 DGSLEffectInfo() noexcept
                     : EffectInfo(),

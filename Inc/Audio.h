@@ -113,8 +113,8 @@ namespace DirectX
     public:
         virtual ~IVoiceNotify() = default;
 
-        IVoiceNotify(const IVoiceNotify&)            = delete;
-        IVoiceNotify& operator=(const IVoiceNotify&) = delete;
+        IVoiceNotify(IVoiceNotify const&)            = delete;
+        IVoiceNotify& operator=(IVoiceNotify const&) = delete;
 
         IVoiceNotify(IVoiceNotify&&)            = default;
         IVoiceNotify& operator=(IVoiceNotify&&) = default;

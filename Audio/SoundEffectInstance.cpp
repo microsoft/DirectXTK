@@ -191,7 +191,7 @@ void SoundEffectInstance::Impl::Play(bool loop)
         char buff[64] = {};
         auto wfx = (mWaveBank) ? mWaveBank->GetFormat(mIndex, reinterpret_cast<WAVEFORMATEX*>(buff), sizeof(buff)) : mEffect->GetFormat();
 
-        const size_t length = (mWaveBank) ? mWaveBank->GetSampleSizeInBytes(mIndex) : mEffect->GetSampleSizeInBytes();
+        size_t const length = (mWaveBank) ? mWaveBank->GetSampleSizeInBytes(mIndex) : mEffect->GetSampleSizeInBytes();
 
         DebugTrace("\tFormat Tag %u, %u channels, %u-bit, %u Hz, %zu bytes\n",
             wfx->wFormatTag,

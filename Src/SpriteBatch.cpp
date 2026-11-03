@@ -61,8 +61,8 @@ XM_ALIGNED_STRUCT(16) SpriteBatch::Impl : public AlignedNew<SpriteBatch::Impl>
 public:
     explicit Impl(_In_ ID3D11DeviceContext * deviceContext);
 
-    Impl(const Impl&)            = delete;
-    Impl& operator=(const Impl&) = delete;
+    Impl(Impl const&)            = delete;
+    Impl& operator=(Impl const&) = delete;
 
     Impl(Impl&&)            = default;
     Impl& operator=(Impl&&) = default;
@@ -72,7 +72,7 @@ public:
         _In_opt_ ID3D11SamplerState * samplerState,
         _In_opt_ ID3D11DepthStencilState * depthStencilState,
         _In_opt_ ID3D11RasterizerState * rasterizerState,
-        const std::function<void()>& setCustomShaders,
+        std::function<void()> const& setCustomShaders,
         FXMMATRIX                    transformMatrix);
     void             End();
 
@@ -283,7 +283,7 @@ std::vector<short> SpriteBatch::Impl::DeviceResources::CreateIndexValues()
 
     for (size_t j = 0; j < MaxBatchSize * VerticesPerSprite; j += VerticesPerSprite)
     {
-        const short i = static_cast<short>(j);
+        short const i = static_cast<short>(j);
 
         indices.push_back(i);
         indices.push_back(i + 1);
@@ -371,7 +371,7 @@ _Use_decl_annotations_ void XM_CALLCONV SpriteBatch::Impl::Begin(SpriteSortMode 
     ID3D11SamplerState*                                                         samplerState,
     ID3D11DepthStencilState*                                                    depthStencilState,
     ID3D11RasterizerState*                                                      rasterizerState,
-    const std::function<void()>&                                                setCustomShaders,
+    std::function<void()> const&                                                setCustomShaders,
     FXMMATRIX                                                                   transformMatrix)
 {
     if (mInBeginEndPair)
@@ -507,7 +507,7 @@ _Use_decl_annotations_ void XM_CALLCONV SpriteBatch::Impl::Draw(ID3D11ShaderReso
 void SpriteBatch::Impl::GrowSpriteQueue()
 {
     // Grow by a factor of 2.
-    const size_t newSize = std::max(InitialQueueSize, mSpriteQueueArraySize * 2);
+    size_t const newSize = std::max(InitialQueueSize, mSpriteQueueArraySize * 2);
 
     // Allocate the new array.
     auto newArray = std::make_unique<SpriteInfo[]>(newSize);
@@ -685,7 +685,7 @@ void SpriteBatch::Impl::SortSprites()
 // Populates the mSortedSprites vector with pointers to individual elements of the mSpriteQueue array.
 void SpriteBatch::Impl::GrowSortedSprites()
 {
-    const size_t previousSize = mSortedSprites.size();
+    size_t const previousSize = mSortedSprites.size();
 
     mSortedSprites.resize(mSpriteQueueCount);
 
@@ -713,7 +713,7 @@ SpriteBatch::Impl::RenderBatch(ID3D11ShaderResourceView* texture, SpriteInfo con
         size_t batchSize = count;
 
         // How many sprites does the D3D vertex buffer have room for?
-        const size_t remainingSpace = MaxBatchSize - mContextResources->vertexBufferPosition;
+        size_t const remainingSpace = MaxBatchSize - mContextResources->vertexBufferPosition;
 
         if (batchSize > remainingSpace)
         {
@@ -765,8 +765,8 @@ SpriteBatch::Impl::RenderBatch(ID3D11ShaderResourceView* texture, SpriteInfo con
 #endif
 
         // Ok lads, the time has come for us draw ourselves some sprites!
-        const auto startIndex = static_cast<UINT>(mContextResources->vertexBufferPosition * IndicesPerSprite);
-        const auto indexCount = static_cast<UINT>(batchSize * IndicesPerSprite);
+        auto const startIndex = static_cast<UINT>(mContextResources->vertexBufferPosition * IndicesPerSprite);
+        auto const indexCount = static_cast<UINT>(batchSize * IndicesPerSprite);
 
         deviceContext->DrawIndexed(indexCount, startIndex, 0);
 
@@ -792,8 +792,8 @@ _Use_decl_annotations_ void XM_CALLCONV SpriteBatch::Impl::RenderSprite(SpriteIn
     const XMVECTOR color               = XMLoadFloat4A(&sprite->color);
     const XMVECTOR originRotationDepth = XMLoadFloat4A(&sprite->originRotationDepth);
 
-    const float        rotation = sprite->originRotationDepth.z;
-    const unsigned int flags    = sprite->flags;
+    float const        rotation = sprite->originRotationDepth.z;
+    unsigned int const flags    = sprite->flags;
 
     // Extract the source and destination sizes into separate vectors.
     XMVECTOR sourceSize      = XMVectorSwizzle<2, 3, 2, 3>(source);
@@ -862,7 +862,7 @@ _Use_decl_annotations_ void XM_CALLCONV SpriteBatch::Impl::RenderSprite(SpriteIn
     static_assert(SpriteEffects_FlipHorizontally == 1 && SpriteEffects_FlipVertically == 2,
         "If you change these enum values, the mirroring implementation must be updated to match");
 
-    const unsigned int mirrorBits = flags & 3u;
+    unsigned int const mirrorBits = flags & 3u;
 
     // Generate the four output vertices.
     for (size_t i = 0; i < VerticesPerSprite; i++)
@@ -935,8 +935,8 @@ XMMATRIX SpriteBatch::Impl::GetViewportTransform(_In_ ID3D11DeviceContext* devic
     }
 
     // Compute the matrix.
-    const float xScale = (mViewPort.Width > 0) ? 2.0f / mViewPort.Width : 0.0f;
-    const float yScale = (mViewPort.Height > 0) ? 2.0f / mViewPort.Height : 0.0f;
+    float const xScale = (mViewPort.Width > 0) ? 2.0f / mViewPort.Width : 0.0f;
+    float const yScale = (mViewPort.Height > 0) ? 2.0f / mViewPort.Height : 0.0f;
 
     switch (rotation)
     {

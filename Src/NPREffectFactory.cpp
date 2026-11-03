@@ -21,7 +21,7 @@ using Microsoft::WRL::ComPtr;
 namespace
 {
     template<typename T>
-    void SetMaterialProperties(_In_ T* effect, const NPREffectFactory::EffectInfo& info, NPREffect::Mode mode)
+    void SetMaterialProperties(_In_ T* effect, NPREffectFactory::EffectInfo const& info, NPREffect::Mode mode)
     {
         effect->SetMode(mode);
 
@@ -68,8 +68,8 @@ public:
             throw std::invalid_argument("Direct3D device is null");
     }
 
-    Impl(const Impl&)            = delete;
-    Impl& operator=(const Impl&) = delete;
+    Impl(Impl const&)            = delete;
+    Impl& operator=(Impl const&) = delete;
 
     Impl(Impl&&)            = delete;
     Impl& operator=(Impl&&) = delete;
@@ -111,7 +111,7 @@ private:
 SharedResourcePool<ID3D11Device*, NPREffectFactory::Impl> NPREffectFactory::Impl::instancePool;
 
 _Use_decl_annotations_ std::shared_ptr<IEffect>
-NPREffectFactory::Impl::CreateEffect(NPREffectFactory* factory, const EffectFactory::EffectInfo& info, ID3D11DeviceContext* deviceContext)
+NPREffectFactory::Impl::CreateEffect(NPREffectFactory* factory, EffectFactory::EffectInfo const& info, ID3D11DeviceContext* deviceContext)
 {
     if (info.enableSkinning)
     {
@@ -270,7 +270,7 @@ NPREffectFactory::Impl::CreateEffect(NPREffectFactory* factory, const EffectFact
 }
 
 _Use_decl_annotations_ void
-NPREffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView)
+NPREffectFactory::Impl::CreateTexture(wchar_t const* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView)
 {
     if (!name || !textureView)
         throw std::invalid_argument("name and textureView parameters can't be null");
@@ -308,7 +308,7 @@ NPREffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext* 
 
         wchar_t ext[_MAX_EXT] = {};
         _wsplitpath_s(name, nullptr, 0, nullptr, 0, nullptr, 0, ext, _MAX_EXT);
-        const bool isdds = _wcsicmp(ext, L".dds") == 0;
+        bool const isdds = _wcsicmp(ext, L".dds") == 0;
 
         if (isdds)
         {
@@ -399,13 +399,13 @@ NPREffectFactory::NPREffectFactory(NPREffectFactory&&) noexcept            = def
 NPREffectFactory& NPREffectFactory::operator=(NPREffectFactory&&) noexcept = default;
 NPREffectFactory::~NPREffectFactory()                                      = default;
 
-_Use_decl_annotations_ std::shared_ptr<IEffect> NPREffectFactory::CreateEffect(const EffectInfo& info, ID3D11DeviceContext* deviceContext)
+_Use_decl_annotations_ std::shared_ptr<IEffect> NPREffectFactory::CreateEffect(EffectInfo const& info, ID3D11DeviceContext* deviceContext)
 {
     return pImpl->CreateEffect(this, info, deviceContext);
 }
 
 _Use_decl_annotations_ void
-NPREffectFactory::CreateTexture(const wchar_t* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView)
+NPREffectFactory::CreateTexture(wchar_t const* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView)
 {
     return pImpl->CreateTexture(name, deviceContext, textureView);
 }

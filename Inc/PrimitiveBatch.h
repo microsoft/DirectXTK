@@ -157,7 +157,7 @@ namespace DirectX
 
             void DrawQuad(TVertex const& v1, TVertex const& v2, TVertex const& v3, TVertex const& v4)
             {
-                static const uint16_t quadIndices[] = { 0, 1, 2, 0, 2, 3 };
+                static uint16_t const quadIndices[] = { 0, 1, 2, 0, 2, 3 };
 
                 TVertex* mappedVertices;
 

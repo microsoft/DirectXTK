@@ -308,7 +308,7 @@ public:
     };
 
 #ifdef VERBOSE_TRACE
-    static const wchar_t* s_debugState[4];
+    static wchar_t const* s_debugState[4];
 #endif
 
     struct BufferNotify : public IVoiceNotify
@@ -412,7 +412,7 @@ private:
 
 #ifdef DIRECTX_ENABLE_SEEK_TABLES
     uint32_t        mSeekCount;
-    const uint32_t* mSeekTable;
+    uint32_t const* mSeekTable;
     uint32_t        mSeekTableCopy[MAX_STREAMING_SEEK_PACKETS];
 #endif
 
@@ -430,7 +430,7 @@ HRESULT SoundStreamInstance::Impl::AllocateStreamingBuffers(const WAVEFORMATEX* 
     if (!wfx)
         return E_INVALIDARG;
 
-    const uint32_t tag = GetFormatTag(wfx);
+    uint32_t const tag = GetFormatTag(wfx);
 
     size_t packetSize = ComputeAsyncPacketSize(wfx, tag, mAsyncAlign);
     if (!packetSize)
@@ -543,7 +543,7 @@ HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
     if (!async)
         return E_POINTER;
 
-    const uint32_t readBuffer = mCurrentDiskReadBuffer;
+    uint32_t const readBuffer = mCurrentDiskReadBuffer;
     for (uint32_t j = 0; j < MAX_BUFFER_COUNT; ++j)
     {
         uint32_t entry = (j + readBuffer) % uint32_t(MAX_BUFFER_COUNT);
@@ -551,7 +551,7 @@ HRESULT SoundStreamInstance::Impl::ReadBuffers() noexcept
         {
             if (mCurrentPosition < mLengthInBytes)
             {
-                const auto cbValid = static_cast<uint32_t>(std::min(mPacketSize, mLengthInBytes - mCurrentPosition));
+                auto const cbValid = static_cast<uint32_t>(std::min(mPacketSize, mLengthInBytes - mCurrentPosition));
 
                 mPackets[entry].valid          = cbValid;
                 mPackets[entry].audioBytes     = 0;
@@ -630,7 +630,7 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
         if (mPackets[mCurrentPlayBuffer].state != State::READY)
             break;
 
-        const uint8_t* ptr   = mPackets[mCurrentPlayBuffer].buffer;
+        uint8_t const* ptr   = mPackets[mCurrentPlayBuffer].buffer;
         uint32_t       valid = mPackets[mCurrentPlayBuffer].valid;
 
         bool endstream = false;
@@ -655,7 +655,7 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
                 // Compute how many bytes at the start of our current packet are the tail of the partial block.
                 thisFrameStitch = mBlockAlign - prevFrameStitch;
 
-                const uint32_t k = (mCurrentPlayBuffer + MAX_BUFFER_COUNT - 1) % MAX_BUFFER_COUNT;
+                uint32_t const k = (mCurrentPlayBuffer + MAX_BUFFER_COUNT - 1) % MAX_BUFFER_COUNT;
                 if (mPackets[k].state == State::READY || mPackets[k].state == State::PLAYING)
                 {
                     // Compute how many bytes at the start of the previous packet were the tail of the previous stitch block.
@@ -663,7 +663,7 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
                     prevFrameStitchOffset          = (prevFrameStitchOffset > 0) ? (mBlockAlign - prevFrameStitchOffset) : 0u;
 
                     // Point to the start of the partial block's head in the previous packet.
-                    const auto* prevBuffer = mPackets[k].buffer + prevFrameStitchOffset + mPackets[k].audioBytes;
+                    auto const* prevBuffer = mPackets[k].buffer + prevFrameStitchOffset + mPackets[k].audioBytes;
 
                     // Merge the the head partial block in the previous packet with the tail partial block at the start of our packet.
                     memcpy(buffer, prevBuffer, prevFrameStitch);
@@ -689,7 +689,7 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
                         wmaBuf.pDecodedPacketCumulativeBytes = mSeekTableCopy;
                         wmaBuf.PacketCount                   = 1;
 
-                        const uint32_t seekOffset
+                        uint32_t const seekOffset
                             = (mPackets[k].startPosition + prevFrameStitchOffset + mPackets[k].audioBytes) / mBlockAlign;
                         assert(seekOffset > 0);
                         mSeekTableCopy[0] = mSeekTable[seekOffset] - mSeekTable[seekOffset - 1];
@@ -728,7 +728,7 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
 
                 wmaBuf.PacketCount = valid / mBlockAlign;
 
-                const uint32_t seekOffset = mPackets[mCurrentPlayBuffer].startPosition / mBlockAlign;
+                uint32_t const seekOffset = mPackets[mCurrentPlayBuffer].startPosition / mBlockAlign;
                 if (seekOffset > MAX_STREAMING_SEEK_PACKETS)
                 {
                     DebugTrace("ERROR: xWMA packet seek count exceeds %zu\n", MAX_STREAMING_SEEK_PACKETS);
@@ -765,7 +765,7 @@ HRESULT SoundStreamInstance::Impl::PlayBuffers() noexcept
 }
 
 #ifdef VERBOSE_TRACE
-const wchar_t* SoundStreamInstance::Impl::s_debugState[4] = { L"FREE", L"PENDING", L"READY", L"PLAYING" };
+wchar_t const* SoundStreamInstance::Impl::s_debugState[4] = { L"FREE", L"PENDING", L"READY", L"PLAYING" };
 #endif
 
 //--------------------------------------------------------------------------------------
@@ -846,7 +846,7 @@ bool SoundStreamInstance::IsLooped() const noexcept
 
 SoundState SoundStreamInstance::GetState() noexcept
 {
-    const SoundState state = pImpl->mBase.GetState(pImpl->mEndStream);
+    SoundState const state = pImpl->mBase.GetState(pImpl->mEndStream);
     if (state == STOPPED)
     {
         pImpl->mPlaying = false;

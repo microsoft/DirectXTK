@@ -153,7 +153,7 @@ public:
     void __cdecl OnDestroyParent() noexcept override {}
 
     const WAVEFORMATEX*      mWaveFormat;
-    const uint8_t*           mStartAudio;
+    uint8_t const*           mStartAudio;
     uint32_t                 mAudioBytes;
     uint32_t                 mLoopStart;
     uint32_t                 mLoopLength;
@@ -163,7 +163,7 @@ public:
 
 #ifdef DIRECTX_ENABLE_SEEK_TABLES
     uint32_t        mSeekCount;
-    const uint32_t* mSeekTable;
+    uint32_t const* mSeekTable;
 #endif
 
 private:
@@ -174,10 +174,10 @@ private:
 #endif
 };
 
-_Use_decl_annotations_ HRESULT SoundEffect::Impl::Initialize(const AudioEngine* engine,
+_Use_decl_annotations_ HRESULT SoundEffect::Impl::Initialize(AudioEngine const* engine,
     std::unique_ptr<uint8_t[]>&                                                 wavData,
     const WAVEFORMATEX*                                                         wfx,
-    const uint8_t*                                                              startAudio,
+    uint8_t const*                                                              startAudio,
     size_t                                                                      audioBytes,
 #ifdef DIRECTX_ENABLE_SEEK_TABLES
     const uint32_t* seekTable,
@@ -252,7 +252,7 @@ _Use_decl_annotations_ HRESULT SoundEffect::Impl::Initialize(const AudioEngine* 
         }
 
         memcpy(mXMAMemory, startAudio, audioBytes);
-        mStartAudio = reinterpret_cast<const uint8_t*>(mXMAMemory);
+        mStartAudio = reinterpret_cast<uint8_t const*>(mXMAMemory);
 
         mWavData.reset(new (std::nothrow) uint8_t[sizeof(XMA2WAVEFORMATEX) + (seekCount * sizeof(uint32_t))]);
         if (!mWavData)
@@ -271,7 +271,7 @@ _Use_decl_annotations_ HRESULT SoundEffect::Impl::Initialize(const AudioEngine* 
         }
 
         mSeekCount = static_cast<uint32_t>(seekCount);
-        mSeekTable = reinterpret_cast<const uint32_t*>(mWavData.get() + sizeof(XMA2WAVEFORMATEX));
+        mSeekTable = reinterpret_cast<uint32_t const*>(mWavData.get() + sizeof(XMA2WAVEFORMATEX));
 
         wavData.reset();
         break;
@@ -311,7 +311,7 @@ void SoundEffect::Impl::Play(float volume, float pitch, float pan)
 
     if (pitch != 0.f)
     {
-        const float fr = XAudio2SemitonesToFrequencyRatio(pitch * 12.f);
+        float const fr = XAudio2SemitonesToFrequencyRatio(pitch * 12.f);
 
         HRESULT hr = voice->SetFrequencyRatio(fr);
         ThrowIfFailed(hr);
@@ -337,7 +337,7 @@ void SoundEffect::Impl::Play(float volume, float pitch, float pan)
     buffer.pContext       = this;
 
 #ifdef DIRECTX_ENABLE_XWMA
-    const uint32_t tag = GetFormatTag(mWaveFormat);
+    uint32_t const tag = GetFormatTag(mWaveFormat);
     if (tag == WAVE_FORMAT_WMAUDIO2 || tag == WAVE_FORMAT_WMAUDIO3)
     {
         XAUDIO2_BUFFER_WMA wmaBuffer            = {};
@@ -371,7 +371,7 @@ void SoundEffect::Impl::Play(float volume, float pitch, float pan)
 //--------------------------------------------------------------------------------------
 
 // Public constructors.
-_Use_decl_annotations_ SoundEffect::SoundEffect(AudioEngine* engine, const wchar_t* waveFileName)
+_Use_decl_annotations_ SoundEffect::SoundEffect(AudioEngine* engine, wchar_t const* waveFileName)
     : pImpl(std::make_unique<Impl>(engine))
 {
     WAVData                    wavInfo;
@@ -407,7 +407,7 @@ _Use_decl_annotations_ SoundEffect::SoundEffect(AudioEngine* engine, const wchar
 _Use_decl_annotations_ SoundEffect::SoundEffect(AudioEngine* engine,
     std::unique_ptr<uint8_t[]>&                              wavData,
     const WAVEFORMATEX*                                      wfx,
-    const uint8_t*                                           startAudio,
+    uint8_t const*                                           startAudio,
     size_t                                                   audioBytes)
     : pImpl(std::make_unique<Impl>(engine))
 {
@@ -426,7 +426,7 @@ _Use_decl_annotations_ SoundEffect::SoundEffect(AudioEngine* engine,
 _Use_decl_annotations_ SoundEffect::SoundEffect(AudioEngine* engine,
     std::unique_ptr<uint8_t[]>&                              wavData,
     const WAVEFORMATEX*                                      wfx,
-    const uint8_t*                                           startAudio,
+    uint8_t const*                                           startAudio,
     size_t                                                   audioBytes,
     uint32_t                                                 loopStart,
     uint32_t                                                 loopLength)
@@ -449,9 +449,9 @@ _Use_decl_annotations_ SoundEffect::SoundEffect(AudioEngine* engine,
 _Use_decl_annotations_ SoundEffect::SoundEffect(AudioEngine* engine,
     std::unique_ptr<uint8_t[]>&                              wavData,
     const WAVEFORMATEX*                                      wfx,
-    const uint8_t*                                           startAudio,
+    uint8_t const*                                           startAudio,
     size_t                                                   audioBytes,
-    const uint32_t*                                          seekTable,
+    uint32_t const*                                          seekTable,
     size_t                                                   seekCount)
 {
     HRESULT hr = pImpl->Initialize(engine, wavData, wfx, startAudio, audioBytes, seekTable, seekCount, 0, 0);
@@ -518,7 +518,7 @@ size_t SoundEffect::GetSampleDuration() const noexcept
         auto adpcmFmt = reinterpret_cast<const ADPCMWAVEFORMAT*>(pImpl->mWaveFormat);
 
         uint64_t           duration = uint64_t(pImpl->mAudioBytes / adpcmFmt->wfx.nBlockAlign) * adpcmFmt->wSamplesPerBlock;
-        const unsigned int partial  = pImpl->mAudioBytes % adpcmFmt->wfx.nBlockAlign;
+        unsigned int const partial  = pImpl->mAudioBytes % adpcmFmt->wfx.nBlockAlign;
         if (partial)
         {
             if (partial >= (7u * adpcmFmt->wfx.nChannels))
@@ -561,7 +561,7 @@ size_t SoundEffect::GetSampleDurationMS() const noexcept
     if (!pImpl->mWaveFormat || !pImpl->mWaveFormat->nSamplesPerSec)
         return 0;
 
-    const uint64_t samples = GetSampleDuration();
+    uint64_t const samples = GetSampleDuration();
     return static_cast<size_t>((samples * 1000) / pImpl->mWaveFormat->nSamplesPerSec);
 }
 
@@ -582,7 +582,7 @@ bool SoundEffect::FillSubmitBuffer(_Out_ XAUDIO2_BUFFER& buffer, _Out_ XAUDIO2_B
     buffer.LoopBegin  = pImpl->mLoopStart;
     buffer.LoopLength = pImpl->mLoopLength;
 
-    const uint32_t tag = GetFormatTag(pImpl->mWaveFormat);
+    uint32_t const tag = GetFormatTag(pImpl->mWaveFormat);
     if (tag == WAVE_FORMAT_WMAUDIO2 || tag == WAVE_FORMAT_WMAUDIO3)
     {
         wmaBuffer.PacketCount                   = pImpl->mSeekCount;
@@ -611,7 +611,7 @@ void SoundEffect::FillSubmitBuffer(_Out_ XAUDIO2_BUFFER& buffer) const
 #if defined(_MSC_VER) && !defined(_NATIVE_WCHAR_T_DEFINED)
 
 _Use_decl_annotations_ SoundEffect::SoundEffect(AudioEngine* engine, const __wchar_t* waveFileName)
-    : SoundEffect(engine, reinterpret_cast<const unsigned short*>(waveFileName))
+    : SoundEffect(engine, reinterpret_cast<unsigned short const*>(waveFileName))
 {}
 
 #endif // !_NATIVE_WCHAR_T_DEFINED

@@ -340,8 +340,8 @@ private:
     {
         auto impl = reinterpret_cast<Mouse::Impl*>(context);
 
-        const bool wasConnected = (previousStatus & GameInputDeviceConnected) != 0;
-        const bool isConnected  = (currentStatus & GameInputDeviceConnected) != 0;
+        bool const wasConnected = (previousStatus & GameInputDeviceConnected) != 0;
+        bool const isConnected  = (currentStatus & GameInputDeviceConnected) != 0;
 
         if (isConnected && !wasConnected)
         {
@@ -916,7 +916,7 @@ private:
             hr = currentPoint->get_Position(&pos);
             ThrowIfFailed(hr);
 
-            const float dpi = s_mouse->mDPI;
+            float const dpi = s_mouse->mDPI;
 
             s_mouse->mState.x = static_cast<int>(pos.X * dpi / USER_DEFAULT_SCREEN_DPI + 0.5f);
             s_mouse->mState.y = static_cast<int>(pos.Y * dpi / USER_DEFAULT_SCREEN_DPI + 0.5f);
@@ -1216,7 +1216,7 @@ public:
             throw std::system_error(std::error_code(static_cast<int>(GetLastError()), std::system_category()), "GetCursorInfo");
         }
 
-        const bool isvisible = (info.flags & CURSOR_SHOWING) != 0;
+        bool const isvisible = (info.flags & CURSOR_SHOWING) != 0;
         if (isvisible != visible)
         {
             ShowCursor(visible);
@@ -1389,7 +1389,7 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
         }
         else
         {
-            const int scrollWheel = pImpl->mState.scrollWheelValue;
+            int const scrollWheel = pImpl->mState.scrollWheelValue;
             memset(&pImpl->mState, 0, sizeof(State));
             pImpl->mState.scrollWheelValue = scrollWheel;
 
@@ -1426,11 +1426,11 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
                 else if (raw.data.mouse.usFlags & MOUSE_VIRTUAL_DESKTOP)
                 {
                     // This is used to make Remote Desktop sessons work
-                    const int width  = GetSystemMetrics(SM_CXVIRTUALSCREEN);
-                    const int height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+                    int const width  = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+                    int const height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
 
-                    const auto x = static_cast<int>((float(raw.data.mouse.lLastX) / 65535.0f) * float(width));
-                    const auto y = static_cast<int>((float(raw.data.mouse.lLastY) / 65535.0f) * float(height));
+                    auto const x = static_cast<int>((float(raw.data.mouse.lLastX) / 65535.0f) * float(width));
+                    auto const y = static_cast<int>((float(raw.data.mouse.lLastY) / 65535.0f) * float(height));
 
                     if (pImpl->mRelativeX == INT32_MAX)
                     {
@@ -1499,8 +1499,8 @@ void Mouse::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
     if (pImpl->mMode == MODE_ABSOLUTE)
     {
         // All mouse messages provide a new pointer position
-        const int xPos = static_cast<short>(LOWORD(lParam)); // GET_X_LPARAM(lParam);
-        const int yPos = static_cast<short>(HIWORD(lParam)); // GET_Y_LPARAM(lParam);
+        int const xPos = static_cast<short>(LOWORD(lParam)); // GET_X_LPARAM(lParam);
+        int const yPos = static_cast<short>(HIWORD(lParam)); // GET_Y_LPARAM(lParam);
 
         pImpl->mState.x = pImpl->mLastX = xPos;
         pImpl->mState.y = pImpl->mLastY = yPos;
@@ -1588,7 +1588,7 @@ Mouse& Mouse::Get()
 
 #define UPDATE_BUTTON_STATE(field) field = static_cast<ButtonState>((!!state.field) | ((!!state.field ^ !!lastState.field) << 1))
 
-void Mouse::ButtonStateTracker::Update(const Mouse::State& state) noexcept
+void Mouse::ButtonStateTracker::Update(Mouse::State const& state) noexcept
 {
     UPDATE_BUTTON_STATE(leftButton);
 

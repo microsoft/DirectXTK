@@ -54,8 +54,8 @@ class BasicEffect::Impl : public EffectBase<BasicEffectTraits>
 public:
     explicit Impl(_In_ ID3D11Device* device);
 
-    Impl(const Impl&)            = delete;
-    Impl& operator=(const Impl&) = delete;
+    Impl(Impl const&)            = delete;
+    Impl& operator=(Impl const&) = delete;
 
     Impl(Impl&&)            = default;
     Impl& operator=(Impl&&) = default;
@@ -185,7 +185,7 @@ namespace
 } // namespace
 
 template<>
-const ShaderBytecode EffectBase<BasicEffectTraits>::VertexShaderBytecode[] = {
+ShaderBytecode const EffectBase<BasicEffectTraits>::VertexShaderBytecode[] = {
     { BasicEffect_VSBasic, sizeof(BasicEffect_VSBasic) },
     { BasicEffect_VSBasicNoFog, sizeof(BasicEffect_VSBasicNoFog) },
     { BasicEffect_VSBasicVc, sizeof(BasicEffect_VSBasicVc) },
@@ -227,7 +227,7 @@ const ShaderBytecode EffectBase<BasicEffectTraits>::VertexShaderBytecode[] = {
 };
 
 template<>
-const int EffectBase<BasicEffectTraits>::VertexShaderIndices[] = {
+int const EffectBase<BasicEffectTraits>::VertexShaderIndices[] = {
     0,  // basic
     1,  // no fog
     2,  // vertex color
@@ -293,7 +293,7 @@ const int EffectBase<BasicEffectTraits>::VertexShaderIndices[] = {
 };
 
 template<>
-const ShaderBytecode EffectBase<BasicEffectTraits>::PixelShaderBytecode[] = {
+ShaderBytecode const EffectBase<BasicEffectTraits>::PixelShaderBytecode[] = {
     { BasicEffect_PSBasic, sizeof(BasicEffect_PSBasic) },
     { BasicEffect_PSBasicNoFog, sizeof(BasicEffect_PSBasicNoFog) },
     { BasicEffect_PSBasicTx, sizeof(BasicEffect_PSBasicTx) },
@@ -309,7 +309,7 @@ const ShaderBytecode EffectBase<BasicEffectTraits>::PixelShaderBytecode[] = {
 };
 
 template<>
-const int EffectBase<BasicEffectTraits>::PixelShaderIndices[] = {
+int const EffectBase<BasicEffectTraits>::PixelShaderIndices[] = {
     0, // basic
     1, // no fog
     0, // vertex color

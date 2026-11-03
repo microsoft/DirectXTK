@@ -60,7 +60,7 @@ namespace
         size_t      length;
     };
 
-    const ShaderBytecode pixelShaders[] = {
+    ShaderBytecode const pixelShaders[] = {
         { PostProcess_PSMerge, sizeof(PostProcess_PSMerge) },
         { PostProcess_PSBloomCombine, sizeof(PostProcess_PSBloomCombine) },
     };
@@ -89,8 +89,8 @@ namespace
             }
         }
 
-        DeviceResources(const DeviceResources&)            = delete;
-        DeviceResources& operator=(const DeviceResources&) = delete;
+        DeviceResources(DeviceResources const&)            = delete;
+        DeviceResources& operator=(DeviceResources const&) = delete;
 
         DeviceResources(DeviceResources&&)            = delete;
         DeviceResources& operator=(DeviceResources&&) = delete;
@@ -147,13 +147,13 @@ class DualPostProcess::Impl : public AlignedNew<PostProcessConstants>
 public:
     explicit Impl(_In_ ID3D11Device* device);
 
-    Impl(const Impl&)            = delete;
-    Impl& operator=(const Impl&) = delete;
+    Impl(Impl const&)            = delete;
+    Impl& operator=(Impl const&) = delete;
 
     Impl(Impl&&)            = default;
     Impl& operator=(Impl&&) = default;
 
-    void Process(_In_ ID3D11DeviceContext* deviceContext, const std::function<void __cdecl()>& setCustomState);
+    void Process(_In_ ID3D11DeviceContext* deviceContext, std::function<void __cdecl()> const& setCustomState);
 
     void SetDirtyFlag() noexcept { mDirtyFlags = INT_MAX; }
 
@@ -201,7 +201,7 @@ DualPostProcess::Impl::Impl(_In_ ID3D11Device* device)
 }
 
 // Sets our state onto the D3D device.
-void DualPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, const std::function<void __cdecl()>& setCustomState)
+void DualPostProcess::Impl::Process(_In_ ID3D11DeviceContext* deviceContext, std::function<void __cdecl()> const& setCustomState)
 {
     // Set the texture.
     ID3D11ShaderResourceView* textures[2] = { texture.Get(), texture2.Get() };

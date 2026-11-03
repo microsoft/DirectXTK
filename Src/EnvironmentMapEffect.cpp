@@ -60,8 +60,8 @@ class EnvironmentMapEffect::Impl : public EffectBase<EnvironmentMapEffectTraits>
 public:
     explicit Impl(_In_ ID3D11Device* device);
 
-    Impl(const Impl&)            = delete;
-    Impl& operator=(const Impl&) = delete;
+    Impl(Impl const&)            = delete;
+    Impl& operator=(Impl const&) = delete;
 
     Impl(Impl&&)            = default;
     Impl& operator=(Impl&&) = default;
@@ -151,7 +151,7 @@ namespace
 } // namespace
 
 template<>
-const ShaderBytecode EffectBase<EnvironmentMapEffectTraits>::VertexShaderBytecode[] = {
+ShaderBytecode const EffectBase<EnvironmentMapEffectTraits>::VertexShaderBytecode[] = {
     { EnvironmentMapEffect_VSEnvMap, sizeof(EnvironmentMapEffect_VSEnvMap) },
     { EnvironmentMapEffect_VSEnvMapFresnel, sizeof(EnvironmentMapEffect_VSEnvMapFresnel) },
     { EnvironmentMapEffect_VSEnvMapOneLight, sizeof(EnvironmentMapEffect_VSEnvMapOneLight) },
@@ -166,7 +166,7 @@ const ShaderBytecode EffectBase<EnvironmentMapEffectTraits>::VertexShaderBytecod
 };
 
 template<>
-const int EffectBase<EnvironmentMapEffectTraits>::VertexShaderIndices[] = {
+int const EffectBase<EnvironmentMapEffectTraits>::VertexShaderIndices[] = {
     0, // basic
     0, // basic, no fog
     1, // fresnel
@@ -235,7 +235,7 @@ const int EffectBase<EnvironmentMapEffectTraits>::VertexShaderIndices[] = {
 };
 
 template<>
-const ShaderBytecode EffectBase<EnvironmentMapEffectTraits>::PixelShaderBytecode[] = {
+ShaderBytecode const EffectBase<EnvironmentMapEffectTraits>::PixelShaderBytecode[] = {
     { EnvironmentMapEffect_PSEnvMap, sizeof(EnvironmentMapEffect_PSEnvMap) },
     { EnvironmentMapEffect_PSEnvMapNoFog, sizeof(EnvironmentMapEffect_PSEnvMapNoFog) },
     { EnvironmentMapEffect_PSEnvMapSpecular, sizeof(EnvironmentMapEffect_PSEnvMapSpecular) },
@@ -259,7 +259,7 @@ const ShaderBytecode EffectBase<EnvironmentMapEffectTraits>::PixelShaderBytecode
 };
 
 template<>
-const int EffectBase<EnvironmentMapEffectTraits>::PixelShaderIndices[] = {
+int const EffectBase<EnvironmentMapEffectTraits>::PixelShaderIndices[] = {
     0,  // basic
     1,  // basic, no fog
     0,  // fresnel

@@ -44,8 +44,8 @@ class DebugEffect::Impl : public EffectBase<DebugEffectTraits>
 public:
     explicit Impl(_In_ ID3D11Device* device);
 
-    Impl(const Impl&)            = delete;
-    Impl& operator=(const Impl&) = delete;
+    Impl(Impl const&)            = delete;
+    Impl& operator=(Impl const&) = delete;
 
     Impl(Impl&&)            = default;
     Impl& operator=(Impl&&) = default;
@@ -102,7 +102,7 @@ namespace
 } // namespace
 
 template<>
-const ShaderBytecode EffectBase<DebugEffectTraits>::VertexShaderBytecode[] = {
+ShaderBytecode const EffectBase<DebugEffectTraits>::VertexShaderBytecode[] = {
     { DebugEffect_VSDebug, sizeof(DebugEffect_VSDebug) },
     { DebugEffect_VSDebugVc, sizeof(DebugEffect_VSDebugVc) },
     { DebugEffect_VSDebugBn, sizeof(DebugEffect_VSDebugBn) },
@@ -114,7 +114,7 @@ const ShaderBytecode EffectBase<DebugEffectTraits>::VertexShaderBytecode[] = {
 };
 
 template<>
-const int EffectBase<DebugEffectTraits>::VertexShaderIndices[] = {
+int const EffectBase<DebugEffectTraits>::VertexShaderIndices[] = {
     0, // default
     0, // normals
     0, // tangents
@@ -157,7 +157,7 @@ const int EffectBase<DebugEffectTraits>::VertexShaderIndices[] = {
 };
 
 template<>
-const ShaderBytecode EffectBase<DebugEffectTraits>::PixelShaderBytecode[] = {
+ShaderBytecode const EffectBase<DebugEffectTraits>::PixelShaderBytecode[] = {
     { DebugEffect_PSHemiAmbient, sizeof(DebugEffect_PSHemiAmbient) },
     { DebugEffect_PSRGBNormals, sizeof(DebugEffect_PSRGBNormals) },
     { DebugEffect_PSRGBTangents, sizeof(DebugEffect_PSRGBTangents) },
@@ -165,7 +165,7 @@ const ShaderBytecode EffectBase<DebugEffectTraits>::PixelShaderBytecode[] = {
 };
 
 template<>
-const int EffectBase<DebugEffectTraits>::PixelShaderIndices[] = {
+int const EffectBase<DebugEffectTraits>::PixelShaderIndices[] = {
     0, // default
     1, // normals
     2, // tangents

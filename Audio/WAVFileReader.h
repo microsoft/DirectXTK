@@ -35,11 +35,11 @@ namespace DirectX
     struct WAVData
     {
         const WAVEFORMATEX* wfx;
-        const uint8_t*      startAudio;
+        uint8_t const*      startAudio;
         uint32_t            audioBytes;
         uint32_t            loopStart;
         uint32_t            loopLength;
-        const uint32_t*     seek; // Note: XMA Seek data is Big-Endian
+        uint32_t const*     seek; // Note: XMA Seek data is Big-Endian
         uint32_t            seekCount;
     };
 

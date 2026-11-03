@@ -156,7 +156,7 @@ namespace VSD3DStarter
 
 #pragma pack(pop)
 
-    const Material s_defMaterial = {
+    Material const s_defMaterial = {
         { 0.2f, 0.2f, 0.2f, 1.f },
         { 0.8f, 0.8f, 0.8f, 1.f },
         { 0.0f, 0.0f, 0.0f, 1.f },

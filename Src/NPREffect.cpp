@@ -75,8 +75,8 @@ class NPREffect::Impl : public EffectBase<NPREffectTraits>
 public:
     explicit Impl(_In_ ID3D11Device* device);
 
-    Impl(const Impl&)            = delete;
-    Impl& operator=(const Impl&) = delete;
+    Impl(Impl const&)            = delete;
+    Impl& operator=(Impl const&) = delete;
 
     Impl(Impl&&)            = default;
     Impl& operator=(Impl&&) = default;
@@ -182,7 +182,7 @@ namespace
 } // namespace
 
 template<>
-const ShaderBytecode EffectBase<NPREffectTraits>::VertexShaderBytecode[] = {
+ShaderBytecode const EffectBase<NPREffectTraits>::VertexShaderBytecode[] = {
     { NPREffect_VSNPREffect, sizeof(NPREffect_VSNPREffect) },
     { NPREffect_VSNPREffectVc, sizeof(NPREffect_VSNPREffectVc) },
     { NPREffect_VSNPREffectBn, sizeof(NPREffect_VSNPREffectBn) },
@@ -204,7 +204,7 @@ const ShaderBytecode EffectBase<NPREffectTraits>::VertexShaderBytecode[] = {
 };
 
 template<>
-const int EffectBase<NPREffectTraits>::VertexShaderIndices[] = {
+int const EffectBase<NPREffectTraits>::VertexShaderIndices[] = {
     0,  // cel shading
     0,  // gooch shading
     0,  // matcap shading
@@ -279,7 +279,7 @@ const int EffectBase<NPREffectTraits>::VertexShaderIndices[] = {
 };
 
 template<>
-const ShaderBytecode EffectBase<NPREffectTraits>::PixelShaderBytecode[] = {
+ShaderBytecode const EffectBase<NPREffectTraits>::PixelShaderBytecode[] = {
     { NPREffect_PSCelShading, sizeof(NPREffect_PSCelShading) },
     { NPREffect_PSGoochShading, sizeof(NPREffect_PSGoochShading) },
     { NPREffect_PSMatCapShading, sizeof(NPREffect_PSMatCapShading) },
@@ -289,7 +289,7 @@ const ShaderBytecode EffectBase<NPREffectTraits>::PixelShaderBytecode[] = {
 };
 
 template<>
-const int EffectBase<NPREffectTraits>::PixelShaderIndices[] = {
+int const EffectBase<NPREffectTraits>::PixelShaderIndices[] = {
     0, // cel shading
     1, // gooch shading
     2, // matcap shading

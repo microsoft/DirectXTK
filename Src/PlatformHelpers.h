@@ -48,7 +48,7 @@ namespace DirectX
             message = str;
         }
 
-        const char* what() const noexcept override { return message.c_str(); }
+        char const* what() const noexcept override { return message.c_str(); }
 
         HRESULT get_result() const noexcept { return result; }
 

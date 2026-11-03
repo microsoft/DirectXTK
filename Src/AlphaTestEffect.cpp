@@ -43,8 +43,8 @@ class AlphaTestEffect::Impl : public EffectBase<AlphaTestEffectTraits>
 public:
     explicit Impl(_In_ ID3D11Device* device);
 
-    Impl(const Impl&)            = delete;
-    Impl& operator=(const Impl&) = delete;
+    Impl(Impl const&)            = delete;
+    Impl& operator=(Impl const&) = delete;
 
     Impl(Impl&&)            = default;
     Impl& operator=(Impl&&) = default;
@@ -89,7 +89,7 @@ namespace
 } // namespace
 
 template<>
-const ShaderBytecode EffectBase<AlphaTestEffectTraits>::VertexShaderBytecode[] = {
+ShaderBytecode const EffectBase<AlphaTestEffectTraits>::VertexShaderBytecode[] = {
     { AlphaTestEffect_VSAlphaTest, sizeof(AlphaTestEffect_VSAlphaTest) },
     { AlphaTestEffect_VSAlphaTestNoFog, sizeof(AlphaTestEffect_VSAlphaTestNoFog) },
     { AlphaTestEffect_VSAlphaTestVc, sizeof(AlphaTestEffect_VSAlphaTestVc) },
@@ -97,7 +97,7 @@ const ShaderBytecode EffectBase<AlphaTestEffectTraits>::VertexShaderBytecode[] =
 };
 
 template<>
-const int EffectBase<AlphaTestEffectTraits>::VertexShaderIndices[] = {
+int const EffectBase<AlphaTestEffectTraits>::VertexShaderIndices[] = {
     0, // lt/gt
     1, // lt/gt, no fog
     2, // lt/gt, vertex color
@@ -110,7 +110,7 @@ const int EffectBase<AlphaTestEffectTraits>::VertexShaderIndices[] = {
 };
 
 template<>
-const ShaderBytecode EffectBase<AlphaTestEffectTraits>::PixelShaderBytecode[] = {
+ShaderBytecode const EffectBase<AlphaTestEffectTraits>::PixelShaderBytecode[] = {
     { AlphaTestEffect_PSAlphaTestLtGt, sizeof(AlphaTestEffect_PSAlphaTestLtGt) },
     { AlphaTestEffect_PSAlphaTestLtGtNoFog, sizeof(AlphaTestEffect_PSAlphaTestLtGtNoFog) },
     { AlphaTestEffect_PSAlphaTestEqNe, sizeof(AlphaTestEffect_PSAlphaTestEqNe) },
@@ -118,7 +118,7 @@ const ShaderBytecode EffectBase<AlphaTestEffectTraits>::PixelShaderBytecode[] = 
 };
 
 template<>
-const int EffectBase<AlphaTestEffectTraits>::PixelShaderIndices[] = {
+int const EffectBase<AlphaTestEffectTraits>::PixelShaderIndices[] = {
     0, // lt/gt
     1, // lt/gt, no fog
     0, // lt/gt, vertex color
@@ -198,7 +198,7 @@ void AlphaTestEffect::Impl::Apply(_In_ ID3D11DeviceContext* deviceContext)
     if (dirtyFlags & EffectDirtyFlags::AlphaTest)
     {
         // Convert reference alpha from 8 bit integer to 0-1 float format.
-        const auto reference = static_cast<float>(referenceAlpha) / 255.0f;
+        auto const reference = static_cast<float>(referenceAlpha) / 255.0f;
 
         // Comparison tolerance of half the 8 bit integer precision.
         constexpr float threshold = 0.5f / 255.0f;

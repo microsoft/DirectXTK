@@ -39,7 +39,7 @@ namespace
         }
 
         // Scale into 0-1 range.
-        const float scaledValue = value / (maxValue - deadZoneSize);
+        float const scaledValue = value / (maxValue - deadZoneSize);
         return std::max(-1.f, std::min(scaledValue, 1.f));
     }
 
@@ -59,10 +59,10 @@ namespace
             break;
 
         case GamePad::DEAD_ZONE_CIRCULAR: {
-            const float dist   = sqrtf(x * x + y * y);
-            const float wanted = ApplyLinearDeadZone(dist, maxValue, deadZoneSize);
+            float const dist   = sqrtf(x * x + y * y);
+            float const wanted = ApplyLinearDeadZone(dist, maxValue, deadZoneSize);
 
-            const float scale = (wanted > 0.f) ? (wanted / dist) : 0.f;
+            float const scale = (wanted > 0.f) ? (wanted / dist) : 0.f;
 
             resultX = std::max(-1.f, std::min(x * scale, 1.f));
             resultY = std::max(-1.f, std::min(y * scale, 1.f));
@@ -279,7 +279,7 @@ public:
                 if (device->GetDeviceStatus() & GameInputDeviceConnected)
                 {
 #if defined(GAMEINPUT_API_VERSION) && (GAMEINPUT_API_VERSION >= 1)
-                    const GameInputDeviceInfo* deviceInfo = nullptr;
+                    GameInputDeviceInfo const* deviceInfo = nullptr;
                     device->GetDeviceInfo(&deviceInfo);
 #else
                     auto deviceInfo = device->GetDeviceInfo();
@@ -1155,7 +1155,7 @@ public:
                     hr = ctrl->get_Type(str.GetAddressOf());
                     if (SUCCEEDED(hr))
                     {
-                        const wchar_t* typeStr = str.GetRawBuffer(nullptr);
+                        wchar_t const* typeStr = str.GetRawBuffer(nullptr);
                         if (_wcsicmp(typeStr, L"Windows.Xbox.Input.Gamepad") == 0)
                         {
                             caps.gamepadType = Capabilities::GAMEPAD;
@@ -1699,7 +1699,7 @@ GamePad& GamePad::Get()
 #define UPDATE_BUTTON_STATE(field) \
     field = static_cast<ButtonState>((!!state.buttons.field) | ((!!state.buttons.field ^ !!lastState.buttons.field) << 1))
 
-void GamePad::ButtonStateTracker::Update(const GamePad::State& state) noexcept
+void GamePad::ButtonStateTracker::Update(GamePad::State const& state) noexcept
 {
     UPDATE_BUTTON_STATE(a);
 

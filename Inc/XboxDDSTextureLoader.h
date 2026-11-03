@@ -97,7 +97,7 @@ namespace Xbox
         _In_ bool                                                         forceSRGB = false) noexcept
     {
         return CreateDDSTextureFromMemory(d3dDevice,
-            reinterpret_cast<const uint8_t*>(ddsData),
+            reinterpret_cast<uint8_t const*>(ddsData),
             ddsDataSize,
             texture,
             textureView,

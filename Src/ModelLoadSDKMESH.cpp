@@ -59,7 +59,7 @@ namespace
     }
 
     template<size_t sizeOfBuffer>
-    inline void ASCIIToWChar(wchar_t (&buffer)[sizeOfBuffer], const char* ascii)
+    inline void ASCIIToWChar(wchar_t (&buffer)[sizeOfBuffer], char const* ascii)
     {
 #ifdef _WIN32
         MultiByteToWideChar(CP_UTF8, 0, ascii, -1, buffer, sizeOfBuffer);
@@ -69,7 +69,7 @@ namespace
 #endif
     }
 
-    void LoadMaterial(const DXUT::SDKMESH_MATERIAL& mh, unsigned int flags, IEffectFactory& fxFactory, MaterialRecordSDKMESH& m, bool srgb)
+    void LoadMaterial(DXUT::SDKMESH_MATERIAL const& mh, unsigned int flags, IEffectFactory& fxFactory, MaterialRecordSDKMESH& m, bool srgb)
     {
         wchar_t matName[DXUT::MAX_MATERIAL_NAME] = {};
         ASCIIToWChar(matName, mh.Name);
@@ -137,7 +137,7 @@ namespace
         m.alpha  = (info.alpha < 1.f);
     }
 
-    void LoadMaterial(const DXUT::SDKMESH_MATERIAL_V2& mh, unsigned int flags, IEffectFactory& fxFactory, MaterialRecordSDKMESH& m)
+    void LoadMaterial(DXUT::SDKMESH_MATERIAL_V2 const& mh, unsigned int flags, IEffectFactory& fxFactory, MaterialRecordSDKMESH& m)
     {
         wchar_t matName[DXUT::MAX_MATERIAL_NAME] = {};
         ASCIIToWChar(matName, mh.Name);
@@ -421,7 +421,7 @@ namespace
 //======================================================================================
 
 _Use_decl_annotations_ std::unique_ptr<Model> Model::CreateFromSDKMESH(ID3D11Device* d3dDevice,
-    const uint8_t*                                                                   meshData,
+    uint8_t const*                                                                   meshData,
     size_t                                                                           idataSize,
     IEffectFactory&                                                                  fxFactory,
     ModelLoaderFlags                                                                 flags)
@@ -429,14 +429,14 @@ _Use_decl_annotations_ std::unique_ptr<Model> Model::CreateFromSDKMESH(ID3D11Dev
     if (!d3dDevice || !meshData)
         throw std::invalid_argument("Device and meshData cannot be null");
 
-    const uint64_t dataSize = idataSize;
+    uint64_t const dataSize = idataSize;
 
     // File Headers
     if (dataSize < sizeof(DXUT::SDKMESH_HEADER))
         throw std::runtime_error("End of file");
-    auto header = reinterpret_cast<const DXUT::SDKMESH_HEADER*>(meshData);
+    auto header = reinterpret_cast<DXUT::SDKMESH_HEADER const*>(meshData);
 
-    const uint64_t headerSize = sizeof(DXUT::SDKMESH_HEADER)
+    uint64_t const headerSize = sizeof(DXUT::SDKMESH_HEADER)
                                 + uint64_t(header->NumVertexBuffers) * sizeof(DXUT::SDKMESH_VERTEX_BUFFER_HEADER)
                                 + uint64_t(header->NumIndexBuffers) * sizeof(DXUT::SDKMESH_INDEX_BUFFER_HEADER);
     if (header->HeaderSize != headerSize)
@@ -473,7 +473,7 @@ _Use_decl_annotations_ std::unique_ptr<Model> Model::CreateFromSDKMESH(ID3D11Dev
 
     if (dataSize < header->VertexStreamHeadersOffset || (dataSize < (header->VertexStreamHeadersOffset + sizeBytes)))
         throw std::runtime_error("End of file");
-    auto vbArray = reinterpret_cast<const DXUT::SDKMESH_VERTEX_BUFFER_HEADER*>(meshData + header->VertexStreamHeadersOffset);
+    auto vbArray = reinterpret_cast<DXUT::SDKMESH_VERTEX_BUFFER_HEADER const*>(meshData + header->VertexStreamHeadersOffset);
 
     sizeBytes = uint64_t(header->NumIndexBuffers) * sizeof(DXUT::SDKMESH_INDEX_BUFFER_HEADER);
     if (sizeBytes > UINT32_MAX)
@@ -481,7 +481,7 @@ _Use_decl_annotations_ std::unique_ptr<Model> Model::CreateFromSDKMESH(ID3D11Dev
 
     if (dataSize < header->IndexStreamHeadersOffset || (dataSize < (header->IndexStreamHeadersOffset + sizeBytes)))
         throw std::runtime_error("End of file");
-    auto ibArray = reinterpret_cast<const DXUT::SDKMESH_INDEX_BUFFER_HEADER*>(meshData + header->IndexStreamHeadersOffset);
+    auto ibArray = reinterpret_cast<DXUT::SDKMESH_INDEX_BUFFER_HEADER const*>(meshData + header->IndexStreamHeadersOffset);
 
     sizeBytes = uint64_t(header->NumMeshes) * sizeof(DXUT::SDKMESH_MESH);
     if (sizeBytes > UINT32_MAX)
@@ -489,7 +489,7 @@ _Use_decl_annotations_ std::unique_ptr<Model> Model::CreateFromSDKMESH(ID3D11Dev
 
     if (dataSize < header->MeshDataOffset || (dataSize < (header->MeshDataOffset + sizeBytes)))
         throw std::runtime_error("End of file");
-    auto meshArray = reinterpret_cast<const DXUT::SDKMESH_MESH*>(meshData + header->MeshDataOffset);
+    auto meshArray = reinterpret_cast<DXUT::SDKMESH_MESH const*>(meshData + header->MeshDataOffset);
 
     sizeBytes = uint64_t(header->NumTotalSubsets) * sizeof(DXUT::SDKMESH_SUBSET);
     if (sizeBytes > UINT32_MAX)
@@ -497,9 +497,9 @@ _Use_decl_annotations_ std::unique_ptr<Model> Model::CreateFromSDKMESH(ID3D11Dev
 
     if (dataSize < header->SubsetDataOffset || (dataSize < (header->SubsetDataOffset + sizeBytes)))
         throw std::runtime_error("End of file");
-    auto subsetArray = reinterpret_cast<const DXUT::SDKMESH_SUBSET*>(meshData + header->SubsetDataOffset);
+    auto subsetArray = reinterpret_cast<DXUT::SDKMESH_SUBSET const*>(meshData + header->SubsetDataOffset);
 
-    const DXUT::SDKMESH_FRAME* frameArray = nullptr;
+    DXUT::SDKMESH_FRAME const* frameArray = nullptr;
     if (header->NumFrames > 0)
     {
         sizeBytes = uint64_t(header->NumFrames) * sizeof(DXUT::SDKMESH_FRAME);
@@ -511,7 +511,7 @@ _Use_decl_annotations_ std::unique_ptr<Model> Model::CreateFromSDKMESH(ID3D11Dev
 
         if (flags & ModelLoader_IncludeBones)
         {
-            frameArray = reinterpret_cast<const DXUT::SDKMESH_FRAME*>(meshData + header->FrameDataOffset);
+            frameArray = reinterpret_cast<DXUT::SDKMESH_FRAME const*>(meshData + header->FrameDataOffset);
         }
     }
 
@@ -522,22 +522,22 @@ _Use_decl_annotations_ std::unique_ptr<Model> Model::CreateFromSDKMESH(ID3D11Dev
     if (dataSize < header->MaterialDataOffset || (dataSize < (header->MaterialDataOffset + sizeBytes)))
         throw std::runtime_error("End of file");
 
-    const DXUT::SDKMESH_MATERIAL*    materialArray    = nullptr;
-    const DXUT::SDKMESH_MATERIAL_V2* materialArray_v2 = nullptr;
+    DXUT::SDKMESH_MATERIAL const*    materialArray    = nullptr;
+    DXUT::SDKMESH_MATERIAL_V2 const* materialArray_v2 = nullptr;
     if (header->Version == DXUT::SDKMESH_FILE_VERSION_V2)
     {
-        materialArray_v2 = reinterpret_cast<const DXUT::SDKMESH_MATERIAL_V2*>(meshData + header->MaterialDataOffset);
+        materialArray_v2 = reinterpret_cast<DXUT::SDKMESH_MATERIAL_V2 const*>(meshData + header->MaterialDataOffset);
     }
     else
     {
-        materialArray = reinterpret_cast<const DXUT::SDKMESH_MATERIAL*>(meshData + header->MaterialDataOffset);
+        materialArray = reinterpret_cast<DXUT::SDKMESH_MATERIAL const*>(meshData + header->MaterialDataOffset);
     }
 
     // Buffer data
-    const uint64_t bufferDataOffset = header->HeaderSize + header->NonBufferDataSize;
+    uint64_t const bufferDataOffset = header->HeaderSize + header->NonBufferDataSize;
     if ((dataSize < bufferDataOffset) || (dataSize < bufferDataOffset + header->BufferDataSize))
         throw std::runtime_error("End of file");
-    const uint8_t* bufferData = meshData + bufferDataOffset;
+    uint8_t const* bufferData = meshData + bufferDataOffset;
 
     // Create vertex buffers
     std::vector<ComPtr<ID3D11Buffer>> vbs;
@@ -667,9 +667,9 @@ _Use_decl_annotations_ std::unique_ptr<Model> Model::CreateFromSDKMESH(ID3D11Dev
         if (dataSize < mh.SubsetOffset || (dataSize < mh.SubsetOffset + sizeBytes))
             throw std::runtime_error("End of file");
 
-        auto subsets = reinterpret_cast<const uint32_t*>(meshData + mh.SubsetOffset);
+        auto subsets = reinterpret_cast<uint32_t const*>(meshData + mh.SubsetOffset);
 
-        const uint32_t* influences = nullptr;
+        uint32_t const* influences = nullptr;
         if (mh.NumFrameInfluences > 0)
         {
             sizeBytes = uint64_t(mh.NumFrameInfluences) * sizeof(uint32_t);
@@ -681,7 +681,7 @@ _Use_decl_annotations_ std::unique_ptr<Model> Model::CreateFromSDKMESH(ID3D11Dev
 
             if (flags & ModelLoader_IncludeBones)
             {
-                influences = reinterpret_cast<const uint32_t*>(meshData + mh.FrameInfluenceOffset);
+                influences = reinterpret_cast<uint32_t const*>(meshData + mh.FrameInfluenceOffset);
             }
         }
 
@@ -707,7 +707,7 @@ _Use_decl_annotations_ std::unique_ptr<Model> Model::CreateFromSDKMESH(ID3D11Dev
         mesh->meshParts.reserve(mh.NumSubsets);
         for (size_t j = 0; j < mh.NumSubsets; ++j)
         {
-            const auto sIndex = subsets[j];
+            auto const sIndex = subsets[j];
             if (sIndex >= header->NumTotalSubsets)
                 throw std::out_of_range("Invalid mesh found");
 
@@ -739,7 +739,7 @@ _Use_decl_annotations_ std::unique_ptr<Model> Model::CreateFromSDKMESH(ID3D11Dev
 
             if (!mat.effect)
             {
-                const size_t vi = mh.VertexBuffers[0];
+                size_t const vi = mh.VertexBuffers[0];
 
                 if (materialArray_v2)
                 {
@@ -805,7 +805,7 @@ _Use_decl_annotations_ std::unique_ptr<Model> Model::CreateFromSDKMESH(ID3D11Dev
 
             transforms[j] = XMLoadFloat4x4(&frameArray[j].Matrix);
 
-            const uint32_t index = frameArray[j].Mesh;
+            uint32_t const index = frameArray[j].Mesh;
             if (index != DXUT::INVALID_MESH)
             {
                 if (index >= model->meshes.size())
@@ -842,7 +842,7 @@ _Use_decl_annotations_ std::unique_ptr<Model> Model::CreateFromSDKMESH(ID3D11Dev
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_ std::unique_ptr<Model>
-Model::CreateFromSDKMESH(ID3D11Device* device, const wchar_t* szFileName, IEffectFactory& fxFactory, ModelLoaderFlags flags)
+Model::CreateFromSDKMESH(ID3D11Device* device, wchar_t const* szFileName, IEffectFactory& fxFactory, ModelLoaderFlags flags)
 {
     size_t                     dataSize = 0;
     std::unique_ptr<uint8_t[]> data;
@@ -868,7 +868,7 @@ Model::CreateFromSDKMESH(ID3D11Device* device, const wchar_t* szFileName, IEffec
 _Use_decl_annotations_ std::unique_ptr<Model>
 Model::CreateFromSDKMESH(ID3D11Device* device, const __wchar_t* szFileName, IEffectFactory& fxFactory, ModelLoaderFlags flags)
 {
-    return CreateFromSDKMESH(device, reinterpret_cast<const unsigned short*>(szFileName), fxFactory, flags);
+    return CreateFromSDKMESH(device, reinterpret_cast<unsigned short const*>(szFileName), fxFactory, flags);
 }
 
 #endif

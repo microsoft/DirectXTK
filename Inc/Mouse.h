@@ -133,7 +133,7 @@ namespace DirectX
 #pragma prefast(pop)
 #endif
 
-            void __cdecl Update(const State& state) noexcept;
+            void __cdecl Update(State const& state) noexcept;
 
             void __cdecl Reset() noexcept;
 

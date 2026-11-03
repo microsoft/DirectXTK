@@ -41,8 +41,8 @@ public:
             throw std::invalid_argument("Direct3D device is null");
     }
 
-    Impl(const Impl&)            = delete;
-    Impl& operator=(const Impl&) = delete;
+    Impl(Impl const&)            = delete;
+    Impl& operator=(Impl const&) = delete;
 
     Impl(Impl&&)            = delete;
     Impl& operator=(Impl&&) = delete;
@@ -84,7 +84,7 @@ private:
 SharedResourcePool<ID3D11Device*, DGSLEffectFactory::Impl> DGSLEffectFactory::Impl::instancePool;
 
 _Use_decl_annotations_ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateEffect(DGSLEffectFactory* factory,
-    const DGSLEffectFactory::EffectInfo&                                                                 info,
+    DGSLEffectFactory::EffectInfo const&                                                                 info,
     ID3D11DeviceContext*                                                                                 deviceContext)
 {
     if (info.enableDualTexture)
@@ -179,7 +179,7 @@ _Use_decl_annotations_ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateE
 }
 
 _Use_decl_annotations_ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateDGSLEffect(DGSLEffectFactory* factory,
-    const DGSLEffectFactory::DGSLEffectInfo&                                                                 info,
+    DGSLEffectFactory::DGSLEffectInfo const&                                                                 info,
     ID3D11DeviceContext*                                                                                     deviceContext)
 {
     if (mSharing && info.name && *info.name)
@@ -372,7 +372,7 @@ _Use_decl_annotations_ std::shared_ptr<IEffect> DGSLEffectFactory::Impl::CreateD
 }
 
 _Use_decl_annotations_ void
-DGSLEffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView)
+DGSLEffectFactory::Impl::CreateTexture(wchar_t const* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView)
 {
     if (!name || !textureView)
         throw std::invalid_argument("name and textureView parameters can't be null");
@@ -410,7 +410,7 @@ DGSLEffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext*
 
         wchar_t ext[_MAX_EXT] = {};
         _wsplitpath_s(name, nullptr, 0, nullptr, 0, nullptr, 0, ext, _MAX_EXT);
-        const bool isdds = _wcsicmp(ext, L".dds") == 0;
+        bool const isdds = _wcsicmp(ext, L".dds") == 0;
 
         if (isdds)
         {
@@ -480,7 +480,7 @@ DGSLEffectFactory::Impl::CreateTexture(const wchar_t* name, ID3D11DeviceContext*
     }
 }
 
-_Use_decl_annotations_ void DGSLEffectFactory::Impl::CreatePixelShader(const wchar_t* name, ID3D11PixelShader** pixelShader)
+_Use_decl_annotations_ void DGSLEffectFactory::Impl::CreatePixelShader(wchar_t const* name, ID3D11PixelShader** pixelShader)
 {
     if (!name || !pixelShader)
         throw std::invalid_argument("name and pixelShader parameters can't be null");
@@ -557,25 +557,25 @@ DGSLEffectFactory& DGSLEffectFactory::operator=(DGSLEffectFactory&&) noexcept = 
 DGSLEffectFactory::~DGSLEffectFactory()                                       = default;
 
 // IEffectFactory methods
-_Use_decl_annotations_ std::shared_ptr<IEffect> DGSLEffectFactory::CreateEffect(const EffectInfo& info, ID3D11DeviceContext* deviceContext)
+_Use_decl_annotations_ std::shared_ptr<IEffect> DGSLEffectFactory::CreateEffect(EffectInfo const& info, ID3D11DeviceContext* deviceContext)
 {
     return pImpl->CreateEffect(this, info, deviceContext);
 }
 
 _Use_decl_annotations_ void
-DGSLEffectFactory::CreateTexture(const wchar_t* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView)
+DGSLEffectFactory::CreateTexture(wchar_t const* name, ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView** textureView)
 {
     return pImpl->CreateTexture(name, deviceContext, textureView);
 }
 
 // DGSL methods.
-_Use_decl_annotations_ std::shared_ptr<IEffect> DGSLEffectFactory::CreateDGSLEffect(const DGSLEffectInfo& info,
+_Use_decl_annotations_ std::shared_ptr<IEffect> DGSLEffectFactory::CreateDGSLEffect(DGSLEffectInfo const& info,
     ID3D11DeviceContext*                                                                                  deviceContext)
 {
     return pImpl->CreateDGSLEffect(this, info, deviceContext);
 }
 
-_Use_decl_annotations_ void DGSLEffectFactory::CreatePixelShader(const wchar_t* shader, ID3D11PixelShader** pixelShader)
+_Use_decl_annotations_ void DGSLEffectFactory::CreatePixelShader(wchar_t const* shader, ID3D11PixelShader** pixelShader)
 {
     pImpl->CreatePixelShader(shader, pixelShader);
 }

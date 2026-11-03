@@ -115,8 +115,8 @@ namespace
         static constexpr int VertexShaderCount = 8;
         static constexpr int PixelShaderCount  = 12;
 
-        static const ShaderBytecode VertexShaderBytecode[VertexShaderCount];
-        static const ShaderBytecode PixelShaderBytecode[PixelShaderCount];
+        static ShaderBytecode const VertexShaderBytecode[VertexShaderCount];
+        static ShaderBytecode const PixelShaderBytecode[PixelShaderCount];
     };
 } // namespace
 
@@ -181,7 +181,7 @@ namespace
 #endif
 } // namespace
 
-const ShaderBytecode DGSLEffectTraits::VertexShaderBytecode[] = {
+ShaderBytecode const DGSLEffectTraits::VertexShaderBytecode[] = {
     { DGSLEffect_main, sizeof(DGSLEffect_main) },
     { DGSLEffect_mainVc, sizeof(DGSLEffect_mainVc) },
     { DGSLEffect_main1Bones, sizeof(DGSLEffect_main1Bones) },
@@ -192,7 +192,7 @@ const ShaderBytecode DGSLEffectTraits::VertexShaderBytecode[] = {
     { DGSLEffect_main4BonesVc, sizeof(DGSLEffect_main4BonesVc) },
 };
 
-const ShaderBytecode DGSLEffectTraits::PixelShaderBytecode[] = {
+ShaderBytecode const DGSLEffectTraits::PixelShaderBytecode[] = {
     { DGSLUnlit_main, sizeof(DGSLUnlit_main) },             // UNLIT (no texture)
     { DGSLLambert_main, sizeof(DGSLLambert_main) },         // LAMBERT (no texture)
     { DGSLPhong_main, sizeof(DGSLPhong_main) },             // PHONG (no texture)
@@ -242,8 +242,8 @@ public:
         static_assert(MaxDirectionalLights == 4, "Mismatch with DGSL pipline");
     }
 
-    Impl(const Impl&)            = delete;
-    Impl& operator=(const Impl&) = delete;
+    Impl(Impl const&)            = delete;
+    Impl& operator=(Impl const&) = delete;
 
     Impl(Impl&&)            = default;
     Impl& operator=(Impl&&) = default;
@@ -529,7 +529,7 @@ void DGSLEffect::Impl::GetVertexShaderBytecode(_Out_ void const** pShaderByteCod
 {
     assert(pShaderByteCode != nullptr && pByteCodeLength != nullptr);
 
-    const int permutation = GetCurrentVSPermutation();
+    int const permutation = GetCurrentVSPermutation();
     assert(permutation < DGSLEffectTraits::VertexShaderCount);
     _Analysis_assume_(permutation < DGSLEffectTraits::VertexShaderCount);
 
