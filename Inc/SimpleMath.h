@@ -335,9 +335,9 @@ namespace DirectX
             static void    Transform(const Vector2& v, const Matrix& m, Vector2& result) noexcept;
             static Vector2 Transform(const Vector2& v, const Matrix& m) noexcept;
             static void    Transform(_In_reads_(count) const Vector2* varray,
-                   size_t                                             count,
-                   const Matrix&                                      m,
-                   _Out_writes_(count) Vector2*                       resultArray) noexcept;
+                size_t                                             count,
+                const Matrix&                                      m,
+                _Out_writes_(count) Vector2*                       resultArray) noexcept;
 
             static void Transform(const Vector2& v, const Matrix& m, Vector4& result) noexcept;
             static void Transform(_In_reads_(count) const Vector2* varray,
@@ -348,9 +348,9 @@ namespace DirectX
             static void    TransformNormal(const Vector2& v, const Matrix& m, Vector2& result) noexcept;
             static Vector2 TransformNormal(const Vector2& v, const Matrix& m) noexcept;
             static void    TransformNormal(_In_reads_(count) const Vector2* varray,
-                   size_t                                                   count,
-                   const Matrix&                                            m,
-                   _Out_writes_(count) Vector2*                             resultArray) noexcept;
+                size_t                                                   count,
+                const Matrix&                                            m,
+                _Out_writes_(count) Vector2*                             resultArray) noexcept;
 
             // Constants
             static const Vector2 Zero;
@@ -543,9 +543,9 @@ namespace DirectX
             static void    Transform(const Vector3& v, const Matrix& m, Vector3& result) noexcept;
             static Vector3 Transform(const Vector3& v, const Matrix& m) noexcept;
             static void    Transform(_In_reads_(count) const Vector3* varray,
-                   size_t                                             count,
-                   const Matrix&                                      m,
-                   _Out_writes_(count) Vector3*                       resultArray) noexcept;
+                size_t                                             count,
+                const Matrix&                                      m,
+                _Out_writes_(count) Vector3*                       resultArray) noexcept;
 
             static void Transform(const Vector3& v, const Matrix& m, Vector4& result) noexcept;
             static void Transform(_In_reads_(count) const Vector3* varray,
@@ -556,9 +556,9 @@ namespace DirectX
             static void    TransformNormal(const Vector3& v, const Matrix& m, Vector3& result) noexcept;
             static Vector3 TransformNormal(const Vector3& v, const Matrix& m) noexcept;
             static void    TransformNormal(_In_reads_(count) const Vector3* varray,
-                   size_t                                                   count,
-                   const Matrix&                                            m,
-                   _Out_writes_(count) Vector3*                             resultArray) noexcept;
+                size_t                                                   count,
+                const Matrix&                                            m,
+                _Out_writes_(count) Vector3*                             resultArray) noexcept;
 
             // Constants
             static const Vector3 Zero;
@@ -732,9 +732,9 @@ namespace DirectX
             static void    Transform(const Vector4& v, const Matrix& m, Vector4& result) noexcept;
             static Vector4 Transform(const Vector4& v, const Matrix& m) noexcept;
             static void    Transform(_In_reads_(count) const Vector4* varray,
-                   size_t                                             count,
-                   const Matrix&                                      m,
-                   _Out_writes_(count) Vector4*                       resultArray) noexcept;
+                size_t                                             count,
+                const Matrix&                                      m,
+                _Out_writes_(count) Vector4*                       resultArray) noexcept;
 
             // Constants
             static const Vector4 Zero;

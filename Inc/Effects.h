@@ -1030,8 +1030,7 @@ namespace DirectX
 
             virtual void __cdecl CreateTexture(_In_z_ const wchar_t* name,
                 _In_opt_ ID3D11DeviceContext*                        deviceContext,
-                _Outptr_ ID3D11ShaderResourceView**                  textureView)
-                = 0;
+                _Outptr_ ID3D11ShaderResourceView**                  textureView) = 0;
 
         protected:
             IEffectFactory()                            = default;
@@ -1057,8 +1056,8 @@ namespace DirectX
             DIRECTX_TOOLKIT_API std::shared_ptr<IEffect> __cdecl CreateEffect(_In_ const EffectInfo& info,
                 _In_opt_ ID3D11DeviceContext*                                                        deviceContext) override;
             DIRECTX_TOOLKIT_API void __cdecl                     CreateTexture(_In_z_ const wchar_t* name,
-                                    _In_opt_ ID3D11DeviceContext*                                    deviceContext,
-                                    _Outptr_ ID3D11ShaderResourceView**                              textureView) override;
+                _In_opt_ ID3D11DeviceContext*                                    deviceContext,
+                _Outptr_ ID3D11ShaderResourceView**                              textureView) override;
 
             // Settings.
             DIRECTX_TOOLKIT_API void __cdecl ReleaseCache();
@@ -1098,8 +1097,8 @@ namespace DirectX
             DIRECTX_TOOLKIT_API std::shared_ptr<IEffect> __cdecl CreateEffect(_In_ const EffectInfo& info,
                 _In_opt_ ID3D11DeviceContext*                                                        deviceContext) override;
             DIRECTX_TOOLKIT_API void __cdecl                     CreateTexture(_In_z_ const wchar_t* name,
-                                    _In_opt_ ID3D11DeviceContext*                                    deviceContext,
-                                    _Outptr_ ID3D11ShaderResourceView**                              textureView) override;
+                _In_opt_ ID3D11DeviceContext*                                    deviceContext,
+                _Outptr_ ID3D11ShaderResourceView**                              textureView) override;
 
             // Settings.
             DIRECTX_TOOLKIT_API void __cdecl ReleaseCache();
@@ -1138,8 +1137,8 @@ namespace DirectX
             DIRECTX_TOOLKIT_API std::shared_ptr<IEffect> __cdecl CreateEffect(_In_ const EffectInfo& info,
                 _In_opt_ ID3D11DeviceContext*                                                        deviceContext) override;
             DIRECTX_TOOLKIT_API void __cdecl                     CreateTexture(_In_z_ const wchar_t* name,
-                                    _In_opt_ ID3D11DeviceContext*                                    deviceContext,
-                                    _Outptr_ ID3D11ShaderResourceView**                              textureView) override;
+                _In_opt_ ID3D11DeviceContext*                                    deviceContext,
+                _Outptr_ ID3D11ShaderResourceView**                              textureView) override;
 
             // Settings.
             DIRECTX_TOOLKIT_API void __cdecl ReleaseCache();
@@ -1184,8 +1183,8 @@ namespace DirectX
             DIRECTX_TOOLKIT_API std::shared_ptr<IEffect> __cdecl CreateEffect(_In_ const EffectInfo& info,
                 _In_opt_ ID3D11DeviceContext*                                                        deviceContext) override;
             DIRECTX_TOOLKIT_API void __cdecl                     CreateTexture(_In_z_ const wchar_t* name,
-                                    _In_opt_ ID3D11DeviceContext*                                    deviceContext,
-                                    _Outptr_ ID3D11ShaderResourceView**                              textureView) override;
+                _In_opt_ ID3D11DeviceContext*                                    deviceContext,
+                _Outptr_ ID3D11ShaderResourceView**                              textureView) override;
 
             // DGSL methods.
             struct DIRECTX_TOOLKIT_API DGSLEffectInfo : public EffectInfo
