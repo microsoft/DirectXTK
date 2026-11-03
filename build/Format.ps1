@@ -13,7 +13,7 @@ This is use to clang-format the code using the rules in .github\linters\.clang-f
 The clang-format version must match the version used by GitHub Super-Linter or false positives can be found.
 You can install this version locally using:
 
-winget install --id=LLVM.LLVM --version 21.1.2
+winget install --id=LLVM.LLVM --version 22.1.3
 
 .PARAMETER Check
 Runs clang-format without modifying the files in place.
@@ -58,7 +58,7 @@ if (-not $clangFormatPath -or -not (Test-Path -LiteralPath $clangFormatPath -Pat
 }
 
 # This has to match the version used by GitHub super-linter or results will not match.
-$requiredClangFormatVersion = '21.1.2'
+$requiredClangFormatVersion = '22.1.3'
 $clangFormatVersion = (& $clangFormatPath '--version' 2>&1 | Out-String).Trim()
 if ($LASTEXITCODE -ne 0) {
     throw "Unable to determine clang-format version."

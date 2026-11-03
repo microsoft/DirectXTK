@@ -381,7 +381,7 @@ _Use_decl_annotations_ void GeometricPrimitive::CreateInputLayout(IEffect* effec
 //--------------------------------------------------------------------------------------
 
 _Use_decl_annotations_ std::unique_ptr<GeometricPrimitive>
-                       GeometricPrimitive::CreateCube(ID3D11DeviceContext* deviceContext, float size, bool rhcoords)
+GeometricPrimitive::CreateCube(ID3D11DeviceContext* deviceContext, float size, bool rhcoords)
 {
     VertexCollection vertices;
     IndexCollection  indices;
@@ -402,7 +402,7 @@ void GeometricPrimitive::CreateCube(VertexCollection& vertices, IndexCollection&
 
 // Creates a box primitive.
 _Use_decl_annotations_ std::unique_ptr<GeometricPrimitive>
-                       GeometricPrimitive::CreateBox(ID3D11DeviceContext* deviceContext, const XMFLOAT3& size, bool rhcoords, bool invertn)
+GeometricPrimitive::CreateBox(ID3D11DeviceContext* deviceContext, const XMFLOAT3& size, bool rhcoords, bool invertn)
 {
     VertexCollection vertices;
     IndexCollection  indices;
@@ -568,7 +568,7 @@ void GeometricPrimitive::CreateTorus(VertexCollection& vertices,
 //--------------------------------------------------------------------------------------
 
 _Use_decl_annotations_ std::unique_ptr<GeometricPrimitive>
-                       GeometricPrimitive::CreateTetrahedron(ID3D11DeviceContext* deviceContext, float size, bool rhcoords)
+GeometricPrimitive::CreateTetrahedron(ID3D11DeviceContext* deviceContext, float size, bool rhcoords)
 {
     VertexCollection vertices;
     IndexCollection  indices;
@@ -592,7 +592,7 @@ void GeometricPrimitive::CreateTetrahedron(VertexCollection& vertices, IndexColl
 //--------------------------------------------------------------------------------------
 
 _Use_decl_annotations_ std::unique_ptr<GeometricPrimitive>
-                       GeometricPrimitive::CreateOctahedron(ID3D11DeviceContext* deviceContext, float size, bool rhcoords)
+GeometricPrimitive::CreateOctahedron(ID3D11DeviceContext* deviceContext, float size, bool rhcoords)
 {
     VertexCollection vertices;
     IndexCollection  indices;
@@ -616,7 +616,7 @@ void GeometricPrimitive::CreateOctahedron(VertexCollection& vertices, IndexColle
 //--------------------------------------------------------------------------------------
 
 _Use_decl_annotations_ std::unique_ptr<GeometricPrimitive>
-                       GeometricPrimitive::CreateDodecahedron(ID3D11DeviceContext* deviceContext, float size, bool rhcoords)
+GeometricPrimitive::CreateDodecahedron(ID3D11DeviceContext* deviceContext, float size, bool rhcoords)
 {
     VertexCollection vertices;
     IndexCollection  indices;
@@ -640,7 +640,7 @@ void GeometricPrimitive::CreateDodecahedron(VertexCollection& vertices, IndexCol
 //--------------------------------------------------------------------------------------
 
 _Use_decl_annotations_ std::unique_ptr<GeometricPrimitive>
-                       GeometricPrimitive::CreateIcosahedron(ID3D11DeviceContext* deviceContext, float size, bool rhcoords)
+GeometricPrimitive::CreateIcosahedron(ID3D11DeviceContext* deviceContext, float size, bool rhcoords)
 {
     VertexCollection vertices;
     IndexCollection  indices;
@@ -664,7 +664,7 @@ void GeometricPrimitive::CreateIcosahedron(VertexCollection& vertices, IndexColl
 //--------------------------------------------------------------------------------------
 
 _Use_decl_annotations_ std::unique_ptr<GeometricPrimitive>
-                       GeometricPrimitive::CreateTeapot(ID3D11DeviceContext* deviceContext, float size, size_t tessellation, bool rhcoords)
+GeometricPrimitive::CreateTeapot(ID3D11DeviceContext* deviceContext, float size, size_t tessellation, bool rhcoords)
 {
     VertexCollection vertices;
     IndexCollection  indices;

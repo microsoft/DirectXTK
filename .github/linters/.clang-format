@@ -46,9 +46,6 @@ BraceWrapping:
   BeforeLambdaBody: true
   SplitEmptyFunction: false
   SplitEmptyRecord: false
-#requires clang-format 22
-#BreakAfterOpenBracketFunction: true
-#BreakBeforeCloseBracketFunction: true
 BreakBeforeBinaryOperators: All
 BreakBeforeTernaryOperators: false
 BreakConstructorInitializers: BeforeColon
@@ -70,8 +67,6 @@ PointerAlignment: Left
 ReflowComments: true
 SortIncludes: false
 SpaceAfterCStyleCast: false
-#requires clang format 21
-#SpaceAfterOperatorKeyword: true
 SpaceAfterTemplateKeyword: false
 SpaceBeforeAssignmentOperators: true
 SpaceBeforeCaseColon: false

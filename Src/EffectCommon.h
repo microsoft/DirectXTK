@@ -112,9 +112,9 @@ namespace DirectX
             bool                        lightingEnabled);
 
         int             SetLightEnabled(int                             whichLight,
-                        bool                                            value,
-                        _Inout_updates_(MaxDirectionalLights) XMVECTOR* lightDiffuseConstant,
-                        _Inout_updates_(MaxDirectionalLights) XMVECTOR* lightSpecularConstant);
+            bool                                            value,
+            _Inout_updates_(MaxDirectionalLights) XMVECTOR* lightDiffuseConstant,
+            _Inout_updates_(MaxDirectionalLights) XMVECTOR* lightSpecularConstant);
         int XM_CALLCONV SetLightDiffuseColor(int            whichLight,
             FXMVECTOR                                       value,
             _Inout_updates_(MaxDirectionalLights) XMVECTOR* lightDiffuseConstant);
@@ -153,9 +153,9 @@ namespace DirectX
         }
 
         ID3D11VertexShader*       DemandCreateVertexShader(_Inout_ Microsoft::WRL::ComPtr<ID3D11VertexShader>& vertexShader,
-                  ShaderBytecode const&                                                                        bytecode);
+            ShaderBytecode const&                                                                        bytecode);
         ID3D11PixelShader*        DemandCreatePixelShader(_Inout_ Microsoft::WRL::ComPtr<ID3D11PixelShader>& pixelShader,
-                   ShaderBytecode const&                                                                     bytecode);
+            ShaderBytecode const&                                                                     bytecode);
         ID3D11ShaderResourceView* GetDefaultTexture();
         ID3D11ShaderResourceView* GetDefaultNormalTexture();
         D3D_FEATURE_LEVEL         GetDeviceFeatureLevel() const;
